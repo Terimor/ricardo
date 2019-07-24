@@ -9,10 +9,13 @@
     "license": "MIT",
     "require": {
         "php": "^7.1.3",
+        "checkout/checkout-php-api": "^1.2",
+        "checkout/checkout-sdk-php": "^1.0",
         "fideloper/proxy": "^4.0",
         "jenssegers/mongodb": "^3.5",
         "laravel/framework": "5.8.*",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "tdanielcox/bluesnap-php": "^0.2.2"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

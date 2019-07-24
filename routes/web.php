@@ -12,9 +12,15 @@
 */
 
 Route::get('/', function () {
-    return view('app');
+    return view('index');
 });
 
-Auth::routes();
+//Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/contact-us', 'SiteController@contactUs')->name('contact-us');
+Route::get('/checkout', 'SiteController@checkout')->name('checkout');
+Route::get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
+Route::get('/products', 'SiteController@products')->name('products');
+
+Route::get('/test-bluesnap', 'PaymentsController@testBluesnap');
+Route::get('/test-checkoutcom', 'PaymentsController@testCheckoutCom');
