@@ -1,4 +1,4 @@
-# Saga-laravel
+# ODIN
 
 # Pre requirements
 
@@ -24,7 +24,7 @@ If you are manually installing locally, download and install the stack above.
 
 * Install using en_US.UTF8 encoding.
 * Setup any relevant users.
-* Create a new database called tuvens with UTF8 encoding 
+* Create a new database called tuvens with UTF8 encoding
 
 ## Environment variables
 
@@ -79,7 +79,7 @@ php artisan db:seed
 
 ## Passport / OAuth Setup
 
-For OAuth to work, you will need to generate keys using the following commands. These provide the website frontend with its own keys to access the API. 
+For OAuth to work, you will need to generate keys using the following commands. These provide the website frontend with its own keys to access the API.
 
 ```
 php artisan passport:keys
@@ -145,7 +145,7 @@ Once this done, you should be able to run the tests using:
 
 * keep APIs RESTful as much as possible (for example user login = create session, user signup = create registration, logout = delete session)
 * keep controllers as thin as possible, logic must be incapsulated into services (we'll need to better organize them)
-* use Dependency injection, don't instantiate services 
+* use Dependency injection, don't instantiate services
 * use request validation (https://laravel.com/docs/5.6/validation#form-request-validation). If validation failed, app will respond with
 ```
 {
@@ -160,12 +160,12 @@ Once this done, you should be able to run the tests using:
 
     * https://medium.com/@mahbubkabir/discovering-swagger-in-laravel-rest-apis-cb0271c8f2
     * https://swagger.io/docs/specification/
-    
+
     Docs can be generated with
-    
+
     ```
     php artisan l5-swagger:generate
     ```
-    
+
     Than it'll be available under `/api/documentation` URL
 
