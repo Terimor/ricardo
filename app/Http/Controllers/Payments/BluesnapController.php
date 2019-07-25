@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use tdanielcox\Bluesnap\Bluesnap;
+use tdanielcox\Bluesnap\CardTransaction;
 
 class BluesnapController extends Controller
 {
@@ -28,7 +29,7 @@ class BluesnapController extends Controller
             'card_number' => 'required',
         ]);
 
-        $response = \tdanielcox\Bluesnap\CardTransaction::create([
+        $response = CardTransaction::create([
             'creditCard' => [
                 'cardNumber' => $request->input('card_number'),
                 'expirationMonth' => $request->input('expiration_month'),

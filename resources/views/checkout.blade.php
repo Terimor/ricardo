@@ -13,7 +13,7 @@
             <span class="label">Card Number</span>
             <div class="prefix"><img src="/images/card.png"></div>
             <div class="postfix"><i class="fa fa-lock"></i></div>
-            <input name="card_number" type="text" style="padding-left: 45px; padding-right: 45px;">
+            <input name="card_number" value="4263982640269299" type="text" style="padding-left: 45px; padding-right: 45px;">
         </label>
         <div class="card-date">
             <span class="label">Card Valid Until</span>
@@ -22,11 +22,11 @@
                     <select name="expiration_month">
                         <option value="1">1</option>
                         <option value="2">2</option>
+                        <option value="12">12</option>
                     </select>
             </div>
             <div class="select variant-1">
                     <select name="expiration_year">
-                        <option></option>
                         <option value="2019">2019</option>
                         <option value="2020">2020</option>
                     </select>
