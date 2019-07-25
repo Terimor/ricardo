@@ -1,0 +1,767 @@
+<template>
+  <div>
+    <div class="container offer">
+      <p><span class="bold">Special Offer:</span> EchoBeat - Wireless 3D Sound</p>
+      <p>Price:&nbsp;<span class="price-object productprice-old-object strike">₴3,598</span>
+        <span class="Green-span">
+        <b><span class="price-object productprice-object"> ₴1,799</span></b>
+      </span>&nbsp;(50% discount per unit)
+      </p>
+    </div>
+
+    <div class="container main">
+      <div class="row">
+        <div class="col-md-7">
+          <div class="paper main__deal">
+            <div class="d-flex">
+              <div class="main__sale">
+                <div class="sale-badge dynamic-sale-badge ">
+                  <div class="dynamic-sale-badge__background"></div>
+                  <div class="dynamic-sale-badge__container">
+                    <span class="badge-discount-percentage">50%</span> Off
+                  </div>
+                </div>
+              </div>
+              <p class="main__deal__text">
+                <strong>Free Shipping</strong> on all orders <strong>Today!</strong>
+                Do not browse away from this page! <strong>Free delivery available today</strong>
+              </p>
+            </div>
+            <h2>Step 1: Choose your Deal</h2>
+            <h3>Article</h3>
+
+            <radio-button-group
+              v-model="form.deal"
+              :list="dealList"
+            />
+
+            <h2>Step 2: Please select your variant</h2>
+
+            <select-field
+              popperClass="emc1-popover-variant"
+              v-model="form.variant"
+              :config="{
+                prefix: 'EchoBeat7'
+              }"
+              :rest="{
+                placeholder: 'Variant'
+              }"
+              :list="mockData.dropdownList" />
+            <transition name="el-zoom-in-top">
+              <button v-show="warrantyPrice" id="warranty-field-button">
+                <label for="warranty-field" class="label-container-checkbox">
+                  3 Years Additional Warranty On Your Purchase & Accessories: ₴{{warrantyPrice}}
+                  <input id="warranty-field" type="checkbox">
+                  <span class="checkmark"></span>
+                </label>
+                <img src="/images/best-saller.png" alt="">
+                <i class="fa fa-arrow-right slide-right"></i>
+              </button>
+            </transition>
+          </div>
+        </div>
+        <div class="paper col-md-5 main__payment">
+          <img :src="`/images/headphones-${form.variant}.png`" alt="">
+          <h2>Step 3: Payment Method</h2>
+          <h3>Pay Securely With: (No Fees)</h3>
+          <radio-button-group
+            class="main__credit-card-switcher"
+            v-model="form.isCreditCard"
+            :list="mockData.creditCardRadioList"
+          />
+          <transition name="el-zoom-in-top">
+            <div v-if="form.isCreditCard" class="flex-wrap payment-form">
+              <h2>Step 4: Contact Information</h2>
+              <text-field
+                theme="variant-1"
+                label="First Name"
+                class="first-name"
+                v-model="form.fname"/>
+              <text-field
+                theme="variant-1"
+                label="Last Name"
+                class="last-name"
+                v-model="form.lname"/>
+              <text-field
+                theme="variant-1"
+                label="Your Email Address"
+                v-model="form.email"/>
+              <phone-field
+                theme="variant-1"
+                label="Your Phone Number"
+                v-model="form.phone"/>
+              <h2>Step 5: Delivery Address</h2>
+              <text-field
+                theme="variant-1"
+                label="Street And Number"
+                v-model="form.street"/>
+              <text-field
+                theme="variant-1"
+                label="City"
+                v-model="form.city"/>
+              <text-field
+                theme="variant-1"
+                label="State"
+                v-model="form.state"/>
+              <text-field
+                theme="variant-1"
+                label="Zip Code"
+                v-model="form.zipcode"/>
+              <select-field
+                theme="variant-1"
+                label="Country"
+                :rest="{
+                  placeholder: 'Country'
+                }"
+                :list="mockData.countryList"
+                v-model="form.country"/>
+              <h2>Step 6: Payment Details</h2>
+              <text-field
+                class="card-number"
+                theme="variant-1"
+                label="Card Number"
+                v-model="form.cardNumber"
+                :prefix="`<img src='/images/card.png' />`"
+                :postfix="`<i class='fa fa-lock'></i>`"
+              />
+              <div class="card-date">
+                <span class="label">Card Valid Until</span>
+                <select-field
+                  :rest="{
+                    placeholder: 'Month'
+                  }"
+                  theme="variant-1"
+                  :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
+                  v-model="form.month"/>
+                <select-field
+                  :rest="{
+                    placeholder: 'Year'
+                  }"
+                  theme="variant-1"
+                  :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+                  v-model="form.year"/>
+              </div>
+              <text-field
+                class="cvv-field"
+                theme="variant-1"
+                label="CVV"
+                v-model="form.cvv"
+                postfix="<i class='fa fa-question-circle'></i>"
+              />
+            </div>
+          </transition>
+          <div class="main__bottom">
+            <img src="/images/safe_payment_en.png" alt="safe payment">
+            <p><i class="fa fa-lock"></i>Safe 256-Bit SSL encryption.</p>
+            <p>Your credit card will be invoiced as: "MDL*EchoBeat"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import emc1Validation from '../validation/emc1-validation'
+import printf from 'printf'
+import notification from '../mixins/notification'
+import { getRandomInt } from '../utils/common'
+
+const getRadioHtml = ({ discountName, newPriceText, text, priceText, discountText }) =>
+  `${discountName ? `<p class="label-container-radio__best-seller"><span>${discountName}</span><span>${newPriceText}</span></p>` : ''}
+     <p class="label-container-radio__name-price"><span>${text}</span><span ${newPriceText ? 'class="strike"' : ''}>${priceText}</span></p>
+   <p class="label-container-radio__discount">${discountText}</p>`
+
+function * getNotice (productName) {
+  const messageMap = {
+    recentlyBought: `
+      <div class="recently-notice">
+        <div class="recently-notice__left">
+          <img src="/images/headphones-white.png" alt="">
+        </div>
+        <div class="recently-notice__right">
+          <p>Olivier B . in Tallinn just bought<br>1x ${productName}</p>
+        </div>
+      </div>
+    `,
+    paypal: `
+      <div class="recently-notice">
+        <div class="recently-notice__left">
+          <img src="/images/paypal232.png" alt="">
+        </div>
+        <div class="recently-notice__right">
+          <p>0 Risk purchase! Buy now with PayPal and return the product for free...</p>
+        </div>
+      </div>
+    `,
+    usersActive: `
+      <div class="recently-notice recently-notice_user-active">
+        <div class="recently-notice__left">
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="recently-notice__right">
+          <p>Currently <text class="red">${getRandomInt(33, 44)}</text> people are looking at this product</p>
+        </div>
+      </div>
+    `,
+    bestsellerText: `
+      <div class="recently-notice recently-notice_high-demand">
+        <div class="recently-notice__left">
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="recently-notice__right">
+          <p>In high demand - This product is our bestseller right now...</p>
+        </div>
+      </div>
+    `,
+    paypalNotice: `<b>paypalNotice</b>`
+  }
+
+  const keyQueue = ['recentlyBought', 'recentlyBought', 'usersActive', 'paypal', 'recentlyBought', 'recentlyBought', 'bestsellerText']
+
+  let lastIndex = 0
+
+  while (true) {
+    if (lastIndex < keyQueue.length - 1) {
+      yield messageMap[keyQueue[lastIndex]]
+      lastIndex++
+    } else {
+      yield messageMap[keyQueue[lastIndex]]
+      lastIndex = 0
+    }
+  }
+}
+
+export default {
+  name: 'emc1',
+  mixins: [notification],
+  data () {
+    return {
+      mockData: {
+        purchase: [
+          {
+            discountName: null,
+            newPrice: null,
+            newPriceText: null,
+            withDiscount: false,
+            text: '1x EchoBeat7 %(color)s',
+            price: 1799,
+            priceText: '₴1,799',
+            discountText: '(50% Discount)'
+          }, {
+            discountName: 'BESTSELLER',
+            newPrice: 3399,
+            newPriceText: '₴3,399',
+            withDiscount: true,
+            text: '2x EchoBeat7 %(color)s + 1 FREE',
+            price: 10794,
+            priceText: '₴10,794',
+            discountText: '(69% Discount, ₴1,133/Unit)'
+          }, {
+            discountName: 'BEST DEAL',
+            newPrice: 4999,
+            newPriceText: '₴4,999',
+            withDiscount: true,
+            text: '3x EchoBeat7 %(color)s + 2 FREE',
+            price: 17990,
+            priceText: '₴17,990',
+            discountText: '(73% Discount, ₴999.80/Unit)'
+          }
+        ],
+        countryList: [
+          {
+            value: 'usa',
+            text: 'USA'
+          }, {
+            value: 'Russia',
+            text: 'Russia'
+          }, {
+            value: 'Ukraine',
+            text: 'Ukraine'
+          }, {
+            value: 'Portugal',
+            text: 'Portugal'
+          }
+        ],
+        creditCardRadioList: [
+          {
+            label: 'Credit cards',
+            value: true
+          }
+        ],
+        dropdownList: [
+          {
+            label: 'EchoBeat7 White',
+            text: `
+              <div><img src="/images/headphones-white.png" alt=""><span>1x EchoBeat7 White</span></div>
+            `,
+            value: 'white'
+          }, {
+            label: 'EchoBeat7 Black',
+            text: `
+              <div><img src="/images/headphones-black.png" alt=""><span>1x EchoBeat7 Black</span></div>
+            `,
+            value: 'black'
+          }, {
+            label: 'EchoBeat7 Gold',
+            text: `
+              <div><img src="/images/headphones-gold.png" alt=""><span>1x EchoBeat7 Gold</span></div>
+            `,
+            value: 'gold'
+          }, {
+            label: 'EchoBeat7 Red',
+            text: `
+              <div><img src="/images/headphones-red.png" alt=""><span>1x EchoBeat7 Red</span></div>
+            `,
+            value: 'red'
+          }, {
+            label: 'EchoBeat7 Pink',
+            text: `
+              <div><img src="/images/headphones-pink.png" alt=""><span>1x EchoBeat7 Pink</span></div>
+            `,
+            value: 'pink'
+          }
+        ]
+      },
+      form: {
+        deal: null,
+        variant: 'white',
+        isCreditCard: false,
+        fname: null,
+        lname: null,
+        email: null,
+        phone: null,
+        street: null,
+        city: null,
+        state: null,
+        zipcode: null,
+        country: null,
+        cardNumber: null,
+        month: null,
+        year: null,
+        cvv: null
+      }
+    }
+  },
+  computed: {
+    dealList () {
+      return this.mockData.purchase.map((it, idx) => ({
+        value: idx,
+        label: getRadioHtml({
+          ...it,
+          text: printf(it.text, { color: this.form.variant })
+        })
+      }))
+    },
+    warrantyPrice () {
+      const currentDeal = this.mockData.purchase[this.form.deal]
+
+      return currentDeal && (currentDeal.newPrice || currentDeal.price) / 10
+    }
+  },
+  validations: emc1Validation,
+  methods: {
+    showNotice () {
+      const notice = getNotice('EchoBeat7')
+      const getNoticeHtml = () => notice.next().value
+
+      setTimeout(() => {
+        setInterval(() => {
+          this.showNotification({
+            content: getNoticeHtml(),
+            position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
+          })
+        }, 6000)
+      }, 9000)
+    }
+  },
+  mounted () {
+    this.showNotice()
+  }
+}
+</script>
+
+<style lang="scss">
+  $white: #fff;
+  $color_flush_mahogany_approx: #c0392b;
+  $red: red;
+  $color_niagara_approx: #16a085;
+
+  .container {
+    max-width: 970px;
+  }
+
+  .offer {
+    padding-top: 10px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      max-width: 416px;
+      width: 100%;
+      text-transform: uppercase;
+    }
+  }
+
+  .sale-badge {
+    width: 85px;
+    height: 85px;
+    margin-left: 5px;
+    margin-top: 5px;
+    justify-content: center;
+    align-items: center;
+    color: $white;
+    font-weight: 700;
+    font-size: 2.5rem;
+    position: relative;
+  }
+
+  .dynamic-sale-badge__background {
+    animation: spin 20s linear infinite;
+    position: absolute;
+    background: $color_flush_mahogany_approx;
+    border-radius: 50%;
+    padding: 5px;
+    border: 2px dashed $white;
+    box-shadow: 0 0 0 5px $color_flush_mahogany_approx;
+    width: 85px;
+    height: 85px;
+  }
+
+  .dynamic-sale-badge__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 12px;
+    text-align: center;
+    transform: rotate(349deg);
+    position: absolute;
+    width: 85px;
+    height: 85px;
+  }
+
+  .main {
+    padding-top: 20px;
+
+    & > .row {
+      align-items: flex-start;
+    }
+
+    .col-7 {
+      padding-right: 20px;
+    }
+
+    &__deal__text {
+      font-size: 18px;
+      font-style: italic;
+      padding-left: 20px;
+      margin: 0;
+
+      strong {
+        font-size: 20px;
+        font-weight: bold;
+      }
+    }
+
+    .radio-button-group {
+      .label-container-radio__label {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .label-container-radio__name-price {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .label-container-radio__best-seller {
+        display: flex;
+        justify-content: space-between;
+        color: $red;
+      }
+
+      .label-container-radio__discount {
+        color: $color_niagara_approx;
+      }
+
+      .label-container-radio.with-discount .label-container-radio__name-price > span:nth-child(2) {
+        text-decoration: line-through;
+      }
+    }
+
+    &__deal {
+      h3 {
+        padding-left: 20px;
+      }
+
+      #warranty-field-button {
+        width: 100%;
+        position: relative;
+        height: 95px;
+        margin-top: 22px;
+        background-color: rgba(216, 216, 216, .71);
+        border-radius: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        outline: none;
+
+        &:hover {
+          background-color: rgba(191,191,191,.71);
+          background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
+        }
+
+        label[for=warranty-field] {
+          font-weight: bold;
+          line-height: 1.8;
+          text-align: left;
+          text-transform: capitalize;
+          font-size: 16px;
+          padding: 23px 70px 30px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+
+          .checkmark {
+            top: 20px;
+            left: 40px;
+          }
+        }
+
+        input[type=checkbox] {
+          position: absolute;
+          top: 23px;
+          left: 45px;
+        }
+
+        & > img {
+          position: absolute;
+          width: 30px;
+          height: auto;
+          top: -7px;
+          right: -7px;
+        }
+
+        & > .fa-arrow-right {
+          position: absolute;
+          font-size: 18px;
+          color: #dc003a;
+          top: 20px;
+          left: 10px;
+          animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+        }
+      }
+    }
+
+    &__payment {
+      display: flex;
+      flex-wrap: wrap;
+
+      h2, h3 {
+        margin: 10px 0;
+      }
+
+      h3 {
+        margin-top: 0;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+
+      .first-name {
+        width: 40%;
+        margin-right: 10px;
+      }
+
+      .last-name {
+        width: calc(60% - 11px);
+      }
+
+      .card-number {
+        .prefix {
+          & > img {
+            height: 22px;
+            width: auto;
+          }
+          input {
+            &:after {
+              content: '\f023';
+              display: block;
+              color: #555;
+              font-family: FontAwesome !important;
+              position: absolute;
+              top: 8px;
+              right: 15px;
+            }
+          }
+        }
+      }
+
+      .card-date {
+        display: flex;
+        flex-wrap: wrap;
+        width: 70%;
+        padding-right: 30px;
+        margin-bottom: 10px;
+
+        & > .label {
+          width: 100%;
+          margin-bottom: 6px;
+        }
+
+        & > div {
+          width: calc(40% - 5px);
+
+          margin-right: 10px;
+
+          &:last-child {
+            margin-right: 0;
+            width: calc(60% - 5px);
+          }
+        }
+      }
+
+      .cvv-field {
+        width: calc(30%);
+      }
+
+      .payment-form {
+        display: flex;
+      }
+    }
+
+    &__credit-card-switcher {
+      width: 100%;
+
+      .label-container-radio {
+        background-color: #0f9b0f;
+        color: $white;
+        cursor: pointer;
+        margin: 0;
+
+        &:hover {
+          border: 1px solid #74bf36;
+          background-color: #11b211;
+          background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
+        }
+
+        &__label {
+          font-size: 15px;
+        }
+
+        .checkmark {
+          border-color: $white;
+          background-color: transparent;
+
+          &:after {
+            background-color: $white;
+            width: 13px;
+          }
+        }
+      }
+    }
+
+    &__bottom {
+      display: flex;
+      flex-direction: column;
+
+      img {
+        width: 80%;
+        margin: 0 auto;
+      }
+
+      p {
+        text-align: center;
+        font-size: 13px;
+
+        i {
+          position: relative;
+          margin-right: 4px;
+          top: 2px;
+          font-size: 18px;
+          color: #409EFF;
+        }
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      .col-md-7 {
+        padding: 0;
+      }
+
+      &__deal {
+        #warranty-field-button {
+          label[for=warranty-field] {
+            padding: 0 0 0 70px;
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+  }
+
+  .emc1-popover-variant {
+    .el-select-dropdown__item {
+      height: auto;
+    }
+
+    .select__label {
+      opacity: 1;
+      & > div {
+        display: flex;
+        align-items: center;
+
+        img {
+          height: 80px;
+          width: auto;
+        }
+      }
+    }
+  }
+
+  *[dir=rtl] {
+    .radio-button-group .label-container-radio {
+      padding: 15px 45px 15px 15px;
+
+      .checkmark {
+        left: unset;
+        right: 15px;
+      }
+    }
+
+    .main__payment {
+      .first-name {
+        margin-right: 0;
+      }
+
+      .last-name {
+        margin-right: 10px;
+      }
+
+      .card-date {
+        padding-right: 0;
+        padding-left: 30px;
+
+        & > div {
+          margin-right: 0;
+
+          &:last-child {
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+
+    .iti__flag-container {
+      left: auto;
+    }
+  }
+</style>

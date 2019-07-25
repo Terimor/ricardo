@@ -1,0 +1,49 @@
+<template>
+  <div>
+    <header-block :withTimer="true">
+      <img src="https://static-backend.saratrkr.com/image_assets/EchoBeat-logo.00" alt="">
+    </header-block>
+    <emc1></emc1>
+    <preloader-3
+      v-if="queryParams.preloader === '3'"
+      @finish-preload="showPreloader = false"
+      :showPreloader="showPreloader"></preloader-3>
+  </div>
+</template>
+
+<script>
+import emc1 from './components/emc1'
+import queryToComponent from './mixins/queryToComponent'
+
+export default {
+  name: 'app',
+  data () {
+    return {
+      showPreloader: true
+    }
+  },
+  mixins: [queryToComponent],
+  components: {
+    emc1
+  },
+  methods: {
+    initial () {
+      for (let key in this.queryParams) {
+        window[key] = this.queryParams[key]
+      }
+
+      const title = document.title
+
+      window.onfocus = function () {
+        document.title = title
+      }
+      window.onblur = function () {
+        document.title = 'WAIT! YOU FORGOT: You have active cart items!'
+      }
+    }
+  },
+  mounted () {
+    this.initial()
+  }
+}
+</script>

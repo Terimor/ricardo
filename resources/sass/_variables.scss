@@ -17,3 +17,18 @@ $yellow: #ffed4a;
 $green: #38c172;
 $teal: #4dc0b5;
 $cyan: #6cb2eb;
+
+// Breakpoints
+$xs-down: 'max-width: 374px';
+$s-down: 'max-width: 767px';
+$m-down: 'max-width: 959px';
+$l-down: 'max-width: 1119px';
+$xl-down: 'max-width: 1279px';
+$xxl-down: 'max-width: 1439px';
+
+$xs-up: 'min-width: 375px';
+$s-up: 'min-width: 768px';
+$m-up: 'min-width: 960px';
+$l-up: 'min-width: 1120px';
+$xl-up: 'min-width: 1280px';
+$xxl-up: 'min-width: 1440px';
