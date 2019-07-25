@@ -36,7 +36,6 @@ phpunit.phar
 /public/hot
 /public/storage
 /storage/*.key
-/vendor
 .env
 .phpunit.result.cache
 Homestead.json
