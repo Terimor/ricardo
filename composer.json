@@ -15,7 +15,9 @@
         "jenssegers/mongodb": "^3.5",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
+        "paypal/rest-api-sdk-php": "^1.14",
         "sentry/sentry-laravel": "1.1.0",
+        "srmklive/paypal": "~1.0",
         "tdanielcox/bluesnap-php": "^0.2.2"
     },
     "require-dev": {
