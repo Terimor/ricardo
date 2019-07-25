@@ -10,6 +10,16 @@ use Checkout\Models\Tokens\Card;
 use Checkout\Models\Payments\TokenSource;
 use Checkout\Models\Payments\Payment;
 
+use PayPal\Rest\ApiContext;
+use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Api\Payer;
+use PayPal\Api\Item;
+use PayPal\Api\ItemList;
+use PayPal\Api\Amount;
+use PayPal\Api\Transaction;
+use PayPal\Api\RedirectUrls;
+use PayPal\Api\Payment as PaymentPaypal;
+
 
 /*use com\checkout;
 use com\checkout\ApiServices;*/
@@ -120,5 +130,58 @@ class PaymentsController extends Controller
         }*/
     }
     
+    public function testPaypal()
+    {
+        /** PayPal api context **/
+        $paypal_conf = \Config::get('paypal');
+        $this->_api_context = new ApiContext(new OAuthTokenCredential(
+            $paypal_conf['client_id'],
+            $paypal_conf['secret'])
+        );
+        $this->_api_context->setConfig($paypal_conf['settings']);
+        
 
+        $payer = new Payer();
+        $payer->setPaymentMethod('paypal');
+        
+        $item_1 = new Item();
+        $item_1->setName('Item 1') /** item name **/
+                    ->setCurrency('USD')
+                    ->setQuantity(2)
+                    ->setPrice('10'); /** unit price **/
+        $item_list = new ItemList();
+        $item_list->setItems(array($item_1));
+        
+        $amount = new Amount();
+        $amount->setCurrency('USD')
+            ->setTotal(20);
+        
+        $transaction = new Transaction();
+                $transaction->setAmount($amount)
+                    ->setItemList($item_list)
+                    ->setDescription('TEST PAYPALL');
+        //$redirect_urls = new RedirectUrls();
+        //$redirect_urls->setReturnUrl('/test') /** Specify return URL **/
+        //           ->setCancelUrl('/test');
+        
+        $payment = new PaymentPaypal();
+        $payment->setIntent('Sale')
+            ->setPayer($payer);
+        //    ->setRedirectUrls($redirect_urls)
+        //    ->setTransactions(array($transaction));
+         dd($payment->create($this->_api_context));exit;
+        try {
+            $payment->create($this->_api_context);
+            
+            echo '<pre>'; var_dump($payment->getId()); echo '</pre>'; exit;
+        } catch (\PayPal\Exception\PPConnectionException $ex) {
+            if (\Config::get('app.debug')) {
+            \Session::put('error', 'Connection timeout');
+                            return Redirect::route('paywithpaypal');
+            } else {
+            \Session::put('error', 'Some error occur, sorry for inconvenient');
+                            return Redirect::route('paywithpaypal');
+            }
+        }
+    }        
 }
