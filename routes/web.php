@@ -25,3 +25,7 @@ Route::group(['middleware' => ['localization']], function () {
     Route::get('/test-checkoutcom', 'PaymentsController@testCheckoutCom');
 
 });
+
+Route::get('/debug-sentry', function () {
+    throw new Exception('My first Sentry error!');
+});
