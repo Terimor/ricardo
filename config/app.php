@@ -229,6 +229,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Eloquent'       => Jenssegers\Mongodb\Eloquent\Model::class,
+        'Sentry' => Sentry\Laravel\Facade::class,
 
     ],
 

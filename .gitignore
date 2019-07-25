@@ -38,7 +38,6 @@ phpunit.phar
 /public/js/*
 /public/css/*
 /storage/*.key
-/vendor
 .env
 .phpunit.result.cache
 Homestead.json
