@@ -1,8 +1,5 @@
 <template>
   <div>
-    <header-block :withTimer="true">
-      <img src="https://static-backend.saratrkr.com/image_assets/EchoBeat-logo.00" alt="">
-    </header-block>
     <emc1></emc1>
     <preloader-3
       v-if="queryParams.preloader === '3'"

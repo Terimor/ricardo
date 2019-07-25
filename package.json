@@ -13,7 +13,6 @@
         "axios": "^0.18",
         "cross-env": "^5.1",
         "element-ui": "^2.11.0",
-        "laravel-mix": "^4.0.7",
         "sass": "^1.15.2",
         "sass-loader": "^7.1.0",
         "vue": "^2.5.17",
@@ -24,6 +23,7 @@
     },
     "devDependencies": {
         "resolve-url-loader": "3.1.0",
+        "laravel-mix": "^4.0.7",
         "vue-template-compiler": "^2.6.10"
     }
 }
