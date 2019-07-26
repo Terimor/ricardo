@@ -1,5 +1,5 @@
 <template>
-  <div class="timer-component">
+  <div class="timer-component" v-if="+queryParams.show_timer === 1">
     <div v-if="isMobile" class="mobile">
       <template v-if="time === '00:00'">
         Time is over! Some stock is still left available...
@@ -31,12 +31,13 @@
 <script>
 import isMobile from '../../mixins/isMobile'
 import moment from 'moment'
+import queryToComponent from '../../mixins/queryToComponent';
 
 let interval
 
 export default {
   name: 'Timer',
-  mixins: [isMobile],
+  mixins: [isMobile, queryToComponent],
   finishTime: moment().add(15, 'minutes').add(4, 'seconds'),
   data () {
     return {
@@ -62,6 +63,7 @@ export default {
 @import "../../../sass/variables";
 
 .timer-component {
+  flex-grow: 1;
   position: absolute;
   width: 100%;
   top: 0;
