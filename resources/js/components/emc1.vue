@@ -272,7 +272,7 @@ export default {
   computed: {
     dealList () {
       return this.mockData.purchase.map((it, idx) => ({
-        value: idx,
+        value: idx + 1,
         label: getRadioHtml({
           ...it,
           text: printf(it.text, { color: this.form.variant })
@@ -306,6 +306,7 @@ export default {
   },
   mounted () {
     this.showNotice()
+    this.form.deal = +this.queryParams.qty
   }
 }
 </script>
