@@ -53,9 +53,9 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function checkout()
-    {
-        $location = Location::get('79.98.49.100');
-        
+    {                
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
+                
         return view('checkout', compact('location'));
     }
 
