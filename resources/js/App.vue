@@ -1,13 +1,12 @@
 <template>
   <div>
-    <header-block :withTimer="true">
-      <img src="https://static-backend.saratrkr.com/image_assets/EchoBeat-logo.00" alt="">
-    </header-block>
     <emc1></emc1>
     <preloader-3
-      v-if="queryParams.preloader === '3'"
+      v-if="+queryParams.preloader === 3"
       @finish-preload="showPreloader = false"
       :showPreloader="showPreloader"></preloader-3>
+    <leave-modal
+        v-if="+queryParams.exit === 1"></leave-modal>
   </div>
 </template>
 
@@ -28,6 +27,8 @@ export default {
   },
   methods: {
     initial () {
+      const { exit } = this.queryParams
+
       for (let key in this.queryParams) {
         window[key] = this.queryParams[key]
       }
@@ -47,3 +48,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+
+</style>
