@@ -18,6 +18,7 @@
         "paypal/rest-api-sdk-php": "^1.14",
         "sentry/sentry-laravel": "1.1.0",
         "srmklive/paypal": "~1.0",
+        "stevebauman/location": "^3.0",
         "tdanielcox/bluesnap-php": "^0.2.2"
     },
     "require-dev": {

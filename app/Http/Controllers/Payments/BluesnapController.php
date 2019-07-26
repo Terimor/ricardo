@@ -38,7 +38,6 @@ class BluesnapController extends Controller
             ],
             'amount' => 10.00,
             'currency' => 'USD',
-            'recurringTransaction' => 'ECOMMERCE',
             'cardTransactionType' => 'AUTH_CAPTURE',
         ]);
         

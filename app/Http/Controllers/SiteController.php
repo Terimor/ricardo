@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Location;
 
 class SiteController extends Controller
 {
@@ -53,7 +54,9 @@ class SiteController extends Controller
      */
     public function checkout()
     {
-        return view('checkout');
+        $location = Location::get('79.98.49.100');
+        
+        return view('checkout', compact('location'));
     }
 
     /**
