@@ -70,85 +70,10 @@
             :list="mockData.creditCardRadioList"
           />
           <transition name="el-zoom-in-top">
-            <div v-if="form.isCreditCard" class="flex-wrap payment-form">
-              <h2>Step 4: Contact Information</h2>
-              <text-field
-                theme="variant-1"
-                label="First Name"
-                class="first-name"
-                v-model="form.fname"/>
-              <text-field
-                theme="variant-1"
-                label="Last Name"
-                class="last-name"
-                v-model="form.lname"/>
-              <text-field
-                theme="variant-1"
-                label="Your Email Address"
-                v-model="form.email"/>
-              <phone-field
-                theme="variant-1"
-                label="Your Phone Number"
-                v-model="form.phone"/>
-              <h2>Step 5: Delivery Address</h2>
-              <text-field
-                theme="variant-1"
-                label="Street And Number"
-                v-model="form.street"/>
-              <text-field
-                theme="variant-1"
-                label="City"
-                v-model="form.city"/>
-              <text-field
-                theme="variant-1"
-                label="State"
-                v-model="form.state"/>
-              <text-field
-                theme="variant-1"
-                label="Zip Code"
-                v-model="form.zipcode"/>
-              <select-field
-                theme="variant-1"
-                label="Country"
-                :rest="{
-                  placeholder: 'Country'
-                }"
-                :list="mockData.countryList"
-                v-model="form.country"/>
-              <h2>Step 6: Payment Details</h2>
-              <text-field
-                class="card-number"
-                theme="variant-1"
-                label="Card Number"
-                v-model="form.cardNumber"
-                :prefix="`<img src='/images/card.png' />`"
-                :postfix="`<i class='fa fa-lock'></i>`"
-              />
-              <div class="card-date">
-                <span class="label">Card Valid Until</span>
-                <select-field
-                  :rest="{
-                    placeholder: 'Month'
-                  }"
-                  theme="variant-1"
-                  :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
-                  v-model="form.month"/>
-                <select-field
-                  :rest="{
-                    placeholder: 'Year'
-                  }"
-                  theme="variant-1"
-                  :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
-                  v-model="form.year"/>
-              </div>
-              <text-field
-                class="cvv-field"
-                theme="variant-1"
-                label="CVV"
-                v-model="form.cvv"
-                postfix="<i class='fa fa-question-circle'></i>"
-              />
-            </div>
+            <payment-form
+              v-if="form.isCreditCard"
+              :isBrazil="queryParams.country === 'bra'"
+              :countryList="mockData.countryList"></payment-form>
           </transition>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
@@ -166,6 +91,7 @@ import emc1Validation from '../validation/emc1-validation'
 import printf from 'printf'
 import notification from '../mixins/notification'
 import { getRandomInt } from '../utils/common'
+import queryToComponent from '../mixins/queryToComponent'
 
 const getRadioHtml = ({ discountName, newPriceText, text, priceText, discountText }) =>
   `${discountName ? `<p class="label-container-radio__best-seller"><span>${discountName}</span><span>${newPriceText}</span></p>` : ''}
@@ -234,7 +160,7 @@ function * getNotice (productName) {
 
 export default {
   name: 'emc1',
-  mixins: [notification],
+  mixins: [notification, queryToComponent],
   data () {
     return {
       mockData: {
@@ -572,67 +498,6 @@ export default {
       img {
         width: 100%;
         height: auto;
-      }
-
-      .first-name {
-        width: 40%;
-        margin-right: 10px;
-      }
-
-      .last-name {
-        width: calc(60% - 11px);
-      }
-
-      .card-number {
-        .prefix {
-          & > img {
-            height: 22px;
-            width: auto;
-          }
-          input {
-            &:after {
-              content: '\f023';
-              display: block;
-              color: #555;
-              font-family: FontAwesome !important;
-              position: absolute;
-              top: 8px;
-              right: 15px;
-            }
-          }
-        }
-      }
-
-      .card-date {
-        display: flex;
-        flex-wrap: wrap;
-        width: 70%;
-        padding-right: 30px;
-        margin-bottom: 10px;
-
-        & > .label {
-          width: 100%;
-          margin-bottom: 6px;
-        }
-
-        & > div {
-          width: calc(40% - 5px);
-
-          margin-right: 10px;
-
-          &:last-child {
-            margin-right: 0;
-            width: calc(60% - 5px);
-          }
-        }
-      }
-
-      .cvv-field {
-        width: calc(30%);
-      }
-
-      .payment-form {
-        display: flex;
       }
     }
 

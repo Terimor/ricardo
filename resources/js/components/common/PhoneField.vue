@@ -20,7 +20,6 @@ export default {
     }
   },
   mounted () {
-    console.log(document.querySelector(`#${this.id}`))
     window.intlTelInput(document.querySelector(`#${this.id}`))
   }
 }

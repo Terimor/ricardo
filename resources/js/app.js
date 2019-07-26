@@ -16,6 +16,7 @@ Vue.component('phone-field', require('./components/common/PhoneField.vue').defau
 Vue.component('select-field', require('./components/common/Select.vue').default)
 Vue.component('radio-button-group', require('./components/common/RadioButtonGroup.vue').default)
 Vue.component('leave-modal', require('./components/common/LeaveModal.vue').default)
+Vue.component('payment-form', require('./components/common/PaymentForm.vue').default)
 // preloaders
 Vue.component('preloader-3', require('./components/common/preloaders/Preloader3').default)
 

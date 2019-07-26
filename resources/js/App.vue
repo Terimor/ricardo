@@ -6,7 +6,7 @@
       @finish-preload="showPreloader = false"
       :showPreloader="showPreloader"></preloader-3>
     <leave-modal
-        v-if="+queryParams.exit === 1"></leave-modal>
+      v-if="+queryParams.exit === 1"></leave-modal>
   </div>
 </template>
 
