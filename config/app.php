@@ -177,6 +177,8 @@ return [
 
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Jenssegers\Mongodb\MongodbQueueServiceProvider::class,
+        
+        Stevebauman\Location\LocationServiceProvider::class,
 
     ],
 
@@ -230,6 +232,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Eloquent'       => Jenssegers\Mongodb\Eloquent\Model::class,
         'Sentry' => Sentry\Laravel\Facade::class,
+        'Location' => Stevebauman\Location\Facades\Location::class,        
 
     ],
 

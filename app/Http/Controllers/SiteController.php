@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Location;
 
 class SiteController extends Controller
 {
@@ -52,8 +53,10 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function checkout()
-    {
-        return view('checkout');
+    {                
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
+                
+        return view('checkout', compact('location'));
     }
 
     /**

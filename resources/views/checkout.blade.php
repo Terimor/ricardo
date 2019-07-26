@@ -3,7 +3,6 @@
 @section('content')
 <app-component></app-component>
 
-
 @if(isset($_GET['_payment_provider']) && $_GET['_payment_provider'] == 'bluesnap')
 <br />
 <form action="{{ route('bluesnap-payment') }}" method="POST">
