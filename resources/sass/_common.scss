@@ -20,6 +20,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 *[dir=rtl] {
   .el-input__suffix {
     right: unset;

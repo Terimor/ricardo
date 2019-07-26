@@ -3,6 +3,10 @@
 export default {
   mounted() {
     window.closeLeaveModal = () => document.querySelector('#bio_ep_close').dispatchEvent(new CustomEvent('click'))
+    window.agreeLeaveModal = () => {
+      window.closeLeaveModal()
+      document.querySelector('.main__deal').scrollIntoView()
+    }
     bioEp.init({
       width: 450,
       html: `
@@ -10,7 +14,7 @@ export default {
               <img src="https://static-backend.saratrkr.com/image_assets/EchoBeat-logo.00" alt="" />
               <p>Wait!! You Have Been Selected For a Special Promotional Offer</p>
               <p class="green">Buy 2 Get 1 FREE! Just $92.99</p>
-              <button class="offer-btn">Claim Your Special Offer Today</button>
+              <button class="offer-btn" onclick="agreeLeaveModal()">Claim Your Special Offer Today</button>
               <button class="close-btn" onclick="closeLeaveModal()">No thanks, I don't want to take this one time special offer</button>
             </div>
           `,
@@ -59,11 +63,12 @@ export default {
     }
 
     .offer-btn {
+        font-size: 1.2rem;
         background: linear-gradient(180deg, #9fdf23, #6ac800);
         border: 1px solid #a4a4a4;
         color: #fff;
         border-radius: 3px;
-        padding: 5px;
+        padding: 7px 5px;
         font-weight: 700;
         margin: 15px 0 22px;
     }

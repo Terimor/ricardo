@@ -306,7 +306,6 @@ export default {
   },
   mounted () {
     this.showNotice()
-    console.log(checkoutData.countryCode)
   }
 }
 </script>
