@@ -72,7 +72,7 @@
           <transition name="el-zoom-in-top">
             <payment-form
               v-if="form.isCreditCard"
-              :isBrazil="queryParams.country === 'bra'"
+              :isBrazil="checkoutData.countryCode === 'BR'"
               :countryList="mockData.countryList"></payment-form>
           </transition>
           <div class="main__bottom">
@@ -279,6 +279,9 @@ export default {
         })
       }))
     },
+    checkoutData () {
+      return checkoutData
+    },
     warrantyPrice () {
       const currentDeal = this.mockData.purchase[this.form.deal]
 
@@ -303,6 +306,7 @@ export default {
   },
   mounted () {
     this.showNotice()
+    console.log(checkoutData.countryCode)
   }
 }
 </script>

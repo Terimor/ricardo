@@ -1,5 +1,9 @@
 @extends('layouts.app')
-
+<script>
+    const checkoutData = {
+      countryCode: '{{ $location->countryCode }}'
+    }
+</script>
 @section('content')
 <app-component></app-component>
 
@@ -7,7 +11,7 @@
 <br />
 <form action="{{ route('bluesnap-payment') }}" method="POST">
     <div class="paper col-md-5 main__payment" style="float: right">
-        <h2>Step 6: Payment Details</h2> 
+        <h2>Step 6: Payment Details</h2>
         <label class="input-container card-number variant-1">
             <span class="label">Card Number</span>
             <div class="prefix"><img src="/images/card.png"></div>
@@ -30,19 +34,19 @@
                         <option value="2020">2020</option>
                     </select>
             </div>
-                
-        </div> 
+
+        </div>
         <label class="input-container cvv-field variant-1">
-            <span class="label">CVV</span> <!----> 
+            <span class="label">CVV</span> <!---->
             <div class="postfix"><i class="fa fa-question-circle"></i></div>
             <input name="security_code" type="text" style="padding-right: 45px;">
         </label>
-        
+
         {{ csrf_field() }}
         <input type="submit" value="Send">
     </div>
-    
-    
+
+
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
