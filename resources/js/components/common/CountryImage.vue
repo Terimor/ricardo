@@ -1,5 +1,5 @@
 <template>
-    <img class="country-image" :src="`/images/country-flags/${data.countryCode.toLowerCase()}.png`">
+    <img class="country-image" :src="`/images/country-flags/${data.countryCode}.png`">
 </template>
 
 <script>

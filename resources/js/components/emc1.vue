@@ -28,6 +28,7 @@
               </p>
             </div>
             <h2>Step 1: Choose your Deal</h2>
+
             <h3>Article</h3>
 
             <radio-button-group
