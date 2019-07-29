@@ -173,7 +173,8 @@ export default {
             text: '1x EchoBeat7 %(color)s',
             price: 1799,
             priceText: '₴1,799',
-            discountText: '(50% Discount)'
+            discountText: '(50% Discount)',
+            totalQuantity: 1
           }, {
             discountName: 'BESTSELLER',
             newPrice: 3399,
@@ -182,7 +183,8 @@ export default {
             text: '2x EchoBeat7 %(color)s + 1 FREE',
             price: 10794,
             priceText: '₴10,794',
-            discountText: '(69% Discount, ₴1,133/Unit)'
+            discountText: '(69% Discount, ₴1,133/Unit)',
+            totalQuantity: 3
           }, {
             discountName: 'BEST DEAL',
             newPrice: 4999,
@@ -191,7 +193,8 @@ export default {
             text: '3x EchoBeat7 %(color)s + 2 FREE',
             price: 17990,
             priceText: '₴17,990',
-            discountText: '(73% Discount, ₴999.80/Unit)'
+            discountText: '(73% Discount, ₴999.80/Unit)',
+            totalQuantity: 5
           }
         ],
         countryList: [
@@ -305,8 +308,10 @@ export default {
     }
   },
   mounted () {
-    // this.showNotice()
-    this.form.deal = +this.queryParams.qty
+    this.showNotice()
+    const qtyIndex = this.mockData.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
+    console.log(qtyIndex)
+    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
   }
 }
 </script>

@@ -27,8 +27,6 @@ export default {
   },
   methods: {
     initial () {
-      const { exit } = this.queryParams
-
       for (let key in this.queryParams) {
         window[key] = this.queryParams[key]
       }
