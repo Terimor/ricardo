@@ -162,6 +162,7 @@ function * getNotice (productName) {
 export default {
   name: 'emc1',
   mixins: [notification, queryToComponent],
+  props: ['showPreloader'],
   data () {
     return {
       mockData: {
@@ -309,7 +310,16 @@ export default {
     }
   },
   mounted () {
-    this.showNotice()
+    if (+this.queryParams.preload === 3) {
+      const interval = setInterval(() => {
+        if (!this.showPreloader) {
+          this.showNotice()
+          clearInterval(interval)
+        }
+      }, 44)
+    } else {
+      this.showNotice()
+    }
     const qtyIndex = this.mockData.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
     this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
   }

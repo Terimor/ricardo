@@ -1,6 +1,7 @@
 <template>
   <div>
-    <emc1></emc1>
+    <emc1
+      :showPreloader="showPreloader"></emc1>
     <preloader-3
       v-if="+queryParams.preload === 3"
       @finish-preload="showPreloader = false"
