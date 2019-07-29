@@ -3,7 +3,8 @@
     <emc1></emc1>
     <preloader-3
       v-if="+queryParams.preload === 3"
-      @finish-preload="showPreloader = false"
+      @finish-preload="showPreloader = true"
+      :countryCode="checkoutData.countryCode"
       :showPreloader="showPreloader"></preloader-3>
     <leave-modal
       v-if="+queryParams.exit === 1"></leave-modal>
@@ -39,6 +40,11 @@ export default {
       window.onblur = function () {
         document.title = 'WAIT! YOU FORGOT: You have active cart items!'
       }
+    }
+  },
+  computed: {
+    checkoutData() {
+      return checkoutData
     }
   },
   mounted () {

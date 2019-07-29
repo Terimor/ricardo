@@ -12,21 +12,22 @@
 
 <script>
 import CheckmarkSvg from '../CheckmarkSvg'
-import Image from '../Image'
+import CountryImage from '../CountryImage'
 
 export default {
   name: 'Preloader3',
   props: {
+    countryCode: String,
     steps: {
       type: Array,
       default () {
         return [
           {
             title: 'Checking 3 warehouses for available stock...',
-            children: Image,
+            children: CountryImage,
             data: {
-              src: '//static.saratrkr.com/images/country-flags/UA.png',
-              percent: 33
+              percent: 33,
+              countryCode: this.countryCode
             }
           }, {
             title: 'Limited stock available in Warehouse 2. Reserving your units...',
@@ -44,7 +45,7 @@ export default {
         ]
       }
     },
-    showPreloader: Boolean
+    showPreloader: Boolean,
   },
   data () {
     return {
