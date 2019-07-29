@@ -24,14 +24,14 @@
             <text-field
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
-                theme="variant-1"
+                theme="variant-1 street"
                 :label="isBrazil ? 'Street' : 'Street And Number'"
                 v-model="paymentForm.street"/>
             <text-field
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 v-if="isBrazil"
-                theme="variant-1"
+                theme="variant-1 number"
                 label="Number"
                 v-model="paymentForm.number"/>
             <text-field
@@ -178,7 +178,7 @@
 
         &__delivery-address {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             width: 100%;
 
             .input-container, .select {
@@ -200,6 +200,15 @@
             .payment-form__delivery-address {
                 #zip-code-field {
                     order: 0;
+                }
+
+                .street {
+                    width: 60%;
+                    margin-right: 10px;
+                }
+
+                .number {
+                    width: calc(40% - 10px);
                 }
             }
         }
