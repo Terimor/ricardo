@@ -35,6 +35,11 @@
                 label="Number"
                 v-model="paymentForm.number"/>
             <text-field
+                v-if="isBrazil"
+                theme="variant-1"
+                label="Complemento"
+                v-model="paymentForm.complemento"/>
+            <text-field
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
@@ -114,6 +119,7 @@
           phone: null,
           street: null,
           number: null,
+          complemento: null,
           city: null,
           state: null,
           zipcode: null,
