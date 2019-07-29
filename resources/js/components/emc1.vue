@@ -286,7 +286,7 @@ export default {
       return checkoutData
     },
     warrantyPrice () {
-      const currentDeal = this.mockData.purchase[this.form.deal]
+      const currentDeal = this.mockData.purchase[this.form.deal - 1]
 
       return currentDeal && (currentDeal.newPrice || currentDeal.price) / 10
     }
@@ -310,7 +310,6 @@ export default {
   mounted () {
     this.showNotice()
     const qtyIndex = this.mockData.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
-    console.log(qtyIndex)
     this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
   }
 }
