@@ -1,5 +1,5 @@
 <template>
-    <img :src="`https://www.countryflags.io/${data.countryCode}/flat/64.png`">
+    <img class="country-image" :src="`/images/country-flags/${data.countryCode.toLowerCase()}.png`">
 </template>
 
 <script>
