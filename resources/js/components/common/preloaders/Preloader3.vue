@@ -116,6 +116,12 @@ export default {
       justify-content: space-between;
       margin: auto 15px;
 
+      .country-image {
+        width: 100%;
+        max-width: 128px;
+        max-height: 128px;
+      }
+
       #svg-box {
         svg {
           max-width: 100%;
