@@ -56,7 +56,7 @@ export default {
   mounted () {
     interval = setInterval(this.changeTimeByDifference, 1000)
 
-    if (this.isMobile) {
+    if (this.isMobile && +this.queryParams.show_timer === 1) {
       document.querySelector('header').style.marginTop = '45px'
     }
   }
