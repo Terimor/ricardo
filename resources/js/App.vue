@@ -2,7 +2,7 @@
   <div>
     <emc1></emc1>
     <preloader-3
-      v-if="+queryParams.preloader === 3"
+      v-if="+queryParams.preload === 3"
       @finish-preload="showPreloader = false"
       :showPreloader="showPreloader"></preloader-3>
     <leave-modal
