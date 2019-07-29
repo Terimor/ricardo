@@ -3,7 +3,7 @@
     <emc1></emc1>
     <preloader-3
       v-if="+queryParams.preload === 3"
-      @finish-preload="showPreloader = true"
+      @finish-preload="showPreloader = false"
       :countryCode="checkoutData.countryCode"
       :showPreloader="showPreloader"></preloader-3>
     <leave-modal
