@@ -1,5 +1,5 @@
 <template>
-  <div class="timer-component" v-if="+queryParams.show_timer === 1">
+  <div class="timer-component" v-if="+queryParams.show_timer === 1" :class="{ 'is-mobile': isMobile }">
     <div v-if="isMobile" class="mobile">
       <template v-if="time === '00:00'">
         Time is over! Some stock is still left available...
@@ -55,6 +55,10 @@ export default {
   },
   mounted () {
     interval = setInterval(this.changeTimeByDifference, 1000)
+
+    if (this.isMobile) {
+      document.querySelector('header').style.marginTop = '45px'
+    }
   }
 }
 </script>
@@ -70,6 +74,11 @@ export default {
   right: 0;
   left: 0;
   height: 45px;
+
+  &.is-mobile {
+    position: fixed;
+    z-index: 1;
+  }
 
   .mobile {
     height: 100%;

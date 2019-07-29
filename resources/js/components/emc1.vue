@@ -305,7 +305,7 @@ export default {
     }
   },
   mounted () {
-    this.showNotice()
+    // this.showNotice()
     this.form.deal = +this.queryParams.qty
   }
 }
