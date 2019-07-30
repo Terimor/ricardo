@@ -28,6 +28,12 @@
               </p>
             </div>
             <h2>Step 1: Choose your Deal</h2>
+              <select-field
+                  v-if="withInstallments"
+                  label="Please Select Amount Of Installments"
+                  popperClass="emc1-popover-variant"
+                  :list="installmentsList"
+                  v-model="form.installments"/>
 
             <h3>Article</h3>
 
@@ -47,11 +53,11 @@
               :rest="{
                 placeholder: 'Variant'
               }"
-              :list="mockData.dropdownList" />
+              :list="variantList" />
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPrice" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
-                  3 Years Additional Warranty On Your Purchase & Accessories: ₴{{warrantyPrice}}
+                  3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} ₴{{warrantyPrice}}
                   <input id="warranty-field" type="checkbox">
                   <span class="checkmark"></span>
                 </label>
@@ -94,10 +100,17 @@ import notification from '../mixins/notification'
 import { getRandomInt } from '../utils/common'
 import queryToComponent from '../mixins/queryToComponent'
 
-const getRadioHtml = ({ discountName, newPriceText, text, priceText, discountText }) =>
-  `${discountName ? `<p class="label-container-radio__best-seller"><span>${discountName}</span><span>${newPriceText}</span></p>` : ''}
-     <p class="label-container-radio__name-price"><span>${text}</span><span ${newPriceText ? 'class="strike"' : ''}>${priceText}</span></p>
-   <p class="label-container-radio__discount">${discountText}</p>`
+const getRadioHtml = ({ discountName, newPrice, text, price, discountText, currency = '$', installments }) =>
+  `${discountName
+    ? `<p class="label-container-radio__best-seller">
+      <span>${discountName}</span><span>${`${installments && installments !== 1 ? installments + 'X ' : ''}` + currency + newPrice.toLocaleString()}</span>
+    </p>`
+    : ''}
+  <p class="label-container-radio__name-price">
+    <span>${text}</span>
+    <span ${newPrice ? 'class="strike"' : ''}>${`${installments && installments !== 1 ? installments + 'X ' : ''}` + currency + price.toLocaleString()}</span>
+  </p>
+  <p class="label-container-radio__discount">${discountText}</p>`
 
 function * getNotice (productName) {
   const messageMap = {
@@ -166,39 +179,6 @@ export default {
   data () {
     return {
       mockData: {
-        purchase: [
-          {
-            discountName: null,
-            newPrice: null,
-            newPriceText: null,
-            withDiscount: false,
-            text: '1x EchoBeat7 %(color)s',
-            price: 1799,
-            priceText: '₴1,799',
-            discountText: '(50% Discount)',
-            totalQuantity: 1
-          }, {
-            discountName: 'BESTSELLER',
-            newPrice: 3399,
-            newPriceText: '₴3,399',
-            withDiscount: true,
-            text: '2x EchoBeat7 %(color)s + 1 FREE',
-            price: 10794,
-            priceText: '₴10,794',
-            discountText: '(69% Discount, ₴1,133/Unit)',
-            totalQuantity: 3
-          }, {
-            discountName: 'BEST DEAL',
-            newPrice: 4999,
-            newPriceText: '₴4,999',
-            withDiscount: true,
-            text: '3x EchoBeat7 %(color)s + 2 FREE',
-            price: 17990,
-            priceText: '₴17,990',
-            discountText: '(73% Discount, ₴999.80/Unit)',
-            totalQuantity: 5
-          }
-        ],
         countryList: [
           {
             value: 'usa',
@@ -220,43 +200,60 @@ export default {
             value: true
           }
         ],
-        dropdownList: [
-          {
-            label: 'EchoBeat7 White',
-            text: `
-              <div><img src="/images/headphones-white.png" alt=""><span>1x EchoBeat7 White</span></div>
-            `,
-            value: 'white'
-          }, {
-            label: 'EchoBeat7 Black',
-            text: `
-              <div><img src="/images/headphones-black.png" alt=""><span>1x EchoBeat7 Black</span></div>
-            `,
-            value: 'black'
-          }, {
-            label: 'EchoBeat7 Gold',
-            text: `
-              <div><img src="/images/headphones-gold.png" alt=""><span>1x EchoBeat7 Gold</span></div>
-            `,
-            value: 'gold'
-          }, {
-            label: 'EchoBeat7 Red',
-            text: `
-              <div><img src="/images/headphones-red.png" alt=""><span>1x EchoBeat7 Red</span></div>
-            `,
-            value: 'red'
-          }, {
-            label: 'EchoBeat7 Pink',
-            text: `
-              <div><img src="/images/headphones-pink.png" alt=""><span>1x EchoBeat7 Pink</span></div>
-            `,
-            value: 'pink'
-          }
-        ]
       },
+      purchase: [],
+      variantList: [
+        {
+          label: 'EchoBeat7 White',
+          text: `
+              <div><img src="/images/headphones-white.png" alt=""><span>EchoBeat7 White</span></div>
+            `,
+          value: 'white'
+        }, {
+          label: 'EchoBeat7 Black',
+          text: `
+              <div><img src="/images/headphones-black.png" alt=""><span>EchoBeat7 Black</span></div>
+            `,
+          value: 'black'
+        }, {
+          label: 'EchoBeat7 Gold',
+          text: `
+              <div><img src="/images/headphones-gold.png" alt=""><span>EchoBeat7 Gold</span></div>
+            `,
+          value: 'gold'
+        }, {
+          label: 'EchoBeat7 Red',
+          text: `
+              <div><img src="/images/headphones-red.png" alt=""><span>EchoBeat7 Red</span></div>
+            `,
+          value: 'red'
+        }, {
+          label: 'EchoBeat7 Pink',
+          text: `
+              <div><img src="/images/headphones-pink.png" alt=""><span>EchoBeat7 Pink</span></div>
+            `,
+          value: 'pink'
+        }
+      ],
+      installmentsList: [
+        {
+          label: 'Pay full amount now',
+          text: 'Pay full amount now',
+          value: 1,
+        }, {
+          label: 'Pay in 3 installments',
+          text: 'Pay in 3 installments',
+          value: 3,
+        }, {
+          label: 'Pay in 6 installments',
+          text: 'Pay in 6 installments',
+          value: 6,
+        }
+      ],
       form: {
         deal: null,
         variant: 'white',
+        installments: 1,
         isCreditCard: false,
         fname: null,
         lname: null,
@@ -275,11 +272,19 @@ export default {
     }
   },
   computed: {
+    withInstallments () {
+      return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
+    },
+    quantityOfInstallments () {
+      const { installments } = this.form
+      return installments && installments !== 1 ? installments + 'X ' : ''
+    },
     dealList () {
-      return this.mockData.purchase.map((it, idx) => ({
+      return this.purchase.map((it, idx) => ({
         value: idx + 1,
         label: getRadioHtml({
           ...it,
+          installments: this.form.installments,
           text: printf(it.text, { color: this.form.variant })
         })
       }))
@@ -288,13 +293,56 @@ export default {
       return checkoutData
     },
     warrantyPrice () {
-      const currentDeal = this.mockData.purchase[this.form.deal - 1]
+      const currentDeal = this.purchase[this.form.deal - 1]
 
-      return currentDeal && (currentDeal.newPrice || currentDeal.price) / 10
+      return currentDeal && Math.round((currentDeal.newPrice || currentDeal.price) * 10) / 100
     }
+  },
+  watch: {
+    'form.installments' (val) {
+        this.setPurchase({
+          variant: this.form.variant,
+          installments: val,
+        })
+    },
+    'form.variant' (val) {
+      this.setPurchase({
+        variant: val,
+        installments: this.form.installments,
+      })
+    },
   },
   validations: emc1Validation,
   methods: {
+    setPurchase ({ variant, installments }) {
+        this.purchase = [
+          {
+            discountName: null,
+            newPrice: null,
+            withDiscount: false,
+            text: `1x EchoBeat7 ${variant}`,
+            price: Math.round(1799 / installments * 100) / 100,
+            discountText: '(50% Discount)',
+            totalQuantity: 1
+          }, {
+            discountName: 'BESTSELLER',
+            newPrice: Math.round(3399 / installments * 100) / 100,
+            withDiscount: true,
+            text: `2x EchoBeat7 ${variant} + 1 FREE`,
+            price: Math.round(10794 / installments * 100) / 100,
+            discountText: '(69% Discount, ₴1,133/Unit)',
+            totalQuantity: 3
+          }, {
+            discountName: 'BEST DEAL',
+            newPrice: Math.round(4999 / installments * 100) / 100,
+            withDiscount: true,
+            text: `3x EchoBeat7 ${variant} + 2 FREE`,
+            price: Math.round(17990 / installments * 100) / 100,
+            discountText: '(73% Discount, ₴999.80/Unit)',
+            totalQuantity: 5
+          }
+        ]
+    },
     showNotice () {
       const notice = getNotice('EchoBeat7')
       const getNoticeHtml = () => notice.next().value
@@ -310,6 +358,10 @@ export default {
     }
   },
   mounted () {
+    this.setPurchase({
+      variant: this.form.variant,
+      installments: this.form.installments,
+    })
     if (+this.queryParams.preload === 3) {
       const interval = setInterval(() => {
         if (!this.showPreloader) {
@@ -320,7 +372,7 @@ export default {
     } else {
       this.showNotice()
     }
-    const qtyIndex = this.mockData.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
+    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
     this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
   }
 }
