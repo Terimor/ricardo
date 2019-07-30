@@ -362,6 +362,14 @@ export default {
       variant: this.form.variant,
       installments: this.form.installments,
     })
+
+    if (this.withInstallments) {
+        this.form.installments =
+          this.checkoutData.countryCode === 'BR' ? 3 :
+          this.checkoutData.countryCode === 'MX' ? 1 :
+          1
+    }
+
     if (+this.queryParams.preload === 3) {
       const interval = setInterval(() => {
         if (!this.showPreloader) {
