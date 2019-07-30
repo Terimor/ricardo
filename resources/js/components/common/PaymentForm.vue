@@ -11,6 +11,20 @@
             label="Last Name"
             class="last-name"
             v-model="paymentForm.lname"/>
+        <date-picker-field
+            :rest="{
+              'popper-class': 'emc1-popover-date-variant',
+              'placeholder': 'DD/MM/YYYY',
+              'format': 'dd/mm/yyyy',
+              'default-value': eighteenYearsAgo
+            }"
+            :pickerOptions="{
+              disabledDate: disabledDate,
+            }"
+            v-model="paymentForm.dateOfBirth"
+            theme="variant-1"
+            label="Your Date Of Birth"
+        />
         <text-field
             theme="variant-1"
             label="Your Email Address"
@@ -135,6 +149,7 @@
         paymentForm: {
           fname: null,
           lname: null,
+          dateOfBirth: null,
           email: null,
           phone: null,
           cardType: 'credit',
@@ -155,6 +170,11 @@
         }
       }
     },
+    computed: {
+      eighteenYearsAgo () {
+        return Date.now() - 31536000000 * 18
+      }
+    },
     watch: {
       'paymentForm.zipcode' (zipcode) {
         if (this.isBrazil) {
@@ -168,6 +188,9 @@
       }
     },
     methods: {
+      disabledDate(date) {
+        return date.getTime() > this.eighteenYearsAgo
+      },
       getLocationByZipcode: debounce(function (zipcode) {
         const { ebanxpay: { url, integration_key } } = apiUrlList
         this.isLoading.address = true

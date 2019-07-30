@@ -48,6 +48,14 @@ header {
   }
 }
 
+.emc1-popover-date-variant {
+    transform: translateY(1px);
+
+    .popper__arrow {
+        display: none;
+    }
+}
+
 .recently-bought {
   border: 1px solid rgba(50, 50, 50, .3);
   padding: 0;
