@@ -15,7 +15,7 @@
 <script>
   export default {
     name: 'DatePicker',
-    props: ['value', 'theme', 'rest', 'label', 'pickerOptions', ],
+    props: ['value', 'theme', 'rest', 'label', 'pickerOptions'],
     data () {
       return {
         value1: null

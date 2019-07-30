@@ -11,17 +11,14 @@
             label="Last Name"
             class="last-name"
             v-model="paymentForm.lname"/>
-        <date-picker-field
-            v-if="countryCode === 'DE'"
+        <text-field-with-placeholder
+            v-if="countryCode === 'DE' || countryCode === 'CO' || countryCode === 'BR'"
             :rest="{
-              'popper-class': 'emc1-popover-date-variant',
-              'placeholder': 'DD/MM/YYYY',
               'format': 'dd/mm/yyyy',
               'default-value': eighteenYearsAgo
             }"
-            :pickerOptions="{
-              disabledDate: disabledDate,
-            }"
+            placeholder="DD/MM/YYYY"
+            :disabledDate="disabledDate"
             v-model="paymentForm.dateOfBirth"
             theme="variant-1"
             label="Your Date Of Birth"
@@ -150,7 +147,7 @@
         paymentForm: {
           fname: null,
           lname: null,
-          dateOfBirth: null,
+          dateOfBirth: '',
           email: null,
           phone: null,
           cardType: 'credit',
@@ -229,7 +226,7 @@
     .payment-form {
         display: flex;
 
-        .variant-1 {
+        .variant-1, .date-picker-manual {
             margin-bottom: 10px;
         }
 
