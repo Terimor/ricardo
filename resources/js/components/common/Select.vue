@@ -5,6 +5,7 @@
       v-bind="rest"
       @input="onChange"
       :value="value"
+      :disabled="disabled"
       :popper-class="popperClass">
       <template v-for="item in list">
         <el-option
@@ -27,6 +28,7 @@ export default {
     'popperClass',
     'theme',
     'label',
+    'disabled',
     'rest'
   ],
   methods: {

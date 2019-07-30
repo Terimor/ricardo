@@ -68,6 +68,26 @@
                 v-model="paymentForm.country"/>
         </div>
         <h2>Step 6: Payment Details</h2>
+        <select-field
+            v-if="countryCode === 'MX'"
+            :disabled="+installments !== 1"
+            theme="variant-1"
+            v-model="paymentForm.cardType"
+            label="Please select your card type"
+            :rest="{
+              placeholder: 'Card type'
+            }"
+            :list="[
+                {
+                    value: 'debit',
+                    label: 'Debit card',
+                    text: 'Debit card',
+                }, {
+                    value: 'credit',
+                    label: 'Credit card',
+                    text: 'Credit card',
+                }
+            ]"/>
         <text-field
             class="card-number"
             theme="variant-1"
@@ -80,8 +100,8 @@
             <span class="label">Card Valid Until</span>
             <select-field
                 :rest="{
-                    placeholder: 'Month'
-                  }"
+                  placeholder: 'Month'
+                }"
                 theme="variant-1"
                 :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
                 v-model="paymentForm.month"/>
@@ -109,7 +129,7 @@
 
   export default {
     name: 'PaymentForm',
-    props: ['input', 'countryList', 'isBrazil'],
+    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments'],
     data () {
       return {
         paymentForm: {
@@ -117,6 +137,7 @@
           lname: null,
           email: null,
           phone: null,
+          cardType: 'credit',
           street: null,
           number: null,
           complemento: null,
@@ -138,6 +159,11 @@
       'paymentForm.zipcode' (zipcode) {
         if (this.isBrazil) {
           this.getLocationByZipcode(zipcode)
+        }
+      },
+      installments (val) {
+        if (+val !== 1 && this.countryCode === 'MX') {
+          this.paymentForm.cardType = 'credit'
         }
       }
     },
@@ -171,9 +197,6 @@
             this.isLoading.address = false
           })
       }, 333)
-    },
-    mounted() {
-      // axios.post()
     }
   };
 </script>
@@ -181,6 +204,10 @@
 <style lang="scss">
     .payment-form {
         display: flex;
+
+        .variant-1 {
+            margin-bottom: 10px;
+        }
 
         &__delivery-address {
             display: flex;
