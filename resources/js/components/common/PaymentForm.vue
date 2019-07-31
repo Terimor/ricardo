@@ -15,7 +15,7 @@
             :invalid="!$v.form.dateOfBirth.isValidDate && $v.form.dateOfBirth.$dirty"
             :validation="$v.form.dateOfBirth"
             invalidMessage="Invalid date"
-            v-if="countryCode === 'DE' || countryCode === 'CO' || countryCode === 'BR'"
+            v-if="countryCode === 'DE'"
             :rest="{
               'format': 'dd/mm/yyyy',
               'default-value': eighteenYearsAgo
@@ -189,19 +189,20 @@
         }
       },
       'paymentForm.dateOfBirth' (val) {
-        const withoutSlashValue = val.replace(/[/]/g, '')
+        let value = val.slice()
         const configForSlash = [2, 4, 8]
-        let result = ''
-
-        for (let i = 0; i < withoutSlashValue.length; i++) {
-          if (configForSlash.includes(i)) {
-            result += '/'
+        const hashmapForReplacing = {
+          '.': '/',
+          '-': '/',
+          '/': '/',
+        }
+        for (let i = 0; i < value.length; i++) {
+          if (configForSlash.includes(i) && isNaN(value[i])) {
+            value[i] = hashmapForReplacing[value[i]] || '/'
           }
-
-          result += withoutSlashValue[i]
         }
 
-        this.paymentForm.dateOfBirth = result
+        this.paymentForm.dateOfBirth = value
       },
       installments (val) {
         if (+val !== 1 && this.countryCode === 'MX') {
