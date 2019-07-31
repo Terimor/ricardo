@@ -196,8 +196,8 @@
             result += '/'
           }
 
-          if (!isNaN(val[i])) {
-            result += + val[i]
+          if (!isNaN(val[i]) && val[i] !== ' ') {
+            result += val[i]
           }
         }
 
