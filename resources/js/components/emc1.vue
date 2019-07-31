@@ -102,9 +102,10 @@
 import emc1Validation from '../validation/emc1-validation'
 import printf from 'printf'
 import notification from '../mixins/notification'
-import { getRandomInt } from '../utils/common'
 import queryToComponent from '../mixins/queryToComponent'
-import { getNotice, getRadioHtml } from '../utils/emc1';
+import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
+
+const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2)).toLocaleString()
 
 export default {
   name: 'emc1',
@@ -266,24 +267,24 @@ export default {
             newPrice: null,
             withDiscount: false,
             text: `1x EchoBeat7 ${variant}`,
-            price: Math.round(1799 / installments * 100) / 100,
+            price: preparePartByInstallments(1799, installments),
             discountText: '(50% Discount)',
             totalQuantity: 1
           }, {
             discountName: 'BESTSELLER',
-            newPrice: Math.round(3399 / installments * 100) / 100,
+            newPrice: preparePartByInstallments(3399, installments),
             withDiscount: true,
             text: `2x EchoBeat7 ${variant} + 1 FREE`,
-            price: Math.round(10794 / installments * 100) / 100,
-            discountText: '(69% Discount, ₴1,133/Unit)',
+            price: preparePartByInstallments(10794, installments),
+            discountText: `(69% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(1133, installments)}/Unit)`,
             totalQuantity: 3
           }, {
             discountName: 'BEST DEAL',
-            newPrice: Math.round(4999 / installments * 100) / 100,
+            newPrice: preparePartByInstallments(4999, installments),
             withDiscount: true,
             text: `3x EchoBeat7 ${variant} + 2 FREE`,
-            price: Math.round(17990 / installments * 100) / 100,
-            discountText: '(73% Discount, ₴999.80/Unit)',
+            price: preparePartByInstallments(17990, installments),
+            discountText: `(73% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(999.80, installments)}/Unit)`,
             totalQuantity: 5
           }
         ]

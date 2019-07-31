@@ -1,14 +1,16 @@
 import { getRandomInt } from './common';
 
+export const getCountOfInstallments = (installments) => installments && installments !== 1 ? installments + 'X ' : ''
+
 export const getRadioHtml = ({ discountName, newPrice, text, price, discountText, currency = '$', installments }) =>
     `${discountName
         ? `<p class="label-container-radio__best-seller">
-      <span>${discountName}</span><span>${`${installments && installments !== 1 ? installments + 'X ' : ''}` + currency + newPrice.toLocaleString()}</span>
+      <span>${discountName}</span><span>${`${getCountOfInstallments(installments)}` + currency + newPrice.toLocaleString()}</span>
     </p>`
         : ''}
   <p class="label-container-radio__name-price">
     <span>${text}</span>
-    <span ${newPrice ? 'class="strike"' : ''}>${`${installments && installments !== 1 ? installments + 'X ' : ''}` + currency + price.toLocaleString()}</span>
+    <span ${newPrice ? 'class="strike"' : ''}>${`${getCountOfInstallments(installments)}` + currency + price.toLocaleString()}</span>
   </p>
   <p class="label-container-radio__discount">${discountText}</p>`
 
