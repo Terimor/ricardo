@@ -108,7 +108,7 @@
             theme="variant-1"
             label="Card Number"
             v-model="paymentForm.cardNumber"
-            :prefix="`<img src='/images/card.png' />`"
+            :prefix="`<img src='${cardUrl}' />`"
             :postfix="`<i class='fa fa-lock'></i>`"
         />
         <div class="card-date">
@@ -139,8 +139,9 @@
 </template>
 
 <script>
-  import apiUrlList from '../../constants/api-url';
-  import { debounce } from '../../utils/common';
+  import apiUrlList from '../../constants/api-url'
+  import { debounce } from '../../utils/common'
+  import creditCardType from 'credit-card-type'
 
   export default {
     name: 'PaymentForm',
@@ -149,15 +150,39 @@
       return {
         isLoading: {
           address: false
-        }
+        },
+        cardType: null
       }
     },
     computed: {
       eighteenYearsAgo () {
         return Date.now() - 31536000000 * 18
+      },
+      cardUrl () {
+        const cardMap = {
+          'american-express': '/images/cc-icons/american-express.png',
+          'aura': '/images/cc-icons/aura.png',
+          'diners-club': '/images/cc-icons/diners-club.png',
+          'discover': '/images/cc-icons/discover.png',
+          'elo': '/images/cc-icons/elo.png',
+          'hipercard': '/images/cc-icons/hipercard.png',
+          'iconcc': '/images/cc-icons/iconcc.png',
+          'jcb': '/images/cc-icons/jcb.png',
+          'maestro': '/images/cc-icons/maestro.png',
+          'mastercard': '/images/cc-icons/mastercard.png',
+          'visa': '/images/cc-icons/visa.png',
+        }
+
+        return cardMap[this.cardType] || cardMap.iconcc
       }
     },
     watch: {
+      'paymentForm.cardNumber' (cardNumber) {
+        const creditCardTypeList = creditCardType(cardNumber)
+        this.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+          ? creditCardTypeList[0].type
+          : null
+      },
       'paymentForm.zipcode' (zipcode) {
         if (this.isBrazil) {
           this.getLocationByZipcode(zipcode)
@@ -190,12 +215,11 @@
 
             const { data: { zipcode: { address, city, state } } } = res
 
-            this.paymentForm = {
-              ...this.paymentForm,
+            this.$emit('setAddress', {
               street: address,
               city,
               state,
-            }
+            })
           })
           .catch((err) => {
             console.error(err)

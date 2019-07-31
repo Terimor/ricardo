@@ -10,12 +10,13 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "dependencies": {
+        "credit-card-type": "^8.2.0",
         "element-ui": "^2.11.0",
+        "moment": "^2.24.0",
+        "printf": "^0.5.1",
         "vue": "^2.5.17",
         "vue-mq": "^1.0.1",
-        "vuelidate": "^0.7.4",
-        "printf": "^0.5.1",
-        "moment": "^2.24.0"
+        "vuelidate": "^0.7.4"
     },
     "devDependencies": {
         "cross-env": "^5.1",

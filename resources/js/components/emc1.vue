@@ -84,7 +84,8 @@
               :paymentForm="form"
               :countryCode="checkoutData.countryCode"
               :isBrazil="checkoutData.countryCode === 'BR'"
-              :countryList="mockData.countryList"></payment-form>
+              :countryList="mockData.countryList"
+              @setAddress="setAddress"></payment-form>
           </transition>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
@@ -252,6 +253,12 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    setAddress (address) {
+      this.form = {
+        ...this.form,
+        ...address
+      }
+    },
     setPurchase ({ variant, installments }) {
         this.purchase = [
           {
