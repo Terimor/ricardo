@@ -189,20 +189,19 @@
         }
       },
       'paymentForm.dateOfBirth' (val) {
-        let value = val.slice()
-        const configForSlash = [2, 4, 8]
-        const hashmapForReplacing = {
-          '.': '/',
-          '-': '/',
-          '/': '/',
-        }
-        for (let i = 0; i < value.length; i++) {
-          if (configForSlash.includes(i) && isNaN(value[i])) {
-            value[i] = hashmapForReplacing[value[i]] || '/'
+        let result = ''
+        const configForSlash = [2, 5]
+        for (let i = 0; i < val.length; i++) {
+          if (configForSlash.includes(i)) {
+            result += '/'
+          }
+
+          if (!isNaN(val[i])) {
+            result += + val[i]
           }
         }
 
-        this.paymentForm.dateOfBirth = value
+        this.paymentForm.dateOfBirth = result
       },
       installments (val) {
         if (+val !== 1 && this.countryCode === 'MX') {
