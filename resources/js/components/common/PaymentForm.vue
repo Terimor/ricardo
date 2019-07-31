@@ -188,6 +188,21 @@
           this.getLocationByZipcode(zipcode)
         }
       },
+      'paymentForm.dateOfBirth' (val) {
+        const withoutSlashValue = val.replace(/[/]/g, '')
+        const configForSlash = [2, 4, 8]
+        let result = ''
+
+        for (let i = 0; i < withoutSlashValue.length; i++) {
+          if (configForSlash.includes(i)) {
+            result += '/'
+          }
+
+          result += withoutSlashValue[i]
+        }
+
+        this.paymentForm.dateOfBirth = result
+      },
       installments (val) {
         if (+val !== 1 && this.countryCode === 'MX') {
           this.paymentForm.cardType = 'credit'
