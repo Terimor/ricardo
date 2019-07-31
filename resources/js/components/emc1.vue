@@ -79,7 +79,9 @@
           <transition name="el-zoom-in-top">
             <payment-form
               v-if="form.isCreditCard"
+              :$v="$v"
               :installments="form.installments"
+              :paymentForm="form"
               :countryCode="checkoutData.countryCode"
               :isBrazil="checkoutData.countryCode === 'BR'"
               :countryList="mockData.countryList"></payment-form>
@@ -186,11 +188,16 @@ export default {
         variant: 'white',
         installments: 1,
         isCreditCard: false,
+
         fname: null,
         lname: null,
+        dateOfBirth: '',
         email: null,
         phone: null,
+        cardType: 'credit',
         street: null,
+        number: null,
+        complemento: null,
         city: null,
         state: null,
         zipcode: null,

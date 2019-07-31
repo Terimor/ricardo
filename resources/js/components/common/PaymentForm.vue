@@ -12,6 +12,9 @@
             class="last-name"
             v-model="paymentForm.lname"/>
         <text-field-with-placeholder
+            :invalid="!$v.form.dateOfBirth.isValidDate && $v.form.dateOfBirth.$dirty"
+            :validation="$v.form.dateOfBirth"
+            invalidMessage="Invalid date"
             v-if="countryCode === 'DE' || countryCode === 'CO' || countryCode === 'BR'"
             :rest="{
               'format': 'dd/mm/yyyy',
@@ -141,28 +144,9 @@
 
   export default {
     name: 'PaymentForm',
-    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments'],
+    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v'],
     data () {
       return {
-        paymentForm: {
-          fname: null,
-          lname: null,
-          dateOfBirth: '',
-          email: null,
-          phone: null,
-          cardType: 'credit',
-          street: null,
-          number: null,
-          complemento: null,
-          city: null,
-          state: null,
-          zipcode: null,
-          country: null,
-          cardNumber: null,
-          month: null,
-          year: null,
-          cvv: null
-        },
         isLoading: {
           address: false
         }

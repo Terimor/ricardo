@@ -53,6 +53,19 @@ const emc1Validation = {
     },
     cvv: {
       required
+    },
+    dateOfBirth: {
+      isValidDate (val) {
+          const [day, month, year] = val.split('/')
+          const date = new Date(year, month - 1, day)
+
+          const diff = dateFns.differenceInYears(
+              new Date(),
+              new Date(year, month - 1, day)
+          )
+
+          return dateFns.isValid(date) && val.length === 10 && diff >= 18 && diff < 100
+      }
     }
   }
 }

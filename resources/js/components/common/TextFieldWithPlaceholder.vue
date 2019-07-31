@@ -1,30 +1,34 @@
 <template>
-  <label class="date-picker-manual">
+  <label class="date-picker-manual" :class="{ 'with-error': invalid }">
     <span>{{label}}</span>
     <div class="date-picker-manual__input">
       <div class="placeholder" v-html="preparedPlaceholder"></div>
       <input
         @input="input"
+        @focus="(e) => $emit('focus', e.target.value)"
+        @blur="(e) => $emit('blur', e.target.value)"
         :maxlength="placeholder.length"
         :value="value"
         v-bind="rest" />
     </div>
+    <div v-show="invalid" class="error">{{invalidMessage}}</div>
   </label>
 </template>
 
 <script>
   export default {
     name: 'TextFieldWithPlaceholder',
-    props: ['label', 'value', 'format', 'rest', 'placeholder'],
+    props: ['label', 'value', 'format', 'rest', 'placeholder', 'invalid', 'invalidMessage', 'validation'],
     computed: {
       preparedPlaceholder () {
         const { length } = this.value
         return '&nbsp;'.repeat(length) + this.placeholder.slice(length)
-      }
+      },
     },
     methods: {
       input (e) {
         this.$emit('input', e.target.value)
+        this.validation.$touch()
       }
     }
   };
@@ -67,6 +71,12 @@
                 outline: none;
             }
 
+        }
+
+        &.with-error {
+            & > span {
+                color: red;
+            }
         }
     }
 </style>
