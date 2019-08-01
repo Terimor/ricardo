@@ -261,8 +261,8 @@ export default {
       }
     },
     setPurchase ({ variant, installments }) {
-        document.querySelector('#old-price').innerHTML = '$'+ preparePartByInstallments(3598, installments)
-        document.querySelector('#new-price').innerHTML = '$'+ preparePartByInstallments(1799, installments)
+        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(3598, installments)
+        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(1799, installments)
 
         this.purchase = [
           {
@@ -354,7 +354,7 @@ export default {
     p {
       margin: 0;
       font-size: 15px;
-      max-width: 416px;
+      max-width: 440px;
       width: 100%;
       text-transform: uppercase;
     }
