@@ -137,12 +137,13 @@
             postfix="<i class='fa fa-question-circle'></i>"
         />
         <el-dialog
+          @click="isOpenCVVModal = false"
           class="cvv-popup"
           title="Where do I find my security code?"
           :visible.sync="isOpenCVVModal">
             <div class="cvv-popup__content">
                 <p>The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it is a 4 digit number, found on the front of your credit card.</p>
-                <img src="/images/cvv_popup.jpg" alt="">
+                <div><img src="/images/cvv_popup.jpg" alt=""></div>
                 <p>Where to find the 3 digit security code (Visa/Mastercard)</p>
             </div>
         </el-dialog>
@@ -223,6 +224,13 @@
     },
     methods: {
       openCVVModal () {
+        const node = document.querySelector('.cvv-popup .el-dialog')
+        const listener = () => {
+            this.isOpenCVVModal = false
+        }
+        node.removeEventListener('click', listener)
+        node.addEventListener('click', listener)
+
         this.isOpenCVVModal = true
       },
       disabledDate (date) {
@@ -278,10 +286,12 @@
            &__content {
                display: flex;
                flex-direction: column;
+               align-items: center;
 
                p {
                  font-family: 'Noto Sans', sans-serif;
                  font-size: 17px;
+                   width: 100%;
                }
 
                img {

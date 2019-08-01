@@ -350,8 +350,9 @@ export default {
     display: flex;
     align-items: center;
     flex-direction: column;
+    text-align: center;
 
-    p {
+      p {
       margin: 0;
       font-size: 15px;
       max-width: 440px;
