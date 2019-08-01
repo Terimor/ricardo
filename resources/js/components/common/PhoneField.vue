@@ -1,22 +1,34 @@
 <template>
-  <label class="phone-input-container" :class="theme">
+  <label
+    class="phone-input-container"
+    :class="{
+      [theme]: theme,
+      invalid: invalid
+    }">
     <span class="label">{{label}}</span>
     <input type="tel" @input="input" :value="value" :id="id">
+    <span v-show="invalid" class="error">{{validationMessage}}</span>
   </label>
 </template>
 
 <script>
 export default {
   name: 'PhoneField',
-  props: ['value', 'label', 'theme'],
+  props: ['value', 'label', 'theme', 'validation', 'validationMessage'],
   computed: {
     id () {
       return 'phone-' + this.label.replace(/[ ]/g, '-').toLowerCase()
+    },
+    invalid () {
+      return this.validation && this.validation.$dirty && this.validation.$invalid
     }
   },
   methods: {
     input (e) {
       this.$emit('input', e.target.value)
+      if (this.validation) {
+        this.validation.$touch()
+      }
     }
   },
   mounted () {
@@ -31,6 +43,12 @@ export default {
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
+
+      &.invalid {
+        .label, .error {
+          color: red;
+        }
+      }
 
     input {
       outline: none;

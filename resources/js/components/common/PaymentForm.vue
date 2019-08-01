@@ -2,11 +2,15 @@
     <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
         <h2>Step 4: Contact Information</h2>
         <text-field
+            :validation="$v.form.fname"
+            validationMessage="Required"
             theme="variant-1"
             label="First Name"
             class="first-name"
             v-model="paymentForm.fname"/>
         <text-field
+            :validation="$v.form.lname"
+            validationMessage="Required"
             theme="variant-1"
             label="Last Name"
             class="last-name"
@@ -26,22 +30,30 @@
             label="Your Date Of Birth"
         />
         <text-field
+            :validation="$v.form.email"
+            validationMessage="Required"
             theme="variant-1"
             label="Your Email Address"
             v-model="paymentForm.email"/>
         <phone-field
+            :validation="$v.form.phone"
+            validationMessage="Required"
             theme="variant-1"
             label="Your Phone Number"
             v-model="paymentForm.phone"/>
         <h2>Step 5: Delivery Address</h2>
         <div class="payment-form__delivery-address">
             <text-field
+                :validation="$v.form.street"
+                validationMessage="Required"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1 street"
                 :label="isBrazil ? 'Street' : 'Street And Number'"
                 v-model="paymentForm.street"/>
             <text-field
+                :validation="$v.form.number"
+                validationMessage="Required"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 v-if="isBrazil"
@@ -54,6 +66,8 @@
                 label="Complemento"
                 v-model="paymentForm.complemento"/>
             <text-field
+                :validation="$v.form.city"
+                validationMessage="Required"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
@@ -66,6 +80,8 @@
                 label="State"
                 v-model="paymentForm.state"/>
             <text-field
+                :validation="$v.form.zipcode"
+                validationMessage="Required"
                 theme="variant-1"
                 label="Zip Code"
                 id="zip-code-field"
@@ -129,9 +145,14 @@
         </div>
         <text-field
             @click-postfix="openCVVModal"
+            :validation="$v.form.cvv"
+            validationMessage="Required"
             class="cvv-field"
             theme="variant-1"
             label="CVV"
+            :rest="{
+              maxlength: cardType === 'american-express' || cardType === 'hipercard' ? 4 : 3
+            }"
             v-model="paymentForm.cvv"
             postfix="<i class='fa fa-question-circle'></i>"
         />
@@ -200,7 +221,7 @@
           'jcb': '/images/cc-icons/jcb.png',
           'maestro': '/images/cc-icons/maestro.png',
           'mastercard': '/images/cc-icons/mastercard.png',
-          'visa': '/images/cc-icons/visa.png',
+          'visa': '/images/cc-icons/visa.png'
         }
 
         return cardMap[this.cardType] || cardMap.iconcc

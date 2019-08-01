@@ -1,5 +1,10 @@
 <template>
-  <label class="input-container" :class="theme">
+  <label
+    class="input-container"
+    :class="{
+      [theme]: theme,
+      invalid: invalid
+    }">
     <span class="label">{{label}}</span>
     <div class="input-container__input">
       <div v-html="prefix" v-if="prefix" class="prefix"></div>
@@ -7,22 +12,32 @@
       <input
         @input="input"
         type="text"
+        v-bind="rest"
         :style="{
           ...prefix && { 'padding-left': '45px' },
           ...postfix && { 'padding-right': '45px' },
         }"
         :value="value">
     </div>
+    <span class="error" v-show="invalid">{{validationMessage}}</span>
   </label>
 </template>
 
 <script>
 export default {
   name: 'TextField',
-  props: ['value', 'label', 'theme', 'prefix', 'postfix'],
+  props: ['value', 'label', 'theme', 'prefix', 'postfix', 'validation', 'validationMessage', 'rest'],
+  computed: {
+    invalid () {
+      return this.validation && this.validation.$dirty && this.validation.$invalid
+    }
+  },
   methods: {
     input (e) {
       this.$emit('input', e.target.value)
+      if (this.validation) {
+        this.validation.$touch()
+      }
     }
   }
 }
@@ -35,6 +50,12 @@ export default {
   flex-direction: column;
   margin-bottom: 10px;
   position: relative;
+
+  &.invalid {
+    .label {
+      color: red;
+    }
+  }
 
   &__input {
     position: relative;

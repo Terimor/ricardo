@@ -12,7 +12,9 @@
     "dependencies": {
         "credit-card-type": "^8.2.0",
         "element-ui": "^2.11.0",
+        "libphonenumber-js": "^1.7.21",
         "moment": "^2.24.0",
+        "postcode-validator": "^2.0.0",
         "printf": "^0.5.1",
         "vue": "^2.5.17",
         "vue-mq": "^1.0.1",
