@@ -105,7 +105,7 @@ import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
 
-const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2)).toLocaleString()
+const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
 
 export default {
   name: 'emc1',
@@ -261,8 +261,8 @@ export default {
       }
     },
     setPurchase ({ variant, installments }) {
-        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(3598, installments)
-        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(1799, installments)
+        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(3598, installments).toLocaleString()
+        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(1799, installments).toLocaleString()
 
         this.purchase = [
           {
@@ -279,7 +279,7 @@ export default {
             withDiscount: true,
             text: `2x EchoBeat7 ${variant} + 1 FREE`,
             price: preparePartByInstallments(10794, installments),
-            discountText: `(69% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(1133, installments)}/Unit)`,
+            discountText: `(69% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(1133, installments).toLocaleString()}/Unit)`,
             totalQuantity: 3
           }, {
             discountName: 'BEST DEAL',
@@ -287,7 +287,7 @@ export default {
             withDiscount: true,
             text: `3x EchoBeat7 ${variant} + 2 FREE`,
             price: preparePartByInstallments(17990, installments),
-            discountText: `(73% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(999.80, installments)}/Unit)`,
+            discountText: `(73% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(999.80, installments).toLocaleString()}/Unit)`,
             totalQuantity: 5
           }
         ]

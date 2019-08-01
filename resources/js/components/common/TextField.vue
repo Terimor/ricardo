@@ -1,16 +1,18 @@
 <template>
   <label class="input-container" :class="theme">
     <span class="label">{{label}}</span>
-    <div v-html="prefix" v-if="prefix" class="prefix"></div>
-    <div v-html="postfix" v-if="postfix" class="postfix"></div>
-    <input
-      @input="input"
-      type="text"
-      :style="{
-        ...prefix && { 'padding-left': '45px' },
-        ...postfix && { 'padding-right': '45px' },
-      }"
-      :value="value">
+    <div class="input-container__input">
+      <div v-html="prefix" v-if="prefix" class="prefix"></div>
+      <div v-html="postfix" v-if="postfix" class="postfix"></div>
+      <input
+        @input="input"
+        type="text"
+        :style="{
+          ...prefix && { 'padding-left': '45px' },
+          ...postfix && { 'padding-right': '45px' },
+        }"
+        :value="value">
+    </div>
   </label>
 </template>
 
@@ -34,9 +36,14 @@ export default {
   margin-bottom: 10px;
   position: relative;
 
+  &__input {
+    position: relative;
+  }
+
   input {
     outline: none;
     color: rgb(85, 85, 85);
+    width: 100%;
   }
 
   .label {
