@@ -3,7 +3,7 @@
     <span class="label">{{label}}</span>
     <div class="input-container__input">
       <div v-html="prefix" v-if="prefix" class="prefix"></div>
-      <div v-html="postfix" v-if="postfix" class="postfix"></div>
+      <div @click="$emit('click-postfix')" v-html="postfix" v-if="postfix" class="postfix"></div>
       <input
         @input="input"
         type="text"

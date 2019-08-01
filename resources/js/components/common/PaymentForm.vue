@@ -129,12 +129,23 @@
                 v-model="paymentForm.year"/>
         </div>
         <text-field
+            @click-postfix="openCVVModal"
             class="cvv-field"
             theme="variant-1"
             label="CVV"
             v-model="paymentForm.cvv"
             postfix="<i class='fa fa-question-circle'></i>"
         />
+        <el-dialog
+          class="cvv-popup"
+          title="Where do I find my security code?"
+          :visible.sync="isOpenCVVModal">
+            <div class="cvv-popup__content">
+                <p>The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it is a 4 digit number, found on the front of your credit card.</p>
+                <img src="/images/cvv_popup.jpg" alt="">
+                <p>Where to find the 3 digit security code (Visa/Mastercard)</p>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -151,7 +162,8 @@
         isLoading: {
           address: false
         },
-        cardType: null
+        cardType: null,
+        isOpenCVVModal: false
       }
     },
     computed: {
@@ -210,7 +222,10 @@
       }
     },
     methods: {
-      disabledDate(date) {
+      openCVVModal () {
+        this.isOpenCVVModal = true
+      },
+      disabledDate (date) {
         return date.getTime() > this.eighteenYearsAgo
       },
       getLocationByZipcode: debounce(function (zipcode) {
@@ -246,11 +261,46 @@
 </script>
 
 <style lang="scss">
+    @import "../../../sass/variables";
+
     .payment-form {
+        .cvv-popup {
+          .el-dialog__header {
+              display: flex;
+              justify-content: center;
+          }
+          .el-dialog__title {
+              text-align: center;
+              font-size: 20px;
+              font-weight: 700;
+          }
+
+           &__content {
+               display: flex;
+               flex-direction: column;
+
+               p {
+                 font-family: 'Noto Sans', sans-serif;
+                 font-size: 17px;
+               }
+
+               img {
+                   max-width: 300px;
+                   height: auto;
+                   margin: 0 auto;
+               }
+           }
+        }
         display: flex;
 
         .variant-1, .date-picker-manual {
             margin-bottom: 10px;
+        }
+
+        .variant-1 {
+            .fa.fa-question-circle {
+                cursor: pointer;
+            }
         }
 
         &__delivery-address {
@@ -345,6 +395,13 @@
 
         .cvv-field {
             width: calc(30%);
+        }
+
+        @media screen and ($s-down) {
+            .el-dialog {
+                width: 90%;
+                margin-top: 15% !important;
+            }
         }
     }
 </style>
