@@ -2,10 +2,10 @@
   <div>
     <div class="container offer">
       <p><span class="bold">Special Offer:</span> EchoBeat - Wireless 3D Sound</p>
-      <p>Price:&nbsp;<span class="price-object productprice-old-object strike">₴3,598</span>
-        <span class="Green-span">
-        <b><span class="price-object productprice-object"> ₴1,799</span></b>
-      </span>&nbsp;(50% discount per unit)
+      <p>Price:&nbsp;<span id="old-price" class="price-object productprice-old-object strike">₴3,598</span>
+        <span class="price-span">
+          <b><span id="new-price" class="price-object productprice-object"> ₴1,799</span></b>
+        </span>&nbsp;(50% discount per unit)
       </p>
     </div>
 
@@ -261,6 +261,9 @@ export default {
       }
     },
     setPurchase ({ variant, installments }) {
+        document.querySelector('#old-price').innerHTML = '$'+ preparePartByInstallments(3598, installments)
+        document.querySelector('#new-price').innerHTML = '$'+ preparePartByInstallments(1799, installments)
+
         this.purchase = [
           {
             discountName: null,
