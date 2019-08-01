@@ -28,7 +28,9 @@
     methods: {
       input (e) {
         this.$emit('input', e.target.value)
-        this.validation.$touch()
+        if (this.validation) {
+          this.validation.$touch()
+        }
       }
     }
   };

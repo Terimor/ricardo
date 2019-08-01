@@ -207,7 +207,8 @@ export default {
         cardNumber: null,
         month: null,
         year: null,
-        cvv: null
+        cvv: null,
+        documentNumber: ''
       }
     }
   },
