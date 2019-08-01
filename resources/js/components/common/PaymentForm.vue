@@ -143,7 +143,16 @@
             'format': '___.___.___-__',
           }"
           theme="variant-1"
-          label="documentNumber" />
+          label="Document number" />
+        <text-field-with-placeholder
+          v-model="paymentForm.documentNumber"
+          v-if="countryCode === 'CO'"
+          placeholder="1234567890"
+          :rest="{
+            'format': '1234567890',
+          }"
+          theme="variant-1"
+          label="Document number" />
         <el-dialog
           @click="isOpenCVVModal = false"
           class="cvv-popup"
@@ -225,24 +234,36 @@
         this.paymentForm.dateOfBirth = result
       },
       'paymentForm.documentNumber' (val) {
-        let result = ''
-        const configForDot = [3, 7]
-        const configForDash = [11]
-        for (let i = 0; i < val.length; i++) {
-          if (configForDot.includes(i)) {
-            result += '.'
+        const isNumber = (val) => !isNaN(val) && val !== ' '
+
+        if (this.countryCode === 'BR') {
+          let result = ''
+          const configForDot = [3, 7]
+          const configForDash = [11]
+          for (let i = 0; i < val.length; i++) {
+            if (configForDot.includes(i)) {
+              result += '.'
+            }
+
+            if (configForDash.includes(i)) {
+              result += '-'
+            }
+
+            if (isNumber(val[i])) {
+              result += val[i]
+            }
           }
 
-          if (configForDash.includes(i)) {
-            result += '-'
+          this.paymentForm.documentNumber = result
+        } else if (this.countryCode === 'CO') {
+          let result = ''
+          for (let i = 0; i < val.length; i++) {
+            if (isNumber(val[i])) {
+              result += val[i]
+            }
           }
-
-          if (!isNaN(val[i]) && val[i] !== ' ') {
-            result += val[i]
-          }
+          this.paymentForm.documentNumber = result
         }
-
-        this.paymentForm.documentNumber = result
       },
       installments (val) {
         if (+val !== 1 && this.countryCode === 'MX') {
