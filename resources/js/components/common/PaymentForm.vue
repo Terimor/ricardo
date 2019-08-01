@@ -273,6 +273,10 @@
 
     .payment-form {
         .cvv-popup {
+          .el-dialog {
+            margin-top: 10vh !important;
+              max-width: 600px;
+          }
           .el-dialog__header {
               display: flex;
               justify-content: center;
