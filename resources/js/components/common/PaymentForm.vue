@@ -117,6 +117,9 @@
             ]"/>
         <text-field
             :validation="$v.form.cardNumber"
+            :rest="{
+              pattern: '\\d*'
+            }"
             validationMessage="Invalid card"
             class="card-number"
             theme="variant-1"
@@ -153,7 +156,8 @@
             theme="variant-1"
             label="CVV"
             :rest="{
-              maxlength: 4
+              maxlength: 4,
+              pattern: '\\d*'
             }"
             v-model="paymentForm.cvv"
             postfix="<i class='fa fa-question-circle'></i>"
@@ -166,6 +170,7 @@
           placeholder="___.___.___-__"
           :rest="{
             'format': '___.___.___-__',
+            'pattern': '\\d*'
           }"
           theme="variant-1"
           label="Document number" />
