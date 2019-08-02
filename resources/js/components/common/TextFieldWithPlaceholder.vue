@@ -11,19 +11,22 @@
         :value="value"
         v-bind="rest" />
     </div>
-    <div v-show="invalid" class="error">{{invalidMessage}}</div>
+    <div v-show="invalid" class="error">{{validationMessage}}</div>
   </label>
 </template>
 
 <script>
   export default {
     name: 'TextFieldWithPlaceholder',
-    props: ['label', 'value', 'format', 'rest', 'placeholder', 'invalid', 'invalidMessage', 'validation'],
+    props: ['label', 'value', 'format', 'rest', 'placeholder', 'validationMessage', 'validation'],
     computed: {
       preparedPlaceholder () {
         const { length } = this.value
         return '&nbsp;'.repeat(length) + this.placeholder.slice(length)
       },
+      invalid () {
+        return this.validation && this.validation.$dirty && this.validation.$invalid
+      }
     },
     methods: {
       input (e) {

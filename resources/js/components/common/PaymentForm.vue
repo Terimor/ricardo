@@ -24,7 +24,6 @@
               'format': 'dd/mm/yyyy',
             }"
             placeholder="DD/MM/YYYY"
-            :disabledDate="disabledDate"
             v-model="paymentForm.dateOfBirth"
             theme="variant-1"
             label="Your Date Of Birth"
@@ -37,7 +36,8 @@
             v-model="paymentForm.email"/>
         <phone-field
             :validation="$v.form.phone"
-            validationMessage="Required"
+            validationMessage="Invalid"
+            :countryCode="countryCode"
             theme="variant-1"
             label="Your Phone Number"
             v-model="paymentForm.phone"/>
@@ -81,7 +81,7 @@
                 v-model="paymentForm.state"/>
             <text-field
                 :validation="$v.form.zipcode"
-                validationMessage="Required"
+                validationMessage="Invalid Zip Code"
                 theme="variant-1"
                 label="Zip Code"
                 id="zip-code-field"
@@ -119,6 +119,8 @@
                 }
             ]"/>
         <text-field
+            :validation="$v.form.cardNumber"
+            validationMessage="Invalid card"
             class="card-number"
             theme="variant-1"
             label="Card Number"
@@ -157,6 +159,8 @@
             postfix="<i class='fa fa-question-circle'></i>"
         />
         <text-field-with-placeholder
+          :validation="$v.form.documentNumber"
+          validationMessage="Required"
           v-model="paymentForm.documentNumber"
           v-if="countryCode === 'BR'"
           placeholder="___.___.___-__"
@@ -166,6 +170,8 @@
           theme="variant-1"
           label="Document number" />
         <text-field-with-placeholder
+          :validation="$v.form.documentNumber"
+          validationMessage="Required"
           v-model="paymentForm.documentNumber"
           v-if="countryCode === 'CO'"
           placeholder="1234567890"
@@ -206,9 +212,6 @@
       }
     },
     computed: {
-      eighteenYearsAgo () {
-        return Date.now() - 31536000000 * 18
-      },
       cardUrl () {
         const cardMap = {
           'american-express': '/images/cc-icons/american-express.png',
@@ -302,9 +305,6 @@
         node.addEventListener('click', listener)
 
         this.isOpenCVVModal = true
-      },
-      disabledDate (date) {
-        return date.getTime() > this.eighteenYearsAgo
       },
       getLocationByZipcode: debounce(function (zipcode) {
         const { ebanxpay: { url, integration_key } } = apiUrlList

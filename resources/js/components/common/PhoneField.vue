@@ -14,7 +14,7 @@
 <script>
 export default {
   name: 'PhoneField',
-  props: ['value', 'label', 'theme', 'validation', 'validationMessage'],
+  props: ['value', 'label', 'theme', 'validation', 'validationMessage', 'countryCode'],
   computed: {
     id () {
       return 'phone-' + this.label.replace(/[ ]/g, '-').toLowerCase()
@@ -32,7 +32,9 @@ export default {
     }
   },
   mounted () {
-    window.intlTelInput(document.querySelector(`#${this.id}`))
+    window.intlTelInput(document.querySelector(`#${this.id}`), {
+      initialCountry: this.countryCode
+    })
   }
 }
 </script>

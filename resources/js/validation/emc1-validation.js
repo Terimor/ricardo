@@ -40,6 +40,10 @@ const emc1Validation = {
     street: {
       required
     },
+    number: {
+      required,
+      type: numeric
+    },
     city: {
       required
     },
@@ -80,6 +84,13 @@ const emc1Validation = {
         )
 
         return dateFns.isValid(date) && val.length === 10 && diff >= 18 && diff < 100
+      }
+    },
+    documentNumber: {
+      isValidNumber (val) {
+        return checkoutData.countryCode === 'CO' ? val.length === 10 :
+        checkoutData.countryCode === 'BR' ? val.length === 14 :
+        true
       }
     }
   }
