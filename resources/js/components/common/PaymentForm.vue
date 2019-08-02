@@ -16,9 +16,8 @@
             class="last-name"
             v-model="paymentForm.lname"/>
         <text-field-with-placeholder
-            :invalid="!$v.form.dateOfBirth.isValidDate && $v.form.dateOfBirth.$dirty"
             :validation="$v.form.dateOfBirth"
-            invalidMessage="Invalid date"
+            validationMessage="Invalid date"
             v-if="countryCode === 'DE'"
             :rest="{
               'format': 'dd/mm/yyyy',

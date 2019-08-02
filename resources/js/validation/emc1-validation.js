@@ -83,7 +83,14 @@ const emc1Validation = {
           new Date(year, month - 1, day)
         )
 
-        return dateFns.isValid(date) && val.length === 10 && diff >= 18 && diff < 100
+        console.log(date)
+
+        return dateFns.isValid(date) &&
+          val.length === 10 &&
+          diff >= 18 &&
+          diff < 100 &&
+          day < 32 &&
+          month < 13
       }
     },
     documentNumber: {
