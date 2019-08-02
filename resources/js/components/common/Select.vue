@@ -29,11 +29,16 @@ export default {
     'theme',
     'label',
     'disabled',
-    'rest'
+    'rest',
+    'validation'
   ],
   methods: {
     onChange (e) {
       this.$emit('input', e)
+
+      if (this.validation) {
+        this.validation.$touch()
+      }
     }
   }
 }

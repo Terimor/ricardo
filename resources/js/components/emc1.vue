@@ -116,17 +116,25 @@ export default {
       mockData: {
         countryList: [
           {
-            value: 'usa',
-            text: 'USA'
+            value: 'US',
+            text: 'USA',
+            label: 'USA',
           }, {
-            value: 'Russia',
-            text: 'Russia'
+            value: 'RU',
+            text: 'Russia',
+            label: 'Russia',
           }, {
-            value: 'Ukraine',
-            text: 'Ukraine'
+            value: 'UA',
+            text: 'Ukraine',
+            label: 'Ukraine',
           }, {
-            value: 'Portugal',
-            text: 'Portugal'
+            value: 'PT',
+            text: 'Portugal',
+            label: 'Portugal',
+          }, {
+            value: 'BR',
+            text: 'Brazil',
+            label: 'Brazil',
           }
         ],
         creditCardRadioList: [
@@ -203,8 +211,8 @@ export default {
         city: null,
         state: null,
         zipcode: null,
-        country: null,
-        cardNumber: null,
+        country: checkoutData.countryCode,
+        cardNumber: '',
         month: null,
         year: null,
         cvv: null,

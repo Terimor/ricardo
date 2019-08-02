@@ -86,8 +86,6 @@
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
             <select-field
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
                 theme="variant-1"
                 label="Country"
                 :rest="{
@@ -127,9 +125,10 @@
             :prefix="`<img src='${cardUrl}' />`"
             :postfix="`<i class='fa fa-lock'></i>`"
         />
-        <div class="card-date">
+        <div class="card-date" :class="{ 'with-error': !$v.form.year.isValid && $v.form.year.$dirty }">
             <span class="label">Card Valid Until</span>
             <select-field
+                :validation="$v.form.month"
                 :rest="{
                   placeholder: 'Month'
                 }"
@@ -137,12 +136,14 @@
                 :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
                 v-model="paymentForm.month"/>
             <select-field
+                :validation="$v.form.year"
                 :rest="{
                     placeholder: 'Year'
                   }"
                 theme="variant-1"
                 :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                 v-model="paymentForm.year"/>
+            <span class="error" v-show="!$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
         </div>
         <text-field
             @click-postfix="openCVVModal"
@@ -152,7 +153,7 @@
             theme="variant-1"
             label="CVV"
             :rest="{
-              maxlength: cardType === 'american-express' || cardType === 'hipercard' ? 4 : 3
+              maxlength: 4
             }"
             v-model="paymentForm.cvv"
             postfix="<i class='fa fa-question-circle'></i>"
@@ -237,7 +238,7 @@
           : null
       },
       'paymentForm.zipcode' (zipcode) {
-        if (this.isBrazil) {
+        if (this.isBrazil && !this.$v.form.zipcode.$invalid) {
           this.getLocationByZipcode(zipcode)
         }
       },
@@ -458,6 +459,12 @@
             width: 70%;
             padding-right: 30px;
             margin-bottom: 10px;
+
+            &.with-error {
+                & > .label {
+                    color: red;
+                }
+            }
 
             & > .label {
                 width: 100%;

@@ -1,6 +1,7 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import postcode from 'postcode-validator'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import creditCardType from 'credit-card-type'
 
 const emc1Validation = {
   form: {
@@ -29,7 +30,7 @@ const emc1Validation = {
       required,
       type: numeric,
       isValidPhone (val) {
-        const phoneNumber = parsePhoneNumberFromString(val, checkoutData.countryCode)
+        const phoneNumber = parsePhoneNumberFromString(val || '', checkoutData.countryCode)
         if (phoneNumber) {
           return phoneNumber.isValid()
         }
@@ -53,7 +54,7 @@ const emc1Validation = {
     zipcode: {
       required,
       isValidZipcode (val) {
-        return postcode.validate(val, checkoutData.countryCode)
+        return postcode.validate(val, this.form.country || checkoutData.countryCode)
       }
     },
     country: {
@@ -61,13 +62,30 @@ const emc1Validation = {
     },
     cardNumber: {
       type: numeric,
-      required
+      required,
+      isValid (val) {
+        const creditCardTypeList = creditCardType(val)
+
+        const commonRule = val.length > 12 && val.length <= 19
+
+        if (creditCardTypeList.length === 1) {
+          return creditCardTypeList[0].lengths.includes(val.length) || commonRule
+        }
+
+        return commonRule
+      }
     },
     month: {
-      required
+      required,
+      isValid (val) {
+        return val > 0 && val <= 12
+      }
     },
     year: {
-      required
+      required,
+      isValid (val) {
+        return dateFns.isFuture(new Date(val, this.form.month))
+      }
     },
     cvv: {
       required,
@@ -83,8 +101,6 @@ const emc1Validation = {
           new Date(year, month - 1, day)
         )
 
-        console.log(date)
-
         return dateFns.isValid(date) &&
           val.length === 10 &&
           diff >= 18 &&
@@ -96,8 +112,8 @@ const emc1Validation = {
     documentNumber: {
       isValidNumber (val) {
         return checkoutData.countryCode === 'CO' ? val.length === 10 :
-        checkoutData.countryCode === 'BR' ? val.length === 14 :
-        true
+          checkoutData.countryCode === 'BR' ? val.length === 14 :
+          true
       }
     }
   }
