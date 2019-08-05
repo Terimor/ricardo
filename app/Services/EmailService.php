@@ -33,7 +33,7 @@ class EmailService
         $urlPath = Setting::where(['key' => 'saga_api_endpoint'])->first();
         $urlPath = !empty($urlPath->value) ? $urlPath->value : '';
         
-        $url = $urlPath.'index.php?r=odin-api/send-confirmation-email';
+        $url = $urlPath.'?r=odin-api/send-confirmation-email';
         
         $request = $client->request('POST', $url, [
             'headers' => [
@@ -63,7 +63,7 @@ class EmailService
         $urlPath = Setting::where(['key' => 'saga_api_endpoint'])->first();
         $urlPath = !empty($urlPath->value) ? $urlPath->value : '';
         
-        $url = $urlPath.'index.php?r=odin-api/send-satisfaction-email';
+        $url = $urlPath.'?r=odin-api/send-satisfaction-email';
         $request = $client->request('POST', $url, [
             'headers' => [
                 'api-token' => $this->apiKey,
