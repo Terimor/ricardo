@@ -3,17 +3,23 @@
         <h2>Step 4: Contact Information</h2>
         <text-field
             :validation="$v.form.fname"
-            validationMessage="Required"
+            validationMessage="Please enter your first name"
             theme="variant-1"
             label="First Name"
             class="first-name"
+            :rest="{
+              autocomplete: 'given-name'
+            }"
             v-model="paymentForm.fname"/>
         <text-field
             :validation="$v.form.lname"
-            validationMessage="Required"
+            validationMessage="Please enter your last name"
             theme="variant-1"
             label="Last Name"
             class="last-name"
+            :rest="{
+              autocomplete: 'family-name'
+            }"
             v-model="paymentForm.lname"/>
         <text-field-with-placeholder
             :validation="$v.form.dateOfBirth"
@@ -29,26 +35,35 @@
         />
         <text-field
             :validation="$v.form.email"
-            validationMessage="Required"
+            validationMessage="Please enter a valid e-mail"
             theme="variant-1"
             label="Your Email Address"
+            :rest="{
+              autocomplete: 'email'
+            }"
             v-model="paymentForm.email"/>
         <phone-field
             :validation="$v.form.phone"
-            validationMessage="Invalid"
+            validationMessage="Please enter a valid phone number"
             :countryCode="countryCode"
             theme="variant-1"
             label="Your Phone Number"
+            :rest="{
+              autocomplete: 'off'
+            }"
             v-model="paymentForm.phone"/>
         <h2>Step 5: Delivery Address</h2>
         <div class="payment-form__delivery-address">
             <text-field
                 :validation="$v.form.street"
-                validationMessage="Required"
+                validationMessage="Please enter your street"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1 street"
                 :label="isBrazil ? 'Street' : 'Street And Number'"
+                :rest="{
+                  autocomplete: 'street-address'
+                }"
                 v-model="paymentForm.street"/>
             <text-field
                 :validation="$v.form.number"
@@ -66,26 +81,45 @@
                 v-model="paymentForm.complemento"/>
             <text-field
                 :validation="$v.form.city"
-                validationMessage="Required"
+                validationMessage="Please enter your city"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
                 label="City"
+                :rest="{
+                    autocomplete: 'shipping locality'
+                }"
                 v-model="paymentForm.city"/>
-            <text-field
+            <select-field
+                v-if="countryCode === 'BR' || countryCode === 'MX'"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
+                validationMessage="Please enter or select your state"
+                theme="variant-1"
+                label="State"
+                :rest="{
+                  placeholder: 'State'
+                }"
+                :list="stateList"
+                v-model="paymentForm.state"/>
+            <text-field
+                v-else
+                v-loading="isLoading.address"
+                element-loading-spinner="el-icon-loading"
+                validationMessage="Please enter or select your state"
                 theme="variant-1"
                 label="State"
                 v-model="paymentForm.state"/>
             <text-field
                 :validation="$v.form.zipcode"
-                validationMessage="Invalid Zip Code"
+                validationMessage="Please enter your zip code"
                 theme="variant-1"
                 label="Zip Code"
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
             <select-field
+                :validation="$v.form.country"
+                validationMessage="Invalid field"
                 theme="variant-1"
                 label="Country"
                 :rest="{
@@ -97,6 +131,8 @@
         <h2>Step 6: Payment Details</h2>
         <select-field
             v-if="countryCode === 'MX'"
+            :validation="$v.form.cardType"
+            validationMessage="Invalid Card Type"
             :disabled="+installments !== 1"
             theme="variant-1"
             v-model="paymentForm.cardType"
@@ -118,9 +154,11 @@
         <text-field
             :validation="$v.form.cardNumber"
             :rest="{
-              pattern: '\\d*'
+              pattern: '\\d*',
+              type: 'tel',
+              autocomplete: 'cc-number'
             }"
-            validationMessage="Invalid card"
+            validationMessage="Please enter a credit card number."
             class="card-number"
             theme="variant-1"
             label="Card Number"
@@ -132,6 +170,7 @@
             <span class="label">Card Valid Until</span>
             <select-field
                 :validation="$v.form.month"
+                validationMessage="Required"
                 :rest="{
                   placeholder: 'Month'
                 }"
@@ -140,6 +179,7 @@
                 v-model="paymentForm.month"/>
             <select-field
                 :validation="$v.form.year"
+                validationMessage="Required"
                 :rest="{
                     placeholder: 'Year'
                   }"
@@ -157,7 +197,9 @@
             label="CVV"
             :rest="{
               maxlength: 4,
-              pattern: '\\d*'
+              pattern: '\\d*',
+              type: 'tel',
+              autocomplete: 'cc-csc'
             }"
             v-model="paymentForm.cvv"
             postfix="<i class='fa fa-question-circle'></i>"
@@ -170,7 +212,8 @@
           placeholder="___.___.___-__"
           :rest="{
             'format': '___.___.___-__',
-            'pattern': '\\d*'
+            'pattern': '\\d*',
+            type: 'tel'
           }"
           theme="variant-1"
           label="Document number" />
@@ -185,6 +228,13 @@
           }"
           theme="variant-1"
           label="Document number" />
+        <button
+          @click="submit"
+          id="purchase-button"
+          type="button"
+          class="green-button-animated">
+          <span class="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
+        </button>
         <el-dialog
           @click="isOpenCVVModal = false"
           class="cvv-popup"
@@ -206,7 +256,7 @@
 
   export default {
     name: 'PaymentForm',
-    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v'],
+    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList'],
     data () {
       return {
         isLoading: {
@@ -338,13 +388,97 @@
             console.error(err)
             this.isLoading.address = false
           })
-      }, 333)
+      }, 333),
+      submit () {
+        this.$v.form.$touch();
+
+        if (this.$v.form.deal.$invalid) {
+          this.$emit('setPromotionalModal', true)
+        }
+
+        if (this.$v.form.$pending || this.$v.form.$error) {
+          if (this.$v.form.deal.$invalid) {
+            document.querySelector('.main__deal').scrollIntoView()
+          } else {
+            document.querySelector('.payment-form').scrollIntoView()
+          }
+
+          return;
+        }
+
+        console.log('submitted')
+      }
     }
   };
 </script>
 
 <style lang="scss">
     @import "../../../sass/variables";
+
+    .green-button-animated {
+        cursor: pointer;
+        bottom: 0;
+        box-shadow: rgb(180, 181, 181) 2px 2px 2px 0;
+        color: rgb(255, 255, 255);
+        height: 92px;
+        position: relative;
+        text-decoration: none solid rgb(255, 255, 255);
+        text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+        text-transform: capitalize;
+        top: 0;
+        width: 100%;
+        column-rule-color: rgb(255, 255, 255);
+        perspective-origin: 195.688px 46px;
+        transform-origin: 195.695px 46px;
+        caret-color: rgb(255, 255, 255);
+        background: rgb(255, 47, 33) linear-gradient(rgb(15, 155, 15), rgb(13, 132, 13)) repeat scroll 0% 0% / auto padding-box border-box;
+        border: 1px solid rgb(15, 155, 15);
+        border-radius: 3px 3px 3px 3px;
+        font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+        margin: 0 0 15px;
+        outline: rgb(255, 255, 255) none 0;
+        padding: 20px;
+        transition: all 0.2s linear 0s;
+
+        &:before {
+            opacity: 0;
+            font-family: FontAwesome!important;
+            content: '\f054';
+            width: 0;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0 50% 50% 0;
+            background-color: rgba(255,255,255,.3);
+            transition: all .2s linear 0s;
+        }
+
+        &:hover {
+            background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
+
+            &:before {
+                opacity: 1;
+                width: 30px;
+            }
+        }
+
+        &:after {
+            box-sizing: border-box;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+            text-transform: capitalize;
+            column-rule-color: rgb(255, 255, 255);
+            caret-color: rgb(255, 255, 255);
+            border: 0 none rgb(255, 255, 255);
+            font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+            outline: rgb(255, 255, 255) none 0;
+        }
+    }
 
     .payment-form {
         .cvv-popup {
@@ -467,7 +601,7 @@
 
             &.with-error {
                 & > .label {
-                    color: red;
+                    color: #c0392b;
                 }
             }
 
@@ -496,6 +630,95 @@
             .el-dialog {
                 width: 90%;
                 margin-top: 15% !important;
+            }
+        }
+
+        .purchase-button-text {
+            box-sizing: border-box;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            text-align: center;
+            text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+            text-transform: capitalize;
+            column-rule-color: rgb(255, 255, 255);
+            perspective-origin: 0 0;
+            transform-origin: 0 0;
+            caret-color: rgb(255, 255, 255);
+            border: 0 none rgb(255, 255, 255);
+            font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+            outline: rgb(255, 255, 255) none 0;
+
+            &:after {
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                cursor: pointer;
+                text-align: center;
+                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+                text-transform: capitalize;
+                column-rule-color: rgb(255, 255, 255);
+                caret-color: rgb(255, 255, 255);
+                border: 0 none rgb(255, 255, 255);
+                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+                outline: rgb(255, 255, 255) none 0;
+            }
+
+            &:before {
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                cursor: pointer;
+                text-align: center;
+                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+                text-transform: capitalize;
+                column-rule-color: rgb(255, 255, 255);
+                caret-color: rgb(255, 255, 255);
+                border: 0 none rgb(255, 255, 255);
+                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+                outline: rgb(255, 255, 255) none 0;
+            }
+        }
+
+        .purchase-button-image {
+            box-sizing: border-box;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            display: none;
+            max-width: 100%;
+            text-align: center;
+            text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+            text-transform: capitalize;
+            vertical-align: middle;
+            column-rule-color: rgb(255, 255, 255);
+            caret-color: rgb(255, 255, 255);
+            border: 0 none rgb(255, 255, 255);
+            font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+            outline: rgb(255, 255, 255) none 0;
+
+            &:after {
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                cursor: pointer;
+                text-align: center;
+                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+                text-transform: capitalize;
+                column-rule-color: rgb(255, 255, 255);
+                caret-color: rgb(255, 255, 255);
+                border: 0 none rgb(255, 255, 255);
+                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+                outline: rgb(255, 255, 255) none 0;
+            }
+
+            &:before {
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                cursor: pointer;
+                text-align: center;
+                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+                text-transform: capitalize;
+                column-rule-color: rgb(255, 255, 255);
+                caret-color: rgb(255, 255, 255);
+                border: 0 none rgb(255, 255, 255);
+                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+                outline: rgb(255, 255, 255) none 0;
             }
         }
     }

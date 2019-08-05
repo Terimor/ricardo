@@ -6,6 +6,9 @@
       @input="onChange"
       :value="value"
       :disabled="disabled"
+      :style="{
+        ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
+      }"
       :popper-class="popperClass">
       <template v-for="item in list">
         <el-option
@@ -16,6 +19,7 @@
         </el-option>
       </template>
     </el-select>
+    <span class="error" v-show="invalid">{{validationMessage}}</span>
   </div>
 </template>
 
@@ -30,8 +34,14 @@ export default {
     'label',
     'disabled',
     'rest',
-    'validation'
+    'validation',
+    'validationMessage',
   ],
+  computed: {
+    invalid () {
+      return this.validation && this.validation.$dirty && this.validation.$invalid
+    }
+  },
   methods: {
     onChange (e) {
       this.$emit('input', e)

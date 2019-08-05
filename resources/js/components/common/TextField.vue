@@ -11,11 +11,11 @@
       <div @click="$emit('click-postfix')" v-html="postfix" v-if="postfix" class="postfix"></div>
       <input
         @input="input"
-        type="text"
         v-bind="rest"
         :style="{
           ...prefix && { 'padding-left': '45px' },
           ...postfix && { 'padding-right': '45px' },
+          ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
         }"
         :value="value">
     </div>
@@ -53,7 +53,7 @@ export default {
 
   &.invalid {
     .label {
-      color: red;
+      color: #c0392b;
     }
   }
 

@@ -9,6 +9,9 @@
         @blur="(e) => $emit('blur', e.target.value)"
         :maxlength="placeholder.length"
         :value="value"
+        :style="{
+          ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
+        }"
         v-bind="rest" />
     </div>
     <div v-show="invalid" class="error">{{validationMessage}}</div>
@@ -80,7 +83,7 @@
 
         &.with-error {
             & > span {
-                color: red;
+                color: #c0392b;
             }
         }
     }

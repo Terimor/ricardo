@@ -37,6 +37,8 @@
 
             <h3>Article</h3>
 
+            <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid">Please select a product promotion.</span>
+
             <radio-button-group
               v-model="form.deal"
               :list="dealList"
@@ -72,20 +74,22 @@
           <h2>Step 3: Payment Method</h2>
           <h3>Pay Securely With: (No Fees)</h3>
           <radio-button-group
-            class="main__credit-card-switcher"
+            class="main__credit-card-switcher green-button-animated"
             v-model="form.isCreditCard"
             :list="mockData.creditCardRadioList"
           />
           <transition name="el-zoom-in-top">
             <payment-form
               v-if="form.isCreditCard"
+              :stateList="stateList"
               :$v="$v"
               :installments="form.installments"
               :paymentForm="form"
               :countryCode="checkoutData.countryCode"
               :isBrazil="checkoutData.countryCode === 'BR'"
               :countryList="mockData.countryList"
-              @setAddress="setAddress"></payment-form>
+              @setPromotionalModal="setPromotionalModal"
+              @setAddress="setAddress"/>
           </transition>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
@@ -95,6 +99,27 @@
         </div>
       </div>
     </div>
+
+    <el-dialog
+      @click="isOpenPromotionModal = false"
+      class="cvv-popup"
+      title="Please select a product promotion."
+      :lock-scroll="false"
+      :visible.sync="isOpenPromotionModal">
+        <div class="cvv-popup__content">
+          <p class="error-container">
+              Please select a product promotion.
+          </p>
+
+            <button
+                @click="isOpenPromotionModal = false"
+                style="height: 67px; margin: 0"
+                type="button"
+                class="green-button-animated">
+                <span class="purchase-button-text">OK, I understand</span>
+            </button>
+        </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -104,6 +129,7 @@ import printf from 'printf'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
+import { stateList } from '../resourses/state';
 
 const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
 
@@ -178,6 +204,11 @@ export default {
           value: 'pink'
         }
       ],
+      stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
+        value: it,
+        text: it,
+        label: it,
+      })),
       installmentsList: [
         {
           label: 'Pay full amount now',
@@ -217,7 +248,8 @@ export default {
         year: null,
         cvv: null,
         documentNumber: ''
-      }
+      },
+      isOpenPromotionModal: false
     }
   },
   computed: {
@@ -263,6 +295,9 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    setPromotionalModal (val) {
+      this.isOpenPromotionModal = val
+    },
     setAddress (address) {
       this.form = {
         ...this.form,
@@ -347,7 +382,7 @@ export default {
 <style lang="scss">
   $white: #fff;
   $color_flush_mahogany_approx: #c0392b;
-  $red: red;
+  $red: rgba(192, 57, 43, 1);
   $color_niagara_approx: #16a085;
 
   .container {
@@ -541,9 +576,14 @@ export default {
 
     &__credit-card-switcher {
       width: 100%;
+      padding: 0 !important;
+      height: auto !important;
 
-      .label-container-radio {
-        background-color: #0f9b0f;
+
+        .label-container-radio {
+        background-color: transparent !important;
+        background-image: none !important;
+        border: 0 !important;
         color: $white;
         cursor: pointer;
         margin: 0;
@@ -564,7 +604,6 @@ export default {
 
           &:after {
             background-color: $white;
-            width: 13px;
           }
         }
       }

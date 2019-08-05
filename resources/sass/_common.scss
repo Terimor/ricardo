@@ -20,6 +20,15 @@
   }
 }
 
+@keyframes shadow-drop-center-error {
+    0% {
+        box-shadow: 0 0 0 0 transparent
+    }
+    to {
+        box-shadow: 0 0 6px 0 rgba(192, 57, 43, 1)
+    }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -49,7 +58,16 @@ header {
 }
 
 .error {
-    color: red;
+    color: rgba(192, 57, 43, 1);
+}
+
+.error-container {
+    color: #a94442;
+    background-color: #f2dede;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ebccd1;
+    border-radius: 4px;
 }
 
 .emc1-popover-date-variant {
@@ -87,6 +105,18 @@ header {
       border-radius: 0;
     }
   }
+}
+
+.el-dialog__header {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #e5e5e5;
+
+    .el-dialog__title {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 700;
+    }
 }
 
 .recently-notice {
