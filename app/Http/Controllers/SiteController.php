@@ -68,5 +68,19 @@ class SiteController extends Controller
     public function products()
     {
         return view('products');
-    }      
+    }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function test()
+    {        
+        $price = 100.26;
+        
+        $exchangedPrice = CurrencyService::exchangePrice($price, 'JPY');
+        echo $exchangedPrice; exit;
+        return view('index');
+    }    
+    
 }

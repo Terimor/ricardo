@@ -29,6 +29,8 @@ Route::group(['middleware' => ['localization']], function () {
     Route::get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
     
     Route::post('/payment/bluesnap-transaction', 'Payments\BluesnapController@createTransaction')->name('bluesnap-payment');
+    
+    Route::get('/test', 'SiteController@test');
 
 });
 

@@ -12,7 +12,19 @@ class CurrencyService
      * Currency codes round to 95
      * @var type 
      */
-    protected $roundTo95 = ['CHF'];
+    public static $roundTo95 = ['CHF'];
+    
+    /**
+     * Up to next 500
+     * @var type 
+     */
+    public static $upToNext500 = ['KRW'];
+    
+    /**
+     * Up to next 10
+     * @var type 
+     */
+    public static $upToNext10 = ['JPY'];
     
     public function __construct()
     {
@@ -24,7 +36,7 @@ class CurrencyService
      * @param type $toCurrency
      * @return type
      */
-    public function exchangePrice($price, $toCurrency)
+    public static function exchangePrice($price, $toCurrency)
     {
         $toCurrency = strtoupper($toCurrency);        
         $currency = Currency::whereCode($toCurrency)->first();
@@ -33,11 +45,87 @@ class CurrencyService
             return 0;
         }
         
-        $exchangedPrice = ceil($price * $currency->usd_rate);
-        $exchangedPrice -= 0.01;
+        //get digits
+        $localeString = app()->getLocale().'-'.strtoupper(app()->getLocale());
+        $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY); 
         
-        if (in_array($toCurrency, $this->roundTo95)) {
-            $exchangedPrice -= 0.04;
+        $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
+        
+        $exchangedPrice = $price * $currency->usd_rate;
+        
+        if (in_array($toCurrency, static::$upToNext500)) {
+            $exchangedPrice = (int)$exchangedPrice;
+            $exchangedPrice = $exchangedPrice/100;
+            $exchangedPrice = (string) $exchangedPrice;
+            $digits = strlen((int)$exchangedPrice);
+            
+            if ($exchangedPrice[$digits-1] >= 5) {
+                $exchangedPrice[$digits-1] = 9;
+                $exchangedPrice = (int) $exchangedPrice + 1;
+            } else {
+                $exchangedPrice[$digits-1] = 5;
+            }
+            
+            $exchangedPrice = (int)$exchangedPrice;
+            $exchangedPrice = $exchangedPrice*100;
+             
+            return $exchangedPrice;
+        }
+        
+        if (in_array($toCurrency, static::$upToNext10)) {
+            $exchangedPrice = (int)$exchangedPrice;
+            $exchangedPrice = (string) $exchangedPrice;
+            $digits = strlen((int)$exchangedPrice);
+            
+            $exchangedPrice[$digits-1] = 9;
+            $exchangedPrice += 1;
+            $exchangedPrice = (int)$exchangedPrice;
+             
+            return $exchangedPrice;
+        }
+        
+        if ($fractionDigits == 0) {
+            $exchangedPrice = (int) $exchangedPrice;
+        }
+        
+        $digits = strlen((int)$exchangedPrice);
+        $exchangedPrice = (string) $exchangedPrice;
+
+        if ($digits >= 4) {            
+            $roundedPriceString = '';
+            for ($i = 0; $i < $digits; $i++) {
+                //first numeral always the same
+                if ($i == 0) {
+                    $roundedPriceString .= $exchangedPrice[$i];
+                } elseif ($i == 1) {
+                    //second numeral stand 9 if >= 5 else 4
+                    if ($exchangedPrice[$i] >= 5) {
+                        $roundedPriceString .= '9';
+                    } else {
+                        $roundedPriceString .= '4';
+                    }
+                } else {
+                    // next numerals always 9
+                    $roundedPriceString .= '9';
+                }
+            }
+            $exchangedPrice = $roundedPriceString;
+        } else if ($digits == 3){            
+            $exchangedPrice[2] = '9';
+        } else if ($digits == 2){
+            $exchangedPrice[1] = '9';
+        }
+
+        $exchangedPrice = (int) $exchangedPrice;
+
+        if ($fractionDigits > 0) {
+            $exchangedPrice += 1;
+            $exchangedPrice -= 0.01;
+
+            if (in_array($toCurrency, static::$roundTo95)) {
+                $exchangedPrice -= 0.04;
+
+            }
         }
         
         return $exchangedPrice;
