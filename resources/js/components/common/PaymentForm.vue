@@ -3,17 +3,23 @@
         <h2>Step 4: Contact Information</h2>
         <text-field
             :validation="$v.form.fname"
-            validationMessage="Required"
+            validationMessage="Please enter your first name"
             theme="variant-1"
             label="First Name"
             class="first-name"
+            :rest="{
+              autocomplete: 'given-name'
+            }"
             v-model="paymentForm.fname"/>
         <text-field
             :validation="$v.form.lname"
-            validationMessage="Required"
+            validationMessage="Please enter your last name"
             theme="variant-1"
             label="Last Name"
             class="last-name"
+            :rest="{
+              autocomplete: 'family-name'
+            }"
             v-model="paymentForm.lname"/>
         <text-field-with-placeholder
             :validation="$v.form.dateOfBirth"
@@ -29,26 +35,35 @@
         />
         <text-field
             :validation="$v.form.email"
-            validationMessage="Required"
+            validationMessage="Please enter a valid e-mail"
             theme="variant-1"
             label="Your Email Address"
+            :rest="{
+              autocomplete: 'email'
+            }"
             v-model="paymentForm.email"/>
         <phone-field
             :validation="$v.form.phone"
-            validationMessage="Invalid"
+            validationMessage="Please enter a valid phone number"
             :countryCode="countryCode"
             theme="variant-1"
             label="Your Phone Number"
+            :rest="{
+              autocomplete: 'off'
+            }"
             v-model="paymentForm.phone"/>
         <h2>Step 5: Delivery Address</h2>
         <div class="payment-form__delivery-address">
             <text-field
                 :validation="$v.form.street"
-                validationMessage="Required"
+                validationMessage="Please enter your street"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1 street"
                 :label="isBrazil ? 'Street' : 'Street And Number'"
+                :rest="{
+                  autocomplete: 'street-address'
+                }"
                 v-model="paymentForm.street"/>
             <text-field
                 :validation="$v.form.number"
@@ -66,21 +81,25 @@
                 v-model="paymentForm.complemento"/>
             <text-field
                 :validation="$v.form.city"
-                validationMessage="Required"
+                validationMessage="Please enter your city"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
                 label="City"
+                :rest="{
+                    autocomplete: 'shipping locality'
+                }"
                 v-model="paymentForm.city"/>
             <text-field
                 v-loading="isLoading.address"
+                validationMessage="Please enter or select your state"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
                 label="State"
                 v-model="paymentForm.state"/>
             <text-field
                 :validation="$v.form.zipcode"
-                validationMessage="Invalid Zip Code"
+                validationMessage="Please enter your zip code"
                 theme="variant-1"
                 label="Zip Code"
                 id="zip-code-field"
@@ -123,9 +142,10 @@
             :validation="$v.form.cardNumber"
             :rest="{
               pattern: '\\d*',
-              type: 'tel'
+              type: 'tel',
+              autocomplete: 'cc-number'
             }"
-            validationMessage="Invalid card"
+            validationMessage="Please enter a credit card number."
             class="card-number"
             theme="variant-1"
             label="Card Number"
@@ -165,7 +185,8 @@
             :rest="{
               maxlength: 4,
               pattern: '\\d*',
-              type: 'tel'
+              type: 'tel',
+              autocomplete: 'cc-csc'
             }"
             v-model="paymentForm.cvv"
             postfix="<i class='fa fa-question-circle'></i>"
