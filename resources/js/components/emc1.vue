@@ -37,6 +37,8 @@
 
             <h3>Article</h3>
 
+            <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid">Please select a product promotion.</span>
+
             <radio-button-group
               v-model="form.deal"
               :list="dealList"
@@ -72,7 +74,7 @@
           <h2>Step 3: Payment Method</h2>
           <h3>Pay Securely With: (No Fees)</h3>
           <radio-button-group
-            class="main__credit-card-switcher"
+            class="main__credit-card-switcher green-button-animated"
             v-model="form.isCreditCard"
             :list="mockData.creditCardRadioList"
           />
@@ -347,7 +349,7 @@ export default {
 <style lang="scss">
   $white: #fff;
   $color_flush_mahogany_approx: #c0392b;
-  $red: red;
+  $red: rgba(192, 57, 43, 1);
   $color_niagara_approx: #16a085;
 
   .container {
@@ -541,9 +543,14 @@ export default {
 
     &__credit-card-switcher {
       width: 100%;
+      padding: 0 !important;
+      height: auto !important;
 
-      .label-container-radio {
-        background-color: #0f9b0f;
+
+        .label-container-radio {
+        background-color: transparent !important;
+        background-image: none !important;
+        border: 0 !important;
         color: $white;
         cursor: pointer;
         margin: 0;
@@ -564,7 +571,6 @@ export default {
 
           &:after {
             background-color: $white;
-            width: 13px;
           }
         }
       }

@@ -42,8 +42,7 @@ const emc1Validation = {
       required
     },
     number: {
-      required,
-      type: numeric
+      required
     },
     city: {
       required

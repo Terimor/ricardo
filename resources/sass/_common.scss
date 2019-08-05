@@ -20,6 +20,15 @@
   }
 }
 
+@keyframes shadow-drop-center-error {
+    0% {
+        box-shadow: 0 0 0 0 transparent
+    }
+    to {
+        box-shadow: 0 0 6px 0 rgba(192, 57, 43, 1)
+    }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -49,7 +58,7 @@ header {
 }
 
 .error {
-    color: red;
+    color: rgba(192, 57, 43, 1);
 }
 
 .emc1-popover-date-variant {

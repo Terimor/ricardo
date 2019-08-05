@@ -6,7 +6,14 @@
       invalid: invalid
     }">
     <span class="label">{{label}}</span>
-    <input type="tel" @input="input" :value="value" :id="id">
+    <input
+      :style="{
+        ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
+      }"
+      type="tel"
+      @input="input"
+      :value="value"
+      :id="id">
     <span v-show="invalid" class="error">{{validationMessage}}</span>
   </label>
 </template>
@@ -48,7 +55,7 @@ export default {
 
       &.invalid {
         .label, .error {
-          color: red;
+          color: #c0392b;
         }
       }
 
