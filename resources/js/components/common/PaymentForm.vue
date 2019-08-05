@@ -220,7 +220,7 @@
           id="purchase-button"
           type="button"
           class="green-button-animated">
-          <span id="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span><img src="//static.saratrkr.com/images/paypal-button-text.png" id="purchase-button-image" alt='' />
+          <span class="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
         </button>
         <el-dialog
           @click="isOpenCVVModal = false"
@@ -378,6 +378,10 @@
       }, 333),
       submit () {
         this.$v.form.$touch();
+
+        if (this.$v.form.deal.$invalid) {
+          this.$emit('setPromotionalModal', true)
+        }
 
         if (this.$v.form.$pending || this.$v.form.$error) {
           if (this.$v.form.deal.$invalid) {
@@ -616,7 +620,7 @@
             }
         }
 
-        #purchase-button-text {
+        .purchase-button-text {
             box-sizing: border-box;
             color: rgb(255, 255, 255);
             cursor: pointer;
@@ -660,7 +664,7 @@
             }
         }
 
-        #purchase-button-image {
+        .purchase-button-image {
             box-sizing: border-box;
             color: rgb(255, 255, 255);
             cursor: pointer;

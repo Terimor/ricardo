@@ -87,6 +87,7 @@
               :countryCode="checkoutData.countryCode"
               :isBrazil="checkoutData.countryCode === 'BR'"
               :countryList="mockData.countryList"
+              @setPromotionalModal="setPromotionalModal"
               @setAddress="setAddress"></payment-form>
           </transition>
           <div class="main__bottom">
@@ -97,6 +98,26 @@
         </div>
       </div>
     </div>
+
+    <el-dialog
+      @click="isOpenPromotionModal = false"
+      class="cvv-popup"
+      title="Please select a product promotion."
+      :lock-scroll="false"
+      :visible.sync="isOpenPromotionModal">
+        <div class="cvv-popup__content">
+          <p class="error-container">
+              Please select a product promotion.
+          </p>
+
+            <button
+                style="height: 67px; margin: 0"
+                type="button"
+                class="green-button-animated">
+                <span class="purchase-button-text" @click="isOpenPromotionModal = false">OK, I understand</span>
+            </button>
+        </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -219,7 +240,8 @@ export default {
         year: null,
         cvv: null,
         documentNumber: ''
-      }
+      },
+      isOpenPromotionModal: false
     }
   },
   computed: {
@@ -265,6 +287,9 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    setPromotionalModal (val) {
+      this.isOpenPromotionModal = val
+    },
     setAddress (address) {
       this.form = {
         ...this.form,
