@@ -81,6 +81,7 @@
           <transition name="el-zoom-in-top">
             <payment-form
               v-if="form.isCreditCard"
+              :stateList="stateList"
               :$v="$v"
               :installments="form.installments"
               :paymentForm="form"
@@ -88,7 +89,7 @@
               :isBrazil="checkoutData.countryCode === 'BR'"
               :countryList="mockData.countryList"
               @setPromotionalModal="setPromotionalModal"
-              @setAddress="setAddress"></payment-form>
+              @setAddress="setAddress"/>
           </transition>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
@@ -111,10 +112,11 @@
           </p>
 
             <button
+                @click="isOpenPromotionModal = false"
                 style="height: 67px; margin: 0"
                 type="button"
                 class="green-button-animated">
-                <span class="purchase-button-text" @click="isOpenPromotionModal = false">OK, I understand</span>
+                <span class="purchase-button-text">OK, I understand</span>
             </button>
         </div>
     </el-dialog>
@@ -127,6 +129,7 @@ import printf from 'printf'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
+import { stateList } from '../resourses/state';
 
 const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
 
@@ -201,6 +204,11 @@ export default {
           value: 'pink'
         }
       ],
+      stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
+        value: it,
+        text: it,
+        label: it,
+      })),
       installmentsList: [
         {
           label: 'Pay full amount now',

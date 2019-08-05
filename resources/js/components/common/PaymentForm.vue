@@ -90,10 +90,23 @@
                     autocomplete: 'shipping locality'
                 }"
                 v-model="paymentForm.city"/>
-            <text-field
+            <select-field
+                v-if="countryCode === 'BR' || countryCode === 'MX'"
                 v-loading="isLoading.address"
-                validationMessage="Please enter or select your state"
                 element-loading-spinner="el-icon-loading"
+                validationMessage="Please enter or select your state"
+                theme="variant-1"
+                label="State"
+                :rest="{
+                  placeholder: 'State'
+                }"
+                :list="stateList"
+                v-model="paymentForm.state"/>
+            <text-field
+                v-else
+                v-loading="isLoading.address"
+                element-loading-spinner="el-icon-loading"
+                validationMessage="Please enter or select your state"
                 theme="variant-1"
                 label="State"
                 v-model="paymentForm.state"/>
@@ -243,7 +256,7 @@
 
   export default {
     name: 'PaymentForm',
-    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v'],
+    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList'],
     data () {
       return {
         isLoading: {
