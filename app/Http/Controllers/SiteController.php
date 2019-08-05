@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Location;
+use App\Services\CurrencyService;
 
 class SiteController extends Controller
 {
