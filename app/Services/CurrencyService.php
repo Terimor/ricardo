@@ -110,9 +110,9 @@ class CurrencyService
                 }
             }
             $exchangedPrice = $roundedPriceString;
-        } else if ($digits == 3){            
+        } else if ($digits == 3) {            
             $exchangedPrice[2] = '9';
-        } else if ($digits == 2){
+        } else if ($digits == 2) {
             $exchangedPrice[1] = '9';
         }
 
