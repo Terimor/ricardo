@@ -11,7 +11,6 @@
       <div @click="$emit('click-postfix')" v-html="postfix" v-if="postfix" class="postfix"></div>
       <input
         @input="input"
-        type="text"
         v-bind="rest"
         :style="{
           ...prefix && { 'padding-left': '45px' },
