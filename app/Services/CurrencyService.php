@@ -9,10 +9,10 @@ use App\Models\Currency;
 class CurrencyService
 {
     /**
-     * Currency codes round to 95
+     * Currency codes round to 0,95
      * @var type 
      */
-    public static $roundTo95 = ['CHF'];
+    public static $roundTo0_95 = ['CHF'];
     
     /**
      * Up to next 500
@@ -36,7 +36,7 @@ class CurrencyService
      * @param type $toCurrency
      * @return type
      */
-    public static function exchangePrice($price, $toCurrency)
+    public static function getLocalPriceFromUsd($price, $toCurrency, $locale)
     {
         $toCurrency = strtoupper($toCurrency);        
         $currency = Currency::whereCode($toCurrency)->first();
@@ -46,7 +46,7 @@ class CurrencyService
         }
         
         //get digits
-        $localeString = app()->getLocale().'-'.strtoupper(app()->getLocale());
+        $localeString = strtolower($locale).'-'.strtoupper($locale);
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY); 
         
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
@@ -54,14 +54,14 @@ class CurrencyService
         $exchangedPrice = $price * $currency->usd_rate;
         
         if (in_array($toCurrency, static::$upToNext500)) {
-            $exchangedPrice = (int)$exchangedPrice;
+            $exchangedPrice = ceil($exchangedPrice);            
             $exchangedPrice = $exchangedPrice/100;
             $exchangedPrice = (string) $exchangedPrice;
             $digits = strlen((int)$exchangedPrice);
             
             if ($exchangedPrice[$digits-1] >= 5) {
                 $exchangedPrice[$digits-1] = 9;
-                $exchangedPrice = (int) $exchangedPrice + 1;
+                $exchangedPrice = (int) $exchangedPrice + 1 + 5;
             } else {
                 $exchangedPrice[$digits-1] = 5;
             }
@@ -75,10 +75,13 @@ class CurrencyService
         if (in_array($toCurrency, static::$upToNext10)) {
             $exchangedPrice = (int)$exchangedPrice;
             $exchangedPrice = (string) $exchangedPrice;
-            $digits = strlen((int)$exchangedPrice);
-            
-            $exchangedPrice[$digits-1] = 9;
-            $exchangedPrice += 1;
+            $digits = strlen((int)$exchangedPrice);            
+            if ($exchangedPrice[$digits-1] != 0 && $exchangedPrice[$digits-2] != 1) {
+                $exchangedPrice[$digits-1] = 9;
+                $exchangedPrice[$digits-2] = 9;
+
+                $exchangedPrice = $exchangedPrice + 1 + 10;
+            }
             $exchangedPrice = (int)$exchangedPrice;
              
             return $exchangedPrice;
@@ -113,7 +116,11 @@ class CurrencyService
         } else if ($digits == 3) {            
             $exchangedPrice[2] = '9';
         } else if ($digits == 2) {
-            $exchangedPrice[1] = '9';
+            if ($exchangedPrice[1] >= 5) {
+                $exchangedPrice[1] = '9';
+            } else {
+                $exchangedPrice[1] = '4';
+            }
         }
 
         $exchangedPrice = (int) $exchangedPrice;
@@ -122,7 +129,7 @@ class CurrencyService
             $exchangedPrice += 1;
             $exchangedPrice -= 0.01;
 
-            if (in_array($toCurrency, static::$roundTo95)) {
+            if (in_array($toCurrency, static::$roundTo0_95)) {
                 $exchangedPrice -= 0.04;
 
             }

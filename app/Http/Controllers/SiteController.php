@@ -76,9 +76,9 @@ class SiteController extends Controller
      */
     public function test()
     {        
-        $price = 100.26;
+        $price = 99.81;
         
-        $exchangedPrice = CurrencyService::exchangePrice($price, 'JPY');
+        $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price, 'KRW', app()->getLocale());
         echo $exchangedPrice; exit;
         return view('index');
     }    
