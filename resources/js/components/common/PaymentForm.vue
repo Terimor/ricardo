@@ -139,26 +139,26 @@
                 v-model="paymentForm.cardType"
                 label="Please select your card type"
                 :rest="{
-              placeholder: 'Card type'
-            }"
+                  placeholder: 'Card type'
+                }"
                 :list="[
-                {
-                    value: 'debit',
-                    label: 'Debit card',
-                    text: 'Debit card',
-                }, {
-                    value: 'credit',
-                    label: 'Credit card',
-                    text: 'Credit card',
-                }
-            ]"/>
+                    {
+                        value: 'debit',
+                        label: 'Debit card',
+                        text: 'Debit card',
+                    }, {
+                        value: 'credit',
+                        label: 'Credit card',
+                        text: 'Credit card',
+                    }
+                ]"/>
             <text-field
                 :validation="$v.form.cardNumber"
                 :rest="{
-              pattern: '\\d*',
-              type: 'tel',
-              autocomplete: 'cc-number'
-            }"
+                  pattern: '\\d*',
+                  type: 'tel',
+                  autocomplete: 'cc-number'
+                }"
                 validationMessage="Please enter a credit card number."
                 class="card-number"
                 theme="variant-1"
@@ -182,8 +182,8 @@
                     :validation="$v.form.year"
                     validationMessage="Required"
                     :rest="{
-                    placeholder: 'Year'
-                  }"
+                      placeholder: 'Year'
+                    }"
                     theme="variant-1"
                     :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                     v-model="paymentForm.year"/>

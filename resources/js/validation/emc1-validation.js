@@ -136,8 +136,6 @@ const emc1Validation = function () {
       }, {})
   }
 
-  console.log(res)
-
   return res
 }
 export default emc1Validation

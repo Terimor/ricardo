@@ -129,10 +129,10 @@
       :visible.sync="isOpenSpecialOfferModal">
         <div class="common-popup__content accessories-modal">
           <p>WAIT! 70% Of Users who bought the same product as you, also bought...</p>
-            <Cart
-              @setCart="setCart"
-              :productList="mockData.productList"
-              :cart="cart"/>
+          <Cart
+            @setCart="setCart"
+            :productList="mockData.productList"
+            :cart="cart"/>
           <div class="accessories-modal__list">
             <ProductItem
               v-for="item in mockData.productList"
@@ -147,6 +147,18 @@
               :newPrice="item.newPrice"
               :maxQuantity="3"
             />
+          </div>
+          <div class="accessories-modal__bottom">
+              <button
+                  style="height: auto;"
+                  type="button"
+                  class="green-button-animated">
+                  <span class="purchase-button-text">YES, SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span>
+              </button>
+              <button
+                  v-if="isEmptyCart"
+                  @click="isOpenSpecialOfferModal = false"
+                  class="thanks">No, thanks...</button>
           </div>
         </div>
       </el-dialog>
@@ -335,14 +347,12 @@ export default {
         documentNumber: ''
       },
       isOpenPromotionModal: false,
-      isOpenSpecialOfferModal: false,
+      isOpenSpecialOfferModal: true,
     }
   },
   computed: {
-    configForShowingFields () {
-      return {
-        ...fieldsByCountry(checkoutData.countryCode)
-      }
+    isEmptyCart () {
+      return Object.values(this.cart).every(it => it === 0)
     },
     withInstallments () {
       return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
@@ -494,6 +504,25 @@ export default {
     & > p {
       text-align: center;
     }
+
+      &__bottom {
+          display: flex;
+          flex-direction: column;
+
+          button {
+              margin: 10px auto;
+              width: 70%;
+              padding: 5px;
+          }
+
+          .thanks {
+              margin: 0 auto;
+              border: 0;
+              background-color: transparent;
+              cursor: pointer;
+              text-decoration: underline;
+          }
+      }
   }
 
   .container {
@@ -851,17 +880,25 @@ export default {
               width: 100%;
               margin-top: 0 !important;
 
-              .accessories-modal__list {
-                .product-item {
-                  &__image {
-                      padding: 0;
-                  }
+              .accessories-modal {
+                  &__list {
+                      .product-item {
+                          &__image {
+                              padding: 0;
+                          }
 
-                  &__main {
-                      padding-left: 20px;
+                          &__main {
+                              padding-left: 20px;
+                          }
+                      }
                   }
-                }
               }
+          }
+      }
+
+      .accessories-modal__bottom {
+          button {
+              width: 100%;
           }
       }
   }
