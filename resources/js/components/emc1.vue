@@ -120,6 +120,35 @@
             </button>
         </div>
     </el-dialog>
+
+    <el-dialog
+      @click="isOpenSpecialOfferModal = false"
+      class="common-popup special-offer-popup"
+      title="SPECIAL OFFER!"
+      :visible.sync="isOpenSpecialOfferModal">
+        <div class="common-popup__content accessories-modal">
+          <p>WAIT! 70% Of Users who bought the same product as you, also bought...</p>
+            <Cart
+              @setCart="setCart"
+              :productList="mockData.productList"
+              :cart="cart"/>
+          <div class="accessories-modal__list">
+            <ProductItem
+              v-for="item in mockData.productList"
+              @setCart="setCart"
+              :key="item.key"
+              :keyProp="item.key"
+              :value="cart[item.key]"
+              :imageUrl="item.imageUrl"
+              :title="item.title"
+              :advantageList="item.advantageList"
+              :regularPrice="item.regularPrice"
+              :newPrice="item.newPrice"
+              :maxQuantity="3"
+            />
+          </div>
+        </div>
+      </el-dialog>
   </div>
 </template>
 
@@ -130,16 +159,64 @@ import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
 import { stateList } from '../resourses/state';
+import ProductItem from './common/ProductItem';
+import Cart from './common/Cart';
 
 const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
 
 export default {
   name: 'emc1',
   mixins: [notification, queryToComponent],
+  components: {
+    ProductItem,
+    Cart,
+  },
   props: ['showPreloader'],
   data () {
     return {
       mockData: {
+        productList: [
+          {
+            key: 0,
+            name: 'Echo Beat - Wireless 3D Sound white',
+            title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
+            imageUrl: '/images/headphones-white.png',
+            advantageList: [
+              'High Sound',
+              'Portable Charging',
+              'Ergonomic Design',
+              'iOs & Android',
+            ],
+            regularPrice: 69.98,
+            newPrice: 34.99,
+          }, {
+            key: 1,
+            name: 'Echo Beat - Wireless 3D Sound gold',
+            title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
+            imageUrl: '/images/headphones-gold.png',
+            advantageList: [
+              'High Sound',
+              'Portable Charging',
+              'Ergonomic Design',
+              'iOs & Android',
+            ],
+            regularPrice: 69.98,
+            newPrice: 34.99,
+          }, {
+            key: 2,
+            name: 'Echo Beat - Wireless 3D Sound red',
+            title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
+            imageUrl: '/images/headphones-red.png',
+            advantageList: [
+              'High Sound',
+              'Portable Charging',
+              'Ergonomic Design',
+              'iOs & Android',
+            ],
+            regularPrice: 69.98,
+            newPrice: 34.99,
+          }
+        ],
         countryList: [
           {
             value: 'US',
@@ -170,6 +247,7 @@ export default {
           }
         ],
       },
+      cart: {},
       purchase: [],
       variantList: [
         {
@@ -249,7 +327,8 @@ export default {
         cvv: null,
         documentNumber: ''
       },
-      isOpenPromotionModal: false
+      isOpenPromotionModal: false,
+      isOpenSpecialOfferModal: true,
     }
   },
   computed: {
@@ -295,6 +374,12 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    setCart (cart) {
+      this.cart = {
+        ...this.cart,
+        ...cart,
+      }
+    },
     setPromotionalModal (val) {
       this.isOpenPromotionModal = val
     },
@@ -351,6 +436,13 @@ export default {
     }
   },
   mounted () {
+    this.setCart(this.mockData.productList.reduce((acc, { key }) => {
+      acc[key] = 0
+
+      return acc
+    }, {}))
+
+
     this.setPurchase({
       variant: this.form.variant,
       installments: this.form.installments,
@@ -380,10 +472,17 @@ export default {
 </script>
 
 <style lang="scss">
+  @import "../../sass/variables";
   $white: #fff;
   $color_flush_mahogany_approx: #c0392b;
   $red: rgba(192, 57, 43, 1);
   $color_niagara_approx: #16a085;
+
+  .accessories-modal {
+    & > p {
+      text-align: center;
+    }
+  }
 
   .container {
     max-width: 970px;
@@ -705,5 +804,26 @@ export default {
     .iti__flag-container {
       left: auto;
     }
+  }
+
+  @media screen and ($s-down) {
+      .special-offer-popup {
+          .el-dialog {
+              width: 100%;
+              margin-top: 0 !important;
+
+              .accessories-modal__list {
+                .product-item {
+                  &__image {
+                      padding: 0;
+                  }
+
+                  &__main {
+                      padding-left: 20px;
+                  }
+                }
+              }
+          }
+      }
   }
 </style>
