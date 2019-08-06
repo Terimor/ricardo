@@ -27,7 +27,7 @@ class OdinOrder extends Model
     const STATUS_DELIVERED  = 'delivered';
     const STATUS_CANCELLED  = 'cancelled';
 
-    public $categories = [
+    public static $statuses = [
       self::STATUS_NEW => 'New',
       self::STATUS_PAID => 'Paid',
       self::STATUS_EXPORTED => 'Exported',
@@ -94,4 +94,16 @@ class OdinOrder extends Model
             'customer_phone'     => 'required',
         ]);
     }
+    
+    /**
+    * Returns type as a text
+    * @return string
+    */
+    public function getStatusText() {        
+        if (!empty(static::$statuses[$this->status])) {
+          return static::$statuses[$this->status];
+        } else {
+          return 'Unknown';
+        }
+    }    
 }
