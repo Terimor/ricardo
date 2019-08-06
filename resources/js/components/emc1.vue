@@ -348,7 +348,7 @@ export default {
         documentNumber: ''
       },
       isOpenPromotionModal: false,
-      isOpenSpecialOfferModal: true,
+      isOpenSpecialOfferModal: false,
     }
   },
   computed: {
@@ -504,6 +504,7 @@ export default {
   .accessories-modal {
     & > p {
       text-align: center;
+        font-size: 17px;
     }
 
       &__bottom {
@@ -513,10 +514,12 @@ export default {
           button {
               margin: 10px auto;
               width: 70%;
+              max-width: 395px;
               padding: 5px;
           }
 
           .thanks {
+              font-size: 17px;
               margin: 0 auto;
               border: 0;
               background-color: transparent;
