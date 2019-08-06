@@ -10,6 +10,8 @@ class GoogleTag extends Model
     
     protected $dates = ['created_at', 'updated_at'];
     
+    public $timestamps = true;
+    
     /**
      * The attributes that are mass assignable.
      *

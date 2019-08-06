@@ -10,6 +10,8 @@ class AwsImage extends Model
     
     protected $dates = ['created_at', 'updated_at'];
     
+    public $timestamps = true;
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -25,7 +27,7 @@ class AwsImage extends Model
     const CATEGORY_GLOBAL  = 'global';
     const CATEGORY_PROMO_PAGE  = 'promo_page';
 
-    public $categories = [
+    public static $categories = [
       self::CATEGORY_LOGO => 'Logo',
       self::CATEGORY_PRODUCT => 'Product',
       self::CATEGORY_PAYMENT_METHOD => 'Payment method',
@@ -38,8 +40,8 @@ class AwsImage extends Model
     * @return string
     */
     public function getCategoryText() {        
-        if (!empty($this->categories[$this->category])) {
-          return $this->categories[$this->category];
+        if (!empty(static::$categories[$this->category])) {
+          return static::$categories[$this->category];
         } else {
           return 'Unknown';
         }

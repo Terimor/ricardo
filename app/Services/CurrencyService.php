@@ -128,7 +128,7 @@ class CurrencyService
         }
 
         $exchangedPrice = (int) $exchangedPrice;
-
+        
         if ($fractionDigits > 0) {
             $exchangedPrice += 1;
             $exchangedPrice -= 0.01;

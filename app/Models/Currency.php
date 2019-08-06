@@ -12,6 +12,8 @@ class Currency extends Model
     
     protected $hidden = ['auto_update', 'history'];
     
+    public $timestamps = true;
+    
     /**
      * The attributes that are mass assignable.
      *
