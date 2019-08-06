@@ -450,10 +450,12 @@ export default {
 
       setTimeout(() => {
         setInterval(() => {
-          this.showNotification({
-            content: getNoticeHtml(),
-            position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
-          })
+          if (!this.isOpenSpecialOfferModal) {
+            this.showNotification({
+              content: getNoticeHtml(),
+              position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
+            })
+          }
         }, 6000)
       }, 9000)
     }
@@ -512,7 +514,7 @@ export default {
           flex-direction: column;
 
           button {
-              margin: 10px auto;
+              margin: 50px auto 10px;
               width: 70%;
               max-width: 395px;
               padding: 5px;

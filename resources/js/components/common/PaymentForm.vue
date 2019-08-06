@@ -412,12 +412,7 @@
           return;
         }
 
-        const fieldList = []
-
-        console.log('submitted')
-
         if (this.paymentForm.paymentType === 'bank-payment') {
-          console.log('showed')
           this.$emit('showCart')
         }
       }
