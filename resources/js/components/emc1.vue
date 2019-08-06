@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="$v">
     <div class="container offer">
       <p><span class="bold">Special Offer:</span> EchoBeat - Wireless 3D Sound</p>
       <p>Price:&nbsp;<span id="old-price" class="price-object productprice-old-object strike">₴3,598</span>
@@ -74,14 +74,15 @@
           <h2>Step 3: Payment Method</h2>
           <h3>Pay Securely With: (No Fees)</h3>
           <radio-button-group
-            class="main__credit-card-switcher green-button-animated"
-            v-model="form.isCreditCard"
+            class="main__credit-card-switcher"
+            v-model="form.paymentType"
             :list="mockData.creditCardRadioList"
           />
           <transition name="el-zoom-in-top">
             <payment-form
-              v-if="form.isCreditCard"
+              v-if="form.paymentType"
               :stateList="stateList"
+              @showCart="isOpenSpecialOfferModal = true"
               :$v="$v"
               :installments="form.installments"
               :paymentForm="form"
@@ -161,6 +162,7 @@ import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
 import { stateList } from '../resourses/state';
 import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
+import fieldsByCountry from '../resourses/fieldsByCountry';
 
 const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
 
@@ -243,7 +245,12 @@ export default {
         creditCardRadioList: [
           {
             label: 'Credit cards',
-            value: true
+            value: 'credit-card',
+            class: 'green-button-animated'
+          }, {
+            label: 'Bank payments',
+            value: 'bank-payment',
+            class: 'bank-payment'
           }
         ],
       },
@@ -306,7 +313,7 @@ export default {
         deal: null,
         variant: 'white',
         installments: 1,
-        isCreditCard: false,
+        paymentType: null,
 
         fname: null,
         lname: null,
@@ -328,10 +335,15 @@ export default {
         documentNumber: ''
       },
       isOpenPromotionModal: false,
-      isOpenSpecialOfferModal: true,
+      isOpenSpecialOfferModal: false,
     }
   },
   computed: {
+    configForShowingFields () {
+      return {
+        ...fieldsByCountry(checkoutData.countryCode)
+      }
+    },
     withInstallments () {
       return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
     },
@@ -679,18 +691,45 @@ export default {
       height: auto !important;
 
 
-        .label-container-radio {
+      .label-container-radio {
         background-color: transparent !important;
-        background-image: none !important;
         border: 0 !important;
         color: $white;
         cursor: pointer;
-        margin: 0;
+        margin: 0 0 10px;
+
+        &.bank-payment {
+            border-radius: 3px;
+            background-image: linear-gradient(to bottom,#fff 0,#f6f6f6 53%,#ececec 100%);
+            border: 1px solid #efefef;
+            color: #333;
+
+            &:hover {
+                background-color: #e6e6e6;
+                background-image: linear-gradient(to bottom,#e6e6e6 0,#ddd 53%,#d3d3d3 100%);
+            }
+
+            .checkmark {
+                border-color: #333;
+
+                &:after {
+                    background-color: #333;
+                }
+            }
+        }
+
+        &:first-child {
+            height: auto;
+            border: 1px solid #0f9b0f;
+            background: #ff2f21 linear-gradient(#0f9b0f, #0d840d) repeat scroll 0% 0%/auto padding-box border-box;
+
+            &:hover {
+                background-image: linear-gradient(to bottom, #6d4 0, #3d6c04 100%);
+            }
+        }
 
         &:hover {
-          border: 1px solid #74bf36;
-          background-color: #11b211;
-          background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
+            background-color: #e6e6e6;
         }
 
         &__label {
