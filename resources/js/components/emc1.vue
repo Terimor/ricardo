@@ -322,6 +322,7 @@ export default {
         }
       ],
       form: {
+        countryCodePhoneField: checkoutData.countryCode,
         deal: null,
         variant: 'white',
         installments: 1,
@@ -347,7 +348,7 @@ export default {
         documentNumber: ''
       },
       isOpenPromotionModal: false,
-      isOpenSpecialOfferModal: true,
+      isOpenSpecialOfferModal: false,
     }
   },
   computed: {

@@ -43,6 +43,7 @@
             }"
             v-model="paymentForm.email"/>
         <phone-field
+            @onCountryChange="setCountryCodeByPhoneField"
             :validation="$v.form.phone"
             validationMessage="Please enter a valid phone number"
             :countryCode="countryCode"
@@ -353,6 +354,9 @@
       }
     },
     methods: {
+      setCountryCodeByPhoneField (val) {
+        this.paymentForm.countryCodePhoneField = val.iso2.toUpperCase()
+      },
       openCVVModal () {
         const node = document.querySelector('.cvv-popup .el-dialog')
         const listener = () => {
