@@ -348,7 +348,7 @@ export default {
         documentNumber: ''
       },
       isOpenPromotionModal: false,
-      isOpenSpecialOfferModal: false,
+      isOpenSpecialOfferModal: true,
     }
   },
   computed: {
@@ -873,6 +873,12 @@ export default {
     .iti__flag-container {
       left: auto;
     }
+  }
+
+  .special-offer-popup {
+      .el-dialog {
+          margin-top: 10vh !important;
+      }
   }
 
   @media screen and ($s-down) {
