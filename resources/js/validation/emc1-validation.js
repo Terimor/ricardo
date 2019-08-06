@@ -117,6 +117,7 @@ const emc1Validation = function () {
 
   const dynamicConfig = {
       ...fieldsByCountry(checkoutData.countryCode),
+      documentNumber: this.form.paymentType === 'credit-card',
       cardNumber: this.form.paymentType === 'credit-card',
       month: this.form.paymentType === 'credit-card',
       year: this.form.paymentType === 'credit-card',
