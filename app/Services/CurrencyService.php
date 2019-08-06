@@ -45,7 +45,7 @@ class CurrencyService
             return 0;
         }
         
-        //get digits
+        //get fraction digits and locale
         $localeString = strtolower($locale).'-'.strtoupper($locale);
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY); 
         
@@ -59,6 +59,7 @@ class CurrencyService
             $exchangedPrice = (string) $exchangedPrice;
             $digits = strlen((int)$exchangedPrice);
             
+            // if digits[-1] >= 5 than we need to add 1 to 1000 and add next 500
             if ($exchangedPrice[$digits-1] >= 5) {
                 $exchangedPrice[$digits-1] = 9;
                 $exchangedPrice = (int) $exchangedPrice + 1 + 5;
@@ -67,7 +68,7 @@ class CurrencyService
             }
             
             $exchangedPrice = (int)$exchangedPrice;
-            $exchangedPrice = $exchangedPrice*100;
+            $exchangedPrice = $exchangedPrice * 100;
              
             return $exchangedPrice;
         }
@@ -75,7 +76,8 @@ class CurrencyService
         if (in_array($toCurrency, static::$upToNext10)) {
             $exchangedPrice = (int)$exchangedPrice;
             $exchangedPrice = (string) $exchangedPrice;
-            $digits = strlen((int)$exchangedPrice);            
+            $digits = strlen((int)$exchangedPrice);
+            // if digits[-1 and -2] != 10 than we set 99 + 1 and add next +10
             if ($exchangedPrice[$digits-1] != 0 && $exchangedPrice[$digits-2] != 1) {
                 $exchangedPrice[$digits-1] = 9;
                 $exchangedPrice[$digits-2] = 9;
@@ -113,9 +115,11 @@ class CurrencyService
                 }
             }
             $exchangedPrice = $roundedPriceString;
-        } else if ($digits == 3) {            
+        } else if ($digits == 3) {
+            //if 3 digits always set 9 to the last numeral
             $exchangedPrice[2] = '9';
         } else if ($digits == 2) {
+            //if 2 digits and last numeral >= 5 always set 9 than 4
             if ($exchangedPrice[1] >= 5) {
                 $exchangedPrice[1] = '9';
             } else {
