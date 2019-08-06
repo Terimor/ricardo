@@ -68,5 +68,19 @@ class SiteController extends Controller
     public function products()
     {
         return view('products');
-    }      
+    }
+    
+    /**
+     * 
+     * @return type
+     */
+    public function test()
+    {        
+        $price = 99.81;
+        
+        $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price, 'KRW', app()->getLocale());
+        echo $exchangedPrice; exit;
+        return view('index');
+    }    
+    
 }
