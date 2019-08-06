@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class AwsImage extends Model
 {
-    protected $collection = 'db2saga_aws_image';
+    protected $collection = 'aws_image';
     
     protected $dates = ['created_at', 'updated_at'];
     
