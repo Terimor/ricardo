@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="$v">
     <div class="container offer">
       <p><span class="bold">Special Offer:</span> EchoBeat - Wireless 3D Sound</p>
       <p>Price:&nbsp;<span id="old-price" class="price-object productprice-old-object strike">₴3,598</span>
@@ -74,14 +74,15 @@
           <h2>Step 3: Payment Method</h2>
           <h3>Pay Securely With: (No Fees)</h3>
           <radio-button-group
-            class="main__credit-card-switcher green-button-animated"
-            v-model="form.isCreditCard"
+            class="main__credit-card-switcher"
+            v-model="form.paymentType"
             :list="mockData.creditCardRadioList"
           />
           <transition name="el-zoom-in-top">
             <payment-form
-              v-if="form.isCreditCard"
+              v-if="form.paymentType"
               :stateList="stateList"
+              @showCart="isOpenSpecialOfferModal = true"
               :$v="$v"
               :installments="form.installments"
               :paymentForm="form"
@@ -120,6 +121,35 @@
             </button>
         </div>
     </el-dialog>
+
+    <el-dialog
+      @click="isOpenSpecialOfferModal = false"
+      class="common-popup special-offer-popup"
+      title="SPECIAL OFFER!"
+      :visible.sync="isOpenSpecialOfferModal">
+        <div class="common-popup__content accessories-modal">
+          <p>WAIT! 70% Of Users who bought the same product as you, also bought...</p>
+            <Cart
+              @setCart="setCart"
+              :productList="mockData.productList"
+              :cart="cart"/>
+          <div class="accessories-modal__list">
+            <ProductItem
+              v-for="item in mockData.productList"
+              @setCart="setCart"
+              :key="item.key"
+              :keyProp="item.key"
+              :value="cart[item.key]"
+              :imageUrl="item.imageUrl"
+              :title="item.title"
+              :advantageList="item.advantageList"
+              :regularPrice="item.regularPrice"
+              :newPrice="item.newPrice"
+              :maxQuantity="3"
+            />
+          </div>
+        </div>
+      </el-dialog>
   </div>
 </template>
 
@@ -130,16 +160,65 @@ import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
 import { stateList } from '../resourses/state';
+import ProductItem from './common/ProductItem';
+import Cart from './common/Cart';
+import fieldsByCountry from '../resourses/fieldsByCountry';
 
 const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
 
 export default {
   name: 'emc1',
   mixins: [notification, queryToComponent],
+  components: {
+    ProductItem,
+    Cart,
+  },
   props: ['showPreloader'],
   data () {
     return {
       mockData: {
+        productList: [
+          {
+            key: 0,
+            name: 'Echo Beat - Wireless 3D Sound white',
+            title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
+            imageUrl: '/images/headphones-white.png',
+            advantageList: [
+              'High Sound',
+              'Portable Charging',
+              'Ergonomic Design',
+              'iOs & Android',
+            ],
+            regularPrice: 69.98,
+            newPrice: 34.99,
+          }, {
+            key: 1,
+            name: 'Echo Beat - Wireless 3D Sound gold',
+            title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
+            imageUrl: '/images/headphones-gold.png',
+            advantageList: [
+              'High Sound',
+              'Portable Charging',
+              'Ergonomic Design',
+              'iOs & Android',
+            ],
+            regularPrice: 69.98,
+            newPrice: 34.99,
+          }, {
+            key: 2,
+            name: 'Echo Beat - Wireless 3D Sound red',
+            title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
+            imageUrl: '/images/headphones-red.png',
+            advantageList: [
+              'High Sound',
+              'Portable Charging',
+              'Ergonomic Design',
+              'iOs & Android',
+            ],
+            regularPrice: 69.98,
+            newPrice: 34.99,
+          }
+        ],
         countryList: [
           {
             value: 'US',
@@ -166,10 +245,16 @@ export default {
         creditCardRadioList: [
           {
             label: 'Credit cards',
-            value: true
+            value: 'credit-card',
+            class: 'green-button-animated'
+          }, {
+            label: 'Bank payments',
+            value: 'bank-payment',
+            class: 'bank-payment'
           }
         ],
       },
+      cart: {},
       purchase: [],
       variantList: [
         {
@@ -228,7 +313,7 @@ export default {
         deal: null,
         variant: 'white',
         installments: 1,
-        isCreditCard: false,
+        paymentType: null,
 
         fname: null,
         lname: null,
@@ -249,10 +334,16 @@ export default {
         cvv: null,
         documentNumber: ''
       },
-      isOpenPromotionModal: false
+      isOpenPromotionModal: false,
+      isOpenSpecialOfferModal: false,
     }
   },
   computed: {
+    configForShowingFields () {
+      return {
+        ...fieldsByCountry(checkoutData.countryCode)
+      }
+    },
     withInstallments () {
       return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
     },
@@ -295,6 +386,12 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    setCart (cart) {
+      this.cart = {
+        ...this.cart,
+        ...cart,
+      }
+    },
     setPromotionalModal (val) {
       this.isOpenPromotionModal = val
     },
@@ -351,6 +448,13 @@ export default {
     }
   },
   mounted () {
+    this.setCart(this.mockData.productList.reduce((acc, { key }) => {
+      acc[key] = 0
+
+      return acc
+    }, {}))
+
+
     this.setPurchase({
       variant: this.form.variant,
       installments: this.form.installments,
@@ -380,10 +484,17 @@ export default {
 </script>
 
 <style lang="scss">
+  @import "../../sass/variables";
   $white: #fff;
   $color_flush_mahogany_approx: #c0392b;
   $red: rgba(192, 57, 43, 1);
   $color_niagara_approx: #16a085;
+
+  .accessories-modal {
+    & > p {
+      text-align: center;
+    }
+  }
 
   .container {
     max-width: 970px;
@@ -580,18 +691,45 @@ export default {
       height: auto !important;
 
 
-        .label-container-radio {
+      .label-container-radio {
         background-color: transparent !important;
-        background-image: none !important;
         border: 0 !important;
         color: $white;
         cursor: pointer;
-        margin: 0;
+        margin: 0 0 10px;
+
+        &.bank-payment {
+            border-radius: 3px;
+            background-image: linear-gradient(to bottom,#fff 0,#f6f6f6 53%,#ececec 100%);
+            border: 1px solid #efefef;
+            color: #333;
+
+            &:hover {
+                background-color: #e6e6e6;
+                background-image: linear-gradient(to bottom,#e6e6e6 0,#ddd 53%,#d3d3d3 100%);
+            }
+
+            .checkmark {
+                border-color: #333;
+
+                &:after {
+                    background-color: #333;
+                }
+            }
+        }
+
+        &:first-child {
+            height: auto;
+            border: 1px solid #0f9b0f;
+            background: #ff2f21 linear-gradient(#0f9b0f, #0d840d) repeat scroll 0% 0%/auto padding-box border-box;
+
+            &:hover {
+                background-image: linear-gradient(to bottom, #6d4 0, #3d6c04 100%);
+            }
+        }
 
         &:hover {
-          border: 1px solid #74bf36;
-          background-color: #11b211;
-          background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
+            background-color: #e6e6e6;
         }
 
         &__label {
@@ -705,5 +843,26 @@ export default {
     .iti__flag-container {
       left: auto;
     }
+  }
+
+  @media screen and ($s-down) {
+      .special-offer-popup {
+          .el-dialog {
+              width: 100%;
+              margin-top: 0 !important;
+
+              .accessories-modal__list {
+                .product-item {
+                  &__image {
+                      padding: 0;
+                  }
+
+                  &__main {
+                      padding-left: 20px;
+                  }
+                }
+              }
+          }
+      }
   }
 </style>

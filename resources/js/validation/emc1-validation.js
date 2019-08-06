@@ -2,16 +2,14 @@ import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import postcode from 'postcode-validator'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import creditCardType from 'credit-card-type'
+import fieldsByCountry from '../resourses/fieldsByCountry';
 
-const emc1Validation = {
-  form: {
+const emc1Validation = function () {
+  const allRules = {
     deal: {
       required
     },
     variant: {
-      required
-    },
-    isCreditCard: {
       required
     },
     fname: {
@@ -101,20 +99,45 @@ const emc1Validation = {
         )
 
         return dateFns.isValid(date) &&
-          val.length === 10 &&
-          diff >= 18 &&
-          diff < 100 &&
-          day < 32 &&
-          month < 13
+                  val.length === 10 &&
+                  diff >= 18 &&
+                  diff < 100 &&
+                  day < 32 &&
+                  month < 13
       }
     },
     documentNumber: {
       isValidNumber (val) {
         return checkoutData.countryCode === 'CO' ? val.length === 10 :
           checkoutData.countryCode === 'BR' ? val.length === 14 :
-          true
+            true
       }
     }
   }
+
+  const dynamicConfig = {
+      ...fieldsByCountry(checkoutData.countryCode),
+      documentNumber: this.form.paymentType === 'credit-card',
+      cardNumber: this.form.paymentType === 'credit-card',
+      month: this.form.paymentType === 'credit-card',
+      year: this.form.paymentType === 'credit-card',
+      cvv: this.form.paymentType === 'credit-card',
+  }
+
+  const res = {
+    form: Object.entries(allRules)
+      .reduce((acc, [key, value]) => {
+          console.log()
+        if (dynamicConfig[key] || dynamicConfig[key] == null) {
+          acc[key] = value
+        }
+
+        return acc
+      }, {})
+  }
+
+  console.log(res)
+
+  return res
 }
 export default emc1Validation

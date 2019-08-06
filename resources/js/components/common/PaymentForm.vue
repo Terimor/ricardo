@@ -128,19 +128,20 @@
                 :list="countryList"
                 v-model="paymentForm.country"/>
         </div>
-        <h2>Step 6: Payment Details</h2>
-        <select-field
-            v-if="countryCode === 'MX'"
-            :validation="$v.form.cardType"
-            validationMessage="Invalid Card Type"
-            :disabled="+installments !== 1"
-            theme="variant-1"
-            v-model="paymentForm.cardType"
-            label="Please select your card type"
-            :rest="{
+        <template v-if="paymentForm.paymentType !== 'bank-payment'">
+            <h2>Step 6: Payment Details</h2>
+            <select-field
+                v-if="countryCode === 'MX'"
+                :validation="$v.form.cardType"
+                validationMessage="Invalid Card Type"
+                :disabled="+installments !== 1"
+                theme="variant-1"
+                v-model="paymentForm.cardType"
+                label="Please select your card type"
+                :rest="{
               placeholder: 'Card type'
             }"
-            :list="[
+                :list="[
                 {
                     value: 'debit',
                     label: 'Debit card',
@@ -151,89 +152,90 @@
                     text: 'Credit card',
                 }
             ]"/>
-        <text-field
-            :validation="$v.form.cardNumber"
-            :rest="{
+            <text-field
+                :validation="$v.form.cardNumber"
+                :rest="{
               pattern: '\\d*',
               type: 'tel',
               autocomplete: 'cc-number'
             }"
-            validationMessage="Please enter a credit card number."
-            class="card-number"
-            theme="variant-1"
-            label="Card Number"
-            v-model="paymentForm.cardNumber"
-            :prefix="`<img src='${cardUrl}' />`"
-            :postfix="`<i class='fa fa-lock'></i>`"
-        />
-        <div class="card-date" :class="{ 'with-error': !$v.form.year.isValid && $v.form.year.$dirty }">
-            <span class="label">Card Valid Until</span>
-            <select-field
-                :validation="$v.form.month"
-                validationMessage="Required"
-                :rest="{
+                validationMessage="Please enter a credit card number."
+                class="card-number"
+                theme="variant-1"
+                label="Card Number"
+                v-model="paymentForm.cardNumber"
+                :prefix="`<img src='${cardUrl}' />`"
+                :postfix="`<i class='fa fa-lock'></i>`"
+            />
+            <div class="card-date" :class="{ 'with-error': !$v.form.year.isValid && $v.form.year.$dirty }">
+                <span class="label">Card Valid Until</span>
+                <select-field
+                    :validation="$v.form.month"
+                    validationMessage="Required"
+                    :rest="{
                   placeholder: 'Month'
                 }"
-                theme="variant-1"
-                :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
-                v-model="paymentForm.month"/>
-            <select-field
-                :validation="$v.form.year"
-                validationMessage="Required"
-                :rest="{
+                    theme="variant-1"
+                    :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
+                    v-model="paymentForm.month"/>
+                <select-field
+                    :validation="$v.form.year"
+                    validationMessage="Required"
+                    :rest="{
                     placeholder: 'Year'
                   }"
+                    theme="variant-1"
+                    :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+                    v-model="paymentForm.year"/>
+                <span class="error" v-show="!$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
+            </div>
+            <text-field
+                @click-postfix="openCVVModal"
+                :validation="$v.form.cvv"
+                validationMessage="Required"
+                class="cvv-field"
                 theme="variant-1"
-                :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
-                v-model="paymentForm.year"/>
-            <span class="error" v-show="!$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
-        </div>
-        <text-field
-            @click-postfix="openCVVModal"
-            :validation="$v.form.cvv"
-            validationMessage="Required"
-            class="cvv-field"
-            theme="variant-1"
-            label="CVV"
-            :rest="{
+                label="CVV"
+                :rest="{
               maxlength: 4,
               pattern: '\\d*',
               type: 'tel',
               autocomplete: 'cc-csc'
             }"
-            v-model="paymentForm.cvv"
-            postfix="<i class='fa fa-question-circle'></i>"
-        />
-        <text-field-with-placeholder
-          :validation="$v.form.documentNumber"
-          validationMessage="Required"
-          v-model="paymentForm.documentNumber"
-          v-if="countryCode === 'BR'"
-          placeholder="___.___.___-__"
-          :rest="{
+                v-model="paymentForm.cvv"
+                postfix="<i class='fa fa-question-circle'></i>"
+            />
+            <text-field-with-placeholder
+                :validation="$v.form.documentNumber"
+                validationMessage="Required"
+                v-model="paymentForm.documentNumber"
+                v-if="countryCode === 'BR'"
+                placeholder="___.___.___-__"
+                :rest="{
             'format': '___.___.___-__',
             'pattern': '\\d*',
             type: 'tel'
           }"
-          theme="variant-1"
-          label="Document number" />
-        <text-field-with-placeholder
-          :validation="$v.form.documentNumber"
-          validationMessage="Required"
-          v-model="paymentForm.documentNumber"
-          v-if="countryCode === 'CO'"
-          placeholder="1234567890"
-          :rest="{
+                theme="variant-1"
+                label="Document number" />
+            <text-field-with-placeholder
+                :validation="$v.form.documentNumber"
+                validationMessage="Required"
+                v-model="paymentForm.documentNumber"
+                v-if="countryCode === 'CO'"
+                placeholder="1234567890"
+                :rest="{
             'format': '1234567890',
           }"
-          theme="variant-1"
-          label="Document number" />
+                theme="variant-1"
+                label="Document number" />
+        </template>
         <button
-          @click="submit"
-          id="purchase-button"
-          type="button"
-          class="green-button-animated">
-          <span class="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
+            @click="submit"
+            id="purchase-button"
+            type="button"
+            class="green-button-animated">
+            <span class="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
         </button>
         <el-dialog
           @click="isOpenCVVModal = false"
@@ -406,7 +408,14 @@
           return;
         }
 
+        const fieldList = []
+
         console.log('submitted')
+
+        if (this.paymentForm.paymentType === 'bank-payment') {
+          console.log('showed')
+          this.$emit('showCart')
+        }
       }
     }
   };
@@ -719,6 +728,14 @@
                 border: 0 none rgb(255, 255, 255);
                 font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
                 outline: rgb(255, 255, 255) none 0;
+            }
+        }
+    }
+
+    @media screen and ($s-down) {
+        .cvv-popup {
+            .el-dialog {
+                width: 90%;
             }
         }
     }
