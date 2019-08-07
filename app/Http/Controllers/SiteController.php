@@ -76,10 +76,10 @@ class SiteController extends Controller
      */
     public function test()
     {        
-        /*$price = 99.81;
+        $price = 99.81;
         
         $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price, 'KRW', app()->getLocale());
-        echo $exchangedPrice; exit;*/
+        echo $exchangedPrice; exit;
         
         $odinOrder = new \App\Models\OdinOrder();
         $odinOrder->save();
