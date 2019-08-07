@@ -36,7 +36,7 @@ class CurrencyService
      * @param type $toCurrency
      * @return type
      */
-    public static function getLocalPriceFromUsd($price, $toCurrency, $locale)
+    public static function getLocalPriceFromUsd(float $price, string $toCurrency, string $locale) : float
     {
         $toCurrency = strtoupper($toCurrency);        
         $currency = Currency::whereCode($toCurrency)->first();
