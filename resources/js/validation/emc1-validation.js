@@ -26,9 +26,10 @@ const emc1Validation = function () {
     },
     phone: {
       required,
-      type: numeric,
       isValidPhone (val) {
+
         const phoneNumber = parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField)
+
         if (phoneNumber) {
           return phoneNumber.isValid()
         }

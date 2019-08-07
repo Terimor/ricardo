@@ -355,7 +355,9 @@
     },
     methods: {
       setCountryCodeByPhoneField (val) {
-        this.paymentForm.countryCodePhoneField = val.iso2.toUpperCase()
+        if (val.iso2) {
+          this.paymentForm.countryCodePhoneField = val.iso2.toUpperCase()
+        }
       },
       openCVVModal () {
         const node = document.querySelector('.cvv-popup .el-dialog')
