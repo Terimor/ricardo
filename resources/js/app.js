@@ -10,7 +10,7 @@ Vue.use(Vuelidate)
 Vue.config.productionTip = false
 
 Vue.component('app-component', require('./App.vue').default)
-Vue.component('timer', require('./components/common/Timer').default)
+Vue.component('timer-component', require('./components/common/Timer').default)
 Vue.component('emc1-component', require('./components/emc1').default)
 Vue.component('text-field', require('./components/common/TextField.vue').default)
 Vue.component('date-picker-field', require('./components/common/DatePicker.vue').default)
