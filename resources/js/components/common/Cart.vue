@@ -10,7 +10,7 @@
         <div class="cart-item__content">
             <span class="quantity">{{cart[key]}}</span>
             <span class="name">{{name}}</span>
-            <span class="price">{{newPrice}}</span>
+            <span class="price">${{(cart[key] * newPrice).toLocaleString()}}</span>
             <i
                 @click="$emit('setCart', {
                     ...cart,
@@ -37,6 +37,7 @@
 
     .cart-item {
         display: flex;
+        margin-bottom: 15px;
 
         &__image {
             width: 15%;

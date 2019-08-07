@@ -43,6 +43,7 @@
             }"
             v-model="paymentForm.email"/>
         <phone-field
+            @onCountryChange="setCountryCodeByPhoneField"
             :validation="$v.form.phone"
             validationMessage="Please enter a valid phone number"
             :countryCode="countryCode"
@@ -139,26 +140,26 @@
                 v-model="paymentForm.cardType"
                 label="Please select your card type"
                 :rest="{
-              placeholder: 'Card type'
-            }"
+                  placeholder: 'Card type'
+                }"
                 :list="[
-                {
-                    value: 'debit',
-                    label: 'Debit card',
-                    text: 'Debit card',
-                }, {
-                    value: 'credit',
-                    label: 'Credit card',
-                    text: 'Credit card',
-                }
-            ]"/>
+                    {
+                        value: 'debit',
+                        label: 'Debit card',
+                        text: 'Debit card',
+                    }, {
+                        value: 'credit',
+                        label: 'Credit card',
+                        text: 'Credit card',
+                    }
+                ]"/>
             <text-field
                 :validation="$v.form.cardNumber"
                 :rest="{
-              pattern: '\\d*',
-              type: 'tel',
-              autocomplete: 'cc-number'
-            }"
+                  pattern: '\\d*',
+                  type: 'tel',
+                  autocomplete: 'cc-number'
+                }"
                 validationMessage="Please enter a credit card number."
                 class="card-number"
                 theme="variant-1"
@@ -182,8 +183,8 @@
                     :validation="$v.form.year"
                     validationMessage="Required"
                     :rest="{
-                    placeholder: 'Year'
-                  }"
+                      placeholder: 'Year'
+                    }"
                     theme="variant-1"
                     :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                     v-model="paymentForm.year"/>
@@ -353,6 +354,11 @@
       }
     },
     methods: {
+      setCountryCodeByPhoneField (val) {
+        if (val.iso2) {
+          this.paymentForm.countryCodePhoneField = val.iso2.toUpperCase()
+        }
+      },
       openCVVModal () {
         const node = document.querySelector('.cvv-popup .el-dialog')
         const listener = () => {
@@ -408,12 +414,7 @@
           return;
         }
 
-        const fieldList = []
-
-        console.log('submitted')
-
         if (this.paymentForm.paymentType === 'bank-payment') {
-          console.log('showed')
           this.$emit('showCart')
         }
       }

@@ -60,9 +60,11 @@
 
   &__main {
     flex-grow: 1;
+    max-width: 70%;
 
-    h5 {
+      h5 {
       margin: 0;
+      font-size: 1.1em;
     }
 
     ul {
@@ -77,6 +79,7 @@
 
     &__price {
       width: 50%;
+      flex-grow: 1;
 
       .regular {
         text-decoration: line-through;
@@ -92,6 +95,8 @@
       width: 50%;
 
       .el-input-number {
+          width: 120px;
+
           &__decrease, &__increase {
               bottom: 1px;
               display: flex;

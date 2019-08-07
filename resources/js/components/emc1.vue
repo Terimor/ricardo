@@ -129,10 +129,10 @@
       :visible.sync="isOpenSpecialOfferModal">
         <div class="common-popup__content accessories-modal">
           <p>WAIT! 70% Of Users who bought the same product as you, also bought...</p>
-            <Cart
-              @setCart="setCart"
-              :productList="mockData.productList"
-              :cart="cart"/>
+          <Cart
+            @setCart="setCart"
+            :productList="mockData.productList"
+            :cart="cart"/>
           <div class="accessories-modal__list">
             <ProductItem
               v-for="item in mockData.productList"
@@ -147,6 +147,18 @@
               :newPrice="item.newPrice"
               :maxQuantity="3"
             />
+          </div>
+          <div class="accessories-modal__bottom">
+              <button
+                  style="height: auto;"
+                  type="button"
+                  class="green-button-animated">
+                  <span class="purchase-button-text">YES, SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span>
+              </button>
+              <button
+                  v-if="isEmptyCart"
+                  @click="isOpenSpecialOfferModal = false"
+                  class="thanks">No, thanks...</button>
           </div>
         </div>
       </el-dialog>
@@ -310,6 +322,7 @@ export default {
         }
       ],
       form: {
+        countryCodePhoneField: checkoutData.countryCode,
         deal: null,
         variant: 'white',
         installments: 1,
@@ -339,10 +352,8 @@ export default {
     }
   },
   computed: {
-    configForShowingFields () {
-      return {
-        ...fieldsByCountry(checkoutData.countryCode)
-      }
+    isEmptyCart () {
+      return Object.values(this.cart).every(it => it === 0)
     },
     withInstallments () {
       return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
@@ -439,10 +450,12 @@ export default {
 
       setTimeout(() => {
         setInterval(() => {
-          this.showNotification({
-            content: getNoticeHtml(),
-            position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
-          })
+          if (!this.isOpenSpecialOfferModal) {
+            this.showNotification({
+              content: getNoticeHtml(),
+              position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
+            })
+          }
         }, 6000)
       }, 9000)
     }
@@ -493,7 +506,29 @@ export default {
   .accessories-modal {
     & > p {
       text-align: center;
+        font-size: 17px;
     }
+
+      &__bottom {
+          display: flex;
+          flex-direction: column;
+
+          button {
+              margin: 50px auto 10px;
+              width: 70%;
+              max-width: 395px;
+              padding: 5px;
+          }
+
+          .thanks {
+              font-size: 17px;
+              margin: 0 auto;
+              border: 0;
+              background-color: transparent;
+              cursor: pointer;
+              text-decoration: underline;
+          }
+      }
   }
 
   .container {
@@ -845,23 +880,37 @@ export default {
     }
   }
 
+  .special-offer-popup {
+      .el-dialog {
+          margin-top: 10vh !important;
+      }
+  }
+
   @media screen and ($s-down) {
       .special-offer-popup {
           .el-dialog {
               width: 100%;
               margin-top: 0 !important;
 
-              .accessories-modal__list {
-                .product-item {
-                  &__image {
-                      padding: 0;
-                  }
+              .accessories-modal {
+                  &__list {
+                      .product-item {
+                          &__image {
+                              padding: 0;
+                          }
 
-                  &__main {
-                      padding-left: 20px;
+                          &__main {
+                              padding-left: 20px;
+                          }
+                      }
                   }
-                }
               }
+          }
+      }
+
+      .accessories-modal__bottom {
+          button {
+              width: 100%;
           }
       }
   }

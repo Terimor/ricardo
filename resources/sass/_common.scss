@@ -57,6 +57,22 @@ header {
   }
 }
 
+.common-popup {
+    .el-dialog__header {
+        .el-dialog__title {
+            font-size: 23px;
+        }
+    }
+
+    .el-dialog__body {
+        font-size: 17px;
+    }
+
+    .el-dialog {
+        max-width: 955px;
+    }
+}
+
 .error {
     color: rgba(192, 57, 43, 1);
 }

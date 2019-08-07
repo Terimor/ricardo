@@ -39,9 +39,14 @@ export default {
     }
   },
   mounted () {
-    window.intlTelInput(document.querySelector(`#${this.id}`), {
+    const selector = document.querySelector(`#${this.id}`)
+    window.intlTelInput(selector, {
       initialCountry: this.countryCode
     })
+
+    selector.addEventListener('countrychange', () => {
+      this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(selector).getSelectedCountryData())
+    });
   }
 }
 </script>
