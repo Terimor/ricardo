@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class Setting extends Model
 {
-    protected $collection = 'db2saga_setting';
+    protected $collection = 'setting';
     
     protected $dates = ['updated_at'];
     

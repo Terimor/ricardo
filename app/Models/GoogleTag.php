@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class GoogleTag extends Model
 {
-    protected $collection = 'db2saga_google_tag';
+    protected $collection = 'google_tag';
     
     protected $dates = ['created_at', 'updated_at'];
     

@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class Currency extends Model
 {
-    protected $collection = 'db2saga_currency';
+    protected $collection = 'currency';
     
     protected $dates = ['created_at', 'updated_at'];
     
