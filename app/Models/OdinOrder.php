@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 
 class OdinOrder extends Model
 {
@@ -120,10 +121,36 @@ class OdinOrder extends Model
     }
     
     /**
+     * Generate order number
+     * @param type $countryCode
+     */
+    public function generateOrderNumber(string $countryCode): string
+    {
+        $countryCode = $countryCode ? $countryCode : 'XX';
+        
+        $numberString = '';
+
+        $i = 0;
+        do {            
+            $numberString = strtoupper('O'.date('y').date('m').$countryCode.\Utils::randomString(6));
+
+            //check unique
+            $model = OdinOrder::where(['number' => $numberString])->first();
+            $i++;                
+            if ($i > 2) {
+                logger()->error("Generate order number - {$i} iteration", ['number' => $numberString]);
+            }
+        } while ($model);
+            
+        return $numberString;
+    }
+    
+    /**
     * Returns type as a text
     * @return string
     */
-    public function getStatusText() {        
+    public function getStatusText()
+    {        
         if (!empty(static::$statuses[$this->status])) {
           return static::$statuses[$this->status];
         } else {
