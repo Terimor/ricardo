@@ -13,11 +13,57 @@ class OdinOrder extends Model
     
     protected $dates = ['created_at', 'updated_at'];
     
+    /**
+     *
+     * @var type 
+     */
     protected $attributes = [
-        'status' => 'new',
-        'exported' => false,
-        'flagged' => false,
-        'is_refunding' => false
+        'number' => '', // * U (O1908USXXXXXX, X = A-Z0-9)
+        'status' => 'new', // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled']
+        'currency' => '', // * enum
+        'total_paid' => '', // * float
+        'payment_hash' => '', // string
+        'payment_provider' => '', // enum string
+        'payment_method' => '', // enum string
+        'customer_id' => '', // * OdinCustomer id
+        'customer_email' => '', // * string
+        'customer_first_name' => '', // * string
+        'customer_last_name' => '', // * string
+        'customer_phone' => '', // * string
+        'language' => '', // enum string
+        'ip' => '', // string
+        'shipping_country' => '', // * enum string
+        'shipping_zip' => '', // * string
+        'shipping_state' => '', // * string
+        'shipping_city' => '', // * string
+        'shipping_street' => '', // * string        
+        'exported' => false, // bool, default false
+        'warehouse_id' => '',
+        'trackings' => [
+            'number' => '', // string
+            'aftership_slug' => '', // enum string
+        ],
+        'products' => [
+            'sku_code' => '', // string
+            'quantity' => '', // int
+            'price' => '', // float
+            'price_usd' => '', // float
+            'is_main' => '', // bool
+        ],
+        'ipqualityscore' => '', // object
+        'page_checkout' => '', // string        
+        'flagged' => false, // bool, default false
+        'offer' => '', // string
+        'affiliate' => '', // string
+        'txns' => [
+            'txn_id' => '', // Txn id
+            'hash' => '', // string
+            'value' => '', // float
+            'approved' => '', // bool
+            'refunded' => false, // bool
+            'charged_back' => false, // bool
+        ],
+        'is_refunding' => false, // bool, default false,
     ];
     
     const STATUS_NEW  = 'new';
@@ -47,35 +93,13 @@ class OdinOrder extends Model
         'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txns', 'is_refunding'
         
     ];
-    
-    /**
-     * boot
-     */
-    public static function boot()
-    {
-        parent::boot();
-
-        self::creating(function($model){
-            if(!isset($model->txns)) {
-                $model->txns = [];
-            }
-            
-            if (!isset($model->txns['refunded'])) {                
-                $model->txns = array_merge($model->txns, ['refunded' => false]);
-            }
-            
-            if (!isset($model->txns['charged_back'])) {
-                $model->txns = array_merge($model->txns, ['charged_back' => false]);
-            }            
-        });
-    }
 
     /**
      * Validator
      * @param array $data
      * @return type
      */
-    public function validator(array $data)
+    public function validate(array $data)
     {
         return Validator::make($data, [
             'number'     => 'required|unique',
