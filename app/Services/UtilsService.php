@@ -22,4 +22,19 @@ class UtilsService
         }
         return implode('', $pieces);
     }
+    
+    /**
+     * Generate random number with lenght
+     * @param type $length
+     * @return type
+     */
+    public static function randomNumber($length) {
+        $result = '';
+
+        for($i = 0; $i < $length; $i++) {
+            $result .= mt_rand(0, 9);
+        }
+
+        return $result;
+    }
 }

@@ -96,14 +96,38 @@ class OdinOrder extends Model
     ];
 
     /**
+     * 
+     */
+    public static function boot()
+    {
+        parent::boot();
+        
+        self::creating(function($model) {
+            if (!isset($model->number) || !$model->number) {
+                $model->number = $this->generateOrderNumber();
+            }
+            
+            if ($model->shipping_country) {
+                $model->shipping_country = strtoupper($model->shipping_country);
+            }
+            
+        });
+    }
+    
+    /**
      * Validator
      * @param array $data
      * @return type
      */
-    public function validate(array $data)
+    public function validate(array $data = [])
     {
+        
+        if (!$data) {
+            $data = $this->attributesToArray();
+        }
+        
         return Validator::make($data, [
-            'number'     => 'required|unique',
+            'number'     => 'required',
             'currency'     => 'required',
             'total_paid'     => 'required|numeric',
             'customer_id'     => 'required',
@@ -124,10 +148,8 @@ class OdinOrder extends Model
      * Generate order number
      * @param type $countryCode
      */
-    public function generateOrderNumber(string $countryCode): string
+    public static function generateOrderNumber(string $countryCode = 'XX'): string
     {
-        $countryCode = $countryCode ? $countryCode : 'XX';
-        
         $numberString = '';
 
         $i = 0;

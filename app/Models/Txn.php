@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
+use Validator;
 
 class Txn extends Model
 {
@@ -30,12 +31,30 @@ class Txn extends Model
     ];
     
     /**
+     * 
+     */
+    public static function boot()
+    {
+        parent::boot();
+        
+        self::creating(function($model) {
+            if ($model->currency) {
+                $model->currency = strtoupper($model->currency);
+            }
+        });
+    }
+    
+    /**
      * Validator
      * @param array $data
      * @return type
      */
-    public function validate(array $data)
+    public function validate(array $data = [])
     {
+        if (!$data) {
+            $data = $this->attributesToArray();
+        }
+
         return Validator::make($data, [
             'hash'     => 'required',
             'value'     => 'required',

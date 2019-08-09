@@ -33,6 +33,9 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/payment/bluesnap-transaction', 'Payments\BluesnapController@createTransaction')->name('bluesnap-payment');
 
     $router->get('/test', 'SiteController@test');
+    
+    $router->get('/send-transaction', 'OrderController@sendTransaction');
+    $router->get('/send-order', 'OrderController@sendOdinOrder');
 
 });
 
