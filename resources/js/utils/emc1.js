@@ -13,7 +13,7 @@ export const getRadioHtml = ({ discountName, newPrice, text, price, discountText
     <span>${text}</span>
     <span ${newPrice ? 'class="strike"' : ''}>${`${getCountOfInstallments(installments)}` + currency + price.toLocaleString()}</span>
   </p>
-  <p class="label-container-radio__discount">${discountText}11</p>`
+  <p class="label-container-radio__discount">${discountText}</p>`
 
 export function * getNotice (productName) {
     const messageMap = {
