@@ -15,6 +15,9 @@ class EmailService
      */
     protected $apiKey;
 
+    /**
+     * 
+     */
     public function __construct()
     {
         $apiKey = Setting::where(['key' => 'saga_api_access_key'])->first();

@@ -5,7 +5,7 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class Currency extends Model
-{
+{  
     protected $collection = 'currency';
     
     protected $dates = ['created_at', 'updated_at'];

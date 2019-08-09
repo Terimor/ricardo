@@ -232,7 +232,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Eloquent'       => Jenssegers\Mongodb\Eloquent\Model::class,
         'Sentry' => Sentry\Laravel\Facade::class,
-        'Location' => Stevebauman\Location\Facades\Location::class,        
+        'Location' => Stevebauman\Location\Facades\Location::class,
+        'Utils' => App\Services\UtilsService::class,
 
     ],
 
