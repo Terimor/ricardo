@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Cookie;
+use App\Models\I18n;
 
 class Localization
 {
@@ -16,10 +17,18 @@ class Localization
      */
     public function handle($request, Closure $next)
     {
-        $supported_languages = ['ru', 'en'];
-        //$supported_languages = I18n::getSupportedLanguages();
-        $lang = $request->getPreferredLanguage($supported_languages);
-
+        //$translated_languages = ['ru', 'en'];
+        $translated_languages = I18n::getTranslationLanguages(true);
+        
+        if ($request->has('language')) {
+            $lang = $request->get('language');
+            if (!in_array($lang, $translated_languages)) {
+                $lang = 'en';
+            }
+        } else {
+            $lang = $request->getPreferredLanguage($translated_languages);
+        }
+        
         /*if($request->hasCookie('lang')) {
             app()->setLocale($lang);
             return $next($request);    

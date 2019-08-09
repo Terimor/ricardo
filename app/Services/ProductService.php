@@ -27,5 +27,5 @@ class ProductService
         // Add domain resolve logic here
 
         abort(404);
-    }
+    }        
 }

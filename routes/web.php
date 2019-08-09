@@ -22,7 +22,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/thankyou-promos', 'SiteController@upsells')->name('upsells');
     $router->get('/thankyou', 'SiteController@thankyou')->name('thankyou');
     $router->get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
-    $router->get('/products', 'SiteController@products')->name('products');
+    //$router->get('/products', 'SiteController@products')->name('products');
     $router->get('/product', 'ProductController@view')->name('product');
 
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
