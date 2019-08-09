@@ -60,7 +60,7 @@ export default {
 
       &.invalid {
         .label, .error {
-          color: #c0392b;
+          color: #e74c3c;
         }
       }
 

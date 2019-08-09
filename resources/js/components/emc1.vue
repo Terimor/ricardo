@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="paper col-md-5 main__payment">
-          <img :src="`/images/headphones-${form.variant}.png`" alt="">
+          <img id="product-image" :src="productImage" alt="">
           <h2>Step 3: Payment Method</h2>
           <h3>Pay Securely With: (No Fees)</h3>
           <radio-button-group
@@ -175,6 +175,7 @@ import { stateList } from '../resourses/state';
 import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
 import fieldsByCountry from '../resourses/fieldsByCountry';
+import { fade } from '../utils/common';
 
 const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
 
@@ -188,6 +189,7 @@ export default {
   props: ['showPreloader'],
   data () {
     return {
+      productImage: '/images/headphones-white.png',
       mockData: {
         productList: [
           {
@@ -274,31 +276,36 @@ export default {
           text: `
               <div><img src="/images/headphones-white.png" alt=""><span>EchoBeat7 White</span></div>
             `,
-          value: 'white'
+          value: 'white',
+          imageUrl: '/images/headphones-white.png'
         }, {
           label: 'EchoBeat7 Black',
           text: `
               <div><img src="/images/headphones-black.png" alt=""><span>EchoBeat7 Black</span></div>
             `,
-          value: 'black'
+          value: 'black',
+          imageUrl: '/images/headphones-black.png'
         }, {
           label: 'EchoBeat7 Gold',
           text: `
               <div><img src="/images/headphones-gold.png" alt=""><span>EchoBeat7 Gold</span></div>
             `,
-          value: 'gold'
+          value: 'gold',
+          imageUrl: '/images/headphones-gold.png'
         }, {
           label: 'EchoBeat7 Red',
           text: `
               <div><img src="/images/headphones-red.png" alt=""><span>EchoBeat7 Red</span></div>
             `,
-          value: 'red'
+          value: 'red',
+          imageUrl: '/images/headphones-red.png'
         }, {
           label: 'EchoBeat7 Pink',
           text: `
               <div><img src="/images/headphones-pink.png" alt=""><span>EchoBeat7 Pink</span></div>
             `,
-          value: 'pink'
+          value: 'pink',
+          imageUrl: '/images/headphones-pink.png'
         }
       ],
       stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
@@ -368,7 +375,8 @@ export default {
         label: getRadioHtml({
           ...it,
           installments: this.form.installments,
-          text: printf(it.text, { color: this.form.variant })
+          text: printf(it.text, { color: this.form.variant }),
+          idx,
         })
       }))
     },
@@ -389,6 +397,13 @@ export default {
         })
     },
     'form.variant' (val) {
+      fade('out', 300, document.querySelector('#product-image'), true)
+        .then(() => {
+          this.productImage = this.variantList.find(variant => variant.value === val).imageUrl
+
+          fade('in', 300, document.querySelector('#product-image'), true)
+        })
+
       this.setPurchase({
         variant: val,
         installments: this.form.installments,
@@ -499,8 +514,8 @@ export default {
 <style lang="scss">
   @import "../../sass/variables";
   $white: #fff;
-  $color_flush_mahogany_approx: #c0392b;
-  $red: rgba(192, 57, 43, 1);
+  $color_flush_mahogany_approx: #e74c3c;
+  $red: #e74c3c;
   $color_niagara_approx: #16a085;
 
   .accessories-modal {
@@ -641,6 +656,33 @@ export default {
     &__deal {
       h3 {
         padding-left: 20px;
+      }
+
+      .share {
+        position: absolute;
+        transform: rotate3d(-10,-3,0,180deg);
+        height: auto;
+        width: 40px;
+          top: -17px;
+          left: -30px;
+
+          @media screen and ($s-down) {
+              width: 24px;
+              top: 0;
+              left: -9px;
+          }
+      }
+
+      .radio-button-group {
+        .label-container-radio {
+            &:nth-child(2) {
+                background: #fef036;
+            }
+
+            &:hover {
+                background: #fef9ae;
+            }
+        }
       }
 
       #warranty-field-button {
