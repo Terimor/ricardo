@@ -1,5 +1,5 @@
 <template>
-    <div class="upsells-item" :class="{ 'main': !withRemoveButton, 'is-accessory': withRemoveButton }">
+    <div :id="id" class="upsells-item" :class="{ 'main': !withRemoveButton, 'is-accessory': withRemoveButton }">
         <div class="upsells-item__image">
             <img :src="imageUrl" alt="">
         </div>
@@ -10,15 +10,29 @@
             </ul>
         </div>
         <div class="upsells-item__remove-block" v-if="withRemoveButton">
-            <el-button type="danger" @click="$emit('deleteAccessory', idx)">Remove</el-button>
+            <el-button type="danger" @click="deleteAccessory">Remove</el-button>
         </div>
     </div>
 </template>
 
 <script>
+  import { fade } from '../../utils/common';
+
   export default {
     name: 'UpsellsItem',
-    props: ['name', 'benefitList', 'withRemoveButton', 'imageUrl', 'idx']
+    props: ['name', 'benefitList', 'withRemoveButton', 'imageUrl', 'idx'],
+    computed: {
+      id () {
+        return 'upsells-item-' + this.idx
+      }
+    },
+    methods: {
+      deleteAccessory () {
+        const node = document.querySelector('#' + this.id)
+        fade('out', 250, node)
+          .then(() => this.$emit('deleteAccessory', this.idx))
+      }
+    }
   };
 </script>
 

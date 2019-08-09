@@ -85,7 +85,8 @@
     },
     computed: {
       totalPrice () {
-        const total = this.accessoryList.map(it => it.price * it.quantity).reduce((acc, current) => acc + current)
+        const allAccessories = this.accessoryList.map(it => it.price * it.quantity)
+        const total = allAccessories.reduce((acc, current) => acc + current)
         return Number(total.toFixed(2))
       },
       viewProps () {
@@ -107,6 +108,9 @@
         this.accessoryList.push(accessory)
       },
       deleteAccessory (indexForDeleting) {
+        if (this.accessoryList.length === 1) {
+          this.goto('/thankyou')
+        }
         this.accessoryList.splice(indexForDeleting, 1)
       }
     },
