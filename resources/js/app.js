@@ -23,6 +23,12 @@ Vue.component('payment-form', require('./components/common/PaymentForm.vue').def
 // preloaders
 Vue.component('preloader-3', require('./components/common/preloaders/Preloader3').default)
 
+// upsells
+Vue.component('upsells-component', require('./components/Upsells').default)
+
+// common
+Vue.component('green-button', require('./components/common/GreenButton').default)
+
 const app = new Vue({
   el: '#app',
 });

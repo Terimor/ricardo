@@ -416,6 +416,8 @@
 
         if (this.paymentForm.paymentType === 'bank-payment') {
           this.$emit('showCart')
+        } else if (this.paymentForm.paymentType === 'credit-card') {
+          window.location.href = '/thankyou-promos';
         }
       }
     }

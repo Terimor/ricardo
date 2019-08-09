@@ -1,0 +1,85 @@
+<template>
+    <div class="upsells-item" :class="{ 'main': !withRemoveButton, 'is-accessory': withRemoveButton }">
+        <div class="upsells-item__image">
+            <img :src="imageUrl" alt="">
+        </div>
+        <div class="upsells-item__content">
+            <h5>{{name}}</h5>
+            <ul class="benefit-list">
+                <li v-for="benefit in benefitList">{{benefit}}</li>
+            </ul>
+        </div>
+        <div class="upsells-item__remove-block" v-if="withRemoveButton">
+            <el-button type="danger" @click="$emit('deleteAccessory', idx)">Remove</el-button>
+        </div>
+    </div>
+</template>
+
+<script>
+  export default {
+    name: 'UpsellsItem',
+    props: ['name', 'benefitList', 'withRemoveButton', 'imageUrl', 'idx']
+  };
+</script>
+
+<style lang="scss">
+    .upsells-item {
+        display: flex;
+
+        &__image {
+            max-width: 170px;
+            padding: 7px;
+
+            img {
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        &__content {
+            flex-grow: 1;
+
+            .benefit-list {
+                list-style-type: none;
+                padding: 0;
+
+                li {
+                    margin-bottom: 5px;
+                }
+            }
+        }
+
+        &__remove-block {
+            display: flex;
+            align-items: flex-end;
+
+            & > button {
+                padding: 8px;
+            }
+        }
+
+        &.main {
+            h5 {
+                font-weight: 400;
+                font-size: 25px;
+                margin-top: 10px;
+            }
+        }
+
+        &.is-accessory {
+            .upsells-item__content {
+                h5  {
+                    margin-top: 8px;
+                }
+
+                .benefit-list {
+                    li {
+                        &:first-child {
+                            font-size: 19px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+</style>

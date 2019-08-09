@@ -36,7 +36,7 @@ phpunit.phar
 /public/hot
 /public/storage
 /public/js/*
-/public/css/*
+/public/css/app.css
 /storage/*.key
 .env
 .phpunit.result.cache
