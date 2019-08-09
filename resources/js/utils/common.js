@@ -28,7 +28,6 @@ export function fade(type, ms, el, withoutDeleting) {
       gap = interval / duration;
 
     if(isIn) {
-      el.style.display = 'inline';
       el.style.opacity = opacity;
     }
 

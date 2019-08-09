@@ -16,26 +16,19 @@
 
         <template v-if="activeTab === 'second'">
             <div class="upsells-component__content">
-                <Step1
-                    v-if="accessoryStep === 0"
-                    @addAccessory="addAccessory"/>
-                <StepWithOneItem
-                    v-if="accessoryStep === 1"
+                <transition name="component-fade" mode="out-in">
+                    <component
+                        v-bind:is="view"
                         @addAccessory="addAccessory"
-                    name="Some accessory"
-                    :benefit-list="[
-                        'One',
-                        'Two',
-                        'Some text',
-                    ]"
-                    image-url="/images/headphones-black.png"
-                />
-                <Step3
-                    v-if="accessoryStep === 2"
-                    @addAccessory="addAccessory"/>
-                <StepWithOneItem
-                    v-if="accessoryStep === 3"
-                    @addAccessory="addAccessory"/>
+                        :benefit-list="[
+                            'One',
+                            'Two',
+                            'Some text',
+                        ]"
+                        :viewProps="viewProps"
+                    />
+                </transition>
+
 
 
                 <p class="no"><a @click="accessoryStep++">No thanks...</a></p>
@@ -72,6 +65,7 @@
   import Step1 from './upsells/Step1';
   import Step3 from './upsells/Step3';
   import StepWithOneItem from './upsells/StepWithOneItem';
+  import { fade } from '../utils/common';
 
   export default {
     name: 'upsells',
@@ -83,6 +77,7 @@
     },
     data () {
       return {
+        view: 'Step1',
         activeTab: 'second',
         accessoryStep: 0,
         accessoryList: []
@@ -92,6 +87,15 @@
       totalPrice () {
         const total = this.accessoryList.map(it => it.price * it.quantity).reduce((acc, current) => acc + current)
         return Number(total.toFixed(2))
+      },
+      viewProps () {
+        return this.accessoryStep === 0 ? {} :
+          this.accessoryStep === 1 ? {
+              imageUrl: '/image/headphones-black.png'
+            } :
+          this.accessoryStep === 2 ? {} :
+          this.accessoryStep === 3 ? {} :
+          {}
       }
     },
     methods: {
@@ -109,8 +113,22 @@
     watch: {
       accessoryStep (val) {
         if (val === 4) {
-          this.activeTab = 'third'
+          const node = document.querySelector('.upsells-component__content')
+          fade('out', 250, node, true)
+            .then(() => {
+              this.activeTab = 'third'
+
+              setTimeout(() => fade('in', 250, node, true))
+            })
+
         }
+
+        this.view =
+          val === 0 ? 'Step1' :
+          val === 1 ? 'StepWithOneItem' :
+          val === 2 ? 'Step3' :
+          val === 3 ? 'StepWithOneItem' :
+          'StepWithOneItem'
       }
     }
   };
