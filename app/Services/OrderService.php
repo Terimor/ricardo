@@ -43,7 +43,7 @@ class OrderService
     public function addOdinOrder(array $data): array
     {         
         $model = new OdinOrder($data);
-        if (!$model->number) {
+        if (!isset($model->number) || !$model->number) {
             //TODO add country code
             $model->number = $model->generateOrderNumber();
         }
