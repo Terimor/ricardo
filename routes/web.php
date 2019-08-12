@@ -36,8 +36,8 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     $router->get('/test', 'SiteController@test');
     
-    $router->get('/send-transaction', 'OrderController@sendTransaction');
-    $router->get('/send-order', 'OrderController@sendOdinOrder');
+    $router->post('/send-transaction', 'OrderController@sendTransaction');
+    $router->post('/send-order', 'OrderController@sendOdinOrder');
 
 });
 
