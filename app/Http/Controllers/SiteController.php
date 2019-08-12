@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Location;
 use App\Services\CurrencyService;
+use App\Services\ProductService;
 
 class SiteController extends Controller
 {
@@ -53,11 +54,11 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function checkout()
+    public function checkout(Request $request, ProductService $productService)
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
-
-        return view('checkout', compact('location'));
+        $product = $productService->resolveProduct($request);
+        return view('checkout', compact('location', 'product'));
     }
 
     /**
