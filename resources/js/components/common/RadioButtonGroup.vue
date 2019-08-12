@@ -15,7 +15,8 @@ export default {
   name: 'radio-button-group',
   props: [
     'list',
-    'value'
+    'value',
+    'labelStyles',
   ],
   methods: {
     input (e) {

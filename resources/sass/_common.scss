@@ -57,6 +57,41 @@ header {
   }
 }
 
+.fb-icon, .twitter-icon {
+    width: 40px;
+    height: 40px;
+    background-size: 100%;
+}
+
+.fb-icon {
+    background-image: url(/images/social/fb-icon.png);
+}
+
+.twitter-icon {
+    background-image: url(/images/social/twitter-icon.png);
+}
+
+.green-button {
+    outline: none;
+    border: 1px solid #0f9b0f;
+    box-shadow: #b4b5b5 2px 2px 2px;
+    border-radius: 3px;
+    font-size: 18px;
+    text-decoration: none;
+    display: inline-block;
+    text-shadow: -1px -1px 0 rgba(0,0,0,.3);
+    font-weight: 700;
+    color: #fff;
+    background-image: linear-gradient(to bottom, #0f9b0f, #0d840d);
+    padding: 20px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.green-button:hover {
+    background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
+}
+
 .common-popup {
     .el-dialog__header {
         .el-dialog__title {
@@ -71,6 +106,13 @@ header {
     .el-dialog {
         max-width: 955px;
     }
+}
+
+.component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+}
+.component-fade-enter, .component-fade-leave-to {
+    opacity: 0;
 }
 
 .error {
@@ -157,7 +199,7 @@ header {
     padding: 10px;
 
     .red {
-      color: #c0392b;
+      color: #e74c3c;
     }
   }
 
@@ -169,7 +211,7 @@ header {
       align-items: center;
       justify-content: center;
       color: #fff;
-      background: #c0392b;
+      background: #e74c3c;
 
       i {
         font-size: 40px;

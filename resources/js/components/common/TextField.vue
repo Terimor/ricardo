@@ -53,7 +53,7 @@ export default {
 
   &.invalid {
     .label {
-      color: #c0392b;
+      color: #e74c3c;
     }
   }
 

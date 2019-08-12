@@ -35,7 +35,7 @@ phpunit.phar
 /node_modules
 /public/hot
 /public/storage
-/public/js/*
+/public/js/app.js
 /public/css/app.css
 /storage/*.key
 .env

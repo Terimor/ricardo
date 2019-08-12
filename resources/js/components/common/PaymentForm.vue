@@ -613,7 +613,7 @@
 
             &.with-error {
                 & > .label {
-                    color: #c0392b;
+                    color: #e74c3c;
                 }
             }
 

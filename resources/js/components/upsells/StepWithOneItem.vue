@@ -18,7 +18,7 @@
 <script>
   import upsells from '../../mixins/upsells'
   export default {
-    name: 'Step4',
+    name: 'StepWithOneItem',
     mixins: [upsells],
     props: {
       name: {
