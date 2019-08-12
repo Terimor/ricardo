@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6cdfd8463176d5dd744beb5e240db7ba",
+    "content-hash": "c752921678d709e47fcafc20a5d05a15",
     "packages": [
         {
             "name": "checkout/checkout-php-api",

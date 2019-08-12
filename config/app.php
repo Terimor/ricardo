@@ -179,6 +179,7 @@ return [
         Jenssegers\Mongodb\MongodbQueueServiceProvider::class,
         
         Stevebauman\Location\LocationServiceProvider::class,
+        Sentry\Laravel\ServiceProvider::class,
 
     ],
 
