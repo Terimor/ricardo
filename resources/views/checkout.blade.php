@@ -1,7 +1,9 @@
 @extends('layouts.app')
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
 <script>
     const checkoutData = {
-      countryCode: '{{ $location->countryCode }}'
+      countryCode: '{{ $location->countryCode }}',
     }
 </script>
 @section('content')
