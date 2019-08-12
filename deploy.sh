@@ -12,6 +12,7 @@ if [[ "$BRANCH" == "development" ]]; then
     esac
 fi
 
+npm install
 npm run prod
 
 rsync -avz -e "ssh -i ~/.ssh/odin-dev.pem" --exclude-from=rsync_exclude.txt . ubuntu@$SERVER:/var/www/odin
