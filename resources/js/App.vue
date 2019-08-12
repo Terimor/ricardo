@@ -45,16 +45,16 @@ export default {
       this.directLinking()
     },
     directLinking () {
-      const { offer_id, aff_id, direct, txid, transaction_id } = this.queryParams
+      const { offer_id, aff_id, direct, txid } = this.queryParams
 
-      if (offer_id > 0 && aff_id > 0 && +direct === 1 && txid === transaction_id) {
+      if (offer_id > 0 && aff_id > 0 && +direct === 1 && (txid === 'transaction_id' || txid === '{transaction_id}')) {
         const iframe = document.createElement('iframe');
         iframe.src = `https://lai.go2cloud.org/aff_c?offer_id=${offer_id}&aff_id=${aff_id}`
 
         document.body.append(iframe)
       }
 
-      if (offer_id > 0 && aff_id > 0 && +direct === 1 && (txid !== transaction_id || txid == null)) {
+      if (offer_id > 0 && aff_id > 0 && +direct === 1 && (txid !== 'transaction_id' || txid !== '{transaction_id}' || txid == null)) {
         window.txidjs = txid
 
         Cookies.set('txidjs', txid)
