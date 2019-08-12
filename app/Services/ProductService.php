@@ -26,14 +26,15 @@ class ProductService
         }
 
         // Domain resolve logic
-        $domain = Domain::where('name', request()->getHost())->first();
+        /*$domain = Domain::where('name', request()->getHost())->first();
         if ($domain) {            
             $product = Product::where('skus.code', $domain->sku_no)->first();
             if ($product) {
                 return $product;
             }
-        }
+        }*/
         
-        abort(404);
+        return Product::orderBy('_id', 'desc')->first();
+        //abort(404);
     }        
 }
