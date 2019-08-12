@@ -41,7 +41,8 @@ export default {
   mounted () {
     const selector = document.querySelector(`#${this.id}`)
     window.intlTelInput(selector, {
-      initialCountry: this.countryCode
+      initialCountry: this.countryCode,
+      separateDialCode: true
     })
 
     selector.addEventListener('countrychange', () => {
