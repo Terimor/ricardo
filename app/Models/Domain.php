@@ -23,6 +23,14 @@ class Domain extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'logo', 'product_id'
+        'name', 'logo', 'odin_product_id'
     ];
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function product()
+    {
+        return $this->hasOne(Product::class, '_id', 'odin_product_id');
+    }    
 }
