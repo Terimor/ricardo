@@ -34,7 +34,15 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        parent::report($exception);
+        if (env('APP_ENV') != 'local') {
+            if (app()->bound('sentry') && $this->shouldReport($exception)) {
+                app('sentry')->captureException($exception);
+            }
+        }
+        //remove log to file on remote server
+        if (env('APP_ENV') == 'local') {
+            parent::report($exception);
+        }
     }
 
     /**
