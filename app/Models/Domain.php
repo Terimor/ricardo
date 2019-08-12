@@ -23,6 +23,6 @@ class Domain extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'logo', 'sku_no'
+        'name', 'logo', 'product_id'
     ];
 }

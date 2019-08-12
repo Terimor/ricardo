@@ -34,6 +34,7 @@ class ProductService
             }
         }
         
-        abort(404);
+        return Product::orderBy('_id', 'desc')->first();
+        //abort(404);
     }        
 }
