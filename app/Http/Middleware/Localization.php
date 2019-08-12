@@ -20,8 +20,8 @@ class Localization
         //$translated_languages = ['ru', 'en'];
         $translated_languages = I18n::getTranslationLanguages(true);
         
-        if ($request->has('language')) {
-            $lang = $request->get('language');
+        if ($request->has('lang')) {
+            $lang = $request->get('lang');
             if (!in_array($lang, $translated_languages)) {
                 $lang = 'en';
             }
