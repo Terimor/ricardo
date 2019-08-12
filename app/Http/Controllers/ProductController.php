@@ -17,7 +17,7 @@ class ProductController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function view(Request $request, ProductService $productService)
-    {
+    {        
         return view('product', [
             'product' => $productService->resolveProduct($request)
         ]);
