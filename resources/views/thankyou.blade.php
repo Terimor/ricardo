@@ -1,7 +1,7 @@
 @extends('layouts.app')
 <script>
     const upsells = {
-      countryCode: '{{ $location->countryCode }}'
+      countryCode: '{{ $location->countryCode }}',
     }
 </script>
 <link rel="stylesheet" href="">
@@ -62,13 +62,13 @@
             <p class="text-center">We hope you enjoyed shopping with us! Let your friends know about it and make our day!</p>
 
             <ul id="social-media-tabs" class="nav nav-tabs">
-                <li class="active">
+                <li onclick="window.onClickSocialNetwork('facebook')" id="facebook" class="active">
                     <a href="#facebook" class="facebook-tab-header">
                         <div class="social-icon fb-icon"></div>
                         Facebook
                     </a>
                 </li>
-                <li>
+                <li onclick="window.onClickSocialNetwork('twitter')" id="twitter">
                     <a href="#twitter" class="twitter-tab-header">
                         <div class="social-icon twitter-icon"></div>
                         Twitter
@@ -76,9 +76,11 @@
                 </li>
             </ul>
 
-            <textarea rows="10">I just bought this awesome product. Thought I’d share this with you</textarea>
-            <div class="d-flex justify-content-center"><button class="green-button">Share this Item!</button></div>
+            <textarea id="quote" rows="10">I just bought this awesome product. Thought I’d share this with you</textarea>
+            <div class="d-flex justify-content-center"><button id="share" class="green-button">Share this Item!</button></div>
         </div>
     </div>
+
+    <script src="{{ asset('js/views/thank-you.js') }}"></script>
 
 @endsection
