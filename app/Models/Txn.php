@@ -29,7 +29,7 @@ class Txn extends Model
      * @var array
      */
     protected $fillable = [
-        'hash', 'value', 'currency', 'provider_data', 'payment_provider', 'payment_method', 'approved'
+        'hash', 'value', 'currency', 'provider_data', 'payment_provider', 'payment_method'
     ];
     
     /**

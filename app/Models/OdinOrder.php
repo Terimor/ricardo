@@ -90,7 +90,7 @@ class OdinOrder extends Model
     protected $fillable = [
         'number', 'status', 'currency', 'total_paid', 'total_price', 'total_price_usd', 'payment_provider', 'payment_method', 'customer_id', 'customer_email', 'customer_first_name',
         'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
-        'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txns', 'is_refunding'
+        'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding'
         
     ];
 
