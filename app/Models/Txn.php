@@ -18,6 +18,9 @@ class Txn extends Model
         'value' => '', // * float
         'currency' => '', // * string
         'provider_data' => '',
+        'payment_provider' => '', // enum string
+        'payment_method' => '', // enum string
+        'approved' => false, // bool
         
     ];
     
@@ -27,7 +30,7 @@ class Txn extends Model
      * @var array
      */
     protected $fillable = [
-        'hash', 'value', 'currency', 'provider_data'
+        'hash', 'value', 'currency', 'provider_data', 'payment_provider', 'payment_method', 'approved'
     ];
     
     /**

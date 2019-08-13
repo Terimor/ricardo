@@ -8,13 +8,24 @@ use App\Models\Setting;
  */
 class UtilsService
 {
+    
+    public static $cultureCodes = [
+        'RU' => 'ru-RU',
+        'BY' => 'be-BY',
+        'ES' => 'es-ES',
+        'BR' => 'pt-BR',
+        'US' => 'en-US',
+        'GB' => 'en-GB',
+    ];
+    
     /**
      * Generate random string
      * @param type $length
      * @param type $keyspace
      * @return type
      */
-    public static function randomString($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+    public static function randomString($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
         $pieces = [];
         $max = mb_strlen($keyspace, '8bit') - 1;
         for ($i = 0; $i < $length; ++$i) {
@@ -28,7 +39,8 @@ class UtilsService
      * @param type $length
      * @return type
      */
-    public static function randomNumber($length) {
+    public static function randomNumber($length) 
+    {
         $result = '';
 
         for($i = 0; $i < $length; $i++) {
@@ -36,5 +48,25 @@ class UtilsService
         }
 
         return $result;
+    }
+    
+    /**
+     * Get culture country code
+     * @param string $ip
+     * @return string
+     */
+    public static function getCultureCode(string $ip = null) : string
+    {
+        if ($ip) {
+            $location = \Location::get($ip); 
+        } else {
+            $location = \Location::get(request()->ip());
+        }
+        
+        // TODO - REMOVE
+        if (request()->get('_ip')) {
+            $location = \Location::get(request()->get('_ip'));
+        }
+        return !empty($location->countryCode) && !empty(static::$cultureCodes[$location->countryCode]) ? static::$cultureCodes[$location->countryCode] : 'en-US';
     }
 }

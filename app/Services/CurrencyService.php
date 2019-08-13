@@ -31,7 +31,7 @@ class CurrencyService
     }
     
     /**
-     * 
+     * Get local price from USD
      * @param type $price
      * @param type $toCurrency
      * @return type
@@ -46,7 +46,9 @@ class CurrencyService
         }
         
         //get fraction digits and locale
-        $localeString = strtolower($locale).'-'.strtoupper($locale);
+        
+        $localeString = \Utils::getCultureCode();
+        echo '<pre>'; var_dump($localeString); echo '</pre>'; exit;
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY); 
         
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);

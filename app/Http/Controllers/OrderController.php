@@ -34,7 +34,6 @@ class OrderController extends Controller
      */
     public function saveTxn(Request $request)
     {
-        
         $data = [
             'hash' => \Utils::randomString(10),
             'value' => \Utils::randomNumber(3) + mt_rand() / mt_getrandmax(),
@@ -58,7 +57,7 @@ class OrderController extends Controller
      * @param Request $request
      * @return type
      */
-    public function orderPaid(Request $request)
+    public function saveOrder(Request $request)
     {
         
         $data = [

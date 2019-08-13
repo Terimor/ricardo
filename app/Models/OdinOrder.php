@@ -22,8 +22,7 @@ class OdinOrder extends Model
         'number' => '', // * U (O1908USXXXXXX, X = A-Z0-9)
         'status' => 'new', // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled']
         'currency' => '', // * enum
-        'total_paid' => '', // * float
-        'payment_hash' => '', // string
+        'total_paid' => '', // * float        
         'payment_provider' => '', // enum string
         'payment_method' => '', // enum string
         'customer_id' => '', // * OdinCustomer id
@@ -49,6 +48,8 @@ class OdinOrder extends Model
             'quantity' => '', // int
             'price' => '', // float
             'price_usd' => '', // float
+            'warranty_price' => '', // float
+            'warranty_price_usd' => '', // float
             'is_main' => '', // bool
         ],
         'ipqualityscore' => '', // object
@@ -89,7 +90,7 @@ class OdinOrder extends Model
      * @var array
      */
     protected $fillable = [
-        'number', 'status', 'currency', 'total_paid', 'payment_hash', 'payment_provider', 'payment_method', 'customer_id', 'customer_email', 'customer_first_name',
+        'number', 'status', 'currency', 'total_paid', 'payment_provider', 'payment_method', 'customer_id', 'customer_email', 'customer_first_name',
         'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
         'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txns', 'is_refunding'
         
