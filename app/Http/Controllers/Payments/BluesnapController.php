@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 
 use tdanielcox\Bluesnap\Bluesnap;
 use tdanielcox\Bluesnap\CardTransaction;
+use GuzzleHttp\Client;
 
 class BluesnapController extends Controller
 {
+    protected $init;
+    
     /**
      * Create a new controller instance.
      *
@@ -28,7 +31,7 @@ class BluesnapController extends Controller
             'security_code' => 'required',
             'card_number' => 'required',
         ]);
-
+exit;
         $response = CardTransaction::create([
             'creditCard' => [
                 'cardNumber' => $request->input('card_number'),
@@ -53,5 +56,32 @@ class BluesnapController extends Controller
         
         echo 'SUCCESS';
         echo '<pre>'; var_dump($transaction); echo '</pre>';
-    }    
+    }
+
+    /**
+     * Generate token using basic auth
+     */
+    public function generateToken() 
+    {       
+        $url = Bluesnap::getBaseUrl().'payment-fields-tokens';
+        $client = new \GuzzleHttp\Client();
+        $request = $client->request('POST', $url, [
+            'headers' => [
+                'Authorization' => "Basic ".base64_encode(env('BLUESNAP_API_KEY').':'.env('BLUESNAP_API_PASS')),
+            ],
+            'form_params' => [
+            ]
+        ]);
+        
+        $response = $request->getHeader('Location');
+        
+        if (!empty($response[0])) {
+            $token = basename($response[0]);
+        } else {
+            logger()->error('Can not generate bluesnap token', ['api_key' => env('BLUESNAP_API_KEY'), 'api_pass' => env('BLUESNAP_API_PASS'), 'url' => $url]);
+            $token = null;
+        }
+        return $token;
+    }
+    
 }
