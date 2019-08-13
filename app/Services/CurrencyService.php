@@ -46,7 +46,7 @@ class CurrencyService
         }
         
         //get fraction digits and locale string        
-        $localeString = \Utils::getCultureCode();        
+        $localeString = \Utils::getCultureCode(null, $countryCode);        
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY); 
         
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
