@@ -14,12 +14,12 @@ class Txn extends Model
     public $timestamps = true;
     
     protected $attributes = [
-        'hash' => '', // * string
-        'value' => '', // * float
-        'currency' => '', // * string
-        'provider_data' => '',
-        'payment_provider' => '', // enum string
-        'payment_method' => '', // enum string        
+        'hash' => null, // * string
+        'value' => null, // * float
+        'currency' => null, // * string
+        'provider_data' => null,
+        'payment_provider' => null, // enum string
+        'payment_method' => null, // enum string        
         
     ];
     

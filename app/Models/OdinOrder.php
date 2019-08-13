@@ -19,52 +19,50 @@ class OdinOrder extends Model
      * @var type 
      */
     protected $attributes = [
-        'number' => '', // * U (O1908USXXXXXX, X = A-Z0-9)
+        'number' => null, // * U (O1908USXXXXXX, X = A-Z0-9)
         'status' => 'new', // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled']
-        'currency' => '', // * enum
-        'total_paid' => '', // * float        
-        'payment_provider' => '', // enum string
-        'payment_method' => '', // enum string
-        'customer_id' => '', // * OdinCustomer id
-        'customer_email' => '', // * string
-        'customer_first_name' => '', // * string
-        'customer_last_name' => '', // * string
-        'customer_phone' => '', // * string
-        'language' => '', // enum string
-        'ip' => '', // string
-        'shipping_country' => '', // * enum string
-        'shipping_zip' => '', // * string
-        'shipping_state' => '', // * string
-        'shipping_city' => '', // * string
-        'shipping_street' => '', // * string        
+        'currency' => null, // * enum
+        'total_paid' => null, // * float amount totally paid in local currency; decreases after refund
+        'total_price' => null, // * float full price in local currency (with warranty)
+        'total_price_usd' => null, // * float, full USD price (with warranty)
+        'payment_provider' => null, // enum string
+        'payment_method' => null, // enum string
+        'customer_id' => null, // * OdinCustomer id
+        'customer_email' => null, // * string
+        'customer_first_name' => null, // * string
+        'customer_last_name' => null, // * string
+        'customer_phone' => null, // * string
+        'language' => null, // enum string
+        'ip' => null, // string
+        'shipping_country' => null, // * enum string
+        'shipping_zip' => null, // * string
+        'shipping_state' => null, // * string
+        'shipping_city' => null, // * string
+        'shipping_street' => null, // * string        
         'exported' => false, // bool, default false
-        'warehouse_id' => '',
+        'warehouse_id' => null,
         'trackings' => [
-            'number' => '', // string
-            'aftership_slug' => '', // enum string
+            'number' => null, // string
+            'aftership_slug' => null, // enum string
         ],
         'products' => [
-            'sku_code' => '', // string
-            'quantity' => '', // int
-            'price' => '', // float
-            'price_usd' => '', // float
-            'warranty_price' => '', // float
-            'warranty_price_usd' => '', // float
-            'is_main' => '', // bool
+            'sku_code' => null, // string
+            'quantity' => null, // int
+            'price' => null, // float
+            'price_usd' => null, // float
+            'warranty_price' => null, // float
+            'warranty_price_usd' => null, // float
+            'is_main' => null, // bool
+            'txn_hash' => null, // string
+            'txn_value' => null, // float decreases after refund
+            'txn_approved' => false, // bool
+            'txn_charged_back' => false, // bool
         ],
-        'ipqualityscore' => '', // object
-        'page_checkout' => '', // string        
+        'ipqualityscore' => null, // object
+        'page_checkout' => null, // string        
         'flagged' => false, // bool, default false
-        'offer' => '', // string
-        'affiliate' => '', // string
-        'txns' => [
-            'txn_id' => '', // Txn id
-            'hash' => '', // string
-            'value' => '', // float
-            'approved' => '', // bool
-            'refunded' => false, // bool
-            'charged_back' => false, // bool
-        ],
+        'offer' => null, // string
+        'affiliate' => null, // string
         'is_refunding' => false, // bool, default false,
     ];
     
@@ -90,7 +88,7 @@ class OdinOrder extends Model
      * @var array
      */
     protected $fillable = [
-        'number', 'status', 'currency', 'total_paid', 'payment_provider', 'payment_method', 'customer_id', 'customer_email', 'customer_first_name',
+        'number', 'status', 'currency', 'total_paid', 'total_price', 'total_price_usd', 'payment_provider', 'payment_method', 'customer_id', 'customer_email', 'customer_first_name',
         'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
         'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txns', 'is_refunding'
         
@@ -131,6 +129,8 @@ class OdinOrder extends Model
             'number'     => 'required',
             'currency'     => 'required',
             'total_paid'     => 'required|numeric',
+            'total_price' => 'required|numeric',
+            'total_price_usd' => 'required|numeric',
             'customer_id'     => 'required',
             'customer_email'     => 'required|email',
             'customer_first_name'     => 'required',
