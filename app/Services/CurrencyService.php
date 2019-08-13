@@ -36,7 +36,7 @@ class CurrencyService
      * @param type $toCurrency
      * @return type
      */
-    public static function getLocalPriceFromUsd(float $price, string $toCurrency, string $locale) : float
+    public static function getLocalPriceFromUsd(float $price, string $toCurrency, string $countryCode) : float
     {
         $toCurrency = strtoupper($toCurrency);        
         $currency = Currency::whereCode($toCurrency)->first();
@@ -45,8 +45,7 @@ class CurrencyService
             return 0;
         }
         
-        //get fraction digits and locale
-        
+        //get fraction digits and locale string        
         $localeString = \Utils::getCultureCode();        
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY); 
         

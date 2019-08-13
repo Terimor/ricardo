@@ -55,7 +55,7 @@ class UtilsService
      * @param string $ip
      * @return string
      */
-    public static function getCultureCode(string $ip = null) : string
+    public static function getCultureCode(string $ip = null, $countryCode = null) : string
     {
         if ($ip) {
             $location = \Location::get($ip); 
@@ -67,6 +67,9 @@ class UtilsService
         if (request()->get('_ip')) {
             $location = \Location::get(request()->get('_ip'));
         }
-        return !empty($location->countryCode) && !empty(static::$cultureCodes[$location->countryCode]) ? static::$cultureCodes[$location->countryCode] : 'en-US';
+        if (!$countryCode) {
+            $countryCode = !empty($location->countryCode) ? $location->countryCode : 'US';
+        }
+        return !empty($countryCode) && !empty(static::$cultureCodes[$countryCode]) ? static::$cultureCodes[$countryCode] : 'en-US';
     }
 }
