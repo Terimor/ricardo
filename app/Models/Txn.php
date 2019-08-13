@@ -19,8 +19,7 @@ class Txn extends Model
         'currency' => '', // * string
         'provider_data' => '',
         'payment_provider' => '', // enum string
-        'payment_method' => '', // enum string
-        'approved' => false, // bool
+        'payment_method' => '', // enum string        
         
     ];
     
