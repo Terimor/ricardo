@@ -23,6 +23,7 @@ class OrderService
         $validator = $model->validate();
         
         if ($validator->fails()) {
+            logger()->error("Add Txn fails", ['errors' => $validator->errors()->messages()]);
             return [
                 'errors' => $validator->errors()->messages(),
                 'success' => false
@@ -51,6 +52,7 @@ class OrderService
         $validator = $model->validate();
         
         if ($validator->fails()) {
+            logger()->error("Add odin order fails", ['errors' => $validator->errors()->messages()]);
             return [
                 'errors' => $validator->errors()->messages(),
                 'success' => false

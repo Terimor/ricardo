@@ -32,7 +32,7 @@ class OrderController extends Controller
      * @param Request $request
      * @return json
      */
-    public function sendTransaction(Request $request)
+    public function saveTxn(Request $request)
     {
         
         $data = [
@@ -45,11 +45,12 @@ class OrderController extends Controller
             ],
         ];
         
-        //$data = $request->all();                
-        
+        $data = $request->all();                
+        $resutl = $this->orderService->addTxn($data);
+                
         return response()->json([
-            $this->orderService->addTxn($data)
-        ]);        
+            $result
+        ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
     }
     
     /**
@@ -57,7 +58,7 @@ class OrderController extends Controller
      * @param Request $request
      * @return type
      */
-    public function sendOdinOrder(Request $request)
+    public function orderPaid(Request $request)
     {
         
         $data = [
@@ -109,11 +110,12 @@ class OrderController extends Controller
             //'is_refunding' => false, // bool, default false,
         ];
         
-        //$data = $request->all();
+        $data = $request->all();
         
+        $result = $this->orderService->addOdinOrder($data);
         return response()->json([
-            $this->orderService->addOdinOrder($data)
-        ]);
+            $result
+        ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
     }
     
 }
