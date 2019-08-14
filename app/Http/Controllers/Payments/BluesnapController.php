@@ -60,6 +60,7 @@ exit;
 
     /**
      * Generate token using basic auth
+     * @return type
      */
     public function generateToken() 
     {       
@@ -82,6 +83,31 @@ exit;
             $token = null;
         }
         return $token;
+    }
+    
+    /**
+     * Send transaction
+     * @return type
+     */
+    public function sendTransaction(Request $request) 
+    {
+        $url = Bluesnap::getBaseUrl().'transactions';        
+        try {
+            $client = new \GuzzleHttp\Client();
+            $request = $client->request('POST', $url, [
+                'headers' => [
+                    'Authorization' => "Basic ".base64_encode(env('BLUESNAP_API_KEY').':'.env('BLUESNAP_API_PASS')),
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ],
+                \GuzzleHttp\RequestOptions::JSON => $request->all()
+            ]);            
+            $response = $request->getBody()->getContents();
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse()->getBody()->getContents();
+        }
+        
+        return $response;
     }
     
 }

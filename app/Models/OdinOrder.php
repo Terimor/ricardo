@@ -38,7 +38,8 @@ class OdinOrder extends Model
         'shipping_zip' => null, // * string
         'shipping_state' => null, // * string
         'shipping_city' => null, // * string
-        'shipping_street' => null, // * string        
+        'shipping_street' => null, // * string
+        'shipping_street2' => null, // * string
         'exported' => false, // bool, default false
         'warehouse_id' => null,
         'trackings' => [
@@ -89,7 +90,7 @@ class OdinOrder extends Model
      */
     protected $fillable = [
         'number', 'status', 'currency', 'total_paid', 'total_price', 'total_price_usd', 'payment_provider', 'payment_method', 'customer_id', 'customer_email', 'customer_first_name',
-        'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
+        'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2',
         'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding'
         
     ];
@@ -126,7 +127,7 @@ class OdinOrder extends Model
         }
         
         return Validator::make($data, [
-            'number'     => 'required',
+            'number'     => 'required|unique:odin_order',
             'currency'     => 'required',
             'total_paid'     => 'required|numeric',
             'total_price' => 'required|numeric',
@@ -179,5 +180,13 @@ class OdinOrder extends Model
         } else {
           return 'Unknown';
         }
+    }
+    
+    /**
+     * Setter customer email
+     */
+    public function setCustomerEmailAttribute($value) 
+    {        
+        $this->attributes['customer_email'] =  strtolower(trim($value));
     }    
 }

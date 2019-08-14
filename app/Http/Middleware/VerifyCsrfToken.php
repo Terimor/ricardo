@@ -18,6 +18,8 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array
      */
-    protected $except = [        
+    protected $except = [
+        //'/payments/bluesnap-send-transaction',
+        //'/payments/bluesnap-generate-token'
     ];
 }
