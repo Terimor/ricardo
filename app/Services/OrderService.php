@@ -76,20 +76,34 @@ class OrderService
         $model = OdinCustomer::firstOrNew(['email' => $data['email']]);        
         $model->fill($data);
         
-        // ips
+        // add ip if not in array
         $ip = !empty($data['ip']) ? $data['ip'] : request()->ip();        
         if (!in_array($ip, $model->ip)) {
             $model->ip = array_merge($model->ip, [$ip]);
         }
        
-        // phones
-        if (!empty($data['phone']) && !in_array($data['phone'], $model->phones)) {            
+        // add phone if not in array
+        if (!empty($data['phone']) && !in_array($data['phone'], $model->phones)) {
             $model->phones = array_merge($model->phones, [$data['phone']]);
         }
         
         // addresses
-        $address = [];
+        $address = [
+            'country' => !empty($data['country']) ? trim($data['country']) : '',
+            'zip' => !empty($data['zip']) ? trim($data['zip']) : '',
+            'state' => !empty($data['state']) ? trim($data['state']) : '',
+            'city' => !empty($data['city']) ? trim($data['city']) : '',
+            'street' => !empty($data['street']) ? trim($data['street']) : '',
+            'street2' => !empty($data['street2']) ? trim($data['street2']) : '',           
+        ];
         
+        $addressJson = json_encode($address);
+        $modelAddressesJson = json_encode($model->addresses);
+
+        // add address if not in array
+        if (!strstr(' '.$modelAddressesJson, $addressJson)) {
+            $model->addresses = array_merge($model->addresses, [$address]);
+        }
         
         $validator = $model->validate();
         

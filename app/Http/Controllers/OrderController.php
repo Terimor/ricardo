@@ -129,14 +129,14 @@ class OrderController extends Controller
             'first_name' =>  \Utils::randomString(10),
             'last_name' =>  \Utils::randomString(10),
             'phone' =>  \Utils::randomString(10),
-            "addresses" =>  [
-                "country" => '1',
+            //"addresses" =>  [
+                "country" => '12',
                 "zip" => '1',
                 "state" => '1',
                 "city" => '1',
                 "street" => '1',
                 "street2" => '1'
-            ],
+            //],
 
         ];
         

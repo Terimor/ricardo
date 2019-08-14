@@ -28,12 +28,12 @@ class OdinCustomer extends Model
         'phones' => [], // array of strings
         'language' => null, // enum string
         'addresses' => [
-            'country' => null, // enum string
-            'zip' => null, // string
-            'state' => null, // string
-            'city' => null, // string
-            'street' => null, // string
-            'street2' => null, // string
+            //'country' => null, // enum string
+            //'zip' => null, // string
+            //'state' => null, // string
+            //'city' => null, // string
+            //'street' => null, // string
+            //'street2' => null, // string
         ],
         'paypal_payer_id' => null, // string
     ];
