@@ -65,6 +65,7 @@ class OdinOrder extends Model
         'offer' => null, // string
         'affiliate' => null, // string
         'is_refunding' => false, // bool, default false,
+        'payer_id' => null, // payer ID in payment provider system
     ];
     
     const STATUS_NEW  = 'new';
@@ -91,7 +92,7 @@ class OdinOrder extends Model
     protected $fillable = [
         'number', 'status', 'currency', 'total_paid', 'total_price', 'total_price_usd', 'payment_provider', 'payment_method', 'customer_id', 'customer_email', 'customer_first_name',
         'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2',
-        'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding'
+        'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'payer_id'
         
     ];
 

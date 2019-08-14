@@ -33,6 +33,7 @@ class OdinCustomer extends Model
             'street' => null, // string
             'street2' => null, // string
         ],
+        'paypal_payer_id' => null, // string
     ];
         
     /**
@@ -41,7 +42,7 @@ class OdinCustomer extends Model
     * @var array
     */
    protected $fillable = [
-       'email', 'first_name', 'last_name', 'ip', 'phones', 'language', 'addresses'
+       'email', 'first_name', 'last_name', 'ip', 'phones', 'language', 'addresses', 'paypal_payer_id'
    ];
    
    
