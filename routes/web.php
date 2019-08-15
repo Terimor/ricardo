@@ -37,13 +37,20 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/payment/bluesnap-transaction', 'Payments\BluesnapController@createTransaction')->name('bluesnap-payment');
 
     $router->get('/test', 'SiteController@test');
-
+    
     $router->post('/save-txn', 'OrderController@saveTxn');
     $router->post('/send-order', 'OrderController@saveOrder');
     $router->post('/save-customer', 'OrderController@saveCustomer');
-
+    
     $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
+
+
+
+    // test route
+    $router->get('/test-checkout', 'Payments\PaypalController@checkout');
+    $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
+    $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
 
 });
 
