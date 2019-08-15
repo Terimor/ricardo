@@ -14,6 +14,8 @@ class OdinCustomer extends Model
     
     protected $dates = ['created_at', 'updated_at'];
     
+    protected $guarded = ['addresses', 'ip', 'phones'];
+    
     /**
      *
      * @var type 
@@ -26,12 +28,12 @@ class OdinCustomer extends Model
         'phones' => [], // array of strings
         'language' => null, // enum string
         'addresses' => [
-            'country' => null, // enum string
-            'zip' => null, // string
-            'state' => null, // string
-            'city' => null, // string
-            'street' => null, // string
-            'street2' => null, // string
+            //'country' => null, // enum string
+            //'zip' => null, // string
+            //'state' => null, // string
+            //'city' => null, // string
+            //'street' => null, // string
+            //'street2' => null, // string
         ],
         'paypal_payer_id' => null, // string
     ];
@@ -42,7 +44,7 @@ class OdinCustomer extends Model
     * @var array
     */
    protected $fillable = [
-       'email', 'first_name', 'last_name', 'ip', 'phones', 'language', 'addresses', 'paypal_payer_id'
+       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id'
    ];
    
    
@@ -56,6 +58,10 @@ class OdinCustomer extends Model
         
         if (!$data) {
             $data = $this->attributesToArray();
+            if (!empty($data['_id'])) {
+                // skip unique for email                
+                $data['email'] .= $data['_id'];
+            }
         }
         
         return Validator::make($data, [

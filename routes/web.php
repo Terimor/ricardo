@@ -38,6 +38,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     
     $router->post('/save-txn', 'OrderController@saveTxn');
     $router->post('/send-order', 'OrderController@saveOrder');
+    $router->post('/save-customer', 'OrderController@saveCustomer');
     
     $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');

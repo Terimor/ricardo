@@ -45,7 +45,7 @@ class OrderController extends Controller
         ];
         
         $data = $request->all();                
-        $resutl = $this->orderService->addTxn($data);
+        $result = $this->orderService->addTxn($data);
                 
         return response()->json([
             $result
@@ -112,6 +112,37 @@ class OrderController extends Controller
         $data = $request->all();
         
         $result = $this->orderService->addOdinOrder($data);
+        return response()->json([
+            $result
+        ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
+    }
+    
+    /**
+     * Save customer
+     * @param Request $request
+     * @return json
+     */
+    public function saveCustomer(Request $request)
+    {
+        $data = [
+            'email' => 'bh4prl7qvw@j6c.com',
+            'first_name' =>  \Utils::randomString(10),
+            'last_name' =>  \Utils::randomString(10),
+            'phone' =>  \Utils::randomString(10),
+            //"addresses" =>  [
+                "country" => '12',
+                "zip" => '1',
+                "state" => '1',
+                "city" => '1',
+                "street" => '1',
+                "street2" => '1'
+            //],
+
+        ];
+        
+        $data = $request->all();                
+        $result = $this->orderService->addCustomer($data);
+                
         return response()->json([
             $result
         ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
