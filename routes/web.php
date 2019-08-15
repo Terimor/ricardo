@@ -24,6 +24,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
     //$router->get('/products', 'SiteController@products')->name('products');
     $router->get('/product', 'ProductController@view')->name('product');
+    $router->get('/product/local-price', 'ProductController@getLocalPrice');
 
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
     $router->get('/test-checkoutcom', 'PaymentsController@testCheckoutCom');

@@ -101,11 +101,11 @@ class SiteController extends Controller
      */
     public function test()
     {
-        /*$price = 99.81;
+        $price = 99.81;
 
-        $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price, 'KRW', app()->getLocale());
-        echo $exchangedPrice; exit; 
-        */
+        $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price);
+        echo '<pre>'; var_dump($exchangedPrice); echo '</pre>'; exit;
+        
         $odinOrder = new \App\Models\OdinOrder();
         $odinOrder->number = $odinOrder->generateOrderNumber('US');
         $odinOrder->customer_email = 'asdaASDSAD@ccc.a     ';
