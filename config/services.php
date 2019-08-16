@@ -44,4 +44,8 @@ return [
         ],
     ],
 
+    'paypal' => [
+        'mode' => env('PAYPAL_MODE', ''),
+    ]
+
 ];

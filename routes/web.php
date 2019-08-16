@@ -23,6 +23,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/thankyou', 'SiteController@thankyou')->name('thankyou');
     $router->get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
     //$router->get('/products', 'SiteController@products')->name('products');
+    $router->get('/product/{product}', 'ProductController@getProduct')->name('ajax.product');
     $router->get('/product', 'ProductController@view')->name('product');
     $router->get('/product/local-price', 'ProductController@getLocalPrice');
 
@@ -43,6 +44,13 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     
     $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
+
+
+
+    // test route
+    $router->get('/test-checkout', 'Payments\PaypalController@checkout');
+    $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
+    $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
 
 });
 
