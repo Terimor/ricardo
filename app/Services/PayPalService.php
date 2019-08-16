@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Http\Requests\PayPalCrateOrderRequest;
 use App\Http\Requests\PayPalVerfifyOrderRequest;
 use App\Models\OdinOrder;
-use App\Models\Product;
+use App\Models\OdinProduct;
 use App\Models\Txn;
 use BraintreeHttp\HttpResponse;
 use Illuminate\Http\Request;
@@ -331,11 +331,11 @@ class PayPalService
      *
      * @param $sku
      * @param Request $request
-     * @param Product $product
+     * @param OdinProduct $product
      * @param OdinOrder|null $order
      * @return float|int
      */
-    private function getPrice($sku, Request $request, Product $product, OdinOrder $order = null)
+    private function getPrice($sku, Request $request, OdinProduct $product, OdinOrder $order = null)
     {
         if ($request->input('order_id', null)) {
             abort_if(!$order, 404);
@@ -374,6 +374,6 @@ class PayPalService
      */
     private function findProductBySku(string $sku)
     {
-        return Product::where('skus.code', $sku)->firstOrFail();
+        return OdinProduct::where('skus.code', $sku)->firstOrFail();
     }
 }

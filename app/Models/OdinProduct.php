@@ -5,10 +5,10 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
- * Class Product
+ * Class OdinProduct
  * @package App\Models
  */
-class Product extends Model
+class OdinProduct extends Model
 {
     /**
      * @var string

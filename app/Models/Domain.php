@@ -31,6 +31,6 @@ class Domain extends Model
      */
     public function product()
     {
-        return $this->hasOne(Product::class, '_id', 'odin_product_id');
+        return $this->hasOne(OdinProduct::class, '_id', 'odin_product_id');
     }    
 }

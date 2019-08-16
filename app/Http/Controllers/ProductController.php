@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Models\OdinProduct;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 
@@ -27,10 +27,10 @@ class ProductController extends Controller
     /**
      * Get product by ID
      *
-     * @param Product $product
-     * @return Product
+     * @param OdinProduct $product
+     * @return OdinProduct
      */
-    public function getProduct(Product $product)
+    public function getProduct(OdinProduct $product) : OdinProduct
     {
         $product->load([
             'category',
