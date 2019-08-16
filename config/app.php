@@ -180,6 +180,7 @@ return [
         
         Stevebauman\Location\LocationServiceProvider::class,
         Sentry\Laravel\ServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 
@@ -235,6 +236,7 @@ return [
         'Sentry' => Sentry\Laravel\Facade::class,
         'Location' => Stevebauman\Location\Facades\Location::class,
         'Utils' => App\Services\UtilsService::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
     ],
 
