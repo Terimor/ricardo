@@ -38,5 +38,9 @@ class AppServiceProvider extends ServiceProvider
             }
             return new PayPalHttpClient($env);
         });
+        
+        if (config('app.debug')){
+            \DB::connection('mongodb')->enableQueryLog();
+        }
     }
 }
