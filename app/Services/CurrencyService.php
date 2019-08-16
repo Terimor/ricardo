@@ -74,7 +74,8 @@ class CurrencyService
             return [
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
-                'code' => $currencyCode
+                'code' => $currencyCode,
+                'exchange_rate' => $currency->usd_rate,
             ];
         }
         
@@ -94,7 +95,8 @@ class CurrencyService
             return [
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
-                'code' => $currencyCode
+                'code' => $currencyCode,
+                'exchange_rate' => $currency->usd_rate,
             ];
         }
         
@@ -151,7 +153,8 @@ class CurrencyService
         return [
             'price' => $exchangedPrice,
             'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
-            'code' => $currencyCode
+            'code' => $currencyCode,
+            'exchange_rate' => $currency->usd_rate,
         ];
     }
     
