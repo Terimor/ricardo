@@ -31,6 +31,8 @@ class ProductService
             return $domain->product;            
         }
         
+        logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
+        
         return Product::orderBy('_id', 'desc')->first();
         //abort(404);
     }        
