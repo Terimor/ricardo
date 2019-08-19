@@ -44,6 +44,8 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     
     $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
+    
+    $router->post('/payments/three', 'Payments\EbanxController@sendTransaction');
 
 
 

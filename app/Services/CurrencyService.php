@@ -38,10 +38,11 @@ class CurrencyService
      * @param type $ip
      * @return float
      */
-    public static function getLocalPriceFromUsd(float $price, string $currencyCode = null, string $countryCode = null, $ip = null) : array
+    public static function getLocalPriceFromUsd(float $price, Currency $currency = null, string $countryCode = null, $ip = null) : array
     {
-        
-        $currency = self::getCurrency($currencyCode, $countryCode);
+        if (!$currency) {
+            $currency = self::getCurrency($currencyCode, $countryCode);
+        }
         $currencyCode = $currency->code;
         $countryCode = $currency->countryCode;
  
