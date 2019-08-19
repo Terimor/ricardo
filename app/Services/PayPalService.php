@@ -26,6 +26,7 @@ class PayPalService
     const DEFAULT_CURRENCY = 'USD';
 
     const PAYPAL_ORDER_APPROVED_STATUS = 'APPROVED';
+    const PAYPAL_ORDER_COMPLETED_STATUS = 'COMPLETED';
 
     /**
      * @var PayPalHttpClient
@@ -202,7 +203,7 @@ class PayPalService
             });
             $products = $order->products;
             switch ($paypal_order->status) {
-                case self::PAYPAL_ORDER_APPROVED_STATUS:
+                case self::PAYPAL_ORDER_COMPLETED_STATUS:
                     $products[$product_key]['txn_approved'] = true;
                     $order->products = $products;
                     $order->total_paid += (float)$txn['value'];
