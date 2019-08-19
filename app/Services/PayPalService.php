@@ -61,13 +61,11 @@ class PayPalService
         if($upsell_order) {
             $this->checkIforderAllowedForAddingProducts($upsell_order);
         }
-
         $product = $this->findProductBySku($request->sku_code);
-        $sku = collect($product->skus)->where('code', $request->sku_code)->first();
-        // TODO change to dynamic currency based on country
-        $price = $this->getPrice($sku, $request, $product, $upsell_order);
-        $local_currency = 'USD';
-        $local_price = $this->getLocalPrice($price, $local_currency);
+        $priceData = $this->getPrice($request, $product, $upsell_order);
+        $price = $priceData['price'] * $priceData['exchange_rate'];
+        $local_currency = $priceData['code'];
+        $local_price = $priceData['price'];
         $total_price = $price;
         $total_local_price = $local_price;
         $items = [[
@@ -81,9 +79,9 @@ class PayPalService
             'quantity' => 1
         ]];
         if ($request->input('is_warrantry_checked') && $product->warranty_percent) {
-            $warrantry_price = ($product->warranty_percent / 100) * $price;
-            $local_warranty_price = $this->getLocalPrice($warrantry_price, $local_currency);
-            $total_price += $warrantry_price;
+            $warrantry_price = CurrencyService::getLocalPriceFromUsd(($product->warranty_percent / 100) * $price);
+            $local_warranty_price = $warrantry_price['price'];
+            $total_price += $warrantry_price['price'] * $warrantry_price['exchange_rate'];
             $total_local_price += $local_warranty_price;
             $items[] = [
                 'name' => 'Warrantry',
@@ -112,6 +110,7 @@ class PayPalService
             'purchase_units' => [$unit]
         ];
         $response = $this->payPalHttpClient->execute($pp_request);
+
         if ($response->statusCode === 201) {
             $paypal_order = $response->result;
 
@@ -149,6 +148,7 @@ class PayPalService
             } else {
                 $order_reponse = $this->orderService->addOdinOrder([
                     'currency' => $local_currency,
+                    'exchange_rate' => $priceData['exchange_rate'],
                     'total_paid' => 0,
                     'total_price' => $total_local_price,
                     'total_price_usd' => $total_price,
@@ -165,8 +165,6 @@ class PayPalService
                 ]);
                 abort_if(!$order_reponse['success'], 404);
             }
-
-
         }
         return $response;
     }
@@ -193,10 +191,23 @@ class PayPalService
             $products = $order->products;
             foreach ($products as $k => $product) {
                 if ($product['txn_hash'] === $paypal_order->id) {
-                    $total_product_price = (double)($product['price'] + $product['warranty_price']);
+                    $product_price = CurrencyService::getLocalPriceFromUsd($product['price']);
+                    $warrantry_price = CurrencyService::getLocalPriceFromUsd($product['warranty_price']);
+                    $total_product_price = (double)(
+                        $product_price['price'] * $product_price['exchange_rate']
+                        +
+                        $warrantry_price['price'] * $warrantry_price['exchange_rate']
+                    );
                     $this->setPayer($order, $paypal_order);
                     $this->setShipping($order, $paypal_order);
                     $this->saveCustomer($order);
+//                    logger()->log('info', 'TXN LOG', compact(
+//                        'product_price',
+//                        'warrantry_price',
+//                        'total_product_price',
+//                        'txn',
+//                        'product'
+//                    ));
                     if ($total_product_price === (double)$txn->value) {
                         $products[$k]['txn_approved'] = true;
                         $order->total_paid += $total_product_price;
@@ -217,19 +228,6 @@ class PayPalService
             ['paypal_order' => $paypal_order]
         );
         abort(404);
-    }
-
-    /**
-     * Get price by currency
-     *
-     * @param $price
-     * @param $currency
-     * @return mixed
-     */
-    private function getLocalPrice($price, $currency)
-    {
-        // TODO Change to dynamic price after currency implementation
-        return $price;
     }
 
     /**
@@ -329,39 +327,29 @@ class PayPalService
     /**
      * Get price
      *
-     * @param $sku
      * @param Request $request
      * @param OdinProduct $product
      * @param OdinOrder|null $order
-     * @return float|int
+     * @return array
      */
-    private function getPrice($sku, Request $request, OdinProduct $product, OdinOrder $order = null)
+    private function getPrice(Request $request, OdinProduct $product, OdinOrder $order = null)
     {
         if ($request->input('order_id', null)) {
             abort_if(!$order, 404);
             $main_order_product = collect($order->products)->where('is_main', true)->first();
             $main_order_product = $this->findProductBySku($main_order_product['sku_code']);
             $upsell = collect($main_order_product->upsells)->where('product_id', $product->_id)->first();
+
             if ($upsell) {
                 if($upsell['fixed_price']) {
-                    return $upsell['fixed_price'];
+                    return CurrencyService::getLocalPriceFromUsd($upsell['fixed_price']);
                 } elseif ($upsell['discount_percent']) {
-                    return ($upsell['discount_percent'] / 100) * $sku['prices'][$request->sku_quantity]['middle'];
-                } else {
-                    logger()->error(
-                        'Trying to use upsell without either `discount_percent` or `fixed_price` attributes',
-                        [
-                            'upsell' => $upsell,
-                            'product_id' => $main_order_product->_id,
-                        ]
-                    );
-                    abort(404);
+                    $price = ($upsell['discount_percent'] / 100) * $product->prices[$request->sku_quantity]['value'];
+                    return CurrencyService::getLocalPriceFromUsd($price);
                 }
-
             }
         } else {
-            // TODO We are using only middle price right now
-            return $sku['prices'][$request->sku_quantity]['middle'];
+            return $product->prices[$request->sku_quantity]['local'];
         }
         abort(404);
     }
