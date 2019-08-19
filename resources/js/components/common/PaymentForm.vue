@@ -153,59 +153,63 @@
                         text: 'Credit card',
                     }
                 ]"/>
-            <text-field
-                :validation="$v.form.cardNumber"
-                :rest="{
+            <form id="payment-data-form">
+                <text-field
+                    :validation="$v.form.cardNumber"
+                    :rest="{
                   pattern: '\\d*',
                   type: 'tel',
-                  autocomplete: 'cc-number'
-                }"
-                validationMessage="Please enter a credit card number."
-                class="card-number"
-                theme="variant-1"
-                label="Card Number"
-                v-model="paymentForm.cardNumber"
-                :prefix="`<img src='${cardUrl}' />`"
-                :postfix="`<i class='fa fa-lock'></i>`"
-            />
-            <div class="card-date" :class="{ 'with-error': !$v.form.year.isValid && $v.form.year.$dirty }">
-                <span class="label">Card Valid Until</span>
-                <select-field
-                    :validation="$v.form.month"
-                    validationMessage="Required"
-                    :rest="{
-                  placeholder: 'Month'
-                }"
+                  autocomplete: 'cc-number',
+                    'data-bluesnap': 'encryptedCreditCard'
+                  }"
+                    validationMessage="Please enter a credit card number."
+                    class="card-number"
                     theme="variant-1"
-                    :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
-                    v-model="paymentForm.month"/>
-                <select-field
-                    :validation="$v.form.year"
-                    validationMessage="Required"
-                    :rest="{
+                    label="Card Number"
+                    v-model="paymentForm.cardNumber"
+                    :prefix="`<img src='${cardUrl}' />`"
+                    :postfix="`<i class='fa fa-lock'></i>`"
+                />
+                <div class="card-date" :class="{ 'with-error': !$v.form.year.isValid && $v.form.year.$dirty }">
+                    <span class="label">Card Valid Until</span>
+                    <select-field
+                        :validation="$v.form.month"
+                        validationMessage="Required"
+                        :rest="{
+                      placeholder: 'Month'
+                    }"
+                        theme="variant-1"
+                        :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
+                        v-model="paymentForm.month"/>
+                    <select-field
+                        :validation="$v.form.year"
+                        validationMessage="Required"
+                        :rest="{
                       placeholder: 'Year'
                     }"
+                        theme="variant-1"
+                        :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+                        v-model="paymentForm.year"/>
+                    <span class="error" v-show="!$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
+                </div>
+                <text-field
+                    @click-postfix="openCVVModal"
+                    :validation="$v.form.cvv"
+                    validationMessage="Required"
+                    class="cvv-field"
                     theme="variant-1"
-                    :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
-                    v-model="paymentForm.year"/>
-                <span class="error" v-show="!$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
-            </div>
-            <text-field
-                @click-postfix="openCVVModal"
-                :validation="$v.form.cvv"
-                validationMessage="Required"
-                class="cvv-field"
-                theme="variant-1"
-                label="CVV"
-                :rest="{
-              maxlength: 4,
-              pattern: '\\d*',
-              type: 'tel',
-              autocomplete: 'cc-csc'
-            }"
-                v-model="paymentForm.cvv"
-                postfix="<i class='fa fa-question-circle'></i>"
-            />
+                    label="CVV"
+                    :rest="{
+                  maxlength: 4,
+                  pattern: '\\d*',
+                  type: 'tel',
+                  autocomplete: 'cc-csc',
+                  'data-bluesnap': 'encryptedCvv'
+                }"
+                    v-model="paymentForm.cvv"
+                    postfix="<i class='fa fa-question-circle'></i>"
+                />
+            </form>
             <text-field-with-placeholder
                 :validation="$v.form.documentNumber"
                 validationMessage="Required"
@@ -213,10 +217,10 @@
                 v-if="countryCode === 'BR'"
                 placeholder="___.___.___-__"
                 :rest="{
-            'format': '___.___.___-__',
-            'pattern': '\\d*',
-            type: 'tel'
-          }"
+                  'format': '___.___.___-__',
+                  'pattern': '\\d*',
+                  type: 'tel'
+                }"
                 theme="variant-1"
                 label="Document number" />
             <text-field-with-placeholder
@@ -226,8 +230,8 @@
                 v-if="countryCode === 'CO'"
                 placeholder="1234567890"
                 :rest="{
-            'format': '1234567890',
-          }"
+                  'format': '1234567890',
+                }"
                 theme="variant-1"
                 label="Document number" />
         </template>
@@ -270,6 +274,15 @@
       }
     },
     computed: {
+      exp () {
+        const { month, year } = this.paymentForm
+
+        if (month && year) {
+          return month.length === 2 ? month : '0'.concat(month) + '/' + String(year)
+        } else {
+          return null
+        }
+      },
       cardUrl () {
         const cardMap = {
           'american-express': '/images/cc-icons/american-express.png',
@@ -417,10 +430,20 @@
         if (this.paymentForm.paymentType === 'bank-payment') {
           this.$emit('showCart')
         } else if (this.paymentForm.paymentType === 'credit-card') {
-          window.location.href = '/thankyou-promos';
+          const { paymentForm, exp } = this
+          const creditCardData = {
+            card_number: paymentForm.cardNumber,
+            card_name: paymentForm.fname + ' ' + paymentForm.lname,
+            card_due_date: exp,
+            card_cvv: paymentForm.cvv
+          }
+
+          EBANX.card.createToken(creditCardData, console.log);
+
+          // window.location.href = '/thankyou-promos';
         }
       }
-    }
+    },
   };
 </script>
 
@@ -733,6 +756,11 @@
                 outline: rgb(255, 255, 255) none 0;
             }
         }
+    }
+
+    #payment-data-form {
+        display: flex;
+        flex-wrap: wrap;
     }
 
     @media screen and ($s-down) {

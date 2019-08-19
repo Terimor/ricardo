@@ -33,7 +33,7 @@ class ProductService
         
         logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
         
-        return OdinProduct::orderBy('_id', 'desc')->first();
+        return OdinProduct::orderBy('_id', 'desc')->firstOrFail();
         //abort(404);
     }        
 }

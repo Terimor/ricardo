@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
-use function Sodium\compare;
 
 /**
  * Class PayPalService

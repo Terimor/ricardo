@@ -476,6 +476,24 @@ export default {
     }
   },
   mounted () {
+    window.setTestData = () => {
+      this.form = {
+        ...this.form,
+        fname: 'Name',
+        lname: 'LName',
+        email: 'email@gmail.mail',
+        phone: '44444444',
+        zipcode: '13010-111',
+        number: '111',
+        complemento: 'Complemento',
+        cardNumber: '5453371328959503',
+        cvv: '123',
+        year: 2021,
+        month: 1,
+        documentNumber: '111.111.111-11',
+      }
+    }
+
     this.setCart(this.mockData.productList.reduce((acc, { key }) => {
       acc[key] = 0
 
