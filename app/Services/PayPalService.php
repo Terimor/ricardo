@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
+use function Sodium\compare;
 
 /**
  * Class PayPalService
@@ -63,9 +64,9 @@ class PayPalService
         }
         $product = $this->findProductBySku($request->sku_code);
         $priceData = $this->getPrice($request, $product, $upsell_order);
-        $price = $priceData['value'];
-        $local_currency = $priceData['local']['code'];
-        $local_price = $priceData['local']['price'];
+        $price = $priceData['price'] * $priceData['exchange_rate'];
+        $local_currency = $priceData['code'];
+        $local_price = $priceData['price'];
         $total_price = $price;
         $total_local_price = $local_price;
         $items = [[
@@ -79,9 +80,9 @@ class PayPalService
             'quantity' => 1
         ]];
         if ($request->input('is_warrantry_checked') && $product->warranty_percent) {
-            $warrantry_price = ($product->warranty_percent / 100) * $price;
-            $local_warranty_price = CurrencyService::getLocalPriceFromUsd($warrantry_price)['price'];
-            $total_price += $warrantry_price;
+            $warrantry_price = CurrencyService::getLocalPriceFromUsd(($product->warranty_percent / 100) * $price);
+            $local_warranty_price = $warrantry_price['price'];
+            $total_price += $warrantry_price['price'] * $warrantry_price['exchange_rate'];
             $total_local_price += $local_warranty_price;
             $items[] = [
                 'name' => 'Warrantry',
@@ -148,7 +149,7 @@ class PayPalService
             } else {
                 $order_reponse = $this->orderService->addOdinOrder([
                     'currency' => $local_currency,
-                    'exchange_rate' => $priceData['local']['exchange_rate'],
+                    'exchange_rate' => $priceData['exchange_rate'],
                     'total_paid' => 0,
                     'total_price' => $total_local_price,
                     'total_price_usd' => $total_price,
@@ -191,10 +192,23 @@ class PayPalService
             $products = $order->products;
             foreach ($products as $k => $product) {
                 if ($product['txn_hash'] === $paypal_order->id) {
-                    $total_product_price = (double)($product['price'] + $product['warranty_price']);
+                    $product_price = CurrencyService::getLocalPriceFromUsd($product['price']);
+                    $warrantry_price = CurrencyService::getLocalPriceFromUsd($product['warranty_price']);
+                    $total_product_price = (double)(
+                        $product_price['price'] * $product_price['exchange_rate']
+                        +
+                        $warrantry_price['price'] * $warrantry_price['exchange_rate']
+                    );
                     $this->setPayer($order, $paypal_order);
                     $this->setShipping($order, $paypal_order);
                     $this->saveCustomer($order);
+//                    logger()->log('info', 'TXN LOG', compact(
+//                        'product_price',
+//                        'warrantry_price',
+//                        'total_product_price',
+//                        'txn',
+//                        'product'
+//                    ));
                     if ($total_product_price === (double)$txn->value) {
                         $products[$k]['txn_approved'] = true;
                         $order->total_paid += $total_product_price;
@@ -329,22 +343,14 @@ class PayPalService
 
             if ($upsell) {
                 if($upsell['fixed_price']) {
-                    return [
-                        'value' => $upsell['fixed_price'],
-                        'currency' => self::DEFAULT_CURRENCY,
-                        'local' => CurrencyService::getLocalPriceFromUsd($upsell['fixed_price'])
-                    ];
+                    return CurrencyService::getLocalPriceFromUsd($upsell['fixed_price']);
                 } elseif ($upsell['discount_percent']) {
                     $price = ($upsell['discount_percent'] / 100) * $product->prices[$request->sku_quantity]['value'];
-                    return [
-                        'value' => $price,
-                        'currency' => self::DEFAULT_CURRENCY,
-                        'local' => CurrencyService::getLocalPriceFromUsd($price)
-                    ];
+                    return CurrencyService::getLocalPriceFromUsd($price);
                 }
             }
         } else {
-            return $product->prices[$request->sku_quantity];
+            return $product->prices[$request->sku_quantity]['local'];
         }
         abort(404);
     }
