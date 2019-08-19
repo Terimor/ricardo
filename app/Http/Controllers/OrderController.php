@@ -14,9 +14,9 @@ use com\checkout\ApiServices;*/
 
 class OrderController extends Controller
 {
-    
+
     protected $orderService;
-    
+
     /**
      * Create a new controller instance.
      *
@@ -26,9 +26,9 @@ class OrderController extends Controller
     {
         $this->orderService = $orderService;
     }
-    
+
     /**
-     * 
+     *
      * @param Request $request
      * @return json
      */
@@ -43,23 +43,23 @@ class OrderController extends Controller
                 'data_2' => \Utils::randomString(6),
             ],
         ];
-        
-        $data = $request->all();                
+
+        $data = $request->all();
         $result = $this->orderService->addTxn($data);
-                
+
         return response()->json([
             $result
         ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
     }
-    
+
     /**
-     * 
+     *
      * @param Request $request
      * @return type
      */
     public function saveOrder(Request $request)
     {
-        
+
         $data = [
             'number' => OdinOrder::generateOrderNumber(),
             'status' => 'new',
@@ -94,7 +94,7 @@ class OrderController extends Controller
                 //'is_main' => '', // bool
             ],
             //'ipqualityscore' => '', // object
-            //'page_checkout' => '', // string        
+            //'page_checkout' => '', // string
             //'flagged' => false, // bool, default false
             //'offer' => '', // string
             //'affiliate' => '', // string
@@ -108,15 +108,15 @@ class OrderController extends Controller
             ],*/
             //'is_refunding' => false, // bool, default false,
         ];
-        
+
         $data = $request->all();
-        
+
         $result = $this->orderService->addOdinOrder($data);
         return response()->json([
             $result
         ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
     }
-    
+
     /**
      * Save customer
      * @param Request $request
@@ -139,13 +139,13 @@ class OrderController extends Controller
             //],
 
         ];
-        
-        $data = $request->all();                
+
+        $data = $request->all();
         $result = $this->orderService->addCustomer($data);
-                
+
         return response()->json([
             $result
         ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
     }
-    
+
 }

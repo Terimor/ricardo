@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Product;
+use App\Models\OdinProduct;
 use App\Models\Domain;
 use Illuminate\Http\Request;
 
@@ -14,24 +14,26 @@ class ProductService
 {
     /**
      * @param Request $request
-     * @return Product
+     * @return OdinProduct
      */
-    public function resolveProduct(Request $request): Product
+    public function resolveProduct(Request $request): OdinProduct
     {
         if ($request->has('product')) {
-            $product = Product::where('skus.code', $request->input('product'))->first();
+            $product = OdinProduct::where('skus.code', $request->input('product'))->first();
             if ($product) {
                 return $product;
             }
         }
 
         // Domain resolve logic
-        $domain = Domain::where('name', request()->getHost())->first();
+        $domain = Domain::where('name', request()->getHost())->first();       
         if ($domain && !empty($domain->product)) {            
             return $domain->product;            
         }
         
-        return Product::orderBy('_id', 'desc')->first();
+        logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
+        
+        return OdinProduct::orderBy('_id', 'desc')->first();
         //abort(404);
     }        
 }
