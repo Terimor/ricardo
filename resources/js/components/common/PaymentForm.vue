@@ -278,7 +278,7 @@
         const { month, year } = this.paymentForm
 
         if (month && year) {
-          return month.length === 2 ? month : '0'.concat(month) + '/' + String(year).slice(2)
+          return month.length === 2 ? month : '0'.concat(month) + '/' + String(year)
         } else {
           return null
         }
@@ -430,13 +430,20 @@
         if (this.paymentForm.paymentType === 'bank-payment') {
           this.$emit('showCart')
         } else if (this.paymentForm.paymentType === 'credit-card') {
-          window.location.href = '/thankyou-promos';
+          const { paymentForm, exp } = this
+          const creditCardData = {
+            card_number: paymentForm.cardNumber,
+            card_name: paymentForm.fname + ' ' + paymentForm.lname,
+            card_due_date: exp,
+            card_cvv: paymentForm.cvv
+          }
+
+          EBANX.card.createToken(creditCardData, console.log);
+
+          // window.location.href = '/thankyou-promos';
         }
       }
     },
-    mounted() {
-
-    }
   };
 </script>
 
