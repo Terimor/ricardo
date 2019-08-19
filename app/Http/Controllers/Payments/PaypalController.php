@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Services\PayPalService;
 use App\Services\ProductService;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -67,4 +68,11 @@ class PaypalController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     */
+    public function webhooks(Request $request)
+    {
+        $this->payPalService->webhooks($request);
+    }
 }

@@ -9,9 +9,14 @@ use App\Models\OdinProduct;
 use App\Models\Txn;
 use BraintreeHttp\HttpResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use PayPal\Api\PaymentDetail;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
+use PayPalCheckoutSdk\Orders\OrdersAuthorizeRequest;
+use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
+use PayPalCheckoutSdk\Payments\CapturesGetRequest;
 
 /**
  * Class PayPalService
@@ -25,7 +30,6 @@ class PayPalService
 
     const DEFAULT_CURRENCY = 'USD';
 
-    const PAYPAL_ORDER_APPROVED_STATUS = 'APPROVED';
     const PAYPAL_ORDER_COMPLETED_STATUS = 'COMPLETED';
 
     /**
@@ -64,7 +68,7 @@ class PayPalService
         }
         $product = $this->findProductBySku($request->sku_code);
         $priceData = $this->getPrice($request, $product, $upsell_order);
-        $price = $priceData['price'] * $priceData['exchange_rate'];
+        $price = round($priceData['price'] * $priceData['exchange_rate'], 2);
         $local_currency = $priceData['code'];
         $local_price = $priceData['price'];
         $total_price = $price;
@@ -81,8 +85,8 @@ class PayPalService
         ]];
         if ($request->input('is_warrantry_checked') && $product->warranty_percent) {
             $warrantry_price_data = CurrencyService::getLocalPriceFromUsd(($product->warranty_percent / 100) * $price);
-            $warrantry_price = $warrantry_price_data['price'] * $warrantry_price_data['exchange_rate'];
-            $local_warranty_price = $warrantry_price_data['price'];
+            $warrantry_price = round($warrantry_price_data['price'] * $warrantry_price_data['exchange_rate'], 2);
+            $local_warranty_price = round($warrantry_price_data['price'], 2);
             $total_price += $warrantry_price;
             $total_local_price += $local_warranty_price;
             $items[] = [
@@ -95,12 +99,11 @@ class PayPalService
                 'quantity' => 1
             ];
         }
-
         $unit = [
             'description' => $product->description,
             'amount' => [
                 'currency_code' => $local_currency,
-                'value' => $total_local_price,
+                'value' => round($total_local_price, 2),
                 'items' => $items,
             ]
         ];
@@ -111,6 +114,7 @@ class PayPalService
             'intent' => 'CAPTURE',
             'purchase_units' => [$unit]
         ];
+
         $response = $this->payPalHttpClient->execute($pp_request);
 
         if ($response->statusCode === 201) {
@@ -180,48 +184,84 @@ class PayPalService
      */
     public function verifyOrder(PayPalVerfifyOrderRequest $request)
     {
-        $response = $this->payPalHttpClient->execute(new OrdersGetRequest($request->orderID));
-        $paypal_order = $response->result;
-        $txn_response = $this->orderService->addTxn([
-            'hash' => $paypal_order->id,
-            'value' => (float)$paypal_order->purchase_units[0]->amount->value,
-            'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
-            'provider_data' => $paypal_order,
-            'payment_method' => self::METHOD,
-            'payment_provider' => self::PROVIDER,
-        ]);
-        $txn = $txn_response['txn'];
-        $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
-        $this->checkIforderAllowedForAddingProducts($order);
-
-        if ($order) {
-            $this->setPayer($order, $paypal_order);
-            $this->setShipping($order, $paypal_order);
-            $this->saveCustomer($order);
-            $product_key = collect($order->products)->search(function ($product) use($txn) {
-                return $product['txn_hash'] === $txn['hash'];
-            });
-            $products = $order->products;
-            switch ($paypal_order->status) {
-                case self::PAYPAL_ORDER_COMPLETED_STATUS:
-                    $products[$product_key]['txn_approved'] = true;
-                    $order->products = $products;
-                    $order->total_paid += (float)$txn['value'];
-                    break;
+        $response = $this->payPalHttpClient->execute(new OrdersCaptureRequest($request->orderID));
+        if ($response->statusCode < 300) {
+            $paypal_order = $response->result;
+            $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
+            if($order) {
+                return ['order_id' => $order->id];
+            } else {
+                logger()->error(
+                    'Cant find matching order for txh.hash: ' . $paypal_order->id,
+                    ['paypal_order' => $paypal_order]
+                );
+                abort(404);
             }
-            $order->status = $this->getOrderStatus($order);
-            $order->save();
-
-            return [
-                'order_id' => $order->_id
-            ];
         }
-
         logger()->error(
-            'Cant find matching order for txh.hash: ' . $paypal_order->id,
-            ['paypal_order' => $paypal_order]
+            'Paypal capture request error',
+            ['response' => $response]
         );
         abort(404);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function webhooks(Request $request) {
+        if($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
+            $link = collect($request->input('resource.links'))->filter(function ($link) {
+                return Str::contains($link['href'], '/orders/');
+            })->first();
+            $response = $this->payPalHttpClient->execute(
+                new OrdersGetRequest(
+                    preg_split('/orders\//', $link['href'])[1]
+                )
+            );
+            if ($response->statusCode === 200 && $response->result->status === 'COMPLETED') {
+                $paypal_order = $response->result;
+                $sum_value = 0;
+                $currency = '';
+                foreach ($paypal_order->purchase_units as $unit) {
+                    foreach ($unit->payments->captures as $capture) {
+                        if($capture->status === 'COMPLETED') {
+                            $sum_value += $capture->amount->value;
+                            $currency = $capture->amount->currency_code;
+                        }
+                    }
+                }
+                $txn_response = $this->orderService->addTxn([
+                    'hash' => $paypal_order->id,
+                    'value' => $sum_value,
+                    'currency' => $currency,
+                    'provider_data' => $paypal_order,
+                    'payment_method' => self::METHOD,
+                    'payment_provider' => self::PROVIDER,
+                ]);
+
+                $txn = $txn_response['txn'];
+                $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
+                $product_key = collect($order->products)->search(function ($product) use($txn) {
+                    return $product['txn_hash'] === $txn['hash'];
+                });
+                $products = $order->products;
+
+                if($product_key !== null) {
+                    $products[$product_key]['txn_approved'] = true;
+                    $products[$product_key]['txn_value'] = $txn['value'];
+                }
+                $order->products = $products;
+                $total_pad = 0;
+                foreach ($order->products as $product) {
+                    if($product['txn_approved']) {
+                        $total_pad += $product['txn_value'];
+                    }
+                }
+                $order->total_paid = $total_pad;
+                $order->status = $this->getOrderStatus($order);
+                $order->save();
+            }
+        }
     }
 
     /**
@@ -291,7 +331,7 @@ class PayPalService
         switch (true) {
             case ($order->total_paid == 0):
                 return OdinOrder::STATUS_NEW;
-            case ($order->total_paid === $order->total_price):
+            case (number_format($order->total_paid, 2) === number_format($order->total_price, 2)):
                 return OdinOrder::STATUS_PAID;
             default:
                 return OdinOrder::STATUS_HALFPAID;
