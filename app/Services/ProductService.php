@@ -21,7 +21,6 @@ class ProductService
         if ($request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();
             if ($product) {
-                echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
                 return $product;
             }
         }
