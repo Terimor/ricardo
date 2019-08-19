@@ -25,7 +25,7 @@ class PayPalService
 
     const DEFAULT_CURRENCY = 'USD';
 
-    const APPROVED_STATUS = 'APPROVED';
+    const PAYPAL_ORDER_APPROVED_STATUS = 'APPROVED';
 
     /**
      * @var PayPalHttpClient
@@ -58,7 +58,7 @@ class PayPalService
     {
         $upsell_order = $request->order_id ? $order = OdinOrder::find($request->order_id) : null;
 
-        if($upsell_order) {
+        if ($upsell_order) {
             $this->checkIforderAllowedForAddingProducts($upsell_order);
         }
         $product = $this->findProductBySku($request->sku_code);
@@ -79,9 +79,10 @@ class PayPalService
             'quantity' => 1
         ]];
         if ($request->input('is_warrantry_checked') && $product->warranty_percent) {
-            $warrantry_price = CurrencyService::getLocalPriceFromUsd(($product->warranty_percent / 100) * $price);
-            $local_warranty_price = $warrantry_price['price'];
-            $total_price += $warrantry_price['price'] * $warrantry_price['exchange_rate'];
+            $warrantry_price_data = CurrencyService::getLocalPriceFromUsd(($product->warranty_percent / 100) * $price);
+            $warrantry_price = $warrantry_price_data['price'] * $warrantry_price_data['exchange_rate'];
+            $local_warranty_price = $warrantry_price_data['price'];
+            $total_price += $warrantry_price;
             $total_local_price += $local_warranty_price;
             $items[] = [
                 'name' => 'Warrantry',
@@ -163,6 +164,7 @@ class PayPalService
                     'offer' => $request->offer,
                     'affiliate' => $request->affiliate,
                 ]);
+
                 abort_if(!$order_reponse['success'], 404);
             }
         }
@@ -179,41 +181,32 @@ class PayPalService
     {
         $response = $this->payPalHttpClient->execute(new OrdersGetRequest($request->orderID));
         $paypal_order = $response->result;
-        $txn = Txn::where('hash', $paypal_order->id)->firstOrFail();
-        $txn->provider_data = $paypal_order;
-        $txn->value = (double)$paypal_order->purchase_units[0]->amount->value;
-        $txn->currency = $paypal_order->purchase_units[0]->amount->currency_code;
-        $txn->save();
-
-        $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
+        $txn_response = $this->orderService->addTxn([
+            'hash' => $paypal_order->id,
+            'value' => (float)$paypal_order->purchase_units[0]->amount->value,
+            'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
+            'provider_data' => $paypal_order,
+            'payment_method' => self::METHOD,
+            'payment_provider' => self::PROVIDER,
+        ]);
+        $txn = $txn_response['txn'];
+        $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
         $this->checkIforderAllowedForAddingProducts($order);
-        if ($order && $paypal_order->status === self::APPROVED_STATUS) {
+
+        if ($order) {
+            $this->setPayer($order, $paypal_order);
+            $this->setShipping($order, $paypal_order);
+            $this->saveCustomer($order);
+            $product_key = collect($order->products)->search(function ($product) use($txn) {
+                return $product['txn_hash'] === $txn['hash'];
+            });
             $products = $order->products;
-            foreach ($products as $k => $product) {
-                if ($product['txn_hash'] === $paypal_order->id) {
-                    $product_price = CurrencyService::getLocalPriceFromUsd($product['price']);
-                    $warrantry_price = CurrencyService::getLocalPriceFromUsd($product['warranty_price']);
-                    $total_product_price = (double)(
-                        $product_price['price'] * $product_price['exchange_rate']
-                        +
-                        $warrantry_price['price'] * $warrantry_price['exchange_rate']
-                    );
-                    $this->setPayer($order, $paypal_order);
-                    $this->setShipping($order, $paypal_order);
-                    $this->saveCustomer($order);
-//                    logger()->log('info', 'TXN LOG', compact(
-//                        'product_price',
-//                        'warrantry_price',
-//                        'total_product_price',
-//                        'txn',
-//                        'product'
-//                    ));
-                    if ($total_product_price === (double)$txn->value) {
-                        $products[$k]['txn_approved'] = true;
-                        $order->total_paid += $total_product_price;
-                        $order->products = $products;
-                    }
-                }
+            switch ($paypal_order->status) {
+                case self::PAYPAL_ORDER_APPROVED_STATUS:
+                    $products[$product_key]['txn_approved'] = true;
+                    $order->products = $products;
+                    $order->total_paid += (float)$txn['value'];
+                    break;
             }
             $order->status = $this->getOrderStatus($order);
             $order->save();
@@ -221,8 +214,8 @@ class PayPalService
             return [
                 'order_id' => $order->_id
             ];
-
         }
+
         logger()->error(
             'Cant find matching order for txh.hash: ' . $paypal_order->id,
             ['paypal_order' => $paypal_order]
@@ -341,7 +334,7 @@ class PayPalService
             $upsell = collect($main_order_product->upsells)->where('product_id', $product->_id)->first();
 
             if ($upsell) {
-                if($upsell['fixed_price']) {
+                if ($upsell['fixed_price']) {
                     return CurrencyService::getLocalPriceFromUsd($upsell['fixed_price']);
                 } elseif ($upsell['discount_percent']) {
                     $price = ($upsell['discount_percent'] / 100) * $product->prices[$request->sku_quantity]['value'];
