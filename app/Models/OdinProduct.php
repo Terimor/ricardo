@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
+use App\Services\CurrencyService;
 
 /**
  * Class OdinProduct
@@ -10,6 +11,12 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class OdinProduct extends Model
 {
+    
+    protected $fillable = [
+        'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id', 'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
+    ];
+    
+    
     /**
      * @var string
      */
@@ -90,5 +97,47 @@ class OdinProduct extends Model
         }
 
         return $value;
+    }
+    
+    /**
+     * Getter prices
+     * @param type $value
+     */
+    public function getPricesAttribute($value)
+    {        
+        if (request()->get('cop_id')) {
+            $finded = false;
+            foreach ($value as $key => $val) {
+                if ($val['price_set'] == request()->get('cop_id')) {
+                    $finded = true;
+                    for ($i=1; $i<=5; $i++) {
+                        if (!empty($val[$i]['value'])) {
+                            $value[$key][$i]['local'] = CurrencyService::getLocalPriceFromUsd($val[$i]['value']);
+                            $value[$key][$i]['currency'] = $value[$key][$i]['local']['code'];
+                        }
+                    }
+                    return $value[$key];
+                }
+            }
+            
+            if (!$finded) {
+                logger()->error("Cop id ".request()->get('cop_id')." not finded");
+            }
+        }
+
+        // else set first by default
+        
+        $returnValue = [];
+        foreach ($value as $key => $val) {
+            for ($i=1; $i<=5; $i++) {
+                if (!empty($val[$i]['value'])) {
+                    $value[$key][$i]['local'] = CurrencyService::getLocalPriceFromUsd($val[$i]['value']);
+                    $value[$key][$i]['currency'] = $value[$key][$i]['local']['code'];
+                }
+            }
+            break;
+        }
+   
+        return $value[0];
     }
 }

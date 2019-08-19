@@ -26,8 +26,9 @@ class ProductService
         }
 
         // Domain resolve logic
-        $domain = Domain::where('name', request()->getHost())->first();
-        if ($domain && !empty($domain->product)) {            
+        $domain = Domain::where('name', request()->getHost())->first();       
+        if ($domain && !empty($domain->product)) {
+            echo '<pre>'; var_dump($domain->product->prices); echo '</pre>';
             return $domain->product;            
         }
         

@@ -41,6 +41,10 @@ class ProductController extends Controller
         return $product;
     }
 
+    /**
+     * 
+     * @param Request $request
+     */
     public function getLocalPrice(Request $request)
     {
         //get country code by GET or IP
