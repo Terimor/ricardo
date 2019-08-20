@@ -20,7 +20,7 @@ class ProductService
     {
         if ($request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();
-            if ($product) {                
+            if ($product) {
                 return $product;
             }
         }

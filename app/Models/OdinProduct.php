@@ -139,7 +139,7 @@ class OdinProduct extends Model
     public function getLogoImageAttribute($value)
     {
         $value = $this->logoImage;
-        $value->url = !empty($value['urls'][app()->getLocale()]) ? $value['urls'][app()->getLocale()] : !empty($value['urls']['en']) ? $value['urls']['en'] : '';
+        $value = !empty($value['urls'][app()->getLocale()]) ? $value['urls'][app()->getLocale()] : !empty($value['urls']['en']) ? $value['urls']['en'] : '';
         return $value;
     }
 }
