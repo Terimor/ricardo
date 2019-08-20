@@ -117,9 +117,9 @@ class OdinProduct extends Model
                     $price = CurrencyService::getLocalPriceFromUsd($val[$i]['value'], $currency);
                     $value[$key][$i]['value'] = $price['price'];
                     $value[$key][$i]['value_text'] = $price['price_text'];
-                    if (!empty($val[$i]['image_id'])) {
-                        $value[$key][$i]['image'] = $this->images[$val[$i]['image_id']];
-                    }
+                    //if (!empty($val[$i]['image_id'])) {
+                        $value[$key][$i]['image'] = !empty($val[$i]['image_id']) ? $this->images[$val[$i]['image_id']] : null;
+                    //}
                 } else {
                     logger()->error("Price not set for qty {$i} -  ".$this->product_name);
                 }
