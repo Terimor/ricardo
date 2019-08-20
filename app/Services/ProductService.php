@@ -26,14 +26,14 @@ class ProductService
         }
 
         // Domain resolve logic
-        $domain = Domain::where('name', request()->getHost())->first();       
-        if ($domain && !empty($domain->product)) {            
-            return $domain->product;            
+        $domain = Domain::where('name', request()->getHost())->first();
+        if ($domain && !empty($domain->product)) {
+            return $domain->product;
         }
-        
+
         logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
-        
+
         return OdinProduct::orderBy('_id', 'desc')->firstOrFail();
         //abort(404);
-    }        
+    }
 }
