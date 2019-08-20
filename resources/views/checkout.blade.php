@@ -17,7 +17,8 @@
     const checkoutData = {
       countryCode: '{{ $location->countryCode }}',
       product: @json($product),
-      productImage: '{{$product->logo_image}}'
+      productImage: '{{$product->logo_image}}',
+      upsell_hero_image: '{{$product->upsell_hero_image}}',
     }
 </script>
 @section('content')
