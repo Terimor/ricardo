@@ -1,5 +1,7 @@
 #!/bin/bash
 
+composer install
+
 BRANCH="development"
 
 if [[ "$BRANCH" == "development" ]]; then

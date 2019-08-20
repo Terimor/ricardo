@@ -21,20 +21,19 @@ class ProductService
         if ($request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();
             if ($product) {
-                echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
                 return $product;
             }
         }
 
         // Domain resolve logic
-        $domain = Domain::where('name', request()->getHost())->first();       
-        if ($domain && !empty($domain->product)) {           
-            return $domain->product;            
+        $domain = Domain::where('name', request()->getHost())->first();
+        if ($domain && !empty($domain->product)) {
+            return $domain->product;
         }
-        
+
         logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
-        
+
         return OdinProduct::orderBy('_id', 'desc')->firstOrFail();
         //abort(404);
-    }        
+    }
 }
