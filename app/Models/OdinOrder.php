@@ -27,6 +27,7 @@ class OdinOrder extends Model
         'total_paid' => null, // * float amount totally paid in local currency; decreases after refund
         'total_price' => null, // * float full price in local currency (with warranty)
         'total_price_usd' => null, // * float, full USD price (with warranty)
+        'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
         'payment_provider' => null, // enum string
         'payment_method' => null, // enum string
         'payer_id' => null, // string, payer ID in payment provider system
@@ -63,10 +64,14 @@ class OdinOrder extends Model
          *      "is_main" => false, //bool, product is main, not upsells and not accessories
          *      'txn_hash' => null, // string
          *      'txn_value' => null, // float decreases after refund
-         *      'txn_approved' => false, // bool
+         *      'is_txn_captured' => false, // bool, default false, txn is authorized and captured
+         *      'is_txn_approved' => false, // bool
          *      'txn_charged_back' => false, // bool
+         *      'txn_fee' => null, // float, provider's txn fee
          *      'is_exported' => false, //bool, default false,
          *      'is_plus_one' => false, //bool,default false, upsells product the same as main product
+         *      'price_set' => null,  // string,
+         *      'failed_txns'  => [], // array of strings, array of failed txns' hashes
          * ]
          */
         'products' => [],

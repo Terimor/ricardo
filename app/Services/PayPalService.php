@@ -135,7 +135,7 @@ class PayPalService
                 'is_main' => !$upsell_order,
                 'txn_hash' => $txn['hash'],
                 'txn_value' => $txn['value'],
-                'txn_approved' => false,
+                'is_txn_approved' => false,
                 'txn_charged_back' => false,
             ];
 
@@ -209,7 +209,7 @@ class PayPalService
 //                        'product'
 //                    ));
                     if ($total_product_price === (double)$txn->value) {
-                        $products[$k]['txn_approved'] = true;
+                        $products[$k]['is_txn_approved'] = true;
                         $order->total_paid += $total_product_price;
                         $order->products = $products;
                     }
