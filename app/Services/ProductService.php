@@ -16,7 +16,7 @@ class ProductService
      * @param Request $request
      * @return OdinProduct
      */
-    public function resolveProduct(Request $request, $need_images = false): OdinProduct
+    public function resolveProduct(Request $request, $needImages = false): OdinProduct
     {
         if ($request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();
@@ -36,10 +36,10 @@ class ProductService
         }
         
         // set local images
-        if ($need_images) {
+        if ($needImages) {
             $product->setLocalImages();
         }
-        
+
         return $product;
         //abort(404);
     }
