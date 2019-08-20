@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Services\PayPalService;
 use App\Services\ProductService;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -63,8 +64,15 @@ class PaypalController extends Controller
     {
         return view('test-checkout')->with([
             'product' => resolve(ProductService::class)->resolveProduct(request()),
-            'paypal_client' => optional(Setting::where('key', 'paypal_client_id')->first())->value
+            'paypal_client' => optional(Setting::where('key', 'instant_payment_paypal_client_id')->first())->value
         ]);
     }
 
+    /**
+     * @param Request $request
+     */
+    public function webhooks(Request $request)
+    {
+        $this->payPalService->webhooks($request);
+    }
 }
