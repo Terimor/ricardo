@@ -36,7 +36,9 @@ class ProductService
         }
         
         // set local images
-        $product->setLocalImages();
+        if ($need_images) {
+            $product->setLocalImages();
+        }
         
         return $product;
         //abort(404);
