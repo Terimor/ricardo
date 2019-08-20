@@ -41,7 +41,7 @@ class CurrencyService
     public static function getLocalPriceFromUsd(float $price, Currency $currency = null, string $countryCode = null, $ip = null) : array
     {
         if (!$currency) {
-            $currency = self::getCurrency($currencyCode, $countryCode);
+            $currency = self::getCurrency(null, $countryCode);
         }
         $currencyCode = $currency->code;
         $countryCode = $currency->countryCode;
