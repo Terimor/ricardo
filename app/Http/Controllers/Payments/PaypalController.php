@@ -64,7 +64,7 @@ class PaypalController extends Controller
     {
         return view('test-checkout')->with([
             'product' => resolve(ProductService::class)->resolveProduct(request()),
-            'paypal_client' => optional(Setting::where('key', 'paypal_client_id')->first())->value
+            'paypal_client' => optional(Setting::where('key', 'instant_payment_paypal_client_id')->first())->value
         ]);
     }
 

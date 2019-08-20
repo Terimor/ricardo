@@ -6,17 +6,13 @@ use App\Http\Requests\PayPalCrateOrderRequest;
 use App\Http\Requests\PayPalVerfifyOrderRequest;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
-use App\Models\Txn;
 use BraintreeHttp\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use PayPal\Api\PaymentDetail;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
-use PayPalCheckoutSdk\Orders\OrdersAuthorizeRequest;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
-use PayPalCheckoutSdk\Payments\CapturesGetRequest;
 
 /**
  * Class PayPalService
@@ -150,6 +146,7 @@ class PayPalService
             ];
 
             if ($upsell_order) {
+                /** Check product "is_plus_one" if this order has main product with the same ID  */
                 $odin_order_product['is_plus_one'] = collect($upsell_order->products)->search(function ($item) use ($product) {
                         return $item['is_main'] && optional($this->findProductBySku($item['sku_code']))->_id === $product->_id;
                     }) !== false;
@@ -450,7 +447,11 @@ class PayPalService
                 }
             }
         } else {
-            return $product->prices[$request->sku_quantity]['local'];
+            return [
+                'price' => $product->prices[$request->sku_quantity]['value'],
+                'code' => $product->prices['currency'],
+                'exchange_rate' => $product->prices['exchange_rate'],
+            ];
         }
         abort(404);
     }
