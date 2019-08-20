@@ -1,7 +1,5 @@
 #!/bin/bash
 
-composer install
-
 BRANCH="development"
 
 if [[ "$BRANCH" == "development" ]]; then
@@ -13,6 +11,8 @@ if [[ "$BRANCH" == "development" ]]; then
       * ) echo "Aborting"; exit 0;;
     esac
 fi
+
+composer install
 
 npm install
 npm run prod
