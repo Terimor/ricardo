@@ -30,11 +30,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PayPalHttpClient::class, function () {
             $credentials = Setting::whereIn(
                 'key',
-                ['instant_payment_paypal_client_id', 'instant_payment_paypal_secret']
+                [
+                    'instant_payment_paypal_client_id',
+                    'instant_payment_paypal_secret',
+                    'instant_payment_paypal_mode',
+                ]
             )->get();
             $client_id = optional($credentials->where('key', 'instant_payment_paypal_client_id')->first())->value;
             $secret = optional($credentials->where('key', 'instant_payment_paypal_secret')->first())->value;
-            if(config('services.paypal.mode') === 'sandbox') {
+            $mode = optional($credentials->where('key', 'instant_payment_paypal_mode')->first())->value;
+            if($mode === 'sandbox') {
                 $env = new SandboxEnvironment($client_id, $secret);
             } else {
                 $env = new ProductionEnvironment($client_id, $secret);
@@ -45,12 +50,12 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.debug')){
             \DB::connection('mongodb')->enableQueryLog();
         }
-        
-        
+
+
         $sentryDNS = \Utils::getSetting('sentry_dsn');
         $this->app['config']['sentry'] = [
             'dsn' => $sentryDNS ? $sentryDNS : env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))
         ];
-        
+
     }
 }
