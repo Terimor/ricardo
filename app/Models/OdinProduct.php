@@ -13,6 +13,7 @@ class OdinProduct extends Model
 {
     
     const QUANTITY_PRICES = 5;
+    public $images;
     
     protected $fillable = [
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id', 'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
@@ -115,7 +116,10 @@ class OdinProduct extends Model
                 if (!empty($val[$i]['value'])) {
                     $price = CurrencyService::getLocalPriceFromUsd($val[$i]['value'], $currency);
                     $value[$key][$i]['value'] = $price['price'];
-                    $value[$key][$i]['value_text'] = $price['price_text'];                    
+                    $value[$key][$i]['value_text'] = $price['price_text'];
+                    //if (!empty($val[$i]['image_id'])) {
+                        $value[$key][$i]['image'] = !empty($val[$i]['image_id']) ? $this->images[$val[$i]['image_id']] : null;
+                    //}
                 } else {
                     logger()->error("Price not set for qty {$i} -  ".$this->product_name);
                 }
@@ -136,10 +140,55 @@ class OdinProduct extends Model
         return $value[$returnedKey];
     }
     
+    /**
+     * Set local images for object
+     */
+    public function setLocalImages()
+    {
+        // get all images ids
+        $ids = [];
+        if(!empty($this->logo_image_id)) {
+            $ids[$this->logo_image_id] = $this->logo_image_id;
+        }
+        if(!empty($this->upsell_hero_image_id)) {
+            $ids[$this->upsell_hero_image_id] = $this->upsell_hero_image_id;
+        }
+        
+        // for prices
+        $returnedKey = 0;
+        foreach ($this->attributes['prices'] as $key => $val) {
+            if (!request()->has('cop_id') || $val['price_set'] == request()->get('cop_id')) {
+                for ($i=1; $i <= self::QUANTITY_PRICES; $i++) {
+                    if (!empty($val[$i]['image_id'])) {                        
+                        $ids[$val[$i]['image_id']] = $val[$i]['image_id'];                    
+                    }
+                }
+                $returnedKey = $key;
+                break;                
+            }
+        }
+        if ($ids) {
+            $this->images = [];
+            $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
+            foreach ($this->imagesObjects as $image) {
+                $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? $image['urls'][app()->getLocale()] : !empty($image['urls']['en']) ? $image['urls']['en'] : '';                
+            }
+        }
+    }
+    
+    /**
+     * Getter logo image
+     */
     public function getLogoImageAttribute($value)
     {
-        $value = $this->logoImage;
-        $value = !empty($value['urls'][app()->getLocale()]) ? $value['urls'][app()->getLocale()] : !empty($value['urls']['en']) ? $value['urls']['en'] : '';
-        return $value;
+        return !empty($this->logo_image_id) ? $this->images[$this->logo_image_id] : null;
     }
+    
+    /**
+     * Getter upsell_hero_image
+     */
+    public function getUpsellHeroImageAttribute($value)
+    {
+        return !empty($this->upsell_hero_image_id) ? $this->images[$this->upsell_hero_image_id] : null;
+    }    
 }

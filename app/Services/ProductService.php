@@ -16,24 +16,31 @@ class ProductService
      * @param Request $request
      * @return OdinProduct
      */
-    public function resolveProduct(Request $request): OdinProduct
+    public function resolveProduct(Request $request, $needImages = false): OdinProduct
     {
         if ($request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();
-            if ($product) {
-                return $product;
-            }
         }
 
         // Domain resolve logic
-        $domain = Domain::where('name', request()->getHost())->first();
-        if ($domain && !empty($domain->product)) {
-            return $domain->product;
+        if (!$product) {
+            $domain = Domain::where('name', request()->getHost())->first();
+            if ($domain && !empty($domain->product)) {
+                $product =  $domain->product;
+            }
         }
 
-        logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
+        if (!$product) {
+            logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
+            $product = OdinProduct::orderBy('_id', 'desc')->firstOrFail();
+        }
+        
+        // set local images
+        if ($needImages) {
+            $product->setLocalImages();
+        }
 
-        return OdinProduct::orderBy('_id', 'desc')->firstOrFail();
+        return $product;
         //abort(404);
     }
 }
