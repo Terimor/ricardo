@@ -16,7 +16,7 @@ class ProductService
      * @param Request $request
      * @return OdinProduct
      */
-    public function resolveProduct(Request $request): OdinProduct
+    public function resolveProduct(Request $request, $need_images = false): OdinProduct
     {
         if ($request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();

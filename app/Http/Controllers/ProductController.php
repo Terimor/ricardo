@@ -20,7 +20,7 @@ class ProductController extends Controller
     public function view(Request $request, ProductService $productService)
     {
         return view('product', [
-            'product' => $productService->resolveProduct($request)
+            'product' => $productService->resolveProduct($request, true)
         ]);
     }
 
