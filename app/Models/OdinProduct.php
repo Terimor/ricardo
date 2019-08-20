@@ -12,7 +12,7 @@ use App\Services\CurrencyService;
 class OdinProduct extends Model
 {
     
-    public static $quantityPrices = 5;
+    const QUANTITY_PRICES = 5;
     
     protected $fillable = [
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id', 'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
@@ -109,8 +109,9 @@ class OdinProduct extends Model
     {
         $currency = CurrencyService::getCurrency();
 
+        $returnedKey = 0;
         foreach ($value as $key => $val) {
-            for ($i=1; $i <= self::$quantityPrices; $i++) {
+            for ($i=1; $i <= self::QUANTITY_PRICES; $i++) {
                 if (!empty($val[$i]['value'])) {
                     $price = CurrencyService::getLocalPriceFromUsd($val[$i]['value'], $currency);
                     $value[$key][$i]['value'] = $price['price'];
@@ -122,8 +123,9 @@ class OdinProduct extends Model
             $value[$key]['currency'] = $currency->code;
             $value[$key]['exchange_rate'] = $currency->usd_rate;
             
-            if (request()->has('cop_id') && $val['price_set'] == request()->get('cop_id')) {
-                return $value[$key];
+            if (!request()->has('cop_id') || $val['price_set'] == request()->get('cop_id')) {
+                $returnedKey = $key;
+                break;                
             }
         }
 
@@ -131,6 +133,6 @@ class OdinProduct extends Model
             logger()->error("Cop id ".request()->get('cop_id')." not found");
         }        
    
-        return $value[0];
+        return $value[$returnedKey];
     }
 }
