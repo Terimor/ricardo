@@ -20,9 +20,9 @@ use PayPalCheckoutSdk\Orders\OrdersGetRequest;
  */
 class PayPalService
 {
-    const PROVIDER = 'PayPal';
+    const PROVIDER = 'paypal';
 
-    const METHOD = 'PayPal';
+    const METHOD = 'paypal';
 
     const DEFAULT_CURRENCY = 'USD';
 
@@ -64,7 +64,7 @@ class PayPalService
         }
         $product = $this->findProductBySku($request->sku_code);
         $priceData = $this->getPrice($request, $product, $upsell_order);
-        $price = round($priceData['price'] * $priceData['exchange_rate'], 2);
+        $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
         $local_currency = $priceData['code'];
         $local_price = $priceData['price'];
         $total_price = $price;
@@ -81,7 +81,7 @@ class PayPalService
         ]];
         if ($request->input('is_warrantry_checked') && $product->warranty_percent) {
             $warrantry_price_data = CurrencyService::getLocalPriceFromUsd(($product->warranty_percent / 100) * $price);
-            $warrantry_price = round($warrantry_price_data['price'] * $warrantry_price_data['exchange_rate'], 2);
+            $warrantry_price = round($warrantry_price_data['price'] / $warrantry_price_data['exchange_rate'], 2);
             $local_warranty_price = round($warrantry_price_data['price'], 2);
             $total_price += $warrantry_price;
             $total_local_price += $local_warranty_price;
@@ -129,7 +129,7 @@ class PayPalService
 
             $odin_order_product = [
                 'sku_code' => $request->sku_code,
-                'quantity' => $request->sku_quantity,
+                'quantity' => (int)$request->sku_quantity,
                 'price' => $local_price,
                 'price_usd' => $price,
                 'warranty_price' => $local_warranty_price ?? null,
@@ -282,6 +282,7 @@ class PayPalService
                 }
                 $order->products = $products;
                 $this->calculateTotalPaid($order);
+                $this->calculateTotalFee($order);
                 $order->status = $this->getOrderStatus($order);
                 $order->save();
             }
@@ -300,6 +301,20 @@ class PayPalService
             }
         }
         $order->total_paid = $total_pad;
+    }
+
+    /**
+     * @param OdinOrder $order
+     */
+    public function calculateTotalFee(OdinOrder $order)
+    {
+        $total_fee = 0;
+        foreach ($order->products as $product) {
+            if ($product['is_txn_approved']) {
+                $total_fee += $product['txn_fee'];
+            }
+        }
+        $order->txns_fee_usd = $total_fee;
     }
 
     /**
