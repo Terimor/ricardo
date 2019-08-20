@@ -11,7 +11,7 @@ export const getRadioHtml = ({ discountName, newPrice, text, price, discountText
   ${idx === 1 ? '<img class="share" src="/images/share.png">' : ''}
   <p class="label-container-radio__name-price">
     <span>${text}</span>
-    <span ${newPrice ? 'class="strike"' : ''}>${`${getCountOfInstallments(installments)}` + currency + price.toLocaleString()}</span>
+    <span ${idx !== 0 ? 'class="strike"' : ''}>${`${getCountOfInstallments(installments)}` + currency + (idx === 0 ? newPrice : price).toLocaleString()}</span>
   </p>
   <p class="label-container-radio__discount">${discountText}</p>`
 

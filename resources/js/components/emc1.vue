@@ -176,8 +176,7 @@ import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
-
-const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
+import { preparePartByInstallments, preparePurchaseData } from '../utils/checkout';
 
 export default {
   name: 'emc1',
@@ -359,6 +358,14 @@ export default {
     }
   },
   computed: {
+    productData () {
+      return checkoutData.product
+    },
+    preparedProductData () {
+      return {
+        price: checkoutData.product.prices[1].value,
+      }
+    },
     isEmptyCart () {
       return Object.values(this.cart).every(it => it === 0)
     },
@@ -428,36 +435,15 @@ export default {
       }
     },
     setPurchase ({ variant, installments }) {
-        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(3598, installments).toLocaleString()
-        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(1799, installments).toLocaleString()
+        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
+        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
 
-        this.purchase = [
-          {
-            discountName: null,
-            newPrice: null,
-            withDiscount: false,
-            text: `1x EchoBeat7 ${variant}`,
-            price: preparePartByInstallments(1799, installments),
-            discountText: '(50% Discount)',
-            totalQuantity: 1
-          }, {
-            discountName: 'BESTSELLER',
-            newPrice: preparePartByInstallments(3399, installments),
-            withDiscount: true,
-            text: `2x EchoBeat7 ${variant} + 1 FREE`,
-            price: preparePartByInstallments(10794, installments),
-            discountText: `(69% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(1133, installments).toLocaleString()}/Unit)`,
-            totalQuantity: 3
-          }, {
-            discountName: 'BEST DEAL',
-            newPrice: preparePartByInstallments(4999, installments),
-            withDiscount: true,
-            text: `3x EchoBeat7 ${variant} + 2 FREE`,
-            price: preparePartByInstallments(17990, installments),
-            discountText: `(73% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(999.80, installments).toLocaleString()}/Unit)`,
-            totalQuantity: 5
-          }
-        ]
+        this.purchase = preparePurchaseData({
+          purchaseList: this.productData.prices,
+          long_name: this.productData.long_name,
+          variant,
+          installments,
+        })
     },
     showNotice () {
       const notice = getNotice('EchoBeat7')
@@ -486,7 +472,7 @@ export default {
         zipcode: '13010-111',
         number: '111',
         complemento: 'Complemento',
-        cardNumber: '5453371328959503',
+        cardNumber: '378282246310005',
         cvv: '123',
         year: 2021,
         month: 1,
