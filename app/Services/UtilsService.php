@@ -93,4 +93,14 @@ class UtilsService
         }
         return !empty($location->countryCode) ? $location->countryCode : 'US';
     }
+    
+    /**
+     * Get setting
+     * @param type $key
+     * @return type
+     */
+    public static function getSetting($key)
+    {        
+        return optional(Setting::where(['key' => $key])->first())->value;
+    }
 }

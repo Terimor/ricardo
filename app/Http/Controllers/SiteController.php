@@ -102,7 +102,6 @@ class SiteController extends Controller
     public function test()
     {
         $price = 99.81;
-
         $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price);
         echo '<pre>'; var_dump($exchangedPrice); echo '</pre>'; exit;
         
