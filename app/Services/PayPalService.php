@@ -141,11 +141,18 @@ class PayPalService
                 'is_main' => !$upsell_order,
                 'txn_hash' => $txn['hash'],
                 'txn_value' => $txn['value'],
-                'txn_approved' => false,
+                'is_txn_captured' => false,
+                'is_txn_approved' => false,
                 'txn_charged_back' => false,
+                'txn_fee' => null,
+                'is_exported' => false,
+                'is_plus_one' => false,
             ];
 
             if ($upsell_order) {
+                $odin_order_product['is_plus_one'] = collect($upsell_order->products)->search(function ($item) use ($product) {
+                        return $item['is_main'] && optional($this->findProductBySku($item['sku_code']))->_id === $product->_id;
+                    }) !== false;
                 $upsell_order->products = array_merge($upsell_order->products, [$odin_order_product]);
                 $upsell_order->status = $this->getOrderStatus($upsell_order);
                 $upsell_order->total_price += $local_price;
@@ -187,8 +194,37 @@ class PayPalService
         $response = $this->payPalHttpClient->execute(new OrdersCaptureRequest($request->orderID));
         if ($response->statusCode < 300) {
             $paypal_order = $response->result;
+            $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
+            $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
+            $txn_response = $this->orderService->addTxn([
+                'hash' => $paypal_order->id,
+                'value' => $paypal_order_value,
+                'currency' => $paypal_order_currency,
+                'provider_data' => $paypal_order,
+                'payment_method' => self::METHOD,
+                'payment_provider' => self::PROVIDER,
+            ]);
+            $txn = $txn_response['txn'];
+
+
             $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
-            if($order) {
+            $this->setPayer($order, $paypal_order);
+            $this->setShipping($order, $paypal_order);
+            $this->saveCustomer($order);
+
+            $product_key = collect($order->products)->search(function ($product) use ($txn) {
+                return $product['txn_hash'] === $txn['hash'];
+            });
+
+            $products = $order->products;
+
+            if ($product_key !== null) {
+                $products[$product_key]['is_txn_captured'] = true;
+                $products[$product_key]['txn_value'] = $txn['value'];
+            }
+            $order->products = $products;
+            $order->save();
+            if ($order) {
                 return ['order_id' => $order->id];
             } else {
                 logger()->error(
@@ -208,32 +244,26 @@ class PayPalService
     /**
      * @param Request $request
      */
-    public function webhooks(Request $request) {
-        if($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
+    public function webhooks(Request $request)
+    {
+        if ($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
             })->first();
+            $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
             $response = $this->payPalHttpClient->execute(
                 new OrdersGetRequest(
                     preg_split('/orders\//', $link['href'])[1]
                 )
             );
-            if ($response->statusCode === 200 && $response->result->status === 'COMPLETED') {
+            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
-                $sum_value = 0;
-                $currency = '';
-                foreach ($paypal_order->purchase_units as $unit) {
-                    foreach ($unit->payments->captures as $capture) {
-                        if($capture->status === 'COMPLETED') {
-                            $sum_value += $capture->amount->value;
-                            $currency = $capture->amount->currency_code;
-                        }
-                    }
-                }
+                $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
+                $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
                 $txn_response = $this->orderService->addTxn([
                     'hash' => $paypal_order->id,
-                    'value' => $sum_value,
-                    'currency' => $currency,
+                    'value' => $paypal_order_value,
+                    'currency' => $paypal_order_currency,
                     'provider_data' => $paypal_order,
                     'payment_method' => self::METHOD,
                     'payment_provider' => self::PROVIDER,
@@ -241,27 +271,64 @@ class PayPalService
 
                 $txn = $txn_response['txn'];
                 $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
-                $product_key = collect($order->products)->search(function ($product) use($txn) {
+                $product_key = collect($order->products)->search(function ($product) use ($txn) {
                     return $product['txn_hash'] === $txn['hash'];
                 });
                 $products = $order->products;
 
-                if($product_key !== null) {
-                    $products[$product_key]['txn_approved'] = true;
+                if ($product_key !== null) {
+                    $products[$product_key]['is_txn_approved'] = true;
                     $products[$product_key]['txn_value'] = $txn['value'];
-                }
-                $order->products = $products;
-                $total_pad = 0;
-                foreach ($order->products as $product) {
-                    if($product['txn_approved']) {
-                        $total_pad += $product['txn_value'];
+                    if ($fee) {
+                        $products[$product_key]['txn_fee'] = (float)$fee;
                     }
                 }
-                $order->total_paid = $total_pad;
+                $order->products = $products;
+                $this->calculateTotalPaid($order);
                 $order->status = $this->getOrderStatus($order);
                 $order->save();
             }
         }
+    }
+
+    /**
+     * @param OdinOrder $order
+     */
+    public function calculateTotalPaid(OdinOrder $order)
+    {
+        $total_pad = 0;
+        foreach ($order->products as $product) {
+            if ($product['is_txn_approved']) {
+                $total_pad += $product['txn_value'];
+            }
+        }
+        $order->total_paid = $total_pad;
+    }
+
+    /**
+     * @param $paypal_order
+     * @return float|int
+     */
+    private function getPayPalOrderValue($paypal_order)
+    {
+        $value = 0;
+        foreach ($paypal_order->purchase_units as $unit) {
+            if ($unit->payments) {
+                foreach ($unit->payments->captures as $capture) {
+                    $value += (float)$capture->amount->value;
+                }
+            }
+        }
+        return $value;
+    }
+
+    /**
+     * @param $paypal_order
+     * @return mixed
+     */
+    private function getPayPalOrderCurrency($paypal_order)
+    {
+        return $paypal_order->purchase_units[0]->payments->captures[0]->amount->currency_code;
     }
 
     /**
@@ -378,7 +445,7 @@ class PayPalService
                 if ($upsell['fixed_price']) {
                     return CurrencyService::getLocalPriceFromUsd($upsell['fixed_price']);
                 } elseif ($upsell['discount_percent']) {
-                    $price = ($upsell['discount_percent'] / 100) * $product->prices[$request->sku_quantity]['value'];
+                    $price = ((100 - $upsell['discount_percent']) / 100) * $product->prices[$request->sku_quantity]['value'];
                     return CurrencyService::getLocalPriceFromUsd($price);
                 }
             }
