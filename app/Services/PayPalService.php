@@ -190,6 +190,7 @@ class PayPalService
         $response = $this->payPalHttpClient->execute(new OrdersCaptureRequest($request->orderID));
         if ($response->statusCode < 300) {
             $paypal_order = $response->result;
+
             $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
             $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
             $txn_response = $this->orderService->addTxn([
@@ -358,7 +359,9 @@ class PayPalService
             if (isset($paypal_order->payer->name)) {
                 $order->customer_first_name = optional($paypal_order->payer->name)->given_name;
                 $order->customer_last_name = optional($paypal_order->payer->name)->surname;
-                $order->customer_phone = $paypal_order->payer->phone->phone_number->national_number;
+                if(isset($paypal_order->payer->phone)) {
+                    $order->customer_phone = $paypal_order->payer->phone->phone_number->national_number;
+                }
             }
         }
     }

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <emc1
-      :showPreloader="showPreloader"></emc1>
-    <preloader-3
+      <emc1-component :showPreloader="showPreloader" v-if="queryParams.tpl === 'emc1'"></emc1-component>
+      <smc7-component :showPreloader="showPreloader" v-if="queryParams.tpl === 'smc7'"></smc7-component>
+      <preloader-3
       v-if="+queryParams.preload === 3"
       @finish-preload="showPreloader = false"
       :countryCode="checkoutData.countryCode"
@@ -14,6 +14,7 @@
 
 <script>
 import emc1 from './components/emc1'
+import smc7 from './components/smc7'
 import queryToComponent from './mixins/queryToComponent'
 
 export default {
@@ -25,7 +26,8 @@ export default {
   },
   mixins: [queryToComponent],
   components: {
-    emc1
+    emc1,
+    smc7
   },
   methods: {
     initial () {
