@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Location;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
+use App\Models\Currency;
 
 class SiteController extends Controller
 {
@@ -102,6 +103,10 @@ class SiteController extends Controller
      */
     public function test()
     {
+        
+        $currency = Currency::whereCode('USD')->first();
+        echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
+        
         $price = 99.81;
         $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price);
         echo '<pre>'; var_dump($exchangedPrice); echo '</pre>'; exit;
