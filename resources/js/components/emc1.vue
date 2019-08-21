@@ -1,14 +1,5 @@
 <template>
   <div v-if="$v">
-    <div class="container offer">
-      <p><span class="bold">Special Offer:</span> {{productData.long_name}}</p>
-      <p>Price:&nbsp;<span id="old-price" class="price-object productprice-old-object strike">₴3,598</span>
-        <span class="price-span">
-          <b><span id="new-price" class="price-object productprice-object"> ₴1,799</span></b>
-        </span>&nbsp;(50% discount per unit)
-      </p>
-    </div>
-
     <div class="container main">
       <div class="row">
         <div class="col-md-7">
@@ -521,26 +512,6 @@ export default {
               text-decoration: underline;
           }
       }
-  }
-
-  .container {
-    max-width: 970px;
-  }
-
-  .offer {
-    padding-top: 10px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
-
-      p {
-      margin: 0;
-      font-size: 15px;
-      max-width: 440px;
-      width: 100%;
-      text-transform: uppercase;
-    }
   }
 
   .sale-badge {

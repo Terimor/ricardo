@@ -23,6 +23,16 @@
     <script src="{{ asset('scripts/bioep.min.js') }}" defer></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+    @if (Request::is('checkout'))
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+        <script type="text/javascript" src="https://js.ebanx.com/ebanx-1.6.0.min.js"></script>
+        {{--<script src="https://cdn.checkout.com/sandbox/js/checkout.js"></script>--}}
+        {{--<script src="https://sandbox.bluesnap.com/js/cse/v1.0.4/bluesnap.js"></script>--}}
+        {{--<script src="https://paypal.com/sdk/js?client-id={{env('PAYPAL_CLIENT_ID','')}}"></script>--}}
+
+        <link rel="stylesheet" href="/css/checkout.css">
+    @endif
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
