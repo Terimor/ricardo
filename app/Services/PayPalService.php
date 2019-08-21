@@ -80,11 +80,10 @@ class PayPalService
             'quantity' => 1
         ]];
         if ($request->input('is_warrantry_checked') && $product->warranty_percent) {
-            $warrantry_price_data = CurrencyService::getLocalPriceFromUsd(($product->warranty_percent / 100) * $price);
-            $warrantry_price = round($warrantry_price_data['price'] / $warrantry_price_data['exchange_rate'], 2);
-            $local_warranty_price = round($warrantry_price_data['price'], 2);
-            $total_price += $warrantry_price;
-            $total_local_price += $local_warranty_price;
+            $local_warranty_price = round(($product->warranty_percent / 100) * $local_price, 2);
+            $local_warranty_usd = round($local_warranty_price / $priceData['exchange_rate'], 2);
+            $total_price += $local_warranty_usd;
+            $total_local_price += $local_warranty_usd;
             $items[] = [
                 'name' => 'Warrantry',
                 'description' => 'Warrantry',
@@ -220,6 +219,7 @@ class PayPalService
                 $products[$product_key]['txn_value'] = $txn['value'];
             }
             $order->products = $products;
+            $order->status = $this->getOrderStatus($order);
             $order->save();
             if ($order) {
                 return ['order_id' => $order->id];
@@ -314,7 +314,8 @@ class PayPalService
                 $total_fee += $product['txn_fee'];
             }
         }
-        $order->txns_fee_usd = $total_fee;
+        $currency = CurrencyService::getCurrency($order->currency);
+        $order->txns_fee_usd = round($total_fee / $currency->usd_rate, 2);
     }
 
     /**
