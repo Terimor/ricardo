@@ -1,6 +1,9 @@
 <template>
   <form @input="input" class="radio-button-group">
-    <template v-for="input in list">
+    <template v-if="withCustomLabels">
+      <slot/>
+    </template>
+    <template v-else v-for="input in list">
       <label :style="input.styles" :key="input.value" class="label-container-radio" :class="input.class">
         <div class="label-container-radio__label" v-html="input.label"></div>
         <input type="radio" :checked="input.value === value" name="radio" :value="input.value">
@@ -12,11 +15,12 @@
 
 <script>
 export default {
-  name: 'radio-button-group',
+  name: 'RadioButtonGroup',
   props: [
     'list',
     'value',
     'labelStyles',
+    'withCustomLabels'
   ],
   methods: {
     input (e) {

@@ -46,3 +46,20 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
       }
     })
 }
+
+export function getCardUrl(cardType) {
+  const cardMap = {
+    'american-express': '/images/cc-icons/american-express.png',
+    'aura': '/images/cc-icons/aura.png',
+    'diners-club': '/images/cc-icons/diners-club.png',
+    'discover': '/images/cc-icons/discover.png',
+    'elo': '/images/cc-icons/elo.png',
+    'hipercard': '/images/cc-icons/hipercard.png',
+    'iconcc': '/images/cc-icons/iconcc.png',
+    'jcb': '/images/cc-icons/jcb.png',
+    'maestro': '/images/cc-icons/maestro.png',
+    'mastercard': '/images/cc-icons/mastercard.png',
+    'visa': '/images/cc-icons/visa.png'
+  }
+  return cardMap[cardType] || cardMap.iconcc
+}
