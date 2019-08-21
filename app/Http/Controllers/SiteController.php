@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Location;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
+use App\Models\Currency;
 
 class SiteController extends Controller
 {
@@ -57,8 +58,9 @@ class SiteController extends Controller
     public function checkout(Request $request, ProductService $productService)
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
+        $isShowProductOffer = request()->get('tpl') === 'emc1';
         $product = $productService->resolveProduct($request, true);
-        return view('checkout', compact('location', 'product'));
+        return view('checkout', compact('location', 'product', 'isShowProductOffer'));
     }
 
     /**
@@ -101,10 +103,14 @@ class SiteController extends Controller
      */
     public function test()
     {
+        
+        $currency = Currency::whereCode('USD')->first();
+        echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
+        
         $price = 99.81;
         $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price);
         echo '<pre>'; var_dump($exchangedPrice); echo '</pre>'; exit;
-        
+
         $odinOrder = new \App\Models\OdinOrder();
         $odinOrder->number = $odinOrder->generateOrderNumber('US');
         $odinOrder->customer_email = 'asdaASDSAD@ccc.a     ';

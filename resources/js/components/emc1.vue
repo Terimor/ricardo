@@ -1,14 +1,5 @@
 <template>
   <div v-if="$v">
-    <div class="container offer">
-      <p><span class="bold">Special Offer:</span> EchoBeat - Wireless 3D Sound</p>
-      <p>Price:&nbsp;<span id="old-price" class="price-object productprice-old-object strike">₴3,598</span>
-        <span class="price-span">
-          <b><span id="new-price" class="price-object productprice-object"> ₴1,799</span></b>
-        </span>&nbsp;(50% discount per unit)
-      </p>
-    </div>
-
     <div class="container main">
       <div class="row">
         <div class="col-md-7">
@@ -269,44 +260,7 @@ export default {
       },
       cart: {},
       purchase: [],
-      variantList: [
-        {
-          label: 'EchoBeat7 White',
-          text: `
-              <div><img src="/images/headphones-white.png" alt=""><span>EchoBeat7 White</span></div>
-            `,
-          value: 'white',
-          imageUrl: '/images/headphones-white.png'
-        }, {
-          label: 'EchoBeat7 Black',
-          text: `
-              <div><img src="/images/headphones-black.png" alt=""><span>EchoBeat7 Black</span></div>
-            `,
-          value: 'black',
-          imageUrl: '/images/headphones-black.png'
-        }, {
-          label: 'EchoBeat7 Gold',
-          text: `
-              <div><img src="/images/headphones-gold.png" alt=""><span>EchoBeat7 Gold</span></div>
-            `,
-          value: 'gold',
-          imageUrl: '/images/headphones-gold.png'
-        }, {
-          label: 'EchoBeat7 Red',
-          text: `
-              <div><img src="/images/headphones-red.png" alt=""><span>EchoBeat7 Red</span></div>
-            `,
-          value: 'red',
-          imageUrl: '/images/headphones-red.png'
-        }, {
-          label: 'EchoBeat7 Pink',
-          text: `
-              <div><img src="/images/headphones-pink.png" alt=""><span>EchoBeat7 Pink</span></div>
-            `,
-          value: 'pink',
-          imageUrl: '/images/headphones-pink.png'
-        }
-      ],
+      variantList: [],
       stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
         value: it,
         text: it,
@@ -330,7 +284,11 @@ export default {
       form: {
         countryCodePhoneField: checkoutData.countryCode,
         deal: null,
-        variant: 'white',
+        variant: (function() {
+          try {
+            return checkoutData.product.skus[0].code
+          } catch(_) {}
+        }()),
         installments: 1,
         paymentType: null,
 
@@ -486,6 +444,12 @@ export default {
       return acc
     }, {}))
 
+    this.variantList = this.productData.skus.map((it) => ({
+      label: it.name,
+      text: `<div><img src="/images/headphones-white.png" alt=""><span>${it.name}</span></div>`,
+      value: it.code,
+      imageUrl: '/images/headphones-white.png'
+    }))
 
     this.setPurchase({
       variant: this.form.variant,
@@ -548,26 +512,6 @@ export default {
               text-decoration: underline;
           }
       }
-  }
-
-  .container {
-    max-width: 970px;
-  }
-
-  .offer {
-    padding-top: 10px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
-
-      p {
-      margin: 0;
-      font-size: 15px;
-      max-width: 440px;
-      width: 100%;
-      text-transform: uppercase;
-    }
   }
 
   .sale-badge {

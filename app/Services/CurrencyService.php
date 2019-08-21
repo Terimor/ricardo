@@ -204,7 +204,7 @@ class CurrencyService
             $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
         }
         
-        $currency->countryCode = $countryCode;
+        $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
         
         return $currency;
     }
