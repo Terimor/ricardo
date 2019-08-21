@@ -125,7 +125,7 @@ class OdinOrder extends Model
 
         self::creating(function($model) {
             if (!isset($model->number) || !$model->number) {
-                $model->number = self::generateOrderNumber();
+                $model->number = !empty($this->shipping_country) ? self::generateOrderNumber($this->shipping_country) : self::generateOrderNumber();
             }
         });
     }

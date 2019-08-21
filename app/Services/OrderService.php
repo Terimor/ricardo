@@ -45,10 +45,10 @@ class OrderService
     public function addOdinOrder(array $data): array
     {
         $model = new OdinOrder($data);
-        if (!isset($model->number) || !$model->number) {
-            //TODO add country code
+        /*if (!isset($model->number) || !$model->number) {
+            //TODO add country code            
             $model->number = $model->generateOrderNumber();
-        }
+        }*/
 
         $validator = $model->validate();
 
@@ -71,7 +71,7 @@ class OrderService
      * @param array $data
      * @return array
      */
-    public function addCustomer(array $data): array
+    public function addCustomer(array $data, $returnModel = false): array
     {
         $model = OdinCustomer::firstOrNew(['email' => $data['email']]);
         $model->fill($data);
@@ -99,7 +99,7 @@ class OrderService
 
         $addressJson = json_encode($address);
         $modelAddressesJson = json_encode($model->addresses);
-
+        
         // add address if not in array
         if (!strstr(' '.$modelAddressesJson, $addressJson)) {
             $model->addresses = array_merge($model->addresses, [$address]);
@@ -116,7 +116,7 @@ class OrderService
         } else {
             return [
                 'success' => $model->save(),
-                'customer' => $model->attributesToArray()
+                'customer' => $returnModel ? $model : $model->attributesToArray()
              ];
         }
     }

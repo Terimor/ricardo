@@ -27,7 +27,11 @@ class EbanxSendTransactionRequest extends FormRequest
             'amount_total' => [
                 'required',
             ],
-            'name' => [
+            'first_name' => [
+                'required',
+                'string',
+            ],
+            'last_name' => [
                 'required',
                 'string',
             ],
@@ -59,7 +63,7 @@ class EbanxSendTransactionRequest extends FormRequest
                 'required',
                 'string'
             ],
-            'phone_number' => [
+            'phone' => [
                 'required',
                 'string'
             ],
@@ -70,6 +74,13 @@ class EbanxSendTransactionRequest extends FormRequest
             'token' => [
                 'required',
                 'string'
+            ],
+            'sku' => [
+                'required',
+                'string'
+            ],
+            'quantity' => [
+                'required',
             ],
         ];
     }

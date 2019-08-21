@@ -19,6 +19,8 @@ class ProductController extends Controller
      */
     public function view(Request $request, ProductService $productService)
     {
+        $p = $productService->resolveProduct($request, true);
+        echo '<pre>'; var_dump($p->prices); echo '</pre>'; exit;
         return view('product', [
             'product' => $productService->resolveProduct($request, true)
         ]);
@@ -39,28 +41,5 @@ class ProductController extends Controller
 
         ]);
         return $product;
-    }
-
-    /**
-     * 
-     * @param Request $request
-     */
-    public function getLocalPrice(Request $request)
-    {
-        //get country code by GET or IP
-        if ($request->has('cur')) {
-            $currencyCode = $request->input('cur');
-        } else {
-            $countryCode = \Utils::getLocationCountryCode();
-            //get fraction digits and locale string
-            $localeString = \Utils::getCultureCode(null, $countryCode);
-            $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
-
-            $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
-        }
-
-        echo '<pre>'; var_dump($currencyCode); echo '</pre>';
-
-        echo '123'; exit;
     }
 }

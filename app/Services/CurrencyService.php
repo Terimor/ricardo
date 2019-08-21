@@ -206,6 +206,12 @@ class CurrencyService
         
         $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
         
+        if (empty($localeString)) {
+            $localeString = \Utils::getCultureCode(null, $currency->countryCode);
+        }
+        
+        $currency->localeString = $localeString;
+        
         return $currency;
     }
     

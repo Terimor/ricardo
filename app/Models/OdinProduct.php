@@ -93,10 +93,17 @@ class OdinProduct extends Model
      * Getter skus
      */
     public function getSkusAttribute($value)
-    {
+    {        
         foreach ($value as $key => $val) {
             $value[$key]['name'] = !empty($val['name'][app()->getLocale()]) && $val['name'][app()->getLocale()] ? $val['name'][app()->getLocale()] : !empty($val['name']['en']) ? $val['name']['en'] : '';
             $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : !empty($val['brief']['en']) ? $val['brief']['en'] : '';
+            // images
+            $value[$key]['images'] = [];
+            if ($value[$key]['image_ids']) {
+                foreach ($value[$key]['image_ids'] as $k => $img) {
+                    $value[$key]['images'][] = $img ? $this->images[$img] : null;
+                }
+            }
         }
 
         return $value;
@@ -117,6 +124,15 @@ class OdinProduct extends Model
                     $price = CurrencyService::getLocalPriceFromUsd($val[$i]['value'], $currency);
                     $value[$key][$i]['value'] = $price['price'];
                     $value[$key][$i]['value_text'] = $price['price_text'];
+                    if (!empty($this->warranty_percent)) {
+                        $numberFormatter = new \NumberFormatter($currency->localeString, \NumberFormatter::CURRENCY);                        
+                        $value[$key][$i]['warranty_price'] = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
+                        $value[$key][$i]['warranty_price_text'] = $numberFormatter->formatCurrency($value[$key][$i]['warranty_price'], $currency->code);
+                    } else {
+                        $value[$key][$i]['warranty_price'] = 0;
+                        $value[$key][$i]['warranty_price_text'] = null;
+                    }
+                    
                     //if (!empty($val[$i]['image_id'])) {
                         $value[$key][$i]['image'] = !empty($val[$i]['image_id']) ? $this->images[$val[$i]['image_id']] : null;
                     //}
@@ -169,6 +185,14 @@ class OdinProduct extends Model
               }
           }
         }
+        
+        //for skus
+        if (!empty($this->attributes['skus']['image_ids'])) {
+            foreach ($this->attributes['skus']['image_ids'] as $key => $val) {
+                $ids[$val] = $val;
+            }
+        }
+        
         if ($ids) {
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
