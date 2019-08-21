@@ -219,6 +219,7 @@ class PayPalService
                 $products[$product_key]['txn_value'] = $txn['value'];
             }
             $order->products = $products;
+            $order->status = $this->getOrderStatus($order);
             $order->save();
             if ($order) {
                 return ['order_id' => $order->id];
