@@ -358,6 +358,7 @@ class PayPalService
             if (isset($paypal_order->payer->name)) {
                 $order->customer_first_name = optional($paypal_order->payer->name)->given_name;
                 $order->customer_last_name = optional($paypal_order->payer->name)->surname;
+                $order->customer_phone = $paypal_order->payer->phone->phone_number->national_number;
             }
         }
     }
