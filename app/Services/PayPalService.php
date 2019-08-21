@@ -79,7 +79,7 @@ class PayPalService
             ],
             'quantity' => 1
         ]];
-        if ($request->input('is_warrantry_checked') && $product->warranty_percent) {
+        if ($request->input('is_warrantry_checked') && $product->warranty_percent && !$upsell_order) {
             $local_warranty_price = round(($product->warranty_percent / 100) * $local_price, 2);
             $local_warranty_usd = round($local_warranty_price / $priceData['exchange_rate'], 2);
             $total_price += $local_warranty_usd;
