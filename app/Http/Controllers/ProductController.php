@@ -19,8 +19,6 @@ class ProductController extends Controller
      */
     public function view(Request $request, ProductService $productService)
     {
-        $p = $productService->resolveProduct($request, true);
-        echo '<pre>'; var_dump($p->prices); echo '</pre>'; exit;
         return view('product', [
             'product' => $productService->resolveProduct($request, true)
         ]);
