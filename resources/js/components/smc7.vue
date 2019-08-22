@@ -2,17 +2,19 @@
   <div v-if="$v">
     <div class="container smc7">
       <div class="row">
-        <div class="paper col-12  smc7__product">
-          <div class="col-md-7 image-wrapper">
-            <img id="product-image-head" :src="productImage" alt="">
-          </div>
-          <div class="col-md-5 advantages">
-            <ul>
-              <li class="advantage"><i class="fa fa-check"></i>High Sound Quality</li>
-              <li class="advantage"><i class="fa fa-check"></i>Portable Charging</li>
-              <li class="advantage"><i class="fa fa-check"></i>Ergonomic Design</li>
-              <li class="advantage"><i class="fa fa-check"></i>iOs & Android</li>
-            </ul>
+        <div class="container">
+          <div class="paper col-12  smc7__product">
+            <div class="col-md-7 image-wrapper">
+              <img id="product-image-head" :src="productImage" alt="">
+            </div>
+            <div class="col-md-5 advantages">
+              <ul>
+                <li class="advantage"><i class="fa fa-check"></i>High Sound Quality</li>
+                <li class="advantage"><i class="fa fa-check"></i>Portable Charging</li>
+                <li class="advantage"><i class="fa fa-check"></i>Ergonomic Design</li>
+                <li class="advantage"><i class="fa fa-check"></i>iOs & Android</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -65,7 +67,8 @@
                       ...item,
                       value: item.totalQuantity,
                     }"
-                    :key="item.value"/>
+                    :key="item.value"
+                    :showShareArrow="item.totalQuantity === 1"/>
               </radio-button-group>
             </div>
 
@@ -74,9 +77,6 @@
               <select-field
                   popperClass="smc7-popover-variant"
                   v-model="form.variant"
-                  :config="{
-                    prefix: 'EchoBeat7'
-                  }"
                   :rest="{
                     placeholder: 'Variant'
                   }"
@@ -132,49 +132,82 @@
             </div>
           </div>
         </div>
-        <div class="paper col-md-5 smc7__step-4">
-          <div class="d-flex">
-            <div class="smc7__step-4__product">
-              <h2>EchoBeat i7</h2>
-              <p>GET 50% OFF TODAY + FREE SHIPPING</p>
+        <div class="col-md-5 smc7__step-4">
+          <div class="paper">
+            <div class="d-flex">
+              <div class="smc7__step-4__product">
+                <h2>EchoBeat i7</h2>
+                <p>GET 50% OFF TODAY + FREE SHIPPING</p>
+              </div>
+              <img id="product-image-body" :src="productImage" alt="Product image">
             </div>
-            <img id="product-image-body" :src="productImage" alt="Product image">
-          </div>
-          <h2 class="step-title">Step 4: Contact Information</h2>
-          <payment-form-smc7
-              :countryList="countryList"
-              :cardNames="cardNames"
-              :$v="$v"
-              :paymentForm="form"/>
-          <button
-              @click="submit"
-              id="purchase-button"
-              type="button"
-              class="green-button-animated">
-            <span class="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span>
-          </button>
-          <div class="smc7__bottom">
-            <img src="/images/safe_payment_en.png" alt="safe payment">
-            <p><i class="fa fa-lock"></i>Safe 256-Bit SSL encryption.</p>
-            <p>Your credit card will be invoiced as: "MDL*EchoBeat"</p>
+            <h2 class="step-title">Step 4: Contact Information</h2>
+            <payment-form-smc7
+                :countryList="countryList"
+                :cardNames="cardNames"
+                :$v="$v"
+                :paymentForm="form"/>
+            <button
+                v-if="form.paymentType !== 'paypal'"
+                @click="submit"
+                id="purchase-button"
+                type="button"
+                class="green-button-animated">
+              <span class="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span>
+            </button>
+            <button
+                v-if="form.paymentType === 'paypal'"
+                @click="submit"
+                id="purchase-button-paypal"
+                type="button"
+                class="green-button-animated">
+              <span class="purchase-button-text">Buy Now Risk-Free with</span>
+              <img src="/images/cc-icons/paypal-highq.png" alt="Paypal">
+            </button>
+            <div class="smc7__bottom">
+              <img src="/images/safe_payment_en.png" alt="safe payment">
+              <div class="smc7__bottom__safe">
+                <p><i class="fa fa-lock"></i>Safe 256-Bit SSL encryption.</p>
+                <p>Your credit card will be invoiced as: "MDL*EchoBeat"</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <el-dialog
+        @click="isOpenPromotionModal = false"
+        class="cvv-popup"
+        title="Please select a product promotion."
+        :lock-scroll="false"
+        :visible.sync="isOpenPromotionModal">
+      <div class="cvv-popup__content">
+        <p class="error-container">
+          Please select a product promotion.
+        </p>
+
+        <button
+            @click="isOpenPromotionModal = false"
+            style="height: 67px; margin: 0"
+            type="button"
+            class="green-button-animated">
+          <span class="purchase-button-text">OK, I understand</span>
+        </button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 	import {preparePurchaseData} from "../utils/checkout";
-	import {getRadioHtml} from "../utils/emc1";
-	import printf from "printf";
 	import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import smc7validation from "../validation/smc7-validation";
+	import {fade} from "../utils/common";
 
 	export default {
 		name: 'smc7',
 		components: {RadioButtonItemDeal},
-    validations: smc7validation,
+		validations: smc7validation,
 		props: ['showPreloader'],
 		data() {
 			return {
@@ -207,22 +240,27 @@
 						value: 'visa',
 						text: 'VISA',
 						label: 'VISA',
+						imgUrl: '/images/cc-icons/visa.png'
 					}, {
 						value: 'mastercard',
 						text: 'MasterCard',
 						label: 'MasterCard',
+						imgUrl: '/images/cc-icons/mastercard.png'
 					}, {
 						value: 'diners-club',
 						text: 'DinnersClub',
 						label: 'DinnersClub',
+						imgUrl: '/images/cc-icons/diners-club.png'
 					}, {
 						value: 'discover',
 						text: 'Discover',
 						label: 'Discover',
+						imgUrl: '/images/cc-icons/discover.png'
 					}, {
-						value: 'PayPal',
+						value: 'paypal',
 						text: 'PayPal',
 						label: 'PayPal',
+						imgUrl: '/images/cc-icons/payPal.png'
 					}
 				],
 				form: {
@@ -238,7 +276,8 @@
 					city: null,
 					state: null,
 					zipCode: null,
-					paymentType: 'VISA',
+					installments: 1,
+					paymentType: null,
 					cardNumber: '',
 					month: null,
 					year: null,
@@ -246,7 +285,9 @@
 					cardType: 'credit',
 				},
 				purchase: [],
-				variantList: []
+				variantList: [],
+				isOpenPromotionModal: false,
+				isOpenSpecialOfferModal: false,
 			}
 		},
 		computed: {
@@ -256,31 +297,49 @@
 			productData() {
 				return checkoutData.product
 			},
-			dealList() {
-				return this.purchase.map((it, idx) => ({
-					value: idx + 1,
-					label: getRadioHtml({
-						...it,
-						installments: 1,
-						text: printf(it.text, {color: this.form.variant}),
-						idx,
-						shareButton: 0
-					})
-				}))
-			}
+
+		},
+		watch: {
+			'form.variant'(val) {
+				fade('out', 300, document.querySelector('#product-image-head'), true)
+					.then(() => {
+						this.productImage = this.variantList.find(variant => variant.value === val).imageUrl;
+
+						fade('in', 300, document.querySelector('#product-image-head'), true)
+					});
+
+				fade('out', 300, document.querySelector('#product-image-body'), true)
+					.then(() => {
+						this.productImage = this.variantList.find(variant => variant.value === val).imageUrl;
+
+						fade('in', 300, document.querySelector('#product-image-body'), true)
+					});
+
+				this.setPurchase({
+					variant: val,
+					installments: this.form.installments,
+				})
+			},
 		},
 		methods: {
 			submit() {
 				this.$v.form.$touch();
+
+				if (this.$v.form.deal.$invalid) {
+					this.setPromotionalModal(true)
+				}
 			},
 			setPurchase({variant, installments}) {
 				this.purchase = preparePurchaseData({
 					purchaseList: this.productData.prices,
-          quantityToShow: [1,2,3,4,5],
+					quantityToShow: [1, 2, 3, 4, 5],
 					long_name: this.productData.long_name,
 					variant,
 					installments,
 				})
+			},
+			setPromotionalModal(val) {
+				this.isOpenPromotionModal = val
 			}
 		},
 		mounted() {
@@ -300,6 +359,9 @@
 </script>
 
 <style lang="scss">
+  @import "../../sass/variables";
+
+  label-container-radio radio-button-deal
   .smc7.container {
     max-width: 970px;
   }
@@ -343,7 +405,8 @@
     }
 
     .offer {
-      padding: 20px 0;
+      padding-top: 20px;
+      padding-bottom: 20px;
     }
 
     &__deal {
@@ -353,6 +416,11 @@
         padding-left: 20px;
         margin: 0;
       }
+    }
+
+    .el-select .el-input.is-focus .el-input__inner,
+    .el-select .el-input__inner:focus {
+      border-color: #C0C4CC;
     }
 
     &__step-1 {
@@ -370,9 +438,17 @@
         }
       }
 
-      .radio-button-group .label-container-radio__label {
-        font-weight: bold;
-        font-size: 16px;
+      .radio-button-group .label-container-radio {
+        &__label {
+          padding-bottom: 5px;
+        }
+
+        &__label,
+        &__subtitle {
+          font-weight: 700;
+          font-size: 16px;
+        }
+
       }
 
       .radio-button-group .label-container-radio__name-price {
@@ -406,10 +482,26 @@
         width: 40px;
         top: -17px;
         left: -30px;
+
+        @media screen and ($s-down) {
+          width: 24px;
+          top: 0;
+          left: -9px;
+        }
+      }
+    }
+
+    &__step-2 {
+      h2 {
+        margin-top: 15px;
       }
     }
 
     &__step-3 {
+      h2 {
+        margin-top: 30px;
+      }
+
       .full-name {
         display: flex;
 
@@ -441,7 +533,12 @@
 
     &__step-4 {
       .step-title {
-        margin-top: 60px;
+        margin-top: 50px;
+      }
+
+      .radio-button-group {
+        display: flex;
+        justify-content: space-between;
       }
 
       .select {
@@ -508,17 +605,20 @@
         margin: 0 auto;
       }
 
-      p {
-        text-align: center;
-        font-size: 13px;
-      }
+      &__safe {
+        p {
+          text-align: center;
+          font-size: 13px;
+          padding-top: 20px;
+        }
 
-      p i {
-        position: relative;
-        margin-right: 4px;
-        top: 2px;
-        font-size: 18px;
-        color: #409EFF;
+        p i {
+          position: relative;
+          margin-right: 4px;
+          top: 2px;
+          font-size: 18px;
+          color: #409EFF;
+        }
       }
     }
   }
