@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-wrap">
+  <div class="flex-wrap payment-form-smc7">
     <select-field
         :validation="$v.form.country"
         validationMessage="Invalid field"
@@ -55,6 +55,20 @@
         id="zip-code-field"
         v-model="paymentForm.zipCode"/>
     <h2>Pay Securely With:</h2>
+    <radio-button-group
+        :withCustomLabels="true"
+        v-model="paymentForm.paymentType"
+    >
+      <pay-method-item
+          v-for="item in cardNames"
+          :key="item.value"
+          :input="{
+            value: item.value,
+            imgUrl: item.imgUrl,
+          }"
+          :value="paymentForm.paymentType" />
+    </radio-button-group>
+
     <select-field
         :validation="$v.form.paymentType"
         validationMessage="Invalid field"
@@ -64,7 +78,7 @@
                 }"
         :list="cardNames"
         v-model="paymentForm.paymentType"/>
-    <form id="payment-data-form">
+    <form id="payment-data-form" v-if="paymentForm.paymentType !== 'paypal'">
       <text-field
           :validation="$v.form.cardNumber"
           :rest="{
@@ -120,6 +134,17 @@
           v-model="paymentForm.cvv"
           postfix="<i class='fa fa-question-circle'></i>"
       />
+      <el-dialog
+          @click="isOpenCVVModal = false"
+          class="cvv-popup"
+          title="Where do I find my security code?"
+          :visible.sync="isOpenCVVModal">
+        <div class="cvv-popup__content">
+          <p>The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it is a 4 digit number, found on the front of your credit card.</p>
+          <div><img src="/images/cvv_popup.jpg" alt=""></div>
+          <p>Where to find the 3 digit security code (Visa/Mastercard)</p>
+        </div>
+      </el-dialog>
     </form>
 
   </div>
@@ -127,13 +152,16 @@
 <script>
 	import {getCardUrl} from "../../utils/checkout";
 	import creditCardType from 'credit-card-type'
+	import PayMethodItem from "./PayMethodItem";
 
 	export default {
 		name: "PaymentFormSMC7",
-    props: ['$v', 'paymentForm', 'countryList', 'cardNames'],
+		components: {PayMethodItem},
+		props: ['$v', 'paymentForm', 'countryList', 'cardNames'],
 		data() {
 			return {
-        cardType: null
+				cardType: null,
+				isOpenCVVModal: false
 			}
 		},
 		computed: {
@@ -153,13 +181,13 @@
 			}
 		},
 		methods: {
-			openCVVModal() {
-				const node = document.querySelector('.cvv-popup .el-dialog')
+			openCVVModal () {
+				const node = document.querySelector('.cvv-popup .el-dialog');
 				const listener = () => {
 					this.isOpenCVVModal = false
-				}
-				node.removeEventListener('click', listener)
-				node.addEventListener('click', listener)
+				};
+				node.removeEventListener('click', listener);
+				node.addEventListener('click', listener);
 
 				this.isOpenCVVModal = true
 			}
@@ -167,22 +195,66 @@
 	}
 </script>
 <style lang="scss">
-  .prefix {
-    & > img {
-      height: 22px;
-      width: auto;
-    }
+  .payment-form-smc7 {
+    .cvv-popup {
+      .el-dialog {
+        margin-top: 10vh !important;
+        max-width: 600px;
+      }
+      .el-dialog__header {
+        display: flex;
+        justify-content: center;
+      }
+      .el-dialog__title {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 700;
+      }
 
-    input {
-      &:after {
-        content: '\f023';
-        display: block;
-        color: #555;
-        font-family: FontAwesome !important;
-        position: absolute;
-        top: 8px;
-        right: 15px;
+      &__content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        p {
+          font-family: 'Noto Sans', sans-serif;
+          font-size: 17px;
+          width: 100%;
+        }
+
+        img {
+          max-width: 300px;
+          height: auto;
+          margin: 0 auto;
+        }
       }
     }
+
+    .prefix {
+      & > img {
+        height: 22px;
+        width: auto;
+      }
+
+      input {
+        &:after {
+          content: '\f023';
+          display: block;
+          color: #555;
+          font-family: FontAwesome !important;
+          position: absolute;
+          top: 8px;
+          right: 15px;
+        }
+      }
+    }
+    .card-icons {
+      display: flex;
+    }
+    .fa.fa-question-circle {
+      cursor: pointer;
+    }
   }
+
+
 </style>

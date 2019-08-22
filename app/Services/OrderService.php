@@ -16,7 +16,7 @@ class OrderService
      * @param array $data
      * @return type
      */
-    public function addTxn(array $data): array
+    public function addTxn(array $data, bool $returnModel = false): array
     {
 
         $model = new Txn($data);
@@ -32,7 +32,7 @@ class OrderService
         } else {
             return [
                 'success' => $model->save(),
-                'txn' => $model->attributesToArray()
+                'txn' => $returnModel ? $model : $model->attributesToArray()
              ];
         }
     }
@@ -42,17 +42,16 @@ class OrderService
      * @param array $data
      * @return type
      */
-    public function addOdinOrder(array $data): array
+    public function addOdinOrder(array $data, bool $returnModel = false): array
     {
         $model = new OdinOrder($data);
-        /*if (!isset($model->number) || !$model->number) {
-            //TODO add country code            
-            $model->number = $model->generateOrderNumber();
-        }*/
+        if (empty($model->number)) {            
+            $model->number = !empty($model->shipping_country) ? $model->generateOrderNumber($model->shipping_country) : $model->generateOrderNumber();
+        }
 
         $validator = $model->validate();
 
-        if ($validator->fails()) {
+        if ($validator->fails()) {            
             logger()->error("Add odin order fails", ['errors' => $validator->errors()->messages()]);
             return [
                 'errors' => $validator->errors()->messages(),
@@ -61,7 +60,7 @@ class OrderService
         } else {
             return [
                 'success' => $model->save(),
-                'order' => $model->attributesToArray()
+                'order' => $returnModel ? $model : $model->attributesToArray()
              ];
         }
     }
@@ -71,7 +70,7 @@ class OrderService
      * @param array $data
      * @return array
      */
-    public function addCustomer(array $data, $returnModel = false): array
+    public function addCustomer(array $data, bool $returnModel = false): array
     {
         $model = OdinCustomer::firstOrNew(['email' => $data['email']]);
         $model->fill($data);

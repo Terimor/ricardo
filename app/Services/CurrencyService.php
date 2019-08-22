@@ -55,7 +55,7 @@ class CurrencyService
         
         $exchangedPrice = $price * $currency->usd_rate;
         
-        if (in_array($currencyCode, static::$upToNext500)) {            
+        if (in_array($currencyCode, static::$upToNext500)) {
             $exchangedPrice = ceil($exchangedPrice);            
             $exchangedPrice = $exchangedPrice/100;
             $exchangedPrice = (string) $exchangedPrice;

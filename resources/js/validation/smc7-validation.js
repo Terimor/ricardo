@@ -27,6 +27,7 @@ const smc7validation = function () {
         type: email
       },
       phone: {
+        required,
         isValidPhone (val) {
 
           const phoneNumber = parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField)
