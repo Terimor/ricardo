@@ -56,7 +56,7 @@ class EbanxController extends Controller
         $dataForCurl = $this->ebanxService->prepareDataCurl($request->all(), $order->number);
 
         // send transaction
-        $response = $this->ebanxService->sendTransaction($dataForCurl);
+        $response = $this->ebanxService->sendTransaction($dataForCurl);        
         $response = json_decode($response, true);
         
         // save txn
@@ -71,7 +71,7 @@ class EbanxController extends Controller
         }
         
         //unset payment data for FE
-        if (!empty($response['payment'])) {
+        if (!empty($response)) {
             unset($response['payment']);
         }
 

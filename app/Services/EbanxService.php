@@ -106,7 +106,7 @@ class EbanxService
             'total_price_usd' => floor($productForOrder['price'] + $productForOrder['warranty_price'] / $this->currency->usd_rate * 100) / 100,
             //'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
             'payment_provider' => 'ebanx',
-            'payment_method' => 'card',            
+            'payment_method' => $request['payment_type_code'],            
             'customer_email' => $request['email'],
             'customer_first_name' => $request['first_name'],
             'customer_last_name' => $request['last_name'],
@@ -189,7 +189,7 @@ class EbanxService
             'currency' => $this->currency->code,
             'provider_data' => $response,
             'payment_provider' => 'ebanx',
-            'payment_method' => 'card',
+            'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
         ];
         
         $res = $this->orderService->addTxn($data, true);
