@@ -103,6 +103,11 @@ class SiteController extends Controller
      */
     public function test()
     {
+        $start = microtime(true);
+        \Location::get('45.177.39.255');
+        echo 'Script time: '.(microtime(true) - $start).' sec.';
+        
+        echo '123'; exit;
         
         $currency = Currency::whereCode('USD')->first();
         echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
