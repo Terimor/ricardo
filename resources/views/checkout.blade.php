@@ -18,7 +18,6 @@
       countryCode: '{{ $location->countryCode }}',
       product: @json($product),
       productImage: '{{$product->logo_image}}',
-      skusList: @json($skusImageList),
     }
 </script>
 @section('content')

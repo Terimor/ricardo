@@ -61,16 +61,8 @@ class SiteController extends Controller
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
-        $skusImageList = [];
-        foreach($product->skus as $skus) {
-            $skusImageList[] =
-                [
-                   'imageList' => $skus['images'],
-                   'name' => $skus['name'],
-                   'code' => $skus['code'],
-                ];
-        }
-        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'skusImageList'));
+
+        return view('checkout', compact('location', 'product', 'isShowProductOffer'));
     }
 
     /**

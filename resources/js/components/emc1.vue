@@ -439,7 +439,7 @@ export default {
     }
 
     try {
-      this.productImage = this.skusList[0].imageList[0];
+      this.productImage = this.skusList[0].images[0];
     } catch (_) {}
 
     this.setCart(this.mockData.productList.reduce((acc, { key }) => {
@@ -450,9 +450,9 @@ export default {
 
     this.variantList = this.skusList.map((it) => ({
       label: it.name,
-      text: `<div><img src="${it.imageList[0]}" alt=""><span>${it.name}</span></div>`,
+      text: `<div><img src="${it.images[0]}" alt=""><span>${it.name}</span></div>`,
       value: it.code,
-      imageUrl: it.imageList[0]
+      imageUrl: it.images[0]
     }))
 
     this.setPurchase({

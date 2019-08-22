@@ -74,7 +74,7 @@ export default {
       return checkoutData
     },
     skusList() {
-      return checkoutData.skusList
+      return checkoutData.product.skus
     }
   },
   mounted () {
