@@ -176,10 +176,10 @@ export default {
     ProductItem,
     Cart,
   },
-  props: ['showPreloader'],
+  props: ['showPreloader', 'skusList'],
   data () {
     return {
-      productImage: '/images/headphones-white.png',
+      productImage: null,
       mockData: {
         productList: [
           {
@@ -352,7 +352,7 @@ export default {
       const currentDeal = this.purchase[this.form.deal - 1]
 
       return currentDeal && Math.round((currentDeal.newPrice || currentDeal.price) * 10) / 100
-    }
+    },
   },
   watch: {
     'form.installments' (val) {
@@ -366,7 +366,7 @@ export default {
         .then(() => {
           this.productImage = this.variantList.find(variant => variant.value === val).imageUrl
 
-          fade('in', 300, document.querySelector('#product-image'), true)
+          setTimeout(() => fade('in', 300, document.querySelector('#product-image'), true), 200)
         })
 
       this.setPurchase({
@@ -438,17 +438,21 @@ export default {
       }
     }
 
+    try {
+      this.productImage = this.skusList[0].imageList[0];
+    } catch (_) {}
+
     this.setCart(this.mockData.productList.reduce((acc, { key }) => {
       acc[key] = 0
 
       return acc
     }, {}))
 
-    this.variantList = this.productData.skus.map((it) => ({
+    this.variantList = this.skusList.map((it) => ({
       label: it.name,
-      text: `<div><img src="/images/headphones-white.png" alt=""><span>${it.name}</span></div>`,
+      text: `<div><img src="${it.imageList[0]}" alt=""><span>${it.name}</span></div>`,
       value: it.code,
-      imageUrl: '/images/headphones-white.png'
+      imageUrl: it.imageList[0]
     }))
 
     this.setPurchase({

@@ -59,8 +59,18 @@ class SiteController extends Controller
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
         $isShowProductOffer = request()->get('tpl') === 'emc1';
+
         $product = $productService->resolveProduct($request, true);
-        return view('checkout', compact('location', 'product', 'isShowProductOffer'));
+        $skusImageList = [];
+        foreach($product->skus as $skus) {
+            $skusImageList[] =
+                [
+                   'imageList' => $skus['images'],
+                   'name' => $skus['name'],
+                   'code' => $skus['code'],
+                ];
+        }
+        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'skusImageList'));
     }
 
     /**
@@ -107,12 +117,12 @@ class SiteController extends Controller
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
         echo 'Script time: '.(microtime(true) - $start).' sec.';
-        
+
         echo '123'; exit;*/
-        
+
         $currency = Currency::whereCode('USD')->first();
         echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
-        
+
         $price = 99.81;
         $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price);
         echo '<pre>'; var_dump($exchangedPrice); echo '</pre>'; exit;
