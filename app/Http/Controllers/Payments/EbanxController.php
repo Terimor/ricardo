@@ -60,13 +60,15 @@ class EbanxController extends Controller
         $response = json_decode($response, true);
         
         // save txn
+
         if ($response['status'] === "SUCCESS") {
             $txn = $this->ebanxService->saveTxn($response);
             
             //update order product
             $this->ebanxService->saveTxnForOrderProduct($order, $txn, $request->input('sku'));
-            
+            $result = ['status' => "SUCCESS"];
         } else {
+            $result = ['status' => "ERROR", 'message' => !empty($response['status_message']) ? $response['status_message'] : 'Unknown error'];
             logger()->error("Ebanx ERROR transaction", ['response' => $response]);
         }
         
@@ -75,6 +77,6 @@ class EbanxController extends Controller
             unset($response['payment']);
         }
 
-        return $response;
+        return $result ? ['status' => "SUCCESS"] : $response;
     }   
 }

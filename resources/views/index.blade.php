@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['product' => $product])
 
 @section('content')
 <div class="container">

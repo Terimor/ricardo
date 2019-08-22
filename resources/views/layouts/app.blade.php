@@ -46,7 +46,7 @@
 </head>
 <body>
     <div id="app">
-        @include('layouts.header')
+        @include('layouts.header', ['product' => $product])
         <main class="py-4">
             @yield('content')
         </main>

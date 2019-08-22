@@ -25,9 +25,10 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request, ProductService $productService)
     {
-        return view('index');
+        $product = $productService->resolveProduct($request, true);
+        return view('index', compact('product'));
     }
 
     /**
