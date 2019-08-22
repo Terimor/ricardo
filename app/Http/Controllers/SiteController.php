@@ -7,6 +7,7 @@ use Location;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
 use App\Models\Currency;
+use App\Models\Setting;
 
 class SiteController extends Controller
 {
