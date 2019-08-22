@@ -62,8 +62,9 @@ class SiteController extends Controller
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
+        $paypalClient = optional(Setting::where('key', 'instant_payment_paypal_client_id')->first())->value;
 
-        return view('checkout', compact('location', 'product', 'isShowProductOffer'));
+        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'paypalClient'));
     }
 
     /**
