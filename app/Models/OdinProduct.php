@@ -187,9 +187,13 @@ class OdinProduct extends Model
         }
         
         //for skus
-        if (!empty($this->attributes['skus']['image_ids'])) {
-            foreach ($this->attributes['skus']['image_ids'] as $key => $val) {
-                $ids[$val] = $val;
+        if (!empty($this->attributes['skus'])) {
+            foreach ($this->attributes['skus'] as $key => $sku) {
+                if (!empty($sku['image_ids'])) {
+                    foreach ($sku['image_ids'] as $k => $val) {
+                        $ids[$val] = $val;
+                    }
+                }
             }
         }
         
