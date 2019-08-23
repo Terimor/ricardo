@@ -155,7 +155,7 @@ class OdinProduct extends Model
             logger()->error("Cop id ".request()->get('cop_id')." not found");
         }
 
-        return $value[$returnedKey];
+        return !empty($value[$returnedKey]) ? $value[$returnedKey] : $value;
     }
 
     /**

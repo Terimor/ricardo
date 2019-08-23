@@ -7,6 +7,7 @@ use Location;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
 use App\Models\Currency;
+use App\Models\Setting;
 
 class SiteController extends Controller
 {
@@ -62,8 +63,10 @@ class SiteController extends Controller
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
-
-        return view('checkout', compact('location', 'product', 'isShowProductOffer'));
+        $setting = Setting::whereIn('key',[
+                    'instant_payment_paypal_client_id',
+                ])->pluck('value', 'key');        
+        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting'));
     }
 
     /**
