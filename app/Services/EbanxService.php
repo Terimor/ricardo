@@ -185,7 +185,7 @@ class EbanxService
     {   
         $data = [
             'hash' => !empty($response['payment']['hash']) ? $response['payment']['hash'] : null,
-            'value' => !empty($response['payment']['amount_ext']) ? $response['payment']['amount_ext'] : null,
+            'value' => !empty($response['payment']['amount_br']) ? $response['payment']['amount_br'] : null,
             'currency' => $this->currency->code,
             'provider_data' => $response,
             'payment_provider' => 'ebanx',

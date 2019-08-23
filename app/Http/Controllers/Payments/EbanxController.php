@@ -60,7 +60,6 @@ class EbanxController extends Controller
         $response = json_decode($response, true);
         
         // save txn
-
         if ($response['status'] === "SUCCESS") {
             $txn = $this->ebanxService->saveTxn($response);
             
