@@ -12,8 +12,8 @@ const getDiscount = ({key, price, installments}) => {
   return config[key]
 }
 
-export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments}) {
-  return  Object.keys(purchaseList)
+export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments, customOrder=false}) {
+  let data = Object.keys(purchaseList)
     .filter((key) => quantityToShow.includes(+key))
     .map((key, idx) => {
       const it = purchaseList[key]
@@ -24,18 +24,18 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
             +key
 
       const freeQuantity =
-            +key === 3 ? 1 :
-              +key === 5 ? 2 :
-                null
+        +key === 3 ? 1 :
+          +key === 5 ? 2 :
+            null
 
       return  {
         discountName:
-                    it.is_bestseller ? 'BESTSELLER' :
-                      it.is_popular ? 'BEST DEAL' :
-                        '',
+          it.is_bestseller ? 'BESTSELLER' :
+            it.is_popular ? 'BEST DEAL' :
+              '',
         newPrice: preparePartByInstallments(it.value * mainQuantity, installments),
         withDiscount: idx > 0,
-        text: `${mainQuantity}x ${long_name} ${variant} ${freeQuantity ? freeQuantity + ' FREE' : ''}`,
+        text: `${mainQuantity}x ${long_name} ${variant} ${freeQuantity ? ' + ' + freeQuantity + ' FREE' : ''}`,
         price: preparePartByInstallments(price, installments),
         discountText: getDiscount({
           key,
@@ -44,7 +44,11 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
         }),
         totalQuantity: +key
       }
-    })
+    });
+  if(customOrder) {
+    [data[0],data[1],data[2],data[3],data[4]] = [data[4],data[2],data[0],data[1],data[3]];
+  }
+  return data
 }
 
 export function getCardUrl(cardType) {
