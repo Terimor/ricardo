@@ -17,7 +17,7 @@ class OdinProduct extends Model
     protected $fillable = [
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id', 'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
     ];
-    
+
     protected $hidden = [
         '_id'
     ];
@@ -95,7 +95,7 @@ class OdinProduct extends Model
      * Getter skus
      */
     public function getSkusAttribute($value)
-    {        
+    {
         foreach ($value as $key => $val) {
             $value[$key]['name'] = !empty($val['name'][app()->getLocale()]) && $val['name'][app()->getLocale()] ? $val['name'][app()->getLocale()] : !empty($val['name']['en']) ? $val['name']['en'] : '';
             $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : !empty($val['brief']['en']) ? $val['brief']['en'] : '';
@@ -126,21 +126,24 @@ class OdinProduct extends Model
                     $price = CurrencyService::getLocalPriceFromUsd($val[$i]['value'], $currency);
                     $value[$key][$i]['value'] = $price['price'];
                     $value[$key][$i]['value_text'] = $price['price_text'];
+
+		    $value[$key][$i]['old_value_text'] = '$'.$price['price']*5;
+
                     $numberFormatter = new \NumberFormatter($currency->localeString, \NumberFormatter::CURRENCY);
-                    if (!empty($this->warranty_percent)) {                                                
+                    if (!empty($this->warranty_percent)) {
                         $value[$key][$i]['warranty_price'] = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
                         $value[$key][$i]['warranty_price_text'] = $numberFormatter->formatCurrency($value[$key][$i]['warranty_price'], $currency->code);
                     } else {
                         $value[$key][$i]['warranty_price'] = 0;
                         $value[$key][$i]['warranty_price_text'] = null;
                     }
-                    
+
                     // installments
                     $value[$key][$i]['installments3_value'] = floor($price['price']*100/3)/100;
                     $value[$key][$i]['installments6_value'] = floor($price['price']*100/6)/100;
                     $value[$key][$i]['installments3_value_text'] = $numberFormatter->formatCurrency($value[$key][$i]['installments3_value'], $currency->code);
                     $value[$key][$i]['installments6_value_text'] = $numberFormatter->formatCurrency($value[$key][$i]['installments6_value'], $currency->code);
-                    
+
                     //if (!empty($val[$i]['image_id'])) {
                         $value[$key][$i]['image'] = !empty($val[$i]['image_id']) ? $this->images[$val[$i]['image_id']] : null;
                     //}
@@ -193,7 +196,7 @@ class OdinProduct extends Model
               }
           }
         }
-        
+
         //for skus
         if (!empty($this->attributes['skus'])) {
             foreach ($this->attributes['skus'] as $key => $sku) {
@@ -204,7 +207,7 @@ class OdinProduct extends Model
                 }
             }
         }
-        
+
         if ($ids) {
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
