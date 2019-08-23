@@ -91,9 +91,9 @@ class EbanxService
             "sku_code" => $request['sku'],
             "quantity" => (int)$request['quantity'],
             "price" => $price,
-            "price_usd" => round($price / !empty($this->currency->price_rate) ? !empty($this->currency->price_rate) : $this->currency->usd_rate, 2),
+            "price_usd" => round($price / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate), 2),
             "warranty_price" => $warrantyPrice,
-            "warranty_price_usd" => floor($warrantyPrice / !empty($this->currency->price_rate) ? !empty($this->currency->price_rate) : $this->currency->usd_rate * 100)/100,                 
+            "warranty_price_usd" => floor($warrantyPrice / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100)/100,                 
             'price_set' => $product->prices['price_set'],          
         ];
         
@@ -103,7 +103,7 @@ class EbanxService
             'exchange_rate' => $this->currency->usd_rate, // * float
             'total_paid' => $productForOrder['price'],
             'total_price' => $productForOrder['price'] + $productForOrder['warranty_price'],
-            'total_price_usd' => floor($productForOrder['price'] + $productForOrder['warranty_price'] / !empty($this->currency->price_rate) ? !empty($this->currency->price_rate) : $this->currency->usd_rate * 100) / 100,
+            'total_price_usd' => floor($productForOrder['price'] + $productForOrder['warranty_price'] / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100) / 100,
             //'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
             'payment_provider' => 'ebanx',
             'payment_method' => $request['payment_type_code'],            
