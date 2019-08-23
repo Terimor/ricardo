@@ -204,7 +204,7 @@
 </template>
 
 <script>
-	import {preparePurchaseData, preparePurchaseData1} from "../utils/checkout";
+	import {preparePurchaseData} from "../utils/checkout";
 	import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import smc7validation from "../validation/smc7-validation";
 	import {fade} from "../utils/common";
@@ -340,7 +340,6 @@
 				}
 			},
 			setCountryCodeByPhoneField (val) {
-				console.log(val)
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2.toUpperCase()
 				}
@@ -461,6 +460,7 @@
         h3 {
           margin: 0 0 10px;
         }
+
         h3:first-child {
           width: 60%;
         }
