@@ -126,14 +126,20 @@ class OdinProduct extends Model
                     $price = CurrencyService::getLocalPriceFromUsd($val[$i]['value'], $currency);
                     $value[$key][$i]['value'] = $price['price'];
                     $value[$key][$i]['value_text'] = $price['price_text'];
-                    if (!empty($this->warranty_percent)) {
-                        $numberFormatter = new \NumberFormatter($currency->localeString, \NumberFormatter::CURRENCY);                        
+                    $numberFormatter = new \NumberFormatter($currency->localeString, \NumberFormatter::CURRENCY);
+                    if (!empty($this->warranty_percent)) {                                                
                         $value[$key][$i]['warranty_price'] = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
                         $value[$key][$i]['warranty_price_text'] = $numberFormatter->formatCurrency($value[$key][$i]['warranty_price'], $currency->code);
                     } else {
                         $value[$key][$i]['warranty_price'] = 0;
                         $value[$key][$i]['warranty_price_text'] = null;
                     }
+                    
+                    // installments
+                    $value[$key][$i]['installments3_value'] = floor($price['price']*100/3)/100;
+                    $value[$key][$i]['installments6_value'] = floor($price['price']*100/6)/100;
+                    $value[$key][$i]['installments3_value_text'] = $numberFormatter->formatCurrency($value[$key][$i]['installments3_value'], $currency->code);
+                    $value[$key][$i]['installments6_value_text'] = $numberFormatter->formatCurrency($value[$key][$i]['installments6_value'], $currency->code);
                     
                     //if (!empty($val[$i]['image_id'])) {
                         $value[$key][$i]['image'] = !empty($val[$i]['image_id']) ? $this->images[$val[$i]['image_id']] : null;
