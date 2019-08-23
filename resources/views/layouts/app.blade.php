@@ -15,7 +15,7 @@
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js" defer></script>
         <script src="https://js.ebanx.com/ebanx-1.6.0.min.js" defer></script>
         <script src="/js/ebanx.js" defer></script>
-        <script src="https://www.paypal.com/sdk/js?disable-card=visa,mastercard,amex&client-id=Afm_LCoC3MNSuaJq9Ep_kOrPJvuOvxg0QC5J3Ux6z3VPhesARugqJN_6gRjgg1mIvfkP_e1VuC2N3qhf"></script> <!-- PAYPAL required  -->
+        <script src="https://www.paypal.com/sdk/js?disable-card=visa,mastercard,amex&client-id={{$setting['instant_payment_paypal_client_id']}}"></script>
 
         {{--<script src="https://cdn.checkout.com/sandbox/js/checkout.js"></script>--}}
         {{--<script src="https://sandbox.bluesnap.com/js/cse/v1.0.4/bluesnap.js"></script>--}}
