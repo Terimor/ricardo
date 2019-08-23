@@ -60,13 +60,12 @@ class SiteController extends Controller
     public function checkout(Request $request, ProductService $productService)
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
-        $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
         $setting = Setting::whereIn('key',[
                     'instant_payment_paypal_client_id',
-                ])->pluck('value', 'key');        
-        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting'));
+                ])->pluck('value', 'key');
+        return view('checkout', compact('location', 'product', 'setting'));
     }
 
     /**

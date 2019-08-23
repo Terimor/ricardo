@@ -412,15 +412,23 @@ export default {
       }
     },
     setPurchase ({ variant, installments }) {
-        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
-        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
+      const oldPrice = document.querySelector('#old-price')
+      const newPrice = document.querySelector('#new-price')
 
-        this.purchase = preparePurchaseData({
-          purchaseList: this.productData.prices,
-          long_name: this.productData.long_name,
-          variant,
-          installments,
-        })
+      if (oldPrice) {
+        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
+      }
+
+      if (newPrice) {
+        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
+      }
+
+      this.purchase = preparePurchaseData({
+        purchaseList: this.productData.prices,
+        long_name: this.productData.long_name,
+        variant,
+        installments,
+      })
     },
     showNotice () {
       const notice = getNotice('EchoBeat7')
