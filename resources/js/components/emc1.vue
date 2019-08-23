@@ -423,10 +423,12 @@ export default {
         document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
       }
 
+      const currentVariant = this.skusList.find(it => it.code === variant)
+
       this.purchase = preparePurchaseData({
         purchaseList: this.productData.prices,
         long_name: this.productData.long_name,
-        variant,
+        variant: currentVariant && currentVariant.name,
         installments,
       })
     },
