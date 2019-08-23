@@ -3,11 +3,11 @@ import { getRandomInt } from './common';
 export const getCountOfInstallments = (installments) => installments && installments !== 1 ? installments + 'X ' : ''
 
 export const getRadioHtml = ({ discountName, newPrice, text, price, discountText, currency = '$', installments, idx }) =>
-    `${discountName
-        ? `<p class="label-container-radio__best-seller">
+  `${discountName
+    ? `<p class="label-container-radio__best-seller">
       <span>${discountName}</span><span>${`${getCountOfInstallments(installments)}` + currency + newPrice.toLocaleString()}</span>
     </p>`
-        : ''}
+    : ''}
   ${idx === 1 ? '<img class="share" src="/images/share.png">' : ''}
   <p class="label-container-radio__name-price">
     <span>${text}</span>
@@ -16,8 +16,8 @@ export const getRadioHtml = ({ discountName, newPrice, text, price, discountText
   <p class="label-container-radio__discount">${discountText}</p>`
 
 export function * getNotice (productName) {
-    const messageMap = {
-        recentlyBought: `
+  const messageMap = {
+    recentlyBought: `
       <div class="recently-notice">
         <div class="recently-notice__left">
           <img src="/images/headphones-white.png" alt="">
@@ -27,7 +27,7 @@ export function * getNotice (productName) {
         </div>
       </div>
     `,
-        paypal: `
+    paypal: `
       <div class="recently-notice">
         <div class="recently-notice__left">
           <img src="/images/paypal232.png" alt="">
@@ -37,7 +37,7 @@ export function * getNotice (productName) {
         </div>
       </div>
     `,
-        usersActive: `
+    usersActive: `
       <div class="recently-notice recently-notice_user-active">
         <div class="recently-notice__left">
           <i class="fa fa-user"></i>
@@ -47,7 +47,7 @@ export function * getNotice (productName) {
         </div>
       </div>
     `,
-        bestsellerText: `
+    bestsellerText: `
       <div class="recently-notice recently-notice_high-demand">
         <div class="recently-notice__left">
           <i class="fa fa-user"></i>
@@ -57,20 +57,73 @@ export function * getNotice (productName) {
         </div>
       </div>
     `,
-        paypalNotice: `<b>paypalNotice</b>`
+    paypalNotice: `<b>paypalNotice</b>`
+  }
+
+  const keyQueue = ['recentlyBought', 'recentlyBought', 'usersActive', 'paypal', 'recentlyBought', 'recentlyBought', 'bestsellerText']
+
+  let lastIndex = 0
+
+  while (true) {
+    if (lastIndex < keyQueue.length - 1) {
+      yield messageMap[keyQueue[lastIndex]]
+      lastIndex++
+    } else {
+      yield messageMap[keyQueue[lastIndex]]
+      lastIndex = 0
     }
+  }
+}
 
-    const keyQueue = ['recentlyBought', 'recentlyBought', 'usersActive', 'paypal', 'recentlyBought', 'recentlyBought', 'bestsellerText']
+export function paypalCreateOrder ({
+  xsrfToken = document.head.querySelector('meta[name="csrf-token"]').content,
+  sku_code,
+  sku_quantity,
+  is_warrantry_checked,
+  order_id = '',
+  page_checkout = document.location.href,
+  offer = new URL(document.location.href).searchParams.get('offer'),
+  affiliate = new URL(document.location.href).searchParams.get('affiliate'),
+}) {
+  return fetch('/paypal-create-order', {
+    method: 'post',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRF-TOKEN': xsrfToken,
+      'content-type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+      sku_code,
+      sku_quantity,
+      is_warrantry_checked,
+      order_id,
+      page_checkout,
+      offer,
+      affiliate,
+    })
+  }).then(function(res) {
+    return res.json();
+  }).then(function(data) {
+    return data.id;
+  });
+}
 
-    let lastIndex = 0
-
-    while (true) {
-        if (lastIndex < keyQueue.length - 1) {
-            yield messageMap[keyQueue[lastIndex]]
-            lastIndex++
-        } else {
-            yield messageMap[keyQueue[lastIndex]]
-            lastIndex = 0
-        }
-    }
+export function paypalOnApprove(data) {
+  return fetch('/paypal-verify-order', {
+    credentials: 'same-origin',
+    method: 'post',
+    headers: {
+      'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+      'content-type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+      orderID: data.orderID
+    })
+  }).then(function(res) {
+    return res.json();
+  }).then(function(details) {
+    console.log(details);
+  });
 }

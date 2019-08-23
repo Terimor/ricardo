@@ -51,7 +51,7 @@
               <button v-show="warrantyPrice" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
                   3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} ₴{{warrantyPrice}}
-                  <input id="warranty-field" type="checkbox">
+                  <input id="warranty-field" type="checkbox" v-model="form.isWarrancyChecked">
                   <span class="checkmark"></span>
                 </label>
                 <img src="/images/best-saller.png" alt="">
@@ -83,6 +83,10 @@
               @setPromotionalModal="setPromotionalModal"
               @setAddress="setAddress"/>
           </transition>
+          <paypal-button
+            :createOrder="paypalCreateOrder"
+            :onApprove="paypalOnApprove"
+          >Buy Now Risk Free PAYPAL</paypal-button>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
             <p><i class="fa fa-lock"></i>Safe 256-Bit SSL encryption.</p>
@@ -168,6 +172,7 @@ import Cart from './common/Cart';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
 import { preparePartByInstallments, preparePurchaseData } from '../utils/checkout';
+import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
 
 export default {
   name: 'emc1',
@@ -282,6 +287,7 @@ export default {
         }
       ],
       form: {
+        isWarrancyChecked: false,
         countryCodePhoneField: checkoutData.countryCode,
         deal: null,
         variant: (function() {
@@ -336,7 +342,8 @@ export default {
     },
     dealList () {
       return this.purchase.map((it, idx) => ({
-        value: idx + 1,
+        value: it.totalQuantity,
+        quantity: it.totalQuantity,
         label: getRadioHtml({
           ...it,
           installments: this.form.installments,
@@ -349,7 +356,7 @@ export default {
       return checkoutData
     },
     warrantyPrice () {
-      const currentDeal = this.purchase[this.form.deal - 1]
+      const currentDeal = this.purchase.find(it => +it.totalQuantity === +this.form.deal)
 
       return currentDeal && Math.round((currentDeal.newPrice || currentDeal.price) * 10) / 100
     },
@@ -377,6 +384,18 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    paypalCreateOrder () {
+      return paypalCreateOrder({
+        xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+        sku_code: this.queryParams.product,
+        sku_quantity: this.form.deal,
+        is_warrantry_checked: this.form.isWarrancyChecked,
+        page_checkout: document.location.href,
+        offer: new URL(document.location.href).searchParams.get('offer'),
+        affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+      })
+    },
+    paypalOnApprove: paypalOnApprove,
     setCart (cart) {
       this.cart = {
         ...this.cart,
