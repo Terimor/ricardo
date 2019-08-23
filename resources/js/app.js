@@ -19,6 +19,7 @@ Vue.component('radio-button-group', require('./components/common/RadioButtonGrou
 Vue.component('leave-modal', require('./components/common/LeaveModal.vue').default)
 Vue.component('payment-form', require('./components/common/PaymentForm.vue').default)
 Vue.component('payment-form-smc7', require('./components/common/PaymentFormSMC7.vue').default)
+Vue.component('paypal-button', require('./components/common/PaypalButton.vue').default)
 // preloaders
 Vue.component('preloader-3', require('./components/common/preloaders/Preloader3').default)
 

@@ -59,14 +59,17 @@
         :withCustomLabels="true"
         v-model="paymentForm.paymentType"
     >
-      <pay-method-item
-          v-for="item in cardNames"
-          :key="item.value"
-          :input="{
+      <div class="card-types">
+        <pay-method-item
+            v-for="item in cardNames"
+            :key="item.value"
+            :input="{
             value: item.value,
             imgUrl: item.imgUrl,
           }"
-          :value="paymentForm.paymentType" />
+            :value="paymentForm.paymentType" />
+      </div>
+
     </radio-button-group>
 
     <select-field
@@ -196,6 +199,15 @@
 </script>
 <style lang="scss">
   .payment-form-smc7 {
+    .card-types {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+      .pay-method-item {
+        cursor: pointer;
+        margin: 5px 12px;
+      }
+    }
     .cvv-popup {
       .el-dialog {
         margin-top: 10vh !important;
