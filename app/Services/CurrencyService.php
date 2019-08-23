@@ -179,6 +179,17 @@ class CurrencyService
     }
 
     /**
+     * Returns discount percent
+     * @param float $priceOld
+     * @param float $priceNow
+     * @return float
+     */
+    public static function getDiscountPercent(float $priceOld, float $priceNow): float {
+	$percent = round(($priceOld - $priceNow) / $priceOld * 100);
+	return $percent;
+    }
+
+    /**
      * Get currency array
      * @param string $countryCode
      * @return Currency

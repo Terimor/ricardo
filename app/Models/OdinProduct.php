@@ -143,6 +143,8 @@ class OdinProduct extends Model
 		    $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
 		    $value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
 
+		    $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
+
                     if (!empty($this->warranty_percent)) {
                         $value[$key][$quantity]['warranty_price'] = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
                         $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($value[$key][$quantity]['warranty_price'], $currency->code);
