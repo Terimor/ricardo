@@ -2,19 +2,17 @@
   <div v-if="$v">
     <div class="container smc7">
       <div class="row">
-        <div class="container">
-          <div class="paper col-12  smc7__product">
-            <div class="col-md-7 image-wrapper">
-              <img id="product-image-head" :src="productImage" alt="">
-            </div>
-            <div class="col-md-5 advantages">
-              <ul>
-                <li class="advantage"><i class="fa fa-check"></i>High Sound Quality</li>
-                <li class="advantage"><i class="fa fa-check"></i>Portable Charging</li>
-                <li class="advantage"><i class="fa fa-check"></i>Ergonomic Design</li>
-                <li class="advantage"><i class="fa fa-check"></i>iOs & Android</li>
-              </ul>
-            </div>
+        <div class="container paper smc7__product">
+          <div class="col-md-7 image-wrapper">
+            <img id="product-image-head" :src="productImage" alt="">
+          </div>
+          <div class="col-md-5 advantages">
+            <ul>
+              <li class="advantage"><i class="fa fa-check"></i>High Sound Quality</li>
+              <li class="advantage"><i class="fa fa-check"></i>Portable Charging</li>
+              <li class="advantage"><i class="fa fa-check"></i>Ergonomic Design</li>
+              <li class="advantage"><i class="fa fa-check"></i>iOs & Android</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -37,14 +35,20 @@
                 <div class="sale-badge dynamic-sale-badge ">
                   <div class="dynamic-sale-badge__background"></div>
                   <div class="dynamic-sale-badge__container">
-                    <span class="badge-discount-percentage">50%</span> Off
+                    <span class="badge-discount-percentage">50%</span>
+                    <span>Off</span>
                   </div>
                 </div>
               </div>
-              <p class="smc7__deal__text">
-                <strong>Free Shipping</strong> on all orders <strong>Today!</strong>
-                Do not browse away from this page! <strong>Free delivery available today</strong>
-              </p>
+              <div class="d-flex flex-column smc7__deal__text">
+                <p>
+                  <strong>Free Shipping</strong> on all orders <strong>Today!</strong>
+                </p>
+                <p>
+                  Do not browse away from this page! <strong>Free delivery available today</strong>
+                </p>
+              </div>
+
             </div>
 
             <div class="smc7__step-1">
@@ -68,7 +72,7 @@
                       value: item.totalQuantity,
                     }"
                     :key="item.value"
-                    :showShareArrow="item.totalQuantity === 1"/>
+                    :showShareArrow="item.totalQuantity === 5"/>
               </radio-button-group>
             </div>
 
@@ -120,6 +124,7 @@
                   }"
                   v-model="form.email"/>
               <phone-field
+                  @onCountryChange="setCountryCodeByPhoneField"
                   :validation="$v.form.phone"
                   validationMessage="Please enter a valid phone number"
                   :countryCode="form.countryCodePhoneField"
@@ -199,7 +204,7 @@
 </template>
 
 <script>
-	import {preparePurchaseData} from "../utils/checkout";
+	import {preparePurchaseData, preparePurchaseData1} from "../utils/checkout";
 	import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import smc7validation from "../validation/smc7-validation";
 	import {fade} from "../utils/common";
@@ -270,7 +275,12 @@
 					lname: null,
 					email: null,
 					phone: null,
-					variant: 'sku1',
+					variant: (function () {
+						try {
+							return checkoutData.product.skus[0].code
+						} catch (_) {
+						}
+					}()),
 					country: checkoutData.countryCode,
 					streetAndNumber: null,
 					city: null,
@@ -329,13 +339,20 @@
 					this.setPromotionalModal(true)
 				}
 			},
+			setCountryCodeByPhoneField (val) {
+				console.log(val)
+				if (val.iso2) {
+					this.form.countryCodePhoneField = val.iso2.toUpperCase()
+				}
+			},
 			setPurchase({variant, installments}) {
 				this.purchase = preparePurchaseData({
 					purchaseList: this.productData.prices,
 					quantityToShow: [1, 2, 3, 4, 5],
-					long_name: this.productData.long_name,
+					long_name: this.productData.product_name,
 					variant,
 					installments,
+					customOrder: true
 				})
 			},
 			setPromotionalModal(val) {
@@ -361,7 +378,6 @@
 <style lang="scss">
   @import "../../sass/variables";
 
-  label-container-radio radio-button-deal
   .smc7.container {
     max-width: 970px;
   }
@@ -413,8 +429,20 @@
       &__text {
         font-size: 18px;
         font-style: italic;
-        padding-left: 20px;
+        padding: 0 20px;
         margin: 0;
+      }
+    }
+
+    &__sale {
+      .dynamic-sale-badge {
+        &__background {
+          background-color: #c0392b;
+          box-shadow: 0 0 0 5px #c0392b;
+        }
+      }
+      .badge-discount-percentage {
+        font-size: 18px;
       }
     }
 
@@ -426,7 +454,7 @@
     &__step-1 {
       &__titles {
         display: flex;
-        padding: 0 20px;
+        padding: 0 10px;
 
         h3:first-child {
           width: 60%;
@@ -495,6 +523,15 @@
       h2 {
         margin-top: 15px;
       }
+      .select {
+        .el-select {
+          outline: 1px inset #000;
+          input {
+            border-color: transparent;
+            font-size: 17px
+          }
+        }
+      }
     }
 
     &__step-3 {
@@ -538,7 +575,6 @@
 
       .radio-button-group {
         display: flex;
-        justify-content: space-between;
       }
 
       .select {
@@ -546,6 +582,11 @@
 
         .el-select {
           outline: 1px inset #000;
+          input {
+            background-color: #ffffff;
+            border-color: transparent;
+            font-size: 17px
+          }
         }
       }
 
@@ -565,11 +606,6 @@
       .card-date > div {
         width: calc(40% - 5px);
         margin-right: 10px;
-      }
-
-      .select.variant-1 input {
-        background-color: #ffffff;
-        font-size: 17px;
       }
 
       .cvv-field {
@@ -646,6 +682,24 @@
           font-weight: 700;
         }
       }
+    }
+  }
+
+  @media screen and ($s-down) {
+    .smc7 {
+      &__product {
+        max-width: 100%;
+        flex-direction: column;
+
+        .image-wrapper {
+          width: 100%;
+        }
+
+        .advantages {
+          width: 100%;
+        }
+      }
+
     }
   }
 </style>
