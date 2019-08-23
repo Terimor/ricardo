@@ -204,7 +204,7 @@
 </template>
 
 <script>
-	import {preparePurchaseData, preparePurchaseData1} from "../utils/checkout";
+	import {preparePurchaseData} from "../utils/checkout";
 	import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import smc7validation from "../validation/smc7-validation";
 	import {fade} from "../utils/common";
@@ -340,7 +340,6 @@
 				}
 			},
 			setCountryCodeByPhoneField (val) {
-				console.log(val)
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2.toUpperCase()
 				}
@@ -452,9 +451,15 @@
     }
 
     &__step-1 {
+      h2 {
+        margin-bottom: 20px;
+      }
       &__titles {
         display: flex;
         padding: 0 10px;
+        h3 {
+          margin: 0 0 10px;
+        }
 
         h3:first-child {
           width: 60%;
@@ -521,7 +526,7 @@
 
     &__step-2 {
       h2 {
-        margin-top: 15px;
+        margin: 15px 0 20px;
       }
       .select {
         .el-select {
@@ -536,7 +541,7 @@
 
     &__step-3 {
       h2 {
-        margin-top: 30px;
+        margin: 25px 0 20px;
       }
 
       .full-name {
@@ -699,7 +704,14 @@
           width: 100%;
         }
       }
+      &__step-4 {
+        margin-top: 10px;
 
+        .step-title {
+          margin-top: 20px;
+        }
+      }
     }
+
   }
 </style>

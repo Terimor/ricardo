@@ -416,11 +416,17 @@ export default {
       const newPrice = document.querySelector('#new-price')
 
       if (oldPrice) {
-        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
+        document.querySelector('#old-price').innerHTML =
+          getCountOfInstallments(installments) +
+          ' $' +
+          preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
       }
 
       if (newPrice) {
-        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
+        document.querySelector('#new-price').innerHTML =
+          getCountOfInstallments(installments) +
+          ' $' +
+          preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
       }
 
       const currentVariant = this.skusList.find(it => it.code === variant)

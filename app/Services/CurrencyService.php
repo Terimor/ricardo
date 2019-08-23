@@ -51,9 +51,7 @@ class CurrencyService
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
         //$start = microtime(true);
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
-        //echo 'Script time: '.(microtime(true) - $start).' sec.';
-        
-
+        //echo 'Script time: '.(microtime(true) - $start).' sec.';        
         $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
 
         if (in_array($currencyCode, static::$upToNext500)) {
