@@ -704,7 +704,14 @@
           width: 100%;
         }
       }
+      &__step-4 {
+        margin-top: 10px;
 
+        .step-title {
+          margin-top: 20px;
+        }
+      }
     }
+
   }
 </style>
