@@ -1,12 +1,12 @@
 <template>
   <div>
-      <emc1-component
-          :showPreloader="showPreloader"
-          :skusList="skusList"
-          v-if="queryParams.tpl === 'emc1'" />
       <smc7-component
           :showPreloader="showPreloader"
           v-if="queryParams.tpl === 'smc7'" />
+      <emc1-component
+          :showPreloader="showPreloader"
+          :skusList="skusList"
+          v-else />
       <preloader-3
       v-if="+queryParams.preload === 3"
       @finish-preload="showPreloader = false"
