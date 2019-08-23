@@ -53,7 +53,8 @@ class CurrencyService
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
         //echo 'Script time: '.(microtime(true) - $start).' sec.';
         
-        $exchangedPrice = $price * $currency->usd_rate;
+        
+        $exchangedPrice = $price * !empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate;
         
         if (in_array($currencyCode, static::$upToNext500)) {
             $exchangedPrice = ceil($exchangedPrice);            
