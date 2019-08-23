@@ -168,6 +168,17 @@ class CurrencyService
     }
 
     /**
+     * Returns single installment price
+     * @param float $price
+     * @param int $installments
+     * @return float
+     */
+    public static function getInstallmentPrice(float $price, int $installments): float {
+	$installmentPrice = floor($price * 100 / $installments) / 100;
+	return $installmentPrice;
+    }
+
+    /**
      * Get currency array
      * @param string $countryCode
      * @return Currency

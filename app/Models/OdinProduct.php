@@ -152,14 +152,14 @@ class OdinProduct extends Model
                     }
 
                     //installments
-                    $value[$key][$quantity]['installments3_value'] = floor($price['price']*100/3)/100;
-                    $value[$key][$quantity]['installments6_value'] = floor($price['price']*100/6)/100;
-                    $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($value[$key][$quantity]['installments3_value'], $currency->code);
-                    $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($value[$key][$quantity]['installments6_value'], $currency->code);
+		    $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
+		    $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
+                    $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($installments3_value, $currency->code);
+                    $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
 
                     $value[$key][$quantity]['image'] = !empty($priceSet[$quantity]['image_id']) ? $this->images[$priceSet[$quantity]['image_id']] : null;
                 } else {
-                    logger()->error("Price not set for qty {$quantity} -  ".$this->product_name);
+                    logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
                 }
             }
             $value[$key]['currency'] = $currency->code;
@@ -172,7 +172,7 @@ class OdinProduct extends Model
         }
 
         if (request()->has('cop_id')) {
-            logger()->error("Cop id ".request()->get('cop_id')." not found");
+            logger()->error("Invalid cop_id ".request()->get('cop_id')." for {$this->product_name}");
         }
 
         return !empty($value[$returnedKey]) ? $value[$returnedKey] : $value;
