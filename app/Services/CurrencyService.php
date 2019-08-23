@@ -10,30 +10,30 @@ class CurrencyService
 {
     /**
      * Currency codes round to 0,95
-     * @var type 
+     * @var type
      */
     public static $roundTo0_95 = ['CHF'];
-    
+
     /**
      * Up to next 500
-     * @var type 
+     * @var type
      */
     public static $upToNext500 = ['KRW'];
-    
+
     /**
      * Up to next 10
-     * @var type 
+     * @var type
      */
     public static $upToNext10 = ['JPY'];
-    
+
     public function __construct()
     {
     }
-    
+
     /**
      * Get local price from USD
      * @param float $price
-     * @param string $toCurrency
+     * @param string $currency
      * @param string $countryCode
      * @param type $ip
      * @return float
@@ -45,21 +45,19 @@ class CurrencyService
         }
         $currencyCode = $currency->code;
         $countryCode = $currency->countryCode;
- 
-        //get fraction digits and locale string        
+
+        //get fraction digits and locale string
         $localeString = \Utils::getCultureCode($ip, $countryCode);
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
-        //$start = microtime(true);
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
-        //echo 'Script time: '.(microtime(true) - $start).' sec.';        
         $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
 
         if (in_array($currencyCode, static::$upToNext500)) {
-            $exchangedPrice = ceil($exchangedPrice);            
+            $exchangedPrice = ceil($exchangedPrice);
             $exchangedPrice = $exchangedPrice/100;
             $exchangedPrice = (string) $exchangedPrice;
             $digits = strlen((int)$exchangedPrice);
-            
+
             // if digits[-1] >= 5 than we need to add 1 to 1000 and add next 500
             if ($exchangedPrice[$digits-1] >= 5) {
                 $exchangedPrice[$digits-1] = 9;
@@ -67,10 +65,9 @@ class CurrencyService
             } else {
                 $exchangedPrice[$digits-1] = 5;
             }
-            
-            $exchangedPrice = (int)$exchangedPrice;
-            $exchangedPrice = $exchangedPrice * 100;
-                        
+
+            $exchangedPrice = (int)$exchangedPrice * 100;
+
             return [
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
@@ -78,7 +75,7 @@ class CurrencyService
                 'exchange_rate' => $currency->usd_rate,
             ];
         }
-        
+
         if (in_array($currencyCode, static::$upToNext10)) {
             $exchangedPrice = (int)$exchangedPrice;
             $exchangedPrice = (string) $exchangedPrice;
@@ -91,7 +88,7 @@ class CurrencyService
                 $exchangedPrice = $exchangedPrice + 1 + 10;
             }
             $exchangedPrice = (int)$exchangedPrice;
-             
+
             return [
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
@@ -99,15 +96,15 @@ class CurrencyService
                 'exchange_rate' => $currency->usd_rate,
             ];
         }
-        
+
         if ($fractionDigits == 0) {
             $exchangedPrice = (int) $exchangedPrice;
         }
-        
+
         $digits = strlen((int)$exchangedPrice);
         $exchangedPrice = (string) $exchangedPrice;
 
-        if ($digits >= 4) {            
+        if ($digits >= 4) {
             $roundedPriceString = '';
             for ($i = 0; $i < $digits; $i++) {
                 //first numeral always the same
@@ -139,7 +136,7 @@ class CurrencyService
         }
 
         $exchangedPrice = (int) $exchangedPrice;
-        
+
         if ($fractionDigits > 0) {
             $exchangedPrice += 1;
             $exchangedPrice -= 0.01;
@@ -149,7 +146,7 @@ class CurrencyService
 
             }
         }
-        
+
         return [
             'price' => $exchangedPrice,
             'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
@@ -157,7 +154,19 @@ class CurrencyService
             'exchange_rate' => $currency->usd_rate,
         ];
     }
-    
+
+    /**
+     * Returns old price by item price
+     * @param float $itemPrice
+     * @param int $quantity
+     * @return float
+     */
+    public static function getOldPrice(float $itemPrice, int $quantity): float
+    {
+	$oldPrice = $itemPrice * $quantity * 2;
+	return $oldPrice;
+    }
+
     /**
      * Get currency array
      * @param string $countryCode
@@ -166,33 +175,33 @@ class CurrencyService
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
     {
         if (request()->has('cur')) {
-            $currencyCode = request()->input('cur');          
+            $currencyCode = request()->input('cur');
         } else {
-            
-            if (!$currencyCode) {            
+
+            if (!$currencyCode) {
                 if (!$countryCode) {
                     $countryCode = strtoupper(\Utils::getLocationCountryCode());
                 }
-                
-                $localeString = \Utils::getCultureCode(null, $countryCode);            
-                $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY); 
+
+                $localeString = \Utils::getCultureCode(null, $countryCode);
+                $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
                 $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
-                
+
             }
         }
 
         $currency = Currency::whereCode($currencyCode)->first();
-        
+
         if (!empty($currency->countries)){
-            if (!in_array(strtolower($countryCode), $currency->countries)) {                
+            if (!in_array(strtolower($countryCode), $currency->countries)) {
                 $countryCode = $currency->countries[0];
             }
-        } else {            
+        } else {
             logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $currencyCode]);
             //try to find in currency countries
-            if ($countryCode) {                
+            if ($countryCode) {
                 $currency = Currency::where(['countries' => strtolower($countryCode)])->first();
-                
+
                 if(!$currency) {
                     $currencyCode = 'USD';
                 }
@@ -202,16 +211,16 @@ class CurrencyService
             $currency = Currency::whereCode($currencyCode)->first();
             $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
         }
-        
+
         $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
-        
+
         if (empty($localeString)) {
             $localeString = \Utils::getCultureCode(null, $currency->countryCode);
         }
 
         $currency->localeString = $localeString;
-        
+
         return $currency;
     }
-    
+
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Services\CurrencyService;
+use NumberFormatter;
 
 /**
  * Class OdinProduct
@@ -120,41 +121,51 @@ class OdinProduct extends Model
         $currency = CurrencyService::getCurrency();
 
         $returnedKey = 0;
-        foreach ($value as $key => $val) {
-            for ($i=1; $i <= self::QUANTITY_PRICES; $i++) {
-                if (!empty($val[$i]['value'])) {
-                    $price = CurrencyService::getLocalPriceFromUsd($val[$i]['value'], $currency);
-                    $value[$key][$i]['value'] = $price['price'];
-                    $value[$key][$i]['value_text'] = $price['price_text'];
 
-		    $value[$key][$i]['old_value_text'] = '$'.$price['price']*5;
+	//iteration by price sets array
+        foreach ($value as $key => $priceSet) {
+	    $oneItemPrice = 0;
 
-                    $numberFormatter = new \NumberFormatter($currency->localeString, \NumberFormatter::CURRENCY);
+	    //iteration by items quantity for selected price set
+            for ($quantity = 1; $quantity <= self::QUANTITY_PRICES; $quantity++) {
+                if (!empty($priceSet[$quantity]['value'])) {
+                    $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency);
+                    $value[$key][$quantity]['value'] = $price['price'];
+                    $value[$key][$quantity]['value_text'] = $price['price_text'];
+
+		    if ($quantity == 1) {
+			//save one item price
+			$oneItemPrice = $price['price'];
+		    }
+
+                    $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
+
+		    $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
+		    $value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
+
                     if (!empty($this->warranty_percent)) {
-                        $value[$key][$i]['warranty_price'] = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
-                        $value[$key][$i]['warranty_price_text'] = $numberFormatter->formatCurrency($value[$key][$i]['warranty_price'], $currency->code);
+                        $value[$key][$quantity]['warranty_price'] = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
+                        $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($value[$key][$quantity]['warranty_price'], $currency->code);
                     } else {
-                        $value[$key][$i]['warranty_price'] = 0;
-                        $value[$key][$i]['warranty_price_text'] = null;
+                        $value[$key][$quantity]['warranty_price'] = 0;
+                        $value[$key][$quantity]['warranty_price_text'] = null;
                     }
 
-                    // installments
-                    $value[$key][$i]['installments3_value'] = floor($price['price']*100/3)/100;
-                    $value[$key][$i]['installments6_value'] = floor($price['price']*100/6)/100;
-                    $value[$key][$i]['installments3_value_text'] = $numberFormatter->formatCurrency($value[$key][$i]['installments3_value'], $currency->code);
-                    $value[$key][$i]['installments6_value_text'] = $numberFormatter->formatCurrency($value[$key][$i]['installments6_value'], $currency->code);
+                    //installments
+                    $value[$key][$quantity]['installments3_value'] = floor($price['price']*100/3)/100;
+                    $value[$key][$quantity]['installments6_value'] = floor($price['price']*100/6)/100;
+                    $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($value[$key][$quantity]['installments3_value'], $currency->code);
+                    $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($value[$key][$quantity]['installments6_value'], $currency->code);
 
-                    //if (!empty($val[$i]['image_id'])) {
-                        $value[$key][$i]['image'] = !empty($val[$i]['image_id']) ? $this->images[$val[$i]['image_id']] : null;
-                    //}
+                    $value[$key][$quantity]['image'] = !empty($priceSet[$quantity]['image_id']) ? $this->images[$priceSet[$quantity]['image_id']] : null;
                 } else {
-                    logger()->error("Price not set for qty {$i} -  ".$this->product_name);
+                    logger()->error("Price not set for qty {$quantity} -  ".$this->product_name);
                 }
             }
             $value[$key]['currency'] = $currency->code;
             $value[$key]['exchange_rate'] = $currency->usd_rate;
 
-            if (!request()->has('cop_id') || $val['price_set'] == request()->get('cop_id')) {
+            if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
                 $returnedKey = $key;
                 break;
             }
