@@ -452,10 +452,15 @@
     }
 
     &__step-1 {
+      h2 {
+        margin-bottom: 20px;
+      }
       &__titles {
         display: flex;
         padding: 0 10px;
-
+        h3 {
+          margin: 0 0 10px;
+        }
         h3:first-child {
           width: 60%;
         }
@@ -521,7 +526,7 @@
 
     &__step-2 {
       h2 {
-        margin-top: 15px;
+        margin: 15px 0 20px;
       }
       .select {
         .el-select {
@@ -536,7 +541,7 @@
 
     &__step-3 {
       h2 {
-        margin-top: 30px;
+        margin: 25px 0 20px;
       }
 
       .full-name {
