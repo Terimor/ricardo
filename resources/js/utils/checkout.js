@@ -7,12 +7,22 @@ const getDiscount = ({key, price, installments}) => {
     1: '(50% Discount)',
     3: `(69% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(price, installments).toLocaleString()}/Unit)`,
     5: `(73% Discount, ${getCountOfInstallments(installments)}₴${preparePartByInstallments(price, installments).toLocaleString()}/Unit)`,
-  }
+  };
 
   return config[key]
-}
+};
 
-export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments, customOrder=false}) {
+const getOnlyDiscount = ({key}) => {
+  const config = {
+    1: '(50% Discount)',
+    3: '(69% Discount)',
+    5: '(73% Discount)'
+  };
+
+  return config[key]
+};
+
+export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments, customOrder=false, onlyDiscount=false}) {
   let data = Object.keys(purchaseList)
     .filter((key) => quantityToShow.includes(+key))
     .map((key, idx) => {
@@ -37,11 +47,9 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
         withDiscount: idx > 0,
         text: `${mainQuantity}x ${long_name} ${variant} ${freeQuantity ? ' + ' + freeQuantity + ' FREE' : ''}`,
         price: preparePartByInstallments(price, installments),
-        discountText: getDiscount({
-          key,
-          price,
-          installments,
-        }),
+        discountText: !onlyDiscount ?
+          getDiscount({key, price, installments}) :
+          getOnlyDiscount({key}),
         totalQuantity: +key
       }
     });
