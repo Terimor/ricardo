@@ -140,6 +140,8 @@ class OdinProduct extends Model
 
                     $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
 
+		    $value[$key][$quantity]['unit_value_text'] = $numberFormatter->formatCurrency($price['price'] / $quantity, $currency->code);
+
 		    $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
 		    $value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
 
@@ -155,9 +157,16 @@ class OdinProduct extends Model
 
                     //installments
 		    $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
+		    $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
 		    $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
+		    $installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
+
                     $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($installments3_value, $currency->code);
+                    $value[$key][$quantity]['installments3_unit_value_text'] = $numberFormatter->formatCurrency($installments3_value / $quantity, $currency->code);
+                    $value[$key][$quantity]['installments3_old_value_text'] = $numberFormatter->formatCurrency($installments3_old_value, $currency->code);
                     $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
+                    $value[$key][$quantity]['installments6_unit_value_text'] = $numberFormatter->formatCurrency($installments6_value / $quantity, $currency->code);
+		    $value[$key][$quantity]['installments6_old_value_text'] = $numberFormatter->formatCurrency($installments6_old_value, $currency->code);
 
                     $value[$key][$quantity]['image'] = !empty($priceSet[$quantity]['image_id']) ? $this->images[$priceSet[$quantity]['image_id']] : null;
                 } else {
