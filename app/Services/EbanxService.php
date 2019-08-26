@@ -97,6 +97,13 @@ class EbanxService
             'price_set' => $product->prices['price_set'],          
         ];
         
+        // installments
+        if(!empty($request['installments']) && ($request['installments'] == 3 || $request['installments'] == 6)) {
+            $installments = $request['installments'];
+        } else {
+            $installments = 0;
+        }
+        
         $data = [            
             'status' => OdinOrder::STATUS_NEW,
             'currency' => $this->currency->code,
@@ -105,6 +112,7 @@ class EbanxService
             'total_price' => $productForOrder['price'] + $productForOrder['warranty_price'],
             'total_price_usd' => floor($productForOrder['price'] + $productForOrder['warranty_price'] / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100) / 100,
             //'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
+            'installments' => $installments,
             'payment_provider' => 'ebanx',
             'payment_method' => $request['payment_type_code'],            
             'customer_email' => $request['email'],
@@ -146,6 +154,13 @@ class EbanxService
             logger()->error("ebanx_integration_key parameter not found");            
         }
         
+        // installments
+        if(!empty($data['installments']) && ($data['installments'] == 3 || $data['installments'] == 6)) {
+            $installments = $data['installments'];
+        } else {
+            $installments = 1;
+        }
+        
         $dataForCurl = [            
             "integration_key" => $key->value,
             "operation" => "request",
@@ -166,6 +181,7 @@ class EbanxService
                 "country" => $data['country'],
                 "phone_number" => $data['phone'],
                 "payment_type_code" => $data['payment_type_code'],
+                "instalments" => $installments,
                 "creditcard" => [
                     "token" => $data['token']
                 ],

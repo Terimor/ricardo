@@ -66,7 +66,9 @@ class SiteController extends Controller
         $setting = Setting::whereIn('key',[
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
-        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting'));
+        
+        $countries =  \Utils::getCountries();
+        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries'));
     }
 
     /**
@@ -109,6 +111,8 @@ class SiteController extends Controller
      */
     public function test()
     {
+        
+        $cc = \Utils::getCountries();
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
