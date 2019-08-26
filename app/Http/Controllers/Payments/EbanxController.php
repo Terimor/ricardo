@@ -31,7 +31,7 @@ class EbanxController extends Controller
      * @return type
      */
     public function sendTransaction(EbanxSendTransactionRequest $request) 
-    {
+    {        
         //check product       
         $product = OdinProduct::where('skus.code', $request->input('sku'))->first();
         if (!$product) {
@@ -45,7 +45,13 @@ class EbanxController extends Controller
             logger()->error("Ebanx send transaction: Prices do not match", ['priceQty' => $priceQty, 'amount_total' => $request->input('amount_total')]);
             return response()->json(['error' => ['Prices do not match']], 402);
         }                
-        
+                // installments
+        if(!empty($request['installments']) && $request['installments'] != 3 && $request['installments'] != 6) {
+            $installments = 0;
+        } else {
+            $installments = $request['installments'];
+        }
+
         // customer 
         $customer = $this->ebanxService->saveCustomer($request->all());
         
@@ -70,12 +76,7 @@ class EbanxController extends Controller
             $result = ['status' => "ERROR", 'message' => !empty($response['status_message']) ? $response['status_message'] : 'Unknown error'];
             logger()->error("Ebanx ERROR transaction", ['response' => $response]);
         }
-        
-        //unset payment data for FE
-        if (!empty($response)) {
-            unset($response['payment']);
-        }
 
-        return $result ? ['status' => "SUCCESS"] : $response;
+        return $result;
     }   
 }
