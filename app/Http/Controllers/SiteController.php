@@ -67,7 +67,7 @@ class SiteController extends Controller
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
         
-        $countries =  \Utils::getCountries();
+        $countries =  \Utils::getCountries();        
         return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries'));
     }
 
