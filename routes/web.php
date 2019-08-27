@@ -46,7 +46,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
     
     $router->post('/payments/three', 'Payments\EbanxController@sendTransaction');
-    $router->get('/payments/ebanx-notification', 'Payments\EbanxController@notification');
+    $router->post('/payments/ebanx-notification', 'Payments\EbanxController@notification');
 
 
 
