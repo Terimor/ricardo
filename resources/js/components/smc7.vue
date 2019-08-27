@@ -454,6 +454,9 @@
     }
 
     &__step-1 {
+      .bestseller {
+        display: none;
+      }
       h2 {
         margin-bottom: 20px;
       }

@@ -169,13 +169,6 @@
 			}
 		},
 		methods: {
-			submit() {
-				// this.$v.form.$touch();
-				//
-				// if (this.$v.form.deal.$invalid) {
-				// 	this.setPromotionalModal(true)
-				// }
-			},
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2.toUpperCase()

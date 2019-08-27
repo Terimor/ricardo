@@ -7,11 +7,16 @@
            @input="input"
            :value="item.value">
     <div class="label-container-radio__label">
-      <span>{{item.text}} {{showDiscount ? " " + item.discountText : ""}}</span>
-      <span class="price">${{item.price}}</span>
+      <div>{{item.text}} {{showDiscount ? " " + item.discountText : ""}}</div>
+      <div class="price">
+        <div class="bestseller" v-if="isBestseller()">
+          <img src="/images/best-seller-checkout4.png" alt="Bestseller">
+        </div>
+        {{item.price}}
+      </div>
     </div>
     <div class="label-container-radio__subtitle" v-if="showPerUnitPrice && item.value !== 1">
-      ${{Math.round((item.price / item.totalQuantity * 100) ) / 100}} / Unit
+      {{item.pricePerUnit}} / Unit
     </div>
     <span class="checkmark"></span>
   </label>
@@ -28,6 +33,9 @@
 			'showDiscount'
 		],
 		methods: {
+			isBestseller() {
+				return this.item.discountName.toLowerCase() === 'bestseller'
+      },
 			input(e) {
 				return this.$emit('checkDeal', e.target.value)
 			}
