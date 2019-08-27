@@ -65,7 +65,7 @@ const vmc4validation = function () {
 				year: {
 					required,
 					isValid (val) {
-						return dateFns.isFuture(new Date(val, this.form.month))
+						return dateFns.isFuture(new Date(val, this.form.stepThree.month))
 					}
 				},
 				cvv: {
@@ -81,7 +81,7 @@ const vmc4validation = function () {
 				zipCode: {
 					required,
 					isValidZipcode (val) {
-						return postcode.validate(val, this.form.country || checkoutData.countryCode)
+						return postcode.validate(val, this.form.stepThree.country || checkoutData.countryCode)
 					}
 				},
 				country: {
