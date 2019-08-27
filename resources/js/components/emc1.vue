@@ -24,7 +24,9 @@
                   label="Please Select Amount Of Installments"
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
-                  v-model="form.installments"/>
+                  v-model="form.installments"
+                  @input="getImplValue"
+              />
 
             <h3>Article</h3>
 
@@ -48,12 +50,12 @@
                 placeholder: 'Variant'
               }"
               :list="variantList"
-              @input="setTitle"
+              warrantyPriceText="setWarrantyPriceText()"
             />
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
-                  3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+                  3 Years Additional Warranty On Your Purchase & Accessories: {{warrantyPriceText}}
                   <input id="warranty-field" type="checkbox" v-model="form.isWarrancyChecked">
                   <span class="checkmark"></span>
                 </label>
@@ -187,7 +189,9 @@ export default {
   props: ['showPreloader', 'skusList'],
   data () {
     return {
-      warrantyPriceText: false,
+      ImplValue: null,
+      radioIdx: null,
+      warrantyPriceText: null,
       productImage: null,
       mockData: {
         productList: [
@@ -341,10 +345,6 @@ export default {
     withInstallments () {
       return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
     },
-    quantityOfInstallments () {
-      const { installments } = this.form
-      return installments && installments !== 1 ? installments + 'X ' : ''
-    },
     dealList () {
       return this.purchase.map((it, idx) => ({
         value: it.totalQuantity,
@@ -392,8 +392,32 @@ export default {
     setTitle(skuName) {
       this.$emit('input', skuName);
     },
-    setWarrantyPriceText(data) {
-      this.warrantyPriceText = this.checkoutData.product.prices[data].warranty_price_text;
+    getImplValue(value) {
+      this.implValue = value;
+      if (this.radioIdx) this.changeWarrantyValue();
+    },
+    setWarrantyPriceText(radioIdx) {
+      this.radioIdx = Number(radioIdx);
+      this.changeWarrantyValue();
+    },
+    changeWarrantyValue () {
+      const prices = this.checkoutData.product.prices;
+      this.implValue = this.implValue || 3;
+
+      switch(this.implValue) {
+        case 1:
+          this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
+          break;
+        case 3:
+          this.warrantyPriceText = prices[this.radioIdx].installments3_warranty_price_text;
+          break;
+        case 6:
+          this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
+          break;
+        default:
+          console.log('NOTHING');
+          break;
+      }
     },
     paypalCreateOrder () {
       return paypalCreateOrder({
