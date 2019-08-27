@@ -109,9 +109,9 @@ class SiteController extends Controller
      *
      * @return type
      */
-    public function test()
+    public function test(Request $request, ProductService $productService)
     {
-        
+
         $cc = \Utils::getCountries();
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
@@ -120,6 +120,9 @@ class SiteController extends Controller
 
         echo '123'; exit;*/
 
+        $product = $productService->resolveProduct($request, true);
+        
+        echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
         $currency = Currency::whereCode('USD')->first();
         echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
 

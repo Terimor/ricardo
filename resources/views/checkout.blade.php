@@ -13,7 +13,7 @@
 </script>
 @section('content')
 
-@includeWhen($isShowProductOffer, 'components.product_offer')
+@include('components.product_offer')
 
 <app-component></app-component>
 

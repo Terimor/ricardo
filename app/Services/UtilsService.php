@@ -12,12 +12,13 @@ class UtilsService
      * Culture codes (for numberFormatter)
      */
     public static $cultureCodes = [
-        'RU' => 'ru-RU',
-        'BY' => 'be-BY',
-        'ES' => 'es-ES',
-        'BR' => 'pt-BR',
-        'US' => 'en-US',
-        'GB' => 'en-GB',
+        'ru' => 'ru-RU',
+        'by' => 'be-BY',
+        'es' => 'es-ES',
+        'br' => 'pt-BR',
+        'us' => 'en-US',
+        'gb' => 'en-GB',
+        'vn' => 'vi-VN',
     ];
     
     /**
@@ -329,6 +330,12 @@ class UtilsService
         }
         if (!$countryCode) {
             $countryCode = !empty($location->countryCode) ? $location->countryCode : 'US';
+        }
+        
+        $countryCode = strtolower($countryCode);
+        
+        if (!isset(static::$cultureCodes[$countryCode])) {
+            logger()->error("Can't find culture code", ['country_code' => $countryCode, 'location' => $location]);
         }
                 
         return !empty($countryCode) && !empty(static::$cultureCodes[$countryCode]) ? static::$cultureCodes[$countryCode] : 'en-US';
