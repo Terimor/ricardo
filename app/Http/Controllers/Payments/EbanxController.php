@@ -78,5 +78,23 @@ class EbanxController extends Controller
         }
 
         return $result;
-    }   
+    }
+    
+    /**
+     * 
+     * @param Request $request
+     */
+    public function notification(Request $request)
+    {
+	$operation = $request->input('payment_status_change');
+	$notification_type = $request->input('notification_type');
+	$hashCodes = $request->input('hash_codes');
+	$hashCodes = explode(',', $hashCodes);
+		
+	if ($operation == 'payment_status_change' && $notification_type == 'update' && $hashCodes) {
+	    $this->ebanxService->updateProductStatuses($hashCodes);
+	}
+	
+	return ['success' => true];
+    }
 }

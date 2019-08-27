@@ -12,7 +12,7 @@ use App\Models\Setting;
  * Ebanx Service class
  */
 class EbanxService
-{
+{    
     
     /**
      * EbanxController constructor.
@@ -22,6 +22,13 @@ class EbanxService
     {
         $this->orderService = $orderService;
         $this->currency = CurrencyService::getCurrency();
+	
+		
+	$this->key = Setting::where(['key' => 'ebanx_integration_key'])->first();
+        
+        if (!$this->key) {
+            logger()->error("ebanx_integration_key parameter not found");            
+        }
     }
     
     /**
@@ -147,13 +154,6 @@ class EbanxService
      */
     public function prepareDataCurl(array $data, string $orderNumber): array
     {
-        
-        $key = Setting::where(['key' => 'ebanx_integration_key'])->first();
-        
-        if (!$key) {
-            logger()->error("ebanx_integration_key parameter not found");            
-        }
-        
         // installments
         if(!empty($data['installments']) && ($data['installments'] == 3 || $data['installments'] == 6)) {
             $installments = $data['installments'];
@@ -162,7 +162,7 @@ class EbanxService
         }
         
         $dataForCurl = [            
-            "integration_key" => $key->value,
+            "integration_key" => $this->key->value,
             "operation" => "request",
             "mode" => "full",
             "payment" => [
@@ -253,20 +253,82 @@ class EbanxService
     {
         $txnsFeeUsd = 0;
         if ($order->products) {
-            foreach ($order->products as $p) {                
-                if ($p['sku_code'] == $sku && empty($p['txn_hash'])) {
+	    $products = $order->products ;
+            foreach ($products as &$p) {		
+                if ($p['sku_code'] == $sku && empty($p['txn_hash'])) {		    
                     $p['txn_hash'] = $txn->hash;
-                    $p['txn_value'] = $txn->value;                    
+                    $p['txn_value'] = (float)$txn->value;                    
                 }
-                
-                if (!empty($p['txn_value'])) {
-                    $txnsFeeUsd += floor($p['txn_value'] / $this->currency->usd_rate * 100)/100;
+
+                if (!empty($p['txn_value'])) {                    
+		    $txnsFeeUsd += round($p['txn_value'] / $this->currency->usd_rate, 5);
                 }
                 
             }
+	    $order->products = $products;
         }
-        
+        	
         $order->txns_fee_usd = $txnsFeeUsd;
         $order->save();
+    }
+    
+    /**
+     * 
+     * @param type $hashCodes
+     */
+    public function updateProductStatuses($hashCodes)
+    {	
+	foreach ($hashCodes as $hash) {	    
+	    //find order product by hash
+	    $order = OdinOrder::where(['products.txn_hash' => $hash])->first();
+	    
+	    $res = json_decode($this->sendQueryHash($hash), true);	    
+	    if(!empty($res['payment']['status'])) {
+		$status = $res['payment']['status'];
+		$products = $order->products;
+		foreach ($products as &$p) {
+		    if($p['txn_hash'] == $hash) {
+			if ($status == 'CO') {
+			    $p['is_txn_approved'] = true;
+			}
+			
+			if ($status == 'CA') {
+			    $p['is_txn_approved'] = false;
+			}
+			
+			$order->products = $products;
+			$order->save();
+			break;
+		    }
+		}
+	    }
+	}
+    }
+    
+    
+    public function sendQueryHash(string $hash) : string
+    {	
+	$url = $this->getBaseUrl()."ws/query";      
+        
+	$dataForCurl = [
+	    'hash' => $hash,
+	    'integration_key' => $this->key->value
+	];
+	
+        try {
+            $client = new \GuzzleHttp\Client();
+            $request = $client->request('POST', $url, [
+                'headers' => [                    
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ],
+                \GuzzleHttp\RequestOptions::JSON => $dataForCurl
+            ]);            
+            $response = $request->getBody()->getContents();
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse()->getBody()->getContents();
+        }
+        
+        return $response;
     }
 }

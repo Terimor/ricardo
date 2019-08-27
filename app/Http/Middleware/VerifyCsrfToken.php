@@ -23,5 +23,6 @@ class VerifyCsrfToken extends Middleware
         //'/payments/bluesnap-send-transaction',
         //'/payments/bluesnap-generate-token',
         'payments/three',
+	'payments/ebanx-notification'
     ];
 }
