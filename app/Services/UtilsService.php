@@ -23,6 +23,7 @@ class UtilsService
         'de' => 'de-DE',
         'lt' => 'lt-LT',
         'mt' => 'mt-MT',
+        'kr' => 'ko-KR',
     ];
     
     /**
