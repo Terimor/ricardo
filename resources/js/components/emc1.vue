@@ -47,7 +47,9 @@
               :rest="{
                 placeholder: 'Variant'
               }"
-              :list="variantList" />
+              :list="variantList"
+              @input="setTitle"
+            />
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
@@ -185,7 +187,7 @@ export default {
   props: ['showPreloader', 'skusList'],
   data () {
     return {
-      warrantyPriceText: this.warrantyPriceText,
+      warrantyPriceText: false,
       productImage: null,
       mockData: {
         productList: [
@@ -329,7 +331,8 @@ export default {
     },
     preparedProductData () {
       return {
-        price: checkoutData.product.prices[1].value,
+        price: checkoutData.product.prices[1].value_text,
+        oldPrice: checkoutData.product.prices[1].old_value_text,
       }
     },
     isEmptyCart () {
@@ -386,8 +389,11 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    setTitle(skuName) {
+      this.$emit('input', skuName);
+    },
     setWarrantyPriceText(data) {
-      this.warrantyPriceText = checkoutData.product.prices[data].warrantyPriceText;
+      this.warrantyPriceText = this.checkoutData.product.prices[data].warranty_price_text;
     },
     paypalCreateOrder () {
       return paypalCreateOrder({
@@ -422,16 +428,12 @@ export default {
 
       if (oldPrice) {
         document.querySelector('#old-price').innerHTML =
-          getCountOfInstallments(installments) +
-          ' $' +
-          preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
+        getCountOfInstallments(installments) + this.preparedProductData.oldPrice.toLocaleString();
       }
 
       if (newPrice) {
         document.querySelector('#new-price').innerHTML =
-          getCountOfInstallments(installments) +
-          ' $' +
-          preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
+        getCountOfInstallments(installments) +this.preparedProductData.price.toLocaleString();
       }
 
       const currentVariant = this.skusList.find(it => it.code === variant)
@@ -871,6 +873,8 @@ export default {
         img {
           height: 80px;
           width: auto;
+          margin-left: 10px;
+          margin-right: 10px;
         }
       }
     }
