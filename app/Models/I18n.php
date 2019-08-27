@@ -93,10 +93,10 @@ class I18n extends Model
     ];
         
     public static $browser_codes = [
-      'ms'  => 'my',
-      'pt-br' => 'br'
-    ];    
-
+        'ms'  => 'my',
+        'pt-br' => 'br'
+    ];
+    
   /**
    * Returns translation languages array
    * @return type

@@ -3,6 +3,7 @@
 
 # netbeans project files
 nbproject
+nbproject/project.xml
 nbproject/*
 
 # zend studio for eclipse project files

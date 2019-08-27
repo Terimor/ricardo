@@ -33,6 +33,7 @@
             <radio-button-group
               v-model="form.deal"
               :list="dealList"
+              @input="setWarrantyPriceText"
             />
 
             <h2>Step 2: Please select your variant</h2>
@@ -48,9 +49,9 @@
               }"
               :list="variantList" />
             <transition name="el-zoom-in-top">
-              <button v-show="warrantyPrice" id="warranty-field-button">
+              <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
-                  3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} ₴{{warrantyPrice}}
+                  3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
                   <input id="warranty-field" type="checkbox" v-model="form.isWarrancyChecked">
                   <span class="checkmark"></span>
                 </label>
@@ -184,6 +185,7 @@ export default {
   props: ['showPreloader', 'skusList'],
   data () {
     return {
+      warrantyPriceText: this.warrantyPriceText,
       productImage: null,
       mockData: {
         productList: [
@@ -384,6 +386,9 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    setWarrantyPriceText(data) {
+      this.warrantyPriceText = checkoutData.product.prices[data].warrantyPriceText;
+    },
     paypalCreateOrder () {
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -412,15 +417,31 @@ export default {
       }
     },
     setPurchase ({ variant, installments }) {
-        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
-        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + ' $'+ preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
+      const oldPrice = document.querySelector('#old-price')
+      const newPrice = document.querySelector('#new-price')
 
-        this.purchase = preparePurchaseData({
-          purchaseList: this.productData.prices,
-          long_name: this.productData.long_name,
-          variant,
-          installments,
-        })
+      if (oldPrice) {
+        document.querySelector('#old-price').innerHTML =
+          getCountOfInstallments(installments) +
+          ' $' +
+          preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
+      }
+
+      if (newPrice) {
+        document.querySelector('#new-price').innerHTML =
+          getCountOfInstallments(installments) +
+          ' $' +
+          preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
+      }
+
+      const currentVariant = this.skusList.find(it => it.code === variant)
+
+      this.purchase = preparePurchaseData({
+        purchaseList: this.productData.prices,
+        long_name: this.productData.long_name,
+        variant: currentVariant && currentVariant.name,
+        installments,
+      })
     },
     showNotice () {
       const notice = getNotice('EchoBeat7')
