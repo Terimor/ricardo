@@ -343,7 +343,7 @@ class UtilsService
         $countryCode = strtolower($countryCode);
         
         if (!isset(static::$cultureCodes[$countryCode])) {
-            logger()->error("Can't find culture code", ['country_code' => $countryCode, 'location' => $location]);
+            logger()->error("Can't find culture code", ['country_code' => $countryCode, 'location' => !empty($location) ? $location : null]);
         }
                 
         return !empty($countryCode) && !empty(static::$cultureCodes[$countryCode]) ? static::$cultureCodes[$countryCode] : 'en-US';

@@ -148,11 +148,18 @@ class OdinProduct extends Model
 		    $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
 
                     if (!empty($this->warranty_percent)) {
-                        $value[$key][$quantity]['warranty_price'] = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
-                        $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($value[$key][$quantity]['warranty_price'], $currency->code);
+                        $warranty_price = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
+                        $value[$key][$quantity]['warranty_price'] = $warranty_price;
+                        $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($warranty_price, $currency->code);
+			$installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
+			$installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
+			$value[$key][$quantity]['installments3_warranty_price_text'] = $numberFormatter->formatCurrency($installments3_warranty_price, $currency->code);
+			$value[$key][$quantity]['installments6_warranty_price_text'] = $numberFormatter->formatCurrency($installments6_warranty_price, $currency->code);
                     } else {
                         $value[$key][$quantity]['warranty_price'] = 0;
                         $value[$key][$quantity]['warranty_price_text'] = null;
+			$value[$key][$quantity]['installments3_warranty_price_text'] = null;
+			$value[$key][$quantity]['installments6_warranty_price_text'] = null;
                     }
 
                     //installments

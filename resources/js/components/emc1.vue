@@ -24,7 +24,9 @@
                   label="Please Select Amount Of Installments"
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
-                  v-model="form.installments"/>
+                  v-model="form.installments"
+                  @input="getImplValue"
+              />
 
             <h3>Article</h3>
 
@@ -47,11 +49,13 @@
               :rest="{
                 placeholder: 'Variant'
               }"
-              :list="variantList" />
+              :list="variantList"
+              warrantyPriceText="setWarrantyPriceText()"
+            />
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
-                  3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+                  3 Years Additional Warranty On Your Purchase & Accessories: {{warrantyPriceText}}
                   <input id="warranty-field" type="checkbox" v-model="form.isWarrancyChecked">
                   <span class="checkmark"></span>
                 </label>
@@ -185,7 +189,9 @@ export default {
   props: ['showPreloader', 'skusList'],
   data () {
     return {
-      warrantyPriceText: this.warrantyPriceText,
+      ImplValue: null,
+      radioIdx: null,
+      warrantyPriceText: null,
       productImage: null,
       mockData: {
         productList: [
@@ -329,7 +335,8 @@ export default {
     },
     preparedProductData () {
       return {
-        price: checkoutData.product.prices[1].value,
+        price: checkoutData.product.prices[1].value_text,
+        oldPrice: checkoutData.product.prices[1].old_value_text,
       }
     },
     isEmptyCart () {
@@ -337,10 +344,6 @@ export default {
     },
     withInstallments () {
       return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
-    },
-    quantityOfInstallments () {
-      const { installments } = this.form
-      return installments && installments !== 1 ? installments + 'X ' : ''
     },
     dealList () {
       return this.purchase.map((it, idx) => ({
@@ -386,8 +389,35 @@ export default {
   },
   validations: emc1Validation,
   methods: {
-    setWarrantyPriceText(data) {
-      this.warrantyPriceText = checkoutData.product.prices[data].warrantyPriceText;
+    setTitle(skuName) {
+      this.$emit('input', skuName);
+    },
+    getImplValue(value) {
+      this.implValue = value;
+      if (this.radioIdx) this.changeWarrantyValue();
+    },
+    setWarrantyPriceText(radioIdx) {
+      this.radioIdx = Number(radioIdx);
+      this.changeWarrantyValue();
+    },
+    changeWarrantyValue () {
+      const prices = this.checkoutData.product.prices;
+      this.implValue = this.implValue || 3;
+
+      switch(this.implValue) {
+        case 1:
+          this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
+          break;
+        case 3:
+          this.warrantyPriceText = prices[this.radioIdx].installments3_warranty_price_text;
+          break;
+        case 6:
+          this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
+          break;
+        default:
+          console.log('NOTHING');
+          break;
+      }
     },
     paypalCreateOrder () {
       return paypalCreateOrder({
@@ -422,16 +452,12 @@ export default {
 
       if (oldPrice) {
         document.querySelector('#old-price').innerHTML =
-          getCountOfInstallments(installments) +
-          ' $' +
-          preparePartByInstallments(this.preparedProductData.price * 2, installments).toLocaleString()
+        getCountOfInstallments(installments) + this.preparedProductData.oldPrice;
       }
 
       if (newPrice) {
         document.querySelector('#new-price').innerHTML =
-          getCountOfInstallments(installments) +
-          ' $' +
-          preparePartByInstallments(this.preparedProductData.price, installments).toLocaleString()
+        getCountOfInstallments(installments) +this.preparedProductData.price;
       }
 
       const currentVariant = this.skusList.find(it => it.code === variant)
@@ -871,6 +897,8 @@ export default {
         img {
           height: 80px;
           width: auto;
+          margin-left: 10px;
+          margin-right: 10px;
         }
       }
     }
