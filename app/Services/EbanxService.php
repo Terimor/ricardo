@@ -249,7 +249,7 @@ class EbanxService
      * @param \App\Services\Txb $txn
      * @param string $sku
      */
-    public function saveTxnForOrderProduct(OdinOrder $order, Txn $txn, string $sku)
+    public function saveTxnForOrderProduct(OdinOrder $order, Txn $txn, string $sku, $response)
     {
         $txnsFeeUsd = 0;
         if ($order->products) {
@@ -257,7 +257,16 @@ class EbanxService
             foreach ($products as &$p) {		
                 if ($p['sku_code'] == $sku && empty($p['txn_hash'])) {		    
                     $p['txn_hash'] = $txn->hash;
-                    $p['txn_value'] = (float)$txn->value;                    
+                    $p['txn_value'] = (float)$txn->value;
+		    // check status transaction, if CO=paid
+		    if (!empty($res['payment']['status'])) {
+			if ($res['payment']['status'] == 'CO') {
+			    $p['is_txn_approved'] = true;
+			} else {
+			    $p['is_txn_approved'] = false;
+			}
+		    }
+		    
                 }
 
                 if (!empty($p['txn_value'])) {                    

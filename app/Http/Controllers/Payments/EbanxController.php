@@ -70,7 +70,7 @@ class EbanxController extends Controller
             $txn = $this->ebanxService->saveTxn($response);
             
             //update order product
-            $this->ebanxService->saveTxnForOrderProduct($order, $txn, $request->input('sku'));
+            $this->ebanxService->saveTxnForOrderProduct($order, $txn, $request->input('sku'), $response);
             $result = ['status' => "SUCCESS"];
         } else {
             $result = ['status' => "ERROR", 'message' => !empty($response['status_message']) ? $response['status_message'] : 'Unknown error'];
