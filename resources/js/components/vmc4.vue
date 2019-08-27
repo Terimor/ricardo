@@ -25,12 +25,13 @@
             <div class="column-with-head">
               <div class="col-content" id="form-steps">
                 <payment-form-vmc4
+                    :checkoutData="checkoutData"
                     :countryList="countryList"
                     :cardNames="cardNames"
                     :paymentForm="form"
                     :list="purchase"
                     :variantList="variantList"
-                    @changedCountryCodePhone="setCountryCodeByPhoneField"/>
+                    @onSubmit="submit"/>
               </div>
               <div class="secure-pay-content">
                 <div class="logos-content">
@@ -114,32 +115,7 @@
 						imgUrl: '/images/cc-icons/payPal.png'
 					}
 				],
-				form: {
-					countryCodePhoneField: checkoutData.countryCode,
-					deal: 1,
-					fname: null,
-					lname: null,
-					email: null,
-					phone: null,
-					variant: (function () {
-						try {
-							return checkoutData.product.skus[0].code
-						} catch (_) {
-						}
-					}()),
-					country: checkoutData.countryCode,
-					streetAndNumber: null,
-					city: null,
-					state: null,
-					zipCode: null,
-					installments: 1,
-					paymentType: null,
-					cardNumber: '',
-					month: null,
-					year: null,
-					cvv: null,
-					cardType: 'credit'
-				},
+				form: {},
 				purchase: [],
 				variantList: []
 			}
@@ -169,6 +145,9 @@
 			}
 		},
 		methods: {
+			submit(val) {
+				console.log(val)
+      },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2.toUpperCase()
@@ -291,6 +270,12 @@
   @media screen and (min-width: 1200px) {
     .vmc4 {
       max-width: 1170px;
+    }
+  }
+
+  @media screen and (max-width: 992px) {
+    .container {
+      max-width: 100%;
     }
   }
 </style>
