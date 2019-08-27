@@ -318,19 +318,22 @@ class UtilsService
      */
     public static function getCultureCode(string $ip = null, $countryCode = null) : string
     {
-        if ($ip) {
-            $location = \Location::get($ip); 
-        } else {
-            $location = \Location::get(request()->ip());
-        }
         
-        // TODO - REMOVE
-        if (request()->get('_ip')) {
-            $location = \Location::get(request()->get('_ip'));
-        }
         if (!$countryCode) {
+            
+            if ($ip) {
+                $location = \Location::get($ip); 
+            } else {
+                $location = \Location::get(request()->ip());
+            }
+
+            // TODO - REMOVE
+            if (request()->get('_ip')) {
+                $location = \Location::get(request()->get('_ip'));
+            }
+            
             $countryCode = !empty($location->countryCode) ? $location->countryCode : 'US';
-        }
+        }                
         
         $countryCode = strtolower($countryCode);
         
