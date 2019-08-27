@@ -33,7 +33,7 @@ const getOldPrice = ({key, valueTexts, installments}) => {
 }
 
 export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments, customOrder=false}) {
-  let data = Object.keys(purchaseList)
+  const data = Object.keys(purchaseList)
     .filter((key) => quantityToShow.includes(+key))
     .map((key, idx) => {
       const it = purchaseList[key];
