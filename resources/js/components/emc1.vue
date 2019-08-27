@@ -428,12 +428,12 @@ export default {
 
       if (oldPrice) {
         document.querySelector('#old-price').innerHTML =
-        getCountOfInstallments(installments) + this.preparedProductData.oldPrice.toLocaleString();
+        getCountOfInstallments(installments) + this.preparedProductData.oldPrice;
       }
 
       if (newPrice) {
         document.querySelector('#new-price').innerHTML =
-        getCountOfInstallments(installments) +this.preparedProductData.price.toLocaleString();
+        getCountOfInstallments(installments) +this.preparedProductData.price;
       }
 
       const currentVariant = this.skusList.find(it => it.code === variant)
