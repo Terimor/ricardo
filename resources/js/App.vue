@@ -6,6 +6,7 @@
       <emc1-component
           :showPreloader="showPreloader"
           :skusList="skusList"
+          @input="setTitle"
           v-else />
       <preloader-3
       v-if="+queryParams.preload === 3"
@@ -26,7 +27,9 @@ export default {
   name: 'app',
   data () {
     return {
-      showPreloader: true
+      showPreloader: true,
+      title: checkoutData.product.skus[0].code,
+      additionalTitle: " Checkout"
     }
   },
   mixins: [queryToComponent],
@@ -35,19 +38,20 @@ export default {
     smc7
   },
   methods: {
+    setTitle(skuName) {
+      this.title = skuName
+      document.title = skuName + this.additionalTitle
+    },
+
     initial () {
       for (let key in this.queryParams) {
         window[key] = this.queryParams[key]
       }
 
-      const title = document.title
+      document.title = this.title + this.additionalTitle
 
-      window.onfocus = function () {
-        document.title = title
-      }
-      window.onblur = function () {
-        document.title = 'WAIT! YOU FORGOT: You have active cart items!'
-      }
+      window.onfocus = () => document.title = this.title + this.additionalTitle
+      window.onblur = () => document.title = 'WAIT! YOU FORGOT: You have active cart items!'
 
       this.directLinking()
     },
