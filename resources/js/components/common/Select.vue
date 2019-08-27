@@ -44,8 +44,7 @@ export default {
   },
   methods: {
     onChange (e) {
-      this.$emit('input', e)
-
+      this.$emit('input', e, this.value)
       if (this.validation) {
         this.validation.$touch()
       }
