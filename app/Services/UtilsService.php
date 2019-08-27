@@ -19,6 +19,10 @@ class UtilsService
         'us' => 'en-US',
         'gb' => 'en-GB',
         'vn' => 'vi-VN',
+        'ee' => 'et-EE',
+        'de' => 'de-DE',
+        'lt' => 'lt-LT',
+        'mt' => 'mt-MT',
     ];
     
     /**
