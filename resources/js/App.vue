@@ -1,17 +1,17 @@
 <template>
   <div>
-      <emc1-component
-          :showPreloader="showPreloader"
-          :skusList="skusList"
-          v-if="queryParams.tpl === 'emc1'" />
       <smc7-component
           :showPreloader="showPreloader"
           v-if="queryParams.tpl === 'smc7'" />
       <vmc4-component
           :showPreloader="showPreloader"
           :data="checkoutData"
-          @input="setTitle"
           v-if="queryParams.tpl === 'vmc4'" />
+      <emc1-component
+          :showPreloader="showPreloader"
+          :skusList="skusList"
+          @input="setTitle"
+          v-else />
       <preloader-3
       v-if="+queryParams.preload === 3"
       @finish-preload="showPreloader = false"
