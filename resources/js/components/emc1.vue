@@ -55,7 +55,7 @@
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
-                  3 Years Additional Warranty On Your Purchase & Accessories: {{warrantyPriceText}}
+                  3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
                   <input id="warranty-field" type="checkbox" v-model="form.isWarrancyChecked">
                   <span class="checkmark"></span>
                 </label>
@@ -95,7 +95,7 @@
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
             <p><i class="fa fa-lock"></i>Safe 256-Bit SSL encryption.</p>
-            <p>Your credit card will be invoiced as: "MDL*EchoBeat"</p>
+            <p>Your credit card will be invoiced as: "{{ productData.billing_descriptor }}"</p>
           </div>
         </div>
       </div>
@@ -333,17 +333,15 @@ export default {
     productData () {
       return checkoutData.product
     },
-    preparedProductData () {
-      return {
-        price: checkoutData.product.prices[1].value_text,
-        oldPrice: checkoutData.product.prices[1].old_value_text,
-      }
-    },
     isEmptyCart () {
       return Object.values(this.cart).every(it => it === 0)
     },
     withInstallments () {
       return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
+    },
+    quantityOfInstallments () {
+      const { installments } = this.form
+      return installments && installments !== 1 ? installments + '× ' : ''
     },
     dealList () {
       return this.purchase.map((it, idx) => ({
@@ -389,9 +387,6 @@ export default {
   },
   validations: emc1Validation,
   methods: {
-    setTitle(skuName) {
-      this.$emit('input', skuName);
-    },
     getImplValue(value) {
       this.implValue = value;
       if (this.radioIdx) this.changeWarrantyValue();
@@ -447,17 +442,32 @@ export default {
       }
     },
     setPurchase ({ variant, installments }) {
-      const oldPrice = document.querySelector('#old-price')
-      const newPrice = document.querySelector('#new-price')
+      const oldPrice = document.querySelector('#old-price');
+      const newPrice = document.querySelector('#new-price');
+      let oldValueText, valueText;
+
+      switch(installments) {
+        case 3:
+          oldValueText = checkoutData.product.prices[1].installments3_old_value_text;
+          valueText = checkoutData.product.prices[1].installments3_value_text;
+          break;
+        case 6:
+          oldValueText = checkoutData.product.prices[1].installments6_old_value_text;
+          valueText = checkoutData.product.prices[1].installments6_value_text;
+          break;
+        case 1:
+        default:
+          oldValueText = checkoutData.product.prices[1].old_value_text;
+          valueText = checkoutData.product.prices[1].value_text;
+          break;
+      }
 
       if (oldPrice) {
-        document.querySelector('#old-price').innerHTML =
-        getCountOfInstallments(installments) + this.preparedProductData.oldPrice;
+        document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + oldValueText;
       }
 
       if (newPrice) {
-        document.querySelector('#new-price').innerHTML =
-        getCountOfInstallments(installments) +this.preparedProductData.price;
+        document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + valueText;
       }
 
       const currentVariant = this.skusList.find(it => it.code === variant)
