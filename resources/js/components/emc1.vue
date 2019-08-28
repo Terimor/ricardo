@@ -91,6 +91,7 @@
           <paypal-button
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
+            v-if="fullAmount"
           >Buy Now Risk Free PAYPAL</paypal-button>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
@@ -330,6 +331,12 @@ export default {
     }
   },
   computed: {
+    codeOrDefault () {
+      return this.queryParams.product || this.checkoutData.product.skus[0].code;
+    },
+    fullAmount () {
+      return this.form.installments == 1;
+    },
     productData () {
       return checkoutData.product
     },
@@ -417,7 +424,7 @@ export default {
     paypalCreateOrder () {
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-        sku_code: this.queryParams.product,
+        sku_code: this.codeOrDefault,
         sku_quantity: this.form.deal,
         is_warrantry_checked: this.form.isWarrancyChecked,
         page_checkout: document.location.href,
