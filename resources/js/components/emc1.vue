@@ -74,6 +74,11 @@
             v-model="form.paymentType"
             :list="mockData.creditCardRadioList"
           />
+          <paypal-button
+            :createOrder="paypalCreateOrder"
+            :onApprove="paypalOnApprove"
+            v-if="form.installments == 1"
+          >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
               v-if="form.paymentType"
@@ -88,10 +93,6 @@
               @setPromotionalModal="setPromotionalModal"
               @setAddress="setAddress"/>
           </transition>
-          <paypal-button
-            :createOrder="paypalCreateOrder"
-            :onApprove="paypalOnApprove"
-          >Buy Now Risk Free PAYPAL</paypal-button>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
             <p><i class="fa fa-lock"></i>Safe 256-Bit SSL encryption.</p>
