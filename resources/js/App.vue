@@ -10,7 +10,6 @@
       <emc1-component
           :showPreloader="showPreloader"
           :skusList="skusList"
-          @input="setTitle"
           v-else />
       <preloader-3
       v-if="+queryParams.preload === 3"
@@ -33,8 +32,9 @@ export default {
   data () {
     return {
       showPreloader: true,
-      title: checkoutData.product.skus[0].code,
-      additionalTitle: " Checkout"
+      title: checkoutData.product.skus[0].name,
+      additionalTitle: " Checkout",
+      waitTitle: 'WAIT! YOU FORGOT: You have active cart items!'
     }
   },
   mixins: [queryToComponent],
@@ -44,20 +44,15 @@ export default {
     vmc4
   },
   methods: {
-    setTitle(skuName) {
-      this.title = skuName
-      document.title = skuName + this.additionalTitle
-    },
-
     initial () {
       for (let key in this.queryParams) {
         window[key] = this.queryParams[key]
       }
 
-      document.title = this.title + this.additionalTitle
+      document.title = this.title + this.additionalTitle;
 
-      window.onfocus = () => document.title = this.title + this.additionalTitle
-      window.onblur = () => document.title = 'WAIT! YOU FORGOT: You have active cart items!'
+      window.onfocus = () => document.title = this.title + this.additionalTitle;
+      window.onblur = () => document.title = this.waitTitle;
 
       this.directLinking()
     },
