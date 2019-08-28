@@ -16,7 +16,10 @@ class OdinProduct extends Model
     protected $images;
 
     protected $fillable = [
-        'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id', 'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
+        'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
+	'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
+	'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label',
+	'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
     ];
 
     protected $hidden = [
@@ -253,5 +256,15 @@ class OdinProduct extends Model
     public function getUpsellHeroImageAttribute($value)
     {
         return !empty($this->upsell_hero_image_id) ? $this->images[$this->upsell_hero_image_id] : null;
+    }
+    
+    /**
+     * Getter billing descriptor
+     * @param type $value
+     */
+    public function getBillingDescriptorAttribute($value)
+    {
+	$billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
+	return "*{$billingDescriptorPrefix}*{$value}";
     }
 }

@@ -259,8 +259,8 @@ class EbanxService
                     $p['txn_hash'] = $txn->hash;
                     $p['txn_value'] = (float)$txn->value;
 		    // check status transaction, if CO=paid
-		    if (!empty($res['payment']['status'])) {
-			if ($res['payment']['status'] == 'CO') {
+		    if (!empty($response['payment']['status'])) {
+			if ($response['payment']['status'] == 'CO') {
 			    $p['is_txn_approved'] = true;
 			} else {
 			    $p['is_txn_approved'] = false;
