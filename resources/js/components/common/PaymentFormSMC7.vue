@@ -57,8 +57,7 @@
     <h2>Pay Securely With:</h2>
     <radio-button-group
         :withCustomLabels="true"
-        v-model="paymentForm.paymentType"
-    >
+        v-model="paymentForm.paymentType">
       <div class="card-types">
         <pay-method-item
             v-for="item in cardNames"

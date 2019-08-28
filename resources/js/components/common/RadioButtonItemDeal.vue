@@ -1,16 +1,22 @@
 <template>
-  <label class="label-container-radio radio-button-deal">
+  <label :class="`label-container-radio radio-button-deal item-${item.value}`">
     <img class="share" src="/images/share.png" v-if="showShareArrow">
     <input type="radio"
            :checked="item.value === value"
            name="radio"
+           @input="input"
            :value="item.value">
     <div class="label-container-radio__label">
-      <span>{{item.text}}</span>
-      <span>${{item.price}}</span>
+      <div>{{item.text}} {{showDiscount ? " " + item.discountText : ""}}</div>
+      <div class="price">
+        <div class="bestseller" v-if="isBestseller()">
+          <img src="/images/best-seller-checkout4.png" alt="Bestseller">
+        </div>
+        {{item.price}}
+      </div>
     </div>
-    <div class="label-container-radio__subtitle" v-if="item.value !== 1">
-      ${{Math.round((item.price / item.totalQuantity * 100) ) / 100}} / Unit
+    <div class="label-container-radio__subtitle" v-if="showPerUnitPrice && item.value !== 1">
+      {{item.pricePerUnit}} / Unit
     </div>
     <span class="checkmark"></span>
   </label>
@@ -22,23 +28,41 @@
 		props: [
 			'item',
 			'value',
-			'showShareArrow'
+			'showShareArrow',
+			'showPerUnitPrice',
+			'showDiscount'
 		],
 		methods: {
+			isBestseller() {
+				return this.item.discountName.toLowerCase() === 'bestseller'
+      },
 			input(e) {
-				return this.$emit('input', e.target.value)
+				return this.$emit('checkDeal', e.target.value)
 			}
-		}
+		},
+    mounted(){
+			this.$nextTick(function () {
+				this.$emit('finish-render')
+			})
+    }
 	}
 </script>
 
 <style lang="scss">
   .radio-button-deal {
     position: relative;
+    margin: 5px 0;
 
     .label-container-radio__label {
       display: flex;
-      justify-content: space-between;
+
+      .price {
+        margin-left: auto;
+      }
     }
+  }
+
+  .isChecked {
+    background: #fef5eb
   }
 </style>

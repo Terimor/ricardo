@@ -1,8 +1,12 @@
 <template>
   <label class="pay-method-item">
-    <img :src="input.imgUrl" alt="Pay Image" :style="{
-      'border': checked ? '2px solid rgba(255,59,0,.93)' : 'none'
-    }">
+    <img :src="input.imgUrl"
+         alt="Pay Image"
+         :style="{
+          'border': checked ?
+           '2px solid rgba(255,59,0,.93)' :
+            'none'
+            }">
     <input type="radio"
            name="radio"
            :checked="checked"

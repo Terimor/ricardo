@@ -25,15 +25,29 @@ const getNewPrice = ({key, valueTexts, installments}) => {
 const getOldPrice = ({key, valueTexts, installments}) => {
   const config = {
     1: `${valueTexts.oldValueText[installments]}`,
+    2: `${valueTexts.oldValueText[installments]}`,
     3: `${valueTexts.oldValueText[installments]}`,
+    4: `${valueTexts.oldValueText[installments]}`,
     5: `${valueTexts.oldValueText[installments]}`,
   }
 
   return config[key]
-}
+};
 
-export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments, customOrder=false}) {
-  let data = Object.keys(purchaseList)
+const getOnlyDiscount = ({key, discountPercent}) => {
+  const config = {
+    1: `(${discountPercent}% Discount)`,
+    2: `(${discountPercent}% Discount)`,
+    3: `(${discountPercent}% Discount)`,
+    4: `(${discountPercent}% Discount)`,
+    5: `(${discountPercent}% Discount)`
+  };
+
+  return config[key]
+};
+
+export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments, customOrder=false, onlyDiscount=false}) {
+  const data = Object.keys(purchaseList)
     .filter((key) => quantityToShow.includes(+key))
     .map((key, idx) => {
       const it = purchaseList[key];
@@ -85,12 +99,14 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
           valueTexts,
           installments,
         }),
-        discountText: getDiscount({
-          key,
-          discountPercent,
-          valueTexts,
-          installments,
-        }),
+        discountText: onlyDiscount ?
+          getOnlyDiscount({key, discountPercent}) :
+          getDiscount({
+            key,
+            discountPercent,
+            valueTexts,
+            installments,
+          }),
         totalQuantity: +key
       }
     });

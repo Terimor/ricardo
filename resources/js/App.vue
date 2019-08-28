@@ -1,12 +1,17 @@
 <template>
   <div>
-      <smc7-component
-          :showPreloader="showPreloader"
-          v-if="queryParams.tpl === 'smc7'" />
       <emc1-component
           :showPreloader="showPreloader"
           :skusList="skusList"
-          v-else />
+          v-if="queryParams.tpl === 'emc1'" />
+      <smc7-component
+          :showPreloader="showPreloader"
+          v-if="queryParams.tpl === 'smc7'" />
+      <vmc4-component
+          :showPreloader="showPreloader"
+          :data="checkoutData"
+          @input="setTitle"
+          v-if="queryParams.tpl === 'vmc4'" />
       <preloader-3
       v-if="+queryParams.preload === 3"
       @finish-preload="showPreloader = false"
@@ -20,34 +25,39 @@
 <script>
 import emc1 from './components/emc1'
 import smc7 from './components/smc7'
+import vmc4 from './components/vmc4'
 import queryToComponent from './mixins/queryToComponent'
 
 export default {
   name: 'app',
   data () {
     return {
-      showPreloader: true
+      showPreloader: true,
+      title: checkoutData.product.skus[0].code,
+      additionalTitle: " Checkout"
     }
   },
   mixins: [queryToComponent],
   components: {
     emc1,
-    smc7
+    smc7,
+    vmc4
   },
   methods: {
+    setTitle(skuName) {
+      this.title = skuName
+      document.title = skuName + this.additionalTitle
+    },
+
     initial () {
       for (let key in this.queryParams) {
         window[key] = this.queryParams[key]
       }
 
-      const title = document.title
+      document.title = this.title + this.additionalTitle
 
-      window.onfocus = function () {
-        document.title = title
-      }
-      window.onblur = function () {
-        document.title = 'WAIT! YOU FORGOT: You have active cart items!'
-      }
+      window.onfocus = () => document.title = this.title + this.additionalTitle
+      window.onblur = () => document.title = 'WAIT! YOU FORGOT: You have active cart items!'
 
       this.directLinking()
     },

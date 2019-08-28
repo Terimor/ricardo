@@ -66,6 +66,9 @@
               >
                 <radio-button-item-deal
                     :value="form.deal"
+                    :showPerUnitPrice=true
+                    :showDiscount=false
+                    :customBackground=false
                     v-for="item in purchase"
                     :item="{
                       ...item,
@@ -451,6 +454,9 @@
     }
 
     &__step-1 {
+      .bestseller {
+        display: none;
+      }
       h2 {
         margin-bottom: 20px;
       }
