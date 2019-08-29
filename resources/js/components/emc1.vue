@@ -77,7 +77,7 @@
           <paypal-button
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
-            v-if="fullAmount"
+            v-show="fullAmount"
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
