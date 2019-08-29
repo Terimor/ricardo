@@ -27,8 +27,8 @@
                 <payment-form-vmc4
                     :checkoutData="checkoutData"
                     :countryList="countryList"
+                    @productImageChanged="setProductImage"
                     :cardNames="cardNames"
-                    :paymentForm="form"
                     :list="purchase"
                     :variantList="variantList"
                     @onSubmit="submit"/>
@@ -41,7 +41,7 @@
                   <p>
                     <img alt="" src="//static.saratrkr.com/images/lock.png">
                     Safe 256-Bit SSL encryption. <br>Your credit card will be invoiced as:
-                    "MDL*EchoBeat"
+                    {{billing_descriptor}}
                   </p>
                 </div>
               </div>
@@ -63,7 +63,8 @@
 		props: ['data'],
 		data() {
 			return {
-				productImage: '/images/headphones-white.png',
+				billing_descriptor: checkoutData.product.billing_descriptor,
+				productImage: null,
 				countryList: [
 					{
 						value: 'US',
@@ -129,21 +130,6 @@
 			},
 
 		},
-		watch: {
-			'form.variant'(val) {
-				fade('out', 300, document.querySelector('#main-prod-image'), true)
-					.then(() => {
-						this.productImage = this.variantList.find(variant => variant.value === val).imageUrl;
-
-						fade('in', 300, document.querySelector('#main-prod-image'), true)
-					});
-
-				this.setPurchase({
-					variant: val,
-					installments: this.form.installments,
-				})
-			}
-		},
 		methods: {
 			submit(val) {
 				console.log(val)
@@ -157,25 +143,32 @@
 				this.purchase = preparePurchaseData({
 					purchaseList: this.productData.prices,
 					quantityToShow: [1, 3, 5],
-					long_name: this.productData.product_name,
+					long_name: this.productData.skus[0].name,
 					variant,
 					installments,
           onlyDiscount: true
 				})
-			}
+			},
+			setProductImage(val) {
+				this.productImage = val
+      }
 		},
 		mounted() {
 			this.variantList = this.productData.skus.map((it) => ({
 				label: it.name,
-				text: `<div><img src="/images/headphones-white.png" alt=""><span>${it.name}</span></div>`,
+				text: `<div><img src="${it.images[0]}" alt=""><span>${it.name}</span></div>`,
 				value: it.code,
-				imageUrl: '/images/headphones-white.png'
+				imageUrl: it.images[0]
 			}));
 
 			this.setPurchase({
 				variant: this.form.variant,
 				installments: 1,
 			});
+
+			try {
+				this.productImage = checkoutData.product.skus[0].images[0];
+			} catch (_) {}
 		}
 	}
 </script>
@@ -278,4 +271,11 @@
       max-width: 100%;
     }
   }
+
+  @media screen and ($s-down) {
+    header {
+      margin-top: 25px;
+    }
+  }
+
 </style>
