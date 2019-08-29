@@ -6,7 +6,7 @@
       <vmc4-component
           :showPreloader="showPreloader"
           :data="checkoutData"
-          v-if="queryParams.tpl === 'vmc4'" />
+          v-else-if="queryParams.tpl === 'vmc4'" />
       <emc1-component
           :showPreloader="showPreloader"
           :skusList="skusList"
