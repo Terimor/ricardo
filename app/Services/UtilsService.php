@@ -25,9 +25,10 @@ class UtilsService
         'mt' => 'mt-MT',
         'kr' => 'ko-KR',
     ];
-    
+
     /**
      * Country codes
+     * Linked to Saga: Utils::$country_codes
      */
     public static $countryCodes = [
         'af' => 'Afghanistan',
@@ -282,8 +283,8 @@ class UtilsService
         'ye' => 'Yemen',
         'zm' => 'Zambia',
         'zw' => 'Zimbabwe'
-    ]; 
-    
+    ];
+
     /**
      * Generate random string
      * @param type $length
@@ -299,13 +300,13 @@ class UtilsService
         }
         return implode('', $pieces);
     }
-    
+
     /**
      * Generate random number with lenght
      * @param type $length
      * @return type
      */
-    public static function randomNumber($length) 
+    public static function randomNumber($length)
     {
         $result = '';
 
@@ -315,7 +316,7 @@ class UtilsService
 
         return $result;
     }
-    
+
     /**
      * Get culture country code
      * @param string $ip
@@ -323,11 +324,11 @@ class UtilsService
      */
     public static function getCultureCode(string $ip = null, $countryCode = null) : string
     {
-        
+
         if (!$countryCode) {
-            
+
             if ($ip) {
-                $location = \Location::get($ip); 
+                $location = \Location::get($ip);
             } else {
                 $location = \Location::get(request()->ip());
             }
@@ -336,19 +337,19 @@ class UtilsService
             if (request()->get('_ip')) {
                 $location = \Location::get(request()->get('_ip'));
             }
-            
+
             $countryCode = !empty($location->countryCode) ? $location->countryCode : 'US';
-        }                
-        
+        }
+
         $countryCode = strtolower($countryCode);
-        
+
         if (!isset(static::$cultureCodes[$countryCode])) {
             logger()->error("Can't find culture code", ['country_code' => $countryCode, 'location' => !empty($location) ? $location : null]);
         }
-                
+
         return !empty($countryCode) && !empty(static::$cultureCodes[$countryCode]) ? static::$cultureCodes[$countryCode] : 'en-US';
     }
-    
+
     /**
      * Get location country code
      * @param string $ip
@@ -357,28 +358,28 @@ class UtilsService
     public static function getLocationCountryCode(string $ip = null) : string
     {
         if ($ip) {
-            $location = \Location::get($ip); 
+            $location = \Location::get($ip);
         } else {
             $location = \Location::get(request()->ip());
         }
-        
+
         // TODO - REMOVE
         if (request()->get('_ip')) {
             $location = \Location::get(request()->get('_ip'));
         }
         return !empty($location->countryCode) ? $location->countryCode : 'US';
     }
-    
+
     /**
      * Get setting
      * @param type $key
      * @return type
      */
     public static function getSetting($key)
-    {        
+    {
         return optional(Setting::where(['key' => $key])->first())->value;
     }
-    
+
     /**
      * Get list of countries
      */

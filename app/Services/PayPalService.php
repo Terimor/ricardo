@@ -71,7 +71,7 @@ class PayPalService
         $total_local_price = $local_price;
         $items = [[
             'name' => $product->product_name,
-            'description' => $product->description,
+            'description' => $product->long_name,
             'sku' => $request->sku_code,
             'unit_amount' => [
                 'currency_code' => $local_currency,
@@ -95,7 +95,7 @@ class PayPalService
             ];
         }
         $unit = [
-            'description' => $product->description,
+            'description' => $product->long_name,
             'amount' => [
                 'currency_code' => $local_currency,
                 'value' => round($total_local_price, 2),
