@@ -8,6 +8,7 @@ use App\Services\CurrencyService;
 use App\Services\ProductService;
 use App\Models\Currency;
 use App\Models\Setting;
+use App\Services\I18nService;
 
 class SiteController extends Controller
 {
@@ -27,7 +28,8 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index(Request $request, ProductService $productService)
-    {
+    {	
+	//$loadedPhrases = (new I18nService())->loadPhrases('product_page');
         $product = $productService->resolveProduct($request, true);
         return view('index', compact('product'));
     }
@@ -76,11 +78,12 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function upsells()
+    public function upsells(Request $request, ProductService $productService)
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
-
-        return view('uppsells_funnel', compact('location'));
+	$product = $productService->resolveProduct($request, true);
+	
+        return view('uppsells_funnel', compact('location', 'product'));
     }
 
     /**
@@ -88,11 +91,12 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function thankyou()
+    public function thankyou(Request $request, ProductService $productService)
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
-
-        return view('thankyou', compact('location'));
+	$product = $productService->resolveProduct($request, true);
+	
+        return view('thankyou', compact('location', 'product'));
     }
 
     /**
@@ -111,7 +115,7 @@ class SiteController extends Controller
      */
     public function test(Request $request, ProductService $productService)
     {
-
+	
         $cc = \Utils::getCountries();
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');

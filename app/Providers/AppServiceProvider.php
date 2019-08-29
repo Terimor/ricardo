@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Services\I18nService;
 use Illuminate\Support\ServiceProvider;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -56,6 +58,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app['config']['sentry'] = [
             'dsn' => $sentryDNS ? $sentryDNS : env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))
         ];
+		
+	// register blade tranlation t()
+	Blade::directive('t', function ($phrase, $args = []) {
+	    echo '<pre>'; var_dump($phrase); echo '</pre>'; exit;
+	    $phrase = (new I18nService)->getTranslatedPhrase($phrase, app()->getLocale());	    
+            return "<?={$phrase}?>";
+        });
 
     }
 }

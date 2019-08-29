@@ -11,6 +11,8 @@ class I18n extends Model
     protected $dates = ['created_at', 'updated_at'];
     
     public $timestamps = true;
+
+    public static $loadedPhrases = [];
     
     public $attributes = [
         '_id',
@@ -101,7 +103,8 @@ class I18n extends Model
    * Returns translation languages array
    * @return type
    */
-  public static function getTranslationLanguages($codes_only = false) {
+  public static function getTranslationLanguages($codes_only = false)
+  {
     $langs = static::$labels;
     foreach ($langs as $lang => $name) {
       if (strlen($lang) != 2) {
@@ -112,5 +115,5 @@ class I18n extends Model
       $langs = array_keys($langs);
     }
     return $langs;
-  }    
+  }
 }
