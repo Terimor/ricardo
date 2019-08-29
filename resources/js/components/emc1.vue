@@ -77,7 +77,7 @@
           <paypal-button
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
-            v-if="form.installments == 1"
+            v-if="fullAmount"
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
@@ -331,6 +331,12 @@ export default {
     }
   },
   computed: {
+    codeOrDefault () {
+      return this.queryParams.product || this.checkoutData.product.skus[0].code;
+    },
+    fullAmount () {
+      return this.form.installments == 1;
+    },
     productData () {
       return checkoutData.product
     },
@@ -418,7 +424,7 @@ export default {
     paypalCreateOrder () {
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-        sku_code: this.queryParams.product,
+        sku_code: this.codeOrDefault,
         sku_quantity: this.form.deal,
         is_warrantry_checked: this.form.isWarrancyChecked,
         page_checkout: document.location.href,

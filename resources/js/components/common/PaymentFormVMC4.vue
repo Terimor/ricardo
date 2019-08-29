@@ -243,15 +243,15 @@
 <script>
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
-	import {getCardUrl} from "../../utils/checkout";
+	import {getCardUrl, preparePurchaseData} from "../../utils/checkout";
 	import vmc4validation from "../../validation/vmc4-validation";
+	import {fade} from "../../utils/common";
 
 	export default {
 		name: "PaymentFormVMC4",
 		components: {PayMethodItem, RadioButtonItemDeal},
 		validations: vmc4validation,
 		props: [
-			'paymentForm',
 			'countryList',
 			'cardNames',
 			'list',
@@ -284,12 +284,7 @@
 					},
 					countryCodePhoneField: checkoutData.countryCode,
 					deal: 1,
-					variant: (function () {
-						try {
-							return checkoutData.product.skus[0].code
-						} catch (_) {
-						}
-					}()),
+					variant: checkoutData.product.skus[0].code || "",
 					installments: 1,
 					paymentType: null,
 				}
@@ -299,6 +294,24 @@
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
 			}
+		},
+		watch: {
+			'form.variant'(val) {
+				fade('out', 300, document.querySelector('#main-prod-image'), true)
+					.then(() => {
+						let productImageUrl = this.variantList.find(variant => variant.value === val).imageUrl;
+						if(productImageUrl) {
+							this.$emit('productImageChanged', productImageUrl)
+            }
+						fade('in', 300, document.querySelector('#main-prod-image'), true)
+					});
+			},
+			'step'(val) {
+				fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
+					.then(() => {
+						fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
+					});
+			},
 		},
 		methods: {
 			submit() {
@@ -319,7 +332,6 @@
 				}
 			},
 			setCountryCodeByPhoneField(val) {
-				console.log(val)
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2.toUpperCase()
 				}
@@ -352,6 +364,25 @@
   .payment-form-vmc4 {
     .form-steps-title {
       text-align: center;
+    }
+
+    .el-input{
+      &__inner{
+        border-radius: 0;
+      }
+    }
+
+    .input-container.variant-1 input,
+    .phone-input-container.variant-1 input {
+      background-color: #ffffff;
+      font-size: 14px;
+      border-radius: 0;
+      border: 0;
+      border-bottom: 1px solid #d2d2d2;
+
+      &:focus {
+        box-shadow: none;
+      }
     }
 
     .step-1 {
@@ -401,26 +432,11 @@
           width: calc(60% - 11px);
         }
       }
-
-
-      .input-container.variant-1 input,
-      .phone-input-container.variant-1 input {
-        background-color: #ffffff;
-        font-size: 14px;
-        border-radius: unset;
-        border: 0;
-        border-bottom: 1px solid #d2d2d2;
-
-        &:focus {
-          box-shadow: none;
-        }
-      }
-
     }
 
     .step-3 {
       .pay-method-item img {
-        max-height: 60px;
+        max-height: 45px;
         margin-right: 15px;
       }
 
@@ -438,8 +454,14 @@
         .card-date {
           display: flex;
 
-          .select.variant-1:first-child {
+          .select.variant-1:nth-child(1) {
+            margin-right: 5px;
             width: 30%;
+          }
+
+          .select.variant-1:nth-child(2) {
+            margin-right: 20px;
+            width: 40%;
           }
 
           .select.variant-1:last-child {
@@ -455,6 +477,15 @@
               }
             }
           }
+        }
+      }
+
+      .el-input {
+        &__inner {
+          background: #ffffff;
+          border-radius: 0;
+          border: 0;
+          border-bottom: 1px solid #d2d2d2;
         }
       }
     }
