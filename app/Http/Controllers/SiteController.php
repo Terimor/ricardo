@@ -29,7 +29,7 @@ class SiteController extends Controller
      */
     public function index(Request $request, ProductService $productService)
     {	
-	//$loadedPhrases = (new I18nService())->loadPhrases('product_page');
+	$loadedPhrases = (new I18nService())->loadPhrases('product_page');
         $product = $productService->resolveProduct($request, true);
         return view('index', compact('product'));
     }
