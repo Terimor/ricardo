@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->loadHelpers();
     }
 
     /**
@@ -60,11 +60,17 @@ class AppServiceProvider extends ServiceProvider
         ];
 		
 	// register blade tranlation t()
-	Blade::directive('t', function ($phrase, $args = []) {
+	/*Blade::directive('t', function ($phrase, $args = []) {
 	    echo '<pre>'; var_dump($phrase); echo '</pre>'; exit;
 	    $phrase = (new I18nService)->getTranslatedPhrase($phrase, app()->getLocale());	    
             return "<?={$phrase}?>";
-        });
+        });*/
 
+    }
+    
+    protected function loadHelpers() {
+        foreach (glob(__DIR__.'/../Helpers/*.php') as $filename) {
+            require_once $filename;
+        }
     }
 }

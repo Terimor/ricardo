@@ -99,6 +99,47 @@ class I18n extends Model
         'pt-br' => 'br'
     ];
     
+    /**
+     * Saga I18n::$placeholders
+     * @var type 
+     */
+    public static $placeholders = [
+	'#FIRST_NAME#',
+	'#LAST_NAME#',
+	'#CUSTOMER#',
+	'#PRODUCT#',
+	'#FIRST_NAME#',
+	'#COMPANY#',
+	'#AFFILIATE_ID#',
+	'#TRACKING_NUMBER#',
+	'#COUNTRY#',
+	'#ORDER#',
+	'#TRACKING_LINK#',
+	'#CODE#',
+	'#DOMAIN#',
+	'#LANGUAGE#',
+	'#SHIPPING_DAYS#',
+	'#SUPPORTER#',
+	'#TICKETDATE#',
+	'#IBAN#',
+	'#PAYMENT_HASH#',
+	'#BIC#',
+	'#PAYMENT_DETAILS#',
+	'#STATUS#',
+	'#STATUS_CLARIFICATION#',
+	'#PRODUCTNAME#',
+	'#SHOPNAME#',
+	'#SUPPORT_TEAM#',
+	'#AMOUNT#',
+	'#COUNT#',
+	'#ADDRESS#',
+	'#SAGA_LINK#',
+	'#CANCEL_LINK#',
+	'#CUSTOMER_NUMBER#',
+	'#PRODUCTS#',
+	'#SURVEY_LINK',
+      ];
+    
   /**
    * Returns translation languages array
    * @return type
