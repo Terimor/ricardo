@@ -36,6 +36,7 @@
               v-model="form.deal"
               :list="dealList"
               @input="setWarrantyPriceText"
+              :validation="$v.form.deal"
             />
 
             <h2>Step 2: Please select your variant</h2>
@@ -43,6 +44,8 @@
             <select-field
               popperClass="emc1-popover-variant"
               v-model="form.variant"
+              :validation="$v.form.variant"
+              validationMessage="Invalid field"
               :config="{
                 prefix: 'EchoBeat7'
               }"
@@ -78,6 +81,8 @@
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
             v-show="fullAmount"
+            :$v="$v.form.deal"
+            @click="submit"
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
@@ -306,7 +311,6 @@ export default {
         }()),
         installments: 1,
         paymentType: null,
-
         fname: null,
         lname: null,
         dateOfBirth: '',
@@ -394,6 +398,12 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    submit () {
+      if (this.$v.form.$invalid) {
+        this.isOpenPromotionModal = true;
+      }
+      this.$v.form.$touch();
+    },
     getImplValue(value) {
       this.implValue = value;
       if (this.radioIdx) this.changeWarrantyValue();

@@ -20,7 +20,8 @@ export default {
     'list',
     'value',
     'labelStyles',
-    'withCustomLabels'
+    'withCustomLabels',
+    'validation'
   ],
   methods: {
     input (e) {
