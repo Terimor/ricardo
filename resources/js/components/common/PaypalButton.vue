@@ -5,18 +5,23 @@
 <script>
   export default {
     name: 'PaypalButton',
-    props: ['createOrder', 'onApprove'],
+    props: ['createOrder', 'onApprove', '$v'],
     methods: {
       initButton () {
         const { createOrder, onApprove } = this;
 
         paypal.Buttons({
-          createOrder: function() {
-            return createOrder()
+          createOrder: () => {
+            if (this.$v.required && this.$v.$dirty) {
+              return createOrder();
+            } else {
+              this.$emit('click', false);
+            }
           },
           onApprove: function(data) {
-            console.log(data)
-            return onApprove(data)
+            if (this.$v.$dirty) {
+              return onApprove(data);
+            }
           }
         }).render('.paypal-button-container');
       }

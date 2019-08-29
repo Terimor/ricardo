@@ -12,6 +12,7 @@
     }
 </script>
 @section('content')
+@section('title', $product->skus[0]['name'])
 
 @include('components.product_offer')
 
