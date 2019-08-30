@@ -387,4 +387,22 @@ class UtilsService
     {
         return self::$countryCodes;
     }
+
+    /**
+     * Returns true if country is in Europe
+     * Duplicated in Saga: Utils::isEUCountry()
+     * @param string $country_code
+     * @return bool
+     */
+    public static function isEUCountry(string $country_code): bool
+    {
+	$eu = [
+	    //EU
+	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'po', 'pt', 'ro', 'se', 'si', 'sk',
+	    //other Europe
+	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va'
+	];
+	return in_array(strtolower(trim($country_code)), $eu);
+    }
+
 }
