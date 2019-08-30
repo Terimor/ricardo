@@ -12,7 +12,7 @@
     }
 </script>
 @section('content')
-@section('title', $product->skus[0]['name'])
+@section('title', $product->skus[0]['name'] . ' Checkout')
 
 @include('components.product_offer')
 
