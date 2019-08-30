@@ -6,22 +6,32 @@
   export default {
     name: 'PaypalButton',
     props: ['createOrder', 'onApprove', '$v'],
+    data() {
+      return {
+        inputCheckbox: this.$v.required,
+        action: null
+      }
+    },
     methods: {
       initButton () {
         const { createOrder, onApprove, $v } = this;
         const that = this;
 
         paypal.Buttons({
+          onInit(data, actions) {
+            that.action = actions;
+            actions.disable();
+          },
           onClick () {
-            if ($v.required && $v.$dirty) {
+            if ($v.required || $v.$dirty) {
               return createOrder();
             } else {
-              that.$emit('click', false);
-              return false;
+              that.$emit('click', true);
+              return true;
             }
           },
           onApprove (data) {
-            if ($v.required && $v.$dirty) {
+            if ($v.required || $v.$dirty) {
               return onApprove(data);
             }
           },
@@ -29,6 +39,11 @@
             label: 'buynow'
           }
         }).render('.paypal-button-container');
+      }
+    },
+    watch: {
+      '$v.required' () {
+        this.action.enable();
       }
     },
     mounted () {
