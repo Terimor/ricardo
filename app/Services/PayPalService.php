@@ -66,6 +66,16 @@ class PayPalService
         $priceData = $this->getPrice($request, $product, $upsell_order);
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
         $local_currency = $priceData['code'];
+
+
+
+//TODO: remove
+$local_currency = 'USD';
+
+
+
+
+
         $local_price = $priceData['price'];
         $total_price = $price;
         $total_local_price = $local_price;
