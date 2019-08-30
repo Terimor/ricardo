@@ -870,6 +870,7 @@ export default {
     }
 
     &__bottom {
+      width: 100%;
       display: flex;
       flex-direction: column;
 

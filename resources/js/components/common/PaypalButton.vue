@@ -8,18 +8,20 @@
     props: ['createOrder', 'onApprove', '$v'],
     methods: {
       initButton () {
-        const { createOrder, onApprove } = this;
+        const { createOrder, onApprove, $v } = this;
+        const that = this;
 
         paypal.Buttons({
-          createOrder: () => {
-            if (this.$v.required && this.$v.$dirty) {
+          onClick () {
+            if ($v.required && $v.$dirty) {
               return createOrder();
             } else {
-              this.$emit('click', false);
+              that.$emit('click', false);
+              return false;
             }
           },
-          onApprove: function(data) {
-            if (this.$v.$dirty) {
+          onApprove (data) {
+            if ($v.required && $v.$dirty) {
               return onApprove(data);
             }
           },
