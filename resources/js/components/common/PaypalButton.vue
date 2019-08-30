@@ -24,6 +24,9 @@
             if ($v.required && $v.$dirty) {
               return onApprove(data);
             }
+          },
+          style: {
+            label: 'buynow'
           }
         }).render('.paypal-button-container');
       }
