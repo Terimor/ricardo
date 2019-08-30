@@ -59,7 +59,7 @@
               <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
                   3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
-                  <input id="warranty-field" type="checkbox" v-model="form.isWarrancyChecked">
+                  <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                   <span class="checkmark"></span>
                 </label>
                 <img src="/images/best-saller.png" alt="">
@@ -301,7 +301,7 @@ export default {
         }
       ],
       form: {
-        isWarrancyChecked: false,
+        isWarrantyChecked: false,
         countryCodePhoneField: checkoutData.countryCode,
         deal: null,
         variant: (function() {
@@ -436,7 +436,7 @@ export default {
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
         sku_code: this.codeOrDefault,
         sku_quantity: this.form.deal,
-        is_warrantry_checked: this.form.isWarrancyChecked,
+        is_warranty_checked: this.form.isWarrantyChecked,
         page_checkout: document.location.href,
         offer: new URL(document.location.href).searchParams.get('offer'),
         affiliate: new URL(document.location.href).searchParams.get('affiliate'),

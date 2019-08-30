@@ -25,8 +25,8 @@
         </div>
 
         <div>
-            <label for="is_warrantry_checked">is_warrantry_checked</label>
-            <input type="checkbox" name="is_warrantry_checked" id="is_warrantry_checked" value="1">
+            <label for="is_warranty_checked">is_warranty_checked</label>
+            <input type="checkbox" name="is_warranty_checked" id="is_warranty_checked" value="1">
         </div>
         <div>
             <label for="order_id">order_id</label>
@@ -53,7 +53,7 @@
                 body: JSON.stringify({
                     sku_code: document.getElementById('sku_code').value,
                     sku_quantity: document.getElementById('sku_quantity').value,
-                    is_warrantry_checked: document.getElementById('is_warrantry_checked').checked,
+                    is_warranty_checked: document.getElementById('is_warranty_checked').checked,
                     order_id: document.getElementById('order_id').value,
                     page_checkout: document.location.href,
                     offer: new URL(document.location.href).searchParams.get('offer'),

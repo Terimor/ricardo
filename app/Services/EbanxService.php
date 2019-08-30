@@ -12,8 +12,8 @@ use App\Models\Setting;
  * Ebanx Service class
  */
 class EbanxService
-{    
-    
+{
+
     /**
      * EbanxController constructor.
      * @param OrderService $orderService
@@ -22,27 +22,27 @@ class EbanxService
     {
         $this->orderService = $orderService;
         $this->currency = CurrencyService::getCurrency();
-	
-		
+
+
 	$this->key = Setting::where(['key' => 'ebanx_integration_key'])->first();
-        
+
         if (!$this->key) {
-            logger()->error("ebanx_integration_key parameter not found");            
+            logger()->error("ebanx_integration_key parameter not found");
         }
     }
-    
+
     /**
-     * 
+     *
      * @return string
      */
     public function getBaseUrl()
     {
         $mode = Setting::where(['key' => 'ebanx_mode'])->first();
-        
+
         if (!$mode) {
             logger()->error("ebanx_mode parameter not found");
         }
-        
+
         if ($mode && $mode->value == 'prod') {
             $url = 'https://sandbox.ebanxpay.com/';
         } else {
@@ -50,7 +50,7 @@ class EbanxService
         }
         return $url;
     }
-    
+
     /**
      * Save customer
      * @param array $request
@@ -71,17 +71,17 @@ class EbanxService
             'state' => $request['state'],
             'city' => $request['city'],
             'street' => $request['address'],
-            'street2' => $request['street_number'],            
+            'street2' => $request['street_number'],
         ];
-        
+
         $res = $this->orderService->addCustomer($data, true);
         if ($res['success']) {
             return $res['customer'];
         } else {
             abort(404);
-        }        
+        }
     }
-    
+
     /**
      * Save order
      * @param array $request
@@ -91,8 +91,8 @@ class EbanxService
     public function saveOrder(array $request, OdinCustomer $customer, OdinProduct $product)
     {
         $price = (float)$product->prices[$request['quantity']]['value'];
-        
-        $warrantyPrice = !empty($request['is_warrantry_checked']) ? (float)$product->prices[$request['quantity']]['warranty_price'] : 0;
+
+        $warrantyPrice = !empty($request['is_warranty_checked']) ? (float)$product->prices[$request['quantity']]['warranty_price'] : 0;
 
         $productForOrder = [
             "sku_code" => $request['sku'],
@@ -100,18 +100,18 @@ class EbanxService
             "price" => $price,
             "price_usd" => round($price / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate), 2),
             "warranty_price" => $warrantyPrice,
-            "warranty_price_usd" => floor($warrantyPrice / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100)/100,                 
-            'price_set' => $product->prices['price_set'],          
+            "warranty_price_usd" => floor($warrantyPrice / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100)/100,
+            'price_set' => $product->prices['price_set'],
         ];
-        
+
         // installments
         if(!empty($request['installments']) && ($request['installments'] == 3 || $request['installments'] == 6)) {
             $installments = $request['installments'];
         } else {
             $installments = 0;
         }
-        
-        $data = [            
+
+        $data = [
             'status' => OdinOrder::STATUS_NEW,
             'currency' => $this->currency->code,
             'exchange_rate' => $this->currency->usd_rate, // * float
@@ -121,7 +121,7 @@ class EbanxService
             //'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
             'installments' => $installments,
             'payment_provider' => 'ebanx',
-            'payment_method' => $request['payment_type_code'],            
+            'payment_method' => $request['payment_type_code'],
             'customer_email' => $request['email'],
             'customer_first_name' => $request['first_name'],
             'customer_last_name' => $request['last_name'],
@@ -133,20 +133,20 @@ class EbanxService
             'shipping_state' => $request['state'],
             'shipping_city' => $request['city'],
             'shipping_street' => $request['address'],
-            'shipping_street2' => $request['street_number'],      
+            'shipping_street2' => $request['street_number'],
             'warehouse_id' => $product->warehouse_id,
             'products' => [$productForOrder],
         ];
-        
+
         $res = $this->orderService->addOdinOrder($data, true);
-        
+
         if ($res['success']) {
             return $res['order'];
         } else {
             abort(404);
         }
     }
-    
+
     /**
      * Prepare data for curl
      * @param array $data
@@ -160,8 +160,8 @@ class EbanxService
         } else {
             $installments = 1;
         }
-        
-        $dataForCurl = [            
+
+        $dataForCurl = [
             "integration_key" => $this->key->value,
             "operation" => "request",
             "mode" => "full",
@@ -188,17 +188,17 @@ class EbanxService
                 'order_number' => $orderNumber,
             ]
         ];
-        
+
         return $dataForCurl;
     }
-    
+
     /**
-     * 
+     *
      * @param array $response
      * @return type
      */
     public function saveTxn(array $response)
-    {   
+    {
         $data = [
             'hash' => !empty($response['payment']['hash']) ? $response['payment']['hash'] : null,
             'value' => !empty($response['payment']['amount_br']) ? $response['payment']['amount_br'] : null,
@@ -207,16 +207,16 @@ class EbanxService
             'payment_provider' => 'ebanx',
             'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
         ];
-        
+
         $res = $this->orderService->addTxn($data, true);
-        
+
         if ($res['success']) {
             return $res['txn'];
         } else {
             abort(404);
         }
     }
-    
+
     /**
      * Send transaction
      * @param array $dataForCurl
@@ -224,25 +224,25 @@ class EbanxService
      */
     public function sendTransaction(array $dataForCurl) : string
     {
-        $url = $this->getBaseUrl().'ws/direct';      
-        
+        $url = $this->getBaseUrl().'ws/direct';
+
         try {
             $client = new \GuzzleHttp\Client();
             $request = $client->request('POST', $url, [
-                'headers' => [                    
+                'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json'
                 ],
                 \GuzzleHttp\RequestOptions::JSON => $dataForCurl
-            ]);            
+            ]);
             $response = $request->getBody()->getContents();
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse()->getBody()->getContents();
         }
-        
+
         return $response;
     }
-    
+
     /**
      * Save txn and recalculate txns_fee_usd
      * @param OdinOrder $order
@@ -254,8 +254,8 @@ class EbanxService
         $txnsFeeUsd = 0;
         if ($order->products) {
 	    $products = $order->products ;
-            foreach ($products as &$p) {		
-                if ($p['sku_code'] == $sku && empty($p['txn_hash'])) {		    
+            foreach ($products as &$p) {
+                if ($p['sku_code'] == $sku && empty($p['txn_hash'])) {
                     $p['txn_hash'] = $txn->hash;
                     $p['txn_value'] = (float)$txn->value;
 		    // check status transaction, if CO=paid
@@ -266,32 +266,32 @@ class EbanxService
 			    $p['is_txn_approved'] = false;
 			}
 		    }
-		    
+
                 }
 
-                if (!empty($p['txn_value'])) {                    
+                if (!empty($p['txn_value'])) {
 		    $txnsFeeUsd += round($p['txn_value'] / $this->currency->usd_rate, 5);
                 }
-                
+
             }
 	    $order->products = $products;
         }
-        	
+
         $order->txns_fee_usd = $txnsFeeUsd;
         $order->save();
     }
-    
+
     /**
-     * 
+     *
      * @param type $hashCodes
      */
     public function updateProductStatuses($hashCodes)
-    {	
-	foreach ($hashCodes as $hash) {	    
+    {
+	foreach ($hashCodes as $hash) {
 	    //find order product by hash
 	    $order = OdinOrder::where(['products.txn_hash' => $hash])->first();
-	    
-	    $res = json_decode($this->sendQueryHash($hash), true);	    
+
+	    $res = json_decode($this->sendQueryHash($hash), true);
 	    if(!empty($res['payment']['status'])) {
 		$status = $res['payment']['status'];
 		$products = $order->products;
@@ -300,11 +300,11 @@ class EbanxService
 			if ($status == 'CO') {
 			    $p['is_txn_approved'] = true;
 			}
-			
+
 			if ($status == 'CA') {
 			    $p['is_txn_approved'] = false;
 			}
-			
+
 			$order->products = $products;
 			$order->save();
 			break;
@@ -313,31 +313,31 @@ class EbanxService
 	    }
 	}
     }
-    
-    
+
+
     public function sendQueryHash(string $hash) : string
-    {	
-	$url = $this->getBaseUrl()."ws/query";      
-        
+    {
+	$url = $this->getBaseUrl()."ws/query";
+
 	$dataForCurl = [
 	    'hash' => $hash,
 	    'integration_key' => $this->key->value
 	];
-	
+
         try {
             $client = new \GuzzleHttp\Client();
             $request = $client->request('POST', $url, [
-                'headers' => [                    
+                'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json'
                 ],
                 \GuzzleHttp\RequestOptions::JSON => $dataForCurl
-            ]);            
+            ]);
             $response = $request->getBody()->getContents();
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse()->getBody()->getContents();
         }
-        
+
         return $response;
     }
 }
