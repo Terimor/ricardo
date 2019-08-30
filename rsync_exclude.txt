@@ -23,6 +23,7 @@ phpunit.phar
 /node_modules
 /public/hot
 /public/storage
+/storage/*
 /storage/*.key
 /vendor
 .env
