@@ -79,7 +79,7 @@ export function paypalCreateOrder ({
   xsrfToken = document.head.querySelector('meta[name="csrf-token"]').content,
   sku_code,
   sku_quantity,
-  is_warrantry_checked,
+  is_warranty_checked,
   order_id = '',
   page_checkout = document.location.href,
   offer = new URL(document.location.href).searchParams.get('offer'),
@@ -96,7 +96,7 @@ export function paypalCreateOrder ({
     body: JSON.stringify({
       sku_code,
       sku_quantity,
-      is_warrantry_checked,
+      is_warranty_checked,
       order_id,
       page_checkout,
       offer,

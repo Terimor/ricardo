@@ -13,6 +13,7 @@ use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
+use App\Services\PaymentService;
 
 /**
  * Class PayPalService
@@ -20,10 +21,6 @@ use PayPalCheckoutSdk\Orders\OrdersGetRequest;
  */
 class PayPalService
 {
-    const PROVIDER = 'paypal';
-
-    const METHOD = 'paypal';
-
     const DEFAULT_CURRENCY = 'USD';
 
     const PAYPAL_ORDER_COMPLETED_STATUS = 'COMPLETED';
@@ -89,14 +86,14 @@ $local_currency = 'USD';
             ],
             'quantity' => 1
         ]];
-        if ($request->input('is_warrantry_checked') && $product->warranty_percent && !$upsell_order) {
+        if ($request->input('is_warranty_checked') && $product->warranty_percent && !$upsell_order) {
             $local_warranty_price = round(($product->warranty_percent / 100) * $local_price, 2);
             $local_warranty_usd = round($local_warranty_price / $priceData['exchange_rate'], 2);
             $total_price += $local_warranty_usd;
             $total_local_price += $local_warranty_usd;
             $items[] = [
-                'name' => 'Warrantry',
-                'description' => 'Warrantry',
+                'name' => 'Warranty',
+                'description' => 'Warranty',
                 'unit_amount' => [
                     'currency_code' => $local_currency,
                     'value' => $local_warranty_price,
@@ -130,8 +127,8 @@ $local_currency = 'USD';
                 'value' => (float)$paypal_order->purchase_units[0]->amount->value,
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
-                'payment_method' => self::METHOD,
-                'payment_provider' => self::PROVIDER,
+                'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
+                'payment_provider' => PaymentService::PROVIDER_PAYPAL,
             ]);
             abort_if(!$txn_response['success'], 404);
             $txn = $txn_response['txn'];
@@ -142,7 +139,7 @@ $local_currency = 'USD';
                 'price' => $local_price,
                 'price_usd' => $price,
                 'warranty_price' => $local_warranty_price ?? null,
-                'warranty_price_usd' => $warrantry_price ?? null,
+                'warranty_price_usd' => $warranty_price ?? null,
                 'is_main' => !$upsell_order,
                 'txn_hash' => $txn['hash'],
                 'txn_value' => $txn['value'],
@@ -171,8 +168,8 @@ $local_currency = 'USD';
                     'total_paid' => 0,
                     'total_price' => $total_local_price,
                     'total_price_usd' => $total_price,
-                    'payment_provider' => self::PROVIDER,
-                    'payment_method' => self::METHOD,
+                    'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                    'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                     'customer_phone' => null,
                     'language' => app()->getLocale(),
                     'ip' => $request->ip(),
@@ -208,8 +205,8 @@ $local_currency = 'USD';
                 'value' => $paypal_order_value,
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
-                'payment_method' => self::METHOD,
-                'payment_provider' => self::PROVIDER,
+                'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
+                'payment_provider' => PaymentService::PROVIDER_PAYPAL,
             ]);
             $txn = $txn_response['txn'];
 
@@ -273,8 +270,8 @@ $local_currency = 'USD';
                     'value' => $paypal_order_value,
                     'currency' => $paypal_order_currency,
                     'provider_data' => $paypal_order,
-                    'payment_method' => self::METHOD,
-                    'payment_provider' => self::PROVIDER,
+                    'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
+                    'payment_provider' => PaymentService::PROVIDER_PAYPAL,
                 ]);
 
                 $txn = $txn_response['txn'];
