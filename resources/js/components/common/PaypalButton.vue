@@ -54,6 +54,7 @@
 
 <style lang="scss">
 .paypal-button-container {
+    max-width: none;
     width: 100%;
     margin-bottom: 10px;
 }
