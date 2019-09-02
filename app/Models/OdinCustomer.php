@@ -26,6 +26,7 @@ class OdinCustomer extends Model
         'last_name' => null, // * string
         'ip' => [], // array of strings
         'phones' => [], // array of strings
+	'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
             //'country' => null, // enum string
@@ -34,6 +35,7 @@ class OdinCustomer extends Model
             //'city' => null, // string
             //'street' => null, // string
             //'street2' => null, // string
+	    //'apt' => null, // string
         ],
         'paypal_payer_id' => null, // string
     ];

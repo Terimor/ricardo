@@ -96,8 +96,31 @@ class SiteController extends Controller
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
 	$product = $productService->resolveProduct($request, true);
 	
-        return view('thankyou', compact('location', 'product'));
+	$setting = Setting::whereIn('key',[
+	    'instant_payment_paypal_client_id',
+	])->pluck('value', 'key');
+	
+        return view('thankyou', compact('location', 'product' , 'setting'));
     }
+    
+    /**
+     * Show the application Promo.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function promo(Request $request, ProductService $productService)
+    {
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
+        $isShowProductOffer = request()->get('tpl') === 'emc1';
+
+        $product = $productService->resolveProduct($request, true);
+        $setting = Setting::whereIn('key',[
+                    'instant_payment_paypal_client_id',
+                ])->pluck('value', 'key');
+        
+        $countries =  \Utils::getCountries();        
+        return view('promo', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries'));
+    }    
 
     /**
      * Show the application Product.

@@ -70,7 +70,7 @@ class EbanxController extends Controller
             $txn = $this->ebanxService->saveTxn($response);
             
             //update order product
-            $this->ebanxService->saveTxnForOrderProduct($order, $txn, $request->input('sku'), $response);
+            $this->ebanxService->saveTxnResponseForOrder($order, $txn, $response);
             $result = ['status' => "SUCCESS"];
         } else {
             $result = ['status' => "ERROR", 'message' => !empty($response['status_message']) ? $response['status_message'] : 'Unknown error'];
@@ -92,7 +92,7 @@ class EbanxController extends Controller
 	$hashCodes = explode(',', $hashCodes);
 		
 	if ($operation == 'payment_status_change' && $notification_type == 'update' && $hashCodes) {
-	    $this->ebanxService->updateProductStatuses($hashCodes);
+	    $this->ebanxService->updateTxnStatuses($hashCodes);
 	}
 	
 	return ['success' => true];

@@ -72,6 +72,7 @@ class EbanxService
             'city' => $request['city'],
             'street' => $request['address'],
             'street2' => $request['street_number'],
+	    'doc_id' => !empty($request['document']) ? $request['document'] : null
         ];
 
         $res = $this->orderService->addCustomer($data, true);
@@ -102,6 +103,7 @@ class EbanxService
             "warranty_price" => $warrantyPrice,
             "warranty_price_usd" => floor($warrantyPrice / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100)/100,
             'price_set' => $product->prices['price_set'],
+	    'is_main' => isset($request['is_main']) ? $request['is_main'] : true,
         ];
 
         // installments
@@ -120,8 +122,8 @@ class EbanxService
             'total_price_usd' => floor($productForOrder['price'] + $productForOrder['warranty_price'] / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100) / 100,
             //'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
             'installments' => $installments,
-            'payment_provider' => 'ebanx',
-            'payment_method' => $request['payment_type_code'],
+            //'payment_provider' => 'ebanx',
+            //'payment_method' => $request['payment_type_code'],
             'customer_email' => $request['email'],
             'customer_first_name' => $request['first_name'],
             'customer_last_name' => $request['last_name'],
@@ -204,9 +206,9 @@ class EbanxService
             'value' => !empty($response['payment']['amount_br']) ? $response['payment']['amount_br'] : null,
             'currency' => $this->currency->code,
             'provider_data' => $response,
-            'payment_provider' => 'ebanx',
+            'payment_provider' => 'ebanx',	   
             'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
-        ];
+        ];	
 
         $res = $this->orderService->addTxn($data, true);
 
@@ -249,35 +251,44 @@ class EbanxService
      * @param \App\Services\Txb $txn
      * @param string $sku
      */
-    public function saveTxnForOrderProduct(OdinOrder $order, Txn $txn, string $sku, $response)
+    public function saveTxnResponseForOrder(OdinOrder $order, Txn $txn, $response)
     {
         $txnsFeeUsd = 0;
-        if ($order->products) {
-	    $products = $order->products ;
-            foreach ($products as &$p) {
-                if ($p['sku_code'] == $sku && empty($p['txn_hash'])) {
-                    $p['txn_hash'] = $txn->hash;
-                    $p['txn_value'] = (float)$txn->value;
-		    // check status transaction, if CO=paid
-		    if (!empty($response['payment']['status'])) {
-			if ($response['payment']['status'] == 'CO') {
-			    $p['is_txn_approved'] = true;
-			} else {
-			    $p['is_txn_approved'] = false;
-			}
-		    }
+	$txns = [];
+        if ($order->txns) {
+	    $txns = $order->txns ;
+	}
+	$dataTxnArray = [
+	    'hash' => $txn->hash,
+	    'value' => $txn->value,
+	    'status' => 'new',
+	    'is_charged_back' => false,
+	    'payment_provider' => 'ebanx',
+	    'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
+	];
 
-                }
+	// check status transaction, if CO=paid
+	if (!empty($response['payment']['status'])) {
+	    if ($response['payment']['status'] == 'CO') {
+		$dataTxnArray['status'] = 'approved';
+	    }
+	}
 
-                if (!empty($p['txn_value'])) {
-		    $txnsFeeUsd += round($p['txn_value'] / $this->currency->usd_rate, 5);
-                }
+	if (!empty($response['payment']['amount_iof'])) {
+	    $dataTxnArray['fee'] = (float)$response['payment']['amount_iof'];
+	}
 
-            }
-	    $order->products = $products;
-        }
+	$txns[] = $dataTxnArray;
 
-        $order->txns_fee_usd = $txnsFeeUsd;
+	// re	calculate txns fee
+	foreach ($txns as $t) {
+	    if (!empty($t['value'])) {
+		$txnsFeeUsd += round($t['value'] / $this->currency->usd_rate, 5);
+	    }
+	}
+	
+	$order->txns = $txns;
+        $order->txns_fee_usd = (float)$txnsFeeUsd;
         $order->save();
     }
 
@@ -285,27 +296,26 @@ class EbanxService
      *
      * @param type $hashCodes
      */
-    public function updateProductStatuses($hashCodes)
+    public function updateTxnStatuses($hashCodes)
     {
 	foreach ($hashCodes as $hash) {
 	    //find order product by hash
-	    $order = OdinOrder::where(['products.txn_hash' => $hash])->first();
+	    $order = OdinOrder::where(['txn.hash' => $hash])->first();
 
 	    $res = json_decode($this->sendQueryHash($hash), true);
 	    if(!empty($res['payment']['status'])) {
 		$status = $res['payment']['status'];
-		$products = $order->products;
-		foreach ($products as &$p) {
-		    if($p['txn_hash'] == $hash) {
+		$txns = [];
+		if (!empty($order->txns)) {
+		    $txns = $order->txns ;
+		}
+		foreach ($txns as &$t) {
+		    if($t['hash'] == $hash) {
 			if ($status == 'CO') {
-			    $p['is_txn_approved'] = true;
+			    $t['status'] = 'approved';
 			}
 
-			if ($status == 'CA') {
-			    $p['is_txn_approved'] = false;
-			}
-
-			$order->products = $products;
+			$order->txnx = $txns;
 			$order->save();
 			break;
 		    }
