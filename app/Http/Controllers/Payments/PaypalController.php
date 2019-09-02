@@ -44,9 +44,9 @@ class PaypalController extends Controller
         $braintree_response->headers['Content-Length'] = strlen($response);
 	
         return [
-            $response,
-            $braintree_response->statusCode,
-            $braintree_response->headers
+            //$response,
+            'status' => $braintree_response->statusCode,
+            //$braintree_response->headers
         ];
     }
 
