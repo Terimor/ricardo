@@ -50,10 +50,11 @@
                     :withRemoveButton="true"/>
 
                 <p class="total-price">Total accessory order ${{totalPrice.toLocaleString()}}</p>
-
-                <div class="buy-block">
-                    <green-button class="buy-button" @click="goto('/thankyou')">Buy Accessories</green-button>
-                </div>
+                <paypal-button
+                    :createOrder="paypalCreateOrder"
+                    :onApprove="paypalOnApprove"
+                    :$v="true"
+                >Buy Now Risk Free PAYPAL</paypal-button>
 
             </div>
         </template>
@@ -66,6 +67,7 @@
   import Step3 from './upsells/Step3';
   import StepWithOneItem from './upsells/StepWithOneItem';
   import { fade } from '../utils/common';
+  import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
 
   export default {
     name: 'upsells',
@@ -84,6 +86,24 @@
       }
     },
     computed: {
+      paypalCreateOrder () {
+        return paypalCreateOrder({
+          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+          sku_code: 'dogsafe-001',
+          sku_quantity: 5,
+          // skus: [ {1: 'dogsafe-001', 2: '5'} ],
+          is_warranty_checked: false,
+          order_id: '',
+          page_checkout: document.location.href,
+          offer: new URL(document.location.href).searchParams.get('offer'),
+          affiliate: new URL(document.location.href).searchParams.get('affiliate')
+        });
+      },
+      paypalOnApprove: paypalOnApprove,
+      totalSkum () {
+        const totalSkus = this.accessoryList.map(it => [it.name, it.quantity]);
+        return totalSkus;
+      },
       totalPrice () {
         const allAccessories = this.accessoryList.map(it => it.price * it.quantity)
         const total = allAccessories.reduce((acc, current) => acc + current)
