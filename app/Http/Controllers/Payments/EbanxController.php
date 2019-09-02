@@ -92,7 +92,7 @@ class EbanxController extends Controller
 	$hashCodes = explode(',', $hashCodes);
 		
 	if ($operation == 'payment_status_change' && $notification_type == 'update' && $hashCodes) {
-	    $this->ebanxService->updateProductStatuses($hashCodes);
+	    $this->ebanxService->updateTxnStatuses($hashCodes);
 	}
 	
 	return ['success' => true];

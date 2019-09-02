@@ -296,27 +296,26 @@ class EbanxService
      *
      * @param type $hashCodes
      */
-    public function updateProductStatuses($hashCodes)
+    public function updateTxnStatuses($hashCodes)
     {
 	foreach ($hashCodes as $hash) {
 	    //find order product by hash
-	    $order = OdinOrder::where(['products.txn_hash' => $hash])->first();
+	    $order = OdinOrder::where(['txn.hash' => $hash])->first();
 
 	    $res = json_decode($this->sendQueryHash($hash), true);
 	    if(!empty($res['payment']['status'])) {
 		$status = $res['payment']['status'];
-		$products = $order->products;
-		foreach ($products as &$p) {
-		    if($p['txn_hash'] == $hash) {
+		$txns = [];
+		if (!empty($order->txns)) {
+		    $txns = $order->txns ;
+		}
+		foreach ($txns as &$t) {
+		    if($t['hash'] == $hash) {
 			if ($status == 'CO') {
-			    $p['is_txn_approved'] = true;
+			    $t['status'] = 'approved';
 			}
 
-			if ($status == 'CA') {
-			    $p['is_txn_approved'] = false;
-			}
-
-			$order->products = $products;
+			$order->txnx = $txns;
 			$order->save();
 			break;
 		    }
