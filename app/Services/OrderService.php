@@ -85,6 +85,11 @@ class OrderService
         if (!empty($data['phone']) && !in_array($data['phone'], $model->phones)) {
             $model->phones = array_merge($model->phones, [$data['phone']]);
         }
+	
+	// doc_ids
+	if (!empty($data['doc_id']) && !in_array($data['doc_id'], $model->doc_ids)) {
+            $model->doc_ids = array_merge($model->doc_ids, [$data['doc_id']]);
+        }
 
         // addresses
         $address = [

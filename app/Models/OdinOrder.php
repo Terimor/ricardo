@@ -28,21 +28,24 @@ class OdinOrder extends Model
         'total_price' => null, // * float full price in local currency (with warranty)
         'total_price_usd' => null, // * float, full USD price (with warranty)
         'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
-        'payment_provider' => null, // enum string
-        'payment_method' => null, // enum string
-        'payer_id' => null, // string, payer ID in payment provider system
+        //'payment_provider' => null, // enum string
+        //'payment_method' => null, // enum string
+        //'payer_id' => null, // string, payer ID in payment provider system
+	'installments' => 0,
         'customer_email' => null, // * string
         'customer_first_name' => null, // * string
         'customer_last_name' => null, // * string
         'customer_phone' => null, // * string
+	'customer_doc_id' => null, // * string, document number like passport
         'language' => null, // enum string
         'ip' => null, // string
-        'shipping_country' => null, // * enum string
-        'shipping_zip' => null, // * string
-        'shipping_state' => null, // * string
-        'shipping_city' => null, // * string
-        'shipping_street' => null, // * string
-        'shipping_street2' => null, // * string        
+        'shipping_country' => null, // enum string
+        'shipping_zip' => null, // string
+        'shipping_state' => null, // string
+        'shipping_city' => null, // string
+        'shipping_street' => null, // string
+        'shipping_street2' => null, // string     
+	'shipping_apt' => null, // string
         'warehouse_id' => null,
         /**
          * collection
@@ -62,27 +65,32 @@ class OdinOrder extends Model
          *      "warranty_price" => null, // float,
          *      "warranty_price_usd" => null, // float,calculated from local price using exchange rate
          *      "is_main" => false, //bool, product is main, not upsells and not accessories
-         *      'txn_hash' => null, // string
-         *      'txn_value' => null, // float decreases after refund
-         *      'is_txn_captured' => false, // bool, default false, txn is authorized and captured
-         *      'is_txn_approved' => false, // bool
-         *      'txn_charged_back' => false, // bool
-         *      'txn_fee' => null, // float, provider's txn fee
-         *      'is_exported' => false, //bool, default false,
-         *      'is_plus_one' => false, //bool,default false, upsells product the same as main product
+         *      'is_exported' => false, // bool,
+         *      'is_plus_one' => false, // bool, upsells product the same as main product
+         *      'is_upsells' => false, // bool, product was bought as upsells
          *      'price_set' => null,  // string,
-         *      'failed_txns'  => [], // array of strings, array of failed txns' hashes
+         *      'txn_hash' => null, // string, //link to Txn hash of transaction
          * ]
          */
         'products' => [],
+	'txns' => [ // — array of objects,
+//	    'hash' => null, // string, //link to Txn hash
+//	    'value' => null, float, //decreases after refund
+//	    'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
+//	    'is_charged_back' => false, // — bool, default false,
+//	    'fee' => null,// — float, //provider's txn fee
+//	    'payment_provider' => '', // — enum string,
+//	    'payment_method' => '', // — enum string,
+//	    'payer_id' => '', // — string, //payer ID in payment provider system
+	],
         'ipqualityscore' => null, // object
         'page_checkout' => null, // string full checkout page address with parameters
-        'flagged' => false, // bool, default false
+        'is_flagged' => false, // bool, default false
         'offer' => null, // string
         'affiliate' => null, // string
         'is_refunding' => false, // bool, default false, refund requested, processing        
         'is_refunded' => false, // bool, order was fully or partially refunded
-        'qc_passed' => false, // bool, additional control of order's correctness
+        'is_qc_passed' => false, // bool, additional control of order's correctness
     ];
 
     const STATUS_NEW = 'new';
