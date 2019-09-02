@@ -96,7 +96,11 @@ class SiteController extends Controller
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
 	$product = $productService->resolveProduct($request, true);
 	
-        return view('thankyou', compact('location', 'product'));
+	$setting = Setting::whereIn('key',[
+	    'instant_payment_paypal_client_id',
+	])->pluck('value', 'key');
+	
+        return view('thankyou', compact('location', 'product' , 'setting'));
     }
 
     /**
