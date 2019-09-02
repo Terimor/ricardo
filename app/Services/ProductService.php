@@ -44,4 +44,28 @@ class ProductService
         return $product;
         //abort(404);
     }
+    
+    /**
+     * 
+     * @param type $productId
+     */
+    public function getUpsellProductById(OdinProduct $product, $productId)
+    {	
+	// check upsell product by ID
+	$productUpsells = !empty($product->upsells) ? $product->upsells : null;
+	if (!$productUpsells) {
+	    logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'products' => $product->toArray()]);
+	    abort(404);
+	}
+	
+	$upsell = null;
+	foreach ($productUpsells as $uproduct) {
+	    if ($uproduct['product_id'] == $productId) {
+		$upsell = OdinProduct::where('_id', $productId)->first();
+	    }
+	}
+	
+	echo '<pre>'; var_dump($upsell); echo '</pre>'; exit;
+	echo '<pre>'; var_dump($product); echo '</pre>'; exit;
+    }
 }

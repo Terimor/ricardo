@@ -1025,7 +1025,7 @@
                 "shasum": ""
             },
             "require": {
-                "ocramius/package-versions": "^1.2.0",
+                "7/package-versions": "^1.2.0",
                 "php": "^7.0"
             },
             "require-dev": {

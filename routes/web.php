@@ -49,6 +49,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/payments/three', 'Payments\EbanxController@sendTransaction');
     $router->post('/payments/ebanx-notification', 'Payments\EbanxController@notification');
 
+    $router->get('/upsell-product/{productId}', 'ProductController@getUpsellProduct');
 
 
     // test route

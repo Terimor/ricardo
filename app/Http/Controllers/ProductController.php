@@ -40,4 +40,14 @@ class ProductController extends Controller
         ]);
         return $product;
     }
+    
+    public function getUpsellProduct(string $productId, ProductService $productService)
+    {
+	$product = $productService->resolveProduct(request());
+	
+	$upsell = $productService->getUpsellProductById($product, $productId);
+	
+	
+	return ['product' => $product, 'usell' => $upsell];
+    }
 }
