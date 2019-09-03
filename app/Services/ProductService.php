@@ -77,9 +77,9 @@ class ProductService
 	    abort(404);
 	}
 	
-	if ($fixedPrice && $fixedPrice < 4.99) {
-	    $fixedPrice = 4.99;
-	    logger()->error("UPSELL Price < 4.99", ['product' => $product->toArray()]);
+	if ($fixedPrice && $fixedPrice < 4.5) {
+	    $fixedPrice = 4.5;
+	    logger()->error("UPSELL Price < 4.5", ['product' => $product->toArray()]);
 	}
 	
 	$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);

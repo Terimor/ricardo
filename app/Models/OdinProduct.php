@@ -313,9 +313,9 @@ class OdinProduct extends Model
 	    $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
 	    if ($discountPrice) {
 		$discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
-		if ($discountPrice < 4.99) {
-		    logger()->error("Discount Price < 4.99", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
-		    $discountPrice = 4.99;
+		if ($discountPrice < 4.5) {
+		    logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
+		    $discountPrice = 4.5;
 		}
 	    }
 	    

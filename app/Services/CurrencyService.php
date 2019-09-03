@@ -50,10 +50,10 @@ class CurrencyService
         $localeString = \Utils::getCultureCode($ip, $countryCode);
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
-	// if price < 4.99 set minimum price = 4.99
-	if ($price < 4.99) {
-	    logger()->error("Price < 4.99", ['price' => $price]);
-	    $price = 4.99;	    
+	// if price < 4.5 set minimum price = 4.5
+	if ($price < 4.5) {
+	    logger()->error("Price < 4.5", ['price' => $price]);
+	    $price = 4.5;	    
 	}
         $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
 
