@@ -96,7 +96,7 @@
               :paymentForm="form"
               :countryCode="checkoutData.countryCode"
               :isBrazil="checkoutData.countryCode === 'BR'"
-              :countryList="mockData.countryList"
+              :countryList="setCountryList"
               @setPromotionalModal="setPromotionalModal"
               @setAddress="setAddress"/>
           </transition>
@@ -169,7 +169,7 @@
                   class="thanks">No, thanks...</button>
           </div>
         </div>
-      </el-dialog>
+    </el-dialog>
   </div>
 </template>
 
@@ -244,29 +244,6 @@ export default {
             newPrice: 34.99,
           }
         ],
-        countryList: [
-          {
-            value: 'US',
-            text: 'USA',
-            label: 'USA',
-          }, {
-            value: 'RU',
-            text: 'Russia',
-            label: 'Russia',
-          }, {
-            value: 'UA',
-            text: 'Ukraine',
-            label: 'Ukraine',
-          }, {
-            value: 'PT',
-            text: 'Portugal',
-            label: 'Portugal',
-          }, {
-            value: 'BR',
-            text: 'Brazil',
-            label: 'Brazil',
-          }
-        ],
         creditCardRadioList: [
           {
             label: 'Credit cards',
@@ -337,6 +314,20 @@ export default {
     }
   },
   computed: {
+    setCountryList () {
+      const countries = checkoutData.countries;
+      let countriesList = [];
+
+      Object.keys(countries).map(function(key) {
+        countriesList.push({
+          value: key.toUpperCase(),
+          text: countries[key],
+          label: countries[key]
+        });
+      });
+
+      return countriesList;
+    },
     codeOrDefault () {
       return this.queryParams.product || this.checkoutData.product.skus[0].code;
     },
