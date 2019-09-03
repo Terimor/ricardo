@@ -321,7 +321,9 @@ class OdinProduct extends Model
 	    
 	    // quantity loop
 	    for ($i=1; $i <= $maxQuantity; $i++) {
-		$this->attributes['upsellPrices'][$i] = CurrencyService::getLocalPriceFromUsd($discountPrice * $i, $currency);;
+		$price = CurrencyService::getLocalPriceFromUsd($discountPrice * $i, $currency);
+		$this->attributes['upsellPrices'][$i]['value'] = $price['price'];
+		$this->attributes['upsellPrices'][$i]['value_text'] = $price['price_text'];
 	    }
 	}
 	
