@@ -813,7 +813,7 @@ export default {
       width: 100%;
       padding: 0 !important;
       height: auto !important;
-
+      margin-bottom: 0;
 
       .label-container-radio {
         background-color: transparent !important;
