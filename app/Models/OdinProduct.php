@@ -14,6 +14,7 @@ class OdinProduct extends Model
 {
     const QUANTITY_PRICES = 5;
     protected $images;
+    protected $upsellPrices;
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
@@ -132,6 +133,8 @@ class OdinProduct extends Model
 	    //iteration by items quantity for selected price set
             for ($quantity = 1; $quantity <= self::QUANTITY_PRICES; $quantity++) {
                 if (!empty($priceSet[$quantity]['value'])) {
+		    // val for calculate upsell
+		    $value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
                     $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency);
                     $value[$key][$quantity]['value'] = $price['price'];
                     $value[$key][$quantity]['value_text'] = $price['price_text'];
@@ -273,5 +276,49 @@ class OdinProduct extends Model
     {
 	$billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
 	return "*{$billingDescriptorPrefix}*{$value}";
+    }
+    
+    /**
+     * Set upsell prices
+     * @param float $fixedPrice
+     * @param float $discountPercent
+     * @param int $maxQuantity
+     * @return boolean
+     */
+    public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
+    {
+	$currency = CurrencyService::getCurrency();
+	
+	if (!$maxQuantity) {
+	    $maxQuantity = self::QUANTITY_PRICES;
+	}
+	
+	if (!$fixedPrice && !$discountPercent) {	    
+	    return false;
+	}
+	
+	if ($fixedPrice) {
+	    // quantity loop
+	    for ($i=1; $i <= $maxQuantity; $i++) {
+		$this->attributes['upsellPrices'][$i] = CurrencyService::getLocalPriceFromUsd($fixedPrice*$i, $currency);;
+	    }
+	} else if ($discountPercent) {
+	    // get price from 1 qty
+	    $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
+	    if ($discountPrice) {
+		$discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
+		if ($discountPrice < 4.99) {
+		    logger()->error("Discount Price < 4.99", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
+		    $discountPrice = 4.99;
+		}
+	    }
+	    
+	    // quantity loop
+	    for ($i=1; $i <= $maxQuantity; $i++) {
+		$this->attributes['upsellPrices'][$i] = CurrencyService::getLocalPriceFromUsd($discountPrice * $i, $currency);;
+	    }
+	}
+	
+	return true;
     }
 }

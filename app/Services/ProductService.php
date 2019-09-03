@@ -49,23 +49,41 @@ class ProductService
      * 
      * @param type $productId
      */
-    public function getUpsellProductById(OdinProduct $product, $productId)
+    public function getUpsellProductById(OdinProduct $product, string $productId, $maxQuantity = 5)
     {	
 	// check upsell product by ID
 	$productUpsells = !empty($product->upsells) ? $product->upsells : null;
 	if (!$productUpsells) {
-	    logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'products' => $product->toArray()]);
+	    logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'product' => $product->toArray()]);
 	    abort(404);
 	}
 	
 	$upsell = null;
 	foreach ($productUpsells as $uproduct) {
 	    if ($uproduct['product_id'] == $productId) {
+		$fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
+		$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
 		$upsell = OdinProduct::where('_id', $productId)->first();
 	    }
 	}
 	
-	echo '<pre>'; var_dump($upsell); echo '</pre>'; exit;
-	echo '<pre>'; var_dump($product); echo '</pre>'; exit;
+	if (!$upsell) {
+	    logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'product' => $product->toArray()]);
+	    abort(404);
+	}
+	
+	if (!$fixedPrice && !$discountPercent) {
+	    logger()->error("fixedPrice and discountPercent is null for productID {$product->id}", ['product' => $product, 'upsell_id' => $productId]);
+	    abort(404);
+	}
+	
+	if ($fixedPrice && $fixedPrice < 4.99) {
+	    $fixedPrice = 4.99;
+	    logger()->error("UPSELL Price < 4.99", ['product' => $product->toArray()]);
+	}
+	
+	$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
+	
+	return $upsell;
     }
 }
