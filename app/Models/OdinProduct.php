@@ -289,7 +289,13 @@ class OdinProduct extends Model
     {
 	$currency = CurrencyService::getCurrency();
 	
+	// if null set quantity 1
 	if (!$maxQuantity) {
+	    $maxQuantity = 1;
+	}
+	
+	// max 5
+	if ($maxQuantity > self::QUANTITY_PRICES) {
 	    $maxQuantity = self::QUANTITY_PRICES;
 	}
 	
