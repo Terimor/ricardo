@@ -46,7 +46,7 @@ class ProductService
     }
     
     /**
-     * 
+     * Get upsell product by ID
      * @param type $productId
      */
     public function getUpsellProductById(OdinProduct $product, string $productId, $maxQuantity = 5)
