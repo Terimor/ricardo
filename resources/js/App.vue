@@ -83,7 +83,7 @@ export default {
     }
   },
   mounted () {
-    this.initial()
+    this.initial();
   }
 }
 </script>
