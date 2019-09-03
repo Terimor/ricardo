@@ -24,14 +24,41 @@
           <div class="col-sm-7 col-md-7">
             <div class="column-with-head">
               <div class="col-content" id="form-steps">
+
                 <payment-form-vmc4
+                    :installments="form.installments"
                     :checkoutData="checkoutData"
                     :countryList="countryList"
                     @productImageChanged="setProductImage"
+                    @setWarrantyPriceText="setWarrantyPriceText"
                     :cardNames="cardNames"
                     :list="purchase"
                     :variantList="variantList"
-                    @onSubmit="submit"/>
+                    @onSubmit="submit">
+                    <template slot="installment">
+                      <select-field
+                        v-if="withInstallments"
+                        label="Please Select Amount Of Installments"
+                        popperClass="emc1-popover-variant"
+                        :list="installmentsList"
+                        v-model="form.installments"
+                        @input="getImplValue"
+                      />
+                    </template>
+                    <template slot="warranty">
+                      <transition name="el-zoom-in-top">
+                        <button v-show="warrantyPriceText" id="warranty-field-button">
+                          <label for="warranty-field" class="label-container-checkbox">
+                            3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+                            <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
+                            <span class="checkmark"></span>
+                          </label>
+                          <img src="/images/best-saller.png" alt="">
+                          <i class="fa fa-arrow-right slide-right"></i>
+                        </button>
+                      </transition>
+                    </template>
+                </payment-form-vmc4>
               </div>
               <div class="secure-pay-content">
                 <div class="logos-content">
@@ -63,6 +90,9 @@
 		props: ['data'],
 		data() {
 			return {
+        ImplValue: null,
+        radioIdx: null,
+        warrantyPriceText: null,
 				billing_descriptor: checkoutData.product.billing_descriptor,
 				productImage: null,
 				countryList: [
@@ -116,23 +146,85 @@
 						imgUrl: '/images/cc-icons/payPal.png'
 					}
 				],
-				form: {},
+				form: {
+          isWarrantyChecked: false,
+          installments: 1,
+        },
 				purchase: [],
-				variantList: []
+        variantList: [],
+        installmentsList: [
+          {
+            label: 'Pay full amount now',
+            text: 'Pay full amount now',
+            value: 1,
+          }, {
+            label: 'Pay in 3 installments',
+            text: 'Pay in 3 installments',
+            value: 3,
+          }, {
+            label: 'Pay in 6 installments',
+            text: 'Pay in 6 installments',
+            value: 6,
+          }
+        ]
 			}
-		},
+    },
+    watch: {
+      'form.installments' (val) {
+          this.setPurchase({
+            variant: this.form.variant,
+            installments: val,
+          })
+      },
+    },
 		computed: {
+      fullAmount () {
+        return this.form.installments == 1;
+      },
 			checkoutData() {
 				return checkoutData
 			},
 			productData() {
 				return checkoutData.product
 			},
-
+      withInstallments () {
+        return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
+      },
+      quantityOfInstallments () {
+        const { installments } = this.form
+        return installments && installments !== 1 ? installments + '× ' : ''
+      }
 		},
 		methods: {
 			submit(val) {
 				console.log(val)
+      },
+      getImplValue(value) {
+        this.implValue = value;
+        if (this.radioIdx) this.changeWarrantyValue();
+      },
+      setWarrantyPriceText(radioIdx) {
+        this.radioIdx = Number(radioIdx);
+        this.changeWarrantyValue();
+      },
+      changeWarrantyValue () {
+        const prices = this.checkoutData.product.prices;
+        this.implValue = this.implValue || 3;
+
+        switch(this.implValue) {
+          case 1:
+            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
+            break;
+          case 3:
+            this.warrantyPriceText = prices[this.radioIdx].installments3_warranty_price_text;
+            break;
+          case 6:
+            this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
+            break;
+          default:
+            console.log('NOTHING');
+            break;
+        }
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
@@ -164,7 +256,15 @@
 			this.setPurchase({
 				variant: this.form.variant,
 				installments: 1,
-			});
+      });
+      
+      if (this.withInstallments) {
+        // set default installments
+        this.form.installments =
+          this.checkoutData.countryCode === 'BR' ? 3 :
+          this.checkoutData.countryCode === 'MX' ? 1 :
+          1
+      }
 
 			try {
 				this.productImage = checkoutData.product.skus[0].images[0];
@@ -256,6 +356,64 @@
             }
           }
         }
+      }
+    }
+
+    #warranty-field-button {
+      width: 100%;
+      position: relative;
+      height: 95px;
+      margin-top: 22px;
+      background-color: rgba(216, 216, 216, .71);
+      border-radius: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      outline: none;
+
+      &:hover {
+        background-color: rgba(191,191,191,.71);
+        background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
+      }
+
+      label[for=warranty-field] {
+        font-weight: bold;
+        line-height: 1.8;
+        text-align: left;
+        text-transform: capitalize;
+        font-size: 16px;
+        padding: 23px 70px 30px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        .checkmark {
+          top: 20px;
+          left: 40px;
+        }
+      }
+
+      input[type=checkbox] {
+        position: absolute;
+        top: 23px;
+        left: 45px;
+      }
+
+      & > img {
+        position: absolute;
+        width: 30px;
+        height: auto;
+        top: -7px;
+        right: -7px;
+      }
+
+      & > .fa-arrow-right {
+        position: absolute;
+        font-size: 18px;
+        color: #dc003a;
+        top: 20px;
+        left: 10px;
+        animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
       }
     }
   }

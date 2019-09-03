@@ -86,20 +86,6 @@
       }
     },
     computed: {
-      paypalCreateOrder () {
-        return paypalCreateOrder({
-          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-          sku_code: 'dogsafe-001',
-          sku_quantity: 5,
-          // skus: [ {1: 'dogsafe-001', 2: '5'} ],
-          is_warranty_checked: false,
-          order_id: '',
-          page_checkout: document.location.href,
-          offer: new URL(document.location.href).searchParams.get('offer'),
-          affiliate: new URL(document.location.href).searchParams.get('affiliate')
-        });
-      },
-      paypalOnApprove: paypalOnApprove,
       totalSkum () {
         const totalSkus = this.accessoryList.map(it => [it.name, it.quantity]);
         return totalSkus;
@@ -120,6 +106,20 @@
       }
     },
     methods: {
+      paypalCreateOrder () {
+        return paypalCreateOrder({
+          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+          sku_code: 'dogsafe-001',
+          sku_quantity: 5,
+          // skus: [ {1: 'dogsafe-001', 2: '5'} ],
+          is_warranty_checked: false,
+          order_id: '',
+          page_checkout: document.location.href,
+          offer: new URL(document.location.href).searchParams.get('offer'),
+          affiliate: new URL(document.location.href).searchParams.get('affiliate')
+        });
+      },
+      paypalOnApprove: paypalOnApprove,
       goto (url) {
         window.location.href = url;
       },

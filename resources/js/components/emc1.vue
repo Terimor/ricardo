@@ -41,6 +41,8 @@
 
             <h2>Step 2: Please select your variant</h2>
 
+            <!-- TODO: check if this is useless, remove it:
+            warrantyPriceText="setWarrantyPriceText()"  -->
             <select-field
               popperClass="emc1-popover-variant"
               v-model="form.variant"

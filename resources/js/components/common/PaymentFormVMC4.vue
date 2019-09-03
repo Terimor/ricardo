@@ -7,10 +7,14 @@
           <span>Choose your Deal</span>
         </h4>
 
+
         <div class="step step-1" v-if="step === 1">
+          <slot name="installment" />
+
           <radio-button-group
               :withCustomLabels="true"
               v-model="form.deal"
+              @input="setWarrantyPriceText"
               :list="list">
             <radio-button-item-deal
                 :showPerUnitPrice=false
@@ -25,6 +29,7 @@
                 @checkDeal="setBackgroundForChecked"
                 @finish-render="setBackgroundForChecked(form.deal)"/>
           </radio-button-group>
+
           <h2>Please select your variant</h2>
           <select-field
               popperClass="smc7-popover-variant"
@@ -33,6 +38,8 @@
                 placeholder: 'Variant'
               }"
               :list="variantList"/>
+
+          <slot name="warranty" />
         </div>
 
         <div class="step step-2" v-if="step === 2">
@@ -289,7 +296,10 @@
 					paymentType: null,
 				}
 			}
-		},
+    },
+    mounted() {
+      this.setWarrantyPriceText(this.form.deal)
+    },
 		computed: {
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
@@ -314,6 +324,9 @@
 			},
 		},
 		methods: {
+      setWarrantyPriceText(value) {
+        this.$emit('setWarrantyPriceText', value)
+      },
 			submit() {
 				this.$v.form.$touch();
 				this.$emit('onSubmit', this.form)
