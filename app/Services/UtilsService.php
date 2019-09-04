@@ -405,4 +405,14 @@ class UtilsService
 	return in_array(strtolower(trim($country_code)), $eu);
     }
 
+    public static function getPayPalCurrencyCode()
+    {
+        $local_currency = optional(CurrencyService::getCurrency())->code;
+        if (!in_array($local_currency, PayPalService::getSupportedCurrenciesCodes())) {
+            $local_currency = PayPalService::DEFAULT_CURRENCY;
+        }
+
+        return $local_currency;
+    }
+
 }

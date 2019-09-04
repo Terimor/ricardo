@@ -67,7 +67,7 @@ class PayPalService
 
 
 //TODO: remove
-$local_currency = 'USD';
+$local_currency = UtilsService::getPayPalCurrencyCode();
 
 
 
@@ -329,6 +329,19 @@ $local_currency = 'USD';
     }
 
     /**
+     * Returns PayPal REST Payments API supported currencies
+     *
+     * @return array
+     */
+    public static function getSupportedCurrenciesCodes()
+    {
+        return [
+            'AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'INR', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD',
+            'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD'
+        ];
+    }
+
+    /**
      * @param $paypal_order
      * @return float|int
      */
@@ -477,8 +490,8 @@ $local_currency = 'USD';
             }
         } else {
             return [
-                'price' => $product->prices[$request->sku_quantity]['value'],
-                'code' => $product->prices['currency'],
+                'price' => CurrencyService::getLocalPriceFromUsd($product->prices[$request->sku_quantity]['value'])['price'],
+                'code' => UtilsService::getPayPalCurrencyCode(),
                 'exchange_rate' => $product->prices['exchange_rate'],
             ];
         }
