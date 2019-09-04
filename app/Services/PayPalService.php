@@ -62,17 +62,12 @@ class PayPalService
         $product = $this->findProductBySku($request->sku_code);
         $priceData = $this->getPrice($request, $product, $upsell_order);
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
+
+        if (!in_array($priceData['code'], self::getSupportedCurrenciesCodes())) {
+            die('123');
+        }
+
         $local_currency = $priceData['code'];
-
-
-
-//TODO: remove
-$local_currency = UtilsService::getPayPalCurrencyCode();
-
-
-
-
-
         $local_price = $priceData['price'];
         $total_price = $price;
         $total_local_price = $local_price;
@@ -118,8 +113,6 @@ $local_currency = UtilsService::getPayPalCurrencyCode();
         ];
 
         $response = $this->payPalHttpClient->execute($pp_request);
-
-        logger()->info(print_r($response, true));
 
         if ($response->statusCode === 201) {
             $paypal_order = $response->result;
@@ -484,8 +477,8 @@ $local_currency = UtilsService::getPayPalCurrencyCode();
             }
         } else {
             return [
-                'price' => CurrencyService::getLocalPriceFromUsd($product->prices[$request->sku_quantity]['value'])['price'],
-                'code' => UtilsService::getPayPalCurrencyCode(),
+                'price' => $product->prices[$request->sku_quantity]['value'],
+                'code' =>  $product->prices['currency'],
                 'exchange_rate' => $product->prices['exchange_rate'],
             ];
         }

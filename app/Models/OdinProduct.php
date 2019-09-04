@@ -267,7 +267,7 @@ class OdinProduct extends Model
     {
         return !empty($this->upsell_hero_image_id) ? $this->images[$this->upsell_hero_image_id] : null;
     }
-    
+
     /**
      * Getter billing descriptor
      * @param type $value
@@ -277,7 +277,7 @@ class OdinProduct extends Model
 	$billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
 	return "*{$billingDescriptorPrefix}*{$value}";
     }
-    
+
     /**
      * Set upsell prices
      * @param float $fixedPrice
@@ -288,21 +288,21 @@ class OdinProduct extends Model
     public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
     {
 	$currency = CurrencyService::getCurrency();
-	
+
 	// if null set quantity 1
 	if (!$maxQuantity) {
 	    $maxQuantity = 1;
 	}
-	
+
 	// max 5
 	if ($maxQuantity > self::QUANTITY_PRICES) {
 	    $maxQuantity = self::QUANTITY_PRICES;
 	}
-	
-	if (!$fixedPrice && !$discountPercent) {	    
+
+	if (!$fixedPrice && !$discountPercent) {
 	    return false;
 	}
-	
+
 	if ($fixedPrice) {
 	    // quantity loop
 	    for ($i=1; $i <= $maxQuantity; $i++) {
@@ -318,7 +318,7 @@ class OdinProduct extends Model
 		    $discountPrice = 4.5;
 		}
 	    }
-	    
+
 	    // quantity loop
 	    for ($i=1; $i <= $maxQuantity; $i++) {
 		$price = CurrencyService::getLocalPriceFromUsd($discountPrice * $i, $currency);
@@ -326,7 +326,7 @@ class OdinProduct extends Model
 		$this->attributes['upsellPrices'][$i]['value_text'] = $price['price_text'];
 	    }
 	}
-	
+
 	return true;
     }
 }

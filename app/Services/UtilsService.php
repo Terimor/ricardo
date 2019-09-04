@@ -324,9 +324,10 @@ class UtilsService
      */
     public static function getCultureCode(string $ip = null, $countryCode = null) : string
     {
-
         if (!$countryCode) {
-
+//            $ip = '187.162.193.051'; // Mexico
+            $ip = '89.184.75.89'; // Ukraine
+            $ip = '103.79.142.90'; //Vietnam
             if ($ip) {
                 $location = \Location::get($ip);
             } else {
@@ -357,6 +358,9 @@ class UtilsService
      */
     public static function getLocationCountryCode(string $ip = null) : string
     {
+//        $ip = '187.162.193.051';
+        $ip = '89.184.75.89'; // Ukraine
+        $ip = '103.79.142.90'; // Vietnam
         if ($ip) {
             $location = \Location::get($ip);
         } else {

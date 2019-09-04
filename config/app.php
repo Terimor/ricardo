@@ -177,12 +177,11 @@ return [
 
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Jenssegers\Mongodb\MongodbQueueServiceProvider::class,
-        
+
         Stevebauman\Location\LocationServiceProvider::class,
         Sentry\Laravel\ServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
-	Jenssegers\Mongodb\Session\SessionServiceProvider::class
-
+        Jenssegers\Mongodb\Session\SessionServiceProvider::class,
     ],
 
     /*
