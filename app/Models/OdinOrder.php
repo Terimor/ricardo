@@ -28,6 +28,7 @@ class OdinOrder extends Model
         'total_price' => null, // * float full price in local currency (with warranty)
         'total_price_usd' => null, // * float, full USD price (with warranty)
         'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
+	'shop_currency' => null,
         //'payment_provider' => null, // enum string
         //'payment_method' => null, // enum string
         //'payer_id' => null, // string, payer ID in payment provider system
@@ -134,6 +135,10 @@ class OdinOrder extends Model
         self::creating(function($model) {
             if (!isset($model->number) || !$model->number) {
                 $model->number = !empty($this->shipping_country) ? self::generateOrderNumber($this->shipping_country) : self::generateOrderNumber();
+            }
+	    
+	    if (!isset($model->shop_currency) || !$model->shop_currency) {
+                $model->shop_currency = !empty($this->currency) ? $this->currency : 'USD';
             }
         });
     }
