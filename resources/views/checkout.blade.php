@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('script')
 <script type="text/javascript">
     const bluesnapCredential = {
       'Authorization': 'Basic {{base64_encode(env('BLUESNAP_API_KEY').':'.env('BLUESNAP_API_PASS'))}}',
@@ -11,6 +12,9 @@
       productImage: '{{$product->logo_image}}',
     }
 </script>
+<script src="{{ asset('js/app.js') }}" defer></script>
+@endsection
+
 @section('content')
 @section('title', $product->skus[0]['name'] . ' Checkout')
 

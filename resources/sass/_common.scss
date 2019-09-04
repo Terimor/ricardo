@@ -71,11 +71,12 @@ header {
     background-image: url(/images/social/twitter-icon.png);
 }
 
-[v-clock] {
+[v-cloak] {
   display: none;
 }
 
 .green-button-animated {
+  display: block;
   cursor: pointer;
   bottom: 0;
   box-shadow: rgb(180, 181, 181) 2px 2px 2px 0;

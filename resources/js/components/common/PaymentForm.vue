@@ -1,6 +1,8 @@
 <template>
     <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
-        <h2>Step 4: Contact Information</h2>
+        <h2>
+          {{ firstTitle }}
+        </h2>
         <text-field
             :validation="$v.form.fname"
             validationMessage="Please enter your first name"
@@ -53,7 +55,9 @@
               autocomplete: 'off'
             }"
             v-model="paymentForm.phone"/>
-        <h2>Step 5: Delivery Address</h2>
+        <h2>
+          {{ secondTitle }}
+        </h2>
         <div class="payment-form__delivery-address">
             <text-field
                 :validation="$v.form.street"
@@ -130,7 +134,9 @@
                 v-model="paymentForm.country"/>
         </div>
         <template v-if="paymentForm.paymentType !== 'bank-payment'">
-            <h2>Step 6: Payment Details</h2>
+            <h2>
+              {{ thirdTitle }}
+            </h2>
             <select-field
                 v-if="countryCode === 'MX'"
                 :validation="$v.form.cardType"
@@ -263,7 +269,19 @@
 
   export default {
     name: 'PaymentForm',
-    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList'],
+    props: [
+      'input',
+      'countryList',
+      'isBrazil',
+      'countryCode',
+      'installments',
+      'paymentForm',
+      '$v',
+      'stateList',
+      'firstTitle',
+      'secondTitle',
+      'thirdTitle',
+    ],
     data () {
       return {
         isLoading: {
@@ -273,6 +291,11 @@
         isOpenCVVModal: false
       }
     },
+
+    mounted() {
+      console.log(this.paymentForm)
+    },
+
     computed: {
       exp () {
         const { month, year } = this.paymentForm

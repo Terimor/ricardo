@@ -15,4 +15,5 @@ mix
   .js('resources/js/app.js', 'public/js')
   .js('resources/js/views/promo.js', 'public/js/views')
   .sass('resources/sass/app.scss', 'public/css')
-  .sass('resources/sass/views/promo.scss', 'public/css');
+  .sass('resources/sass/views/promo.scss', 'public/css')
+  .version();

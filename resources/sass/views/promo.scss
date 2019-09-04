@@ -1,9 +1,15 @@
+@import '../variables';
+
 .promo {
   font-size: 15px;
   text-align: center;
 
   .promo-title-big {
     font-size: 38px;
+
+    @media screen and ($m-down) {
+      font-size: 22px;
+    }
   }
 
   .border-dashed {
@@ -70,6 +76,7 @@
     cursor: pointer;
     font-size: 16px;
     padding-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .selected-promotion {
@@ -170,15 +177,31 @@
     & .review-text {
       text-align: left;
     }
+
+    @media screen and ($m-down) {
+      .section-text {
+        text-align: center
+      }
+
+      & {
+        width: 100%;
+        flex-direction: column;
+      }
+    }
   }
 
   .reverse {
     flex-direction: row-reverse;
 
+    @media screen and ($m-down) {
+      flex-direction: column;
+    }
+
     & .review-text {
       text-align: right;
     }
   }
+
 
   .feedback-vmp41 img {
     max-width: 85%;
@@ -248,5 +271,107 @@
       max-width: 430px;
     }
   }
+
+  .select-variant {
+    background-color: #4ec314;
+    padding: 20px 0;
+    font-size: 28px;
+    color: white;
+    margin: 24px 0;
+  }
+
+  .carousel-img {
+    width: 100%;
+    height: 75px;
+    object-fit: contain;
+  }
+
+  .people-rate-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel {
+    margin: 10px 0;
+  }
+
+  .choose-product-item {
+    width: fit-content;
+    height: 210px;
+    background-color: white;
+    margin: auto;
+    display: flex;
+    justify-content: space-evenly;
+    border-radius: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+
+    .color {
+      display: flex;
+      justify-content: center;
+    }
+
+    .choose-color {
+      text-align: center;
+      padding-bottom: 8px;
+    }
+
+    .choose-product-item-color {
+      width: 200px;
+      padding-top: 0;
+      text-align: center;
+
+      &.selected-variant {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+      }
+    }
+
+    .selected-variant {
+      & .variant-name {
+        border-bottom: 1px solid red;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+    }
+
+    .red-item, .green-item, .blue-item {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      position: relative;
+
+      &.selected-variant {
+        border: 2px solid red;
+      }
+    }
+  }
+
+  .step-title {
+    font-size: 21px;
+    font-weight: 700;
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: center;
+    text-align: center;
 }
 
+  .complete-order {
+    display: block;
+    margin: 60px 0;
+    padding: 60px 0;
+    background-color: white;
+  }
+
+  .row-credit-cards-flex {
+    padding-bottom: 40px;
+    padding-top: 24px;
+    display: flex;
+    margin: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
