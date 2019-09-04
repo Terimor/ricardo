@@ -70,7 +70,10 @@ class SiteController extends Controller
                 ])->pluck('value', 'key');
         
         $countries =  \Utils::getCountries();        
-        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries'));
+	
+	$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+	
+        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
     }
 
     /**
