@@ -3,6 +3,7 @@ require('../bootstrap')
 import carousel from 'vue-owl-carousel';
 import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
+import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
 
 const promo = new Vue({
   el: "#promo",
@@ -122,21 +123,37 @@ const promo = new Vue({
   },
 
   methods: {
+    paypalCreateOrder () {
+      return paypalCreateOrder({
+        xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+        sku_code: this.codeOrDefault,
+        sku_quantity: this.form.deal,
+        is_warranty_checked: this.form.isWarrantyChecked,
+        page_checkout: document.location.href,
+        offer: new URL(document.location.href).searchParams.get('offer'),
+        affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+      })
+    },
+
+    paypalOnApprove: paypalOnApprove,
+
     setSelectedPlan(plan) {
       this.selectedPlan = plan;
 
-      console.log(this.$data)
+      this.scrollTo('.j-variant-section');
     },
 
     setSelectedVariant(variant) {
       this.selectedVariant = variant;
       this.isShownForm = true;
 
-      console.log(this.$data)
+      this.scrollTo('.j-complete-order');
     },
 
     selectPaymentMethod(method) {
       this.paymentMethod = method;
+
+      this.scrollTo('.j-payment-form');
     },
 
     setAddress (address) {
@@ -145,5 +162,11 @@ const promo = new Vue({
         ...address
       }
     },
+
+    scrollTo(selector) {
+      setTimeout(() => {
+        document.querySelector(selector).scrollIntoView()
+      }, 1)
+    }
   }
 })

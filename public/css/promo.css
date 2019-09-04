@@ -7,14 +7,18 @@
   font-size: 38px;
 }
 
-@media screen and (max-width: 959px) {
+@media screen and (max-width: 1119px) {
   .promo .promo-title-big {
-    font-size: 22px;
+    font-size: 27px;
   }
 }
 
+.promo .header-products {
+  font-size: 24px;
+}
+
 .promo .border-dashed {
-  border: 5px dashed red;
+  border: 5px dashed #e3342f;
   max-width: 1100px;
   padding: 15px;
   margin: 0 auto;
@@ -23,7 +27,7 @@
 }
 
 .promo .text-red {
-  color: red;
+  color: #e3342f;
 }
 
 .promo .heading-battery {
@@ -32,6 +36,7 @@
 }
 
 .promo .offer {
+  text-transform: uppercase;
   margin: 15px 0;
 }
 
@@ -50,7 +55,7 @@
 
 .promo .go-to-selector {
   text-decoration: none;
-  color: red;
+  color: #e3342f;
 }
 
 .promo .price {
@@ -81,7 +86,7 @@
 }
 
 .promo .selected-promotion {
-  border: 3px solid #598be8;
+  border: 3px solid #3490dc;
 }
 
 .promo .selected-promotion .product-info {
@@ -93,15 +98,15 @@
 }
 
 .promo .card.starter:hover {
-  border: 3px solid #6fb1e1;
+  border: 3px solid #3490dc;
 }
 
 .promo .card.most-profitable:hover {
-  border: 3px solid #fbaf5d;
+  border: 3px solid #f6993f;
 }
 
 .promo .card.most-popular:hover {
-  border: 3px solid #4ec314;
+  border: 3px solid #38c172;
 }
 
 .promo .card .heading {
@@ -110,16 +115,16 @@
   display: flex;
   justify-content: center;
   transform: skewX(20deg);
-  background-color: #6fb1e1;
+  background-color: #3490dc;
   color: white;
 }
 
 .promo .card .heading.most-profitable {
-  background-color: #fbaf5d;
+  background-color: #f6993f;
 }
 
 .promo .card .heading.most-popular {
-  background-color: #4ec314;
+  background-color: #38c172;
 }
 
 .promo .card .heading strong {
@@ -151,7 +156,7 @@
 }
 
 .promo .fifty-discount {
-  font-size: 21px;
+  font-size: 19px;
   margin: 2px;
 }
 
@@ -248,7 +253,7 @@
 
 .promo .footer li a {
   color: white;
-  text-decoration: none !important;
+  text-decoration: none;
   font-weight: 500;
 }
 
@@ -270,7 +275,7 @@
 }
 
 .promo .select-variant {
-  background-color: #4ec314;
+  background-color: #38c172;
   padding: 20px 0;
   font-size: 28px;
   color: white;
@@ -332,7 +337,7 @@
 }
 
 .promo .choose-product-item .selected-variant .variant-name {
-  border-bottom: 1px solid red;
+  border-bottom: 1px solid #e3342f;
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -349,7 +354,7 @@
 .promo .choose-product-item .red-item.selected-variant,
 .promo .choose-product-item .green-item.selected-variant,
 .promo .choose-product-item .blue-item.selected-variant {
-  border: 2px solid red;
+  border: 2px solid #e3342f;
 }
 
 .promo .step-title {
@@ -375,5 +380,10 @@
   margin: auto;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.promo .form-wrapper {
+  max-width: 555px;
+  margin: 0 auto;
 }
 

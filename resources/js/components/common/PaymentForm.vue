@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
+    <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }" v-if="paymentForm">
         <h2>
           {{ firstTitle }}
         </h2>
@@ -241,6 +241,17 @@
                 theme="variant-1"
                 label="Document number" />
         </template>
+        <button v-show="hasWarranty" class="warranty-field-button">
+          <label for="warranty-field" class="label-container-checkbox">
+            <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
+            3 Years Additional Warranty On Your Purchase & Accessories:
+            <input id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
+            <span class="checkmark"></span>
+          </label>
+          <span class="warranty-field-icon">
+            <img src="/images/best-saller.png" alt="">
+          </span>
+        </button>
         <button
             @click="submit"
             id="purchase-button"
@@ -281,6 +292,7 @@
       'firstTitle',
       'secondTitle',
       'thirdTitle',
+      'hasWarranty',
     ],
     data () {
       return {
@@ -293,7 +305,7 @@
     },
 
     mounted() {
-      console.log(this.paymentForm)
+      console.log(this.paymentForm, this.$v.form)
     },
 
     computed: {
@@ -784,6 +796,37 @@
             }
         }
     }
+
+    .warranty-field-button {
+    position: relative;
+    display: flex;
+    padding: 10px;
+    margin: 40px 0;
+  }
+
+  .warranty-field-icon {
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    width: 30px;
+    height: 30px;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  .label-container-checkbox {
+    position: relative;
+    margin-left: 30px;
+  }
+
+  .warranty-field-arrow {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    z-index: 2;
+  }
 
     #payment-data-form {
         display: flex;

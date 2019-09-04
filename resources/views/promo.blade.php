@@ -11,6 +11,7 @@
             countryCode: 'BR',
         }
     </script>
+
     <script src="{{ asset('js/views/promo.js') }}" defer></script>
 @endsection
 
@@ -19,7 +20,7 @@
 <div class="promo" id="promo">
     <div class="container">
 
-        <div class="border-dashed">
+        <div class="border-dashed" @click="scrollTo('.j-header-products')">
             <h2 class="heading-battery">
                 Limited offer
             </h2>
@@ -30,9 +31,9 @@
                     </span>
                     EchoBeat - Wireless 3D Sound
                 </p>
-                <div id="discount-header" class="discount1">
+                <div class="discount1">
                     <div class="price-mobile">
-                        <span id="price-element" class="bold">
+                        <span class="bold">
                             Price:
                         </span>
                         <span class="double-price bold">
@@ -54,7 +55,7 @@
             </div>
         </div>
 
-        <h2 id="header-products">Secure Your Discounted Deal Now</h2>
+        <h2 class="header-products j-header-products">Secure Your Discounted Deal Now</h2>
 
         <div class="row">
 
@@ -166,7 +167,7 @@
                         <div class="section-text stars"><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i></div>
                         <div class="section-text name">Harriet S.</div>
                     </div>
-                    <div class="col-md-9 col-sm-9 col-xs-12 nplr review-text" id="responsive-center">
+                    <div class="col-md-9 col-sm-9 col-xs-12 nplr review-text">
                         <div class="section-text title">
                             My best companions!
                         </div>
@@ -182,7 +183,7 @@
                         <div class="section-text stars"><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i></div>
                         <div class="section-text name">Adrian P.</div>
                     </div>
-                    <div class="col-md-9 col-sm-9 col-xs-12 nplr review-text" id="responsive-center">
+                    <div class="col-md-9 col-sm-9 col-xs-12 nplr review-text">
                         <div class="section-text title">
                             Better than expected
                         </div>
@@ -200,7 +201,7 @@
                         <div class="section-text stars"><i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i></div>
                         <div class="section-text name">Jack P.</div>
                     </div>
-                    <div class="col-md-9 col-sm-9 col-xs-12 nplr review-text" id="responsive-center">
+                    <div class="col-md-9 col-sm-9 col-xs-12 nplr review-text">
                         <div class="section-text title">
                             Thoroughly worth the money
                         </div>
@@ -223,7 +224,7 @@
         Please select your variant
     </div>
 
-    <div id="variant-section" class="col-choose-product">
+    <div class="col-choose-product j-variant-section" v-show="selectedPlan">
         <div class="choose-product-item">
             <div
                 class="variant-item"
@@ -298,69 +299,70 @@
         </div>
     </div>
 
-    <section class="complete-order">
+    <template v-if="selectedVariant">
+        <section class="complete-order j-complete-order">
+            <h2 class="promo-title-big">
+                Complete order
+            </h2>
 
-        <h2 class="promo-title-big">
-            Complete order
-        </h2>
+            <div class="step-title">Step 1: Pay securely with:</div>
 
-        <div class="step-title">Step 1: Pay securely with:</div>
+            <paypal-button
+                :create-order="paypalCreateOrder"
+                :on-approve="paypalOnApprove"
+                :$v="true"
+            >Buy Now Risk Free PAYPAL</paypal-button>
 
-        <div id="paypal-button-container">
+            <div>Or, you can also pay securely with:</div>
 
-        <div>Or, you can also pay securely with:</div>
+            <div class="row-credit-cards-flex">
+                <radio-button-group
+                    :with-custom-labels="true"
+                    v-model="form.paymentType"
+                >
+                    <div class="card-types">
+                        <pay-method-item
+                            v-for="item in cardNames"
+                            :key="item.value"
+                            :input="{
+                                value: item.value,
+                                imgUrl: item.imgUrl,
+                            }"
+                            :value="form.paymentType"
+                        />
+                    </div>
+                </radio-button-group>
+            </div>
 
-        <div class="row-credit-cards-flex">
-            <radio-button-group
-                :with-custom-labels="true"
-                v-model="form.paymentType"
-            >
-                <div class="card-types">
-                    <pay-method-item
-                        v-for="item in cardNames"
-                        :key="item.value"
-                        :input="{
-                            value: item.value,
-                            imgUrl: item.imgUrl,
-                        }"
-                        :value="form.paymentType"
-                    />
-                </div>
-            </radio-button-group>
-        </div>
+            <div class="form-wrapper main__deal payment-form j-payment-form">
+                <payment-form
+                    v-if="form && form.paymentType"
+                    first-title="Step 2: Contact Information"
+                    second-title="Step 3: Delivery Address"
+                    third-title="Step 4: Payment Details"
+                    :state-list="stateList"
+                    :$v="$v"
+                    :installments="form.installments"
+                    :payment-form="form"
+                    :has-warranty="true"
+                    :country-code="checkoutData.countryCode"
+                    :is-brazil="checkoutData.countryCode === 'BR'"
+                    :country-list="mockData.countryList"
+                />
+            </div>
 
-        <pre>
-            @{{ cardNames }}
-        </pre>
-
-        <div class="form-fields">
-            <payment-form
-                v-if="form && form.paymentType"
-                firstTitle="Step 4: Contact Information"
-                secondTitle="Step 5: Delivery Address"
-                thirdTitle="Step 6: Payment Details"
-                :stateList="stateList"
-                :$v="$v"
-                :installments="form.installments"
-                :paymentForm="form"
-                :countryCode="checkoutData.countryCode"
-                :isBrazil="checkoutData.countryCode === 'BR'"
-                :countryList="mockData.countryList"
-            />
-        </div>
-
-        <div class="step-title">Step 3: Delivery Address</div>
-        <div class="step-title">Step 4: Payment Details</div>
-
-    </section>
+        </section>
+    </template>
 
     <section class="scroll-to-top">
 
         <div class="container">
             <div class="people-rate-block">
                 <h1 class="bold promo-title-big">Revolutionary Sound Quality at an Unbeatable Price</h1>
-                <h2 id="people-rate" class="bold people-rate">Many audio and tech companies tried to shut down this cheaper alternative to their overpriced bluetooth headphones. However, at last, finally EchoBeat has made it to the public</h2>
-                <green-button>
+                <h2 class="bold people-rate">Many audio and tech companies tried to shut down this cheaper alternative to their overpriced bluetooth headphones. However, at last, finally EchoBeat has made it to the public</h2>
+                <green-button
+                    @click="scrollTo('.j-header-products')"
+                >
                     Click here to claim your special 50% discount - This incredible offer will NOT last
                 </green-button>
             </div>

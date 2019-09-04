@@ -7,13 +7,17 @@
   .promo-title-big {
     font-size: 38px;
 
-    @media screen and ($m-down) {
-      font-size: 22px;
+    @media screen and ($l-down) {
+      font-size: 27px;
     }
   }
 
+  .header-products {
+    font-size: 24px;
+  }
+
   .border-dashed {
-    border: 5px dashed red;
+    border: 5px dashed $red;
     max-width: 1100px;
     padding: 15px;
     margin: 0 auto;
@@ -22,7 +26,7 @@
   }
 
   .text-red {
-    color: red;
+    color: $red;
   }
 
   .heading-battery {
@@ -31,6 +35,7 @@
   }
 
   .offer {
+    text-transform: uppercase;
     margin: 15px 0;
   }
 
@@ -49,7 +54,7 @@
 
   .go-to-selector {
     text-decoration: none;
-    color: red;
+    color: $red;
   }
 
   .price {
@@ -80,7 +85,7 @@
   }
 
   .selected-promotion {
-    border: 3px solid #598be8;
+    border: 3px solid $blue;
   }
 
   .selected-promotion {
@@ -95,15 +100,15 @@
 
   .card {
     &.starter:hover {
-      border: 3px solid #6fb1e1;
+      border: 3px solid $blue;
     }
 
     &.most-profitable:hover {
-      border: 3px solid #fbaf5d;
+      border: 3px solid $orange;
     }
 
     &.most-popular:hover {
-      border: 3px solid #4ec314;
+      border: 3px solid $green;
     }
 
     .heading {
@@ -112,15 +117,15 @@
       display: flex;
       justify-content: center;
       transform: skewX(20deg);
-      background-color: #6fb1e1;
+      background-color: $blue;
       color: white;
 
       &.most-profitable {
-        background-color: #fbaf5d;
+        background-color: $orange;
       }
 
       &.most-popular {
-        background-color: #4ec314;
+        background-color: $green;
       }
 
       & strong {
@@ -155,7 +160,7 @@
   }
 
   .fifty-discount {
-    font-size: 21px;
+    font-size: 19px;
     margin: 2px;
   }
 
@@ -250,7 +255,7 @@
 
     li a {
       color: white;
-      text-decoration: none !important;
+      text-decoration: none;
       font-weight: 500;
     }
   }
@@ -273,7 +278,7 @@
   }
 
   .select-variant {
-    background-color: #4ec314;
+    background-color: $green;
     padding: 20px 0;
     font-size: 28px;
     color: white;
@@ -332,7 +337,7 @@
 
     .selected-variant {
       & .variant-name {
-        border-bottom: 1px solid red;
+        border-bottom: 1px solid $red;
         margin-left: 10px;
         margin-right: 10px;
       }
@@ -345,7 +350,7 @@
       position: relative;
 
       &.selected-variant {
-        border: 2px solid red;
+        border: 2px solid $red;
       }
     }
   }
@@ -373,5 +378,10 @@
     margin: auto;
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .form-wrapper {
+    max-width: 555px;
+    margin: 0 auto;
   }
 }

@@ -257,7 +257,7 @@
 			'list',
 			'variantList',
 			'countryCode',
-			'checkoutData'
+      'checkoutData',
 		],
 		data() {
 			return {

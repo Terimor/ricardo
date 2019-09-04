@@ -1630,12 +1630,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'PaymentForm',
-  props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList', 'firstTitle', 'secondTitle', 'thirdTitle'],
+  props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList', 'firstTitle', 'secondTitle', 'thirdTitle', 'hasWarranty'],
   data: function data() {
     return {
       isLoading: {
@@ -1646,7 +1657,7 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   mounted: function mounted() {
-    console.log(this.paymentForm);
+    console.log(this.paymentForm, this.$v.form);
   },
   computed: {
     exp: function exp() {
@@ -7316,7 +7327,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.green-button-animated {\n  cursor: pointer;\n  bottom: 0;\n  box-shadow: #b4b5b5 2px 2px 2px 0;\n  color: white;\n  height: 92px;\n  position: relative;\n  -webkit-text-decoration: none solid white;\n          text-decoration: none solid white;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  top: 0;\n  width: 100%;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  perspective-origin: 195.688px 46px;\n  transform-origin: 195.695px 46px;\n  caret-color: white;\n  background: #ff2f21 linear-gradient(#0f9b0f, #0d840d) repeat scroll 0% 0%/auto padding-box border-box;\n  border: 1px solid #0f9b0f;\n  border-radius: 3px 3px 3px 3px;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  margin: 0 0 15px;\n  outline: white none 0;\n  padding: 20px;\n  transition: all 0.2s linear 0s;\n}\n.green-button-animated:before {\n  opacity: 0;\n  font-family: FontAwesome !important;\n  content: \"\\F054\";\n  width: 0;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  border-radius: 0 50% 50% 0;\n  background-color: rgba(255, 255, 255, 0.3);\n  transition: all 0.2s linear 0s;\n}\n.green-button-animated:hover {\n  background-image: linear-gradient(to bottom, #6d4 0, #3d6c04 100%);\n}\n.green-button-animated:hover:before {\n  opacity: 1;\n  width: 30px;\n}\n.green-button-animated:after {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form {\n  display: flex;\n}\n.payment-form h2 {\n  width: 100%;\n}\n.payment-form .cvv-popup .el-dialog {\n  margin-top: 10vh !important;\n  max-width: 600px;\n}\n.payment-form .cvv-popup .el-dialog__header {\n  display: flex;\n  justify-content: center;\n}\n.payment-form .cvv-popup .el-dialog__title {\n  text-align: center;\n  font-size: 20px;\n  font-weight: 700;\n}\n.payment-form .cvv-popup__content {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.payment-form .cvv-popup__content p {\n  font-family: \"Noto Sans\", sans-serif;\n  font-size: 17px;\n  width: 100%;\n}\n.payment-form .cvv-popup__content img {\n  max-width: 300px;\n  height: auto;\n  margin: 0 auto;\n}\n.payment-form .variant-1, .payment-form .date-picker-manual {\n  margin-bottom: 10px;\n}\n.payment-form .variant-1 .fa.fa-question-circle {\n  cursor: pointer;\n}\n.payment-form__delivery-address {\n  display: flex;\n  flex-wrap: wrap;\n  width: 100%;\n}\n.payment-form__delivery-address .input-container, .payment-form__delivery-address .select {\n  order: 1;\n}\n.payment-form__delivery-address .el-loading-mask {\n  top: 26px;\n  background-color: rgba(255, 255, 255, 0.5);\n}\n.payment-form__delivery-address .el-loading-mask .el-loading-spinner {\n  margin-top: 0;\n  transform: translateY(-50%);\n}\n.payment-form.is-brazil .payment-form__delivery-address #zip-code-field {\n  order: 0;\n}\n.payment-form.is-brazil .payment-form__delivery-address .street {\n  width: 60%;\n  margin-right: 10px;\n}\n.payment-form.is-brazil .payment-form__delivery-address .number {\n  width: calc(40% - 10px);\n}\n.payment-form .first-name {\n  width: 40%;\n  margin-right: 10px;\n}\n.payment-form .last-name {\n  width: calc(60% - 11px);\n}\n.payment-form .card-number .prefix > img {\n  height: 22px;\n  width: auto;\n}\n.payment-form .card-number .prefix input:after {\n  content: \"\\F023\";\n  display: block;\n  color: #555;\n  font-family: FontAwesome !important;\n  position: absolute;\n  top: 8px;\n  right: 15px;\n}\n.payment-form .card-date {\n  display: flex;\n  flex-wrap: wrap;\n  width: 70%;\n  padding-right: 30px;\n  margin-bottom: 10px;\n}\n.payment-form .card-date.with-error > .label {\n  color: #e74c3c;\n}\n.payment-form .card-date > .label {\n  width: 100%;\n  margin-bottom: 6px;\n}\n.payment-form .card-date > div {\n  width: calc(40% - 5px);\n  margin-right: 10px;\n}\n.payment-form .card-date > div:last-child {\n  margin-right: 0;\n  width: calc(60% - 5px);\n}\n.payment-form .cvv-field {\n  width: calc(30%);\n}\n@media screen and (max-width: 767px) {\n.payment-form .el-dialog {\n    width: 90%;\n    margin-top: 15% !important;\n}\n}\n.payment-form .purchase-button-text {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  perspective-origin: 0 0;\n  transform-origin: 0 0;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-text:after {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-text:before {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-image {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  display: none;\n  max-width: 100%;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  vertical-align: middle;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-image:after {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-image:before {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n#payment-data-form {\n  display: flex;\n  flex-wrap: wrap;\n}\n@media screen and (max-width: 767px) {\n.cvv-popup .el-dialog {\n    width: 90%;\n}\n}", ""]);
+exports.push([module.i, "@charset \"UTF-8\";\n.green-button-animated {\n  cursor: pointer;\n  bottom: 0;\n  box-shadow: #b4b5b5 2px 2px 2px 0;\n  color: white;\n  height: 92px;\n  position: relative;\n  -webkit-text-decoration: none solid white;\n          text-decoration: none solid white;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  top: 0;\n  width: 100%;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  perspective-origin: 195.688px 46px;\n  transform-origin: 195.695px 46px;\n  caret-color: white;\n  background: #ff2f21 linear-gradient(#0f9b0f, #0d840d) repeat scroll 0% 0%/auto padding-box border-box;\n  border: 1px solid #0f9b0f;\n  border-radius: 3px 3px 3px 3px;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  margin: 0 0 15px;\n  outline: white none 0;\n  padding: 20px;\n  transition: all 0.2s linear 0s;\n}\n.green-button-animated:before {\n  opacity: 0;\n  font-family: FontAwesome !important;\n  content: \"\\F054\";\n  width: 0;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  border-radius: 0 50% 50% 0;\n  background-color: rgba(255, 255, 255, 0.3);\n  transition: all 0.2s linear 0s;\n}\n.green-button-animated:hover {\n  background-image: linear-gradient(to bottom, #6d4 0, #3d6c04 100%);\n}\n.green-button-animated:hover:before {\n  opacity: 1;\n  width: 30px;\n}\n.green-button-animated:after {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form {\n  display: flex;\n}\n.payment-form h2 {\n  width: 100%;\n}\n.payment-form .cvv-popup .el-dialog {\n  margin-top: 10vh !important;\n  max-width: 600px;\n}\n.payment-form .cvv-popup .el-dialog__header {\n  display: flex;\n  justify-content: center;\n}\n.payment-form .cvv-popup .el-dialog__title {\n  text-align: center;\n  font-size: 20px;\n  font-weight: 700;\n}\n.payment-form .cvv-popup__content {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n}\n.payment-form .cvv-popup__content p {\n  font-family: \"Noto Sans\", sans-serif;\n  font-size: 17px;\n  width: 100%;\n}\n.payment-form .cvv-popup__content img {\n  max-width: 300px;\n  height: auto;\n  margin: 0 auto;\n}\n.payment-form .variant-1, .payment-form .date-picker-manual {\n  margin-bottom: 10px;\n}\n.payment-form .variant-1 .fa.fa-question-circle {\n  cursor: pointer;\n}\n.payment-form__delivery-address {\n  display: flex;\n  flex-wrap: wrap;\n  width: 100%;\n}\n.payment-form__delivery-address .input-container, .payment-form__delivery-address .select {\n  order: 1;\n}\n.payment-form__delivery-address .el-loading-mask {\n  top: 26px;\n  background-color: rgba(255, 255, 255, 0.5);\n}\n.payment-form__delivery-address .el-loading-mask .el-loading-spinner {\n  margin-top: 0;\n  transform: translateY(-50%);\n}\n.payment-form.is-brazil .payment-form__delivery-address #zip-code-field {\n  order: 0;\n}\n.payment-form.is-brazil .payment-form__delivery-address .street {\n  width: 60%;\n  margin-right: 10px;\n}\n.payment-form.is-brazil .payment-form__delivery-address .number {\n  width: calc(40% - 10px);\n}\n.payment-form .first-name {\n  width: 40%;\n  margin-right: 10px;\n}\n.payment-form .last-name {\n  width: calc(60% - 11px);\n}\n.payment-form .card-number .prefix > img {\n  height: 22px;\n  width: auto;\n}\n.payment-form .card-number .prefix input:after {\n  content: \"\\F023\";\n  display: block;\n  color: #555;\n  font-family: FontAwesome !important;\n  position: absolute;\n  top: 8px;\n  right: 15px;\n}\n.payment-form .card-date {\n  display: flex;\n  flex-wrap: wrap;\n  width: 70%;\n  padding-right: 30px;\n  margin-bottom: 10px;\n}\n.payment-form .card-date.with-error > .label {\n  color: #e74c3c;\n}\n.payment-form .card-date > .label {\n  width: 100%;\n  margin-bottom: 6px;\n}\n.payment-form .card-date > div {\n  width: calc(40% - 5px);\n  margin-right: 10px;\n}\n.payment-form .card-date > div:last-child {\n  margin-right: 0;\n  width: calc(60% - 5px);\n}\n.payment-form .cvv-field {\n  width: calc(30%);\n}\n@media screen and (max-width: 767px) {\n.payment-form .el-dialog {\n    width: 90%;\n    margin-top: 15% !important;\n}\n}\n.payment-form .purchase-button-text {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  perspective-origin: 0 0;\n  transform-origin: 0 0;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-text:after {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-text:before {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-image {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  display: none;\n  max-width: 100%;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  vertical-align: middle;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-image:after {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.payment-form .purchase-button-image:before {\n  box-sizing: border-box;\n  color: white;\n  cursor: pointer;\n  text-align: center;\n  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;\n  text-transform: capitalize;\n  -moz-column-rule-color: white;\n       column-rule-color: white;\n  caret-color: white;\n  border: 0 none white;\n  font: normal normal 700 normal 18px/25.7143px \"Noto Sans\", sans-serif;\n  outline: white none 0;\n}\n.warranty-field-button {\n  position: relative;\n  display: flex;\n  padding: 10px;\n  margin: 40px 0;\n}\n.warranty-field-icon {\n  position: absolute;\n  right: -15px;\n  top: -15px;\n  width: 30px;\n  height: 30px;\n}\n.warranty-field-icon img {\n  max-width: 100%;\n}\n.label-container-checkbox {\n  position: relative;\n  margin-left: 30px;\n}\n.warranty-field-arrow {\n  position: absolute;\n  left: -30px;\n  top: 0;\n  z-index: 2;\n}\n#payment-data-form {\n  display: flex;\n  flex-wrap: wrap;\n}\n@media screen and (max-width: 767px) {\n.cvv-popup .el-dialog {\n    width: 90%;\n}\n}", ""]);
 
 // exports
 
@@ -39087,248 +39098,125 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "flex-wrap payment-form",
-      class: { "is-brazil": _vm.isBrazil }
-    },
-    [
-      _c("h2", [_vm._v("\n      " + _vm._s(_vm.firstTitle) + "\n    ")]),
-      _vm._v(" "),
-      _c("text-field", {
-        staticClass: "first-name",
-        attrs: {
-          validation: _vm.$v.form.fname,
-          validationMessage: "Please enter your first name",
-          theme: "variant-1",
-          label: "First Name",
-          rest: {
-            autocomplete: "given-name"
-          }
-        },
-        model: {
-          value: _vm.paymentForm.fname,
-          callback: function($$v) {
-            _vm.$set(_vm.paymentForm, "fname", $$v)
-          },
-          expression: "paymentForm.fname"
-        }
-      }),
-      _vm._v(" "),
-      _c("text-field", {
-        staticClass: "last-name",
-        attrs: {
-          validation: _vm.$v.form.lname,
-          validationMessage: "Please enter your last name",
-          theme: "variant-1",
-          label: "Last Name",
-          rest: {
-            autocomplete: "family-name"
-          }
-        },
-        model: {
-          value: _vm.paymentForm.lname,
-          callback: function($$v) {
-            _vm.$set(_vm.paymentForm, "lname", $$v)
-          },
-          expression: "paymentForm.lname"
-        }
-      }),
-      _vm._v(" "),
-      _vm.countryCode === "DE"
-        ? _c("text-field-with-placeholder", {
-            attrs: {
-              validation: _vm.$v.form.dateOfBirth,
-              validationMessage: "Invalid date",
-              rest: {
-                format: "dd/mm/yyyy"
-              },
-              placeholder: "DD/MM/YYYY",
-              theme: "variant-1",
-              label: "Your Date Of Birth"
-            },
-            model: {
-              value: _vm.paymentForm.dateOfBirth,
-              callback: function($$v) {
-                _vm.$set(_vm.paymentForm, "dateOfBirth", $$v)
-              },
-              expression: "paymentForm.dateOfBirth"
-            }
-          })
-        : _vm._e(),
-      _vm._v(" "),
-      _c("text-field", {
-        attrs: {
-          validation: _vm.$v.form.email,
-          validationMessage: "Please enter a valid e-mail",
-          theme: "variant-1",
-          label: "Your Email Address",
-          rest: {
-            autocomplete: "email"
-          }
-        },
-        model: {
-          value: _vm.paymentForm.email,
-          callback: function($$v) {
-            _vm.$set(_vm.paymentForm, "email", $$v)
-          },
-          expression: "paymentForm.email"
-        }
-      }),
-      _vm._v(" "),
-      _c("phone-field", {
-        attrs: {
-          validation: _vm.$v.form.phone,
-          validationMessage: "Please enter a valid phone number",
-          countryCode: _vm.countryCode,
-          theme: "variant-1",
-          label: "Your Phone Number",
-          rest: {
-            autocomplete: "off"
-          }
-        },
-        on: { onCountryChange: _vm.setCountryCodeByPhoneField },
-        model: {
-          value: _vm.paymentForm.phone,
-          callback: function($$v) {
-            _vm.$set(_vm.paymentForm, "phone", $$v)
-          },
-          expression: "paymentForm.phone"
-        }
-      }),
-      _vm._v(" "),
-      _c("h2", [_vm._v("\n      " + _vm._s(_vm.secondTitle) + "\n    ")]),
-      _vm._v(" "),
-      _c(
+  return _vm.paymentForm
+    ? _c(
         "div",
-        { staticClass: "payment-form__delivery-address" },
+        {
+          staticClass: "flex-wrap payment-form",
+          class: { "is-brazil": _vm.isBrazil }
+        },
         [
-          _c("text-field", {
-            directives: [
-              {
-                name: "loading",
-                rawName: "v-loading",
-                value: _vm.isLoading.address,
-                expression: "isLoading.address"
-              }
-            ],
-            attrs: {
-              validation: _vm.$v.form.street,
-              validationMessage: "Please enter your street",
-              "element-loading-spinner": "el-icon-loading",
-              theme: "variant-1 street",
-              label: _vm.isBrazil ? "Street" : "Street And Number",
-              rest: {
-                autocomplete: "street-address"
-              }
-            },
-            model: {
-              value: _vm.paymentForm.street,
-              callback: function($$v) {
-                _vm.$set(_vm.paymentForm, "street", $$v)
-              },
-              expression: "paymentForm.street"
-            }
-          }),
-          _vm._v(" "),
-          _vm.isBrazil
-            ? _c("text-field", {
-                directives: [
-                  {
-                    name: "loading",
-                    rawName: "v-loading",
-                    value: _vm.isLoading.address,
-                    expression: "isLoading.address"
-                  }
-                ],
-                attrs: {
-                  validation: _vm.$v.form.number,
-                  validationMessage: "Required",
-                  "element-loading-spinner": "el-icon-loading",
-                  theme: "variant-1 number",
-                  label: "Number"
-                },
-                model: {
-                  value: _vm.paymentForm.number,
-                  callback: function($$v) {
-                    _vm.$set(_vm.paymentForm, "number", $$v)
-                  },
-                  expression: "paymentForm.number"
-                }
-              })
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.isBrazil
-            ? _c("text-field", {
-                attrs: { theme: "variant-1", label: "Complemento" },
-                model: {
-                  value: _vm.paymentForm.complemento,
-                  callback: function($$v) {
-                    _vm.$set(_vm.paymentForm, "complemento", $$v)
-                  },
-                  expression: "paymentForm.complemento"
-                }
-              })
-            : _vm._e(),
+          _c("h2", [_vm._v("\n      " + _vm._s(_vm.firstTitle) + "\n    ")]),
           _vm._v(" "),
           _c("text-field", {
-            directives: [
-              {
-                name: "loading",
-                rawName: "v-loading",
-                value: _vm.isLoading.address,
-                expression: "isLoading.address"
-              }
-            ],
+            staticClass: "first-name",
             attrs: {
-              validation: _vm.$v.form.city,
-              validationMessage: "Please enter your city",
-              "element-loading-spinner": "el-icon-loading",
+              validation: _vm.$v.form.fname,
+              validationMessage: "Please enter your first name",
               theme: "variant-1",
-              label: "City",
+              label: "First Name",
               rest: {
-                autocomplete: "shipping locality"
+                autocomplete: "given-name"
               }
             },
             model: {
-              value: _vm.paymentForm.city,
+              value: _vm.paymentForm.fname,
               callback: function($$v) {
-                _vm.$set(_vm.paymentForm, "city", $$v)
+                _vm.$set(_vm.paymentForm, "fname", $$v)
               },
-              expression: "paymentForm.city"
+              expression: "paymentForm.fname"
             }
           }),
           _vm._v(" "),
-          _vm.countryCode === "BR" || _vm.countryCode === "MX"
-            ? _c("select-field", {
-                directives: [
-                  {
-                    name: "loading",
-                    rawName: "v-loading",
-                    value: _vm.isLoading.address,
-                    expression: "isLoading.address"
-                  }
-                ],
+          _c("text-field", {
+            staticClass: "last-name",
+            attrs: {
+              validation: _vm.$v.form.lname,
+              validationMessage: "Please enter your last name",
+              theme: "variant-1",
+              label: "Last Name",
+              rest: {
+                autocomplete: "family-name"
+              }
+            },
+            model: {
+              value: _vm.paymentForm.lname,
+              callback: function($$v) {
+                _vm.$set(_vm.paymentForm, "lname", $$v)
+              },
+              expression: "paymentForm.lname"
+            }
+          }),
+          _vm._v(" "),
+          _vm.countryCode === "DE"
+            ? _c("text-field-with-placeholder", {
                 attrs: {
-                  "element-loading-spinner": "el-icon-loading",
-                  validationMessage: "Please enter or select your state",
-                  theme: "variant-1",
-                  label: "State",
+                  validation: _vm.$v.form.dateOfBirth,
+                  validationMessage: "Invalid date",
                   rest: {
-                    placeholder: "State"
+                    format: "dd/mm/yyyy"
                   },
-                  list: _vm.stateList
+                  placeholder: "DD/MM/YYYY",
+                  theme: "variant-1",
+                  label: "Your Date Of Birth"
                 },
                 model: {
-                  value: _vm.paymentForm.state,
+                  value: _vm.paymentForm.dateOfBirth,
                   callback: function($$v) {
-                    _vm.$set(_vm.paymentForm, "state", $$v)
+                    _vm.$set(_vm.paymentForm, "dateOfBirth", $$v)
                   },
-                  expression: "paymentForm.state"
+                  expression: "paymentForm.dateOfBirth"
                 }
               })
-            : _c("text-field", {
+            : _vm._e(),
+          _vm._v(" "),
+          _c("text-field", {
+            attrs: {
+              validation: _vm.$v.form.email,
+              validationMessage: "Please enter a valid e-mail",
+              theme: "variant-1",
+              label: "Your Email Address",
+              rest: {
+                autocomplete: "email"
+              }
+            },
+            model: {
+              value: _vm.paymentForm.email,
+              callback: function($$v) {
+                _vm.$set(_vm.paymentForm, "email", $$v)
+              },
+              expression: "paymentForm.email"
+            }
+          }),
+          _vm._v(" "),
+          _c("phone-field", {
+            attrs: {
+              validation: _vm.$v.form.phone,
+              validationMessage: "Please enter a valid phone number",
+              countryCode: _vm.countryCode,
+              theme: "variant-1",
+              label: "Your Phone Number",
+              rest: {
+                autocomplete: "off"
+              }
+            },
+            on: { onCountryChange: _vm.setCountryCodeByPhoneField },
+            model: {
+              value: _vm.paymentForm.phone,
+              callback: function($$v) {
+                _vm.$set(_vm.paymentForm, "phone", $$v)
+              },
+              expression: "paymentForm.phone"
+            }
+          }),
+          _vm._v(" "),
+          _c("h2", [_vm._v("\n      " + _vm._s(_vm.secondTitle) + "\n    ")]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "payment-form__delivery-address" },
+            [
+              _c("text-field", {
                 directives: [
                   {
                     name: "loading",
@@ -39338,353 +39226,570 @@ var render = function() {
                   }
                 ],
                 attrs: {
+                  validation: _vm.$v.form.street,
+                  validationMessage: "Please enter your street",
                   "element-loading-spinner": "el-icon-loading",
-                  validationMessage: "Please enter or select your state",
-                  theme: "variant-1",
-                  label: "State"
+                  theme: "variant-1 street",
+                  label: _vm.isBrazil ? "Street" : "Street And Number",
+                  rest: {
+                    autocomplete: "street-address"
+                  }
                 },
                 model: {
-                  value: _vm.paymentForm.state,
+                  value: _vm.paymentForm.street,
                   callback: function($$v) {
-                    _vm.$set(_vm.paymentForm, "state", $$v)
+                    _vm.$set(_vm.paymentForm, "street", $$v)
                   },
-                  expression: "paymentForm.state"
+                  expression: "paymentForm.street"
                 }
               }),
-          _vm._v(" "),
-          _c("text-field", {
-            attrs: {
-              validation: _vm.$v.form.zipcode,
-              validationMessage: "Please enter your zip code",
-              theme: "variant-1",
-              label: "Zip Code",
-              id: "zip-code-field"
-            },
-            model: {
-              value: _vm.paymentForm.zipcode,
-              callback: function($$v) {
-                _vm.$set(_vm.paymentForm, "zipcode", $$v)
-              },
-              expression: "paymentForm.zipcode"
-            }
-          }),
-          _vm._v(" "),
-          _c("select-field", {
-            attrs: {
-              validation: _vm.$v.form.country,
-              validationMessage: "Invalid field",
-              theme: "variant-1",
-              label: "Country",
-              rest: {
-                placeholder: "Country"
-              },
-              list: _vm.countryList
-            },
-            model: {
-              value: _vm.paymentForm.country,
-              callback: function($$v) {
-                _vm.$set(_vm.paymentForm, "country", $$v)
-              },
-              expression: "paymentForm.country"
-            }
-          })
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _vm.paymentForm.paymentType !== "bank-payment"
-        ? [
-            _c("h2", [
-              _vm._v("\n          " + _vm._s(_vm.thirdTitle) + "\n        ")
-            ]),
-            _vm._v(" "),
-            _vm.countryCode === "MX"
-              ? _c("select-field", {
-                  attrs: {
-                    validation: _vm.$v.form.cardType,
-                    validationMessage: "Invalid Card Type",
-                    disabled: +_vm.installments !== 1,
-                    theme: "variant-1",
-                    label: "Please select your card type",
-                    rest: {
-                      placeholder: "Card type"
-                    },
-                    list: [
+              _vm._v(" "),
+              _vm.isBrazil
+                ? _c("text-field", {
+                    directives: [
                       {
-                        value: "debit",
-                        label: "Debit card",
-                        text: "Debit card"
-                      },
-                      {
-                        value: "credit",
-                        label: "Credit card",
-                        text: "Credit card"
+                        name: "loading",
+                        rawName: "v-loading",
+                        value: _vm.isLoading.address,
+                        expression: "isLoading.address"
                       }
-                    ]
-                  },
-                  model: {
-                    value: _vm.paymentForm.cardType,
-                    callback: function($$v) {
-                      _vm.$set(_vm.paymentForm, "cardType", $$v)
+                    ],
+                    attrs: {
+                      validation: _vm.$v.form.number,
+                      validationMessage: "Required",
+                      "element-loading-spinner": "el-icon-loading",
+                      theme: "variant-1 number",
+                      label: "Number"
                     },
-                    expression: "paymentForm.cardType"
+                    model: {
+                      value: _vm.paymentForm.number,
+                      callback: function($$v) {
+                        _vm.$set(_vm.paymentForm, "number", $$v)
+                      },
+                      expression: "paymentForm.number"
+                    }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.isBrazil
+                ? _c("text-field", {
+                    attrs: { theme: "variant-1", label: "Complemento" },
+                    model: {
+                      value: _vm.paymentForm.complemento,
+                      callback: function($$v) {
+                        _vm.$set(_vm.paymentForm, "complemento", $$v)
+                      },
+                      expression: "paymentForm.complemento"
+                    }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _c("text-field", {
+                directives: [
+                  {
+                    name: "loading",
+                    rawName: "v-loading",
+                    value: _vm.isLoading.address,
+                    expression: "isLoading.address"
                   }
-                })
-              : _vm._e(),
-            _vm._v(" "),
-            _c(
-              "form",
-              { attrs: { id: "payment-data-form" } },
-              [
-                _c("text-field", {
-                  staticClass: "card-number",
-                  attrs: {
-                    validation: _vm.$v.form.cardNumber,
-                    rest: {
-                      pattern: "\\d*",
-                      type: "tel",
-                      autocomplete: "cc-number",
-                      "data-bluesnap": "encryptedCreditCard"
-                    },
-                    validationMessage: "Please enter a credit card number.",
-                    theme: "variant-1",
-                    label: "Card Number",
-                    prefix: "<img src='" + _vm.cardUrl + "' />",
-                    postfix: "<i class='fa fa-lock'></i>"
-                  },
-                  model: {
-                    value: _vm.paymentForm.cardNumber,
-                    callback: function($$v) {
-                      _vm.$set(_vm.paymentForm, "cardNumber", $$v)
-                    },
-                    expression: "paymentForm.cardNumber"
+                ],
+                attrs: {
+                  validation: _vm.$v.form.city,
+                  validationMessage: "Please enter your city",
+                  "element-loading-spinner": "el-icon-loading",
+                  theme: "variant-1",
+                  label: "City",
+                  rest: {
+                    autocomplete: "shipping locality"
                   }
-                }),
+                },
+                model: {
+                  value: _vm.paymentForm.city,
+                  callback: function($$v) {
+                    _vm.$set(_vm.paymentForm, "city", $$v)
+                  },
+                  expression: "paymentForm.city"
+                }
+              }),
+              _vm._v(" "),
+              _vm.countryCode === "BR" || _vm.countryCode === "MX"
+                ? _c("select-field", {
+                    directives: [
+                      {
+                        name: "loading",
+                        rawName: "v-loading",
+                        value: _vm.isLoading.address,
+                        expression: "isLoading.address"
+                      }
+                    ],
+                    attrs: {
+                      "element-loading-spinner": "el-icon-loading",
+                      validationMessage: "Please enter or select your state",
+                      theme: "variant-1",
+                      label: "State",
+                      rest: {
+                        placeholder: "State"
+                      },
+                      list: _vm.stateList
+                    },
+                    model: {
+                      value: _vm.paymentForm.state,
+                      callback: function($$v) {
+                        _vm.$set(_vm.paymentForm, "state", $$v)
+                      },
+                      expression: "paymentForm.state"
+                    }
+                  })
+                : _c("text-field", {
+                    directives: [
+                      {
+                        name: "loading",
+                        rawName: "v-loading",
+                        value: _vm.isLoading.address,
+                        expression: "isLoading.address"
+                      }
+                    ],
+                    attrs: {
+                      "element-loading-spinner": "el-icon-loading",
+                      validationMessage: "Please enter or select your state",
+                      theme: "variant-1",
+                      label: "State"
+                    },
+                    model: {
+                      value: _vm.paymentForm.state,
+                      callback: function($$v) {
+                        _vm.$set(_vm.paymentForm, "state", $$v)
+                      },
+                      expression: "paymentForm.state"
+                    }
+                  }),
+              _vm._v(" "),
+              _c("text-field", {
+                attrs: {
+                  validation: _vm.$v.form.zipcode,
+                  validationMessage: "Please enter your zip code",
+                  theme: "variant-1",
+                  label: "Zip Code",
+                  id: "zip-code-field"
+                },
+                model: {
+                  value: _vm.paymentForm.zipcode,
+                  callback: function($$v) {
+                    _vm.$set(_vm.paymentForm, "zipcode", $$v)
+                  },
+                  expression: "paymentForm.zipcode"
+                }
+              }),
+              _vm._v(" "),
+              _c("select-field", {
+                attrs: {
+                  validation: _vm.$v.form.country,
+                  validationMessage: "Invalid field",
+                  theme: "variant-1",
+                  label: "Country",
+                  rest: {
+                    placeholder: "Country"
+                  },
+                  list: _vm.countryList
+                },
+                model: {
+                  value: _vm.paymentForm.country,
+                  callback: function($$v) {
+                    _vm.$set(_vm.paymentForm, "country", $$v)
+                  },
+                  expression: "paymentForm.country"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _vm.paymentForm.paymentType !== "bank-payment"
+            ? [
+                _c("h2", [
+                  _vm._v("\n          " + _vm._s(_vm.thirdTitle) + "\n        ")
+                ]),
+                _vm._v(" "),
+                _vm.countryCode === "MX"
+                  ? _c("select-field", {
+                      attrs: {
+                        validation: _vm.$v.form.cardType,
+                        validationMessage: "Invalid Card Type",
+                        disabled: +_vm.installments !== 1,
+                        theme: "variant-1",
+                        label: "Please select your card type",
+                        rest: {
+                          placeholder: "Card type"
+                        },
+                        list: [
+                          {
+                            value: "debit",
+                            label: "Debit card",
+                            text: "Debit card"
+                          },
+                          {
+                            value: "credit",
+                            label: "Credit card",
+                            text: "Credit card"
+                          }
+                        ]
+                      },
+                      model: {
+                        value: _vm.paymentForm.cardType,
+                        callback: function($$v) {
+                          _vm.$set(_vm.paymentForm, "cardType", $$v)
+                        },
+                        expression: "paymentForm.cardType"
+                      }
+                    })
+                  : _vm._e(),
                 _vm._v(" "),
                 _c(
-                  "div",
-                  {
-                    staticClass: "card-date",
-                    class: {
-                      "with-error":
-                        !_vm.$v.form.year.isValid && _vm.$v.form.year.$dirty
-                    }
-                  },
+                  "form",
+                  { attrs: { id: "payment-data-form" } },
                   [
-                    _c("span", { staticClass: "label" }, [
-                      _vm._v("Card Valid Until")
-                    ]),
-                    _vm._v(" "),
-                    _c("select-field", {
+                    _c("text-field", {
+                      staticClass: "card-number",
                       attrs: {
-                        validation: _vm.$v.form.month,
-                        validationMessage: "Required",
+                        validation: _vm.$v.form.cardNumber,
                         rest: {
-                          placeholder: "Month"
+                          pattern: "\\d*",
+                          type: "tel",
+                          autocomplete: "cc-number",
+                          "data-bluesnap": "encryptedCreditCard"
                         },
+                        validationMessage: "Please enter a credit card number.",
                         theme: "variant-1",
-                        list: Array.apply(null, Array(12)).map(function(
-                          _,
-                          idx
-                        ) {
-                          return { value: idx + 1 }
-                        })
+                        label: "Card Number",
+                        prefix: "<img src='" + _vm.cardUrl + "' />",
+                        postfix: "<i class='fa fa-lock'></i>"
                       },
                       model: {
-                        value: _vm.paymentForm.month,
+                        value: _vm.paymentForm.cardNumber,
                         callback: function($$v) {
-                          _vm.$set(_vm.paymentForm, "month", $$v)
+                          _vm.$set(_vm.paymentForm, "cardNumber", $$v)
                         },
-                        expression: "paymentForm.month"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("select-field", {
-                      attrs: {
-                        validation: _vm.$v.form.year,
-                        validationMessage: "Required",
-                        rest: {
-                          placeholder: "Year"
-                        },
-                        theme: "variant-1",
-                        list: Array.apply(null, Array(10)).map(function(
-                          _,
-                          ind
-                        ) {
-                          return { value: new Date().getFullYear() + ind }
-                        })
-                      },
-                      model: {
-                        value: _vm.paymentForm.year,
-                        callback: function($$v) {
-                          _vm.$set(_vm.paymentForm, "year", $$v)
-                        },
-                        expression: "paymentForm.year"
+                        expression: "paymentForm.cardNumber"
                       }
                     }),
                     _vm._v(" "),
                     _c(
-                      "span",
+                      "div",
                       {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value:
-                              !_vm.$v.form.year.isValid &&
-                              _vm.$v.form.year.$dirty,
-                            expression:
-                              "!$v.form.year.isValid && $v.form.year.$dirty"
-                          }
-                        ],
-                        staticClass: "error"
+                        staticClass: "card-date",
+                        class: {
+                          "with-error":
+                            !_vm.$v.form.year.isValid && _vm.$v.form.year.$dirty
+                        }
                       },
-                      [_vm._v("Card is expired")]
-                    )
+                      [
+                        _c("span", { staticClass: "label" }, [
+                          _vm._v("Card Valid Until")
+                        ]),
+                        _vm._v(" "),
+                        _c("select-field", {
+                          attrs: {
+                            validation: _vm.$v.form.month,
+                            validationMessage: "Required",
+                            rest: {
+                              placeholder: "Month"
+                            },
+                            theme: "variant-1",
+                            list: Array.apply(null, Array(12)).map(function(
+                              _,
+                              idx
+                            ) {
+                              return { value: idx + 1 }
+                            })
+                          },
+                          model: {
+                            value: _vm.paymentForm.month,
+                            callback: function($$v) {
+                              _vm.$set(_vm.paymentForm, "month", $$v)
+                            },
+                            expression: "paymentForm.month"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("select-field", {
+                          attrs: {
+                            validation: _vm.$v.form.year,
+                            validationMessage: "Required",
+                            rest: {
+                              placeholder: "Year"
+                            },
+                            theme: "variant-1",
+                            list: Array.apply(null, Array(10)).map(function(
+                              _,
+                              ind
+                            ) {
+                              return { value: new Date().getFullYear() + ind }
+                            })
+                          },
+                          model: {
+                            value: _vm.paymentForm.year,
+                            callback: function($$v) {
+                              _vm.$set(_vm.paymentForm, "year", $$v)
+                            },
+                            expression: "paymentForm.year"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            directives: [
+                              {
+                                name: "show",
+                                rawName: "v-show",
+                                value:
+                                  !_vm.$v.form.year.isValid &&
+                                  _vm.$v.form.year.$dirty,
+                                expression:
+                                  "!$v.form.year.isValid && $v.form.year.$dirty"
+                              }
+                            ],
+                            staticClass: "error"
+                          },
+                          [_vm._v("Card is expired")]
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c("text-field", {
+                      staticClass: "cvv-field",
+                      attrs: {
+                        validation: _vm.$v.form.cvv,
+                        validationMessage: "Required",
+                        theme: "variant-1",
+                        label: "CVV",
+                        rest: {
+                          maxlength: 4,
+                          pattern: "\\d*",
+                          type: "tel",
+                          autocomplete: "cc-csc",
+                          "data-bluesnap": "encryptedCvv"
+                        },
+                        postfix: "<i class='fa fa-question-circle'></i>"
+                      },
+                      on: { "click-postfix": _vm.openCVVModal },
+                      model: {
+                        value: _vm.paymentForm.cvv,
+                        callback: function($$v) {
+                          _vm.$set(_vm.paymentForm, "cvv", $$v)
+                        },
+                        expression: "paymentForm.cvv"
+                      }
+                    })
                   ],
                   1
                 ),
                 _vm._v(" "),
-                _c("text-field", {
-                  staticClass: "cvv-field",
-                  attrs: {
-                    validation: _vm.$v.form.cvv,
-                    validationMessage: "Required",
-                    theme: "variant-1",
-                    label: "CVV",
-                    rest: {
-                      maxlength: 4,
-                      pattern: "\\d*",
-                      type: "tel",
-                      autocomplete: "cc-csc",
-                      "data-bluesnap": "encryptedCvv"
-                    },
-                    postfix: "<i class='fa fa-question-circle'></i>"
-                  },
-                  on: { "click-postfix": _vm.openCVVModal },
-                  model: {
-                    value: _vm.paymentForm.cvv,
-                    callback: function($$v) {
-                      _vm.$set(_vm.paymentForm, "cvv", $$v)
-                    },
-                    expression: "paymentForm.cvv"
-                  }
-                })
+                _vm.countryCode === "BR"
+                  ? _c("text-field-with-placeholder", {
+                      attrs: {
+                        validation: _vm.$v.form.documentNumber,
+                        validationMessage: "Required",
+                        placeholder: "___.___.___-__",
+                        rest: {
+                          format: "___.___.___-__",
+                          pattern: "\\d*",
+                          type: "tel"
+                        },
+                        theme: "variant-1",
+                        label: "Document number"
+                      },
+                      model: {
+                        value: _vm.paymentForm.documentNumber,
+                        callback: function($$v) {
+                          _vm.$set(_vm.paymentForm, "documentNumber", $$v)
+                        },
+                        expression: "paymentForm.documentNumber"
+                      }
+                    })
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.countryCode === "CO"
+                  ? _c("text-field-with-placeholder", {
+                      attrs: {
+                        validation: _vm.$v.form.documentNumber,
+                        validationMessage: "Required",
+                        placeholder: "1234567890",
+                        rest: {
+                          format: "1234567890"
+                        },
+                        theme: "variant-1",
+                        label: "Document number"
+                      },
+                      model: {
+                        value: _vm.paymentForm.documentNumber,
+                        callback: function($$v) {
+                          _vm.$set(_vm.paymentForm, "documentNumber", $$v)
+                        },
+                        expression: "paymentForm.documentNumber"
+                      }
+                    })
+                  : _vm._e()
+              ]
+            : _vm._e(),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.hasWarranty,
+                  expression: "hasWarranty"
+                }
               ],
-              1
-            ),
-            _vm._v(" "),
-            _vm.countryCode === "BR"
-              ? _c("text-field-with-placeholder", {
-                  attrs: {
-                    validation: _vm.$v.form.documentNumber,
-                    validationMessage: "Required",
-                    placeholder: "___.___.___-__",
-                    rest: {
-                      format: "___.___.___-__",
-                      pattern: "\\d*",
-                      type: "tel"
-                    },
-                    theme: "variant-1",
-                    label: "Document number"
-                  },
-                  model: {
-                    value: _vm.paymentForm.documentNumber,
-                    callback: function($$v) {
-                      _vm.$set(_vm.paymentForm, "documentNumber", $$v)
-                    },
-                    expression: "paymentForm.documentNumber"
-                  }
-                })
-              : _vm._e(),
-            _vm._v(" "),
-            _vm.countryCode === "CO"
-              ? _c("text-field-with-placeholder", {
-                  attrs: {
-                    validation: _vm.$v.form.documentNumber,
-                    validationMessage: "Required",
-                    placeholder: "1234567890",
-                    rest: {
-                      format: "1234567890"
-                    },
-                    theme: "variant-1",
-                    label: "Document number"
-                  },
-                  model: {
-                    value: _vm.paymentForm.documentNumber,
-                    callback: function($$v) {
-                      _vm.$set(_vm.paymentForm, "documentNumber", $$v)
-                    },
-                    expression: "paymentForm.documentNumber"
-                  }
-                })
-              : _vm._e()
-          ]
-        : _vm._e(),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "green-button-animated",
-          attrs: { id: "purchase-button", type: "button" },
-          on: { click: _vm.submit }
-        },
-        [
-          _c("span", { staticClass: "purchase-button-text" }, [
-            _vm._v("YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW")
-          ]),
-          _c("img", {
-            staticClass: "purchase-button-image",
-            attrs: {
-              src: "//static.saratrkr.com/images/paypal-button-text.png",
-              alt: ""
-            }
-          })
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "el-dialog",
-        {
-          staticClass: "cvv-popup",
-          attrs: {
-            title: "Where do I find my security code?",
-            visible: _vm.isOpenCVVModal
-          },
-          on: {
-            click: function($event) {
-              _vm.isOpenCVVModal = false
+              staticClass: "warranty-field-button"
             },
-            "update:visible": function($event) {
-              _vm.isOpenCVVModal = $event
-            }
-          }
-        },
-        [
-          _c("div", { staticClass: "cvv-popup__content" }, [
-            _c("p", [
-              _vm._v(
-                "The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it is a 4 digit number, found on the front of your credit card."
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", [
-              _c("img", { attrs: { src: "/images/cvv_popup.jpg", alt: "" } })
-            ]),
-            _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                "Where to find the 3 digit security code (Visa/Mastercard)"
-              )
-            ])
-          ])
-        ]
+            [
+              _c(
+                "label",
+                {
+                  staticClass: "label-container-checkbox",
+                  attrs: { for: "warranty-field" }
+                },
+                [
+                  _c("i", {
+                    staticClass:
+                      "fa fa-arrow-right slide-right warranty-field-arrow"
+                  }),
+                  _vm._v(
+                    "\n        3 Years Additional Warranty On Your Purchase & Accessories:\n        "
+                  ),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.paymentForm.isWarrantyChecked,
+                        expression: "paymentForm.isWarrantyChecked"
+                      }
+                    ],
+                    attrs: { id: "warranty-field", type: "checkbox" },
+                    domProps: {
+                      checked: Array.isArray(_vm.paymentForm.isWarrantyChecked)
+                        ? _vm._i(_vm.paymentForm.isWarrantyChecked, null) > -1
+                        : _vm.paymentForm.isWarrantyChecked
+                    },
+                    on: {
+                      change: function($event) {
+                        var $$a = _vm.paymentForm.isWarrantyChecked,
+                          $$el = $event.target,
+                          $$c = $$el.checked ? true : false
+                        if (Array.isArray($$a)) {
+                          var $$v = null,
+                            $$i = _vm._i($$a, $$v)
+                          if ($$el.checked) {
+                            $$i < 0 &&
+                              _vm.$set(
+                                _vm.paymentForm,
+                                "isWarrantyChecked",
+                                $$a.concat([$$v])
+                              )
+                          } else {
+                            $$i > -1 &&
+                              _vm.$set(
+                                _vm.paymentForm,
+                                "isWarrantyChecked",
+                                $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                              )
+                          }
+                        } else {
+                          _vm.$set(_vm.paymentForm, "isWarrantyChecked", $$c)
+                        }
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "checkmark" })
+                ]
+              ),
+              _vm._v(" "),
+              _vm._m(0)
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "green-button-animated",
+              attrs: { id: "purchase-button", type: "button" },
+              on: { click: _vm.submit }
+            },
+            [
+              _c("span", { staticClass: "purchase-button-text" }, [
+                _vm._v("YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW")
+              ]),
+              _c("img", {
+                staticClass: "purchase-button-image",
+                attrs: {
+                  src: "//static.saratrkr.com/images/paypal-button-text.png",
+                  alt: ""
+                }
+              })
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "el-dialog",
+            {
+              staticClass: "cvv-popup",
+              attrs: {
+                title: "Where do I find my security code?",
+                visible: _vm.isOpenCVVModal
+              },
+              on: {
+                click: function($event) {
+                  _vm.isOpenCVVModal = false
+                },
+                "update:visible": function($event) {
+                  _vm.isOpenCVVModal = $event
+                }
+              }
+            },
+            [
+              _c("div", { staticClass: "cvv-popup__content" }, [
+                _c("p", [
+                  _vm._v(
+                    "The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it is a 4 digit number, found on the front of your credit card."
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", [
+                  _c("img", {
+                    attrs: { src: "/images/cvv_popup.jpg", alt: "" }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("p", [
+                  _vm._v(
+                    "Where to find the 3 digit security code (Visa/Mastercard)"
+                  )
+                ])
+              ])
+            ]
+          )
+        ],
+        2
       )
-    ],
-    2
-  )
+    : _vm._e()
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "warranty-field-icon" }, [
+      _c("img", { attrs: { src: "/images/best-saller.png", alt: "" } })
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -48790,6 +48895,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_owl_carousel__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_owl_carousel__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _resourses_state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../resourses/state */ "./resources/js/resourses/state.js");
 /* harmony import */ var _validation_emc1_validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../validation/emc1-validation */ "./resources/js/validation/emc1-validation.js");
+/* harmony import */ var _utils_upsells__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/upsells */ "./resources/js/utils/upsells.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -48797,6 +48903,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 __webpack_require__(/*! ../bootstrap */ "./resources/js/bootstrap.js");
+
 
 
 
@@ -48920,20 +49027,38 @@ var promo = new Vue({
     })
   },
   methods: {
+    paypalCreateOrder: function paypalCreateOrder() {
+      return Object(_utils_upsells__WEBPACK_IMPORTED_MODULE_3__["paypalCreateOrder"])({
+        xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+        sku_code: this.codeOrDefault,
+        sku_quantity: this.form.deal,
+        is_warranty_checked: this.form.isWarrantyChecked,
+        page_checkout: document.location.href,
+        offer: new URL(document.location.href).searchParams.get('offer'),
+        affiliate: new URL(document.location.href).searchParams.get('affiliate')
+      });
+    },
+    paypalOnApprove: _utils_upsells__WEBPACK_IMPORTED_MODULE_3__["paypalOnApprove"],
     setSelectedPlan: function setSelectedPlan(plan) {
       this.selectedPlan = plan;
-      console.log(this.$data);
+      this.scrollTo('.j-variant-section');
     },
     setSelectedVariant: function setSelectedVariant(variant) {
       this.selectedVariant = variant;
       this.isShownForm = true;
-      console.log(this.$data);
+      this.scrollTo('.j-complete-order');
     },
     selectPaymentMethod: function selectPaymentMethod(method) {
       this.paymentMethod = method;
+      this.scrollTo('.j-payment-form');
     },
     setAddress: function setAddress(address) {
       this.form = _objectSpread({}, this.form, {}, address);
+    },
+    scrollTo: function scrollTo(selector) {
+      setTimeout(function () {
+        document.querySelector(selector).scrollIntoView();
+      }, 1);
     }
   }
 });
