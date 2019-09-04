@@ -367,7 +367,7 @@ class UtilsService
         if (request()->get('_ip')) {
             $location = \Location::get(request()->get('_ip'));
         }
-        return !empty($location->countryCode) ? $location->countryCode : 'US';
+        return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
     }
 
     /**

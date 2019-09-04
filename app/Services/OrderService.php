@@ -18,11 +18,11 @@ class OrderService
      */
     public function addTxn(array $data, bool $returnModel = false): array
     {
-
-        $model = new Txn($data);
+        // In situation when we need single txn record.
+        $model = Txn::firstOrNew(['hash' => $data['hash']]);
+        $model->fill($data);
 
         $validator = $model->validate();
-
         if ($validator->fails()) {
             logger()->error("Add Txn fails", ['errors' => $validator->errors()->messages()]);
             return [
@@ -45,13 +45,13 @@ class OrderService
     public function addOdinOrder(array $data, bool $returnModel = false): array
     {
         $model = new OdinOrder($data);
-        if (empty($model->number)) {            
+        if (empty($model->number)) {
             $model->number = !empty($model->shipping_country) ? $model->generateOrderNumber($model->shipping_country) : $model->generateOrderNumber();
         }
 
         $validator = $model->validate();
 
-        if ($validator->fails()) {            
+        if ($validator->fails()) {
             logger()->error("Add odin order fails", ['errors' => $validator->errors()->messages()]);
             return [
                 'errors' => $validator->errors()->messages(),
@@ -85,7 +85,7 @@ class OrderService
         if (!empty($data['phone']) && !in_array($data['phone'], $model->phones)) {
             $model->phones = array_merge($model->phones, [$data['phone']]);
         }
-	
+
 	// doc_ids
 	if (!empty($data['doc_id']) && !in_array($data['doc_id'], $model->doc_ids)) {
             $model->doc_ids = array_merge($model->doc_ids, [$data['doc_id']]);
@@ -103,7 +103,7 @@ class OrderService
 
         $addressJson = json_encode($address);
         $modelAddressesJson = json_encode($model->addresses);
-        
+
         // add address if not in array
         if (!strstr(' '.$modelAddressesJson, $addressJson)) {
             $model->addresses = array_merge($model->addresses, [$address]);

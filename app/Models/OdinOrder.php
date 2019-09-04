@@ -31,12 +31,12 @@ class OdinOrder extends Model
         //'payment_provider' => null, // enum string
         //'payment_method' => null, // enum string
         //'payer_id' => null, // string, payer ID in payment provider system
-	'installments' => 0,
+        'installments' => 0,
         'customer_email' => null, // * string
         'customer_first_name' => null, // * string
         'customer_last_name' => null, // * string
         'customer_phone' => null, // * string
-	'customer_doc_id' => null, // * string, document number like passport
+        'customer_doc_id' => null, // * string, document number like passport
         'language' => null, // enum string
         'ip' => null, // string
         'shipping_country' => null, // enum string
@@ -44,8 +44,8 @@ class OdinOrder extends Model
         'shipping_state' => null, // string
         'shipping_city' => null, // string
         'shipping_street' => null, // string
-        'shipping_street2' => null, // string     
-	'shipping_apt' => null, // string
+        'shipping_street2' => null, // string
+        'shipping_apt' => null, // string
         'warehouse_id' => null,
         /**
          * collection
@@ -73,7 +73,7 @@ class OdinOrder extends Model
          * ]
          */
         'products' => [],
-	'txns' => [ // — array of objects,
+        'txns' => [ // — array of objects,
 //	    'hash' => null, // string, //link to Txn hash
 //	    'value' => null, float, //decreases after refund
 //	    'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
@@ -82,13 +82,13 @@ class OdinOrder extends Model
 //	    'payment_provider' => '', // — enum string,
 //	    'payment_method' => '', // — enum string,
 //	    'payer_id' => '', // — string, //payer ID in payment provider system
-	],
+        ],
         'ipqualityscore' => null, // object
         'page_checkout' => null, // string full checkout page address with parameters
         'is_flagged' => false, // bool, default false
         'offer' => null, // string
         'affiliate' => null, // string
-        'is_refunding' => false, // bool, default false, refund requested, processing        
+        'is_refunding' => false, // bool, default false, refund requested, processing
         'is_refunded' => false, // bool, order was fully or partially refunded
         'is_qc_passed' => false, // bool, additional control of order's correctness
     ];
@@ -117,7 +117,7 @@ class OdinOrder extends Model
      * @var array
      */
     protected $fillable = [
-        'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_price', 'total_price_usd', 'payment_provider', 'payment_method', 'payer_id',
+        'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_price', 'total_price_usd', 'payer_id',
         'customer_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country',
         'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id', 'trackings', 'products',
         'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed'

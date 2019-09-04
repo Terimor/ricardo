@@ -33,7 +33,7 @@ class PaypalController extends Controller
 
     /**
      * @param PayPalCrateOrderRequest $request
-     * @return Response
+     * @return array
      */
     public function createOrder(PayPalCrateOrderRequest $request)
     {
@@ -43,12 +43,8 @@ class PaypalController extends Controller
         unset($braintree_response->headers['Set-Cookie']);
         $braintree_response->headers['Content-Length'] = strlen($response);
 
-        return $response;
-
         return [
-            //$response,
-            'status' => $braintree_response->statusCode,
-            //$braintree_response->headers
+            'id' => optional($braintree_response->result)->id
         ];
     }
 

@@ -143,14 +143,11 @@ $local_currency = UtilsService::getPayPalCurrencyCode();
                 'warranty_price' => $local_warranty_price ?? null,
                 'warranty_price_usd' => $warranty_price ?? null,
                 'is_main' => !$upsell_order,
-                'txn_hash' => $txn['hash'],
-                'txn_value' => $txn['value'],
-                'is_txn_captured' => false,
-                'is_txn_approved' => false,
-                'txn_charged_back' => false,
-                'txn_fee' => null,
                 'is_exported' => false,
                 'is_plus_one' => false,
+                'price_set' => $product->prices['price_set'],
+                'txn_hash' => $txn['hash'],
+                'is_upsells' => (bool)$upsell_order,
             ];
 
             if ($upsell_order) {
@@ -170,8 +167,6 @@ $local_currency = UtilsService::getPayPalCurrencyCode();
                     'total_paid' => 0,
                     'total_price' => $total_local_price,
                     'total_price_usd' => $total_price,
-                    'payment_provider' => PaymentService::PROVIDER_PAYPAL,
-                    'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                     'customer_phone' => null,
                     'language' => app()->getLocale(),
                     'ip' => $request->ip(),
@@ -211,7 +206,6 @@ $local_currency = UtilsService::getPayPalCurrencyCode();
                 'payment_provider' => PaymentService::PROVIDER_PAYPAL,
             ]);
             $txn = $txn_response['txn'];
-
 
             $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
             $this->setPayer($order, $paypal_order);
