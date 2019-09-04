@@ -244,7 +244,7 @@
         <button v-show="hasWarranty" class="warranty-field-button">
           <label for="warranty-field" class="label-container-checkbox">
             <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
-            3 Years Additional Warranty On Your Purchase & Accessories:
+            3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
             <input id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
             <span class="checkmark"></span>
           </label>
@@ -293,6 +293,8 @@
       'secondTitle',
       'thirdTitle',
       'hasWarranty',
+      'quantityOfInstallments',
+      'warrantyPriceText',
     ],
     data () {
       return {

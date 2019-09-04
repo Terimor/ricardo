@@ -1646,7 +1646,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'PaymentForm',
-  props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList', 'firstTitle', 'secondTitle', 'thirdTitle', 'hasWarranty'],
+  props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList', 'firstTitle', 'secondTitle', 'thirdTitle', 'hasWarranty', 'quantityOfInstallments', 'warrantyPriceText'],
   data: function data() {
     return {
       isLoading: {
@@ -39660,7 +39660,11 @@ var render = function() {
                       "fa fa-arrow-right slide-right warranty-field-arrow"
                   }),
                   _vm._v(
-                    "\n        3 Years Additional Warranty On Your Purchase & Accessories:\n        "
+                    "\n        3 Years Additional Warranty On Your Purchase & Accessories: " +
+                      _vm._s(_vm.quantityOfInstallments) +
+                      " " +
+                      _vm._s(_vm.warrantyPriceText) +
+                      "\n        "
                   ),
                   _c("input", {
                     directives: [
@@ -48896,6 +48900,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _resourses_state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../resourses/state */ "./resources/js/resourses/state.js");
 /* harmony import */ var _validation_emc1_validation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../validation/emc1-validation */ "./resources/js/validation/emc1-validation.js");
 /* harmony import */ var _utils_upsells__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/upsells */ "./resources/js/utils/upsells.js");
+/* harmony import */ var _utils_checkout__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/checkout */ "./resources/js/utils/checkout.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -48908,13 +48913,20 @@ __webpack_require__(/*! ../bootstrap */ "./resources/js/bootstrap.js");
 
 
 
+
 var promo = new Vue({
   el: "#promo",
   data: function data() {
     return {
+      implValue: '1',
+      installments: '1',
       isShownForm: false,
       selectedPlan: null,
-      selectedVariant: null,
+      warrantyPriceText: null,
+      warrantyOldPrice: null,
+      discount: null,
+      variant: null,
+      variantList: [],
       paymentMethod: null,
       stateList: (_resourses_state__WEBPACK_IMPORTED_MODULE_1__["stateList"][checkoutData.countryCode] || []).map(function (it) {
         return {
@@ -49008,8 +49020,30 @@ var promo = new Vue({
   components: {
     carousel: vue_owl_carousel__WEBPACK_IMPORTED_MODULE_0___default.a
   },
+  installmentsList: [{
+    value: '1',
+    text: 'Pay in 1 installments',
+    label: 'Pay in 1 installments'
+  }, {
+    value: '3',
+    text: 'Pay in 3 installments',
+    label: 'Pay in 3 installments'
+  }, {
+    value: '5',
+    text: 'Pay in 5 installments',
+    label: 'Pay in 5 installments'
+  }],
   mounted: function mounted() {
     this.form.installments = this.checkoutData.countryCode === 'BR' ? 3 : this.checkoutData.countryCode === 'MX' ? 1 : 1;
+    this.changeWarrantyValue();
+    this.variantList = this.skusList.map(function (it) {
+      return {
+        label: it.name,
+        text: "<div><img src=\"".concat(it.images[0], "\" alt=\"\"><span>").concat(it.name, "</span></div>"),
+        value: it.code,
+        imageUrl: it.images[0]
+      };
+    });
   },
   computed: {
     checkoutData: function (_checkoutData) {
@@ -49024,7 +49058,17 @@ var promo = new Vue({
       return checkoutData;
     }(function () {
       return checkoutData;
-    })
+    }),
+    quantityOfInstallments: function quantityOfInstallments() {
+      var implValue = this.implValue;
+      return implValue && implValue !== 1 ? implValue + '× ' : '';
+    },
+    productData: function productData() {
+      return checkoutData.product;
+    },
+    skusList: function skusList() {
+      return checkoutData.product.skus;
+    }
   },
   methods: {
     paypalCreateOrder: function paypalCreateOrder() {
@@ -49044,7 +49088,7 @@ var promo = new Vue({
       this.scrollTo('.j-variant-section');
     },
     setSelectedVariant: function setSelectedVariant(variant) {
-      this.selectedVariant = variant;
+      this.variant = variant;
       this.isShownForm = true;
       this.scrollTo('.j-complete-order');
     },
@@ -49054,6 +49098,47 @@ var promo = new Vue({
     },
     setAddress: function setAddress(address) {
       this.form = _objectSpread({}, this.form, {}, address);
+    },
+    getImplValue: function getImplValue(value) {
+      this.implValue = value;
+      if (this.implValue) this.changeWarrantyValue();
+    },
+    changeWarrantyValue: function changeWarrantyValue() {
+      var _this = this;
+
+      var prices = product.prices;
+      this.implValue = this.implValue || 3;
+
+      switch (this.implValue) {
+        case String(1):
+          this.warrantyPriceText = prices[this.implValue].value_text;
+          this.warrantyOldPrice = prices[this.implValue].old_value_text;
+          this.discount = prices[this.implValue].discount_percent;
+
+        case String(3):
+          this.warrantyPriceText = prices[this.implValue].installments3_value_text;
+          this.warrantyOldPrice = prices[this.implValue].installments3_old_value_text;
+          this.discount = prices[this.implValue].discount_percent;
+
+        case String(5):
+          this.warrantyPriceText = prices[this.implValue].installments6_value_text;
+          this.warrantyOldPrice = prices[this.implValue].installments6_old_value_text;
+          this.discount = prices[this.implValue].discount_percent;
+
+        default:
+          break;
+      }
+
+      var currentVariant = this.skusList.find(function (it) {
+        return it.code === _this.variant;
+      });
+      this.purchase = Object(_utils_checkout__WEBPACK_IMPORTED_MODULE_4__["preparePurchaseData"])({
+        purchaseList: this.productData.prices,
+        long_name: this.productData.long_name,
+        variant: currentVariant && currentVariant.name,
+        installments: this.installments
+      });
+      console.log(JSON.parse(JSON.stringify(this.purchase)));
     },
     scrollTo: function scrollTo(selector) {
       setTimeout(function () {

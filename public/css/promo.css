@@ -3,12 +3,12 @@
   text-align: center;
 }
 
-.promo .promo-title-big {
+.promo__title {
   font-size: 38px;
 }
 
 @media screen and (max-width: 1119px) {
-  .promo .promo-title-big {
+  .promo__title {
     font-size: 27px;
   }
 }
@@ -17,7 +17,7 @@
   font-size: 24px;
 }
 
-.promo .border-dashed {
+.promo__jumbotron {
   border: 5px dashed #e3342f;
   max-width: 1100px;
   padding: 15px;
@@ -30,27 +30,14 @@
   color: #e3342f;
 }
 
-.promo .heading-battery {
+.promo__heading-battery {
   font-size: 38px;
   margin: 0 0 10px;
 }
 
-.promo .offer {
+.promo__offer {
   text-transform: uppercase;
   margin: 15px 0;
-}
-
-.promo .double-price {
-  font-size: 18px;
-  text-decoration: line-through;
-  color: #c1c1c1;
-  margin-bottom: 6px;
-}
-
-.promo .section-subtitle {
-  font-size: 19px;
-  font-weight: 300;
-  text-align: center;
 }
 
 .promo .go-to-selector {
@@ -58,22 +45,45 @@
   color: #e3342f;
 }
 
-.promo .price {
+.promo__installments {
+  margin: 0 auto;
+  max-width: 350px;
+}
+
+.promo__discount-text {
+  margin: 10px 0;
+  display: block;
+}
+
+.promo__price {
   font-size: 24px;
 }
 
-.promo .section-subtitle {
+.promo__price--double {
+  font-size: 18px;
+  text-decoration: line-through;
+  color: #c1c1c1;
+  margin-bottom: 6px;
+}
+
+.promo__subtitle {
   font-size: 19px;
   font-weight: 300;
   text-align: center;
   margin: 20px auto 20px;
 }
 
+.promo .card-wrapper {
+  display: flex;
+}
+
 .promo .card {
+  display: flex;
+  flex-direction: column;
   max-width: 360px;
   width: 100%;
+  min-height: 100%;
   border: 3px solid transparent;
-  min-height: 490px;
   border-radius: 10px;
   box-shadow: 3px 2px 15px -5px rgba(0, 0, 0, 0.49);
   text-align: center;
@@ -93,8 +103,13 @@
   margin: 20px;
 }
 
-.promo .product-info {
+.promo__product-info {
   padding: 0 15px 0;
+  flex: 1 0 auto;
+}
+
+.promo__add-button {
+  flex: 0 0 auto;
 }
 
 .promo .card.starter:hover {
@@ -205,7 +220,7 @@
   text-align: right;
 }
 
-.promo .feedback-vmp41 img {
+.promo .feedback img {
   max-width: 85%;
   border-radius: 50px;
   margin: 0 auto;
@@ -229,7 +244,7 @@
   margin-bottom: 20px;
 }
 
-.promo .footer {
+.promo__footer {
   justify-content: space-between;
   align-items: center;
   padding: 20px 30px;
@@ -241,7 +256,7 @@
   font-weight: 300;
 }
 
-.promo .footer .footer-row {
+.promo__footer-row {
   max-width: 1000px;
   display: flex;
   justify-content: space-around;
@@ -251,17 +266,24 @@
   list-style: none;
 }
 
-.promo .footer li a {
+.promo__footer-link {
   color: white;
   text-decoration: none;
   font-weight: 500;
 }
 
-.promo .people-rate {
+.promo__people-rate {
   padding-bottom: 30px;
 }
 
-.promo .scroll-to-top {
+.promo__people-rate-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.promo__scroll-to-top {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -270,7 +292,7 @@
   padding-bottom: 50px;
 }
 
-.promo .scroll-to-top .green-button-animated {
+.promo__scroll-to-top .green-button-animated {
   max-width: 430px;
 }
 
@@ -287,13 +309,6 @@
   height: 75px;
   -o-object-fit: contain;
      object-fit: contain;
-}
-
-.promo .people-rate-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .promo .carousel {
@@ -342,22 +357,26 @@
   margin-right: 10px;
 }
 
-.promo .choose-product-item .red-item,
-.promo .choose-product-item .green-item,
-.promo .choose-product-item .blue-item {
+.promo__variant-icon {
+  max-width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.promo__variant-icon-wrapper {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   position: relative;
+  overflow: hidden;
 }
 
-.promo .choose-product-item .red-item.selected-variant,
-.promo .choose-product-item .green-item.selected-variant,
-.promo .choose-product-item .blue-item.selected-variant {
+.promo__variant-icon-wrapper.selected-variant {
   border: 2px solid #e3342f;
 }
 
-.promo .step-title {
+.promo__step-title {
   font-size: 21px;
   font-weight: 700;
   display: flex;
@@ -366,14 +385,14 @@
   text-align: center;
 }
 
-.promo .complete-order {
+.promo__complete-order {
   display: block;
   margin: 60px 0;
   padding: 60px 0;
   background-color: white;
 }
 
-.promo .row-credit-cards-flex {
+.promo__row-credit-cards {
   padding-bottom: 40px;
   padding-top: 24px;
   display: flex;
@@ -382,7 +401,7 @@
   justify-content: center;
 }
 
-.promo .form-wrapper {
+.promo__form-wrapper {
   max-width: 555px;
   margin: 0 auto;
 }

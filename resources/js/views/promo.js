@@ -4,14 +4,21 @@ import carousel from 'vue-owl-carousel';
 import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
 import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
+import { preparePurchaseData } from '../utils/checkout';
 
 const promo = new Vue({
   el: "#promo",
 
   data: () => ({
+    implValue: '1',
+    installments: '1',
     isShownForm: false,
     selectedPlan: null,
-    selectedVariant: null,
+    warrantyPriceText: null,
+    warrantyOldPrice: null,
+    discount: null,
+    variant: null,
+    variantList: [],
     paymentMethod: null,
     stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
       value: it,
@@ -108,17 +115,55 @@ const promo = new Vue({
     carousel,
   },
 
+  installmentsList: [
+    {
+      value: '1',
+      text: 'Pay in 1 installments',
+      label: 'Pay in 1 installments',
+    },
+    {
+      value: '3',
+      text: 'Pay in 3 installments',
+      label: 'Pay in 3 installments',
+    },
+    {
+      value: '5',
+      text: 'Pay in 5 installments',
+      label: 'Pay in 5 installments',
+    }
+  ],
 
   mounted() {
     this.form.installments =
       this.checkoutData.countryCode === 'BR' ? 3 :
         this.checkoutData.countryCode === 'MX' ? 1 :
           1
+    this.changeWarrantyValue()
+
+    this.variantList = this.skusList.map((it) => ({
+      label: it.name,
+      text: `<div><img src="${it.images[0]}" alt=""><span>${it.name}</span></div>`,
+      value: it.code,
+      imageUrl: it.images[0]
+    }))
   },
 
   computed: {
     checkoutData() {
       return checkoutData;
+    },
+
+    quantityOfInstallments () {
+      const implValue = this.implValue
+      return implValue && implValue !== 1 ? implValue + '× ' : ''
+    },
+
+    productData () {
+      return checkoutData.product
+    },
+
+    skusList () {
+      return checkoutData.product.skus;
     },
   },
 
@@ -144,7 +189,7 @@ const promo = new Vue({
     },
 
     setSelectedVariant(variant) {
-      this.selectedVariant = variant;
+      this.variant = variant;
       this.isShownForm = true;
 
       this.scrollTo('.j-complete-order');
@@ -161,6 +206,43 @@ const promo = new Vue({
         ...this.form,
         ...address
       }
+    },
+
+    getImplValue(value) {
+      this.implValue = value;
+      if (this.implValue) this.changeWarrantyValue();
+    },
+
+    changeWarrantyValue () {
+      const prices = product.prices;
+      this.implValue = this.implValue || 3;
+      switch(this.implValue) {
+        case String(1):
+          this.warrantyPriceText = prices[this.implValue].value_text;
+          this.warrantyOldPrice = prices[this.implValue].old_value_text;
+          this.discount = prices[this.implValue].discount_percent;
+        case String(3):
+          this.warrantyPriceText = prices[this.implValue].installments3_value_text;
+          this.warrantyOldPrice = prices[this.implValue].installments3_old_value_text;
+          this.discount = prices[this.implValue].discount_percent;
+        case String(5):
+          this.warrantyPriceText = prices[this.implValue].installments6_value_text;
+          this.warrantyOldPrice = prices[this.implValue].installments6_old_value_text;
+          this.discount = prices[this.implValue].discount_percent;
+        default:
+          break;
+      }
+
+      const currentVariant = this.skusList.find(it => it.code === this.variant)
+
+      this.purchase = preparePurchaseData({
+        purchaseList: this.productData.prices,
+        long_name: this.productData.long_name,
+        variant: currentVariant && currentVariant.name,
+        installments: this.installments,
+      })
+
+      console.log(JSON.parse(JSON.stringify(this.purchase)))
     },
 
     scrollTo(selector) {
