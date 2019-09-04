@@ -38,11 +38,13 @@ class PaypalController extends Controller
     public function createOrder(PayPalCrateOrderRequest $request)
     {
         $braintree_response = $this->payPalService->createOrder($request);
-	
+
         $response = json_encode($braintree_response->result);
         unset($braintree_response->headers['Set-Cookie']);
         $braintree_response->headers['Content-Length'] = strlen($response);
-	
+
+        return $response;
+
         return [
             //$response,
             'status' => $braintree_response->statusCode,

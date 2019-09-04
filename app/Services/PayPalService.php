@@ -119,6 +119,8 @@ $local_currency = 'USD';
 
         $response = $this->payPalHttpClient->execute($pp_request);
 
+        logger()->info(print_r($response, true));
+
         if ($response->statusCode === 201) {
             $paypal_order = $response->result;
 
