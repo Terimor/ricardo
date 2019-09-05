@@ -22,15 +22,18 @@
             that.action = actions;
             actions.disable();
           },
-          onClick () {
-            if ($v.required || $v.$dirty) {
+          createOrder(data, actions) {
               return createOrder();
-            } else {
-              that.$emit('click', true);
-              return true;
-            }
           },
-          onApprove (data) {
+          // onClick () {
+          //   if ($v.required || $v.$dirty) {
+          //     return createOrder();
+          //   } else {
+          //     that.$emit('click', true);
+          //     return true;
+          //   }
+          // },
+          onApprove (data, actions) {
             if ($v.required || $v.$dirty) {
               return onApprove(data);
             }

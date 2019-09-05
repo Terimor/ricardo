@@ -181,6 +181,7 @@ return [
         Stevebauman\Location\LocationServiceProvider::class,
         Sentry\Laravel\ServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
+	Jenssegers\Mongodb\Session\SessionServiceProvider::class
 
     ],
 

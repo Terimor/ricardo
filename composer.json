@@ -13,6 +13,7 @@
         "checkout/checkout-sdk-php": "^1.0",
         "fideloper/proxy": "^4.0",
         "jenssegers/mongodb": "^3.5",
+        "jenssegers/mongodb-session": "^1.2",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "paypal/paypal-checkout-sdk": "1.0.0",

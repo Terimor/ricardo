@@ -1,30 +1,24 @@
 <template>
   <div v-if="$v">
     <div class="d-flex flex-column payment-form-vmc4">
+      <div class="vmc4__deal">
       <div class="col-md-12">
         <h4 class="form-steps-title">
           <b>{{step}}/{{maxSteps}}</b>
           <span>Choose your Deal</span>
         </h4>
 
+
         <div class="step step-1" v-if="step === 1">
+          <slot name="installment" />
+
           <radio-button-group
-              :withCustomLabels="true"
-              v-model="form.deal"
-              :list="list">
-            <radio-button-item-deal
-                :showPerUnitPrice=false
-                :showDiscount=true
-                :value="form.deal"
-                v-for="item in list"
-                :item="{
-                  ...item,
-                  value: item.totalQuantity,
-                }"
-                :key="item.value"
-                @checkDeal="setBackgroundForChecked"
-                @finish-render="setBackgroundForChecked(form.deal)"/>
-          </radio-button-group>
+            :withCustomLabels="false"
+            v-model="form.deal"
+            @input="setWarrantyPriceText"
+            :list="list"
+            />
+
           <h2>Please select your variant</h2>
           <select-field
               popperClass="smc7-popover-variant"
@@ -33,6 +27,8 @@
                 placeholder: 'Variant'
               }"
               :list="variantList"/>
+
+          <slot name="warranty" />
         </div>
 
         <div class="step step-2" v-if="step === 2">
@@ -237,6 +233,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 
 </template>
@@ -256,8 +253,9 @@
 			'cardNames',
 			'list',
 			'variantList',
-			'countryCode',
-      'checkoutData',
+      'countryCode',
+      'installments',
+			'checkoutData'
 		],
 		data() {
 			return {
@@ -289,7 +287,10 @@
 					paymentType: null,
 				}
 			}
-		},
+    },
+    mounted() {
+      this.setWarrantyPriceText(this.form.deal)
+    },
 		computed: {
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
@@ -311,25 +312,20 @@
 					.then(() => {
 						fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
 					});
-			},
+      },
+      installments (val) {
+        if (+val !== 1 && this.countryCode === 'MX') {
+          this.paymentForm.cardType = 'credit'
+        }
+      }
 		},
 		methods: {
+      setWarrantyPriceText(value) {
+        this.$emit('setWarrantyPriceText', value)
+      },
 			submit() {
 				this.$v.form.$touch();
 				this.$emit('onSubmit', this.form)
-			},
-			setBackgroundForChecked(checkbox) {
-				let allBoxes = document.getElementsByClassName('radio-button-deal');
-				let boxContent = document.querySelector(`.item-${checkbox}`);
-				if (allBoxes.length) {
-					for (let i of allBoxes) {
-						i.classList.remove("isChecked");
-					}
-				}
-
-				if (checkbox && boxContent) {
-					boxContent.classList.add("isChecked");
-				}
 			},
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
@@ -360,6 +356,7 @@
 	}
 </script>
 <style lang="scss">
+@import "../../../sass/variables";
 
   .payment-form-vmc4 {
     .form-steps-title {
@@ -402,19 +399,42 @@
         top: 20px;
       }
 
+      .label-container-radio {
+        border: none;
+        margin: 5px 0;
+      }
+      .label-container-radio:hover {
+        background-color: #fef5eb;
+        border: none;
+      }
+
       .label-container-radio input:checked ~ .checkmark:after {
         display: block;
       }
 
-      .price {
-        position: relative;
-        margin-right: 60px;
+      .radio-button-group {
+        margin: 24px 8px;
+      }
 
-        .bestseller {
-          position: absolute;
-          left: -50px;
-          top: -26px;
-        }
+      .main-row {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+      }
+      .discount {
+        margin-left: 4px;
+      }
+      .prices {
+        margin-right: 50px;
+      }
+      .red {
+        color: $red;
+      }
+      .best-seller {
+        position: absolute;
+        top: -26px;
+        right: 50px;
+
       }
     }
 

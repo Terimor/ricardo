@@ -96,7 +96,7 @@
                 }"
                 v-model="paymentForm.city"/>
             <select-field
-                v-if="countryCode === 'BR' || countryCode === 'MX'"
+                v-if="countryCode === 'BR' || countryCode === 'MX' || countryCode === 'CO'"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 validationMessage="Please enter or select your state"
