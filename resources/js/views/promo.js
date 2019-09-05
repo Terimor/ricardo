@@ -226,21 +226,25 @@ const promo = new Vue({
 
     changeWarrantyValue () {
       const prices = checkoutData.product.prices;
-      this.implValue = this.implValue || 3;
+
+      console.log(this.implValue);
 
       switch(this.implValue) {
         case String(1):
           this.warrantyPriceText = prices[1].value_text;
           this.warrantyOldPrice = prices[1].old_value_text;
           this.discount = prices[1].discount_percent;
+          break;
         case String(3):
           this.warrantyPriceText = prices[1].installments3_value_text;
           this.warrantyOldPrice = prices[1].installments3_old_value_text;
           this.discount = prices[1].discount_percent;
+          break;
         case String(6):
           this.warrantyPriceText = prices[1].installments6_value_text;
           this.warrantyOldPrice = prices[1].installments6_old_value_text;
           this.discount = prices[1].discount_percent;
+          break;
         default:
           break;
       }

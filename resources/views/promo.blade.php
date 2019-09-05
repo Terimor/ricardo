@@ -48,7 +48,7 @@
                         </span>
                     </div>
                     <span class="promo__price promo__text-red bold">
-                        @{{quantityOfInstallments}} @{{warrantyPriceText}}
+                        @{{quantityOfInstallments}} @{{ warrantyPriceText }}
                     </span>
                 </div>
             </div>
