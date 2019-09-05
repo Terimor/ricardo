@@ -19,8 +19,10 @@ class ProductController extends Controller
      */
     public function view(Request $request, ProductService $productService)
     {
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
         return view('product', [
-            'product' => $productService->resolveProduct($request, true)
+            'product' => $productService->resolveProduct($request, true),
+            'location' => $location
         ]);
     }
 
@@ -40,14 +42,14 @@ class ProductController extends Controller
         ]);
         return $product;
     }
-    
+
     public function getUpsellProduct(string $productId, ProductService $productService)
     {
 	$product = $productService->resolveProduct(request());
-	
+
 	$upsell = $productService->getUpsellProductById($product, $productId);
-	
-	
+
+
 	return ['product' => $product, 'usell' => $upsell];
     }
 }

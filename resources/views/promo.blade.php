@@ -8,12 +8,10 @@
 @section('script')
     <script defer>
         const checkoutData = {
-            countryCode: 'BR',
+            countryCode: '{{ $location->countryCode }}',
             product: @json($product),
         };
         const product = @json($product)
-
-        console.log(product)
     </script>
 
     <script src="{{ asset('js/views/promo.js') }}" defer></script>
