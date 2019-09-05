@@ -70,7 +70,10 @@ class SiteController extends Controller
                 ])->pluck('value', 'key');
 
         $countries =  \Utils::getCountries();
-        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries'));
+
+	$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+
+        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
     }
 
     /**
@@ -81,9 +84,13 @@ class SiteController extends Controller
     public function upsells(Request $request, ProductService $productService)
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
-        $product = $productService->resolveProduct($request, true);
+	$product = $productService->resolveProduct($request, true);
 
-        return view('uppsells_funnel', compact('location', 'product'));
+	$setting = Setting::whereIn('key',[
+	    'instant_payment_paypal_client_id',
+	])->pluck('value', 'key');
+
+        return view('uppsells_funnel', compact('location', 'product', 'setting'));
     }
 
     /**

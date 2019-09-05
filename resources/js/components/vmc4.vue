@@ -32,7 +32,7 @@
                     @productImageChanged="setProductImage"
                     @setWarrantyPriceText="setWarrantyPriceText"
                     :cardNames="cardNames"
-                    :list="purchase"
+                    :list="dealList"
                     :variantList="variantList"
                     @onSubmit="submit">
                     <template slot="installment">
@@ -80,9 +80,11 @@
   </div>
 </template>
 <script>
-	import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
+  import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import {preparePurchaseData} from "../utils/checkout";
-	import {fade} from "../utils/common";
+  import {fade} from "../utils/common";
+  import {getRadioHtml} from '../utils/vmc4';
+  import printf from 'printf'
 
 	export default {
 		name: 'vmc4',
@@ -193,7 +195,20 @@
       quantityOfInstallments () {
         const { installments } = this.form
         return installments && installments !== 1 ? installments + '× ' : ''
-      }
+      },
+      dealList () {
+        return this.purchase.map((it, idx) => ({
+          class: `${this.radioIdx === it.totalQuantity ? 'isChecked' : ''} ${it.discountName.toLowerCase() === 'bestseller' ? 'bestseller':''}`,
+          value: it.totalQuantity,
+          quantity: it.totalQuantity,
+          label: getRadioHtml({
+            ...it,
+            installments: this.form.installments,
+            text: printf(it.text, { color: this.form.variant }),
+            idx
+          })
+        }))
+      },
 		},
 		methods: {
 			submit(val) {
@@ -355,6 +370,85 @@
               max-width: 100%;
             }
           }
+        }
+      }
+    }
+
+    .radio-button-group {
+      .label-container-radio__label {
+        font-size: 16px;
+      }
+
+      .label-container-radio__name-price {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .label-container-radio.with-discount .label-container-radio__name-price > span:nth-child(2) {
+        text-decoration: line-through;
+      }
+    }
+
+    .vmc4__deal {
+      h3 {
+        padding-left: 20px;
+      }
+
+      #warranty-field-button {
+        width: 100%;
+        position: relative;
+        height: 95px;
+        margin-top: 22px;
+        background-color: rgba(216, 216, 216, .71);
+        border-radius: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        outline: none;
+
+        &:hover {
+          background-color: rgba(191,191,191,.71);
+          background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
+        }
+
+        label[for=warranty-field] {
+          font-weight: bold;
+          line-height: 1.8;
+          text-align: left;
+          text-transform: capitalize;
+          font-size: 16px;
+          padding: 23px 70px 30px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+
+          .checkmark {
+            top: 20px;
+            left: 40px;
+          }
+        }
+
+        input[type=checkbox] {
+          position: absolute;
+          top: 23px;
+          left: 45px;
+        }
+
+        & > img {
+          position: absolute;
+          width: 30px;
+          height: auto;
+          top: -7px;
+          right: -7px;
+        }
+
+        & > .fa-arrow-right {
+          position: absolute;
+          font-size: 18px;
+          color: #dc003a;
+          top: 20px;
+          left: 10px;
+          animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
         }
       }
     }
