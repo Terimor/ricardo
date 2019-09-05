@@ -5,6 +5,7 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use App\Models\OdinHistory;
 
 class OdinOrder extends Model
 {
@@ -12,7 +13,7 @@ class OdinOrder extends Model
 
     protected $collection = 'odin_order';
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $dates = ['created_at', 'updated_at'];        
 
     /**
      * Attributes with default values
@@ -140,6 +141,55 @@ class OdinOrder extends Model
 	    if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $this->currency;
             }
+        });
+	
+	self::updated(function($model) {
+	    $original = $model->getOriginal();
+	    if ($model->getChanges()) {
+		$fields = []; $isArray = false;
+		foreach ($model->getChanges() as $fieldName => $changedField) {
+		    $old = [];
+		    $new = [];
+		    if (in_array($fieldName, OdinHistory::$ignoreFields)) {
+			continue;
+		    } else {
+			if (is_array($changedField)) {
+			    $isArray = true;
+			    // check array
+			    foreach ($changedField as $key => $cField) {
+				// check if new
+				if(!isset($original[$fieldName][$key])) {
+				    $new[] = $cField;
+				} else {
+				    //check in json
+				    $jsonOld = json_encode($original[$fieldName][$key]);
+				    $jsonNew = json_encode($cField);
+				    // add to array
+				    if($jsonOld != $jsonNew) {
+					$old[] = $original[$fieldName][$key];
+					$new[] = $cField;
+				    }
+				}
+			    }
+			    $fields[] = [$fieldName, $old, $new];
+			    
+			} else {
+			    $fields[] = [$fieldName, $original[$fieldName], $changedField];
+			}
+		    }
+		}
+		
+		// add to OdinHistory
+		if ($fields) {
+		    $history = new OdinHistory();
+		    $history->collection = 'odin_order';
+		    $history->document_id = $model->_id;
+		    $history->fields = $fields;
+		    $history->is_array_changed = $isArray;
+		    $history->reason = OdinHistory::REASON_ODIN_UPDATE;
+		    $history->save();
+		}
+	    }	
         });
     }
 

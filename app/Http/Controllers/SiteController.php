@@ -9,6 +9,7 @@ use App\Services\ProductService;
 use App\Models\Currency;
 use App\Models\Setting;
 use App\Services\I18nService;
+use App\Models\OdinOrder;
 
 class SiteController extends Controller
 {
@@ -144,9 +145,7 @@ class SiteController extends Controller
      * @return type
      */
     public function test(Request $request, ProductService $productService)
-    {
-	
-        $cc = \Utils::getCountries();
+    {	        
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
@@ -154,6 +153,17 @@ class SiteController extends Controller
 
         echo '123'; exit;*/
 
+	//5d6d166a14dec6079e07d171
+	/*$order = OdinOrder::where('_id','5d6d166a14dec6079e07d171')->first();
+	$order->status = 'aaaa';
+	$txns = $order->txns;
+	$txns[1]['status'] = 'tttt';
+	$txns[] = $txns[0];
+	$order->txns = $txns;
+	$order->save();
+	echo '<pre>'; var_dump($order); echo '</pre>';
+	*/
+	exit;
         $product = $productService->resolveProduct($request, true);
         
         echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
