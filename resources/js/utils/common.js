@@ -47,3 +47,9 @@ export function fade(type, ms, el, withoutDeleting) {
     const fading = window.setInterval(func, interval);
   }))
 }
+
+export function scrollTo(selector) {
+  this.$nextTick(() => {
+    document.querySelector(selector).scrollIntoView()
+  })
+}

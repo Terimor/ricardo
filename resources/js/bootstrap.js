@@ -1,4 +1,5 @@
 import VueMq from 'vue-mq'
+import './UIsettings';
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 

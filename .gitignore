@@ -36,8 +36,10 @@ phpunit.phar
 /node_modules
 /public/hot
 /public/storage
-/public/js/app.js
+/public/js
 /public/css/app.css
+/public/css/promo.css
+/public/mix-manifest.json
 /storage/*.key
 .env
 .phpunit.result.cache
