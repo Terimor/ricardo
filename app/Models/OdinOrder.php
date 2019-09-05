@@ -171,6 +171,7 @@ class OdinOrder extends Model
 				    }
 				}
 			    }
+			    $old = $old ? $old : null;
 			    $fields[] = [$fieldName, $old, $new];
 			    
 			} else {
