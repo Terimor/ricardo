@@ -170,8 +170,7 @@ class OdinOrder extends Model
 					$new[] = $cField;
 				    }
 				}
-			    }
-			    $old = $old ? $old : null;
+			    }			    
 			    $fields[] = [$fieldName, $old, $new];
 			    
 			} else {
