@@ -25,6 +25,7 @@
     @endif
 
     @if (config('app.env') === 'local')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js" defer></script>
     @else
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js" defer></script>
     @endif
