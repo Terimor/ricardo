@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }" v-if="paymentForm">
+    <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
         <h2>
           {{ firstTitle }}
         </h2>
@@ -304,10 +304,6 @@
         cardType: null,
         isOpenCVVModal: false
       }
-    },
-
-    mounted() {
-      console.log(this.paymentForm, this.$v.form)
     },
 
     computed: {

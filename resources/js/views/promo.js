@@ -5,9 +5,16 @@ import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
 import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
 import { preparePurchaseData } from '../utils/checkout';
+import { getNotice } from '../utils/emc1';
+import { scrollTo } from '../utils/common';
+import notification from '../mixins/notification'
 
 const promo = new Vue({
   el: "#promo",
+
+  mixins: [
+    notification,
+  ],
 
   data: () => ({
     implValue: '1',
@@ -18,6 +25,7 @@ const promo = new Vue({
     warrantyOldPrice: null,
     discount: null,
     variant: null,
+    purchase: [],
     variantList: [],
     paymentMethod: null,
     stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
@@ -127,9 +135,9 @@ const promo = new Vue({
       label: 'Pay in 3 installments',
     },
     {
-      value: '5',
-      text: 'Pay in 5 installments',
-      label: 'Pay in 5 installments',
+      value: '6',
+      text: 'Pay in 6 installments',
+      label: 'Pay in 6 installments',
     }
   ],
 
@@ -139,6 +147,8 @@ const promo = new Vue({
         this.checkoutData.countryCode === 'MX' ? 1 :
           1
     this.changeWarrantyValue()
+
+    this.showNotice();
 
     this.variantList = this.skusList.map((it) => ({
       label: it.name,
@@ -168,6 +178,9 @@ const promo = new Vue({
   },
 
   methods: {
+    scrollTo: scrollTo,
+    paypalOnApprove: paypalOnApprove,
+
     paypalCreateOrder () {
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -179,8 +192,6 @@ const promo = new Vue({
         affiliate: new URL(document.location.href).searchParams.get('affiliate'),
       })
     },
-
-    paypalOnApprove: paypalOnApprove,
 
     setSelectedPlan(plan) {
       this.selectedPlan = plan;
@@ -208,6 +219,20 @@ const promo = new Vue({
       }
     },
 
+    showNotice () {
+      const notice = getNotice('EchoBeat7')
+      const getNoticeHtml = () => notice.next().value
+
+      setTimeout(() => {
+        setInterval(() => {
+          this.showNotification({
+            content: getNoticeHtml(),
+            position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
+          })
+        }, 6000)
+      }, 9000)
+    },
+
     getImplValue(value) {
       this.implValue = value;
       if (this.implValue) this.changeWarrantyValue();
@@ -216,19 +241,20 @@ const promo = new Vue({
     changeWarrantyValue () {
       const prices = product.prices;
       this.implValue = this.implValue || 3;
+
       switch(this.implValue) {
         case String(1):
-          this.warrantyPriceText = prices[this.implValue].value_text;
-          this.warrantyOldPrice = prices[this.implValue].old_value_text;
-          this.discount = prices[this.implValue].discount_percent;
+          this.warrantyPriceText = prices[1].value_text;
+          this.warrantyOldPrice = prices[1].old_value_text;
+          this.discount = prices[1].discount_percent;
         case String(3):
-          this.warrantyPriceText = prices[this.implValue].installments3_value_text;
-          this.warrantyOldPrice = prices[this.implValue].installments3_old_value_text;
-          this.discount = prices[this.implValue].discount_percent;
-        case String(5):
-          this.warrantyPriceText = prices[this.implValue].installments6_value_text;
-          this.warrantyOldPrice = prices[this.implValue].installments6_old_value_text;
-          this.discount = prices[this.implValue].discount_percent;
+          this.warrantyPriceText = prices[1].installments3_value_text;
+          this.warrantyOldPrice = prices[1].installments3_old_value_text;
+          this.discount = prices[1].discount_percent;
+        case String(6):
+          this.warrantyPriceText = prices[1].installments6_value_text;
+          this.warrantyOldPrice = prices[1].installments6_old_value_text;
+          this.discount = prices[1].discount_percent;
         default:
           break;
       }
@@ -239,16 +265,8 @@ const promo = new Vue({
         purchaseList: this.productData.prices,
         long_name: this.productData.long_name,
         variant: currentVariant && currentVariant.name,
-        installments: this.installments,
+        installments: this.implValue,
       })
-
-      console.log(JSON.parse(JSON.stringify(this.purchase)))
     },
-
-    scrollTo(selector) {
-      setTimeout(() => {
-        document.querySelector(selector).scrollIntoView()
-      }, 1)
-    }
   }
 })

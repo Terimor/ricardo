@@ -12,11 +12,12 @@
     }
   }
 
-  .header-products {
+  &__header-products {
     font-size: 24px;
   }
 
   &__jumbotron {
+    cursor: pointer;
     border: 5px dashed $red;
     max-width: 1100px;
     padding: 15px;
@@ -25,7 +26,7 @@
     margin-bottom: 40px;
   }
 
-  .text-red {
+  &__text-red {
     color: $red;
   }
 
@@ -39,7 +40,7 @@
     margin: 15px 0;
   }
 
-  .go-to-selector {
+  &__go-to-selector {
     text-decoration: none;
     color: $red;
   }
@@ -72,11 +73,11 @@
     margin: 20px auto 20px;
   }
 
-  .card-wrapper {
+  &__card-wrapper {
     display: flex;
   }
 
-  .card {
+  &__card {
     display: flex;
 	  flex-direction: column;
     max-width: 360px;
@@ -90,7 +91,7 @@
     transition: 0.2s all;
     cursor: pointer;
     font-size: 16px;
-    padding-bottom: 10px;
+    padding: 0 10px 10px;
     margin-bottom: 20px;
   }
 
@@ -113,7 +114,7 @@
     flex: 0 0 auto;
   }
 
-  .card {
+  &__card {
     &.starter:hover {
       border: 3px solid $blue;
     }
@@ -152,19 +153,7 @@
     }
   }
 
-  .started-img {
-    margin: 0;
-    max-width: 225px;
-  }
-
-  .multi-prod-sec {
-    font-size: 19px;
-    text-align: center;
-    max-width: 1130px;
-    margin: 10px 0;
-  }
-
-  .discount {
+  &__discount {
     width: 200px;
     margin: 0 auto;
     padding: 8px 0 10px;
@@ -174,7 +163,7 @@
     font-weight: 600;
   }
 
-  .fifty-discount {
+  &__fifty-discount {
     font-size: 19px;
     margin: 2px;
   }
@@ -184,15 +173,31 @@
     height: auto;
   }
 
-  .reviews {
+  &__reviews {
     margin-bottom: 30px;
   }
 
-  .review {
+  .label {
+    text-align: left;
+  }
+
+  &__review {
     width: 900px;
     margin: 0 auto;
     display: flex;
     align-items: center;
+
+    &:nth-child(odd) {
+      flex-direction: row-reverse;
+
+      @media screen and ($m-down) {
+        flex-direction: column;
+      }
+
+      & .review-text {
+        text-align: right;
+      }
+    }
 
     & .review-text {
       text-align: left;
@@ -210,20 +215,7 @@
     }
   }
 
-  .reverse {
-    flex-direction: row-reverse;
-
-    @media screen and ($m-down) {
-      flex-direction: column;
-    }
-
-    & .review-text {
-      text-align: right;
-    }
-  }
-
-
-  .feedback img {
+  &__review-feedback img {
     max-width: 85%;
     border-radius: 50px;
     margin: 0 auto;
@@ -231,12 +223,12 @@
     max-height: 80px;
   }
 
-  .review .stars .fa {
+  &__review .stars .fa {
     color: #fbd401;
     font-size: 26px;
   }
 
-  .review .title {
+  &__review-title {
     font-size: 19px;
     font-weight: bold;
     color: black;
@@ -300,7 +292,7 @@
     }
   }
 
-  .select-variant {
+  &__select-variant {
     background-color: $green;
     padding: 20px 0;
     font-size: 28px;
@@ -308,17 +300,18 @@
     margin: 24px 0;
   }
 
-  .carousel-img {
+  &__carousel-img {
     width: 100%;
     height: 75px;
     object-fit: contain;
   }
 
-  .carousel {
+  &__carousel {
     margin: 10px 0;
   }
 
-  .choose-product-item {
+  &__choose-product-item {
+    cursor: pointer;
     width: fit-content;
     height: 210px;
     background-color: white;
@@ -339,24 +332,24 @@
       padding-bottom: 8px;
     }
 
-    .choose-product-item-color {
-      width: 200px;
-      padding-top: 0;
-      text-align: center;
-
-      &.selected-variant {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-      }
-    }
-
     .selected-variant {
       & .variant-name {
         border-bottom: 1px solid $red;
         margin-left: 10px;
         margin-right: 10px;
       }
+    }
+  }
+
+  &__choose-product-item-color {
+    width: 200px;
+    padding-top: 0;
+    text-align: center;
+
+    &.selected-variant {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
     }
   }
 
