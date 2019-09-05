@@ -10,8 +10,8 @@
         const checkoutData = {
             countryCode: '{{ $location->countryCode }}',
             product: @json($product),
+            countries: @json($countries),
         };
-        const product = @json($product)
     </script>
 
     <script src="{{ asset('js/views/promo.js') }}" defer></script>
@@ -154,7 +154,7 @@
             <section class="promo__reviews">
 
                 <h2 class="promo__title">
-                    Happy EchoBeat users
+                    Happy {{ $product->skus[0]['name'] }} users
                 </h2>
 
                 <div class="promo__review">
@@ -307,7 +307,7 @@
                     :has-warranty="true"
                     :country-code="checkoutData.countryCode"
                     :is-brazil="checkoutData.countryCode === 'BR'"
-                    :country-list="mockData.countryList"
+                    :country-list="countriesList"
                     :quantity-of-installments="quantityOfInstallments"
                     :warranty-price-text="warrantyPriceText"
                 />
@@ -318,7 +318,7 @@
         <div class="container">
             <div class="promo__people-rate-block">
                 <h1 class="bold promo__title">Revolutionary Sound Quality at an Unbeatable Price</h1>
-                <h2 class="bold promo__people-rate">Many audio and tech companies tried to shut down this cheaper alternative to their overpriced bluetooth headphones. However, at last, finally EchoBeat has made it to the public</h2>
+                <h2 class="bold promo__people-rate">Many audio and tech companies tried to shut down this cheaper alternative to their overpriced bluetooth headphones. However, at last, finally {{ $product->skus[0]['name'] }} has made it to the public</h2>
                 <green-button @click="scrollTo('.j-header-products')">
                     Click here to claim your special 50% discount - This incredible offer will NOT last
                 </green-button>

@@ -48997,30 +48997,7 @@ var promo = new Vue({
         text: 'PayPal',
         label: 'PayPal',
         imgUrl: '/images/cc-icons/payPal.png'
-      }],
-      mockData: {
-        countryList: [{
-          value: 'US',
-          text: 'USA',
-          label: 'USA'
-        }, {
-          value: 'RU',
-          text: 'Russia',
-          label: 'Russia'
-        }, {
-          value: 'UA',
-          text: 'Ukraine',
-          label: 'Ukraine'
-        }, {
-          value: 'PT',
-          text: 'Portugal',
-          label: 'Portugal'
-        }, {
-          value: 'BR',
-          text: 'Brazil',
-          label: 'Brazil'
-        }]
-      }
+      }]
     };
   },
   validations: _validation_emc1_validation__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -49067,6 +49044,17 @@ var promo = new Vue({
     }(function () {
       return checkoutData;
     }),
+    countriesList: function countriesList() {
+      var countries = [];
+      Object.keys(checkoutData.countries).map(function (key) {
+        countries.push({
+          value: key.toUpperCase(),
+          text: countries[key],
+          label: countries[key]
+        });
+      });
+      return countries;
+    },
     quantityOfInstallments: function quantityOfInstallments() {
       var implValue = this.implValue;
       return implValue && implValue !== 1 ? implValue + '× ' : '';
@@ -49133,7 +49121,7 @@ var promo = new Vue({
     changeWarrantyValue: function changeWarrantyValue() {
       var _this2 = this;
 
-      var prices = product.prices;
+      var prices = checkoutData.product.prices;
       this.implValue = this.implValue || 3;
 
       switch (this.implValue) {

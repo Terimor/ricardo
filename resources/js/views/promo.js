@@ -91,31 +91,6 @@ const promo = new Vue({
         imgUrl: '/images/cc-icons/payPal.png'
       }
     ],
-    mockData: {
-      countryList: [
-        {
-          value: 'US',
-          text: 'USA',
-          label: 'USA',
-        }, {
-          value: 'RU',
-          text: 'Russia',
-          label: 'Russia',
-        }, {
-          value: 'UA',
-          text: 'Ukraine',
-          label: 'Ukraine',
-        }, {
-          value: 'PT',
-          text: 'Portugal',
-          label: 'Portugal',
-        }, {
-          value: 'BR',
-          text: 'Brazil',
-          label: 'Brazil',
-        }
-      ],
-    },
   }),
   validations: emc1Validation,
 
@@ -161,6 +136,19 @@ const promo = new Vue({
   computed: {
     checkoutData() {
       return checkoutData;
+    },
+
+    countriesList() {
+      let countries = []
+      Object.keys(checkoutData.countries).map((key) => {
+        countries.push({
+          value: key.toUpperCase(),
+          text: countries[key],
+          label: countries[key],
+        });
+      });
+
+      return countries;
     },
 
     quantityOfInstallments () {
@@ -239,7 +227,7 @@ const promo = new Vue({
     },
 
     changeWarrantyValue () {
-      const prices = product.prices;
+      const prices = checkoutData.product.prices;
       this.implValue = this.implValue || 3;
 
       switch(this.implValue) {
