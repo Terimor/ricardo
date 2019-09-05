@@ -795,22 +795,31 @@
         }
     }
 
-    .warranty-field-button {
-    position: relative;
-    display: flex;
-    padding: 10px;
-    margin: 40px 0;
-  }
+  .warranty-field {
+    &-button {
+      position: relative;
+      display: flex;
+      padding: 10px;
+      margin: 40px 0;
+    }
 
-  .warranty-field-icon {
-    position: absolute;
-    right: -15px;
-    top: -15px;
-    width: 30px;
-    height: 30px;
+    &-icon {
+      position: absolute;
+      right: -15px;
+      top: -15px;
+      width: 30px;
+      height: 30px;
 
-    img {
-      max-width: 100%;
+      img {
+        max-width: 100%;
+      }
+    }
+
+    &-arrow {
+      position: absolute;
+      left: -30px;
+      top: 0;
+      z-index: 2;
     }
   }
 
@@ -819,23 +828,16 @@
     margin-left: 30px;
   }
 
-  .warranty-field-arrow {
-    position: absolute;
-    left: -30px;
-    top: 0;
-    z-index: 2;
+  #payment-data-form {
+    display: flex;
+    flex-wrap: wrap;
   }
 
-    #payment-data-form {
-        display: flex;
-        flex-wrap: wrap;
+  @media screen and ($s-down) {
+    .cvv-popup {
+      .el-dialog {
+        width: 90%;
+      }
     }
-
-    @media screen and ($s-down) {
-        .cvv-popup {
-            .el-dialog {
-                width: 90%;
-            }
-        }
-    }
+}
 </style>
