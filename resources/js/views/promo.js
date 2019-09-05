@@ -151,7 +151,7 @@ const promo = new Vue({
 
     quantityOfInstallments () {
       const implValue = this.implValue
-      return implValue && implValue !== 1 ? implValue + '× ' : ''
+      return implValue && implValue !== String(1) ? implValue + '× ' : ''
     },
 
     productData () {

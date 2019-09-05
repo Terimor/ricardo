@@ -5,6 +5,7 @@
   text-align: center;
 
   &__title {
+    margin: 45px 0;
     font-size: 38px;
 
     @media screen and ($l-down) {
@@ -18,7 +19,7 @@
 
   &__jumbotron {
     cursor: pointer;
-    border: 5px dashed $red;
+    border: 5px dashed red;
     max-width: 1100px;
     padding: 15px;
     margin: 0 auto;
@@ -27,7 +28,7 @@
   }
 
   &__text-red {
-    color: $red;
+    color: red;
   }
 
   &__heading-battery {
@@ -42,7 +43,7 @@
 
   &__go-to-selector {
     text-decoration: none;
-    color: $red;
+    color: red;
   }
 
   &__installments {
@@ -53,6 +54,10 @@
   &__discount-text {
     margin: 10px 0;
     display: block;
+  }
+
+  &__discount-image {
+    max-width: 100%;
   }
 
   &__price {
@@ -75,6 +80,7 @@
 
   &__card-wrapper {
     display: flex;
+    margin-bottom: 15px;
   }
 
   &__card {
@@ -126,30 +132,30 @@
     &.most-popular:hover {
       border: 3px solid $green;
     }
+  }
 
-    .heading {
-      max-width: 158px;
-      margin: auto;
-      display: flex;
-      justify-content: center;
-      transform: skewX(20deg);
-      background-color: $blue;
-      color: white;
+  &__heading {
+    max-width: 158px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    transform: skewX(20deg);
+    background-color: $blue;
+    color: white;
+    margin-bottom: 10px;
 
-      &.most-profitable {
-        background-color: $orange;
-      }
+    &.most-profitable {
+      background-color: $orange;
+    }
 
-      &.most-popular {
-        background-color: $green;
-      }
+    &.most-popular {
+      background-color: $green;
+    }
 
-      & strong {
-        font-size: 16px;
-        font-weight: 600;
-        transform: skewX(-20deg);
-
-      }
+    & strong {
+      font-size: 16px;
+      font-weight: 600;
+      transform: skewX(-20deg);
     }
   }
 
@@ -186,6 +192,7 @@
     margin: 0 auto;
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 
     &:nth-child(odd) {
       flex-direction: row-reverse;
@@ -215,12 +222,16 @@
     }
   }
 
-  &__review-feedback img {
-    max-width: 85%;
-    border-radius: 50px;
-    margin: 0 auto;
-    width: auto;
-    max-height: 80px;
+  &__review-feedback {
+    margin: 10px 0;
+
+    img {
+      max-width: 85%;
+      border-radius: 50px;
+      margin: 0 auto;
+      width: auto;
+      max-height: 80px;
+    }
   }
 
   &__review .stars .fa {

@@ -77,7 +77,7 @@
                 @input="getImplValue"
             />
         </div>
-        <h2 class="promo__header-products j-header-products">Secure Your Discounted Deal Now</h2>
+        <h2 class="promo__title j-header-products">Secure Your Discounted Deal Now</h2>
         <div
             class="row"
             v-cloak
@@ -98,7 +98,7 @@
                 >
                 <div class="promo__product-info">
                     <div
-                        class="heading"
+                        class="promo__heading"
                         :class="{
                             'most-popular': item.discountName === 'BESTSELLER',
                             'most-profitable': item.discountName === 'BEST DEAL',
@@ -110,11 +110,12 @@
                             @{{ item.discountName || 'STARTER CHOICE' }}
                         </strong>
                     </div>
+                    <img :src="item.image" alt="item.text" class="promo__discount-image">
                     <strong class="promo__discount-text">@{{ item.text }}</strong>
                     <div class="products-price">
                         <p class="promo__discount">
-                            <span class="promo__price--double bold">@{{ item.price }}</span>
-                            <span class="price promo__text-red bold">@{{ item.newPrice }}</span>
+                            <span class="promo__price--double bold">@{{quantityOfInstallments}} @{{ item.price }}</span>
+                            <span class="price promo__text-red bold">@{{quantityOfInstallments}} @{{ item.newPrice }}</span>
                         </p>
                     </div>
                     <div class="promo__fifty-discount">
