@@ -12,9 +12,7 @@ import notification from '../mixins/notification'
 const promo = new Vue({
   el: "#promo",
 
-  mixins: [
-    notification,
-  ],
+  mixins: [notification],
 
   data: () => ({
     implValue: '1',

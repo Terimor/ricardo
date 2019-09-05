@@ -23,7 +23,6 @@
     <div class="container">
         <div
             class="promo__jumbotron"
-            v-cloak
             @click="scrollTo('.j-header-products')"
         >
             <h2 class="promo__heading-battery">
@@ -36,7 +35,10 @@
                     </span>
                     {{ $product->long_name }}
                 </p>
-                <div class="promo__discount">
+                <div
+                    class="promo__discount"
+                    v-cloak
+                >
                     <div>
                         <span class="bold">
                             Price:
@@ -51,7 +53,12 @@
                 </div>
             </div>
             <h3>
-                <span class="promo__go-to-selector promo__text-red">BUY NOW - @{{ discount }}% OFF &amp; Free Shipping</span>
+                <span
+                    class="promo__go-to-selector promo__text-red"
+                    v-cloak
+                >
+                    BUY NOW - @{{ discount }}% OFF &amp; Free Shipping
+                </span>
             </h3>
             <div class="promo__subtitle">
                 <div>
@@ -119,15 +126,10 @@
                     </green-button>
                 </div>
             </div>
-
         </div>
-
         <template v-if="!selectedPlan">
-
             <section class="carousel-section">
-
                 <h1 class="promo__title">Also featured in</h1>
-
                 <carousel
                     class="promo__carousel"
                     :items="4"
@@ -148,26 +150,20 @@
                     <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/Gadgetify_1.png" alt="">
                     <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/NewYourToday_3.png" alt="">
                 </carousel>
-
             </section>
-
             <section class="promo__reviews">
-
                 <h2 class="promo__title">
                     Happy {{ $product->skus[0]['name'] }} users
                 </h2>
-
                 <div class="promo__review">
                     <div class="col-md-3 col-sm-3 col-xs-12">
                         <div class="promo__review-feedback">
                             <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/third_1.jpg">
                         </div>
                         <div class="section-text stars">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fa fa-star"></i>
+                            @endfor
                         </div>
                         <div class="section-text name">Harriet S.</div>
                     </div>
@@ -175,21 +171,20 @@
                         <div class="section-text promo__review-title">
                             My best companions!
                         </div>
-                        <div>The color wasn't what I expected but other than that, perfect! Seems to last quite a while and I enjoy not having to untangle cords anymore.</div>
+                        <div>
+                            The color wasn't what I expected but other than that, perfect! Seems to last quite a while and I enjoy not having to untangle cords anymore.
+                        </div>
                     </div>
                 </div>
-
                 <div class="promo__review reverse">
                     <div class="col-md-3 col-sm-3 col-xs-12">
                         <div class="promo__review-feedback">
                             <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/first_1.jpg">
                         </div>
                         <div class="section-text stars">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fa fa-star"></i>
+                            @endfor
                         </div>
                         <div class="section-text name">Adrian P.</div>
                     </div>
@@ -202,18 +197,15 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="promo__review">
                     <div class="col-md-3 col-sm-3 col-xs-12">
                         <div class="promo__review-feedback">
                             <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/second_1.jpg">
                         </div>
                         <div class="section-text stars">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <i class="fa fa-star"></i>
+                            @endfor
                         </div>
                         <div class="section-text name">Jack P.</div>
                     </div>
@@ -317,8 +309,12 @@
     <section class="promo__scroll-to-top">
         <div class="container">
             <div class="promo__people-rate-block">
-                <h1 class="bold promo__title">Revolutionary Sound Quality at an Unbeatable Price</h1>
-                <h2 class="bold promo__people-rate">Many audio and tech companies tried to shut down this cheaper alternative to their overpriced bluetooth headphones. However, at last, finally {{ $product->skus[0]['name'] }} has made it to the public</h2>
+                <h1 class="bold promo__title">
+                    Revolutionary Sound Quality at an Unbeatable Price
+                </h1>
+                <h2 class="bold promo__people-rate">
+                    Many audio and tech companies tried to shut down this cheaper alternative to their overpriced bluetooth headphones. However, at last, finally {{ $product->skus[0]['name'] }} has made it to the public
+                </h2>
                 <green-button @click="scrollTo('.j-header-products')">
                     Click here to claim your special 50% discount - This incredible offer will NOT last
                 </green-button>
@@ -327,18 +323,31 @@
     </section>
     <footer class="promo__footer">
         <ul class="promo__footer-row">
-            <li>
-                <a href="#!" class="promo__footer-link">Contact us</a>
-            </li>
-            <li>
-                <a href="#!" class="promo__footer-link">Terms of business</a>
-            </li>
-            <li>
-                <a href="#!" class="promo__footer-link">Privacy</a>
-            </li>
-            <li>
-                <a href="#!" class="promo__footer-link">Affiliate program</a>
-            </li>
+            @php
+            $links = [
+                [
+                    'text' => 'Contact us',
+                    'link' => '#!',
+                ],
+                [
+                    'text' => 'Terms of business',
+                    'link' => '#!',
+                ],
+                [
+                    'text' => 'Privacy',
+                    'link' => '#!',
+                ],
+                [
+                    'text' => 'Affiliate program',
+                    'link' => '#!',
+                ]
+            ];
+            @endphp
+            @foreach ($links as $item)
+                <li>
+                    <a href="{{ $item['text'] }}" class="promo__footer-link">{{ $item['text'] }}</a>
+                </li>
+            @endforeach
         </ul>
     </footer>
 </div>
