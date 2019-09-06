@@ -62,6 +62,12 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService)
     {
+		$viewTemplate = 'checkout';
+
+		if (request()->get('tpl') == 'vmp41') {
+			$viewTemplate = 'vmp41';
+		}
+
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
@@ -72,9 +78,9 @@ class SiteController extends Controller
 
         $countries =  \Utils::getCountries();
 
-	$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 
-        return view('checkout', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
+        return view($viewTemplate, compact('location', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
     }
 
     /**
@@ -154,16 +160,18 @@ class SiteController extends Controller
         echo '123'; exit;*/
 
 	//5d6d166a14dec6079e07d171
-	$order = OdinOrder::where('_id','5d6d166a14dec6079e07d171')->first();
-	$order->status = 'acvzzz';
+	/*$order = OdinOrder::where('_id','5d6d166a14dec6079e07d171')->first();
+	$order->status = 'v';
+	$i = 6;
 	$txns = $order->txns;
-	$txns[1]['status'] = 'abzxbz';
-	$txns[] = $txns[0];
+	$txns[$i]['status'] = 'axc';
+	$txns[] = $txns[$i];
+	unset($txns[$i]);
 	$order->txns = $txns;
 	$order->save();
 	echo '<pre>'; var_dump($order); echo '</pre>';
 
-	exit;
+	exit;*/
         $product = $productService->resolveProduct($request, true);
 
         echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;

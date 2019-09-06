@@ -23,7 +23,7 @@
     max-width: 1100px;
     padding: 15px;
     margin: 0 auto;
-    margin-top: 100px;
+    margin-top: 35px;
     margin-bottom: 40px;
   }
 
@@ -250,34 +250,6 @@
     margin-bottom: 20px;
   }
 
-  &__footer {
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 30px;
-    margin: auto;
-    background-color: #363636;
-    padding: 27px 0;
-    color: white;
-    font-size: 16px;
-    font-weight: 300;
-  }
-
-  &__footer-row {
-    max-width: 1000px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: auto;
-    text-align: center;
-    list-style: none;
-  }
-
-  &__footer-link {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-  }
-
   &__people-rate {
     padding-bottom: 30px;
   }
@@ -308,7 +280,7 @@
     padding: 20px 0;
     font-size: 28px;
     color: white;
-    margin: 24px 0;
+    margin-top: 24px;
   }
 
   &__carousel-img {
@@ -321,10 +293,15 @@
     margin: 10px 0;
   }
 
+  &__choose-product {
+    padding: 30px 0;
+    background-color: $body-bg;
+  }
+
   &__choose-product-item {
     cursor: pointer;
     width: fit-content;
-    height: 210px;
+    min-height: 210px;
     background-color: white;
     margin: auto;
     display: flex;
@@ -332,6 +309,10 @@
     border-radius: 10px;
     align-items: center;
     margin-bottom: 10px;
+
+    @media screen and ($m-down) {
+      flex-direction: column;
+    }
 
     .color {
       display: flex;
@@ -364,6 +345,12 @@
     }
   }
 
+  &__variant-item {
+    @media screen and ($m-down) {
+      margin: 10px 0;
+    }
+  }
+
   &__variant-icon {
     max-width: 100%;
     height: 100%;
@@ -393,9 +380,24 @@
 
   &__complete-order {
     display: block;
-    margin: 60px 0;
+    margin-top: 60px;
     padding: 60px 0;
     background-color: white;
+  }
+
+  &__alternative-payment {
+    margin: 10px;
+  }
+
+  &__row-payments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__credit-card-switcher {
+    max-width: 300px;
   }
 
   &__row-credit-cards {
@@ -410,5 +412,15 @@
   &__form-wrapper {
     max-width: 555px;
     margin: 0 auto;
+    padding: 0 10px;
+
+    label {
+      text-align: left;
+    }
+
+    .green-button-animated {
+      padding: 10px;
+      height: 92px;
+    }
   }
 }
