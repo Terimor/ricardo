@@ -236,7 +236,7 @@
             Please select your variant
         </div>
         <template v-if="selectedPlan">
-            <div class="col-choose-product">
+            <div class="promo__choose-product">
                 <div class="promo__choose-product-item">
                     <div
                         v-for="variantItem in variantList"
