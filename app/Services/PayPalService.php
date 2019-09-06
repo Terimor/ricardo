@@ -85,7 +85,7 @@ class PayPalService
             'quantity' => 1
         ]];
         if ($request->input('is_warranty_checked') && $product->warranty_percent && !$upsell_order) {
-            $local_warranty_price = round(($product->warranty_percent / 100) * $local_price, 2);
+            $local_warranty_price = $priceData['warranty'];
             $local_warranty_usd = round($local_warranty_price / $priceData['exchange_rate'], 2);
             $total_price += $local_warranty_usd;
             $total_local_price += $local_warranty_price;
@@ -103,7 +103,7 @@ class PayPalService
             'description' => $product->long_name,
             'amount' => [
                 'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
-                'value' => !$is_currency_supported ? $total_price : round($total_local_price, 2),
+                'value' => !$is_currency_supported ? $total_price : $total_local_price,
                 'items' => $items,
             ]
         ];
@@ -484,6 +484,7 @@ class PayPalService
                 'price' => $product->prices[$request->sku_quantity]['value'],
                 'code' =>  $product->prices['currency'],
                 'exchange_rate' => $product->prices['exchange_rate'],
+                'warranty' => $product->prices[$request->sku_quantity]['warranty_price']
             ];
         }
         abort(404);
