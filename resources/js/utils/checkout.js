@@ -68,7 +68,7 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
           1: it.unit_value_text,
           3: it.installments3_unit_value_text,
           6: it.installments6_unit_value_text
-        }
+        },
       }
 
       const price = it.value_text;
@@ -83,6 +83,7 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
             null;
 
       return  {
+        image: it.image,
         discountName:
           it.is_bestseller ? 'BESTSELLER' :
             it.is_popular ? 'BEST DEAL' :

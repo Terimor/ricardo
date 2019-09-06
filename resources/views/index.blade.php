@@ -11,7 +11,7 @@
                 <a href="/checkout">Checkout</a>
 
                 <div class="card-body">
-                    
+
                 </div>
             </div>
         </div>

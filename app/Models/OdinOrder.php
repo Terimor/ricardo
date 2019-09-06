@@ -5,14 +5,15 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use App\Models\OdinHistory;
 
-class OdinOrder extends Model
+class OdinOrder extends OdinModel
 {
     public $timestamps = true;
 
     protected $collection = 'odin_order';
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $dates = ['created_at', 'updated_at'];        
 
     /**
      * Attributes with default values
@@ -124,6 +125,8 @@ class OdinOrder extends Model
         'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed'
 
     ];
+    
+    protected static $save_history = true;
 
     /**
      *
@@ -139,7 +142,7 @@ class OdinOrder extends Model
             if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $model->currency;
             }
-        });
+        });		
     }
 
     /**

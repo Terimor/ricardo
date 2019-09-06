@@ -88,6 +88,9 @@
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
+              firstTitle="Step 4: Contact Information"
+              secondTitle="Step 5: Delivery Address"
+              thirdTitle="Step 6: Payment Details"
               v-if="form.paymentType"
               :stateList="stateList"
               @showCart="isOpenSpecialOfferModal = true"

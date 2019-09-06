@@ -1,6 +1,8 @@
 <template>
     <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
-        <h2>Step 4: Contact Information</h2>
+        <h2>
+          {{ firstTitle }}
+        </h2>
         <text-field
             :validation="$v.form.fname"
             validationMessage="Please enter your first name"
@@ -53,7 +55,9 @@
               autocomplete: 'off'
             }"
             v-model="paymentForm.phone"/>
-        <h2>Step 5: Delivery Address</h2>
+        <h2>
+          {{ secondTitle }}
+        </h2>
         <div class="payment-form__delivery-address">
             <text-field
                 :validation="$v.form.street"
@@ -130,7 +134,9 @@
                 v-model="paymentForm.country"/>
         </div>
         <template v-if="paymentForm.paymentType !== 'bank-payment'">
-            <h2>Step 6: Payment Details</h2>
+            <h2>
+              {{ thirdTitle }}
+            </h2>
             <select-field
                 v-if="countryCode === 'MX'"
                 :validation="$v.form.cardType"
@@ -235,6 +241,17 @@
                 theme="variant-1"
                 label="Document number" />
         </template>
+        <button v-show="hasWarranty" class="warranty-field-button">
+          <label for="warranty-field" class="label-container-checkbox">
+            <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
+            3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+            <input id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
+            <span class="checkmark"></span>
+          </label>
+          <span class="warranty-field-icon">
+            <img src="/images/best-saller.png" alt="">
+          </span>
+        </button>
         <button
             @click="submit"
             id="purchase-button"
@@ -263,7 +280,22 @@
 
   export default {
     name: 'PaymentForm',
-    props: ['input', 'countryList', 'isBrazil', 'countryCode', 'installments', 'paymentForm', '$v', 'stateList'],
+    props: [
+      'input',
+      'countryList',
+      'isBrazil',
+      'countryCode',
+      'installments',
+      'paymentForm',
+      '$v',
+      'stateList',
+      'firstTitle',
+      'secondTitle',
+      'thirdTitle',
+      'hasWarranty',
+      'quantityOfInstallments',
+      'warrantyPriceText',
+    ],
     data () {
       return {
         isLoading: {
@@ -273,6 +305,7 @@
         isOpenCVVModal: false
       }
     },
+
     computed: {
       exp () {
         const { month, year } = this.paymentForm
@@ -762,16 +795,49 @@
         }
     }
 
-    #payment-data-form {
-        display: flex;
-        flex-wrap: wrap;
+  .warranty-field {
+    &-button {
+      position: relative;
+      display: flex;
+      padding: 10px;
+      margin: 40px 0;
     }
 
-    @media screen and ($s-down) {
-        .cvv-popup {
-            .el-dialog {
-                width: 90%;
-            }
-        }
+    &-icon {
+      position: absolute;
+      right: -15px;
+      top: -15px;
+      width: 30px;
+      height: 30px;
+
+      img {
+        max-width: 100%;
+      }
     }
+
+    &-arrow {
+      position: absolute;
+      left: -30px;
+      top: 0;
+      z-index: 2;
+    }
+  }
+
+  .label-container-checkbox {
+    position: relative;
+    margin-left: 30px;
+  }
+
+  #payment-data-form {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  @media screen and ($s-down) {
+    .cvv-popup {
+      .el-dialog {
+        width: 90%;
+      }
+    }
+}
 </style>
