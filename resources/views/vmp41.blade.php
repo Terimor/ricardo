@@ -100,7 +100,7 @@
                             'most-profitable': item.discountName === 'BEST DEAL',
                             'starter': item.discountName === '',
                         }"
-                        @click="setSelectedPlan(item.discountName)"
+                        @click="setSelectedPlan(item.discountName, item.totalQuantity)"
                     >
                     <div class="promo__product-info">
                         <div
@@ -242,14 +242,14 @@
                         v-for="variantItem in variantList"
                         class="promo__variant-item"
                         @click="setSelectedVariant(variantItem.value)"
-                        :class="{ 'selected-variant': variant === variantItem.value }"
+                        :class="{ 'selected-variant': form.variant === variantItem.value }"
                     >
                         <div class="promo__choose-product-item-color">
                             <div class="color">
                                 <div class="choose-color">
                                     <div
                                         class="promo__variant-icon-wrapper"
-                                        :class="{ 'selected-variant': variant === variantItem.value }"
+                                        :class="{ 'selected-variant': form.variant === variantItem.value }"
                                     >
                                         <img
                                             class="promo__variant-icon"
@@ -268,12 +268,20 @@
         <section class="j-complete-order">
             <div
                 class="promo__complete-order"
-                v-if="variant"
+                v-if="form.variant"
             >
                 <h2 class="promo__title">
                     Complete order
                 </h2>
                 <div class="promo__step-title">Step 1: Pay securely with:</div>
+                <div class="promo__paypal-button-wrapper">
+                    <paypal-button
+                        :style="{ width: '300px' }"
+                        :create-order="paypalCreateOrder"
+                        :on-approve="paypalOnApprove"
+                        :$v="true"
+                    >Buy Now Risk Free PAYPAL</paypal-button>
+                </div>
                 <div class="promo__alternative-payment">
                     Or, you can also pay securely with:
                 </div>

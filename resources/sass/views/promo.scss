@@ -275,6 +275,11 @@
     }
   }
 
+  &__paypal-button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
   &__select-variant {
     background-color: $green;
     padding: 20px 0;
@@ -380,7 +385,6 @@
 
   &__complete-order {
     display: block;
-    margin-top: 60px;
     padding: 60px 0;
     background-color: white;
   }
