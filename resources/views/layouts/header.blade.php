@@ -1,4 +1,3 @@
-<script src="{{ asset('js/views/header.js') }}" defer></script>
 
 <header id="header">
     <div class="container">
@@ -6,3 +5,5 @@
         <timer-component></timer-component>
     </div>
 </header>
+
+<script src="{{ asset('js/views/header.js') }}" defer></script>

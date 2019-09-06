@@ -2,8 +2,11 @@
 
 @section('title', $product->skus[0]['name'] . ' Checkout')
 
-<link rel="stylesheet" href="{{ asset('css/promo.css') }}">
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/promo.css') }}">
+@endsection
 
 @section('script')
     <script defer>
