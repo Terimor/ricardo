@@ -246,4 +246,14 @@ class CurrencyService
         return $currency;
     }
 
+	/**
+	 * Calculate warranty price
+	 * @param float $warrantyPercent
+	 * @param float $price
+	 */
+	public static function calculateWarrantyPrice(float $warrantyPercent, float $price): float
+	{
+		return floor(($warrantyPercent / 100) * $price * 100)/100;
+	}
+
 }

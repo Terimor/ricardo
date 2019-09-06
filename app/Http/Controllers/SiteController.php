@@ -172,6 +172,12 @@ class SiteController extends Controller
 	echo '<pre>'; var_dump($order); echo '</pre>';
 
 	exit;*/
+		
+		/*$price = CurrencyService::calculateWarrantyPrice(20, 49.99);
+		$p2 = round(20/100 * 49.99, 2);
+		echo '<pre>'; var_dump($price); echo '</pre>';
+		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
+		
         $product = $productService->resolveProduct($request, true);
 
         echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
