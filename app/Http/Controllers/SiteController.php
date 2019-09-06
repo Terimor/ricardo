@@ -154,15 +154,15 @@ class SiteController extends Controller
         echo '123'; exit;*/
 
 	//5d6d166a14dec6079e07d171
-	/*$order = OdinOrder::where('_id','5d6d166a14dec6079e07d171')->first();
-	$order->status = 'aaaa';
+	$order = OdinOrder::where('_id','5d6d166a14dec6079e07d171')->first();
+	$order->status = 'acvzzz';
 	$txns = $order->txns;
-	$txns[1]['status'] = 'tttt';
+	$txns[1]['status'] = 'abzxbz';
 	$txns[] = $txns[0];
 	$order->txns = $txns;
 	$order->save();
 	echo '<pre>'; var_dump($order); echo '</pre>';
-	*/
+	
 	exit;
         $product = $productService->resolveProduct($request, true);
         

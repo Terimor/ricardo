@@ -65,4 +65,14 @@ class OdinHistory extends Model
             'reason'    => 'required',
         ]);
     }
+    
+    /**
+     * Save history from data
+     * @param type $data
+     */
+    public static function saveHistoryData($data)
+    {
+	$new = new OdinHistory($data);
+	$new->save();
+    }
 }
