@@ -202,19 +202,15 @@ class CurrencyService
      */
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
     {
-        if (request()->has('cur')) {
-            $currencyCode = request()->input('cur');
-        } else {
-
-            if (!$currencyCode) {
-                if (!$countryCode) {
-                    $countryCode = strtoupper(\Utils::getLocationCountryCode());
-                }
-
-                $localeString = \Utils::getCultureCode(null, $countryCode);
-                $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
-                $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
+        $currencyCode = request()->input('cur');
+        if (!$currencyCode) {
+            if (!$countryCode) {
+                $countryCode = strtoupper(\Utils::getLocationCountryCode());
             }
+
+            $localeString = \Utils::getCultureCode(null, $countryCode);
+            $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
+            $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
         }
 
         $currency = Currency::whereCode($currencyCode)->first();

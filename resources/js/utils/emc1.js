@@ -82,6 +82,7 @@ export function paypalCreateOrder ({
   is_warranty_checked,
   order_id = '',
   page_checkout = document.location.href,
+  cur,
   offer = new URL(document.location.href).searchParams.get('offer'),
   affiliate = new URL(document.location.href).searchParams.get('affiliate'),
 }) {
@@ -99,6 +100,7 @@ export function paypalCreateOrder ({
       is_warranty_checked,
       order_id,
       page_checkout,
+      cur,
       offer,
       affiliate,
     })

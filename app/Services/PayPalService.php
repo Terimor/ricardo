@@ -63,21 +63,24 @@ class PayPalService
         $priceData = $this->getPrice($request, $product, $upsell_order);
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
 
-        if (!in_array($priceData['code'], self::getSupportedCurrenciesCodes())) {
-            die('123');
-        }
+        // Currency of the prices show on the shop page
+        $shop_currency_code = CurrencyService::getCurrency()->code;
 
         $local_currency = $priceData['code'];
         $local_price = $priceData['price'];
         $total_price = $price;
         $total_local_price = $local_price;
+
+        // If local currency is not supported by PayPal convert to USD. Used for purchase only.
+        $is_currency_supported = in_array($priceData['code'], self::getSupportedCurrenciesCodes());
+
         $items = [[
             'name' => $product->product_name,
             'description' => $product->long_name,
             'sku' => $request->sku_code,
             'unit_amount' => [
-                'currency_code' => $local_currency,
-                'value' => $local_price,
+                'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                'value' => !$is_currency_supported ? $price : $local_price,
             ],
             'quantity' => 1
         ]];
@@ -85,13 +88,13 @@ class PayPalService
             $local_warranty_price = round(($product->warranty_percent / 100) * $local_price, 2);
             $local_warranty_usd = round($local_warranty_price / $priceData['exchange_rate'], 2);
             $total_price += $local_warranty_usd;
-            $total_local_price += $local_warranty_usd;
+            $total_local_price += $local_warranty_price;
             $items[] = [
                 'name' => 'Warranty',
                 'description' => 'Warranty',
                 'unit_amount' => [
-                    'currency_code' => $local_currency,
-                    'value' => $local_warranty_price,
+                    'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                    'value' => !$is_currency_supported ? $local_warranty_usd : $local_warranty_price,
                 ],
                 'quantity' => 1
             ];
@@ -99,8 +102,8 @@ class PayPalService
         $unit = [
             'description' => $product->long_name,
             'amount' => [
-                'currency_code' => $local_currency,
-                'value' => round($total_local_price, 2),
+                'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                'value' => !$is_currency_supported ? $total_price : round($total_local_price, 2),
                 'items' => $items,
             ]
         ];
@@ -155,10 +158,10 @@ class PayPalService
                 $upsell_order->save();
             } else {
                 $order_reponse = $this->orderService->addOdinOrder([
-                    'currency' => $local_currency,
+                    'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
                     'exchange_rate' => $priceData['exchange_rate'],
                     'total_paid' => 0,
-                    'total_price' => $total_local_price,
+                    'total_price' => !$is_currency_supported ? $total_price : $total_local_price,
                     'total_price_usd' => $total_price,
                     'customer_phone' => null,
                     'language' => app()->getLocale(),
@@ -168,6 +171,7 @@ class PayPalService
                     'page_checkout' => $request->page_checkout,
                     'offer' => $request->offer,
                     'affiliate' => $request->affiliate,
+                    'shop_currency' => $shop_currency_code
                 ]);
 
                 abort_if(!$order_reponse['success'], 404);

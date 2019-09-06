@@ -431,6 +431,7 @@ export default {
         sku_quantity: this.form.deal,
         is_warranty_checked: this.form.isWarrantyChecked,
         page_checkout: document.location.href,
+        cur: new URL(document.location.href).searchParams.get('cur'),
         offer: new URL(document.location.href).searchParams.get('offer'),
         affiliate: new URL(document.location.href).searchParams.get('affiliate'),
       })
