@@ -127,6 +127,7 @@ class PayPalService
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                 'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                'payer_id' => '',
             ]);
             abort_if(!$txn_response['success'], 404);
             $txn = $txn_response['txn'];
@@ -201,6 +202,7 @@ class PayPalService
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                 'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                'payer_id' => optional($paypal_order->payer)->payer_id,
             ]);
             $txn = $txn_response['txn'];
 
@@ -265,6 +267,7 @@ class PayPalService
                     'provider_data' => $paypal_order,
                     'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                     'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                    'payer_id' => optional($paypal_order->payer)->payer_id,
                 ]);
 
                 $txn = $txn_response['txn'];
@@ -367,7 +370,6 @@ class PayPalService
     private function setPayer($order, $paypal_order)
     {
         if (isset($paypal_order->payer)) {
-            $order->payer_id = optional($paypal_order->payer)->payer_id;
             $order->customer_email = optional($paypal_order->payer)->email_address;
             if (isset($paypal_order->payer->name)) {
                 $order->customer_first_name = optional($paypal_order->payer->name)->given_name;

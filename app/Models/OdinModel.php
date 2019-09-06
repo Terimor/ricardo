@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use App\Models\OdinModel;
 
 class OdinModel extends Model
 {
@@ -15,9 +14,9 @@ class OdinModel extends Model
         parent::boot();
 
 		if (!empty(static::$save_history)) {
-	    
-			self::updated(function($model) {		
-			$original = $model->getOriginal();		
+
+			self::updated(function($model) {
+			$original = $model->getOriginal();
 			// check if any field was changed
 			if ($model->getChanges()) {
 				$fields = [];
@@ -33,7 +32,7 @@ class OdinModel extends Model
 						// if field is array check all array
 						if (is_array($changedField)) {
 							$isArray = true;
-							
+
 							// add json old and new objects
 							$jsonFieldsOld = []; $jsonFieldsNew = [];
 							$oldFields = []; $newFields = [];
@@ -42,7 +41,7 @@ class OdinModel extends Model
 								ksort($oField);
 								$jsonFieldsOld[$keyOld] = json_encode($oField);
 							}
-							
+
 							// new array
 							foreach ($changedField as $keyNew => $nField) {
 								ksort($nField);
@@ -63,7 +62,7 @@ class OdinModel extends Model
 									$newFields[] = $changedField[$k];
 								}
 							}
-							
+
 							// add to changed fields
 							$fields[] = [$fieldName, $oldFields, $newFields, $isArray];
 
@@ -84,7 +83,7 @@ class OdinModel extends Model
 					];
 					OdinHistory::saveHistoryData($data);
 				}
-			}	
+			}
 			});
 		}
     }
