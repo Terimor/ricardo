@@ -139,7 +139,7 @@ class OdinOrder extends OdinModel
             }
 	    
 	    if (!isset($model->shop_currency) || !$model->shop_currency) {
-                $model->shop_currency = $this->currency;
+                $model->shop_currency = $model->currency;
             }
         });		
     }
