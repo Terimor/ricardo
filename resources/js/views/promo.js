@@ -171,8 +171,8 @@ const promo = new Vue({
     },
 
     quantityOfInstallments () {
-      const implValue = this.implValue
-      return implValue && implValue !== String(1) ? implValue + '× ' : ''
+      const installments = this.installments
+      return installments && installments !== String(1) ? installments + '× ' : ''
     },
 
     productData () {
