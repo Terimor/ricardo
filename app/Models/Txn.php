@@ -8,44 +8,44 @@ use Validator;
 class Txn extends Model
 {
     protected $collection = 'txn';
-    
+
     protected $dates = ['created_at', 'updated_at'];
-    
+
     public $timestamps = true;
-    
+
     protected $attributes = [
         'hash' => null, // * string
         'value' => null, // * float
         'currency' => null, // * string
         'provider_data' => null,
         'payment_provider' => null, // enum string
-        'payment_method' => null, // enum string        
-        
+        'payment_method' => null, // enum string
+        'payer_id' => null // string
     ];
-    
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'hash', 'value', 'currency', 'provider_data', 'payment_provider', 'payment_method'
+        'hash', 'value', 'currency', 'provider_data', 'payment_provider', 'payment_method', 'payer_id'
     ];
-    
+
     /**
-     * 
+     *
      */
     public static function boot()
     {
         parent::boot();
-        
+
         self::creating(function($model) {
             if ($model->currency) {
                 $model->currency = strtoupper($model->currency);
             }
         });
     }
-    
+
     /**
      * Validator
      * @param array $data
