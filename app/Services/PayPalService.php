@@ -6,6 +6,7 @@ use App\Http\Requests\PayPalCrateOrderRequest;
 use App\Http\Requests\PayPalVerfifyOrderRequest;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
+use App\Models\Txn;
 use BraintreeHttp\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -34,6 +35,11 @@ class PayPalService
      * @var OrderService
      */
     protected $orderService;
+
+    public static $supported_currencies = [
+            'AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'INR', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD',
+            'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD'
+        ];
 
     /**
      * PayPalService constructor.
@@ -86,7 +92,7 @@ class PayPalService
         ]];
         if ($request->input('is_warranty_checked') && $product->warranty_percent && !$upsell_order) {
             $local_warranty_price = $priceData['warranty'];
-            $local_warranty_usd = round($local_warranty_price / $priceData['exchange_rate'], 2);
+            $local_warranty_usd = CurrencyService::calculateWarrantyPrice($product->warranty_percent, $total_price);
             $total_price += $local_warranty_usd;
             $total_local_price += $local_warranty_price;
             $items[] = [
@@ -172,7 +178,8 @@ class PayPalService
                     'page_checkout' => $request->page_checkout,
                     'offer' => $request->offer,
                     'affiliate' => $request->affiliate,
-                    'shop_currency' => $shop_currency_code
+                    'shop_currency' => $shop_currency_code,
+                    'txns' => [$txn]
                 ]);
 
                 abort_if(!$order_reponse['success'], 404);
@@ -195,6 +202,8 @@ class PayPalService
 
             $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
             $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
+
+            /** @var Txn $txn_object */
             $txn_response = $this->orderService->addTxn([
                 'hash' => $paypal_order->id,
                 'value' => $paypal_order_value,
@@ -203,8 +212,9 @@ class PayPalService
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                 'payment_provider' => PaymentService::PROVIDER_PAYPAL,
                 'payer_id' => optional($paypal_order->payer)->payer_id,
-            ]);
-            $txn = $txn_response['txn'];
+            ], true);
+
+            $txn = $txn_response['txn']->attributesToArray();
 
             $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
             $this->setPayer($order, $paypal_order);
@@ -223,6 +233,7 @@ class PayPalService
             }
             $order->products = $products;
             $order->status = $this->getOrderStatus($order);
+            $order->addTransaction($txn_response['txn']);
             $order->save();
             if ($order) {
                 return ['order_id' => $order->id];
@@ -320,19 +331,6 @@ class PayPalService
         }
         $currency = CurrencyService::getCurrency($order->currency);
         $order->txns_fee_usd = round($total_fee / $currency->usd_rate, 2);
-    }
-
-    /**
-     * Returns PayPal REST Payments API supported currencies
-     *
-     * @return array
-     */
-    public static function getSupportedCurrenciesCodes()
-    {
-        return [
-            'AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'INR', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD',
-            'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD'
-        ];
     }
 
     /**
@@ -486,7 +484,7 @@ class PayPalService
                 'price' => $product->prices[$request->sku_quantity]['value'],
                 'code' =>  $product->prices['currency'],
                 'exchange_rate' => $product->prices['exchange_rate'],
-                'warranty' => $product->prices[$request->sku_quantity]['warranty_price']
+                'warranty' => $product->prices[$request->sku_quantity]['warranty_price'],
             ];
         }
         abort(404);

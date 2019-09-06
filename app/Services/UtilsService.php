@@ -644,7 +644,7 @@ class UtilsService
     public static function getPayPalCurrencyCode()
     {
         $local_currency = optional(CurrencyService::getCurrency())->code;
-        if (!in_array($local_currency, PayPalService::getSupportedCurrenciesCodes())) {
+        if (!in_array($local_currency, PayPalService::$supported_currencies)) {
             $local_currency = PayPalService::DEFAULT_CURRENCY;
         }
 

@@ -47,8 +47,7 @@ class OdinModel extends Model
 								ksort($nField);
 								$jsonFieldsNew[$keyNew] = json_encode($nField);
 							}
-							echo '<pre>'; var_dump($jsonFieldsOld); echo '</pre>';
-							echo '<pre>'; var_dump($jsonFieldsNew); echo '</pre>';
+
 							// loop old array to check in new
 							foreach ($jsonFieldsOld as $k => $jsonOld) {
 								if (!in_array($jsonOld, $jsonFieldsNew)) {

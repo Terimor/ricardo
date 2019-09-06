@@ -19,8 +19,10 @@ class OrderService
     public function addTxn(array $data, bool $returnModel = false): array
     {
         // In situation when we need single txn record.
-        $model = Txn::firstOrNew(['hash' => $data['hash']]);
-        $model->fill($data);
+//        $model = Txn::firstOrNew(['hash' => $data['hash']]);
+//        $model->fill($data);
+
+        $model = new Txn($data);
 
         $validator = $model->validate();
         if ($validator->fails()) {
