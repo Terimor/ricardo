@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
-use App\Models\OdinHistory;
 
 class OdinOrder extends OdinModel
 {
