@@ -176,7 +176,7 @@
                     :prefix="`<img src='${cardUrl}' />`"
                     :postfix="`<i class='fa fa-lock'></i>`"
                 />
-                <div class="card-date" :class="{ 'with-error': !$v.form.year.isValid && $v.form.year.$dirty }">
+                <div class="card-date" :class="{ 'with-error': $v.form.year && !$v.form.year.isValid && $v.form.year.$dirty }">
                     <span class="label">Card Valid Until</span>
                     <select-field
                         :validation="$v.form.month"
@@ -196,7 +196,7 @@
                         theme="variant-1"
                         :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                         v-model="paymentForm.year"/>
-                    <span class="error" v-show="!$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
+                    <span class="error" v-show="$v.form.year && !$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
                 </div>
                 <text-field
                     @click-postfix="openCVVModal"

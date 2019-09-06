@@ -12,10 +12,10 @@
           :skusList="skusList"
           v-else />
       <preloader-3
-      v-if="+queryParams.preload === 3"
-      @finish-preload="showPreloader = false"
-      :countryCode="checkoutData.countryCode"
-      :showPreloader="showPreloader"></preloader-3>
+        v-if="+queryParams.preload === 3"
+        :countryCode="checkoutData.countryCode"
+        :show-preloader.sync="showPreloader">
+      </preloader-3>
     <leave-modal
       v-if="+queryParams.exit === 1"></leave-modal>
   </div>
