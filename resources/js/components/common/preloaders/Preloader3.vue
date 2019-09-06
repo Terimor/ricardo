@@ -76,7 +76,7 @@ export default {
               setTimeout(doProgress, 1500)
               this.forceRerender()
             } else {
-              setTimeout(() => this.$emit('finish-preload'), 1300)
+              setTimeout(() => this.$emit('update:showPreloader', false), 1300)
             }
           }
         }, 44)

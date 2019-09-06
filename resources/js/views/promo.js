@@ -8,13 +8,19 @@ import { preparePurchaseData } from '../utils/checkout';
 import { getNotice } from '../utils/emc1';
 import { scrollTo } from '../utils/common';
 import notification from '../mixins/notification'
+import queryToComponent from '../mixins/queryToComponent'
 
 const promo = new Vue({
   el: "#promo",
 
-  mixins: [notification],
+  mixins: [
+    notification,
+    queryToComponent
+  ],
 
   data: () => ({
+    showPreloader: true,
+    isFormShown: false,
     implValue: '1',
     installments: '1',
     isShownForm: false,
@@ -35,13 +41,9 @@ const promo = new Vue({
       isWarrantyChecked: false,
       countryCodePhoneField: checkoutData.countryCode,
       deal: null,
-      variant: (function() {
-        try {
-          return checkoutData.product.skus[0].code
-        } catch(_) {}
-      }()),
+      variant: '',
       installments: 1,
-      paymentType: 'credit-card',
+      paymentType: '',
       fname: null,
       lname: null,
       dateOfBirth: '',
@@ -89,6 +91,19 @@ const promo = new Vue({
         imgUrl: '/images/cc-icons/payPal.png'
       }
     ],
+    mockData: {
+      creditCardRadioList: [
+        {
+          label: 'Credit cards',
+          value: 'credit-card',
+          class: 'green-button-animated'
+        }, {
+          label: 'Bank payments',
+          value: 'bank-payment',
+          class: 'bank-payment'
+        }
+      ],
+    }
   }),
   validations: emc1Validation,
 
@@ -115,9 +130,9 @@ const promo = new Vue({
   ],
 
   mounted() {
-    this.form.installments =
-      this.checkoutData.countryCode === 'BR' ? 3 :
-        this.checkoutData.countryCode === 'MX' ? 1 :
+    this.installments =
+      this.checkoutData.countryCode === 'BR' ? '3' :
+        this.checkoutData.countryCode === 'MX' ? '1' :
           1
     this.changeWarrantyValue()
 
@@ -128,7 +143,10 @@ const promo = new Vue({
       text: `<div><img src="${it.images[0]}" alt=""><span>${it.name}</span></div>`,
       value: it.code,
       imageUrl: it.images[0]
-    }))
+    }));
+
+    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
+    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
   },
 
   computed: {
@@ -138,11 +156,12 @@ const promo = new Vue({
 
     countriesList() {
       let countries = []
-      Object.keys(checkoutData.countries).map((key) => {
+
+      Object.entries(checkoutData.countries).map(([key, value]) => {
         countries.push({
           value: key.toUpperCase(),
-          text: countries[key],
-          label: countries[key],
+          text: value,
+          label: value,
         });
       });
 
@@ -150,8 +169,8 @@ const promo = new Vue({
     },
 
     quantityOfInstallments () {
-      const implValue = this.implValue
-      return implValue && implValue !== String(1) ? implValue + '× ' : ''
+      const installments = this.installments
+      return installments && installments !== String(1) ? installments + '× ' : ''
     },
 
     productData () {
@@ -160,6 +179,10 @@ const promo = new Vue({
 
     skusList () {
       return checkoutData.product.skus;
+    },
+
+    codeOrDefault () {
+      return this.queryParams.product || this.checkoutData.product.skus[0].code;
     },
   },
 
@@ -170,7 +193,7 @@ const promo = new Vue({
     paypalCreateOrder () {
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-        sku_code: this.codeOrDefault,
+        sku_code: this.form.variant,
         sku_quantity: this.form.deal,
         is_warranty_checked: this.form.isWarrantyChecked,
         page_checkout: document.location.href,
@@ -179,14 +202,14 @@ const promo = new Vue({
       })
     },
 
-    setSelectedPlan(plan) {
+    setSelectedPlan(plan, deal) {
       this.selectedPlan = plan;
-
+      this.form.deal = deal
       this.scrollTo('.j-variant-section');
     },
 
     setSelectedVariant(variant) {
-      this.variant = variant;
+      this.form.variant = variant;
       this.isShownForm = true;
 
       this.scrollTo('.j-complete-order');
@@ -224,22 +247,28 @@ const promo = new Vue({
       if (this.implValue) this.changeWarrantyValue();
     },
 
+    activateForm() {
+      this.isFormShown = true;
+
+      this.scrollTo('.j-payment-form');
+    },
+
     changeWarrantyValue () {
       const prices = checkoutData.product.prices;
       this.implValue = this.implValue || 3;
 
       switch(this.implValue) {
-        case String(1):
+        case '1':
           this.warrantyPriceText = prices[1].value_text;
           this.warrantyOldPrice = prices[1].old_value_text;
           this.discount = prices[1].discount_percent;
           break;
-        case String(3):
+        case '3':
           this.warrantyPriceText = prices[1].installments3_value_text;
           this.warrantyOldPrice = prices[1].installments3_old_value_text;
           this.discount = prices[1].discount_percent;
           break;
-        case String(6):
+        case '6':
           this.warrantyPriceText = prices[1].installments6_value_text;
           this.warrantyOldPrice = prices[1].installments6_old_value_text;
           this.discount = prices[1].discount_percent;

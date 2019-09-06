@@ -20,19 +20,23 @@
         paypal.Buttons({
           onInit(data, actions) {
             that.action = actions;
-            actions.disable();
+            if ($v.required || $v.$dirty) {
+              actions.disable();
+            } else {
+              return createOrder();
+            }
           },
           createOrder(data, actions) {
               return createOrder();
           },
-          // onClick () {
-          //   if ($v.required || $v.$dirty) {
-          //     return createOrder();
-          //   } else {
-          //     that.$emit('click', true);
-          //     return true;
-          //   }
-          // },
+          onClick () {
+            if ($v.required || $v.$dirty) {
+              return createOrder();
+            } else {
+              that.$emit('click', true);
+              return true;
+            }
+          },
           onApprove (data, actions) {
             if ($v.required || $v.$dirty) {
               return onApprove(data);
