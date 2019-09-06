@@ -1,72 +1,171 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# ODIN
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+# Pre requirements
 
-## About Laravel
+https://laravel.com/docs/5.8#server-requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Required stack
 
-## Learning Laravel
+* Postgres DB (10 or greater) [Download here](https://www.postgresql.org/download/)
+* Composer [Download here](https://getcomposer.org/download/)
+* php 7.1 or greater
+* node (8.x or greater)
+* npm (3.5.x or greater)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1400 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Development setup
 
-## Laravel Sponsors
+If you are manually installing locally, download and install the stack above.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Postgres setup
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
+* Install using en_US.UTF8 encoding.
+* Setup any relevant users.
+* Create a new database called tuvens with UTF8 encoding
 
-## Contributing
+## Environment variables
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Copy the .env.example file and create a .env file.
+e.g.
 
-## Security Vulnerabilities
+```
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Add your database properties here:
 
-## License
+```
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=__REQUIRED__
+DB_USERNAME=__REQUIRED__
+DB_PASSWORD=__REQUIRED__
+```
 
-The Laravel framework is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+You will also need to add the Mailchimp and Mail server details before the app will work correctly. Please ask an admin to supply them. These settings are:
+
+```
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.mandrillapp.com
+MAIL_PORT=587
+MAIL_USERNAME=__REQUIRED__
+MAIL_PASSWORD=__REQUIRED__
+MAIL_ENCRYPTION=
+MAIL_FROM_ADDRESS=no-reply@tuvens.com
+MAIL_FROM_NAME=Tuvens
+
+MAILCHIMP_APIKEY=__REQUIRED__
+MAILCHIMP_LIST_ID=__REQUIRED__
+```
+
+## App setup
+
+Now enter the following commands in your shell
+
+```
+composer install
+
+php artisan key:generate
+
+php artisan migrate
+
+php artisan db:seed
+
+```
+
+## Passport / OAuth Setup
+
+For OAuth to work, you will need to generate keys using the following commands. These provide the website frontend with its own keys to access the API.
+
+```
+php artisan passport:keys
+php artisan passport:client --personal
+
+# Add the generated client id and secret to you .env file
+
+PASSPORT_CLIENT_ID=X
+PASSPORT_SECRET=X
+```
+
+Finally, we will clear any cached config with the following command
+
+```
+php artisan config:clear
+```
+
+## Node / JS / Sass setup (Laravel Mix)
+
+To compile the frontend, Laravel has a fluent wrapper for Webpack called Mix. You can find out more about Mix [here](https://laravel.com/docs/5.7/mix)
+
+Firstly we will install the node components
+
+```
+npm install
+````
+
+Next we will build for development (this will run Laravel Mix) and start watch
+
+```
+npm run hot
+```
+
+Also u can use https://github.com/facebook/react-devtools, just install Chrome Extension
+
+
+# Running
+
+Laravel comes with a built in web server. Type the following command to start it
+
+Note that Laravel logs errors to storage/logs
+
+```
+php artisan serve
+```
+
+
+# Running tests
+
+Create .env.testing with your testing configuration (DB) than run:
+
+```
+php artisan config:cache --env=testing
+```
+
+Once this done, you should be able to run the tests using:
+
+```
+./vendor/bin/phpunit
+```
+
+# Some tips
+
+* keep APIs RESTful as much as possible (for example user login = create session, user signup = create registration, logout = delete session)
+* keep controllers as thin as possible, logic must be incapsulated into services (we'll need to better organize them)
+* use Dependency injection, don't instantiate services
+* use request validation (https://laravel.com/docs/5.6/validation#form-request-validation). If validation failed, app will respond with
+```
+{
+    "success": false,
+    "errors": {
+        "field1": [ "message1", "message2" ],
+        "field2": [ "message3", "message4" ],
+        ...
+}
+```
+* write Swagger documentation for controller API methods. We'll use it for API docs generation. Please refer to Controllers examples in this project and the following links:
+
+    * https://medium.com/@mahbubkabir/discovering-swagger-in-laravel-rest-apis-cb0271c8f2
+    * https://swagger.io/docs/specification/
+
+    Docs can be generated with
+
+    ```
+    php artisan l5-swagger:generate
+    ```
+
+    Than it'll be available under `/api/documentation` URL
+
