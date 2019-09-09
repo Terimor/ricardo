@@ -29,19 +29,19 @@ class OdinHistory extends Model
         'collection' => null, // * enum
         'document_id' => null, // * document ID, //document id in collection
         'fields' => 
-	[
+		[
             //'name' => null, //field name
             //'old' => null, //old value
             //'new' => null, //new value
-        ],
-	'is_array_changed' => false, //bool, default false, //true if changes were made in array — added or removed array object
-	'reason' => null, // *enum string
-	'user_id' => null, // Saga user ID, default null //if was changed manually in Saga	
+			//'is_array_changed' => false, //bool, default false, //true if changes were made in array — added or removed array object
+        ],	
+		'reason' => null, // *enum string
+		'user_id' => null, // Saga user ID, default null //if was changed manually in Saga	
     ];
     
     const REASON_ODIN_UPDATE = 'odin_update';
     
-    public static $ignoreFields = ['updated_at'];
+    public static $historyIgnoredFields = ['updated_at'];
     
     public static function boot()
     {
@@ -72,7 +72,7 @@ class OdinHistory extends Model
      */
     public static function saveHistoryData($data)
     {
-	$new = new OdinHistory($data);
-	$new->save();
+		$new = new OdinHistory($data);
+		$new->save();
     }
 }

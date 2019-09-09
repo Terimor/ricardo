@@ -17,22 +17,19 @@
         <template v-if="activeTab === 'second'">
             <div class="upsells-component__content">
                 <transition name="component-fade" mode="out-in">
+                    <!--TODO: for component we can use something like v-for="upsell in this.upsellsAsProdsList"-->
                     <component
                         v-bind:is="view"
                         @addAccessory="addAccessory"
-                        :benefit-list="[
-                            'One',
-                            'Two',
-                            'Some text',
-                        ]"
                         :viewProps="viewProps"
+                        :name="product.long_name"
+                        :descriptionHtml="product.description"
+                        :price="product.prices['1'].value"
+                        :imageUrl="product.skus[0].images[0]"
                     />
                 </transition>
 
-
-
                 <p class="no"><a @click="accessoryStep++">No thanks...</a></p>
-
             </div>
         </template>
         <template v-if="activeTab === 'third'">
@@ -54,8 +51,8 @@
                     :createOrder="paypalCreateOrder"
                     :onApprove="paypalOnApprove"
                     :$v="true"
-                >Buy Now Risk Free PAYPAL</paypal-button>
-
+                >Buy Now Risk Free PAYPAL
+                </paypal-button>
             </div>
         </template>
     </div>
@@ -77,36 +74,46 @@
       Step3,
       StepWithOneItem,
     },
-    data () {
+    data() {
       return {
         view: 'Step1',
         activeTab: 'second',
         accessoryStep: 0,
-        accessoryList: []
-      }
+        accessoryList: [],
+        product: upsellsData.product,
+        upsellsObj: upsellsData.product.upsells,
+        upsellsAsProdsList: [],
+      };
     },
     computed: {
-      totalSkum () {
-        const totalSkus = this.accessoryList.map(it => [it.name, it.quantity]);
-        return totalSkus;
+      totalPrice() {
+        const allAccessories = this.accessoryList.map(it => it.price * it.quantity);
+        const total = allAccessories.reduce((acc, current) => acc + current);
+        return Number(total.toFixed(2));
       },
-      totalPrice () {
-        const allAccessories = this.accessoryList.map(it => it.price * it.quantity)
-        const total = allAccessories.reduce((acc, current) => acc + current)
-        return Number(total.toFixed(2))
-      },
-      viewProps () {
+      viewProps() {
         return this.accessoryStep === 0 ? {} :
           this.accessoryStep === 1 ? {
               imageUrl: '/image/headphones-black.png'
             } :
-          this.accessoryStep === 2 ? {} :
-          this.accessoryStep === 3 ? {} :
-          {}
-      }
+            this.accessoryStep === 2 ? {} :
+              this.accessoryStep === 3 ? {} :
+                {};
+      },
     },
     methods: {
-      paypalCreateOrder () {
+      setUpsellsAsProdsList() {
+        let upsells = this.upsellsObj;
+
+        Object.keys(upsells).map((key) => {
+          axios
+            .get(`${window.location.origin}/upsell-product/${upsells[key]['product_id']}?quantity=1`)
+            .then((res) => {
+              this.upsellsAsProdsList.push(res.data.upsell);
+            });
+        });
+      },
+      paypalCreateOrder() {
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
           sku_code: 'dogsafe-001',
@@ -120,189 +127,192 @@
         });
       },
       paypalOnApprove: paypalOnApprove,
-      goto (url) {
+      goto(url) {
         window.location.href = url;
       },
       addAccessory(accessory) {
-        this.accessoryStep++
-        this.accessoryList.push(accessory)
+        this.accessoryStep++;
+        this.accessoryList.push(accessory);
       },
-      deleteAccessory (indexForDeleting) {
+      deleteAccessory(indexForDeleting) {
         if (this.accessoryList.length === 1) {
-          this.goto('/thankyou')
+          this.goto('/thankyou');
         }
-        this.accessoryList.splice(indexForDeleting, 1)
+        this.accessoryList.splice(indexForDeleting, 1);
       }
     },
+    mounted() {
+      this.setUpsellsAsProdsList();
+    },
     watch: {
-      accessoryStep (val) {
+      accessoryStep(val) {
         if (val === 4) {
-          const node = document.querySelector('.upsells-component__content')
+          const node = document.querySelector('.upsells-component__content');
           fade('out', 250, node, true)
             .then(() => {
-              this.activeTab = 'third'
+              this.activeTab = 'third';
 
-              setTimeout(() => fade('in', 250, node, true))
-            })
+              setTimeout(() => fade('in', 250, node, true));
+            });
 
         }
 
         this.view =
           val === 0 ? 'Step1' :
-          val === 1 ? 'StepWithOneItem' :
-          val === 2 ? 'Step3' :
-          val === 3 ? 'StepWithOneItem' :
-          'StepWithOneItem'
+            val === 1 ? 'StepWithOneItem' :
+              val === 2 ? 'Step3' :
+                val === 3 ? 'StepWithOneItem' :
+                  'StepWithOneItem';
       }
     }
   };
 </script>
 
 <style lang="scss">
-$gray: #dadada;
+    $gray: #dadada;
 
-.upsells-component {
-    background-color: #fff;
-    border: 1px solid $gray;
+    .upsells-component {
+        background-color: #fff;
+        border: 1px solid $gray;
 
-    &__top {
-        display: flex;
-        background-color: $gray;
-    }
-
-    &__step {
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-grow: 1;
-        width: calc(100% / 3);
-        text-transform: uppercase;
-        color: #a5a5a6;
-
-        &.active {
-            background-color: #272727;
-            color: #fff;
-        }
-    }
-
-    &__content {
-        padding: 40px 80px;
-
-        .green-up {
-            color: #0d840d;
-        }
-
-        h4 {
-            font-size: 20px;
-            text-align: center;
-
-            .congrats {
-                color: #d4513a;
-            }
-        }
-
-        h5 {
-            font-size: 25px;
-            text-align: center;
-            margin-top: 0;
-        }
-    }
-
-    &__item {
-        display: flex;
-
-        .benefits {
-            list-style-type: none;
-            width: 60%;
-            font-size: 18px;
-            flex-grow: 1;
-
-            li {
-                margin-bottom: 2px;
-            }
-        }
-
-        .image {
-            max-width: 300px;
-
-            img {
-                max-width: 150px;
-                width: 100%;
-                height: auto;
-            }
-        }
-    }
-
-    &__bot {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-between;
-
-        .green-button-animated {
-            max-width: 350px;
-            width: 100%;
-            height: auto;
-        }
-    }
-
-    .no {
-        margin-top: 20px;
-        text-align: center;
-
-        a {
-            cursor: pointer;
-            text-decoration: none;
-            color: #3f75b5;
-        }
-    }
-
-    &__finish {
-        padding: 15px;
-
-        .original-order {
-            text-align: left;
-            margin-bottom: 0;
-        }
-
-        .upsells-item {
-            margin-bottom: 15px;
-        }
-
-        .total-price {
-            text-align: right;
-            margin: 30px 0;
-        }
-
-        .buy-block {
+        &__top {
             display: flex;
-            justify-content: center;
-
-            .buy-button {
-                height: 60px;
-                width: 100%;
-                max-width: 780px;
-            }
-        }
-    }
-
-    @media screen and (max-width: 992px) {
-        &__bot {
-            flex-direction: column;
-            align-items: center;
+            background-color: $gray;
         }
 
         &__step {
-            display: none;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            width: calc(100% / 3);
+            text-transform: uppercase;
+            color: #a5a5a6;
 
             &.active {
-                display: flex;
+                background-color: #272727;
+                color: #fff;
             }
         }
 
         &__content {
-            padding: 5px;
+            padding: 40px 80px;
+
+            .green-up {
+                color: #0d840d;
+            }
+
+            h4 {
+                font-size: 20px;
+                text-align: center;
+
+                .congrats {
+                    color: #d4513a;
+                }
+            }
+
+            h5 {
+                font-size: 25px;
+                text-align: center;
+                margin-top: 0;
+            }
+        }
+
+        &__item {
+            display: flex;
+
+            .benefits {
+                list-style-type: none;
+                width: 60%;
+                font-size: 18px;
+                flex-grow: 1;
+
+                li {
+                    margin-bottom: 2px;
+                }
+            }
+
+            .image {
+                max-width: 300px;
+
+                img {
+                    max-width: 150px;
+                    width: 100%;
+                    height: auto;
+                }
+            }
+        }
+
+        &__bot {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+
+            .green-button-animated {
+                max-width: 350px;
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        .no {
+            margin-top: 20px;
+            text-align: center;
+
+            a {
+                cursor: pointer;
+                text-decoration: none;
+                color: #3f75b5;
+            }
+        }
+
+        &__finish {
+            padding: 15px;
+
+            .original-order {
+                text-align: left;
+                margin-bottom: 0;
+            }
+
+            .upsells-item {
+                margin-bottom: 15px;
+            }
+
+            .total-price {
+                text-align: right;
+                margin: 30px 0;
+            }
+
+            .buy-block {
+                display: flex;
+                justify-content: center;
+
+                .buy-button {
+                    height: 60px;
+                    width: 100%;
+                    max-width: 780px;
+                }
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+            &__bot {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            &__step {
+                display: none;
+
+                &.active {
+                    display: flex;
+                }
+            }
+
+            &__content {
+                padding: 5px;
+            }
         }
     }
-}
 </style>

@@ -45,11 +45,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @yield('styles')
 </head>
-<body>
+<body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
     <div id="app">
         @include('layouts.header', ['product' => $product])
-        <main class="py-4">
+        <main class="pt-4">
             @yield('content')
         </main>
     </div>

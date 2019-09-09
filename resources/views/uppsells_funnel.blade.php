@@ -1,6 +1,7 @@
 @extends('layouts.app')
 <script>
-    const upsells = {
+    const upsellsData = {
+      product: @json($product),
       countryCode: '{{ $location->countryCode }}'
     }
 </script>
@@ -12,4 +13,5 @@
         <upsells-component></upsells-component>
     </div>
 
+    <script src="{{ asset('js/app.js') }}" defer></script>
 @endsection

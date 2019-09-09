@@ -265,6 +265,10 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  &.white-bg {
+    background-color: #fff;
+  }
 }
 
 p {
