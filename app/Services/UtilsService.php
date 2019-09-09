@@ -660,7 +660,7 @@ class UtilsService
 	public static function replaceImageUrl($url)
 	{
 		$remoteHost = request()->server('HTTP_HOST');
-		if ($remoteHost == '127.0.0.1' || $remoteHost == 'localhost') {
+		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost')) {
 			$remoteHost = \Utils::getSetting('cf_host_default');
 		}
 		
