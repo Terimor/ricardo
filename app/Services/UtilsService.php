@@ -659,9 +659,9 @@ class UtilsService
 	 */
 	public static function replaceImageUrl($url)
 	{
-		$remoteAddr = request()->server('REMOTE_ADDR');
-		if ($remoteAddr == '127.0.0.1' || $remoteAddr == 'localhost') {
-			$remoteAddr = \Utils::getSetting('cf_host_default');
+		$remoteHost = request()->server('HTTP_HOST');
+		if ($remoteHost == '127.0.0.1' || $remoteHost == 'localhost') {
+			$remoteHost = \Utils::getSetting('cf_host_default');
 		}
 		
 		return str_replace(self::S3_URL, 'cdn.'.$remoteAddr, $url);
