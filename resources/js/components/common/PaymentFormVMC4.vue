@@ -27,8 +27,6 @@
                 placeholder: 'Variant'
               }"
               :list="variantList"/>
-
-          <slot name="warranty" />
         </div>
 
         <div class="step step-2" v-if="step === 2">
@@ -102,49 +100,61 @@
                 :prefix="`<img src='${cardUrl}' alt='Card Number' />`"
                 :postfix="`<i class='fa fa-lock'></i>`"
             />
+
             <div class="card-info">
-              <div class="card-info__labels">
-                <span class="label">Card Valid Until</span>
-                <span class="label"> </span>
-              </div>
-              <div class="card-date">
-                <select-field
-                    :validation="$v.form.stepThree.month"
-                    validationMessage="Required"
-                    :rest="{
-                      placeholder: 'Month'
-                    }"
-                    theme="variant-1"
-                    :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
-                    v-model="form.stepThree.month"/>
-                <select-field
-                    :validation="$v.form.stepThree.year"
-                    validationMessage="Required"
-                    :rest="{
-                      placeholder: 'Year'
-                    }"
-                    theme="variant-1"
-                    :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
-                    v-model="form.stepThree.year"/>
-                <div class="card-cvv">
-                  <text-field
-                      :validation="$v.form.stepThree.cvv"
-                      @click-postfix="openCVVModal"
-                      validationMessage="Required"
-                      class="cvv-field"
-                      theme="variant-1"
-                      :rest="{
-                        maxlength: 4,
-                        pattern: '\\d*',
-                        type: 'tel',
-                        autocomplete: 'cc-csc',
-                        'data-bluesnap': 'encryptedCvv'
-                      }"
-                      v-model="form.stepThree.cvv"
-                      postfix="<i class='fa fa-question-circle'></i>"
-                  />
+
+              <div class="d-flex">
+                <div>
+                  <div class="card-info__labels">
+                    <span class="label">Card Valid Until</span>
+                  </div>
+                  <div class="card-date d-flex">
+                    <select-field
+                        :validation="$v.form.stepThree.month"
+                        validationMessage="Required"
+                        :rest="{
+                          placeholder: 'Month'
+                        }"
+                        theme="variant-1"
+                        :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
+                        v-model="form.stepThree.month"/>
+                    <select-field
+                        :validation="$v.form.stepThree.year"
+                        validationMessage="Required"
+                        :rest="{
+                          placeholder: 'Year'
+                        }"
+                        theme="variant-1"
+                        :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+                        v-model="form.stepThree.year"/>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="card-cvv">
+                    <div class="card-info__labels">
+                      <span class="label">CVV code</span>
+                    </div>
+                    <text-field
+                        :validation="$v.form.stepThree.cvv"
+                        @click-postfix="openCVVModal"
+                        validationMessage="Required"
+                        class="cvv-field"
+                        theme="variant-1"
+                        :rest="{
+                          maxlength: 4,
+                          pattern: '\\d*',
+                          type: 'tel',
+                          autocomplete: 'cc-csc',
+                          'data-bluesnap': 'encryptedCvv'
+                        }"
+                        v-model="form.stepThree.cvv"
+                        postfix="<i class='fa fa-question-circle cursor-pointer'></i>"
+                    />
+                  </div>
                 </div>
               </div>
+
               <text-field
                   :validation="$v.form.stepThree.city"
                   validationMessage="Please enter your city"
@@ -203,6 +213,8 @@
               </div>
             </el-dialog>
           </form>
+
+          <slot name="warranty" />
         </div>
         <div class="buttons">
           <button
@@ -221,18 +233,29 @@
             <img src="/images/cc-icons/paypal-highq.png" alt="Paypal">
           </button>
           <div class="form-navigation">
-            <button @click="step !==3 && isAllowNext(step)? step++ : step"
-                    v-if="step !== 3 "
-                    :style="step>1">Next
-            </button>
-            <button v-if="step > 1 && !form.paymentType"
-                    class="back-btn"
-                    @click="step--"><< Go Back
-            </button>
+            <button @click="isAllowNext(step)" v-if="step !== 3">Next</button>
+            <button v-if="step > 1" class="back-btn" @click="step--">&lt;&lt; Go Back</button>
           </div>
         </div>
       </div>
     </div>
+
+    <el-dialog
+      @click="isOpenPromotionModal = false"
+      class="deal-popup"
+      title="Please select a product promotion."
+      :lock-scroll="false"
+      :visible.sync="isOpenPromotionModal">
+        <div class="deal-popup__content">
+            <button
+                @click="isOpenPromotionModal = false"
+                type="button"
+                class="green-button-animated">
+                <span class="purchase-button-text">OK, I understand</span>
+            </button>
+        </div>
+    </el-dialog>
+
     </div>
   </div>
 
@@ -262,6 +285,7 @@
 				step: 1,
 				maxSteps: 3,
 				isOpenCVVModal: false,
+        isOpenPromotionModal: false,
 				form: {
 					stepTwo: {
 						fname: null,
@@ -281,15 +305,12 @@
 						cardType: null
 					},
 					countryCodePhoneField: checkoutData.countryCode,
-					deal: 1,
+					deal: null,
 					variant: checkoutData.product.skus[0].code || "",
 					installments: 1,
 					paymentType: null,
 				}
 			}
-    },
-    mounted() {
-      this.setWarrantyPriceText(this.form.deal)
     },
 		computed: {
 			cardUrl() {
@@ -342,15 +363,24 @@
 
 				this.isOpenCVVModal = true
 			},
-			isAllowNext(step) {
-				const checkStepTwo = this.$v.form.stepTwo.$invalid;
-
-				const checkStepThree =
+			isAllowNext(currentStep) {
+				const isStepOneInvalid = this.$v.form.deal.$invalid;
+				const isStepTwoInvalid = this.$v.form.stepTwo.$invalid;
+				const isStepThreeInvalid =
 					this.form.paymentType !== 'paypal' &&
-					this.$v.form.stepThree.$invalid;
+          this.$v.form.stepThree.$invalid;
 
-				step === 3 && checkStepThree ? this.$v.form.stepThree.$touch() :
-					step === 2 && checkStepTwo ? this.$v.form.stepTwo.$touch() : this.step++
+        if (currentStep === 1 && isStepOneInvalid) {
+          this.$v.form.deal.$touch();
+          this.isOpenPromotionModal = true;
+        }
+        else if (currentStep === 2 && isStepTwoInvalid) {
+          this.$v.form.stepTwo.$touch();
+        } else if (currentStep === 3 && isStepThreeInvalid) {
+          this.$v.form.stepThree.$touch();
+        } else {
+          this.step++
+        }
 			}
 		}
 	}
@@ -359,6 +389,10 @@
 @import "../../../sass/variables";
 
   .payment-form-vmc4 {
+    .d-flex {
+      display: flex;
+    }
+
     .form-steps-title {
       text-align: center;
     }
@@ -413,7 +447,7 @@
       }
 
       .radio-button-group {
-        margin: 24px 8px;
+        margin: 24px 0;
       }
 
       .main-row {
@@ -472,25 +506,20 @@
 
 
         .card-date {
-          display: flex;
+          margin-top: 6px;
 
           .select.variant-1:nth-child(1) {
             margin-right: 5px;
-            width: 30%;
+            width: 50%;
           }
 
           .select.variant-1:nth-child(2) {
             margin-right: 20px;
-            width: 40%;
-          }
-
-          .select.variant-1:last-child {
-            width: 40%;
+            width: 50%;
           }
 
           .card-cvv {
             width: 30%;
-
             .input-container {
               .label {
                 margin-bottom: 0;
@@ -508,6 +537,10 @@
           border-bottom: 1px solid #d2d2d2;
         }
       }
+    }
+
+    .cursor-pointer:hover {
+      cursor: pointer;
     }
 
     .buttons button:not(.back-btn),
@@ -576,6 +609,21 @@
         background-color: transparent;
         text-align: center;
         color: #337ABE;
+      }
+    }
+
+    .deal-popup {
+      .el-dialog {
+        width: 600px;
+        max-width: 100%;
+      }
+      .green-button-animated {
+        display: table;
+        width: auto;
+        height: 67px;
+        margin: auto;
+        padding-left: 80px;
+        padding-right: 80px;
       }
     }
   }

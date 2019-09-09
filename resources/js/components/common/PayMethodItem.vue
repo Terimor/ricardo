@@ -27,6 +27,7 @@
 </script>
 <style lang="scss">
   .pay-method-item {
+    cursor: pointer;
     img {
       max-height: 30px;
     }

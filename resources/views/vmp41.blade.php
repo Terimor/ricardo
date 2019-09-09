@@ -53,11 +53,11 @@
                                 Price:
                             </span>
                             <span class="promo__price--double bold">
-                                @{{quantityOfInstallments}} @{{ warrantyOldPrice }}
+                                @{{countOfInstallments}} @{{ warrantyOldPrice }}
                             </span>
                         </div>
                         <span class="promo__price promo__text-red bold">
-                            @{{quantityOfInstallments}} @{{ warrantyPriceText }}
+                            @{{countOfInstallments}} @{{ warrantyPriceText }}
                         </span>
                     </div>
                 </div>
@@ -128,8 +128,8 @@
                             <strong class="promo__discount-text">@{{ item.text }}</strong>
                             <div class="products-price">
                                 <p class="promo__discount">
-                                    <span class="promo__price--double bold">@{{quantityOfInstallments}} @{{ item.price }}</span>
-                                    <span class="price promo__text-red bold">@{{quantityOfInstallments}} @{{ item.newPrice }}</span>
+                                    <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
+                                    <span class="price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
                                 </p>
                             </div>
                             <div class="promo__fifty-discount">
@@ -316,7 +316,7 @@
                         :country-code="checkoutData.countryCode"
                         :is-brazil="checkoutData.countryCode === 'BR'"
                         :country-list="countriesList"
-                        :quantity-of-installments="quantityOfInstallments"
+                        :quantity-of-installments="countOfInstallments"
                         :warranty-price-text="warrantyPriceText"
                     />
                 </div>
