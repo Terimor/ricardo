@@ -66,7 +66,7 @@ export default {
     },
 
     isVmpPage() {
-      if (this.queryParams.tpl.indexOf('vmp') >= 0) {
+      if (this.queryParams.tpl && this.queryParams.tpl.indexOf('vmp') >= 0) {
         this.displayGreenTimer = true
       }
     },
