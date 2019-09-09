@@ -8,6 +8,7 @@ use App\Models\Setting;
  */
 class UtilsService
 {
+	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
     /**
      * Culture codes (for numberFormatter)
      * Two Letter Country Code -> Culture Info Code
@@ -650,5 +651,20 @@ class UtilsService
 
         return $local_currency;
     }
+	
+	/**
+	 * Replace image URL
+	 * @param type $url
+	 * @return type
+	 */
+	public static function replaceImageUrl($url)
+	{
+		$remoteAddr = request()->server('REMOTE_ADDR');
+		if ($remoteAddr == '127.0.0.1' || $remoteAddr == 'localhost') {
+			$remoteAddr = \Utils::getSetting('cf_host_default');
+		}
+		
+		return str_replace(self::S3_URL, 'cdn.'.$remoteAddr, $url);
+	}
 
 }

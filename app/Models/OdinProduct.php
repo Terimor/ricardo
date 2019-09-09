@@ -12,8 +12,7 @@ use NumberFormatter;
  */
 class OdinProduct extends Model
 {
-    const QUANTITY_PRICES = 5;
-	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
+    const QUANTITY_PRICES = 5;	
     protected $images;
     protected $upsellPrices;
 
@@ -247,7 +246,7 @@ class OdinProduct extends Model
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
             foreach ($this->imagesObjects as $image) {
-                $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? $image['urls'][app()->getLocale()] : !empty($image['urls']['en']) ? $image['urls']['en'] : '';
+                $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceImageUrl($image['urls'][app()->getLocale()]) : !empty($image['urls']['en']) ? \Utils::replaceImageUrl($image['urls']['en']) : '';
             }
         }
     }
@@ -328,10 +327,5 @@ class OdinProduct extends Model
 		}
 
 		return true;
-    }
-	
-	public function replaceImageUrl()
-	{
-		
-	}
+    }	
 }
