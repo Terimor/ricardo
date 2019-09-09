@@ -180,11 +180,20 @@ class PayPalService
                     'offer' => $request->offer,
                     'affiliate' => $request->affiliate,
                     'shop_currency' => $shop_currency_code,
-                    'txns' => [$txn]
                 ], true);
 
                 $order = $order_reponse['order'];
-                $order->addTransaction($txn_response['txn']);
+                $order_txn_data = [
+                    'hash' => $txn_response['txn']->hash,
+                    'value' => $txn_response['txn']->value,
+                    'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                    'is_charged_back' => false,
+                    'fee' => null,
+                    'payment_provider' => $txn_response['txn']->payment_provider,
+                    'payment_method' => $txn_response['txn']->payment_method,
+                    'payer_id' => $txn_response['txn']->payer_id,
+                ];
+                $order->push('txns', $order_txn_data);
 
                 abort_if(!$order_reponse['success'], 404);
             }
@@ -207,7 +216,6 @@ class PayPalService
             $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
             $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
 
-            /** @var Txn $txn_object */
             $txn_response = $this->orderService->addTxn([
                 'hash' => $paypal_order->id,
                 'value' => $paypal_order_value,
@@ -232,13 +240,21 @@ class PayPalService
 
             $products = $order->products;
 
-            if ($product_key !== null) {
-                $products[$product_key]['is_txn_captured'] = true;
-                $products[$product_key]['txn_value'] = $txn['value'];
-            }
             $order->products = $products;
             $order->status = $this->getOrderStatus($order);
-            $order->addTransaction($txn_response['txn']);
+
+            $order_txn_data = [
+                'hash' => $txn_response['txn']->hash,
+                'value' => $txn_response['txn']->value,
+                'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                'is_charged_back' => false,
+                'fee' => null,
+                'payment_provider' => $txn_response['txn']->payment_provider,
+                'payment_method' => $txn_response['txn']->payment_method,
+                'payer_id' => $txn_response['txn']->payer_id,
+            ];
+            $order->push('txns', $order_txn_data);
+
             $order->save();
             if ($order) {
                 return ['order_id' => $order->id];
@@ -289,7 +305,19 @@ class PayPalService
                 $txn = $txn_response['txn']->attributesToArray();
 
                 $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
-                $order->addTransaction($txn_response['txn']);
+
+                $order_txn_data = [
+                    'hash' => $txn_response['txn']->hash,
+                    'value' => $txn_response['txn']->value,
+                    'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                    'is_charged_back' => false,
+                    'fee' => $fee,
+                    'payment_provider' => $txn_response['txn']->payment_provider,
+                    'payment_method' => $txn_response['txn']->payment_method,
+                    'payer_id' => $txn_response['txn']->payer_id,
+                ];
+                $order->push('txns', $order_txn_data);
+
                 $product_key = collect($order->products)->search(function ($product) use ($txn) {
                     return $product['txn_hash'] === $txn['hash'];
                 });
@@ -302,6 +330,7 @@ class PayPalService
                         $products[$product_key]['txn_fee'] = (float)$fee;
                     }
                 }
+
                 $order->products = $products;
                 $this->calculateTotalPaid($order);
                 $this->calculateTotalFee($order);
