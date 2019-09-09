@@ -181,13 +181,15 @@ import emc1Validation from '../validation/emc1-validation'
 import printf from 'printf'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
-import { getCountOfInstallments, getNotice, getRadioHtml } from '../utils/emc1';
+import { getNotice, getRadioHtml } from '../utils/emc1';
+import { getCountOfInstallments } from '../utils/installments';
 import { stateList } from '../resourses/state';
 import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
-import { preparePartByInstallments, preparePurchaseData } from '../utils/checkout';
+import { preparePurchaseData } from '../utils/checkout';
+import { preparePartByInstallments } from '../utils/installments';
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
 
 export default {

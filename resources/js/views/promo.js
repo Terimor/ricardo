@@ -7,6 +7,7 @@ import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
 import { preparePurchaseData } from '../utils/checkout';
 import { getNotice } from '../utils/emc1';
 import { scrollTo } from '../utils/common';
+import { getCountOfInstallments } from '../utils/installments';
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 
@@ -168,9 +169,8 @@ const promo = new Vue({
       return countries;
     },
 
-    quantityOfInstallments () {
-      const installments = this.installments
-      return installments && installments !== String(1) ? installments + '× ' : ''
+    countOfInstallments() {
+      return getCountOfInstallments(this.installments);
     },
 
     productData () {
