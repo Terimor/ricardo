@@ -103,7 +103,7 @@
                             'most-profitable': item.discountName === 'BEST DEAL',
                             'starter': item.discountName === '',
                         }"
-                        @click="setSelectedPlan(item.discountName, item.totalQuantity)"
+                        @click="setSelectedPlan(item.discountName || 'STARTER', item.totalQuantity)"
                     >
                     <div class="promo__product-info">
                         <div
@@ -119,7 +119,11 @@
                                 @{{ item.discountName || 'STARTER CHOICE' }}
                             </strong>
                         </div>
-                        <img :src="item.image" alt="item.text" class="promo__discount-image">
+                        <img
+                            :src="item.image"
+                            alt="item.text"
+                            class="promo__discount-image"
+                        >
                         <div class="promo__product-info-wrapper">
                             <strong class="promo__discount-text">@{{ item.text }}</strong>
                             <div class="products-price">
@@ -297,25 +301,6 @@
                         :list="mockData.creditCardRadioList"
                         @input="activateForm"
                     />
-                </div>
-                <div class="promo__row-credit-cards">
-                    <radio-button-group
-                        :with-custom-labels="true"
-                        v-model="form.paymentType"
-                        @input="activateForm"
-                    >
-                        <div class="card-types">
-                            <pay-method-item
-                                v-for="item in cardNames"
-                                :key="item.value"
-                                :input="{
-                                    value: item.value,
-                                    imgUrl: item.imgUrl,
-                                }"
-                                :value="form.paymentType"
-                            />
-                        </div>
-                    </radio-button-group>
                 </div>
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form
