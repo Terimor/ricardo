@@ -23,7 +23,9 @@ class VerifyCsrfToken extends Middleware
         //'/payments/bluesnap-send-transaction',
         //'/payments/bluesnap-generate-token',
         'payments/three',
-	'payments/ebanx-notification',
-	'paypal-create-order'
+        'payments/ebanx-notification',
+        'paypal-create-order',
+        'paypal-verify-order',
+        'paypal-webhooks'
     ];
 }
