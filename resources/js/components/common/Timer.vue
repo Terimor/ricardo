@@ -1,6 +1,11 @@
 <template>
-  <div class="timer-component" v-if="+queryParams.show_timer === 1" :class="{ 'is-mobile': isMobile }">
-    <div v-if="isMobile" class="mobile">
+  <div
+    class="timer-component"
+    id="timer-component"
+    v-if="+queryParams.show_timer === 1"
+    :class="{ 'is-mobile': isMobile || displayGreenTimer }"
+  >
+    <div v-if="isMobile || displayGreenTimer" class="mobile">
       <template v-if="time === '00:00'">
         Time is over! Some stock is still left available...
       </template>
@@ -41,7 +46,8 @@ export default {
   finishTime: moment().add(15, 'minutes').add(4, 'seconds'),
   data () {
     return {
-      time: '15:03'
+      time: '15:03',
+      displayGreenTimer: false,
     }
   },
   methods: {
@@ -51,15 +57,27 @@ export default {
       if (newDiff === '00:00') {
         clearInterval(interval)
       }
-    }
+    },
+
+    setHeader() {
+      if ((this.isMobile || this.displayGreenTimer) && +this.queryParams.show_timer === 1) {
+        document.querySelector('header').style.marginTop = '45px'
+      }
+    },
+
+    isVmpPage() {
+      if (this.queryParams.tpl.indexOf('vmp') >= 0) {
+        this.displayGreenTimer = true
+      }
+    },
   },
+
   mounted () {
     interval = setInterval(this.changeTimeByDifference, 1000)
 
-    if (this.isMobile && +this.queryParams.show_timer === 1) {
-      document.querySelector('header').style.marginTop = '45px'
-    }
-  }
+    this.isVmpPage();
+    this.setHeader();
+  },
 }
 </script>
 
@@ -73,7 +91,6 @@ export default {
   top: 0;
   right: 0;
   left: 0;
-  height: 45px;
 
   &.is-mobile {
     position: fixed;
@@ -81,6 +98,7 @@ export default {
   }
 
   .mobile {
+    padding: 15px 0;
     height: 100%;
     display: flex;
     align-items: center;
@@ -99,7 +117,6 @@ export default {
   @media screen and ($s-up) {
     position: relative;
     order: 1;
-    height: 100%;
 
     & > .desktop {
       display: flex;

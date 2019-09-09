@@ -6,6 +6,7 @@ use App\Http\Requests\PayPalCrateOrderRequest;
 use App\Http\Requests\PayPalVerfifyOrderRequest;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
+use App\Models\Txn;
 use BraintreeHttp\HttpResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -35,6 +36,11 @@ class PayPalService
      */
     protected $orderService;
 
+    public static $supported_currencies = [
+            'AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'INR', 'ILS', 'JPY', 'MYR', 'MXN', 'TWD', 'NZD',
+            'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD'
+        ];
+
     /**
      * PayPalService constructor.
      * @param PayPalHttpClient $payPalHttpClient
@@ -62,41 +68,39 @@ class PayPalService
         $product = $this->findProductBySku($request->sku_code);
         $priceData = $this->getPrice($request, $product, $upsell_order);
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
+
+        // Currency of the prices show on the shop page
+        $shop_currency_code = CurrencyService::getCurrency()->code;
+
         $local_currency = $priceData['code'];
-
-
-
-//TODO: remove
-$local_currency = 'USD';
-
-
-
-
-
         $local_price = $priceData['price'];
         $total_price = $price;
         $total_local_price = $local_price;
+
+        // If local currency is not supported by PayPal convert to USD. Used for purchase only.
+        $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
+
         $items = [[
             'name' => $product->product_name,
             'description' => $product->long_name,
             'sku' => $request->sku_code,
             'unit_amount' => [
-                'currency_code' => $local_currency,
-                'value' => $local_price,
+                'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                'value' => !$is_currency_supported ? $price : $local_price,
             ],
             'quantity' => 1
         ]];
         if ($request->input('is_warranty_checked') && $product->warranty_percent && !$upsell_order) {
-            $local_warranty_price = round(($product->warranty_percent / 100) * $local_price, 2);
-            $local_warranty_usd = round($local_warranty_price / $priceData['exchange_rate'], 2);
+            $local_warranty_price = $priceData['warranty'];
+            $local_warranty_usd = CurrencyService::calculateWarrantyPrice($product->warranty_percent, $total_price);
             $total_price += $local_warranty_usd;
-            $total_local_price += $local_warranty_usd;
+            $total_local_price += $local_warranty_price;
             $items[] = [
                 'name' => 'Warranty',
                 'description' => 'Warranty',
                 'unit_amount' => [
-                    'currency_code' => $local_currency,
-                    'value' => $local_warranty_price,
+                    'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                    'value' => !$is_currency_supported ? $local_warranty_usd : $local_warranty_price,
                 ],
                 'quantity' => 1
             ];
@@ -104,8 +108,8 @@ $local_currency = 'USD';
         $unit = [
             'description' => $product->long_name,
             'amount' => [
-                'currency_code' => $local_currency,
-                'value' => round($total_local_price, 2),
+                'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                'value' => !$is_currency_supported ? $total_price : $total_local_price,
                 'items' => $items,
             ]
         ];
@@ -129,9 +133,11 @@ $local_currency = 'USD';
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                 'payment_provider' => PaymentService::PROVIDER_PAYPAL,
-            ]);
+                'payer_id' => '',
+            ], true);
             abort_if(!$txn_response['success'], 404);
-            $txn = $txn_response['txn'];
+
+            $txn = $txn_response['txn']->attributesToArray();
 
             $odin_order_product = [
                 'sku_code' => $request->sku_code,
@@ -139,7 +145,7 @@ $local_currency = 'USD';
                 'price' => $local_price,
                 'price_usd' => $price,
                 'warranty_price' => $local_warranty_price ?? null,
-                'warranty_price_usd' => $warranty_price ?? null,
+                'warranty_price_usd' => $local_warranty_usd ?? null,
                 'is_main' => !$upsell_order,
                 'is_exported' => false,
                 'is_plus_one' => false,
@@ -160,10 +166,10 @@ $local_currency = 'USD';
                 $upsell_order->save();
             } else {
                 $order_reponse = $this->orderService->addOdinOrder([
-                    'currency' => $local_currency,
+                    'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
                     'exchange_rate' => $priceData['exchange_rate'],
                     'total_paid' => 0,
-                    'total_price' => $total_local_price,
+                    'total_price' => !$is_currency_supported ? $total_price : $total_local_price,
                     'total_price_usd' => $total_price,
                     'customer_phone' => null,
                     'language' => app()->getLocale(),
@@ -173,7 +179,21 @@ $local_currency = 'USD';
                     'page_checkout' => $request->page_checkout,
                     'offer' => $request->offer,
                     'affiliate' => $request->affiliate,
-                ]);
+                    'shop_currency' => $shop_currency_code,
+                ], true);
+
+                $order = $order_reponse['order'];
+                $order_txn_data = [
+                    'hash' => $txn_response['txn']->hash,
+                    'value' => $txn_response['txn']->value,
+                    'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                    'is_charged_back' => false,
+                    'fee' => null,
+                    'payment_provider' => $txn_response['txn']->payment_provider,
+                    'payment_method' => $txn_response['txn']->payment_method,
+                    'payer_id' => $txn_response['txn']->payer_id,
+                ];
+                $order->push('txns', $order_txn_data);
 
                 abort_if(!$order_reponse['success'], 404);
             }
@@ -195,15 +215,19 @@ $local_currency = 'USD';
 
             $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
             $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
+
             $txn_response = $this->orderService->addTxn([
                 'hash' => $paypal_order->id,
                 'value' => $paypal_order_value,
+                'status' => $this->getPayPalOrderStatus($paypal_order),
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                 'payment_provider' => PaymentService::PROVIDER_PAYPAL,
-            ]);
-            $txn = $txn_response['txn'];
+                'payer_id' => optional($paypal_order->payer)->payer_id,
+            ], true);
+
+            $txn = $txn_response['txn']->attributesToArray();
 
             $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
             $this->setPayer($order, $paypal_order);
@@ -216,12 +240,21 @@ $local_currency = 'USD';
 
             $products = $order->products;
 
-            if ($product_key !== null) {
-                $products[$product_key]['is_txn_captured'] = true;
-                $products[$product_key]['txn_value'] = $txn['value'];
-            }
             $order->products = $products;
             $order->status = $this->getOrderStatus($order);
+
+            $order_txn_data = [
+                'hash' => $txn_response['txn']->hash,
+                'value' => $txn_response['txn']->value,
+                'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                'is_charged_back' => false,
+                'fee' => null,
+                'payment_provider' => $txn_response['txn']->payment_provider,
+                'payment_method' => $txn_response['txn']->payment_method,
+                'payer_id' => $txn_response['txn']->payer_id,
+            ];
+            $order->push('txns', $order_txn_data);
+
             $order->save();
             if ($order) {
                 return ['order_id' => $order->id];
@@ -266,10 +299,25 @@ $local_currency = 'USD';
                     'provider_data' => $paypal_order,
                     'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                     'payment_provider' => PaymentService::PROVIDER_PAYPAL,
-                ]);
+                    'payer_id' => optional($paypal_order->payer)->payer_id,
+                ], true);
 
-                $txn = $txn_response['txn'];
+                $txn = $txn_response['txn']->attributesToArray();
+
                 $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
+
+                $order_txn_data = [
+                    'hash' => $txn_response['txn']->hash,
+                    'value' => $txn_response['txn']->value,
+                    'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                    'is_charged_back' => false,
+                    'fee' => $fee,
+                    'payment_provider' => $txn_response['txn']->payment_provider,
+                    'payment_method' => $txn_response['txn']->payment_method,
+                    'payer_id' => $txn_response['txn']->payer_id,
+                ];
+                $order->push('txns', $order_txn_data);
+
                 $product_key = collect($order->products)->search(function ($product) use ($txn) {
                     return $product['txn_hash'] === $txn['hash'];
                 });
@@ -282,6 +330,7 @@ $local_currency = 'USD';
                         $products[$product_key]['txn_fee'] = (float)$fee;
                     }
                 }
+
                 $order->products = $products;
                 $this->calculateTotalPaid($order);
                 $this->calculateTotalFee($order);
@@ -347,6 +396,17 @@ $local_currency = 'USD';
     }
 
     /**
+     * Returns PayPal status string from a PayPal order object
+     *
+     * @param $paypal_order
+     * @return string
+     */
+    private function getPayPalOrderStatus($paypal_order)
+    {
+        return strtolower($paypal_order->status);
+    }
+
+    /**
      * Set payper info to order
      *
      * @param $order
@@ -355,7 +415,6 @@ $local_currency = 'USD';
     private function setPayer($order, $paypal_order)
     {
         if (isset($paypal_order->payer)) {
-            $order->payer_id = optional($paypal_order->payer)->payer_id;
             $order->customer_email = optional($paypal_order->payer)->email_address;
             if (isset($paypal_order->payer->name)) {
                 $order->customer_first_name = optional($paypal_order->payer->name)->given_name;
@@ -470,8 +529,9 @@ $local_currency = 'USD';
         } else {
             return [
                 'price' => $product->prices[$request->sku_quantity]['value'],
-                'code' => $product->prices['currency'],
+                'code' =>  $product->prices['currency'],
                 'exchange_rate' => $product->prices['exchange_rate'],
+                'warranty' => $product->prices[$request->sku_quantity]['warranty_price'],
             ];
         }
         abort(404);

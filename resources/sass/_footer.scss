@@ -17,6 +17,15 @@
     margin: auto;
     text-align: center;
     list-style: none;
+    padding-left: 0;
+
+    @media screen and ($xs-down) {
+      flex-direction: column;
+    }
+  }
+
+  &__row-item {
+    margin: 10px;
   }
 
   &__link {

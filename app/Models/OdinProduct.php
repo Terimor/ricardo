@@ -124,18 +124,17 @@ class OdinProduct extends Model
     public function getPricesAttribute($value)
     {
         $currency = CurrencyService::getCurrency();
-
         $returnedKey = 0;
 
-	//iteration by price sets array
+	    //iteration by price sets array
         foreach ($value as $key => $priceSet) {
-	    $oneItemPrice = 0;
+            $oneItemPrice = 0;
 
-	    //iteration by items quantity for selected price set
+            //iteration by items quantity for selected price set
             for ($quantity = 1; $quantity <= self::QUANTITY_PRICES; $quantity++) {
                 if (!empty($priceSet[$quantity]['value'])) {
-					// val for calculate upsell
-					$value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
+                    // val for calculate upsell
+                    $value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
                     $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency);
                     $value[$key][$quantity]['value'] = $price['price'];
                     $value[$key][$quantity]['value_text'] = $price['price_text'];
@@ -268,7 +267,7 @@ class OdinProduct extends Model
     {
         return !empty($this->upsell_hero_image_id) ? $this->images[$this->upsell_hero_image_id] : null;
     }
-    
+
     /**
      * Getter billing descriptor
      * @param type $value
@@ -278,7 +277,7 @@ class OdinProduct extends Model
 		$billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
 		return "*{$billingDescriptorPrefix}*{$value}";
     }
-    
+
     /**
      * Set upsell prices
      * @param float $fixedPrice

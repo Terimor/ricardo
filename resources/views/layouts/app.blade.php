@@ -15,7 +15,7 @@
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js" defer></script>
         <script src="https://js.ebanx.com/ebanx-1.6.0.min.js" defer></script>
         <script src="/js/ebanx.js" defer></script>
-        <script src="https://www.paypal.com/sdk/js?disable-card=visa,mastercard,amex&client-id={{$setting['instant_payment_paypal_client_id']}}"></script>
+        <script src="https://www.paypal.com/sdk/js?currency={{$PayPalCurrency}}&disable-card=visa,mastercard,amex&client-id={{$setting['instant_payment_paypal_client_id']}}"></script>
 
         {{--<script src="https://cdn.checkout.com/sandbox/js/checkout.js"></script>--}}
         {{--<script src="https://sandbox.bluesnap.com/js/cse/v1.0.4/bluesnap.js"></script>--}}
@@ -34,6 +34,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.min.js" defer></script>
     <script src="{{ asset('scripts/bioep.min.js') }}" defer></script>
+    <script src="{{ asset('js/views/header.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -45,6 +46,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @yield('styles')
 </head>
 <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
     <div id="app">

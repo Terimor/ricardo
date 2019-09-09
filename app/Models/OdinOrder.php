@@ -11,7 +11,7 @@ class OdinOrder extends OdinModel
 
     protected $collection = 'odin_order';
 
-    protected $dates = ['created_at', 'updated_at'];        
+    protected $dates = ['created_at', 'updated_at'];
 
     /**
      * Attributes with default values
@@ -27,7 +27,7 @@ class OdinOrder extends OdinModel
         'total_price' => null, // * float full price in local currency (with warranty)
         'total_price_usd' => null, // * float, full USD price (with warranty)
         'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
-	'shop_currency' => null, // enum string, //currency was used to display prices
+        'shop_currency' => null, // enum string, //currency was used to display prices
         //'payment_provider' => null, // enum string
         //'payment_method' => null, // enum string
         //'payer_id' => null, // string, payer ID in payment provider system
@@ -117,13 +117,13 @@ class OdinOrder extends OdinModel
      * @var array
      */
     protected $fillable = [
-        'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_price', 'total_price_usd', 'payer_id',
+        'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_price', 'total_price_usd', 'shop_currency',
         'customer_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country',
         'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id', 'trackings', 'products',
-        'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed'
+        'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed', 'txns'
 
     ];
-    
+
     protected static $save_history = true;
 
     /**
@@ -137,11 +137,10 @@ class OdinOrder extends OdinModel
             if (!isset($model->number) || !$model->number) {
                 $model->number = !empty($this->shipping_country) ? self::generateOrderNumber($this->shipping_country) : self::generateOrderNumber();
             }
-	    
-	    if (!isset($model->shop_currency) || !$model->shop_currency) {
+            if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $model->currency;
             }
-        });		
+        });
     }
 
     /**

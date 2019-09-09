@@ -272,7 +272,7 @@
 				variant: this.form.variant,
 				installments: 1,
       });
-      
+
       if (this.withInstallments) {
         // set default installments
         this.form.installments =
@@ -287,7 +287,7 @@
 		}
 	}
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   @import "../../sass/variables";
 
   .vmc4 {
@@ -296,6 +296,10 @@
     background: #fff;
     margin-top: 30px;
     padding: 0;
+
+    button:not(disabled) {
+      cursor: pointer;
+    }
 
     .main-content {
       .col-content {

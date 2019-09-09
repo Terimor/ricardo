@@ -29,7 +29,7 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index(Request $request, ProductService $productService)
-    {	
+    {
 	$loadedPhrases = (new I18nService())->loadPhrases('product_page');
         $product = $productService->resolveProduct($request, true);
         return view('index', compact('product'));
@@ -63,11 +63,11 @@ class SiteController extends Controller
     public function checkout(Request $request, ProductService $productService)
     {
 		$viewTemplate = 'checkout';
-		
+
 		if (request()->get('tpl') == 'vmp41') {
 			$viewTemplate = 'vmp41';
 		}
-		
+
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
@@ -75,11 +75,11 @@ class SiteController extends Controller
         $setting = Setting::whereIn('key',[
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
-        
-        $countries =  \Utils::getCountries();        
-	
+
+        $countries =  \Utils::getCountries();
+
 		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
-	
+
         return view($viewTemplate, compact('location', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
     }
 
@@ -92,11 +92,11 @@ class SiteController extends Controller
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
 	$product = $productService->resolveProduct($request, true);
-	
+
 	$setting = Setting::whereIn('key',[
 	    'instant_payment_paypal_client_id',
 	])->pluck('value', 'key');
-	
+
         return view('uppsells_funnel', compact('location', 'product', 'setting'));
     }
 
@@ -109,14 +109,14 @@ class SiteController extends Controller
     {
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
 	$product = $productService->resolveProduct($request, true);
-	
+
 	$setting = Setting::whereIn('key',[
 	    'instant_payment_paypal_client_id',
 	])->pluck('value', 'key');
-	
+
         return view('thankyou', compact('location', 'product' , 'setting'));
     }
-    
+
     /**
      * Show the application Promo.
      *
@@ -131,10 +131,10 @@ class SiteController extends Controller
         $setting = Setting::whereIn('key',[
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
-        
-        $countries =  \Utils::getCountries();        
+
+        $countries =  \Utils::getCountries();
         return view('promo', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries'));
-    }    
+    }
 
     /**
      * Show the application Product.
@@ -151,7 +151,7 @@ class SiteController extends Controller
      * @return type
      */
     public function test(Request $request, ProductService $productService)
-    {	        
+    {
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
@@ -170,7 +170,7 @@ class SiteController extends Controller
 	$order->txns = $txns;
 	$order->save();
 	echo '<pre>'; var_dump($order); echo '</pre>';
-	
+
 	exit;*/
 		
 		/*$price = CurrencyService::calculateWarrantyPrice(20, 49.99);
@@ -179,7 +179,7 @@ class SiteController extends Controller
 		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
 		
         $product = $productService->resolveProduct($request, true);
-        
+
         echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
         $currency = Currency::whereCode('USD')->first();
         echo '<pre>'; var_dump($currency); echo '</pre>'; exit;

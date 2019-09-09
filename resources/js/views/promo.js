@@ -7,19 +7,19 @@ import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
 import { preparePurchaseData } from '../utils/checkout';
 import { getNotice } from '../utils/emc1';
 import { scrollTo } from '../utils/common';
-import notification from '../mixins/notification'
-import queryToComponent from '../mixins/queryToComponent'
+import { getCountOfInstallments } from '../utils/installments';
+import notification from '../mixins/notification';
+import queryToComponent from '../mixins/queryToComponent';
 
 const promo = new Vue({
   el: "#promo",
 
   mixins: [
     notification,
-    queryToComponent
+    queryToComponent,
   ],
 
   data: () => ({
-    asd: '',
     showPreloader: true,
     isFormShown: false,
     implValue: '1',
@@ -42,11 +42,7 @@ const promo = new Vue({
       isWarrantyChecked: false,
       countryCodePhoneField: checkoutData.countryCode,
       deal: null,
-      variant: (function() {
-        try {
-          return checkoutData.product.skus[0].code
-        } catch(_) {}
-      }()),
+      variant: '',
       installments: 1,
       paymentType: '',
       fname: null,
@@ -148,7 +144,10 @@ const promo = new Vue({
       text: `<div><img src="${it.images[0]}" alt=""><span>${it.name}</span></div>`,
       value: it.code,
       imageUrl: it.images[0]
-    }))
+    }));
+
+    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
+    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
   },
 
   computed: {
@@ -170,9 +169,8 @@ const promo = new Vue({
       return countries;
     },
 
-    quantityOfInstallments () {
-      const installments = this.installments
-      return installments && installments !== String(1) ? installments + '× ' : ''
+    countOfInstallments() {
+      return getCountOfInstallments(this.installments);
     },
 
     productData () {
@@ -181,6 +179,14 @@ const promo = new Vue({
 
     skusList () {
       return checkoutData.product.skus;
+    },
+
+    codeOrDefault () {
+      return this.queryParams.product || this.checkoutData.product.skus[0].code;
+    },
+
+    hasTimer() {
+      return document.getElementById('timer-component');
     },
   },
 
@@ -191,7 +197,7 @@ const promo = new Vue({
     paypalCreateOrder () {
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-        sku_code: this.codeOrDefault,
+        sku_code: this.form.variant,
         sku_quantity: this.form.deal,
         is_warranty_checked: this.form.isWarrantyChecked,
         page_checkout: document.location.href,
@@ -200,14 +206,14 @@ const promo = new Vue({
       })
     },
 
-    setSelectedPlan(plan) {
+    setSelectedPlan(plan, deal) {
       this.selectedPlan = plan;
-
+      this.form.deal = deal
       this.scrollTo('.j-variant-section');
     },
 
     setSelectedVariant(variant) {
-      this.variant = variant;
+      this.form.variant = variant;
       this.isShownForm = true;
 
       this.scrollTo('.j-complete-order');

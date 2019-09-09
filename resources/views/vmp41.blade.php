@@ -2,8 +2,11 @@
 
 @section('title', $product->skus[0]['name'] . ' Checkout')
 
-<link rel="stylesheet" href="{{ asset('css/promo.css') }}">
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
+
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/promo.css') }}">
+@endsection
 
 @section('script')
     <script defer>
@@ -50,11 +53,11 @@
                                 Price:
                             </span>
                             <span class="promo__price--double bold">
-                                @{{quantityOfInstallments}} @{{ warrantyOldPrice }}
+                                @{{countOfInstallments}} @{{ warrantyOldPrice }}
                             </span>
                         </div>
                         <span class="promo__price promo__text-red bold">
-                            @{{quantityOfInstallments}} @{{ warrantyPriceText }}
+                            @{{countOfInstallments}} @{{ warrantyPriceText }}
                         </span>
                     </div>
                 </div>
@@ -85,7 +88,7 @@
             </div>
             <h2 class="promo__title j-header-products">Secure Your Discounted Deal Now</h2>
             <div
-                class="row"
+                class="row promo__products-row"
                 v-cloak
             >
                 <div
@@ -100,7 +103,7 @@
                             'most-profitable': item.discountName === 'BEST DEAL',
                             'starter': item.discountName === '',
                         }"
-                        @click="setSelectedPlan(item.discountName)"
+                        @click="setSelectedPlan(item.discountName || 'STARTER', item.totalQuantity)"
                     >
                     <div class="promo__product-info">
                         <div
@@ -116,16 +119,24 @@
                                 @{{ item.discountName || 'STARTER CHOICE' }}
                             </strong>
                         </div>
-                        <img :src="item.image" alt="item.text" class="promo__discount-image">
-                        <strong class="promo__discount-text">@{{ item.text }}</strong>
-                        <div class="products-price">
-                            <p class="promo__discount">
-                                <span class="promo__price--double bold">@{{quantityOfInstallments}} @{{ item.price }}</span>
-                                <span class="price promo__text-red bold">@{{quantityOfInstallments}} @{{ item.newPrice }}</span>
-                            </p>
-                        </div>
-                        <div class="promo__fifty-discount">
-                            <p>@{{ item.discountText }}</p>
+                        <div class="promo__product-content">
+                            <img
+                                :src="item.image"
+                                alt="item.text"
+                                class="promo__discount-image"
+                            >
+                            <div class="promo__product-info-wrapper">
+                                <strong class="promo__discount-text">@{{ item.text }}</strong>
+                                <div class="products-price">
+                                    <p class="promo__discount">
+                                        <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
+                                        <span class="promo__price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
+                                    </p>
+                                </div>
+                                <div class="promo__fifty-discount">
+                                    <p>@{{ item.discountText }}</p>
+                                </div>
+                            </div>
                         </div>
                         </div>
                         <green-button class="promo__add-button">
@@ -230,10 +241,16 @@
             </template>
         </div>
         <div
-            v-if="selectedPlan"
-            class="promo__select-variant j-variant-section"
-        >
-            Please select your variant
+            class="j-variant-section"
+            :class="{
+                'promo__select-variant-wrapper': hasTimer !== null
+            }">
+            <div
+                v-if="selectedPlan"
+                class="promo__select-variant"
+            >
+                Please select your variant
+            </div>
         </div>
         <template v-if="selectedPlan">
             <div class="promo__choose-product">
@@ -242,14 +259,14 @@
                         v-for="variantItem in variantList"
                         class="promo__variant-item"
                         @click="setSelectedVariant(variantItem.value)"
-                        :class="{ 'selected-variant': variant === variantItem.value }"
+                        :class="{ 'selected-variant': form.variant === variantItem.value }"
                     >
                         <div class="promo__choose-product-item-color">
                             <div class="color">
                                 <div class="choose-color">
                                     <div
                                         class="promo__variant-icon-wrapper"
-                                        :class="{ 'selected-variant': variant === variantItem.value }"
+                                        :class="{ 'selected-variant': form.variant === variantItem.value }"
                                     >
                                         <img
                                             class="promo__variant-icon"
@@ -268,12 +285,20 @@
         <section class="j-complete-order">
             <div
                 class="promo__complete-order"
-                v-if="variant"
+                v-if="form.variant"
             >
                 <h2 class="promo__title">
                     Complete order
                 </h2>
                 <div class="promo__step-title">Step 1: Pay securely with:</div>
+                <div class="promo__paypal-button-wrapper">
+                    <paypal-button
+                        :style="{ width: '300px' }"
+                        :create-order="paypalCreateOrder"
+                        :on-approve="paypalOnApprove"
+                        :$v="true"
+                    >Buy Now Risk Free PAYPAL</paypal-button>
+                </div>
                 <div class="promo__alternative-payment">
                     Or, you can also pay securely with:
                 </div>
@@ -284,25 +309,6 @@
                         :list="mockData.creditCardRadioList"
                         @input="activateForm"
                     />
-                </div>
-                <div class="promo__row-credit-cards">
-                    <radio-button-group
-                        :with-custom-labels="true"
-                        v-model="form.paymentType"
-                        @input="activateForm"
-                    >
-                        <div class="card-types">
-                            <pay-method-item
-                                v-for="item in cardNames"
-                                :key="item.value"
-                                :input="{
-                                    value: item.value,
-                                    imgUrl: item.imgUrl,
-                                }"
-                                :value="form.paymentType"
-                            />
-                        </div>
-                    </radio-button-group>
                 </div>
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form
@@ -318,7 +324,7 @@
                         :country-code="checkoutData.countryCode"
                         :is-brazil="checkoutData.countryCode === 'BR'"
                         :country-list="countriesList"
-                        :quantity-of-installments="quantityOfInstallments"
+                        :quantity-of-installments="countOfInstallments"
                         :warranty-price-text="warrantyPriceText"
                     />
                 </div>

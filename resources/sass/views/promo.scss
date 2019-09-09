@@ -1,6 +1,20 @@
 @import '../variables';
 
+body {
+  background-color: #fff;
+}
+
+header {
+  box-shadow: none;
+  position: fixed;
+  top: 0;
+  z-index: 4;
+  width: 100%;
+  transition: all .1s ease-in-out;
+}
+
 .promo {
+  $self: &;
   font-size: 15px;
   text-align: center;
 
@@ -23,7 +37,7 @@
     max-width: 1100px;
     padding: 15px;
     margin: 0 auto;
-    margin-top: 35px;
+    margin-top: 150px;
     margin-bottom: 40px;
   }
 
@@ -58,6 +72,10 @@
 
   &__discount-image {
     max-width: 100%;
+    @media screen and ($s-down) {
+      max-width: 30%;
+      margin-top: 30px;
+    }
   }
 
   &__price {
@@ -83,6 +101,10 @@
     margin-bottom: 15px;
   }
 
+  &__products-row {
+    align-items: center;
+  }
+
   &__card {
     display: flex;
 	  flex-direction: column;
@@ -103,11 +125,12 @@
 
   .selected-promotion {
     border: 3px solid $blue;
-  }
-
-  .selected-promotion {
     .product-info {
       margin: 20px;
+
+      @media screen and ($s-down) {
+        margin: 0;
+      }
     }
   }
 
@@ -120,6 +143,12 @@
     flex: 0 0 auto;
   }
 
+  &__product-info-wrapper {
+    @media screen and ($s-down) {
+      padding-left: 10px;
+    }
+  }
+
   &__card {
     &.starter:hover {
       border: 3px solid $blue;
@@ -127,6 +156,15 @@
 
     &.most-profitable:hover {
       border: 3px solid $orange;
+    }
+
+    &.most-popular {
+      #{ $self }__product-info-wrapper {
+        padding: 25px 0;
+        @media screen and ($s-down) {
+          padding: 0;
+        }
+      }
     }
 
     &.most-popular:hover {
@@ -160,7 +198,6 @@
   }
 
   &__discount {
-    width: 200px;
     margin: 0 auto;
     padding: 8px 0 10px;
     display: flex;
@@ -275,12 +312,21 @@
     }
   }
 
+  &__paypal-button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
   &__select-variant {
     background-color: $green;
     padding: 20px 0;
     font-size: 28px;
     color: white;
     margin-top: 24px;
+  }
+
+  &__select-variant-wrapper {
+    padding-top: 35px;
   }
 
   &__carousel-img {
@@ -298,6 +344,14 @@
     background-color: $body-bg;
   }
 
+  &__product-content {
+    @media screen and ($s-down) {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
   &__choose-product-item {
     cursor: pointer;
     width: fit-content;
@@ -306,12 +360,13 @@
     margin: auto;
     display: flex;
     justify-content: space-evenly;
+    flex-wrap: wrap;
     border-radius: 10px;
     align-items: center;
     margin-bottom: 10px;
 
     @media screen and ($m-down) {
-      flex-direction: column;
+      width: 100%;
     }
 
     .color {
@@ -338,6 +393,10 @@
     padding-top: 0;
     text-align: center;
 
+    @media screen and ($m-down) {
+      width: auto;
+    }
+
     &.selected-variant {
       display: flex;
       justify-content: center;
@@ -348,6 +407,7 @@
   &__variant-item {
     @media screen and ($m-down) {
       margin: 10px 0;
+      flex-basis: 50%;
     }
   }
 
@@ -380,7 +440,6 @@
 
   &__complete-order {
     display: block;
-    margin-top: 60px;
     padding: 60px 0;
     background-color: white;
   }
@@ -398,15 +457,6 @@
 
   &__credit-card-switcher {
     max-width: 300px;
-  }
-
-  &__row-credit-cards {
-    padding-bottom: 40px;
-    padding-top: 24px;
-    display: flex;
-    margin: auto;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   &__form-wrapper {

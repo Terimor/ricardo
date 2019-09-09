@@ -1,4 +1,3 @@
-<script src="{{ asset('js/views/header.js') }}" defer></script>
 
 <header id="header">
     <div class="container">

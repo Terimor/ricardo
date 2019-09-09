@@ -9,7 +9,7 @@
     <template v-else v-for="input in list">
       <label :style="input.styles" :key="input.value" class="label-container-radio" :class="input.class">
         <div class="label-container-radio__label" v-html="input.label"></div>
-        <input type="radio" :checked="input.value === value" name="radio" :value="input.value">
+        <input type="radio" :checked="+input.value === +value" name="radio" :value="input.value">
         <span class="checkmark"></span>
       </label>
     </template>

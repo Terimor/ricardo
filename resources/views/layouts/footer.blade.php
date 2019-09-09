@@ -22,7 +22,7 @@
         ];
         @endphp
         @foreach ($links as $item)
-            <li>
+            <li class="footer__row-item">
                 <a href="{{ $item['text'] }}" class="footer__link">{{ $item['text'] }}</a>
             </li>
         @endforeach

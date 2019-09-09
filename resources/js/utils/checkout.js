@@ -1,6 +1,4 @@
-import { getCountOfInstallments } from './emc1';
-
-export const preparePartByInstallments = (value, installment) => Number((value / installment).toFixed(2))
+import { getCountOfInstallments } from './installments';
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
   const config = {
@@ -83,12 +81,12 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
             null;
 
       return  {
+        discountPercent,
         image: it.image,
         discountName:
           it.is_bestseller ? 'BESTSELLER' :
             it.is_popular ? 'BEST DEAL' :
               '',
-        withDiscount: idx > 0,
         text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' FREE' : ''}`,
         newPrice: getNewPrice({
           key,

@@ -26,7 +26,16 @@
 <script>
 export default {
   name: 'TextField',
-  props: ['value', 'label', 'theme', 'prefix', 'postfix', 'validation', 'validationMessage', 'rest'],
+  props: [
+    'value',
+    'label',
+    'theme',
+    'prefix',
+    'postfix',
+    'validation',
+    'validationMessage',
+    'rest'
+  ],
   computed: {
     invalid () {
       return this.validation && this.validation.$dirty && this.validation.$invalid
