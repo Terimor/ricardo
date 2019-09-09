@@ -101,6 +101,7 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: 4;
     background-color: #f3f3f3;
 
     &__container {

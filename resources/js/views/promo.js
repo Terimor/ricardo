@@ -8,15 +8,15 @@ import { preparePurchaseData } from '../utils/checkout';
 import { getNotice } from '../utils/emc1';
 import { scrollTo } from '../utils/common';
 import { getCountOfInstallments } from '../utils/installments';
-import notification from '../mixins/notification'
-import queryToComponent from '../mixins/queryToComponent'
+import notification from '../mixins/notification';
+import queryToComponent from '../mixins/queryToComponent';
 
 const promo = new Vue({
   el: "#promo",
 
   mixins: [
     notification,
-    queryToComponent
+    queryToComponent,
   ],
 
   data: () => ({
@@ -183,6 +183,10 @@ const promo = new Vue({
 
     codeOrDefault () {
       return this.queryParams.product || this.checkoutData.product.skus[0].code;
+    },
+
+    hasTimer() {
+      return document.getElementById('timer-component');
     },
   },
 

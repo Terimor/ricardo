@@ -119,21 +119,23 @@
                                 @{{ item.discountName || 'STARTER CHOICE' }}
                             </strong>
                         </div>
-                        <img
-                            :src="item.image"
-                            alt="item.text"
-                            class="promo__discount-image"
-                        >
-                        <div class="promo__product-info-wrapper">
-                            <strong class="promo__discount-text">@{{ item.text }}</strong>
-                            <div class="products-price">
-                                <p class="promo__discount">
-                                    <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
-                                    <span class="price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
-                                </p>
-                            </div>
-                            <div class="promo__fifty-discount">
-                                <p>@{{ item.discountText }}</p>
+                        <div class="promo__product-content">
+                            <img
+                                :src="item.image"
+                                alt="item.text"
+                                class="promo__discount-image"
+                            >
+                            <div class="promo__product-info-wrapper">
+                                <strong class="promo__discount-text">@{{ item.text }}</strong>
+                                <div class="products-price">
+                                    <p class="promo__discount">
+                                        <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
+                                        <span class="promo__price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
+                                    </p>
+                                </div>
+                                <div class="promo__fifty-discount">
+                                    <p>@{{ item.discountText }}</p>
+                                </div>
                             </div>
                         </div>
                         </div>
@@ -239,10 +241,16 @@
             </template>
         </div>
         <div
-            v-if="selectedPlan"
-            class="promo__select-variant j-variant-section"
-        >
-            Please select your variant
+            class="j-variant-section"
+            :class="{
+                'promo__select-variant-wrapper': hasTimer !== null
+            }">
+            <div
+                v-if="selectedPlan"
+                class="promo__select-variant"
+            >
+                Please select your variant
+            </div>
         </div>
         <template v-if="selectedPlan">
             <div class="promo__choose-product">
