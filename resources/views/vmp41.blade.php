@@ -88,7 +88,7 @@
             </div>
             <h2 class="promo__title j-header-products">Secure Your Discounted Deal Now</h2>
             <div
-                class="row"
+                class="row promo__products-row"
                 v-cloak
             >
                 <div
@@ -103,7 +103,7 @@
                             'most-profitable': item.discountName === 'BEST DEAL',
                             'starter': item.discountName === '',
                         }"
-                        @click="setSelectedPlan(item.discountName, item.totalQuantity)"
+                        @click="setSelectedPlan(item.discountName || 'STARTER', item.totalQuantity)"
                     >
                     <div class="promo__product-info">
                         <div
@@ -119,16 +119,22 @@
                                 @{{ item.discountName || 'STARTER CHOICE' }}
                             </strong>
                         </div>
-                        <img :src="item.image" alt="item.text" class="promo__discount-image">
-                        <strong class="promo__discount-text">@{{ item.text }}</strong>
-                        <div class="products-price">
-                            <p class="promo__discount">
-                                <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
-                                <span class="price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
-                            </p>
-                        </div>
-                        <div class="promo__fifty-discount">
-                            <p>@{{ item.discountText }}</p>
+                        <img
+                            :src="item.image"
+                            alt="item.text"
+                            class="promo__discount-image"
+                        >
+                        <div class="promo__product-info-wrapper">
+                            <strong class="promo__discount-text">@{{ item.text }}</strong>
+                            <div class="products-price">
+                                <p class="promo__discount">
+                                    <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
+                                    <span class="price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
+                                </p>
+                            </div>
+                            <div class="promo__fifty-discount">
+                                <p>@{{ item.discountText }}</p>
+                            </div>
                         </div>
                         </div>
                         <green-button class="promo__add-button">
@@ -295,25 +301,6 @@
                         :list="mockData.creditCardRadioList"
                         @input="activateForm"
                     />
-                </div>
-                <div class="promo__row-credit-cards">
-                    <radio-button-group
-                        :with-custom-labels="true"
-                        v-model="form.paymentType"
-                        @input="activateForm"
-                    >
-                        <div class="card-types">
-                            <pay-method-item
-                                v-for="item in cardNames"
-                                :key="item.value"
-                                :input="{
-                                    value: item.value,
-                                    imgUrl: item.imgUrl,
-                                }"
-                                :value="form.paymentType"
-                            />
-                        </div>
-                    </radio-button-group>
                 </div>
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form

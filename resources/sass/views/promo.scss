@@ -14,6 +14,7 @@ header {
 }
 
 .promo {
+  $self: &;
   font-size: 15px;
   text-align: center;
 
@@ -96,6 +97,10 @@ header {
     margin-bottom: 15px;
   }
 
+  &__products-row {
+    align-items: center;
+  }
+
   &__card {
     display: flex;
 	  flex-direction: column;
@@ -116,9 +121,6 @@ header {
 
   .selected-promotion {
     border: 3px solid $blue;
-  }
-
-  .selected-promotion {
     .product-info {
       margin: 20px;
     }
@@ -140,6 +142,12 @@ header {
 
     &.most-profitable:hover {
       border: 3px solid $orange;
+    }
+
+    &.most-popular {
+      #{ $self }__product-info-wrapper {
+        padding: 25px 0;
+      }
     }
 
     &.most-popular:hover {
@@ -415,15 +423,6 @@ header {
 
   &__credit-card-switcher {
     max-width: 300px;
-  }
-
-  &__row-credit-cards {
-    padding-bottom: 40px;
-    padding-top: 24px;
-    display: flex;
-    margin: auto;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   &__form-wrapper {
