@@ -664,7 +664,7 @@ class UtilsService
 			$remoteHost = \Utils::getSetting('cf_host_default');
 		}
 		
-		return str_replace(self::S3_URL, 'cdn.'.$remoteAddr, $url);
+		return str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
 	}
 
 }
