@@ -22,8 +22,6 @@
             that.action = actions;
             if ($v.required || $v.$dirty) {
               actions.disable();
-            } else {
-              return createOrder();
             }
           },
           createOrder(data, actions) {
