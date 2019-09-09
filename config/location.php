@@ -27,7 +27,7 @@ return [
 
     'fallbacks' => [
 
-        Stevebauman\Location\Drivers\FreeGeoIp::class,
+        //Stevebauman\Location\Drivers\FreeGeoIp::class,
 
         Stevebauman\Location\Drivers\GeoPlugin::class,
 

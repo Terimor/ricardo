@@ -13,14 +13,15 @@ use NumberFormatter;
 class OdinProduct extends Model
 {
     const QUANTITY_PRICES = 5;
+	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
     protected $images;
     protected $upsellPrices;
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
-	'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
-	'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label',
-	'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
+		'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
+		'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label',
+		'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
     ];
 
     protected $hidden = [
@@ -30,7 +31,7 @@ class OdinProduct extends Model
     /**
      * @var string
      */
-    protected $collection = 'odin_product';
+    protected $collection = 'odin_product';		
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -133,66 +134,66 @@ class OdinProduct extends Model
 	    //iteration by items quantity for selected price set
             for ($quantity = 1; $quantity <= self::QUANTITY_PRICES; $quantity++) {
                 if (!empty($priceSet[$quantity]['value'])) {
-		    // val for calculate upsell
-		    $value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
+					// val for calculate upsell
+					$value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
                     $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency);
                     $value[$key][$quantity]['value'] = $price['price'];
                     $value[$key][$quantity]['value_text'] = $price['price_text'];
 
-		    if ($quantity == 1) {
-			//save one item price
-			$oneItemPrice = $price['price'];
-		    }
+					if ($quantity == 1) {
+					//save one item price
+					$oneItemPrice = $price['price'];
+					}
 
                     $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
 
-		    $value[$key][$quantity]['unit_value_text'] = $numberFormatter->formatCurrency($price['price'] / $quantity, $currency->code);
+					$value[$key][$quantity]['unit_value_text'] = $numberFormatter->formatCurrency($price['price'] / $quantity, $currency->code);
 
-		    $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
-		    $value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
+					$oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
+					$value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
 
-		    $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
+					$value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
 
-                    if (!empty($this->warranty_percent)) {
-                        $warranty_price = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
-                        $value[$key][$quantity]['warranty_price'] = $warranty_price;
-                        $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($warranty_price, $currency->code);
-			$installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
-			$installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
-			$value[$key][$quantity]['installments3_warranty_price_text'] = $numberFormatter->formatCurrency($installments3_warranty_price, $currency->code);
-			$value[$key][$quantity]['installments6_warranty_price_text'] = $numberFormatter->formatCurrency($installments6_warranty_price, $currency->code);
-                    } else {
-                        $value[$key][$quantity]['warranty_price'] = 0;
-                        $value[$key][$quantity]['warranty_price_text'] = null;
-			$value[$key][$quantity]['installments3_warranty_price_text'] = null;
-			$value[$key][$quantity]['installments6_warranty_price_text'] = null;
-                    }
+					if (!empty($this->warranty_percent)) {
+						$warranty_price = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
+						$value[$key][$quantity]['warranty_price'] = $warranty_price;
+						$value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($warranty_price, $currency->code);
+						$installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
+						$installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
+						$value[$key][$quantity]['installments3_warranty_price_text'] = $numberFormatter->formatCurrency($installments3_warranty_price, $currency->code);
+						$value[$key][$quantity]['installments6_warranty_price_text'] = $numberFormatter->formatCurrency($installments6_warranty_price, $currency->code);
+					} else {
+						$value[$key][$quantity]['warranty_price'] = 0;
+						$value[$key][$quantity]['warranty_price_text'] = null;
+						$value[$key][$quantity]['installments3_warranty_price_text'] = null;
+						$value[$key][$quantity]['installments6_warranty_price_text'] = null;
+					}
 
-                    //installments
-		    $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
-		    $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
-		    $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
-		    $installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
+							//installments
+					$installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
+					$installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
+					$installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
+					$installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
 
-                    $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($installments3_value, $currency->code);
-                    $value[$key][$quantity]['installments3_unit_value_text'] = $numberFormatter->formatCurrency($installments3_value / $quantity, $currency->code);
-                    $value[$key][$quantity]['installments3_old_value_text'] = $numberFormatter->formatCurrency($installments3_old_value, $currency->code);
-                    $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
-                    $value[$key][$quantity]['installments6_unit_value_text'] = $numberFormatter->formatCurrency($installments6_value / $quantity, $currency->code);
-		    $value[$key][$quantity]['installments6_old_value_text'] = $numberFormatter->formatCurrency($installments6_old_value, $currency->code);
+					$value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($installments3_value, $currency->code);
+					$value[$key][$quantity]['installments3_unit_value_text'] = $numberFormatter->formatCurrency($installments3_value / $quantity, $currency->code);
+					$value[$key][$quantity]['installments3_old_value_text'] = $numberFormatter->formatCurrency($installments3_old_value, $currency->code);
+					$value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
+					$value[$key][$quantity]['installments6_unit_value_text'] = $numberFormatter->formatCurrency($installments6_value / $quantity, $currency->code);
+					$value[$key][$quantity]['installments6_old_value_text'] = $numberFormatter->formatCurrency($installments6_old_value, $currency->code);
 
-                    $value[$key][$quantity]['image'] = !empty($priceSet[$quantity]['image_id']) ? $this->images[$priceSet[$quantity]['image_id']] : null;
-                } else {
-                    logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
-                }
-            }
-            $value[$key]['currency'] = $currency->code;
-            $value[$key]['exchange_rate'] = $currency->usd_rate;
+					$value[$key][$quantity]['image'] = !empty($priceSet[$quantity]['image_id']) ? $this->images[$priceSet[$quantity]['image_id']] : null;
+				} else {
+					logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
+				}
+			}
+			$value[$key]['currency'] = $currency->code;
+			$value[$key]['exchange_rate'] = $currency->usd_rate;
 
-            if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
-                $returnedKey = $key;
-                break;
-            }
+			if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
+				$returnedKey = $key;
+				break;
+			}
         }
 
         if (request()->has('cop_id')) {
@@ -274,8 +275,8 @@ class OdinProduct extends Model
      */
     public function getBillingDescriptorAttribute($value)
     {
-	$billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
-	return "*{$billingDescriptorPrefix}*{$value}";
+		$billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
+		return "*{$billingDescriptorPrefix}*{$value}";
     }
     
     /**
@@ -287,46 +288,51 @@ class OdinProduct extends Model
      */
     public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
     {
-	$currency = CurrencyService::getCurrency();
-	
-	// if null set quantity 1
-	if (!$maxQuantity) {
-	    $maxQuantity = 1;
-	}
-	
-	// max 5
-	if ($maxQuantity > self::QUANTITY_PRICES) {
-	    $maxQuantity = self::QUANTITY_PRICES;
-	}
-	
-	if (!$fixedPrice && !$discountPercent) {	    
-	    return false;
-	}
-	
-	if ($fixedPrice) {
-	    // quantity loop
-	    for ($i=1; $i <= $maxQuantity; $i++) {
-		$this->attributes['upsellPrices'][$i] = CurrencyService::getLocalPriceFromUsd($fixedPrice*$i, $currency);;
-	    }
-	} else if ($discountPercent) {
-	    // get price from 1 qty
-	    $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
-	    if ($discountPrice) {
-		$discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
-		if ($discountPrice < 4.5) {
-		    logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
-		    $discountPrice = 4.5;
+		$currency = CurrencyService::getCurrency();
+
+		// if null set quantity 1
+		if (!$maxQuantity) {
+			$maxQuantity = 1;
 		}
-	    }
-	    
-	    // quantity loop
-	    for ($i=1; $i <= $maxQuantity; $i++) {
-		$price = CurrencyService::getLocalPriceFromUsd($discountPrice * $i, $currency);
-		$this->attributes['upsellPrices'][$i]['value'] = $price['price'];
-		$this->attributes['upsellPrices'][$i]['value_text'] = $price['price_text'];
-	    }
-	}
-	
-	return true;
+
+		// max 5
+		if ($maxQuantity > self::QUANTITY_PRICES) {
+			$maxQuantity = self::QUANTITY_PRICES;
+		}
+
+		if (!$fixedPrice && !$discountPercent) {	    
+			return false;
+		}
+
+		if ($fixedPrice) {
+			// quantity loop
+			for ($i=1; $i <= $maxQuantity; $i++) {
+			$this->attributes['upsellPrices'][$i] = CurrencyService::getLocalPriceFromUsd($fixedPrice*$i, $currency);;
+			}
+		} else if ($discountPercent) {
+			// get price from 1 qty
+			$discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
+			if ($discountPrice) {
+				$discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
+				if ($discountPrice < 4.5) {
+					logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
+					$discountPrice = 4.5;
+				}
+			}
+
+			// quantity loop
+			for ($i=1; $i <= $maxQuantity; $i++) {
+			$price = CurrencyService::getLocalPriceFromUsd($discountPrice * $i, $currency);
+			$this->attributes['upsellPrices'][$i]['value'] = $price['price'];
+			$this->attributes['upsellPrices'][$i]['value_text'] = $price['price_text'];
+			}
+		}
+
+		return true;
     }
+	
+	public function replaceImageUrl()
+	{
+		
+	}
 }

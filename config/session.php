@@ -18,8 +18,8 @@ return [
     |
     */
 
-    //'driver' => env('SESSION_DRIVER', 'file'),
-    'driver' => 'mongodb',
+    'driver' => env('SESSION_DRIVER', 'file'),
+    //'driver' => 'mongodb',
 
     /*
     |--------------------------------------------------------------------------
