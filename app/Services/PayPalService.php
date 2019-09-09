@@ -78,7 +78,7 @@ class PayPalService
         $total_local_price = $local_price;
 
         // If local currency is not supported by PayPal convert to USD. Used for purchase only.
-        $is_currency_supported = in_array($priceData['code'], self::getSupportedCurrenciesCodes());
+        $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
 
         $items = [[
             'name' => $product->product_name,
@@ -144,7 +144,7 @@ class PayPalService
                 'price' => $local_price,
                 'price_usd' => $price,
                 'warranty_price' => $local_warranty_price ?? null,
-                'warranty_price_usd' => $warranty_price ?? null,
+                'warranty_price_usd' => $local_warranty_usd ?? null,
                 'is_main' => !$upsell_order,
                 'is_exported' => false,
                 'is_plus_one' => false,
@@ -207,6 +207,7 @@ class PayPalService
             $txn_response = $this->orderService->addTxn([
                 'hash' => $paypal_order->id,
                 'value' => $paypal_order_value,
+                'status' => $this->getPayPalOrderStatus($paypal_order),
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
@@ -279,10 +280,12 @@ class PayPalService
                     'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                     'payment_provider' => PaymentService::PROVIDER_PAYPAL,
                     'payer_id' => optional($paypal_order->payer)->payer_id,
-                ]);
+                ], true);
 
-                $txn = $txn_response['txn'];
+                $txn = $txn_response['txn']->attributesToArray();
+
                 $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
+                $order->addTransaction($txn_response['txn']);
                 $product_key = collect($order->products)->search(function ($product) use ($txn) {
                     return $product['txn_hash'] === $txn['hash'];
                 });
@@ -357,6 +360,17 @@ class PayPalService
     private function getPayPalOrderCurrency($paypal_order)
     {
         return $paypal_order->purchase_units[0]->payments->captures[0]->amount->currency_code;
+    }
+
+    /**
+     * Returns PayPal status string from a PayPal order object
+     *
+     * @param $paypal_order
+     * @return string
+     */
+    private function getPayPalOrderStatus($paypal_order)
+    {
+        return strtolower($paypal_order->status);
     }
 
     /**
