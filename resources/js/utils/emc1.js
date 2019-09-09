@@ -1,6 +1,5 @@
 import { getRandomInt } from './common';
-
-export const getCountOfInstallments = (installments) => installments && installments !== 1 ? installments + '× ' : ''
+import { getCountOfInstallments } from './installments';
 
 export const getRadioHtml = ({ discountName, newPrice, text, price, discountText, currency = '$', installments, idx }) =>
   `${discountName

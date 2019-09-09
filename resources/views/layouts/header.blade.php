@@ -5,5 +5,3 @@
         <timer-component></timer-component>
     </div>
 </header>
-
-<script src="{{ asset('js/views/header.js') }}" defer></script>
