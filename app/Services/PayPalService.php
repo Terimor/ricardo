@@ -134,9 +134,10 @@ class PayPalService
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
                 'payment_provider' => PaymentService::PROVIDER_PAYPAL,
                 'payer_id' => '',
-            ]);
+            ], true);
             abort_if(!$txn_response['success'], 404);
-            $txn = $txn_response['txn'];
+
+            $txn = $txn_response['txn']->attributesToArray();
 
             $odin_order_product = [
                 'sku_code' => $request->sku_code,
@@ -180,7 +181,10 @@ class PayPalService
                     'affiliate' => $request->affiliate,
                     'shop_currency' => $shop_currency_code,
                     'txns' => [$txn]
-                ]);
+                ], true);
+
+                $order = $order_reponse['order'];
+                $order->addTransaction($txn_response['txn']);
 
                 abort_if(!$order_reponse['success'], 404);
             }

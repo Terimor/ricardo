@@ -216,8 +216,24 @@ class OdinOrder extends OdinModel
         $this->attributes['customer_email'] =  strtolower(trim($value));
     }
 
+    /**
+     * Adds a transaction data to a OdinOrder
+     *
+     * @param Txn $txn
+     */
     public function addTransaction(Txn $txn)
     {
-        $this->push('txns', $txn->attributesToArray());
+        $order_txn_data = [
+            'hash' => $txn->hash,
+            'value' => $txn->value,
+            'status' => strtolower(optional($txn->provider_data)->status),
+            'is_charged_back' => false,
+            'fee' => '',
+            'payment_provider' => $txn->payment_provider,
+            'payment_method' => $txn->payment_method,
+            'payer_id' => $txn->payer_id,
+        ];
+
+        $this->push('txns', $order_txn_data);
     }
 }
