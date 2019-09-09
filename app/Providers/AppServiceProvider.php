@@ -59,13 +59,6 @@ class AppServiceProvider extends ServiceProvider
             'dsn' => $sentryDNS ? $sentryDNS : env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))
         ];
 
-	// register blade tranlation t()
-	/*Blade::directive('t', function ($phrase, $args = []) {
-	    echo '<pre>'; var_dump($phrase); echo '</pre>'; exit;
-	    $phrase = (new I18nService)->getTranslatedPhrase($phrase, app()->getLocale());
-            return "<?={$phrase}?>";
-        });*/
-
     }
 
     protected function loadHelpers() {
