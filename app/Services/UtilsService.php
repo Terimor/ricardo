@@ -567,8 +567,8 @@ class UtilsService
         if (!$countryCode) {
             if ($ip) {
                 $location = \Location::get($ip);
-            } else {
-                $location = \Location::get(request()->ip());
+            } else {				
+                $location = (request()->ip() == '127.0.0.1') ? Location::get('42.112.209.164') : Location::get(request()->ip());
             }
 
             // TODO - REMOVE

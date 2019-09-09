@@ -67,8 +67,9 @@ class SiteController extends Controller
 		if (request()->get('tpl') == 'vmp41') {
 			$viewTemplate = 'vmp41';
 		}
-
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
+		
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (request()->ip() == '127.0.0.1') ? Location::get('42.112.209.164') : Location::get(request()->ip());
+		
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
@@ -90,12 +91,12 @@ class SiteController extends Controller
      */
     public function upsells(Request $request, ProductService $productService)
     {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
-	$product = $productService->resolveProduct($request, true);
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (request()->ip() == '127.0.0.1') ? Location::get('42.112.209.164') : Location::get(request()->ip());
+		$product = $productService->resolveProduct($request, true);
 
-	$setting = Setting::whereIn('key',[
-	    'instant_payment_paypal_client_id',
-	])->pluck('value', 'key');
+		$setting = Setting::whereIn('key',[
+			'instant_payment_paypal_client_id',
+		])->pluck('value', 'key');
 
         return view('uppsells_funnel', compact('location', 'product', 'setting'));
     }
@@ -107,12 +108,12 @@ class SiteController extends Controller
      */
     public function thankyou(Request $request, ProductService $productService)
     {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
-	$product = $productService->resolveProduct($request, true);
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (request()->ip() == '127.0.0.1') ? Location::get('42.112.209.164') : Location::get(request()->ip());
+		$product = $productService->resolveProduct($request, true);
 
-	$setting = Setting::whereIn('key',[
-	    'instant_payment_paypal_client_id',
-	])->pluck('value', 'key');
+		$setting = Setting::whereIn('key',[
+			'instant_payment_paypal_client_id',
+		])->pluck('value', 'key');
 
         return view('thankyou', compact('location', 'product' , 'setting'));
     }
@@ -124,7 +125,7 @@ class SiteController extends Controller
      */
     public function promo(Request $request, ProductService $productService)
     {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : Location::get('45.177.39.255');
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (request()->ip() == '127.0.0.1') ? Location::get('42.112.209.164') : Location::get(request()->ip());
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
