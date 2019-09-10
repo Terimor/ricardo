@@ -202,7 +202,7 @@ class CurrencyService
      */
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
     {
-        if (request()->has('cur')) {
+        if (request()->input('cur')) {
             $currencyCode = request()->input('cur');
         } else {
             if (!$currencyCode) {
