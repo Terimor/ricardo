@@ -661,7 +661,7 @@ class UtilsService
 	 * @param type $url
 	 * @return type
 	 */
-	public static function replaceUrlForCdn	($url)
+	public static function replaceUrlForCdn	(string $url): string
 	{
 		$remoteHost = request()->server('HTTP_HOST');
 		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
