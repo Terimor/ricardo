@@ -126,4 +126,28 @@ class OrderService
              ];
         }
     }
+	
+	/**
+	 * Get customer data by order ID
+	 * @param string $orderId
+	 * @return type
+	 */
+	public static function getCustomerDataByOrderId(string $orderId)
+	{
+		$order = OdinOrder::where('_id', $orderId)->select([
+			'shipping_country',
+			'shipping_zip',
+			'shipping_state',
+			'shipping_city',
+			'shipping_street',
+			'shipping_street2',
+			'shipping_apt',
+			'customer_email',
+			'customer_first_name',
+			'customer_last_name',
+			'customer_phone',
+			'customer_doc_id'
+		])->first();
+		return $order;
+	}
 }

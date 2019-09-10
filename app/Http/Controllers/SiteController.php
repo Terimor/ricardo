@@ -10,6 +10,7 @@ use App\Models\Currency;
 use App\Models\Setting;
 use App\Services\I18nService;
 use App\Models\OdinOrder;
+use App\Services\OrderService;
 
 class SiteController extends Controller
 {
@@ -97,8 +98,13 @@ class SiteController extends Controller
 		$setting = Setting::whereIn('key',[
 			'instant_payment_paypal_client_id',
 		])->pluck('value', 'key');
+		
+		$orderCustomer = null;
+		if (request()->get('order')) {
+			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+		}
 
-        return view('uppsells_funnel', compact('location', 'product', 'setting'));
+        return view('uppsells_funnel', compact('location', 'product', 'setting', 'orderCustomer'));
     }
 
     /**
@@ -114,8 +120,13 @@ class SiteController extends Controller
 		$setting = Setting::whereIn('key',[
 			'instant_payment_paypal_client_id',
 		])->pluck('value', 'key');
-
-        return view('thankyou', compact('location', 'product' , 'setting'));
+		
+		$orderCustomer = null;
+		if (request()->get('order')) {
+			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+		}
+		
+        return view('thankyou', compact('location', 'product' , 'setting', 'orderCustomer'));
     }
 
     /**
