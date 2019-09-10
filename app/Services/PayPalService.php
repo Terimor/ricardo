@@ -56,9 +56,9 @@ class PayPalService
      * Creating order
      *
      * @param PayPalCrateOrderRequest $request
-     * @return HttpResponse
+     * @return array
      */
-    public function createOrder(PayPalCrateOrderRequest $request): HttpResponse
+    public function createOrder(PayPalCrateOrderRequest $request): array
     {
         $upsell_order = $request->order_id ? $order = OdinOrder::find($request->order_id) : null;
 
@@ -167,7 +167,7 @@ class PayPalService
             } else {
                 $order_reponse = $this->orderService->addOdinOrder([
                     'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
-                    'exchange_rate' => $priceData['exchange_rate'],
+                    'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
                     'total_paid' => 0,
                     'total_price' => !$is_currency_supported ? $total_price : $total_local_price,
                     'total_price_usd' => $total_price,
@@ -198,7 +198,10 @@ class PayPalService
                 abort_if(!$order_reponse['success'], 404);
             }
         }
-        return $response;
+        return [
+            'braintree_response' => $response,
+            'odin_order_id' => optional($order)->getIdAttribute()
+        ];
     }
 
     /**
