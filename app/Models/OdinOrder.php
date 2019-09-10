@@ -141,12 +141,6 @@ class OdinOrder extends OdinModel
                 $model->shop_currency = $model->currency;
             }
         });
-        self::saving(function($model) {
-            // If shipping country was changed - re-generate order number
-            if ($model->isDirty('shipping_country')) {
-                $model->number = self::generateOrderNumber($model->shipping_country);
-            }
-        });
     }
 
     /**
@@ -176,8 +170,9 @@ class OdinOrder extends OdinModel
      * @param string $countryCode
      * @return string
      */
-    public static function generateOrderNumber(string $countryCode = 'XX'): string
+    public static function generateOrderNumber(string $countryCode = null): string
     {
+        $countryCode = $countryCode ?? strtoupper(\Utils::getLocationCountryCode());
         $i = 0;
         do {
             $numberString = strtoupper('O'.date('y').date('m').$countryCode.\Utils::randomString(6));
