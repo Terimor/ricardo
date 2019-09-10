@@ -9,6 +9,9 @@ use App\Models\Setting;
 class UtilsService
 {
 	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
+	
+	public static $localhostIps = ['127.0.0.1', '192.168.1.101'];
+	
     /**
      * Culture codes (for numberFormatter)
      * Two Letter Country Code -> Culture Info Code
@@ -567,8 +570,9 @@ class UtilsService
         if (!$countryCode) {
             if ($ip) {
                 $location = \Location::get($ip);
-            } else {				
-                $location = (request()->ip() == '127.0.0.1') ? Location::get('42.112.209.164') : Location::get(request()->ip());
+            } else {
+				// default Vietnam IP on localhost
+                $location = (in_array(request()->ip(), self::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip());
             }
 
             // TODO - REMOVE
@@ -660,7 +664,7 @@ class UtilsService
 	public static function replaceImageUrl($url)
 	{
 		$remoteHost = request()->server('HTTP_HOST');
-		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost')) {
+		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101')) {
 			$remoteHost = \Utils::getSetting('cf_host_default');
 		}
 		
