@@ -246,7 +246,7 @@ class OdinProduct extends Model
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
             foreach ($this->imagesObjects as $image) {
-                $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceImageUrl($image['urls'][app()->getLocale()]) : !empty($image['urls']['en']) ? \Utils::replaceImageUrl($image['urls']['en']) : '';
+                $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : !empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '';
             }
         }
     }
