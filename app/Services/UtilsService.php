@@ -10,7 +10,7 @@ class UtilsService
 {
 	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
 	
-	public static $localhostIps = ['127.0.0.1', '192.168.1.101'];
+	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
 	
     /**
      * Culture codes (for numberFormatter)
@@ -664,7 +664,7 @@ class UtilsService
 	public static function replaceImageUrl($url)
 	{
 		$remoteHost = request()->server('HTTP_HOST');
-		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101')) {
+		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
 			$remoteHost = \Utils::getSetting('cf_host_default');
 		}
 		
