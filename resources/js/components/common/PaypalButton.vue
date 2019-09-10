@@ -1,5 +1,5 @@
 <template>
-    <div class="paypal-button-container"></div>
+    <div class="paypal-button-container d-flex justify-content-center"></div>
 </template>
 
 <script>
@@ -28,9 +28,7 @@
               return createOrder();
           },
           onClick () {
-            if ($v.required || $v.$dirty) {
-              return createOrder();
-            } else {
+            if (!$v.required || !$v.$dirty) {
               that.$emit('click', true);
               return true;
             }
