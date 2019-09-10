@@ -37,14 +37,17 @@ class PaypalController extends Controller
      */
     public function createOrder(PayPalCrateOrderRequest $request)
     {
-        $braintree_response = $this->payPalService->createOrder($request);
+        $response = $this->payPalService->createOrder($request);
+        $braintree_response = $response['braintree_response'];
+        $odin_order_id = $response['odin_order_id'];
 
         $response = json_encode($braintree_response->result);
         unset($braintree_response->headers['Set-Cookie']);
         $braintree_response->headers['Content-Length'] = strlen($response);
 
         return [
-            'id' => optional($braintree_response->result)->id
+            'id' => optional($braintree_response->result)->id,
+            'odin_order_id' => $odin_order_id
         ];
     }
 
