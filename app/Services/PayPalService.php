@@ -142,9 +142,9 @@ class PayPalService
             $odin_order_product = [
                 'sku_code' => $request->sku_code,
                 'quantity' => (int)$request->sku_quantity,
-                'price' => $local_price,
+                'price' => $is_currency_supported ? $local_price : $price,
                 'price_usd' => $price,
-                'warranty_price' => $local_warranty_price ?? null,
+                'warranty_price' => $is_currency_supported ? ($local_warranty_price ?? null) : ($local_warranty_usd ?? null),
                 'warranty_price_usd' => $local_warranty_usd ?? null,
                 'is_main' => !$upsell_order,
                 'is_exported' => false,
@@ -186,14 +186,14 @@ class PayPalService
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
-                    'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                    'status' => $this->getPayPalOrderStatus($paypal_order),
                     'is_charged_back' => false,
                     'fee' => null,
                     'payment_provider' => $txn_response['txn']->payment_provider,
                     'payment_method' => $txn_response['txn']->payment_method,
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
-                $order->push('txns', $order_txn_data);
+                $order->unset('txns')->push('txns', $order_txn_data);
 
                 abort_if(!$order_reponse['success'], 404);
             }
@@ -222,7 +222,6 @@ class PayPalService
             $txn_response = $this->orderService->addTxn([
                 'hash' => $paypal_order->id,
                 'value' => $paypal_order_value,
-                'status' => $this->getPayPalOrderStatus($paypal_order),
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
@@ -233,6 +232,19 @@ class PayPalService
             $txn = $txn_response['txn']->attributesToArray();
 
             $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
+
+            $order_txn_data = [
+                'hash' => $txn_response['txn']->hash,
+                'value' => $txn_response['txn']->value,
+                'status' => $this->getPayPalOrderStatus($paypal_order),
+                'is_charged_back' => false,
+                'fee' => null,
+                'payment_provider' => $txn_response['txn']->payment_provider,
+                'payment_method' => $txn_response['txn']->payment_method,
+                'payer_id' => $txn_response['txn']->payer_id,
+            ];
+            $order->unset('txns')->push('txns', $order_txn_data);
+
             $this->setPayer($order, $paypal_order);
             $this->setShipping($order, $paypal_order);
             $this->saveCustomer($order);
@@ -245,18 +257,6 @@ class PayPalService
 
             $order->products = $products;
             $order->status = $this->getOrderStatus($order);
-
-            $order_txn_data = [
-                'hash' => $txn_response['txn']->hash,
-                'value' => $txn_response['txn']->value,
-                'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
-                'is_charged_back' => false,
-                'fee' => null,
-                'payment_provider' => $txn_response['txn']->payment_provider,
-                'payment_method' => $txn_response['txn']->payment_method,
-                'payer_id' => $txn_response['txn']->payer_id,
-            ];
-            $order->push('txns', $order_txn_data);
 
             $order->save();
             if ($order) {
@@ -312,14 +312,14 @@ class PayPalService
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
-                    'status' => strtolower(optional($txn_response['txn']->provider_data)->status),
+                    'status' => $this->getPayPalOrderStatus($paypal_order),
                     'is_charged_back' => false,
                     'fee' => $fee,
                     'payment_provider' => $txn_response['txn']->payment_provider,
                     'payment_method' => $txn_response['txn']->payment_method,
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
-                $order->push('txns', $order_txn_data);
+                $order->unset('txns')->push('txns', $order_txn_data);
 
                 $product_key = collect($order->products)->search(function ($product) use ($txn) {
                     return $product['txn_hash'] === $txn['hash'];
@@ -501,7 +501,8 @@ class PayPalService
             'state' => $order->shipping_state,
             'city' => $order->shipping_city,
             'street' => $order->shipping_street,
-            'street2' => $order->shipping_street2
+            'street2' => $order->shipping_street2,
+            'language' => $order->language,
         ]);
     }
 
