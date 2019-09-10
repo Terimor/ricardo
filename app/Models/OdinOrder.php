@@ -170,8 +170,9 @@ class OdinOrder extends OdinModel
      * @param string $countryCode
      * @return string
      */
-    public static function generateOrderNumber(string $countryCode = 'XX'): string
+    public static function generateOrderNumber(string $countryCode = null): string
     {
+        $countryCode = $countryCode ?? strtoupper(\Utils::getLocationCountryCode());
         $i = 0;
         do {
             $numberString = strtoupper('O'.date('y').date('m').$countryCode.\Utils::randomString(6));
