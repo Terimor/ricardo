@@ -657,7 +657,7 @@ class UtilsService
     }
 	
 	/**
-	 * Replace image URL
+	 * Replace URL for CDN
 	 * @param type $url
 	 * @return type
 	 */

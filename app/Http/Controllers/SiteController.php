@@ -69,7 +69,7 @@ class SiteController extends Controller
 			$viewTemplate = 'vmp41';
 		}
 		
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip());
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
 		
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
@@ -92,7 +92,7 @@ class SiteController extends Controller
      */
     public function upsells(Request $request, ProductService $productService)
     {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip());
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
 		$product = $productService->resolveProduct($request, true);
 
 		$setting = Setting::whereIn('key',[
@@ -114,7 +114,7 @@ class SiteController extends Controller
      */
     public function thankyou(Request $request, ProductService $productService)
     {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip());
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
 		$product = $productService->resolveProduct($request, true);
 
 		$setting = Setting::whereIn('key',[
@@ -136,7 +136,7 @@ class SiteController extends Controller
      */
     public function promo(Request $request, ProductService $productService)
     {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : (in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip());
+        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
