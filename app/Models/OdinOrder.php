@@ -141,6 +141,12 @@ class OdinOrder extends OdinModel
                 $model->shop_currency = $model->currency;
             }
         });
+        self::saving(function($model) {
+            // If shipping country was changed - re-generate order number
+            if ($model->isDirty('shipping_country')) {
+                $model->number = self::generateOrderNumber($model->shipping_country);
+            }
+        });
     }
 
     /**
