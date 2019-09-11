@@ -471,7 +471,9 @@
             card_cvv: paymentForm.cvv
           }
 
-          EBANX.card.createToken(creditCardData, console.log);
+          EBANX.card.createToken(creditCardData, resp => {
+
+          });
 
           // window.location.href = '/thankyou-promos';
         }

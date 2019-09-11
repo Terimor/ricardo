@@ -47,6 +47,6 @@ export function paypalOnApprove(data) {
   }).then(function(res) {
     return res.json();
   }).then(function(details) {
-    console.log(details);
+
   });
 }
