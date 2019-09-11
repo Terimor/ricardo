@@ -397,7 +397,7 @@ export default {
   validations: emc1Validation,
   methods: {
     submit () {
-      if (this.$v.form.$invalid) {
+      if (this.$v.form.deal.$invalid) {
         this.isOpenPromotionModal = true;
       }
       this.$v.form.$touch();
