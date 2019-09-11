@@ -128,7 +128,6 @@ const emc1Validation = function () {
   const res = {
     form: Object.entries(allRules)
       .reduce((acc, [key, value]) => {
-          console.log()
         if (dynamicConfig[key] || dynamicConfig[key] == null) {
           acc[key] = value
         }

@@ -51,9 +51,30 @@ class ProductController extends Controller
      */
     public function getUpsellProduct(string $productId, ProductService $productService)
     {
-	$product = $productService->resolveProduct(request());
+		$product = $productService->resolveProduct(request());
 
-	$upsell = $productService->getUpsellProductById($product, $productId, request()->get('quantity'));
-	return ['upsell' => $upsell];
+		$upsell = $productService->getUpsellProductById($product, $productId, request()->get('quantity'));
+		return ['upsell' => $upsell];
     }
+	
+	/**
+	 * Calculate upsells total
+	 * @param Request $request
+	 * @param ProductService $productService
+	 */
+	public function calculateUpsellsTotal(Request $request, ProductService $productService)
+	{		
+		$upsells = $request->input('upsells');
+		$total = $request->input('total');
+		
+		if ($upsells && $total) {
+			$product = $productService->resolveProduct(request());
+			return $productService->calculateUpsellsTotal($product, $upsells, $total);			
+		} else {
+			logger()->error("Bad data for calculate upsells total", ['request' => $request->all()]);
+			abort(404);
+		}
+		
+	}
+	
 }

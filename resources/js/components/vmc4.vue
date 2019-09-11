@@ -212,7 +212,7 @@
 		},
 		methods: {
 			submit(val) {
-				console.log(val)
+
       },
       getImplValue(value) {
         this.implValue = value;
@@ -237,7 +237,6 @@
             this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
             break;
           default:
-            console.log('NOTHING');
             break;
         }
       },

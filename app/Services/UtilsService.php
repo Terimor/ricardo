@@ -657,18 +657,21 @@ class UtilsService
     }
 	
 	/**
-	 * Replace image URL
+	 * Replace URL for CDN
 	 * @param type $url
 	 * @return type
 	 */
-	public static function replaceImageUrl($url)
+	public static function replaceUrlForCdn	(string $url): string
 	{
 		$remoteHost = request()->server('HTTP_HOST');
 		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
 			$remoteHost = \Utils::getSetting('cf_host_default');
 		}
 		
-		return str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
+		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);		
+		// cut www. from url
+		$url = str_replace('www.', '', $url);
+		return $url;
 	}
 
 }

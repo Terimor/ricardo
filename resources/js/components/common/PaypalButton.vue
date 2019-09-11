@@ -46,7 +46,9 @@
     },
     watch: {
       '$v.required' () {
-        this.action.enable();
+        if (this.action) {
+          this.action.enable();
+        }
       }
     },
     mounted () {
