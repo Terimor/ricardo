@@ -25,7 +25,7 @@
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
                   v-model="form.installments"
-                  @input="getImplValue"
+                  @input="setImplValue"
               />
 
             <h3>Article</h3>
@@ -84,7 +84,7 @@
             :onApprove="paypalOnApprove"
             v-show="fullAmount"
             :$v="$v.form.deal"
-            @click="submit"
+            @click="paypalSubmit"
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
@@ -396,13 +396,12 @@ export default {
   },
   validations: emc1Validation,
   methods: {
-    submit () {
+    paypalSubmit() {
       if (this.$v.form.deal.$invalid) {
         this.isOpenPromotionModal = true;
       }
-      this.$v.form.$touch();
     },
-    getImplValue(value) {
+    setImplValue(value) {
       this.implValue = value;
       if (this.radioIdx) this.changeWarrantyValue();
     },
@@ -412,7 +411,12 @@ export default {
     },
     changeWarrantyValue () {
       const prices = this.checkoutData.product.prices;
-      this.implValue = this.implValue || 3;
+
+      if (!this.implValue) {
+        this.implValue = this.withInstallments
+          ? 3
+          : 1;
+      }
 
       switch(this.implValue) {
         case 1:
