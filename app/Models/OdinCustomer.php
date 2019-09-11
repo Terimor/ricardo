@@ -26,7 +26,7 @@ class OdinCustomer extends Model
         'last_name' => null, // * string
         'ip' => [], // array of strings
         'phones' => [], // array of strings
-	'doc_ids' => [], // array of strings //documents numbers array
+		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
             //'country' => null, // enum string
@@ -38,6 +38,7 @@ class OdinCustomer extends Model
 	    //'apt' => null, // string
         ],
         'paypal_payer_id' => null, // string
+		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
     ];
         
     /**
@@ -46,8 +47,22 @@ class OdinCustomer extends Model
     * @var array
     */
    protected $fillable = [
-       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id'
+       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses'
    ];
+   
+    /**
+     *
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        self::creating(function($model) {
+            if (empty($model->number)) {
+                $model->number = self::generateCustomerNumber();
+            }
+        });
+    }   
    
    
    /**
@@ -79,5 +94,28 @@ class OdinCustomer extends Model
     public function setEmailAttribute($value) 
     {        
         $this->attributes['email'] =  strtolower(trim($value));
-    }      
+    }
+	
+    /**
+     * Generate customer number
+     * @param string $countryCode
+     * @return string
+     */
+    public static function generateCustomerNumber(string $countryCode = null): string
+    {
+        $countryCode = $countryCode ?? strtoupper(\Utils::getLocationCountryCode());
+        $i = 0;
+        do {
+            $numberString = strtoupper('U'.\Utils::randomString(7).$countryCode);
+
+            //check unique
+            $model = self::where(['number' => $numberString])->first();
+            $i++;
+            if ($i > 2) {
+                logger()->error("Generate customer number - {$i} iteration", ['number' => $numberString]);
+            }
+        } while ($model);
+
+        return $numberString;
+    }	
 }

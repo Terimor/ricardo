@@ -91,6 +91,20 @@ class ProductService
 			$fixedPrice = 4.5;
 			logger()->error("UPSELL Price < 4.5", ['product' => $product->toArray()]);
 		}
+		
+		// check published status
+		$skus = [];
+		foreach ($upsell->skus as $key => $sku) {
+			if (!empty($sku['is_published'])) {
+				$skus[] = $sku;
+			}
+		}		
+		$upsell->skus = $skus;
+		
+		if (!$upsell->skus) {
+			logger()->error("UPSELL skus empty or not published", ['product' => $product->toArray()]);
+			abort(405, 'Method Not Allowed');
+		}
 
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
 

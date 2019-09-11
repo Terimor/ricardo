@@ -607,7 +607,7 @@ class UtilsService
         // TODO - REMOVE
         if (request()->get('_ip')) {
             $location = \Location::get(request()->get('_ip'));
-        }
+        }		
         return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
     }
 
