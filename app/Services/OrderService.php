@@ -34,7 +34,8 @@ class OrderService
         } else {
             return [
                 'success' => $model->save(),
-                'txn' => $returnModel ? $model : $model->attributesToArray()
+                'txn' => $returnModel ? $model : $model->attributesToArray(),
+                'isNew' => $model->wasRecentlyCreated,
              ];
         }
     }

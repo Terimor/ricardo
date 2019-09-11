@@ -193,7 +193,9 @@ class PayPalService
                     'payment_method' => $txn_response['txn']->payment_method,
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
-                $order->unset('txns')->push('txns', $order_txn_data);
+
+                $order->pull('txns', ['hash' => $txn_response['txn']->hash]);
+                $order->push('txns', $order_txn_data);
 
                 abort_if(!$order_reponse['success'], 404);
             }
@@ -243,11 +245,17 @@ class PayPalService
                 'payment_method' => $txn_response['txn']->payment_method,
                 'payer_id' => $txn_response['txn']->payer_id,
             ];
-            $order->unset('txns')->push('txns', $order_txn_data);
+
+            if ($txn_response['isNew']) {
+                $order->push('txns', $order_txn_data);
+            } else {
+                $order->pull('txns', ['hash' => $txn_response['txn']->hash]);
+                $order->push('txns', $order_txn_data);
+            }
 
             $this->setPayer($order, $paypal_order);
             $this->setShipping($order, $paypal_order);
-            $this->saveCustomer($order);
+            $this->saveCustomer($order, $paypal_order);
 
             $product_key = collect($order->products)->search(function ($product) use ($txn) {
                 return $product['txn_hash'] === $txn['hash'];
@@ -319,7 +327,13 @@ class PayPalService
                     'payment_method' => $txn_response['txn']->payment_method,
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
-                $order->unset('txns')->push('txns', $order_txn_data);
+
+                if ($txn_response['isNew']) {
+                    $order->push('txns', $order_txn_data);
+                } else {
+                    $order->pull('txns', ['hash' => $txn_response['txn']->hash]);
+                    $order->push('txns', $order_txn_data);
+                }
 
                 $product_key = collect($order->products)->search(function ($product) use ($txn) {
                     return $product['txn_hash'] === $txn['hash'];
@@ -489,8 +503,9 @@ class PayPalService
      * Save customer
      *
      * @param $order
+     * @param $paypal_order
      */
-    private function saveCustomer($order)
+    private function saveCustomer($order, $paypal_order)
     {
         $this->orderService->addCustomer([
             'email' => $order->customer_email,
@@ -503,6 +518,7 @@ class PayPalService
             'street' => $order->shipping_street,
             'street2' => $order->shipping_street2,
             'language' => $order->language,
+            'paypal_payer_id' => optional($paypal_order->payer)->payer_id
         ]);
     }
 
