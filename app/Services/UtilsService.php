@@ -336,7 +336,7 @@ class UtilsService
         'dj' => 'Djibouti',
         'dm' => 'Dominica',
         'do' => 'Dominican Republic',
-        'tl' => 'East Timor',
+        'tl' => 'Timor-Leste',
         'ec' => 'Ecuador',
         'eg' => 'Egypt',
         'sv' => 'El Salvador',
