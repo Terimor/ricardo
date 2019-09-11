@@ -425,7 +425,6 @@ export default {
           this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
           break;
         default:
-          console.log('NOTHING');
           break;
       }
     },
