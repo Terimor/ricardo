@@ -25,7 +25,7 @@
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
                   v-model="form.installments"
-                  @input="getImplValue"
+                  @input="setImplValue"
               />
 
             <h3>Article</h3>
@@ -401,7 +401,7 @@ export default {
         this.isOpenPromotionModal = true;
       }
     },
-    getImplValue(value) {
+    setImplValue(value) {
       this.implValue = value;
       if (this.radioIdx) this.changeWarrantyValue();
     },
@@ -411,7 +411,12 @@ export default {
     },
     changeWarrantyValue () {
       const prices = this.checkoutData.product.prices;
-      this.implValue = this.implValue || 3;
+
+      if (!this.implValue) {
+        this.implValue = this.withInstallments
+          ? 3
+          : 1;
+      }
 
       switch(this.implValue) {
         case 1:

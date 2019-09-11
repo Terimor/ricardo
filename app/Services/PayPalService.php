@@ -65,6 +65,7 @@ class PayPalService
         if ($upsell_order) {
             $this->checkIforderAllowedForAddingProducts($upsell_order);
         }
+        $order = $upsell_order;
         $product = $this->findProductBySku($request->sku_code);
         $priceData = $this->getPrice($request, $product, $upsell_order);
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
@@ -161,28 +162,10 @@ class PayPalService
                     }) !== false;
                 $upsell_order->products = array_merge($upsell_order->products, [$odin_order_product]);
                 $upsell_order->status = $this->getOrderStatus($upsell_order);
-                $upsell_order->total_price += $local_price;
+                $upsell_order->total_price += $is_currency_supported ? $local_price : $price;
                 $upsell_order->total_price_usd += $price;
                 $upsell_order->save();
             } else {
-                $order_reponse = $this->orderService->addOdinOrder([
-                    'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
-                    'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
-                    'total_paid' => 0,
-                    'total_price' => !$is_currency_supported ? $total_price : $total_local_price,
-                    'total_price_usd' => $total_price,
-                    'customer_phone' => null,
-                    'language' => app()->getLocale(),
-                    'ip' => $request->ip(),
-                    'warehouse_id' => $product->warehouse_id,
-                    'products' => [$odin_order_product],
-                    'page_checkout' => $request->page_checkout,
-                    'offer' => $request->offer,
-                    'affiliate' => $request->affiliate,
-                    'shop_currency' => $shop_currency_code,
-                ], true);
-
-                $order = $order_reponse['order'];
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
@@ -194,8 +177,25 @@ class PayPalService
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
 
-                $order->pull('txns', ['hash' => $txn_response['txn']->hash]);
-                $order->push('txns', $order_txn_data);
+                $order_reponse = $this->orderService->addOdinOrder([
+                    'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                    'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
+                    'total_paid' => 0,
+                    'total_price' => !$is_currency_supported ? $total_price : $total_local_price,
+                    'total_price_usd' => $total_price,
+                    'customer_phone' => null,
+                    'language' => app()->getLocale(),
+                    'ip' => $request->ip(),
+                    'warehouse_id' => $product->warehouse_id,
+                    'products' => [$odin_order_product],
+                    'txns' => [$order_txn_data],
+                    'page_checkout' => $request->page_checkout,
+                    'offer' => $request->offer,
+                    'affiliate' => $request->affiliate,
+                    'shop_currency' => $shop_currency_code,
+                ], true);
+
+                $order = $order_reponse['order'];
 
                 abort_if(!$order_reponse['success'], 404);
             }
@@ -246,12 +246,10 @@ class PayPalService
                 'payer_id' => $txn_response['txn']->payer_id,
             ];
 
-            if ($txn_response['isNew']) {
-                $order->push('txns', $order_txn_data);
-            } else {
-                $order->pull('txns', ['hash' => $txn_response['txn']->hash]);
-                $order->push('txns', $order_txn_data);
-            }
+            $txns = array_filter($order['txns'], function($item) use ($txn_response) {
+                return $item['hash'] !== $txn_response['txn']->hash;
+            });
+            $order->txns = array_merge($txns, [$order_txn_data]);
 
             $this->setPayer($order, $paypal_order);
             $this->setShipping($order, $paypal_order);
@@ -328,12 +326,10 @@ class PayPalService
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
 
-                if ($txn_response['isNew']) {
-                    $order->push('txns', $order_txn_data);
-                } else {
-                    $order->pull('txns', ['hash' => $txn_response['txn']->hash]);
-                    $order->push('txns', $order_txn_data);
-                }
+                $txns = array_filter($order['txns'], function($item) use ($txn_response) {
+                    return $item['hash'] !== $txn_response['txn']->hash;
+                });
+                $order->txns = array_merge($txns, [$order_txn_data]);
 
                 $product_key = collect($order->products)->search(function ($product) use ($txn) {
                     return $product['txn_hash'] === $txn['hash'];
