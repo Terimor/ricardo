@@ -19,10 +19,10 @@ class OrderService
     public function addTxn(array $data, bool $returnModel = false): array
     {
         // In situation when we need single txn record.
-//        $model = Txn::firstOrNew(['hash' => $data['hash']]);
-//        $model->fill($data);
+        $model = Txn::firstOrNew(['hash' => $data['hash']]);
+        $model->fill($data);
 
-        $model = new Txn($data);
+//        $model = new Txn($data);
 
         $validator = $model->validate();
         if ($validator->fails()) {
@@ -34,7 +34,8 @@ class OrderService
         } else {
             return [
                 'success' => $model->save(),
-                'txn' => $returnModel ? $model : $model->attributesToArray()
+                'txn' => $returnModel ? $model : $model->attributesToArray(),
+                'isNew' => $model->wasRecentlyCreated,
              ];
         }
     }
@@ -126,7 +127,7 @@ class OrderService
              ];
         }
     }
-	
+
 	/**
 	 * Get customer data by order ID
 	 * @param string $orderId

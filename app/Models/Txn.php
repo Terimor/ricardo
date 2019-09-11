@@ -21,7 +21,6 @@ class Txn extends Model
         'payment_provider' => null, // enum string
         'payment_method' => null, // enum string
         'payer_id' => null, // string
-        'status' => null,
     ];
 
     /**
