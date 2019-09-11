@@ -618,7 +618,7 @@ class UtilsService
      */
     public static function getSetting($key)
     {
-        return optional(Setting::where(['key' => $key])->first())->value;
+        return Setting::getValue($key);
     }
 
     /**

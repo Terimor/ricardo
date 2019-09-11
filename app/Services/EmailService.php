@@ -20,7 +20,7 @@ class EmailService
      */
     public function __construct()
     {
-        $apiKey = Setting::where(['key' => 'saga_api_access_key'])->first();
+        $apiKey = Setting::getValue('saga_api_access_key');
         $this->apiKey = !empty($apiKey->value) ? $apiKey->value : '';
     }
     
@@ -33,7 +33,7 @@ class EmailService
     {
         $client = new \GuzzleHttp\Client();
         
-        $urlPath = Setting::where(['key' => 'saga_api_endpoint'])->first();
+        $urlPath = Setting::getValue('saga_api_endpoint');
         $urlPath = !empty($urlPath->value) ? $urlPath->value : '';
         
         $url = $urlPath.'?r=odin-api/send-confirmation-email';
@@ -63,7 +63,7 @@ class EmailService
     {
         $client = new \GuzzleHttp\Client();
         
-        $urlPath = Setting::where(['key' => 'saga_api_endpoint'])->first();
+        $urlPath = Setting::getValue('saga_api_endpoint');
         $urlPath = !empty($urlPath->value) ? $urlPath->value : '';
         
         $url = $urlPath.'?r=odin-api/send-satisfaction-email';

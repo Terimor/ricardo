@@ -37,7 +37,7 @@ class EbanxService
      */
     public function getBaseUrl()
     {
-        $mode = Setting::where(['key' => 'ebanx_mode'])->first();
+        $mode = Setting::getValue('ebanx_mode');
 
         if (!$mode) {
             logger()->error("ebanx_mode parameter not found");

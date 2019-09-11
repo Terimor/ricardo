@@ -20,20 +20,21 @@ class ProductService
     {
         $product = null;
         if ($request->has('product')) {
-            $product = OdinProduct::where('skus.code', $request->input('product'))->first();
+            $product = OdinProduct::where('skus.code', $request->input('product'))->first();			
         }
 
         // Domain resolve logic
         if (!$product) {
-            $domain = Domain::where('name', request()->getHost())->first();
-            if ($domain && !empty($domain->product)) {
+            $domain = Domain::where('odin_product.skus.is_published', false)
+					->where('name', request()->getHost())->first();
+            if ($domain && !empty($domain->product)) {							
                 $product =  $domain->product;
             }
         }
 
         if (!$product) {
             logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
-            $product = OdinProduct::orderBy('_id', 'desc')->firstOrFail();
+            $product = OdinProduct::orderBy('_id', 'desc')->where('skus.is_published', true)->firstOrFail();
         }
         
         // set local images
@@ -41,6 +42,15 @@ class ProductService
             $product->setLocalImages();
         }
 
+		// check published status
+		$skus = [];
+		foreach ($product->skus as $key => $sku) {
+			if (!empty($sku['is_published'])) {
+				$skus[] = $sku;
+			}
+		}		
+		$product->skus = $skus;				
+		
         return $product;
         //abort(404);
     }

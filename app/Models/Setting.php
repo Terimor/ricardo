@@ -25,12 +25,12 @@ class Setting extends Model
 	* @param object $default
 	* @return object
 	*/
-	/*public static function getValue($key, $default = null) {
-		$model = static::findOne(['key' => $key]);
+	public static function getValue($key, $default = null) {
+		$model = static::where(['key' => $key])->first();
 		if ($model) {
 			return $model->value;
 		} else {
 			return $default;
 		}
-	}*/
+	}
 }
