@@ -168,8 +168,8 @@ class CurrencyService
      */
     public static function getOldPrice(float $itemPrice, int $quantity): float
     {
-	$oldPrice = $itemPrice * $quantity * 2;
-	return $oldPrice;
+		$oldPrice = $itemPrice * $quantity * 2;
+		return $oldPrice;
     }
 
     /**
@@ -179,8 +179,8 @@ class CurrencyService
      * @return float
      */
     public static function getInstallmentPrice(float $price, int $installments): float {
-	$installmentPrice = floor($price * 100 / $installments) / 100;
-	return $installmentPrice;
+		$installmentPrice = floor($price * 100 / $installments) / 100;
+		return $installmentPrice;
     }
 
     /**
@@ -190,8 +190,8 @@ class CurrencyService
      * @return float
      */
     public static function getDiscountPercent(float $priceOld, float $priceNow): float {
-	$percent = round(($priceOld - $priceNow) / $priceOld * 100);
-	return $percent;
+		$percent = round(($priceOld - $priceNow) / $priceOld * 100);
+		return $percent;
     }
 
     /**
@@ -257,6 +257,28 @@ class CurrencyService
 	public static function calculateWarrantyPrice(float $warrantyPercent, float $price): float
 	{
 		return floor(($warrantyPercent / 100) * $price * 100)/100;
+	}
+	
+	/**
+	 * Get local text value
+	 * @param float $price
+	 * @param type $currency
+	 */
+	public static function getLocalTextValue(float $price, $currency = null, string $countryCode = null) : string
+	{
+		if (!$countryCode) {
+			if (!$currency) {
+				$currency = self::getCurrency(null, $countryCode);
+			}
+			$currencyCode = $currency->code;
+			$countryCode = $currency->countryCode;
+		}
+
+        //get fraction digits and locale string
+        $localeString = \Utils::getCultureCode(null, $countryCode);
+        $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);        
+		
+		return $numberFormatter->formatCurrency($price, $currencyCode);
 	}
 
 }

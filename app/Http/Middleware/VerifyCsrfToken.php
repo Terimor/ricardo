@@ -20,11 +20,10 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'paypal-webhooks',
-        //'/payments/bluesnap-send-transaction',
-        //'/payments/bluesnap-generate-token',
         'payments/three',
         'payments/ebanx-notification',
         'paypal-create-order',
         'paypal-verify-order',
+		//'calculate-upsells-total'
     ];
 }

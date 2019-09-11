@@ -24,7 +24,8 @@ class OdinProduct extends Model
     ];
 
     protected $hidden = [
-        '_id'
+        '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at', 'image_id',
+		'logo_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id'
     ];
 
     /**
@@ -108,7 +109,7 @@ class OdinProduct extends Model
             $value[$key]['images'] = [];
             if ($value[$key]['image_ids']) {
                 foreach ($value[$key]['image_ids'] as $k => $img) {
-                    $value[$key]['images'][] = $img ? $this->images[$img] : null;
+                    $value[$key]['images'][] = ($img && !empty($this->images[$img])) ? $this->images[$img] : null;
                 }
             }
         }
