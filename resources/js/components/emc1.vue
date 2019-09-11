@@ -84,7 +84,7 @@
             :onApprove="paypalOnApprove"
             v-show="fullAmount"
             :$v="$v.form.deal"
-            @click="submit"
+            @click="paypalSubmit"
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
@@ -396,11 +396,10 @@ export default {
   },
   validations: emc1Validation,
   methods: {
-    submit () {
+    paypalSubmit() {
       if (this.$v.form.deal.$invalid) {
         this.isOpenPromotionModal = true;
       }
-      this.$v.form.$touch();
     },
     getImplValue(value) {
       this.implValue = value;
