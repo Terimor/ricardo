@@ -63,8 +63,8 @@ class ProductController extends Controller
 	 * @param ProductService $productService
 	 */
 	public function calculateUpsellsTotal(Request $request, ProductService $productService)
-	{
-		$upsells = json_decode($request->input('upsells'), TRUE);
+	{		
+		$upsells = $request->input('upsells');
 		$total = $request->input('total');
 		
 		if ($upsells && $total) {
