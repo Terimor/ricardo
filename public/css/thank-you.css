@@ -47,6 +47,8 @@ hr {
 
 .thank-you__order {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .thank-you__container h4 {
@@ -61,18 +63,22 @@ hr {
 
 .thank-you__order__image {
     position: relative;
-    padding: 8px;
+    padding: 15px;
 }
 
 .thank-you__order__image img {
-    width: 100%;
-    height: auto;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    overflow: hidden;
+    object-fit: cover;
 }
 
 .thank-you__order__image .quantity {
     position: absolute;
     top: 0;
     right: 0;
+    z-index: 3;
     background: #bbb;
     color: #fff;
     min-width: 25px;

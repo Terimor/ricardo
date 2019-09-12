@@ -7,18 +7,14 @@
           <b>{{step}}/{{maxSteps}}</b>
           <span>Choose your Deal</span>
         </h4>
-
-
         <div class="step step-1" v-if="step === 1">
           <slot name="installment" />
-
           <radio-button-group
             :withCustomLabels="false"
             v-model="form.deal"
             @input="setWarrantyPriceText"
             :list="list"
             />
-
           <h2>Please select your variant</h2>
           <select-field
               popperClass="smc7-popover-variant"
@@ -28,7 +24,6 @@
               }"
               :list="variantList"/>
         </div>
-
         <div class="step step-2" v-if="step === 2">
           <div class="full-name">
             <text-field
@@ -64,7 +59,6 @@
                   }"
               v-model="form.stepTwo.phone"/>
         </div>
-
         <div class="step step-3" v-if="step === 3">
           <h2>Pay Securely With:</h2>
           <radio-button-group
@@ -100,9 +94,7 @@
                 :prefix="`<img src='${cardUrl}' alt='Card Number' />`"
                 :postfix="`<i class='fa fa-lock'></i>`"
             />
-
             <div class="card-info">
-
               <div class="d-flex">
                 <div>
                   <div class="card-info__labels">
@@ -129,7 +121,6 @@
                         v-model="form.stepThree.year"/>
                   </div>
                 </div>
-
                 <div>
                   <div class="card-cvv">
                     <div class="card-info__labels">
@@ -154,7 +145,6 @@
                   </div>
                 </div>
               </div>
-
               <text-field
                   :validation="$v.form.stepThree.city"
                   validationMessage="Please enter your city"
@@ -164,7 +154,7 @@
                   :rest="{
                     placeholder: 'City',
                     autocomplete: 'shipping locality'
-                   }"
+                  }"
                   v-model="form.stepThree.city"/>
               <text-field
                   :validation="$v.form.stepThree.state"
@@ -194,7 +184,7 @@
                   label="Country"
                   class="country"
                   :rest="{
-                     placeholder: 'Country'
+                    placeholder: 'Country'
                   }"
                   :list="countryList"
                   v-model="form.stepThree.country"/>
@@ -213,7 +203,6 @@
               </div>
             </el-dialog>
           </form>
-
           <slot name="warranty" />
         </div>
         <div class="buttons">
@@ -239,7 +228,6 @@
         </div>
       </div>
     </div>
-
     <el-dialog
       @click="isOpenPromotionModal = false"
       class="deal-popup"
@@ -255,7 +243,6 @@
             </button>
         </div>
     </el-dialog>
-
     </div>
   </div>
 

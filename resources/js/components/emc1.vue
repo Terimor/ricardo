@@ -40,7 +40,6 @@
             />
 
             <h2>Step 2: Please select your variant</h2>
-
             <!-- TODO: check if this is useless, remove it:
             warrantyPriceText="setWarrantyPriceText()"  -->
             <select-field
@@ -56,6 +55,7 @@
               }"
               :list="variantList"
               warrantyPriceText="setWarrantyPriceText()"
+              @change="setDataToLocalStorage"
             />
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
@@ -79,6 +79,7 @@
             v-model="form.paymentType"
             :list="mockData.creditCardRadioList"
           />
+          {{ $v.form.deal }}
           <paypal-button
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
@@ -202,6 +203,10 @@ export default {
   props: ['showPreloader', 'skusList'],
   data () {
     return {
+      selectedProductData: {
+        prices: null,
+        quantity: null,
+      },
       ImplValue: null,
       radioIdx: null,
       warrantyPriceText: null,
@@ -409,6 +414,15 @@ export default {
       this.radioIdx = Number(radioIdx);
       this.changeWarrantyValue();
     },
+    setDataToLocalStorage() {
+      const prices = this.checkoutData.product.prices;
+      return this.selectedProductData = {
+        upsells: this.productData.upsells,
+        prices: prices[this.radioIdx],
+        quantity: this.radioIdx,
+        variant: this.form.variant,
+      };
+    },
     changeWarrantyValue () {
       const prices = this.checkoutData.product.prices;
 
@@ -417,6 +431,8 @@ export default {
           ? 3
           : 1;
       }
+
+      this.setDataToLocalStorage();
 
       switch(this.implValue) {
         case 1:
