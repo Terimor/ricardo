@@ -3,6 +3,7 @@
 namespace App\Services;
 use GuzzleHttp\Client;
 use App\Models\Setting;
+use App\Models\Txn;
 
 /**
  * Email Service class

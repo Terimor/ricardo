@@ -24,6 +24,6 @@ class VerifyCsrfToken extends Middleware
         'payments/ebanx-notification',
         'paypal-create-order',
         'paypal-verify-order',
-		//'calculate-upsells-total'
+		'calculate-upsells-total'
     ];
 }

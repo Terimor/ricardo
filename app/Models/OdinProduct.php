@@ -107,7 +107,7 @@ class OdinProduct extends Model
             $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : !empty($val['brief']['en']) ? $val['brief']['en'] : '';
             // images
             $value[$key]['images'] = [];
-            if ($value[$key]['image_ids']) {
+            if (!empty($value[$key]['image_ids'])) {
                 foreach ($value[$key]['image_ids'] as $k => $img) {
                     $value[$key]['images'][] = ($img && !empty($this->images[$img])) ? $this->images[$img] : null;
                 }
