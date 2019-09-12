@@ -21,9 +21,7 @@
     export default {
         name: 'UpsellsItem',
         mixins: [upsellsMixin],
-        props: [
-            'order',
-        ],
+        props: ['order'],
 
         data: () => ({
             upsellPrices: null,
@@ -33,9 +31,8 @@
             price() {
                 if (this.upsellPrices && this.order) {
                     return this.upsellPrices[this.order.quantity].value_text
-                } else {
-                    return 0
                 }
+                return '';
             }
         },
 

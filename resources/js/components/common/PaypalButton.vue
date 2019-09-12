@@ -6,6 +6,7 @@
   export default {
     name: 'PaypalButton',
     props: ['createOrder', 'onApprove', '$v'],
+
     data() {
       return {
         inputCheckbox: this.$v.required,
