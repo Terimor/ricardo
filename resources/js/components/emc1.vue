@@ -433,15 +433,18 @@ export default {
       }
     },
     paypalCreateOrder () {
+      const searchParams = new URL(document.location.href).searchParams;
+      const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
         sku_code: this.codeOrDefault,
         sku_quantity: this.form.deal,
         is_warranty_checked: this.form.isWarrantyChecked,
         page_checkout: document.location.href,
-        cur: new URL(document.location.href).searchParams.get('cur'),
-        offer: new URL(document.location.href).searchParams.get('offer'),
-        affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+        cur: currency,
+        offer: searchParams.get('offer'),
+        affiliate: searchParams.get('affiliate'),
       })
     },
     paypalOnApprove: paypalOnApprove,
