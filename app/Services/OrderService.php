@@ -17,15 +17,15 @@ class OrderService
      * @param array $data
      * @return type
      */
-    public function addTxn(array $data, bool $returnModel = false): array
+    public function addTxn(array $data, bool $returnModel = false, $sendConfirmation = true): array
     {
         // In situation when we need single txn record.
         $model = Txn::firstOrNew(['hash' => $data['hash']]);
         $model->fill($data);
 
 		// send confirmation email to SAGA
-		if (empty($model->id)) {
-			//$res = (new EmailService())->sendConfirmationEmail($model);
+		if ($sendConfirmation) {
+			$res = (new EmailService())->sendConfirmationEmail($model);
 		}
 
         $validator = $model->validate();

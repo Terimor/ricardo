@@ -43,7 +43,7 @@ class EbanxService
             logger()->error("ebanx_mode parameter not found");
         }
 
-        if ($mode && $mode->value == 'prod') {
+        if ($mode == 'prod') {
             $url = 'https://sandbox.ebanxpay.com/';
         } else {
             $url = 'https://sandbox.ebanxpay.com/';
