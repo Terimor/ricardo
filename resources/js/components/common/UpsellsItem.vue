@@ -17,67 +17,50 @@
 </template>
 
 <script>
-  import { fade } from '../../utils/common';
+    import { fade } from '../../utils/common';
+    import upsellsMixin from '../../mixins/upsells';
 
-  export default {
-    name: 'UpsellsItem',
-    props: [
-        'name',
-        'benefitList',
-        'withRemoveButton',
-        'imageUrl',
-        'idx',
-        'itemData',
-        'price',
-        'quantity',
-        'subtotal',
-    ],
+    export default {
+        name: 'UpsellsItem',
+        mixins: [upsellsMixin],
+        props: [
+            'name',
+            'benefitList',
+            'withRemoveButton',
+            'imageUrl',
+            'idx',
+            'itemData',
+            'price',
+            'quantity',
+            'subtotal',
+        ],
 
-    data: () => ({
-        total: 0,
-    }),
+        data: () => ({
+            total: 0,
+        }),
 
-    computed: {
-      id () {
-        return 'upsells-item-' + this.idx
-      }
-    },
+        computed: {
+            id () {
+                return 'upsells-item-' + this.idx
+            }
+        },
 
-    mounted() {
-        if (this.itemData) {
-            this.getTotalPrice(this.itemData, this.price * this.quantity);
-        }
-    },
+        mounted() {
+            if (this.itemData) {
+                this.getTotalPrice(this.itemData, this.price * this.quantity);
+            }
+        },
 
-    methods: {
-      deleteAccessory () {
-        const node = document.querySelector('#' + this.id)
-        fade('out', 250, node)
-          .then(() => {
-                this.$emit('deleteAccessory', this.idx)
-            })
-      },
-
-      getTotalPrice(data, total) {
-        return axios
-          .post(`${window.location.origin}/calculate-upsells-total`,
-          {
-              upsells: data,
-              total: total
-          },
-          {
-            credentials: 'same-origin',
-            headers: {
-              accept: 'application/json',
-                'content-type': 'application/json'
+        methods: {
+            deleteAccessory () {
+                const node = document.querySelector('#' + this.id)
+                fade('out', 250, node)
+                .then(() => {
+                    this.$emit('deleteAccessory', this.idx)
+                })
             },
-          })
-          .then(({ data }) => {
-            this.total = data.value_text;
-          });
-      },
-    }
-  };
+        }
+    };
 </script>
 
 <style lang="scss">

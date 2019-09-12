@@ -30,6 +30,7 @@
                     :name="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].long_name"
                     :description="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].description"
                     :price="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsellPrices['1'].value"
+                    :price-formatted="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsellPrices['1'].value_text"
                     :data="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity]"
                     :image-url="product.skus[0].images[0]"
                   />
@@ -61,6 +62,7 @@
                     v-for="(it, idx) in accessoryList"
                     :image-url="it.imageUrl"
                     :idx="idx"
+                    :id="it.id"
                     :key="idx"
                     :benefitList="[
                       it.name,
@@ -96,9 +98,12 @@
   import { goTo } from '../utils/goTo';
   import { groupBy } from '../utils/groupBy';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
+  import upsellsMixin from '../mixins/upsells'
 
   export default {
     name: 'upsells',
+    mixins: [upsellsMixin],
+
     components: {
       UpsellsItem,
       Step1,
@@ -160,26 +165,6 @@
         Object.values(this.upsellsObj).map((value) => {
           this.getUppsells(value);
         });
-      },
-
-      getTotalPrice(data, total) {
-        return axios
-          .post(`${window.location.origin}/calculate-upsells-total`,
-          {
-              upsells: data,
-              total: total
-          },
-          {
-            credentials: 'same-origin',
-            headers: {
-              accept: 'application/json',
-                'content-type': 'application/json'
-            },
-          })
-          .then(({ data }) => {
-            this.total = data.value_text;
-            return data.value_text;
-          });
       },
 
       getUppsells(value) {

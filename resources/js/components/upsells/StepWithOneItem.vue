@@ -46,6 +46,10 @@
         type: Number,
         default: 0,
       },
+      priceFormatted: {
+        type: String,
+        default: '',
+      },
       id: {
         type: String,
         default: '',

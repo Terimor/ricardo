@@ -25,13 +25,13 @@
               @click="addToCart(1)"
               :is-loading="isLoading"
             >
-                YES! I want to add 1 {{name}} TO My Order For Just {{price}}
+                YES! I want to add 1 {{name}} TO My Order For Just {{priceFormatted}}
             </green-button>
             <green-button
               @click="addToCart(2)"
               :is-loading="isLoading"
             >
-                YES! I want to add 2 {{name}} TO My Order For Just {{(price * 2)}}
+                YES! I want to add 2 {{name}} TO My Order For Just {{total}}
             </green-button>
         </div>
       </div>
@@ -43,7 +43,9 @@
 
   export default {
     name: 'Step1',
+
     mixins: [upsells],
+
     props: {
       data: {
         default: null,
@@ -60,6 +62,10 @@
         type: Number,
         default: 0,
       },
+      priceFormatted: {
+        type: String,
+        default: '',
+      },
       id: {
         type: String,
         default: '',
@@ -72,6 +78,18 @@
         type: Boolean,
         default: false,
       },
+    },
+
+    data: () => ({
+      total: 0,
+    }),
+
+    watch: {
+      id(id) {
+        if (id) {
+          this.getTotalPrice({ [this.id]: 2 }, this.price * 2);
+        }
+      }
     },
   };
 </script>

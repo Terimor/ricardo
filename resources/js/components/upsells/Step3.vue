@@ -47,28 +47,32 @@ export default {
       default: null
     },
     name: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     description: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     price: {
-    type: Number,
-    default: 0,
+      type: Number,
+      default: 0,
+    },
+    priceFormatted: {
+      type: String,
+      default: '',
     },
     id: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     imageUrl: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     isLoading: {
-    type: Boolean,
-    default: false,
+      type: Boolean,
+      default: false,
     },
   },
   data () {

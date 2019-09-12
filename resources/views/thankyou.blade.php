@@ -21,7 +21,6 @@
         <p class="thank-you__order">Order: {{ $orderCustomer->_id }}</p>
         <h2 class="thank-you__name">Thank you {{ $orderCustomer->customer_first_name }}</h2>
         <div class="border-box thank-you__container">
-            @{{ getShippingAddress }}
             <div id="map">
                 <iframe
                     class="resp-iframe"
@@ -49,7 +48,7 @@
                     </div>
                     <div class="thank-you__order__name">{{ $product->long_name }}</div>
                 </div>
-                <div class="thank-you__order__price">@{{ selectedProductData.prices.value }}</div>
+                <div class="thank-you__order__price">@{{ selectedProductData.prices.value_text }}</div>
             </div>
             <div
                 class="thank-you__order"
@@ -62,17 +61,17 @@
                     </div>
                     <div class="thank-you__order__name">@{{ order.name }}</div>
                 </div>
-                <div class="thank-you__order__price">@{{ order.price }}</div>
+                <div class="thank-you__order__price">@{{ order.priceFormatted }}</div>
             </div>
 
             <hr>
 
-            <p class="paragraph d-flex justify-content-between"><span>Subtotal:</span><span>@{{ totalPrice }}</span></p>
+            <p class="paragraph d-flex justify-content-between"><span>Subtotal:</span><span>@{{ total || totalPrice }}</span></p>
             <p class="paragraph d-flex justify-content-between"><span>Payment method:</span><span>PayPal</span></p>
 
             <hr>
 
-            <p class="paragraph d-flex justify-content-between"><span>Order Total:</span><span class="bold">@{{ totalPrice }}</span></p>
+            <p class="paragraph d-flex justify-content-between"><span>Order Total:</span><span class="bold">@{{ total || totalPrice }}</span></p>
 
         </div>
         <div class="border-box thank-you__customer-info">
