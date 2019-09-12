@@ -13,7 +13,6 @@ use NumberFormatter;
 class OdinProduct extends Model
 {
     const QUANTITY_PRICES = 5;
-    const SKU_QUANTITY_IMAGES_COUNT = 5;
 
     protected $images;
     protected $upsellPrices;
@@ -110,7 +109,7 @@ class OdinProduct extends Model
 
             // images
             $value[$key]['images'] = [];
-            for ($i = 1; $i <= self::SKU_QUANTITY_IMAGES_COUNT; $i++) {
+            for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
                 if (!empty($value[$key]['quantity_image_ids'][$i])) {
                     $imgId = $value[$key]['quantity_image_ids'][$i];
                     $value[$key]['images'][] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
@@ -228,7 +227,7 @@ class OdinProduct extends Model
         //for skus
         if (!empty($this->attributes['skus'])) {
             foreach ($this->attributes['skus'] as $key => $sku) {
-                for ($i = 1; $i <= self::SKU_QUANTITY_IMAGES_COUNT; $i++) {
+                for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
                     if (!empty($sku['quantity_image_ids'][$i])) {
                         $ids[$sku['quantity_image_ids'][$i]] = $sku['quantity_image_ids'][$i];
                     }
