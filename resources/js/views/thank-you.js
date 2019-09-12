@@ -3,9 +3,14 @@ require('../bootstrap');
 import queryToComponent from '../mixins/queryToComponent';
 import upsellsMixin from '../mixins/upsells';
 import { groupBy } from '../utils/groupBy';
+import ThankYouItem from '../components/common/ThankYouItem';
 
 const thankYou = new Vue({
     el: '#thank-you',
+
+    components: {
+        ThankYouItem,
+    },
 
     mixins: [
         queryToComponent,
@@ -43,6 +48,7 @@ const thankYou = new Vue({
                 quantity: this.selectedProductData.quantity,
             }
             orders.push(currentOrder);
+
             this.addToCart(1)
             this.getTotalPrice(groupBy(orders, 'id', 'quantity'), this.totalPrice);
         }
@@ -50,9 +56,11 @@ const thankYou = new Vue({
 
     computed: {
         totalPrice() {
-            const subOrdersTotal = this.subOrder.reduce((acc, item) =>{
-                return acc += item.price
-            }, 0)
+            const subOrdersTotal = this.subOrder.reduce((acc, item) => {
+                return acc += item.price * item.quantity;
+            }, 0);
+
+            console.log(this.subOrder);
 
             return subOrdersTotal + this.selectedProductData.prices.value;
         },

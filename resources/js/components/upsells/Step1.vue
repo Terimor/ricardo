@@ -31,7 +31,7 @@
               @click="addToCart(2)"
               :is-loading="isLoading"
             >
-                YES! I want to add 2 {{name}} TO My Order For Just {{total}}
+                YES! I want to add 2 {{name}} TO My Order For Just {{upsellPrices['2'] && upsellPrices['2'].value_text}}
             </green-button>
         </div>
       </div>
@@ -81,13 +81,15 @@
     },
 
     data: () => ({
-      total: 0,
+      upsellPrices: {},
     }),
 
     watch: {
       id(id) {
         if (id) {
-          this.getTotalPrice({ [this.id]: 2 }, this.price * 2);
+          this.getUppSells(this.id, 2).then(({ data }) => {
+            this.upsellPrices = data.upsell.upsellPrices
+          });
         }
       }
     },

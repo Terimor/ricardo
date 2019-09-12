@@ -68,7 +68,7 @@
                       it.name,
                       `Quantity: ${it.quantity}`,
                     ]"
-                    :item-data="upsellsForBack([it])"
+                    :item-data="it"
                     :price="it.price"
                     :quantity="it.quantity"
                     :withRemoveButton="true"
@@ -169,12 +169,12 @@
 
       getUppsells(value) {
         this.isLoading = true;
-        return axios
-          .get(`${window.location.origin}/upsell-product/${value.product_id}?quantity=1`)
+
+        this.getUppSells(value.product_id, 1)
           .then((res) => {
             this.upsellsAsProdsList.push(res.data.upsell);
             if (this.upsellsAsProdsList.length === this.upsellsObj.length) this.isLoading = false;
-          });
+          })
       },
 
       paypalCreateOrder() {

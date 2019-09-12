@@ -50,18 +50,10 @@
                 </div>
                 <div class="thank-you__order__price">@{{ selectedProductData.prices.value_text }}</div>
             </div>
-            <div
-                class="thank-you__order"
-                v-for="order in subOrder"
-            >
-                <div class="d-flex">
-                    <div class="thank-you__order__image">
-                        <img :src="order.imageUrl" alt="">
-                        <div class="quantity">@{{ order.quantity }}</div>
-                    </div>
-                    <div class="thank-you__order__name">@{{ order.name }}</div>
-                </div>
-                <div class="thank-you__order__price">@{{ order.priceFormatted }}</div>
+            <div v-for="order in subOrder">
+                <thank-you-item
+                    :order="order"
+                ></thank-you-item>
             </div>
 
             <hr>

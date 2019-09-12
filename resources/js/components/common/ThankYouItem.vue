@@ -1,21 +1,13 @@
 <template>
-    <div
-        :id="id"
-        class="upsells-item"
-        :class="{ 'main': !withRemoveButton, 'is-accessory': withRemoveButton }">
-        <div class="upsells-item__image">
-            <img :src="imageUrl" alt="">
+    <div class="thank-you__order">
+        <div class="d-flex">
+            <div class="thank-you__order__image">
+                <img :src="order.imageUrl" alt="">
+                <div class="quantity">{{ order.quantity }}</div>
+            </div>
+            <div class="thank-you__order__name">{{ order.name }}</div>
         </div>
-        <div class="upsells-item__content">
-            <h5>{{name}}</h5>
-            <ul class="benefit-list">
-                <li v-for="benefit in benefitList">{{benefit}}</li>
-                <li>Subtotatal: {{ subtotalValue }}</li>
-            </ul>
-        </div>
-        <div class="upsells-item__remove-block" v-if="withRemoveButton">
-            <el-button type="danger" @click="deleteAccessory">Remove</el-button>
-        </div>
+        <div class="thank-you__order__price">{{ price }}</div>
     </div>
 </template>
 
@@ -27,15 +19,7 @@
         name: 'UpsellsItem',
         mixins: [upsellsMixin],
         props: [
-            'name',
-            'benefitList',
-            'withRemoveButton',
-            'imageUrl',
-            'idx',
-            'itemData',
-            'price',
-            'quantity',
-            'subtotal',
+            'order',
         ],
 
         data: () => ({
@@ -43,36 +27,22 @@
         }),
 
         computed: {
-            id () {
-                return 'upsells-item-' + this.idx
-            },
-
-            subtotalValue() {
-                if (this.upsellPrices && this.quantity) {
-                    return this.upsellPrices[this.quantity].value_text;
+            price() {
+                if (this.upsellPrices && this.order) {
+                    return this.upsellPrices[this.order.quantity].value_text
                 } else {
-                    return this.subtotal;
+                    return 0
                 }
             }
         },
 
         mounted() {
-            if (this.itemData) {
-                this.getUppSells(this.itemData.id, this.quantity).then(({ data }) => {
+            if (this.order) {
+                this.getUppSells(this.order.id, this.order.quantity).then(({ data }) => {
                     this.upsellPrices = data.upsell.upsellPrices
                 });
             }
         },
-
-        methods: {
-            deleteAccessory () {
-                const node = document.querySelector('#' + this.id)
-                fade('out', 250, node)
-                .then(() => {
-                    this.$emit('deleteAccessory', this.idx)
-                })
-            },
-        }
     };
 </script>
 

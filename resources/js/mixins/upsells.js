@@ -40,5 +40,13 @@ export default {
         return data.value_text;
       });
     },
+
+    getUppSells(product_id, quantity) {
+      return axios
+        .get(`${window.location.origin}/upsell-product/${product_id}?quantity=${quantity}`)
+        .then((res) => {
+          return res
+        });
+    },
   },
 }

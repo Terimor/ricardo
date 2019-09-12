@@ -78,6 +78,17 @@ export default {
   data () {
     return {
       quantity: 1,
+      upsellPrices: {},
+    }
+  },
+
+  watch: {
+    id(id) {
+      if(id) {
+        this.getUppSells(this.id, 3).then(({ data }) => {
+          this.upsellPrices = data.upsell.upsellPrices
+        });
+      }
     }
   },
 
@@ -85,12 +96,11 @@ export default {
     selectList() {
       const data = Array(3).fill('').map((item, index) => {
         const value = index + 1
-        const price = this.getTotalPrice({ [this.id]: value }, value);
 
         return item = {
-          label: `${index + 1}x ${this.name} - ${this.price * value}`,
-          text: `${index + 1}x ${this.name} - ${this.price * value}`,
-          value: index + 1,
+          label: `${value}x ${this.name} - ${this.upsellPrices[value] && this.upsellPrices[value].value_text}`,
+          text: `${value}x ${this.name} - ${this.upsellPrices[value] && this.upsellPrices[value].value_text}`,
+          value: value,
         }
       })
 
