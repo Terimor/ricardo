@@ -276,6 +276,7 @@
 <script>
   import apiUrlList from '../../constants/api-url'
   import { debounce } from '../../utils/common'
+  import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
 
   export default {
@@ -475,7 +476,7 @@
 
           });
 
-          // window.location.href = '/thankyou-promos';
+          goTo('/thankyou-promos');
         }
       }
     },

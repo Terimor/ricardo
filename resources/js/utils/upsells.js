@@ -47,6 +47,8 @@ export function paypalOnApprove(data) {
   }).then(function(res) {
     return res.json();
   }).then(function(details) {
-
+    const currentOrder = details.order_id
+    goTo(`/thankyou-promos/?order=${currentOrder}`);
+    localStorage.setItem('order_id', currentOrder)
   });
 }

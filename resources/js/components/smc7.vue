@@ -4,7 +4,11 @@
       <div class="row">
         <div class="container paper smc7__product">
           <div class="col-md-7 image-wrapper">
-            <img id="product-image-head" :src="productImage" alt="">
+            <img
+              id="product-image-head"
+              :src="productImage"
+              alt=""
+            >
           </div>
           <div class="col-md-5 advantages">
             <ul>
@@ -305,12 +309,11 @@
 		},
 		computed: {
 			checkoutData() {
-				return checkoutData
+				return checkoutData;
 			},
 			productData() {
-				return checkoutData.product
+				return checkoutData.product;
 			},
-
 		},
 		watch: {
 			'form.variant'(val) {
@@ -336,7 +339,7 @@
 		},
 		methods: {
 			submit() {
-				this.$v.form.$touch();
+        this.$v.form.$touch();
 
 				if (this.$v.form.deal.$invalid) {
 					this.setPromotionalModal(true)

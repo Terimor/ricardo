@@ -7,8 +7,11 @@
             <div class="column-with-head">
               <div class="col-content">
                 <div class="product_img">
-                  <img id="main-prod-image" alt="Product image"
-                       :src="productImage">
+                  <img
+                    id="main-prod-image"
+                    alt="Product image"
+                    :src="productImage"
+                  >
                 </div>
                 <div class="product_desc">
                   <ul>
@@ -24,7 +27,6 @@
           <div class="col-sm-7 col-md-7">
             <div class="column-with-head">
               <div class="col-content" id="form-steps">
-
                 <payment-form-vmc4
                     :installments="form.installments"
                     :checkoutData="checkoutData"

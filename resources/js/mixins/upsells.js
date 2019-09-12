@@ -6,6 +6,7 @@ export default {
         benefitList,
         imageUrl,
         price,
+        id,
       } = this
 
       this.$emit('addAccessory', {
@@ -14,6 +15,7 @@ export default {
         benefitList,
         imageUrl,
         price,
+        id,
       })
     }
   }

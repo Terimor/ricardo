@@ -5,7 +5,10 @@
         v-for="({ key, imageUrl, name, newPrice }) in productList"
         v-if="cart[key] !== 0">
         <div class="cart-item__image">
-            <img :src="imageUrl" alt="">
+            <img
+                :src="imageUrl"
+                alt=""
+            >
         </div>
         <div class="cart-item__content">
             <span class="quantity">{{cart[key]}}</span>
@@ -17,7 +20,9 @@
                     [key]: 0
                 })"
                 class="fa fa-times-circle"
-                aria-hidden="true"></i>
+                aria-hidden="true"
+            >
+            </i>
         </div>
     </div>
 </div>

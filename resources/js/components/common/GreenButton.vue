@@ -1,13 +1,20 @@
 <template>
-    <button @click="$emit('click')" class="green-button-animated" v-bind="rest">
-        <span><slot></slot></span>
+    <button
+        @click="$emit('click')"
+        class="green-button-animated"
+        v-bind="rest"
+        :disabled="isLoading"
+    >
+        <span>
+            <slot></slot>
+        </span>
     </button>
 </template>
 
 <script>
   export default {
     name: 'GreenButton',
-    props: ['label', 'rest']
+    props: ['label', 'rest', 'isLoading']
   };
 </script>
 

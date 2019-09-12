@@ -1,5 +1,6 @@
 import { getRandomInt } from './common';
 import { getCountOfInstallments } from './installments';
+import { goTo } from './goTo';
 
 export const getRadioHtml = ({ discountName, newPrice, text, price, discountText, currency = '$', installments, idx }) =>
   `${discountName
@@ -125,6 +126,8 @@ export function paypalOnApprove(data) {
   }).then(function(res) {
     return res.json();
   }).then(function(details) {
-
+    const currentOrder = details.order_id
+    goTo(`/thankyou-promos/?order=${currentOrder}`);
+    localStorage.setItem('order_id', currentOrder)
   });
 }

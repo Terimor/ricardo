@@ -30,7 +30,9 @@
       deleteAccessory () {
         const node = document.querySelector('#' + this.id)
         fade('out', 250, node)
-          .then(() => this.$emit('deleteAccessory', this.idx))
+          .then(() => {
+                this.$emit('deleteAccessory', this.idx)
+            })
       }
     }
   };

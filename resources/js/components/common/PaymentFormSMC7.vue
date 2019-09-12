@@ -7,7 +7,7 @@
         label="Country"
         class="country"
         :rest="{
-           placeholder: 'Country'
+          placeholder: 'Country'
         }"
         :list="countryList"
         v-model="paymentForm.country"/>
@@ -31,7 +31,7 @@
         :rest="{
           placeholder: 'City',
           autocomplete: 'shipping locality'
-         }"
+        }"
         v-model="paymentForm.city"/>
     <text-field
         :validation="$v.form.state"
@@ -76,20 +76,21 @@
         validationMessage="Invalid field"
         theme="variant-1"
         :rest="{
-                  placeholder: 'VISA'
-                }"
+          placeholder: 'VISA'
+        }"
         :list="cardNames"
         v-model="paymentForm.paymentType"/>
     <form id="payment-data-form" v-if="paymentForm.paymentType !== 'paypal'">
       <text-field
           :validation="$v.form.cardNumber"
           :rest="{
-                  pattern: '\\d*',
-                  type: 'tel',
-                  placeholder: '**** **** **** ****',
-                  autocomplete: 'cc-number',
-                    'data-bluesnap': 'encryptedCreditCard'
-                  }"
+            pattern: '\\d*',
+            type: 'tel',
+            placeholder: '**** **** **** ****',
+            autocomplete:
+              'cc-number',
+              'data-bluesnap': 'encryptedCreditCard'
+          }"
           validationMessage="Please enter a credit card number."
           class="card-number"
           theme="variant-1"
@@ -104,8 +105,8 @@
             :validation="$v.form.month"
             validationMessage="Required"
             :rest="{
-                      placeholder: 'Month'
-                    }"
+              placeholder: 'Month'
+            }"
             theme="variant-1"
             :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
             v-model="paymentForm.month"/>
@@ -113,8 +114,8 @@
             :validation="$v.form.year"
             validationMessage="Required"
             :rest="{
-                      placeholder: 'Year'
-                    }"
+              placeholder: 'Year'
+            }"
             theme="variant-1"
             :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
             v-model="paymentForm.year"/>
@@ -127,12 +128,12 @@
           theme="variant-1"
           label="CVV"
           :rest="{
-                  maxlength: 4,
-                  pattern: '\\d*',
-                  type: 'tel',
-                  autocomplete: 'cc-csc',
-                  'data-bluesnap': 'encryptedCvv'
-                }"
+            maxlength: 4,
+            pattern: '\\d*',
+            type: 'tel',
+            autocomplete: 'cc-csc',
+            'data-bluesnap': 'encryptedCvv'
+          }"
           v-model="paymentForm.cvv"
           postfix="<i class='fa fa-question-circle'></i>"
       />

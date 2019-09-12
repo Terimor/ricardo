@@ -1,28 +1,28 @@
 <template></template>
 <script>
-export default {
-  mounted() {
-    window.closeLeaveModal = () => document.querySelector('#bio_ep_close').dispatchEvent(new CustomEvent('click'))
-    window.agreeLeaveModal = () => {
-      window.closeLeaveModal()
-      document.querySelector('.main__deal').scrollIntoView()
+    export default {
+        mounted() {
+            window.closeLeaveModal = () => document.querySelector('#bio_ep_close').dispatchEvent(new CustomEvent('click'))
+            window.agreeLeaveModal = () => {
+                window.closeLeaveModal()
+                document.querySelector('.main__deal').scrollIntoView()
+            }
+            bioEp.init({
+                width: 450,
+                html: `
+                    <div class="leave-modal">
+                        <img src="https://static-backend.saratrkr.com/image_assets/EchoBeat-logo.00" alt="" />
+                        <p>Wait!! You Have Been Selected For a Special Promotional Offer</p>
+                        <p class="green">Buy 2 Get 1 FREE! Just $92.99</p>
+                        <button class="offer-btn" onclick="agreeLeaveModal()">Claim Your Special Offer Today</button>
+                        <button class="close-btn" onclick="closeLeaveModal()">No thanks, I don't want to take this one time special offer</button>
+                    </div>
+                    `,
+                cookieExp: 0,
+                delay: 15
+            });
+        }
     }
-    bioEp.init({
-      width: 450,
-      html: `
-            <div class="leave-modal">
-              <img src="https://static-backend.saratrkr.com/image_assets/EchoBeat-logo.00" alt="" />
-              <p>Wait!! You Have Been Selected For a Special Promotional Offer</p>
-              <p class="green">Buy 2 Get 1 FREE! Just $92.99</p>
-              <button class="offer-btn" onclick="agreeLeaveModal()">Claim Your Special Offer Today</button>
-              <button class="close-btn" onclick="closeLeaveModal()">No thanks, I don't want to take this one time special offer</button>
-            </div>
-          `,
-      cookieExp: 0,
-      delay: 15
-    });
-  }
-}
 </script>
 
 <style lang="scss">

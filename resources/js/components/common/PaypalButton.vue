@@ -20,24 +20,28 @@
         paypal.Buttons({
           onInit(data, actions) {
             that.action = actions;
-            if ($v.required || $v.$dirty) {
+            if ($v.required || $v.$invalid) {
               actions.disable();
             }
           },
+
           createOrder(data, actions) {
               return createOrder();
           },
+
           onClick () {
             if (!$v.required || !$v.$dirty) {
               that.$emit('click', true);
               return true;
             }
           },
+
           onApprove (data, actions) {
             if ($v.required || $v.$dirty) {
               return onApprove(data);
             }
           },
+
           style: {
             label: 'buynow'
           }

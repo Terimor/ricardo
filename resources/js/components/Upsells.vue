@@ -1,57 +1,80 @@
 <template>
     <div class="upsells-component">
         <div class="upsells-component__top">
-            <div class="upsells-component__step">Step 1: Order Page</div>
+            <div class="upsells-component__step">
+              Step 1: Order Page
+            </div>
             <div
                 class="upsells-component__step"
-                :class="{ 'active': activeTab === 'second'}">
+                :class="{
+                  'active': activeTab === 'second'
+                }">
                 Step 2: Special Offer
             </div>
             <div
                 class="upsells-component__step"
-                :class="{ 'active': activeTab === 'third'}">
+                :class="{
+                  'active': activeTab === 'third'
+                }">
                 Step 3: Confirmation
             </div>
         </div>
-
         <template v-if="activeTab === 'second'">
             <div class="upsells-component__content">
                 <transition name="component-fade" mode="out-in">
-                    <!--TODO: for component we can use something like v-for="upsell in this.upsellsAsProdsList"-->
-                    <component
-                        v-bind:is="view"
-                        @addAccessory="addAccessory"
-                        :viewProps="viewProps"
-                        :name="product.long_name"
-                        :descriptionHtml="product.description"
-                        :price="product.prices['1'].value"
-                        :imageUrl="product.skus[0].images[0]"
-                    />
+                  <component
+                    :is-loading="isLoading"
+                    v-bind:is="view"
+                    @addAccessory="addAccessory"
+                    :id="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsells[getEntity].product_id"
+                    :name="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].long_name"
+                    :description="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].description"
+                    :price="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsellPrices['1'].value"
+                    :data="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity]"
+                    :image-url="product.skus[0].images[0]"
+                  />
                 </transition>
-
-                <p class="no"><a @click="accessoryStep++">No thanks...</a></p>
+                <p class="no">
+                  <a @click="accessoryStep++">
+                    No thanks...
+                  </a>
+                </p>
             </div>
         </template>
         <template v-if="activeTab === 'third'">
             <div class="upsells-component__finish">
                 <h3 class="original-order">Your original order</h3>
-                <UpsellsItem :image-url="'/images/aircool.jpg'" name="EcoFuel" :benefitList="['Quantity: 1']"/>
-                <h3 class="accessory-cart">Your accessory cart</h3>
                 <UpsellsItem
+                  :image-url="product.skus[0].images[0]"
+                  :name="product.long_name"
+                  :benefitList="[
+                    `Quantity: ${getOriginalOrder.quantity}`,
+                    `Subtotal: ${getOriginalOrderPrice}`
+                  ]"
+                />
+                <template v-if="accessoryList.length">
+                  <h3 class="accessory-cart">
+                    Your accessory cart
+                  </h3>
+                  <UpsellsItem
                     @deleteAccessory="deleteAccessory"
                     v-for="(it, idx) in accessoryList"
-                    :imageUrl="it.imageUrl"
+                    :image-url="it.imageUrl"
                     :idx="idx"
-                    :key="it.name + idx"
+                    :key="idx"
                     :benefitList="[it.name, `Quantity: ${it.quantity}`, `Subtotal: $${it.quantity * it.price}`]"
-                    :withRemoveButton="true"/>
-
-                <p class="total-price">Total accessory order ${{totalPrice.toLocaleString()}}</p>
+                    :withRemoveButton="true"
+                  />
+                  <p class="total-price">
+                    Total accessory order {{ total }}
+                  </p>
+                </template>
                 <paypal-button
-                    :createOrder="paypalCreateOrder"
-                    :onApprove="paypalOnApprove"
-                    :$v="true"
-                >Buy Now Risk Free PAYPAL
+                  :createOrder="paypalCreateOrder"
+                  :onApprove="paypalOnApprove"
+                  :$v="true"
+                >
+                  Buy Now Risk Free PAYPAL
                 </paypal-button>
             </div>
         </template>
@@ -64,6 +87,8 @@
   import Step3 from './upsells/Step3';
   import StepWithOneItem from './upsells/StepWithOneItem';
   import { fade } from '../utils/common';
+  import { goTo } from '../utils/goTo';
+  import { groupBy } from '../utils/groupBy';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
 
   export default {
@@ -76,6 +101,7 @@
     },
     data() {
       return {
+        total: 0,
         view: 'Step1',
         activeTab: 'second',
         accessoryStep: 0,
@@ -83,14 +109,10 @@
         product: upsellsData.product,
         upsellsObj: upsellsData.product.upsells,
         upsellsAsProdsList: [],
+        isLoading: true,
       };
     },
     computed: {
-      totalPrice() {
-        const allAccessories = this.accessoryList.map(it => it.price * it.quantity);
-        const total = allAccessories.reduce((acc, current) => acc + current);
-        return Number(total.toFixed(2));
-      },
       viewProps() {
         return this.accessoryStep === 0 ? {} :
           this.accessoryStep === 1 ? {
@@ -100,45 +122,106 @@
               this.accessoryStep === 3 ? {} :
                 {};
       },
+
+      getEntity() {
+        if (this.accessoryStep > this.upsellsAsProdsList.length) {
+          return this.upsellsAsProdsList.length;
+        } else {
+          return this.accessoryStep;
+        }
+      },
+
+      getOriginalOrder() {
+        return JSON.parse(localStorage.getItem('selectedProductData'));
+      },
+
+      getOriginalOrderPrice() {
+        return this.getOriginalOrder.prices.value_text;
+      },
+
+      getOriginalOrderId() {
+        return localStorage.getItem('order_id');
+      },
+
+      totalAccessoryPrice() {
+        return this.accessoryList
+          .map(it => it.price * it.quantity)
+          .reduce((acc, item) => acc + item, 0);
+      },
     },
     methods: {
       setUpsellsAsProdsList() {
-        let upsells = this.upsellsObj;
-
-        Object.keys(upsells).map((key) => {
-          axios
-            .get(`${window.location.origin}/upsell-product/${upsells[key]['product_id']}?quantity=1`)
-            .then((res) => {
-              this.upsellsAsProdsList.push(res.data.upsell);
-            });
+        Object.values(this.upsellsObj).map((value) => {
+          this.getUppsells(value);
         });
       },
+
+      getTotalPrice() {
+        const accessoryList = this.accessoryList.map(({ quantity, id, price }) => ({
+          quantity,
+          id,
+          price: price *= quantity,
+        }))
+        const upsellsForBack = groupBy(this.accessoryList, 'id', 'quantity');
+
+        return axios
+          .post(`${window.location.origin}/calculate-upsells-total`,
+          {
+              upsells: upsellsForBack,
+              total: this.totalAccessoryPrice
+          },
+          {
+            credentials: 'same-origin',
+            headers: {
+              accept: 'application/json',
+                'content-type': 'application/json'
+            },
+          })
+          .then(({ data }) => {
+            this.total = data.value_text;
+          });
+      },
+
+      getUppsells(value) {
+        this.isLoading = true;
+        return axios
+          .get(`${window.location.origin}/upsell-product/${value.product_id}?quantity=1`)
+          .then((res) => {
+            this.upsellsAsProdsList.push(res.data.upsell);
+            if (this.upsellsAsProdsList.length === this.upsellsObj.length) this.isLoading = false;
+          });
+      },
+
       paypalCreateOrder() {
+        localStorage.setItem('subOrder', JSON.stringify(this.accessoryList));
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-          sku_code: 'dogsafe-001',
-          sku_quantity: 5,
-          // skus: [ {1: 'dogsafe-001', 2: '5'} ],
+          sku_code: this.getOriginalOrder.variant,
+          sku_quantity: this.getOriginalOrder.quantity,
           is_warranty_checked: false,
-          order_id: '',
+          order_id: this.getOriginalOrderId,
           page_checkout: document.location.href,
           offer: new URL(document.location.href).searchParams.get('offer'),
           affiliate: new URL(document.location.href).searchParams.get('affiliate')
-        });
+        })
       },
       paypalOnApprove: paypalOnApprove,
-      goto(url) {
-        window.location.href = url;
-      },
+
       addAccessory(accessory) {
         this.accessoryStep++;
         this.accessoryList.push(accessory);
       },
+
       deleteAccessory(indexForDeleting) {
-        if (this.accessoryList.length === 1) {
-          this.goto('/thankyou');
+        this.accessoryList.splice(indexForDeleting, 1)
+
+        if (this.accessoryList.length === 0) {
+          this.redirect();
         }
-        this.accessoryList.splice(indexForDeleting, 1);
+      },
+
+      redirect() {
+        goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
       }
     },
     mounted() {
@@ -146,23 +229,36 @@
     },
     watch: {
       accessoryStep(val) {
-        if (val === 4) {
+        if (val === this.upsellsAsProdsList.length) {
           const node = document.querySelector('.upsells-component__content');
           fade('out', 250, node, true)
             .then(() => {
-              this.activeTab = 'third';
+              this.getTotalPrice()
+                .finally(() => {
+                  this.activeTab = 'third';
+                })
 
               setTimeout(() => fade('in', 250, node, true));
             });
-
         }
 
-        this.view =
-          val === 0 ? 'Step1' :
-            val === 1 ? 'StepWithOneItem' :
-              val === 2 ? 'Step3' :
-                val === 3 ? 'StepWithOneItem' :
-                  'StepWithOneItem';
+        switch(val) {
+        case 0:
+          this.view = 'Step1';
+          break;
+        case 1:
+          this.view = 'StepWithOneItem';
+          break;
+        case 2:
+          this.view = 'Step3';
+          break;
+        case 3:
+          this.view = 'StepWithOneItem';
+          break;
+        default:
+          this.view = 'StepWithOneItem';
+          break;
+        }
       }
     }
   };

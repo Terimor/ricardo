@@ -1,18 +1,9 @@
+import { queryParams } from '../utils/queryParams';
+
 const queryToComponent = {
   computed: {
-    queryParams () {
-      return location.search
-        .slice(1)
-        .split('&')
-        .map((it) => it && it.split('='))
-        .filter(Boolean)
-        .reduce((acc, [key, value]) => {
-          acc[key] = value
-
-          return acc
-        }, {})
-    }
-  }
+    queryParams: queryParams,
+  },
 }
 
 export default queryToComponent

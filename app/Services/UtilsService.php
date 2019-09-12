@@ -9,9 +9,9 @@ use App\Models\Setting;
 class UtilsService
 {
 	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
-	
+
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
-	
+
     /**
      * Culture codes (for numberFormatter)
      * Two Letter Country Code -> Culture Info Code
@@ -336,7 +336,7 @@ class UtilsService
         'dj' => 'Djibouti',
         'dm' => 'Dominica',
         'do' => 'Dominican Republic',
-        'tl' => 'East Timor',
+        'tl' => 'Timor-Leste',
         'ec' => 'Ecuador',
         'eg' => 'Egypt',
         'sv' => 'El Salvador',
@@ -429,7 +429,6 @@ class UtilsService
         'nr' => 'Nauru',
         'np' => 'Nepal',
         'nl' => 'Netherlands',
-        'an' => 'Netherlands Antilles',
         'nc' => 'New Caledonia',
         'nz' => 'New Zealand',
         'ni' => 'Nicaragua',
@@ -472,7 +471,6 @@ class UtilsService
         'sa' => 'Saudi Arabia',
         'sn' => 'Senegal',
         'rs' => 'Serbia',
-        'cs' => 'Serbia and Montenegro',
         'sc' => 'Seychelles',
         'sl' => 'Sierra Leone',
         'sg' => 'Singapore',
@@ -607,7 +605,7 @@ class UtilsService
         // TODO - REMOVE
         if (request()->get('_ip')) {
             $location = \Location::get(request()->get('_ip'));
-        }		
+        }
         return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
     }
 
@@ -655,7 +653,7 @@ class UtilsService
 
         return $local_currency;
     }
-	
+
 	/**
 	 * Replace URL for CDN
 	 * @param type $url
@@ -667,8 +665,8 @@ class UtilsService
 		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
 			$remoteHost = \Utils::getSetting('cf_host_default');
 		}
-		
-		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);		
+
+		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
 		// cut www. from url
 		$url = str_replace('www.', '', $url);
 		return $url;
