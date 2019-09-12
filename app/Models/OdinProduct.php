@@ -12,7 +12,8 @@ use NumberFormatter;
  */
 class OdinProduct extends Model
 {
-    const QUANTITY_PRICES = 5;	
+    const QUANTITY_PRICES = 5;
+
     protected $images;
     protected $upsellPrices;
 
@@ -20,7 +21,7 @@ class OdinProduct extends Model
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
 		'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
 		'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label',
-		'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency'
+		'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency', 'image_ids'
     ];
 
     protected $hidden = [
@@ -32,7 +33,11 @@ class OdinProduct extends Model
     /**
      * @var string
      */
-    protected $collection = 'odin_product';		
+    protected $collection = 'odin_product';
+
+    protected $appends = ['image'];
+
+    protected $attributes = ['image'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -106,11 +111,13 @@ class OdinProduct extends Model
         foreach ($value as $key => $val) {
             $value[$key]['name'] = !empty($val['name'][app()->getLocale()]) && $val['name'][app()->getLocale()] ? $val['name'][app()->getLocale()] : !empty($val['name']['en']) ? $val['name']['en'] : '';
             $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : !empty($val['brief']['en']) ? $val['brief']['en'] : '';
+
             // images
-            $value[$key]['images'] = [];
-            if (!empty($value[$key]['image_ids'])) {
-                foreach ($value[$key]['image_ids'] as $k => $img) {
-                    $value[$key]['images'][] = ($img && !empty($this->images[$img])) ? $this->images[$img] : null;
+            $value[$key]['quantity_image'] = [];
+            for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
+                if (!empty($value[$key]['quantity_image_ids'][$i])) {
+                    $imgId = $value[$key]['quantity_image_ids'][$i];
+                    $value[$key]['quantity_image'][$i] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
                 }
             }
         }
@@ -181,8 +188,6 @@ class OdinProduct extends Model
 					$value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
 					$value[$key][$quantity]['installments6_unit_value_text'] = $numberFormatter->formatCurrency($installments6_value / $quantity, $currency->code);
 					$value[$key][$quantity]['installments6_old_value_text'] = $numberFormatter->formatCurrency($installments6_old_value, $currency->code);
-
-					$value[$key][$quantity]['image'] = !empty($priceSet[$quantity]['image_id']) ? $this->images[$priceSet[$quantity]['image_id']] : null;
 				} else {
 					logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
 				}
@@ -217,28 +222,19 @@ class OdinProduct extends Model
             $ids[$this->upsell_hero_image_id] = $this->upsell_hero_image_id;
         }
 
-        // for prices
-        $returnedKey = 0;
-        if (!empty($this->attributes['prices'])) {
-          foreach ($this->attributes['prices'] as $key => $val) {
-              if (!request()->has('cop_id') || $val['price_set'] == request()->get('cop_id')) {
-                  for ($i=1; $i <= self::QUANTITY_PRICES; $i++) {
-                      if (!empty($val[$i]['image_id'])) {
-                          $ids[$val[$i]['image_id']] = $val[$i]['image_id'];
-                      }
-                  }
-                  $returnedKey = $key;
-                  break;
-              }
-          }
+        // Product images
+        if (!empty($this->attributes['image_ids'])) {
+            foreach($this->attributes['image_ids'] as $imgId) {
+                $ids[$imgId] = $imgId;
+            }
         }
 
         //for skus
         if (!empty($this->attributes['skus'])) {
             foreach ($this->attributes['skus'] as $key => $sku) {
-                if (!empty($sku['image_ids'])) {
-                    foreach ($sku['image_ids'] as $k => $val) {
-                        $ids[$val] = $val;
+                for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
+                    if (!empty($sku['quantity_image_ids'][$i])) {
+                        $ids[$sku['quantity_image_ids'][$i]] = $sku['quantity_image_ids'][$i];
                     }
                 }
             }
@@ -280,6 +276,23 @@ class OdinProduct extends Model
     }
 
     /**
+     * Return image
+     *
+     * @return array
+     */
+    public function getImageAttribute(): array
+    {
+        $images = collect($this->image_ids)->map(function($item) {
+            if (!empty($this->images[$item])) {
+                return $this->images[$item];
+            }
+            return false;
+        })->toArray();
+
+        return $images;
+    }
+
+    /**
      * Set upsell prices
      * @param float $fixedPrice
      * @param float $discountPercent
@@ -300,7 +313,7 @@ class OdinProduct extends Model
 			$maxQuantity = self::QUANTITY_PRICES;
 		}
 
-		if (!$fixedPrice && !$discountPercent) {	    
+		if (!$fixedPrice && !$discountPercent) {
 			return false;
 		}
 
