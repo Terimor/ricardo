@@ -34,6 +34,10 @@ class OdinProduct extends Model
      */
     protected $collection = 'odin_product';
 
+    protected $appends = ['image'];
+
+    protected $attributes = ['image'];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -108,11 +112,11 @@ class OdinProduct extends Model
             $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : !empty($val['brief']['en']) ? $val['brief']['en'] : '';
 
             // images
-            $value[$key]['images'] = [];
+            $value[$key]['quantity_image'] = [];
             for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
                 if (!empty($value[$key]['quantity_image_ids'][$i])) {
                     $imgId = $value[$key]['quantity_image_ids'][$i];
-                    $value[$key]['images'][] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
+                    $value[$key]['quantity_image'][] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
                 }
             }
         }
@@ -268,6 +272,23 @@ class OdinProduct extends Model
     {
 		$billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
 		return "*{$billingDescriptorPrefix}*{$value}";
+    }
+
+    /**
+     * Return image
+     *
+     * @return array
+     */
+    public function getImageAttribute(): array
+    {
+        $images = collect($this->image_ids)->map(function($item) {
+            if (!empty($this->images[$item])) {
+                return $this->images[$item];
+            }
+            return false;
+        })->toArray();
+
+        return $images;
     }
 
     /**
