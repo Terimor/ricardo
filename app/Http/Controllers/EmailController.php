@@ -64,7 +64,7 @@ class EmailController extends Controller
         $domain = 'https://www.echobeat.pro';
         
         $surveyLink = Setting::getValue('survey_link_template');
-        $surveyLink = !empty($surveyLink->value) ? $surveyLink->value : '';
+        $surveyLink = !empty($surveyLink) ? $surveyLink : '';
         
         $surveyLink = str_replace('#PRODUCT_NAME#', $product, $surveyLink);
         $surveyLink = str_replace('#DOMAIN#', $domain, $surveyLink);

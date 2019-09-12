@@ -4,6 +4,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use App\Models\Setting;
 use App\Models\Txn;
+use App\Models\OdinOrder;
 
 /**
  * Email Service class
@@ -22,7 +23,7 @@ class EmailService
     public function __construct()
     {
         $apiKey = Setting::getValue('saga_api_access_key');
-        $this->apiKey = !empty($apiKey->value) ? $apiKey->value : '';
+        $this->apiKey = !empty($apiKey) ? $apiKey : '';
     }
     
     /**
@@ -30,14 +31,23 @@ class EmailService
      * @param type $customer
      * @param type $products
      */
-    public function sendConfirmationEmail($customer, $products) 
+    public function sendConfirmationEmail(Txn $txn) 
     {
         $client = new \GuzzleHttp\Client();
         
         $urlPath = Setting::getValue('saga_api_endpoint');
-        $urlPath = !empty($urlPath->value) ? $urlPath->value : '';
+        $urlPath = !empty($urlPath) ? $urlPath : '';
         
         $url = $urlPath.'?r=odin-api/send-confirmation-email';
+        
+        // find order by hash
+        $order = OdinOrder::where('txns.hash', $txn->hash)->first();
+        echo '<pre>'; var_dump($order->toArray()); echo '</pre>'; exit;
+        if (!$order->customer_email && !$order->products) {
+            logger()->error('Fail confirmation email on order', ['order' => $order->toArray()]);
+            abort(404);
+        }
+        echo '<pre>'; var_dump($order); echo '</pre>'; exit;
         
         $request = $client->request('POST', $url, [
             'headers' => [
@@ -65,7 +75,7 @@ class EmailService
         $client = new \GuzzleHttp\Client();
         
         $urlPath = Setting::getValue('saga_api_endpoint');
-        $urlPath = !empty($urlPath->value) ? $urlPath->value : '';
+        $urlPath = !empty($urlPath) ? $urlPath : '';
         
         $url = $urlPath.'?r=odin-api/send-satisfaction-email';
         $request = $client->request('POST', $url, [
