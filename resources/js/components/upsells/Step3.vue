@@ -9,7 +9,7 @@
       <h5>
         Last chance! Get 1 more eazyclean for just
         <span class="price">
-          {{ price }}!
+          {{ priceFormatted }}!
         </span>
       </h5>
       <div class="content-with-image">
@@ -83,21 +83,18 @@ export default {
 
   computed: {
     selectList() {
-      return [
-        {
-          label: `1x ${this.name} - ${this.price}`,
-          text: `1x ${this.name} - ${this.price}`,
-          value: 1,
-        }, {
-          label: `2x ${this.name} - ${this.price * 2}`,
-          text: `2x ${this.name} - ${this.price * 2}`,
-          value: 2,
-        }, {
-          label: `3x ${this.name} - ${this.price * 3}`,
-          text: `3x ${this.name} - ${this.price * 3}`,
-          value: 3,
-        },
-      ]
+      const data = Array(3).fill('').map((item, index) => {
+        const value = index + 1
+        const price = this.getTotalPrice({ [this.id]: value }, value);
+
+        return item = {
+          label: `${index + 1}x ${this.name} - ${this.price * value}`,
+          text: `${index + 1}x ${this.name} - ${this.price * value}`,
+          value: index + 1,
+        }
+      })
+
+      return data;
     },
   },
 };
