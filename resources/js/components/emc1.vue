@@ -79,7 +79,6 @@
             v-model="form.paymentType"
             :list="mockData.creditCardRadioList"
           />
-          {{ $v.form.deal }}
           <paypal-button
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
