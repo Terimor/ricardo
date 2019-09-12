@@ -117,7 +117,7 @@ class OdinProduct extends Model
             for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
                 if (!empty($value[$key]['quantity_image_ids'][$i])) {
                     $imgId = $value[$key]['quantity_image_ids'][$i];
-                    $value[$key]['quantity_image'][] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
+                    $value[$key]['quantity_image'][$i] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
                 }
             }
         }
