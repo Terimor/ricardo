@@ -7,6 +7,7 @@
             <h5>{{name}}</h5>
             <ul class="benefit-list">
                 <li v-for="benefit in benefitList">{{benefit}}</li>
+                <li>Subtotatal: {{ subtotal || total }}</li>
             </ul>
         </div>
         <div class="upsells-item__remove-block" v-if="withRemoveButton">
@@ -20,12 +21,34 @@
 
   export default {
     name: 'UpsellsItem',
-    props: ['name', 'benefitList', 'withRemoveButton', 'imageUrl', 'idx'],
+    props: [
+        'name',
+        'benefitList',
+        'withRemoveButton',
+        'imageUrl',
+        'idx',
+        'itemData',
+        'price',
+        'quantity',
+        'subtotal',
+    ],
+
+    data: () => ({
+        total: 0,
+    }),
+
     computed: {
       id () {
         return 'upsells-item-' + this.idx
       }
     },
+
+    mounted() {
+        if (this.itemData) {
+            this.getTotalPrice(this.itemData, this.price * this.quantity);
+        }
+    },
+
     methods: {
       deleteAccessory () {
         const node = document.querySelector('#' + this.id)
@@ -33,7 +56,26 @@
           .then(() => {
                 this.$emit('deleteAccessory', this.idx)
             })
-      }
+      },
+
+      getTotalPrice(data, total) {
+        return axios
+          .post(`${window.location.origin}/calculate-upsells-total`,
+          {
+              upsells: data,
+              total: total
+          },
+          {
+            credentials: 'same-origin',
+            headers: {
+              accept: 'application/json',
+                'content-type': 'application/json'
+            },
+          })
+          .then(({ data }) => {
+            this.total = data.value_text;
+          });
+      },
     }
   };
 </script>

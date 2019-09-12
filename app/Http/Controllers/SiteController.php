@@ -68,9 +68,9 @@ class SiteController extends Controller
 		if (request()->get('tpl') == 'vmp41') {
 			$viewTemplate = 'vmp41';
 		}
-		
+
         $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
-		
+
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
@@ -98,7 +98,7 @@ class SiteController extends Controller
 		$setting = Setting::whereIn('key',[
 			'instant_payment_paypal_client_id',
 		])->pluck('value', 'key');
-		
+
 		$orderCustomer = null;
 		if (request()->get('order')) {
 			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
@@ -120,12 +120,12 @@ class SiteController extends Controller
 		$setting = Setting::whereIn('key',[
 			'instant_payment_paypal_client_id',
 		])->pluck('value', 'key');
-		
+
 		$orderCustomer = null;
 		if (request()->get('order')) {
 			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
 		}
-		
+
         return view('thankyou', compact('location', 'product' , 'setting', 'orderCustomer'));
     }
 
@@ -164,7 +164,7 @@ class SiteController extends Controller
      */
     public function test(Request $request, ProductService $productService)
     {
-		
+
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
@@ -185,11 +185,11 @@ class SiteController extends Controller
 	echo '<pre>'; var_dump($order); echo '</pre>';
 
 	exit;*/
-		
+
 		/*$price = CurrencyService::calculateWarrantyPrice(20, 49.99);
 		$p2 = round(20/100 * 49.99, 2);
 		echo '<pre>'; var_dump($price); echo '</pre>';
-		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/		
+		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
         $product = $productService->resolveProduct($request, true);
 
         echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;

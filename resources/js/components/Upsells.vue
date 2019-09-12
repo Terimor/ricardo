@@ -47,9 +47,9 @@
                 <UpsellsItem
                   :image-url="product.skus[0].images[0]"
                   :name="product.long_name"
+                  :subtotal="getOriginalOrderPrice"
                   :benefitList="[
                     `Quantity: ${getOriginalOrder.quantity}`,
-                    `Subtotal: ${getOriginalOrderPrice}`
                   ]"
                 />
                 <template v-if="accessoryList.length">
@@ -62,7 +62,13 @@
                     :image-url="it.imageUrl"
                     :idx="idx"
                     :key="idx"
-                    :benefitList="[it.name, `Quantity: ${it.quantity}`, `Subtotal: $${it.quantity * it.price}`]"
+                    :benefitList="[
+                      it.name,
+                      `Quantity: ${it.quantity}`,
+                    ]"
+                    :item-data="upsellsForBack([it])"
+                    :price="it.price"
+                    :quantity="it.quantity"
                     :withRemoveButton="true"
                   />
                   <p class="total-price">
@@ -156,19 +162,12 @@
         });
       },
 
-      getTotalPrice() {
-        const accessoryList = this.accessoryList.map(({ quantity, id, price }) => ({
-          quantity,
-          id,
-          price: price *= quantity,
-        }))
-        const upsellsForBack = groupBy(this.accessoryList, 'id', 'quantity');
-
+      getTotalPrice(data, total) {
         return axios
           .post(`${window.location.origin}/calculate-upsells-total`,
           {
-              upsells: upsellsForBack,
-              total: this.totalAccessoryPrice
+              upsells: data,
+              total: total
           },
           {
             credentials: 'same-origin',
@@ -179,6 +178,7 @@
           })
           .then(({ data }) => {
             this.total = data.value_text;
+            return data.value_text;
           });
       },
 
@@ -205,6 +205,7 @@
           affiliate: new URL(document.location.href).searchParams.get('affiliate')
         })
       },
+
       paypalOnApprove: paypalOnApprove,
 
       addAccessory(accessory) {
@@ -222,6 +223,10 @@
 
       redirect() {
         goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
+      },
+
+      upsellsForBack(array) {
+        return groupBy(array, 'id', 'quantity');
       }
     },
     mounted() {
@@ -233,7 +238,13 @@
           const node = document.querySelector('.upsells-component__content');
           fade('out', 250, node, true)
             .then(() => {
-              this.getTotalPrice()
+              const accessoryList = this.accessoryList.map(({ quantity, id, price }) => ({
+                quantity,
+                id,
+                price: price *= quantity,
+              }))
+
+              this.getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
                 .finally(() => {
                   this.activeTab = 'third';
                 })
