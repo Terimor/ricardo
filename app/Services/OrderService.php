@@ -22,12 +22,12 @@ class OrderService
         // In situation when we need single txn record.
         $model = Txn::firstOrNew(['hash' => $data['hash']]);
         $model->fill($data);
-		
+
 		// send confirmation email to SAGA
 		if (empty($model->id)) {
 			//$res = (new EmailService())->sendConfirmationEmail($model);
 		}
-		
+
         $validator = $model->validate();
         if ($validator->fails()) {
             logger()->error("Add Txn fails", ['errors' => $validator->errors()->messages()]);
@@ -151,7 +151,8 @@ class OrderService
 			'customer_first_name',
 			'customer_last_name',
 			'customer_phone',
-			'customer_doc_id'
+			'customer_doc_id',
+			'number'
 		])->first();
 		return $order;
 	}

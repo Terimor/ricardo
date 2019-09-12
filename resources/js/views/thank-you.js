@@ -60,8 +60,6 @@ const thankYou = new Vue({
                 return acc += item.price * item.quantity;
             }, 0);
 
-            console.log(this.subOrder);
-
             return subOrdersTotal + this.selectedProductData.prices.value;
         },
 

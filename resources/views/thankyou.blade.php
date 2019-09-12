@@ -18,7 +18,7 @@
 
 @section('content')
     <div class="container thank-you" id="thank-you">
-        <p class="thank-you__order">Order: {{ $orderCustomer->_id }}</p>
+        <p class="thank-you__order">Order: {{ $orderCustomer->number }}</p>
         <h2 class="thank-you__name">Thank you {{ $orderCustomer->customer_first_name }}</h2>
         <div class="border-box thank-you__container">
             <div id="map">
@@ -58,8 +58,14 @@
 
             <hr>
 
-            <p class="paragraph d-flex justify-content-between"><span>Subtotal:</span><span>@{{ total || totalPrice }}</span></p>
-            <p class="paragraph d-flex justify-content-between"><span>Payment method:</span><span>PayPal</span></p>
+            <p class="paragraph d-flex justify-content-between">
+                <span>Subtotal:</span>
+                <span>@{{ total || totalPrice }}</span>
+            </p>
+            <p class="paragraph d-flex justify-content-between">
+                <span>Payment method:</span>
+                <span>PayPal</span>
+            </p>
 
             <hr>
 
@@ -96,7 +102,9 @@
                 </li>
             </ul>
 
-            <textarea id="quote" rows="10">I just bought this awesome product. Thought I’d share this with you</textarea>
+            <textarea id="quote" rows="10">
+                I just bought this awesome product. Thought I’d share this with you
+            </textarea>
             <div class="d-flex justify-content-center">
                 <button
                     id="share"

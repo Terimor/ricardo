@@ -2,7 +2,10 @@
     <div class="thank-you__order">
         <div class="d-flex">
             <div class="thank-you__order__image">
-                <img :src="order.imageUrl" alt="">
+                <img
+                    :src="order.imageUrl"
+                    alt=""
+                >
                 <div class="quantity">{{ order.quantity }}</div>
             </div>
             <div class="thank-you__order__name">{{ order.name }}</div>
