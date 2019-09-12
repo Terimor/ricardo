@@ -9,6 +9,7 @@ use App\Models\Setting;
 use App\Http\Requests\EbanxSendTransactionRequest;
 use App\Services\EbanxService;
 use App\Models\OdinProduct;
+use App\Services\EmailService;
 
 class EbanxController extends Controller
 {
@@ -71,6 +72,9 @@ class EbanxController extends Controller
             
             //update order product
             $this->ebanxService->saveTxnResponseForOrder($order, $txn, $response);
+            // send email confirmation
+            (new EmailService())->sendConfirmationEmail($order, $customer);
+            
             $result = ['status' => "SUCCESS"];
         } else {
             $result = ['status' => "ERROR", 'message' => !empty($response['status_message']) ? $response['status_message'] : 'Unknown error'];
@@ -86,15 +90,15 @@ class EbanxController extends Controller
      */
     public function notification(Request $request)
     {
-	$operation = $request->input('payment_status_change');
-	$notification_type = $request->input('notification_type');
-	$hashCodes = $request->input('hash_codes');
-	$hashCodes = explode(',', $hashCodes);
-		
-	if ($operation == 'payment_status_change' && $notification_type == 'update' && $hashCodes) {
-	    $this->ebanxService->updateTxnStatuses($hashCodes);
-	}
-	
-	return ['success' => true];
+        $operation = $request->input('payment_status_change');
+        $notification_type = $request->input('notification_type');
+        $hashCodes = $request->input('hash_codes');
+        $hashCodes = explode(',', $hashCodes);
+
+        if ($operation == 'payment_status_change' && $notification_type == 'update' && $hashCodes) {
+            $this->ebanxService->updateTxnStatuses($hashCodes);
+        }
+
+        return ['success' => true];
     }
 }
