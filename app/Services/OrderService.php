@@ -5,6 +5,7 @@ use App\Models\Setting;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\OdinCustomer;
+use App\Services\EmailService;
 
 /**
  * Order Service class
@@ -21,9 +22,12 @@ class OrderService
         // In situation when we need single txn record.
         $model = Txn::firstOrNew(['hash' => $data['hash']]);
         $model->fill($data);
-
-//        $model = new Txn($data);
-
+		
+		// send confirmation email to SAGA
+		if (empty($model->id)) {
+			//$res = (new EmailService())->sendConfirmationEmail($model);
+		}
+		
         $validator = $model->validate();
         if ($validator->fails()) {
             logger()->error("Add Txn fails", ['errors' => $validator->errors()->messages()]);

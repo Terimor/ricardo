@@ -129,8 +129,7 @@ class ProductService
 		if ($totalSumCalc != $total) {
 			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
 			abort(404);
-		}
-		
+		}		
 		return [
 			'value' => $totalSumCalc,
 			'value_text' => CurrencyService::getLocalTextValue($totalSumCalc)
