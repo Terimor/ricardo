@@ -429,6 +429,7 @@ class PayPalService
     {
         if (isset($paypal_order->payer)) {
             $order->customer_email = optional($paypal_order->payer)->email_address;
+            $order->payer_id = optional($paypal_order->payer)->payer_id;
             if (isset($paypal_order->payer->name)) {
                 $order->customer_first_name = optional($paypal_order->payer->name)->given_name;
                 $order->customer_last_name = optional($paypal_order->payer->name)->surname;

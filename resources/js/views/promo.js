@@ -141,9 +141,9 @@ const promo = new Vue({
 
     this.variantList = this.skusList.map((it) => ({
       label: it.name,
-      text: `<div><img src="${it.images[0]}" alt=""><span>${it.name}</span></div>`,
+      text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
       value: it.code,
-      imageUrl: it.images[0]
+      imageUrl: it.quantity_image[1]
     }));
 
     const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
