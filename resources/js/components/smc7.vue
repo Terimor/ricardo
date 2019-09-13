@@ -376,7 +376,6 @@
 				variant: this.form.variant,
 				installments: 1,
 			})
-
 		}
 	}
 </script>
