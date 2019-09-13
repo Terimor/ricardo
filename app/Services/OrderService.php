@@ -147,11 +147,7 @@ class OrderService
 			'customer_last_name',
 			'customer_phone',
 			'customer_doc_id',
-<<<<<<< HEAD
-			'number'
-=======
             'number'
->>>>>>> 0e057945bfc67a8a675b49e8447544feb2b2b6d9
 		])->first();
 		return $order;
 	}
