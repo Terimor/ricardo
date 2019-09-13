@@ -2,7 +2,7 @@ require('../bootstrap');
 
 import queryToComponent from '../mixins/queryToComponent';
 import upsellsMixin from '../mixins/upsells';
-import { getOrderAmount } from '../services/upsells';
+import { getOrderAmount } from '../services/order';
 import ThankYouItem from '../components/common/ThankYouItem';
 
 const thankYou = new Vue({

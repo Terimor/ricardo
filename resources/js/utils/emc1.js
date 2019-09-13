@@ -134,7 +134,7 @@ export function paypalOnApprove(data) {
     })
   }).then(function(res) {
     return res.json();
-  }).then(function(details) {
+  }).then(function() {
     if (odin_order_id) {
       goTo(`/thankyou-promos/?order=${odin_order_id}`);
     }

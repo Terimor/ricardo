@@ -25,11 +25,3 @@ export const getUppSells = (product_id, quantity) => {
       return res;
     });
 };
-
-export const getOrderAmount = (orderId) => {
-  return axios
-    .get(`/order-amount-total/${orderId}`)
-    .then((res) => {
-      return res;
-    });
-}

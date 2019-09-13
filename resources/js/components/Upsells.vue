@@ -106,7 +106,9 @@
 
   export default {
     name: 'upsells',
-    mixins: [upsellsMixin],
+    mixins: [
+      upsellsMixin,
+    ],
 
     components: {
       UpsellsItem,
@@ -127,6 +129,57 @@
         upsellsAsProdsList: [],
         isLoading: true,
       };
+    },
+
+    mounted() {
+      this.setUpsellsAsProdsList();
+      if (this.upsellsAsProdsList.length === 0) {
+        goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
+      }
+    },
+
+    watch: {
+      accessoryStep(val) {
+        if (val === this.upsellsAsProdsList.length) {
+          const node = document.querySelector('.upsells-component__content');
+          fade('out', 250, node, true)
+            .then(() => {
+              const accessoryList = this.accessoryList.map(({ quantity, id, price }) => ({
+                quantity,
+                id,
+                price: price *= quantity,
+              }))
+
+              getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
+              .then((total) => {
+                this.total = total;
+              })
+                .finally(() => {
+                  this.activeTab = 'third';
+                })
+
+              setTimeout(() => fade('in', 250, node, true));
+            });
+        }
+
+        switch(val) {
+        case 0:
+          this.view = 'Step1';
+          break;
+        case 1:
+          this.view = 'StepWithOneItem';
+          break;
+        case 2:
+          this.view = 'Step3';
+          break;
+        case 3:
+          this.view = 'StepWithOneItem';
+          break;
+        default:
+          this.view = 'StepWithOneItem';
+          break;
+        }
+      }
     },
 
     computed: {
@@ -166,6 +219,7 @@
           .reduce((acc, item) => acc + item, 0);
       },
     },
+
     methods: {
       setUpsellsAsProdsList() {
         Object.values(this.upsellsObj).map((value) => {
@@ -223,56 +277,6 @@
         return groupBy(array, 'id', 'quantity');
       }
     },
-    mounted() {
-      this.setUpsellsAsProdsList();
-      if (this.upsellsAsProdsList.length === 0) {
-        goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
-      }
-    },
-
-    watch: {
-      accessoryStep(val) {
-        if (val === this.upsellsAsProdsList.length) {
-          const node = document.querySelector('.upsells-component__content');
-          fade('out', 250, node, true)
-            .then(() => {
-              const accessoryList = this.accessoryList.map(({ quantity, id, price }) => ({
-                quantity,
-                id,
-                price: price *= quantity,
-              }))
-
-              getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
-              .then((total) => {
-                this.total = total;
-              })
-                .finally(() => {
-                  this.activeTab = 'third';
-                })
-
-              setTimeout(() => fade('in', 250, node, true));
-            });
-        }
-
-        switch(val) {
-        case 0:
-          this.view = 'Step1';
-          break;
-        case 1:
-          this.view = 'StepWithOneItem';
-          break;
-        case 2:
-          this.view = 'Step3';
-          break;
-        case 3:
-          this.view = 'StepWithOneItem';
-          break;
-        default:
-          this.view = 'StepWithOneItem';
-          break;
-        }
-      }
-    }
   };
 </script>
 
