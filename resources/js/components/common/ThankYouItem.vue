@@ -23,6 +23,7 @@
 <script>
     import { fade } from '../../utils/common';
     import upsellsMixin from '../../mixins/upsells';
+    import { getUppSells } from '../../services/upsells';
 
     export default {
         name: 'UpsellsItem',
@@ -38,13 +39,13 @@
                 if (this.upsellPrices && this.order) {
                     return this.upsellPrices[this.order.quantity].value_text
                 }
-                return '';
+                return 0;
             }
         },
 
         mounted() {
             if (this.order) {
-                this.getUppSells(this.order.id, this.order.quantity).then(({ data }) => {
+                getUppSells(this.order.id, this.order.quantity).then(({ data }) => {
                     this.upsellPrices = data.upsell.upsellPrices
                 });
             }

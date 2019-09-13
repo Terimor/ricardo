@@ -2,6 +2,7 @@ require('../bootstrap');
 
 import queryToComponent from '../mixins/queryToComponent';
 import upsellsMixin from '../mixins/upsells';
+import { getOrderAmount } from '../services/upsells';
 import { groupBy } from '../utils/groupBy';
 import ThankYouItem from '../components/common/ThankYouItem';
 
@@ -41,19 +42,11 @@ const thankYou = new Vue({
         },
 
         getTotal() {
-            this.getOrderAmount(new URL(document.location.href).searchParams.get('order'));
+            getOrderAmount(new URL(document.location.href).searchParams.get('order'));
         }
     },
 
     computed: {
-        totalPrice() {
-            const subOrdersTotal = this.subOrder.reduce((acc, item) => {
-                return acc += item.price * item.quantity;
-            }, 0);
-
-            return subOrdersTotal;
-        },
-
         getShippingAddress() {
             const {
                 shipping_street,

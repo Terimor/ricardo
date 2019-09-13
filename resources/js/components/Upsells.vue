@@ -101,7 +101,8 @@
   import { goTo } from '../utils/goTo';
   import { groupBy } from '../utils/groupBy';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
-  import upsellsMixin from '../mixins/upsells'
+  import upsellsMixin from '../mixins/upsells';
+  import { getUppSells, getTotalPrice } from '../services/upsells';
 
   export default {
     name: 'upsells',
@@ -175,7 +176,7 @@
       getUppsells(value) {
         this.isLoading = true;
 
-        this.getUppSells(value.product_id, 1)
+        getUppSells(value.product_id, 1)
           .then((res) => {
             this.upsellsAsProdsList.push(res.data.upsell);
             if (this.upsellsAsProdsList.length === this.upsellsObj.length) this.isLoading = false;
@@ -241,7 +242,10 @@
                 price: price *= quantity,
               }))
 
-              this.getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
+              getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
+              .then((total) => {
+                this.total = total;
+              })
                 .finally(() => {
                   this.activeTab = 'third';
                 })

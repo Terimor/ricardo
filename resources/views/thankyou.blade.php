@@ -60,7 +60,7 @@
 
             <p class="paragraph d-flex justify-content-between">
                 <span>Subtotal:</span>
-                <span>@{{ total || totalPrice }}</span>
+                <span>@{{ total }}</span>
             </p>
             <p class="paragraph d-flex justify-content-between">
                 <span>Payment method:</span>
@@ -69,7 +69,7 @@
 
             <hr>
 
-            <p class="paragraph d-flex justify-content-between"><span>Order Total:</span><span class="bold">@{{ total || totalPrice }}</span></p>
+            <p class="paragraph d-flex justify-content-between"><span>Order Total:</span><span class="bold">@{{ total }}</span></p>
 
         </div>
         <div class="border-box thank-you__customer-info">

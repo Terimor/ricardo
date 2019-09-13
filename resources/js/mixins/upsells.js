@@ -29,42 +29,5 @@ export default {
 
       this.$emit('addAccessory', cartData)
     },
-
-    getTotalPrice(data, total) {
-      return axios
-        .post(`${window.location.origin}/calculate-upsells-total`,
-          {
-            upsells: data,
-            total,
-          },
-          {
-            credentials: 'same-origin',
-            headers: {
-              accept:
-              'application/json',
-              'content-type': 'application/json'
-            },
-          })
-        .then(({ data }) => {
-          this.total = data.value_text;
-          return data.value_text;
-        });
-    },
-
-    getUppSells(product_id, quantity) {
-      return axios
-        .get(`${window.location.origin}/upsell-product/${product_id}?quantity=${quantity}`)
-        .then((res) => {
-          return res
-        });
-    },
-
-    getOrderAmount(orderId) {
-      return axios
-        .get(`${window.location.origin}/order-amount-total/${orderId}`)
-        .then((res) => {
-          return res
-        });
-    }
   },
 }

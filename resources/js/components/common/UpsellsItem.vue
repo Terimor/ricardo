@@ -38,6 +38,7 @@
 <script>
     import { fade } from '../../utils/common';
     import upsellsMixin from '../../mixins/upsells';
+    import { getUppSells } from '../../services/upsells';
 
     export default {
         name: 'UpsellsItem',
@@ -74,7 +75,7 @@
 
         mounted() {
             if (this.itemData) {
-                this.getUppSells(this.itemData.id, this.quantity).then(({ data }) => {
+                getUppSells(this.itemData.id, this.quantity).then(({ data }) => {
                     this.upsellPrices = data.upsell.upsellPrices
                 });
             }

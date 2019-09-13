@@ -40,6 +40,7 @@
 
 <script>
   import upsells from '../../mixins/upsells'
+  import { getUppSells } from '../../services/upsells';
 
   export default {
     name: 'Step1',
@@ -87,7 +88,7 @@
     watch: {
       id(id) {
         if (id) {
-          this.getUppSells(this.id, 2).then(({ data }) => {
+          getUppSells(this.id, 2).then(({ data }) => {
             this.upsellPrices = data.upsell.upsellPrices
           });
         }
