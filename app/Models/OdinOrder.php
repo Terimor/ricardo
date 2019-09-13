@@ -11,7 +11,7 @@ class OdinOrder extends OdinModel
 
     protected $collection = 'odin_order';
 
-    protected $dates = ['created_at', 'updated_at'];
+    protected $dates = ['created_at', 'updated_at'];    
 
     /**
      * Attributes with default values

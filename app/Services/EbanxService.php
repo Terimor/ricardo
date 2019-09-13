@@ -103,7 +103,7 @@ class EbanxService
             "warranty_price" => $warrantyPrice,
             "warranty_price_usd" => floor($warrantyPrice / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100)/100,
             'price_set' => $product->prices['price_set'],
-	    'is_main' => isset($request['is_main']) ? $request['is_main'] : true,
+            'is_main' => isset($request['is_main']) ? $request['is_main'] : true,
         ];
 
         // installments

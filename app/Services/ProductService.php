@@ -43,13 +43,14 @@ class ProductService
         }
 
 		// check published status
-		$skus = [];
+		/*$skus = [];
 		foreach ($product->skus as $key => $sku) {
 			if (!empty($sku['is_published'])) {
 				$skus[] = $sku;
 			}
-		}		
-		$product->skus = $skus;				
+		}
+        
+		$product->skus = $skus;	*/			
 		
         return $product;
         //abort(404);
@@ -60,7 +61,7 @@ class ProductService
      * @param type $productId
      */
     public function getUpsellProductById(OdinProduct $product, string $productId, $maxQuantity = 5)
-    {	
+    {	        
 		// check upsell product by ID
 		$productUpsells = !empty($product->upsells) ? $product->upsells : null;
 		if (!$productUpsells) {
@@ -93,14 +94,14 @@ class ProductService
 		}
 		
 		// check published status
-		$skus = [];
+		/*$skus = [];
 		foreach ($upsell->skus as $key => $sku) {
 			if (!empty($sku['is_published'])) {
 				$skus[] = $sku;
 			}
 		}		
 		$upsell->skus = $skus;
-		
+		*/
 		if (!$upsell->skus) {
 			logger()->error("UPSELL skus empty or not published", ['product' => $product->toArray()]);
 			abort(405, 'Method Not Allowed');
@@ -117,7 +118,7 @@ class ProductService
 	 * @param float $total
 	 */
 	public function calculateUpsellsTotal(OdinProduct $product, array $upsells, float $total) : array
-	{
+	{        
 		// TODO: modify WHERE IN
 		$upsellProducts = [];
 		$totalSumCalc = 0;
@@ -125,7 +126,7 @@ class ProductService
 			$upsellProduct = $this->getUpsellProductById($product, $id, $quantity);
 			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['value']) ? $upsellProduct->upsellPrices[$quantity]['value'] : 0;
 		}
-		
+        
 		if ($totalSumCalc != $total) {
 			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
 			abort(404);
