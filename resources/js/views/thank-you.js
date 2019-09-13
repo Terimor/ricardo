@@ -41,7 +41,10 @@ const thankYou = new Vue({
         },
 
         getTotal() {
-            getOrderAmount(new URL(document.location.href).searchParams.get('order'));
+            getOrderAmount(new URL(document.location.href).searchParams.get('order'))
+            .then(({ total_text }) => {
+                this.total = total_text;
+            });
         }
     },
 
