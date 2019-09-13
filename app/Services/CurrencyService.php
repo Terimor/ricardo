@@ -264,14 +264,14 @@ class CurrencyService
 	 * @param float $price
 	 * @param type $currency
 	 */
-	public static function getLocalTextValue(float $price, $currency = null, string $countryCode = null) : string
+	public static function getLocalTextValue(float $price, Currency $currency = null, string $countryCode = null) : string
 	{
 		if (!$countryCode) {
 			if (!$currency) {
 				$currency = self::getCurrency(null, $countryCode);
 			}
-			$currencyCode = $currency->code;
-			$countryCode = $currency->countryCode;
+			$currencyCode = $currency->code;            
+			$countryCode = !empty($currency->countryCode) ? $currency->countryCode : (!empty($currency->countries[0]) ? $currency->countries[0] : 'us');
 		}
 
         //get fraction digits and locale string

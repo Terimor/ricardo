@@ -570,7 +570,7 @@ class UtilsService
                 $location = \Location::get($ip);
             } else {
 				// default Vietnam IP on localhost
-                $location = (in_array(request()->ip(), self::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip());
+                $location = (in_array(request()->ip(), self::$localhostIps)) ? \Location::get('42.112.209.164') : \Location::get(request()->ip());
             }
 
             // TODO - REMOVE
