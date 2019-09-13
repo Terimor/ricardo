@@ -8,9 +8,9 @@ export default {
         price,
         name,
         id,
-      } = this
+      } = this;
 
-      this.$emit('addAccessory', {
+      const cartData = {
         priceFormatted,
         benefitList,
         imageUrl,
@@ -18,7 +18,16 @@ export default {
         name,
         price,
         id,
-      })
+      }
+
+      const oldSubOrders = JSON.parse(localStorage.getItem('subOrder'));
+
+      if (oldSubOrders && id) {
+        oldSubOrders.push(cartData);
+        localStorage.setItem('subOrder', JSON.stringify(oldSubOrders));
+      }
+
+      this.$emit('addAccessory', cartData)
     },
 
     getTotalPrice(data, total) {
