@@ -25,8 +25,7 @@ class ProductService
 
         // Domain resolve logic
         if (!$product) {
-            $domain = Domain::where('odin_product.skus.is_published', false)
-					->where('name', request()->getHost())->first();
+            $domain = Domain::where('name', request()->getHost())->first();
             if ($domain && !empty($domain->product)) {							
                 $product =  $domain->product;
             }
