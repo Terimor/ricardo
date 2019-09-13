@@ -8,29 +8,24 @@
               <div class="main__sale">
                 <div class="sale-badge dynamic-sale-badge ">
                   <div class="dynamic-sale-badge__background"></div>
-                  <div class="dynamic-sale-badge__container">
-                    <span class="badge-discount-percentage">50%</span> Off
-                  </div>
+                  <div class="dynamic-sale-badge__container" v-html="textDynamicSaleBadge"></div>
                 </div>
               </div>
-              <p class="main__deal__text">
-                <strong>Free Shipping</strong> on all orders <strong>Today!</strong>
-                Do not browse away from this page! <strong>Free delivery available today</strong>
-              </p>
+              <p class="main__deal__text" v-html="textMainDealText"></p>
             </div>
-            <h2>Step 1: Choose your Deal</h2>
+            <h2 v-html="textChooseDeal"></h2>
               <select-field
                   v-if="withInstallments"
-                  label="Please Select Amount Of Installments"
+                  :label="textInstallmentsTitle"
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
                   v-model="form.installments"
                   @input="setImplValue"
               />
 
-            <h3>Article</h3>
+            <h3 v-html="textArtcile"></h3>
 
-            <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid">Please select a product promotion.</span>
+            <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid" v-html="textMainDealError"></span>
 
             <radio-button-group
               v-model="form.deal"
@@ -39,7 +34,7 @@
               :validation="$v.form.deal"
             />
 
-            <h2>Step 2: Please select your variant</h2>
+            <h2 v-html="textSelectVariant"></h2>
             <!-- TODO: check if this is useless, remove it:
             warrantyPriceText="setWarrantyPriceText()"  -->
             <select-field
@@ -60,7 +55,7 @@
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
-                  3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+                  <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
                   <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                   <span class="checkmark"></span>
                 </label>
@@ -72,8 +67,8 @@
         </div>
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
-          <h2>Step 3: Payment Method</h2>
-          <h3>Pay Securely With: (No Fees)</h3>
+          <h2 v-html="textPaymentMethod"></h2>
+          <h3 v-html="textPaySecurely"></h3>
           <radio-button-group
             class="main__credit-card-switcher"
             v-model="form.paymentType"
@@ -88,9 +83,9 @@
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
-              firstTitle="Step 4: Contact Information"
-              secondTitle="Step 5: Delivery Address"
-              thirdTitle="Step 6: Payment Details"
+              :firstTitle="textContactInformation"
+              :secondTitle="textDeliveryAddress"
+              :thirdTitle="textPaymentDetails"
               v-if="form.paymentType"
               :stateList="stateList"
               @showCart="isOpenSpecialOfferModal = true"
@@ -105,8 +100,8 @@
           </transition>
           <div class="main__bottom">
             <img src="/images/safe_payment_en.png" alt="safe payment">
-            <p><i class="fa fa-lock"></i>Safe 256-Bit SSL encryption.</p>
-            <p>Your credit card will be invoiced as: "{{ productData.billing_descriptor }}"</p>
+            <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
+            <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
           </div>
         </div>
       </div>
@@ -115,20 +110,18 @@
     <el-dialog
       @click="isOpenPromotionModal = false"
       class="cvv-popup"
-      title="Please select a product promotion."
+      :title="textMainDealErrorPopupTitle"
       :lock-scroll="false"
       :visible.sync="isOpenPromotionModal">
         <div class="cvv-popup__content">
-          <p class="error-container">
-              Please select a product promotion.
-          </p>
+          <p class="error-container" v-html="textMainDealErrorPopupMessage"></p>
 
             <button
                 @click="isOpenPromotionModal = false"
                 style="height: 67px; margin: 0"
                 type="button"
                 class="green-button-animated">
-                <span class="purchase-button-text">OK, I understand</span>
+                <span class="purchase-button-text" v-html="textMainDealErrorPopupButton"></span>
             </button>
         </div>
     </el-dialog>
@@ -136,10 +129,10 @@
     <el-dialog
       @click="isOpenSpecialOfferModal = false"
       class="common-popup special-offer-popup"
-      title="SPECIAL OFFER!"
+      :title="textSpecialOfferPopupTitle"
       :visible.sync="isOpenSpecialOfferModal">
         <div class="common-popup__content accessories-modal">
-          <p>WAIT! 70% Of Users who bought the same product as you, also bought...</p>
+          <p v-html="textSpecialOfferPopupMessage"></p>
           <Cart
             @setCart="setCart"
             :productList="mockData.productList"
@@ -164,12 +157,13 @@
                   style="height: auto;"
                   type="button"
                   class="green-button-animated">
-                  <span class="purchase-button-text">YES, SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span>
+                  <span class="purchase-button-text" v-html="textSpecialOfferPopupButtonPurchase"></span>
               </button>
               <button
                   v-if="isEmptyCart"
+                  v-html="textSpecialOfferPopupButtonEmpty"
                   @click="isOpenSpecialOfferModal = false"
-                  class="thanks">No, thanks...</button>
+                  class="thanks"></button>
           </div>
         </div>
     </el-dialog>
@@ -181,6 +175,7 @@ import emc1Validation from '../validation/emc1-validation'
 import printf from 'printf'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
+import { t } from '../utils/i18n';
 import { getNotice, getRadioHtml } from '../utils/emc1';
 import { getCountOfInstallments } from '../utils/installments';
 import { stateList } from '../resourses/state';
@@ -255,11 +250,11 @@ export default {
         ],
         creditCardRadioList: [
           {
-            label: 'Credit cards',
+            label: t('checkout_credit_cards'),
             value: 'credit-card',
             class: 'green-button-animated'
           }, {
-            label: 'Bank payments',
+            label: t('checkout_bank_payments'),
             value: 'bank-payment',
             class: 'bank-payment'
           }
@@ -275,16 +270,16 @@ export default {
       })),
       installmentsList: [
         {
-          label: 'Pay full amount now',
-          text: 'Pay full amount now',
+          label: t('checkout_installments_full_amount'),
+          text: t('checkout_installments_full_amount'),
           value: 1,
         }, {
-          label: 'Pay in 3 installments',
-          text: 'Pay in 3 installments',
+          label: t('checkout_installments_pay_3'),
+          text: t('checkout_installments_pay_3'),
           value: 3,
         }, {
-          label: 'Pay in 6 installments',
-          text: 'Pay in 6 installments',
+          label: t('checkout_installments_pay_6'),
+          text: t('checkout_installments_pay_6'),
           value: 6,
         }
       ],
@@ -376,6 +371,28 @@ export default {
 
       return currentDeal && Math.round((currentDeal.newPrice || currentDeal.price) * 10) / 100
     },
+    textDynamicSaleBadge: () => t('checkout_dynamic_sale_badge'),
+    textMainDealText: () => t('checkout_main_deal_text'),
+    textChooseDeal: () => t('checkout_choose_deal'),
+    textInstallmentsTitle: () => t('checkout_installments_title'),
+    textArtcile: () => t('checkout_article'),
+    textMainDealError: () => t('checkout_main_deal_error'),
+    textMainDealErrorPopupTitle: () => t('checkout_main_deal_error_popup_title'),
+    textMainDealErrorPopupMessage: () => t('checkout_main_deal_error_popup_message'),
+    textMainDealErrorPopupButton: () => t('checkout_main_deal_error_popup_button'),
+    textSelectVariant: () => t('checkout_select_variant'),
+    textWarranty: () => t('checkout_warranty'),
+    textPaymentMethod: () => t('checkout_payment_method'),
+    textPaySecurely: () => t('checkout_pay_securely'),
+    textSafeSSLEncryption: () => t('checkout_safe_sll_encryption'),
+    textCreditCardInvoiced: () => t('checkout_credit_card_invoiced'),
+    textContactInformation: () => t('checkout_contact_information'),
+    textDeliveryAddress: () => t('checkout_delivery_address'),
+    textPaymentDetails: () => t('checkout_payment_details'),
+    textSpecialOfferPopupTitle: () => t('checkout_special_offer_popup_title'),
+    textSpecialOfferPopupMessage: () => t('checkout_special_offer_popup_message'),
+    textSpecialOfferPopupButtonPurchase: () => t('checkout_special_offer_popup_button_purchase'),
+    textSpecialOfferPopupButtonEmpty: () => t('checkout_special_offer_popup_button_empty'),
   },
   watch: {
     'form.installments' (val) {

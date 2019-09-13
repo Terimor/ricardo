@@ -12,6 +12,8 @@
       product: @json($product),
       productImage: '{{$product->logo_image}}',
     }
+
+    const loadedPhrases = @json($loadedPhrases);
 </script>
 <script src="{{ asset('js/app.js') }}" defer></script>
 @endsection
