@@ -28,11 +28,13 @@ export function paypalCreateOrder ({
   }).then(function(res) {
     return res.json();
   }).then(function(data) {
+    localStorage.setItem('odin_order_id', data.odin_order_id);
     return data.id;
   });
 }
 
 export function paypalOnApprove(data) {
+  const odin_order_id = localStorage.getItem('odin_order_id');
   return fetch('/paypal-verify-order', {
     credentials: 'same-origin',
     method: 'post',
@@ -42,13 +44,13 @@ export function paypalOnApprove(data) {
       'X-Requested-With': 'XMLHttpRequest'
     },
     body: JSON.stringify({
-      orderID: data.orderID
+      orderID: odin_order_id
     })
   }).then(function(res) {
     return res.json();
   }).then(function(details) {
-    const currentOrder = details.order_id
-    goTo(`/thankyou-promos/?order=${currentOrder}`);
-    localStorage.setItem('order_id', currentOrder)
+    if (odin_order_id) {
+      goTo(`/thankyou-promos/?order=${odin_order_id}`);
+    }
   });
 }
