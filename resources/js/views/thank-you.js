@@ -3,7 +3,6 @@ require('../bootstrap');
 import queryToComponent from '../mixins/queryToComponent';
 import upsellsMixin from '../mixins/upsells';
 import { getOrderAmount } from '../services/upsells';
-import { groupBy } from '../utils/groupBy';
 import ThankYouItem from '../components/common/ThankYouItem';
 
 const thankYou = new Vue({
