@@ -15,6 +15,7 @@ use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use App\Services\PaymentService;
+use App\Services\EmailService;
 
 /**
  * Class PayPalService
@@ -266,6 +267,8 @@ class PayPalService
 
             $order->save();
             if ($order) {
+                // send confirmation email
+                (new EmailService())->sendConfirmationEmail($order);
                 return ['order_id' => $order->id];
             } else {
                 logger()->error(
@@ -349,6 +352,9 @@ class PayPalService
                 $this->calculateTotalFee($order);
                 $order->status = $this->getOrderStatus($order);
                 $order->save();
+                
+                // send satisfaction email
+                (new EmailService())->sendSatisfactionEmail($order);
             }
         }
     }

@@ -216,7 +216,7 @@ class CurrencyService
             }
         }
 
-        $currency = Currency::whereCode($currencyCode)->first();
+        $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
 
         if (!empty($currency->countries)){
             if (!in_array(strtolower($countryCode), $currency->countries)) {
@@ -226,7 +226,7 @@ class CurrencyService
             logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $currencyCode]);
             //try to find in currency countries
             if ($countryCode) {
-                $currency = Currency::where(['countries' => strtolower($countryCode)])->first();
+                $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
 
                 if(!$currency) {
                     $currencyCode = 'USD';
@@ -264,14 +264,14 @@ class CurrencyService
 	 * @param float $price
 	 * @param type $currency
 	 */
-	public static function getLocalTextValue(float $price, $currency = null, string $countryCode = null) : string
+	public static function getLocalTextValue(float $price, Currency $currency = null, string $countryCode = null) : string
 	{
 		if (!$countryCode) {
 			if (!$currency) {
 				$currency = self::getCurrency(null, $countryCode);
 			}
-			$currencyCode = $currency->code;
-			$countryCode = $currency->countryCode;
+			$currencyCode = $currency->code;            
+			$countryCode = !empty($currency->countryCode) ? $currency->countryCode : (!empty($currency->countries[0]) ? $currency->countries[0] : 'us');
 		}
 
         //get fraction digits and locale string

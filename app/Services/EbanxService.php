@@ -7,6 +7,7 @@ use App\Models\OdinCustomer;
 use App\Models\OdinOrder;
 use App\Models\Txn;
 use App\Services\OrderService;
+use App\Services\EmailService;
 use App\Models\Setting;
 /**
  * Ebanx Service class
@@ -24,7 +25,7 @@ class EbanxService
         $this->currency = CurrencyService::getCurrency();
 
 
-	$this->key = Setting::where(['key' => 'ebanx_integration_key'])->first();
+        $this->key = Setting::where(['key' => 'ebanx_integration_key'])->first();
 
         if (!$this->key) {
             logger()->error("ebanx_integration_key parameter not found");
@@ -72,7 +73,7 @@ class EbanxService
             'city' => $request['city'],
             'street' => $request['address'],
             'street2' => $request['street_number'],
-	    'doc_id' => !empty($request['document']) ? $request['document'] : null
+            'doc_id' => !empty($request['document']) ? $request['document'] : null
         ];
 
         $res = $this->orderService->addCustomer($data, true);
@@ -254,85 +255,94 @@ class EbanxService
     public function saveTxnResponseForOrder(OdinOrder $order, Txn $txn, $response)
     {
         $txnsFeeUsd = 0;
-	$txns = [];
+        $txns = [];
         if ($order->txns) {
-	    $txns = $order->txns ;
-	}
-	$dataTxnArray = [
-	    'hash' => $txn->hash,
-	    'value' => $txn->value,
-	    'status' => 'new',
-	    'is_charged_back' => false,
-	    'payment_provider' => 'ebanx',
-	    'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
-	];
+            $txns = $order->txns ;
+        }
+        $dataTxnArray = [
+            'hash' => $txn->hash,
+            'value' => $txn->value,
+            'status' => 'new',
+            'is_charged_back' => false,
+            'payment_provider' => 'ebanx',
+            'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
+        ];
 
-	// check status transaction, if CO=paid
-	if (!empty($response['payment']['status'])) {
-	    if ($response['payment']['status'] == 'CO') {
-		$dataTxnArray['status'] = 'approved';
-	    }
-	}
+        // check status transaction, if CO=paid
+        if (!empty($response['payment']['status'])) {
+            if ($response['payment']['status'] == 'CO') {
+            $dataTxnArray['status'] = 'approved';
+            }
+        }
 
-	if (!empty($response['payment']['amount_iof'])) {
-	    $dataTxnArray['fee'] = (float)$response['payment']['amount_iof'];
-	}
+        if (!empty($response['payment']['amount_iof'])) {
+            $dataTxnArray['fee'] = (float)$response['payment']['amount_iof'];
+        }
 
-	$txns[] = $dataTxnArray;
+        $txns[] = $dataTxnArray;
 
-	// re	calculate txns fee
-	foreach ($txns as $t) {
-	    if (!empty($t['value'])) {
-		$txnsFeeUsd += round($t['value'] / $this->currency->usd_rate, 5);
-	    }
-	}
-	
-	$order->txns = $txns;
+        // re	calculate txns fee
+        foreach ($txns as $t) {
+            if (!empty($t['value'])) {
+            $txnsFeeUsd += round($t['value'] / $this->currency->usd_rate, 5);
+            }
+        }
+
+        $order->txns = $txns;
         $order->txns_fee_usd = (float)$txnsFeeUsd;
         $order->save();
     }
 
     /**
-     *
+     * Update Txn statuses
      * @param type $hashCodes
      */
     public function updateTxnStatuses($hashCodes)
     {
-	foreach ($hashCodes as $hash) {
-	    //find order product by hash
-	    $order = OdinOrder::where(['txn.hash' => $hash])->first();
+        foreach ($hashCodes as $hash) {
+            //find order product by hash
+            $order = OdinOrder::where(['txn.hash' => $hash])->first();
 
-	    $res = json_decode($this->sendQueryHash($hash), true);
-	    if(!empty($res['payment']['status'])) {
-		$status = $res['payment']['status'];
-		$txns = [];
-		if (!empty($order->txns)) {
-		    $txns = $order->txns ;
-		}
-		foreach ($txns as &$t) {
-		    if($t['hash'] == $hash) {
-			if ($status == 'CO') {
-			    $t['status'] = 'approved';
-			}
+            $res = json_decode($this->sendQueryHash($hash), true);
+            if(!empty($res['payment']['status'])) {
+                $status = $res['payment']['status'];
+                $txns = [];
+            if (!empty($order->txns)) {
+                $txns = $order->txns ;
+            }
+            $approved = false;
+            foreach ($txns as &$t) {
+                if($t['hash'] == $hash) {
+                    if ($status == 'CO') {
+                        $t['status'] = 'approved';
+                        $approved = true;
+                    }
 
-			$order->txnx = $txns;
-			$order->save();
-			break;
-		    }
-		}
-	    }
-	}
+                    $order->txnx = $txns;
+                    $order->save();
+                    if ($approved) {
+                        (new EmailService())->sendConfirmationEmail($order);
+                    }
+                    break;
+                    }
+                }
+            }
+        }
     }
 
-
+    /**
+     * 
+     * @param string $hash
+     * @return string
+     */
     public function sendQueryHash(string $hash) : string
     {
-	$url = $this->getBaseUrl()."ws/query";
+        $url = $this->getBaseUrl()."ws/query";
 
-	$dataForCurl = [
-	    'hash' => $hash,
-	    'integration_key' => $this->key->value
-	];
+        $dataForCurl = [
+            'hash' => $hash,
+            'integration_key' => $this->key->value
+        ];
 
         try {
             $client = new \GuzzleHttp\Client();

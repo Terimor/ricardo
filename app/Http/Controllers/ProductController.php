@@ -68,7 +68,7 @@ class ProductController extends Controller
 		$total = $request->input('total');
 		
 		if ($upsells && $total) {
-			$product = $productService->resolveProduct(request());
+			$product = $productService->resolveProduct($request);
 			return $productService->calculateUpsellsTotal($product, $upsells, $total);			
 		} else {
 			logger()->error("Bad data for calculate upsells total", ['request' => $request->all()]);

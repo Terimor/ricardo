@@ -51,6 +51,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     $router->get('/upsell-product/{productId}', 'ProductController@getUpsellProduct');
 	$router->post('/calculate-upsells-total', 'ProductController@calculateUpsellsTotal');
+    $router->get('/order-amount-total/{orderId}', 'OrderController@orderAmountTotal');
 
 
     // test route
