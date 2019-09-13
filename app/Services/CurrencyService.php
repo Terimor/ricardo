@@ -216,7 +216,7 @@ class CurrencyService
             }
         }
 
-        $currency = Currency::whereCode($currencyCode)->first();
+        $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
 
         if (!empty($currency->countries)){
             if (!in_array(strtolower($countryCode), $currency->countries)) {
@@ -226,7 +226,7 @@ class CurrencyService
             logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $currencyCode]);
             //try to find in currency countries
             if ($countryCode) {
-                $currency = Currency::where(['countries' => strtolower($countryCode)])->first();
+                $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
 
                 if(!$currency) {
                     $currencyCode = 'USD';
