@@ -41,27 +41,12 @@ const thankYou = new Vue({
         },
 
         getTotal() {
-            const orders = JSON.parse(JSON.stringify(this.subOrder));
-            const currentOrder = {
-                id: this.queryParams.order,
-                price: this.selectedProductData.prices.value,
-                quantity: this.selectedProductData.quantity,
-            }
-            orders.push(currentOrder);
-
-            this.addToCart(1)
-            // this.getTotalPrice(groupBy(orders, 'id', 'quantity'), Math.ceil(parseFloat(this.totalPrice)));
-            this.getTotalPrice(groupBy(orders, 'id', 'quantity'), {
-                upsells_total: this.totalPrice,
-                product_total: this.selectedProductData.prices.value,
-                product_quantity: this.selectedProductData.quantity,
-            });
+            this.getOrderAmount(new URL(document.location.href).searchParams.get('order'));
         }
     },
 
     computed: {
         totalPrice() {
-            console.log(this.subOrder);
             const subOrdersTotal = this.subOrder.reduce((acc, item) => {
                 return acc += item.price * item.quantity;
             }, 0);

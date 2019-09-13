@@ -30,14 +30,12 @@ export default {
       this.$emit('addAccessory', cartData)
     },
 
-    getTotalPrice(data, total_data) {
+    getTotalPrice(data, total) {
       return axios
         .post(`${window.location.origin}/calculate-upsells-total`,
           {
             upsells: data,
-            upsells_total: total_data.upsells_total,
-            product_total: total_data.product_total,
-            product_quantity: total_data.product_quantity,
+            total,
           },
           {
             credentials: 'same-origin',
@@ -60,5 +58,13 @@ export default {
           return res
         });
     },
+
+    getOrderAmount(orderId) {
+      return axios
+        .get(`${window.location.origin}/order-amount-total/${orderId}`)
+        .then((res) => {
+          return res
+        });
+    }
   },
 }

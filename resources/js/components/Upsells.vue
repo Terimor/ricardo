@@ -224,6 +224,9 @@
     },
     mounted() {
       this.setUpsellsAsProdsList();
+      if (this.upsellsAsProdsList.length === 0) {
+        goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
+      }
     },
 
     watch: {
@@ -238,7 +241,7 @@
                 price: price *= quantity,
               }))
 
-              this.getTotalPrice(this.upsellsForBack(accessoryList), { upsells_total: this.totalAccessoryPrice })
+              this.getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
                 .finally(() => {
                   this.activeTab = 'third';
                 })
