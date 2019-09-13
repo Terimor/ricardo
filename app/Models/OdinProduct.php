@@ -68,7 +68,7 @@ class OdinProduct extends Model
      */
     public function getDescriptionAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : !empty($value['en']) ? $value['en'] : '';
+        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
 
     /**
@@ -76,7 +76,7 @@ class OdinProduct extends Model
      */
     public function getLongNameAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : !empty($value['en']) ? $value['en'] : '';
+        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
 
     /**
@@ -84,7 +84,7 @@ class OdinProduct extends Model
      */
     public function getVimeoIdAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : !empty($value['en']) ? $value['en'] : '';
+        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
 
     /**
@@ -92,7 +92,7 @@ class OdinProduct extends Model
      */
     public function getUpsellPlusoneTextAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : !empty($value['en']) ? $value['en'] : '';
+        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
 
     /**
@@ -100,7 +100,7 @@ class OdinProduct extends Model
      */
     public function getUpsellHeroTextAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : !empty($value['en']) ? $value['en'] : '';
+        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
 
     /**
@@ -109,8 +109,8 @@ class OdinProduct extends Model
     public function getSkusAttribute($value)
     {
         foreach ($value as $key => $val) {
-            $value[$key]['name'] = !empty($val['name'][app()->getLocale()]) && $val['name'][app()->getLocale()] ? $val['name'][app()->getLocale()] : !empty($val['name']['en']) ? $val['name']['en'] : '';
-            $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : !empty($val['brief']['en']) ? $val['brief']['en'] : '';
+            $value[$key]['name'] = !empty($val['name'][app()->getLocale()]) && $val['name'][app()->getLocale()] ? $val['name'][app()->getLocale()] : (!empty($val['name']['en']) ? $val['name']['en'] : '');
+            $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : (!empty($val['brief']['en']) ? $val['brief']['en'] : '');
 
             // images
             $value[$key]['quantity_image'] = [];
@@ -244,7 +244,7 @@ class OdinProduct extends Model
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
             foreach ($this->imagesObjects as $image) {
-                $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : !empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '';
+                $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
             }
         }
     }
