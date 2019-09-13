@@ -32,6 +32,7 @@ class SiteController extends Controller
     public function index(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('product_page');
+        
         $product = $productService->resolveProduct($request, true);
         
          $setting = Setting::whereIn('key',[
@@ -196,8 +197,8 @@ class SiteController extends Controller
 		echo '<pre>'; var_dump($price); echo '</pre>';
 		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
         $product = $productService->resolveProduct($request, true);
-
-        echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
+echo '<pre>'; var_dump(app()->getLocale()); echo '</pre>';
+        echo '<pre>'; var_dump($product->description); echo '</pre>'; exit;
         $currency = Currency::whereCode('USD')->first();
         echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
 

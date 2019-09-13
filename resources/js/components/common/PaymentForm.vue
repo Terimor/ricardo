@@ -5,9 +5,9 @@
         </h2>
         <text-field
             :validation="$v.form.fname"
-            validationMessage="Please enter your first name"
+            :validationMessage="textFirstNameRequired"
             theme="variant-1"
-            label="First Name"
+            :label="textFirstName"
             class="first-name"
             :rest="{
               autocomplete: 'given-name'
@@ -15,9 +15,9 @@
             v-model="paymentForm.fname"/>
         <text-field
             :validation="$v.form.lname"
-            validationMessage="Please enter your last name"
+            :validationMessage="textLastNameRequired"
             theme="variant-1"
-            label="Last Name"
+            :label="textLastName"
             class="last-name"
             :rest="{
               autocomplete: 'family-name'
@@ -25,21 +25,21 @@
             v-model="paymentForm.lname"/>
         <text-field-with-placeholder
             :validation="$v.form.dateOfBirth"
-            validationMessage="Invalid date"
+            :validationMessage="textBirthdayRequired"
             v-if="countryCode === 'DE'"
             :rest="{
               'format': 'dd/mm/yyyy',
             }"
-            placeholder="DD/MM/YYYY"
+            :placeholder="textBirthdayPlaceHolder"
             v-model="paymentForm.dateOfBirth"
             theme="variant-1"
-            label="Your Date Of Birth"
+            :label="textBirthday"
         />
         <text-field
             :validation="$v.form.email"
-            validationMessage="Please enter a valid e-mail"
+            :validationMessage="textEmailRequired"
             theme="variant-1"
-            label="Your Email Address"
+            :label="textEmail"
             :rest="{
               autocomplete: 'email'
             }"
@@ -47,10 +47,10 @@
         <phone-field
             @onCountryChange="setCountryCodeByPhoneField"
             :validation="$v.form.phone"
-            validationMessage="Please enter a valid phone number"
+            :validationMessage="textPhoneRequired"
             :countryCode="countryCode"
             theme="variant-1"
-            label="Your Phone Number"
+            :label="textPhone"
             :rest="{
               autocomplete: 'off'
             }"
@@ -61,36 +61,36 @@
         <div class="payment-form__delivery-address">
             <text-field
                 :validation="$v.form.street"
-                validationMessage="Please enter your street"
+                :validationMessage="textStreetRequired"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1 street"
-                :label="isBrazil ? 'Street' : 'Street And Number'"
+                :label="textStreet"
                 :rest="{
                   autocomplete: 'street-address'
                 }"
                 v-model="paymentForm.street"/>
             <text-field
                 :validation="$v.form.number"
-                validationMessage="Required"
+                :validationMessage="textStreetNumberRequired"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 v-if="isBrazil"
                 theme="variant-1 number"
-                label="Number"
+                :label="textStreetNumber"
                 v-model="paymentForm.number"/>
             <text-field
                 v-if="isBrazil"
                 theme="variant-1"
-                label="Complemento"
+                label="textComplemento"
                 v-model="paymentForm.complemento"/>
             <text-field
                 :validation="$v.form.city"
-                validationMessage="Please enter your city"
+                :validationMessage="textCityRequired"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
-                label="City"
+                :label="textCity"
                 :rest="{
                     autocomplete: 'shipping locality'
                 }"
@@ -99,11 +99,11 @@
                 v-if="countryCode === 'BR' || countryCode === 'MX' || countryCode === 'CO'"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
-                validationMessage="Please enter or select your state"
+                :validationMessage="textStateRequired"
                 theme="variant-1"
-                label="State"
+                :label="textState"
                 :rest="{
-                  placeholder: 'State'
+                  placeholder: textStatePlaceholder
                 }"
                 :list="stateList"
                 v-model="paymentForm.state"/>
@@ -111,24 +111,24 @@
                 v-else
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
-                validationMessage="Please enter or select your state"
+                :validationMessage="textStateRequired"
                 theme="variant-1"
-                label="State"
+                :label="textState"
                 v-model="paymentForm.state"/>
             <text-field
                 :validation="$v.form.zipcode"
-                validationMessage="Please enter your zip code"
+                :validationMessage="textZipcodeRequired"
                 theme="variant-1"
-                label="Zip Code"
+                :label="textZipcode"
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
             <select-field
                 :validation="$v.form.country"
-                validationMessage="Invalid field"
+                :validationMessage="textCountryRequired"
                 theme="variant-1"
-                label="Country"
+                :label="textCountry"
                 :rest="{
-                  placeholder: 'Country'
+                  placeholder: textCountryPlaceholder
                 }"
                 :list="countryList"
                 v-model="paymentForm.country"/>
@@ -140,23 +140,23 @@
             <select-field
                 v-if="countryCode === 'MX'"
                 :validation="$v.form.cardType"
-                validationMessage="Invalid Card Type"
+                :validationMessage="textCardTypeRequired"
                 :disabled="+installments !== 1"
                 theme="variant-1"
                 v-model="paymentForm.cardType"
-                label="Please select your card type"
+                :label="textCardType"
                 :rest="{
-                  placeholder: 'Card type'
+                  placeholder: textCardTypePlaceholder
                 }"
                 :list="[
                     {
                         value: 'debit',
-                        label: 'Debit card',
-                        text: 'Debit card',
+                        label: textCardTypeDebit,
+                        text: textCardTypeDebit,
                     }, {
                         value: 'credit',
-                        label: 'Credit card',
-                        text: 'Credit card',
+                        label: textCardTypeCredit,
+                        text: textCardTypeCredit,
                     }
                 ]"/>
             <form id="payment-data-form">
@@ -168,43 +168,43 @@
                   autocomplete: 'cc-number',
                     'data-bluesnap': 'encryptedCreditCard'
                   }"
-                    validationMessage="Please enter a credit card number."
+                    :validationMessage="textCardNumberRequired"
                     class="card-number"
                     theme="variant-1"
-                    label="Card Number"
+                    :label="textCardNumber"
                     v-model="paymentForm.cardNumber"
                     :prefix="`<img src='${cardUrl}' />`"
                     :postfix="`<i class='fa fa-lock'></i>`"
                 />
                 <div class="card-date" :class="{ 'with-error': $v.form.year && !$v.form.year.isValid && $v.form.year.$dirty }">
-                    <span class="label">Card Valid Until</span>
+                    <span class="label" v-html="textCardValidUntil"></span>
                     <select-field
                         :validation="$v.form.month"
-                        validationMessage="Required"
+                        :validationMessage="textCardValidMonthRequired"
                         :rest="{
-                      placeholder: 'Month'
+                      placeholder: textCardValidMonthPlaceholder
                     }"
                         theme="variant-1"
                         :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
                         v-model="paymentForm.month"/>
                     <select-field
                         :validation="$v.form.year"
-                        validationMessage="Required"
+                        :validationMessage="textCardValidYearRequired"
                         :rest="{
-                      placeholder: 'Year'
+                      placeholder: textCardValidYearPlaceholder
                     }"
                         theme="variant-1"
                         :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                         v-model="paymentForm.year"/>
-                    <span class="error" v-show="$v.form.year && !$v.form.year.isValid && $v.form.year.$dirty">Card is expired</span>
+                    <span class="error" v-show="$v.form.year && !$v.form.year.isValid && $v.form.year.$dirty" v-html="textCardExpired"></span>
                 </div>
                 <text-field
                     @click-postfix="openCVVModal"
                     :validation="$v.form.cvv"
-                    validationMessage="Required"
+                    :validationMessage="textCardCVVRequired"
                     class="cvv-field"
                     theme="variant-1"
-                    label="CVV"
+                    :label="textCardCVV"
                     :rest="{
                   maxlength: 4,
                   pattern: '\\d*',
@@ -218,7 +218,7 @@
             </form>
             <text-field-with-placeholder
                 :validation="$v.form.documentNumber"
-                validationMessage="Required"
+                :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
                 v-if="countryCode === 'BR'"
                 placeholder="___.___.___-__"
@@ -228,10 +228,10 @@
                   type: 'tel'
                 }"
                 theme="variant-1"
-                label="Document number" />
+                :label="textDocumentNumber" />
             <text-field-with-placeholder
                 :validation="$v.form.documentNumber"
-                validationMessage="Required"
+                :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
                 v-if="countryCode === 'CO'"
                 placeholder="1234567890"
@@ -239,12 +239,12 @@
                   'format': '1234567890',
                 }"
                 theme="variant-1"
-                label="Document number" />
+                :label="textDocumentNumber" />
         </template>
         <button v-show="hasWarranty" class="warranty-field-button">
           <label for="warranty-field" class="label-container-checkbox">
             <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
-            3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+            <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
             <input id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
             <span class="checkmark"></span>
           </label>
@@ -257,17 +257,17 @@
             id="purchase-button"
             type="button"
             class="green-button-animated">
-            <span class="purchase-button-text">YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW</span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
+            <span class="purchase-button-text" v-html="textSubmitButton"></span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
         </button>
         <el-dialog
           @click="isOpenCVVModal = false"
           class="cvv-popup"
-          title="Where do I find my security code?"
+          :title="textCVVPopupTitle"
           :visible.sync="isOpenCVVModal">
             <div class="cvv-popup__content">
-                <p>The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it is a 4 digit number, found on the front of your credit card.</p>
+                <p v-html="textCVVPopupLine1"></p>
                 <div><img src="/images/cvv_popup.jpg" alt=""></div>
-                <p>Where to find the 3 digit security code (Visa/Mastercard)</p>
+                <p v-html="textCVVPopupLine2"></p>
             </div>
         </el-dialog>
     </div>
@@ -275,6 +275,7 @@
 
 <script>
   import apiUrlList from '../../constants/api-url'
+  import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
   import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
@@ -333,7 +334,55 @@
         }
 
         return cardMap[this.cardType] || cardMap.iconcc
-      }
+      },
+      textFirstName: () => t('checkout_payment_form_first_name'),
+      textFirstNameRequired: () => t('checkout_payment_form_first_name_required'),
+      textLastName: () => t('checkout_payment_form_last_name'),
+      textLastNameRequired: () => t('checkout_payment_form_last_name_required'),
+      textBirthday: () => t('checkout_payment_form_birthday'),
+      textBirthdayPlaceHolder: () => t('checkout_payment_form_birthday_placeholder'),
+      textBirthdayRequired: () => t('checkout_payment_form_birthday_required'),
+      textEmail: () => t('checkout_payment_form_email'),
+      textEmailRequired: () => t('checkout_payment_form_email_required'),
+      textPhone: () => t('checkout_payment_form_phone'),
+      textPhoneRequired: () => t('checkout_payment_form_phone_required'),
+      textStreet: () => t('checkout_payment_form_street'),
+      textStreetRequired: () => t('checkout_payment_form_street_required'),
+      textStreetNumber: () => t('checkout_payment_form_street_number'),
+      textStreetNumberRequired: () => t('checkout_payment_form_street_number_required'),
+      textComplemento: () => t('checkout_payment_form_complemento'),
+      textCity: () => t('checkout_payment_form_city'),
+      textCityRequired: () => t('checkout_payment_form_city_required'),
+      textState: () => t('checkout_payment_form_state'),
+      textStatePlaceholder: () => t('checkout_payment_form_state_placeholder'),
+      textStateRequired: () => t('checkout_payment_form_state_required'),
+      textZipcode: () => t('checkout_payment_form_zipcode'),
+      textZipcodeRequired: () => t('checkout_payment_form_zipcode_required'),
+      textCountry: () => t('checkout_payment_form_сountry'),
+      textCountryPlaceholder: () => t('checkout_payment_form_сountry_placeholder'),
+      textCountryRequired: () => t('checkout_payment_form_сountry_required'),
+      textCardType: () => t('checkout_payment_form_card_type'),
+      textCardTypeRequired: () => t('checkout_payment_form_card_type_required'),
+      textCardTypePlaceholder: () => t('checkout_payment_form_card_type_placeholder'),
+      textCardTypeDebit: () => t('checkout_payment_form_card_type_debit'),
+      textCardTypeCredit: () => t('checkout_payment_form_card_type_credit'),
+      textCardNumber: () => t('checkout_payment_form_card_number'),
+      textCardNumberRequired: () => t('checkout_payment_form_card_number_required'),
+      textCardValidUntil: () => t('checkout_payment_form_card_valid_until'),
+      textCardValidMonthRequired: () => t('checkout_payment_form_card_valid_month_required'),
+      textCardValidMonthPlaceholder: () => t('checkout_payment_form_card_valid_month_placeholder'),
+      textCardValidYearRequired: () => t('checkout_payment_form_card_valid_year_required'),
+      textCardValidYearPlaceholder: () => t('checkout_payment_form_card_valid_year_placeholder'),
+      textCardExpired: () => t('checkout_payment_form_card_expired'),
+      textCardCVV: () => t('checkout_payment_form_card_cvv'),
+      textCardCVVRequired: () => t('checkout_payment_form_card_cvv_required'),
+      textDocumentNumber: () => t('checkout_payment_form_document_number'),
+      textDocumentNumberRequired: () => t('checkout_payment_form_document_number_required'),
+      textWarranty: () => t('checkout_warranty'),
+      textSubmitButton: () => t('checkout_payment_form_submit_button'),
+      textCVVPopupTitle: () => t('checkout_payment_form_cvv_popup_title'),
+      textCVVPopupLine1: () => t('checkout_payment_form_cvv_popup_line_1'),
+      textCVVPopupLine2: () => t('checkout_payment_form_cvv_popup_line_2'),
     },
     watch: {
       'paymentForm.cardNumber' (cardNumber) {

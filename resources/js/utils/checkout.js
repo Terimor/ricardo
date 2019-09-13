@@ -1,10 +1,12 @@
 import { getCountOfInstallments } from './installments';
+import { t } from './i18n';
+
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
   const config = {
-    1: `(${discountPercent}% Discount)`,
-    3: `(${discountPercent}% Discount, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/Unit)`,
-    5: `(${discountPercent}% Discount, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/Unit)`,
+    1: `(${discountPercent}% ${t('checkout_discount')})`,
+    3: `(${discountPercent}% ${t('checkout_discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout_unit')})`,
+    5: `(${discountPercent}% ${t('checkout_discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout_unit')})`,
   }
 
   return config[key]
@@ -34,11 +36,11 @@ const getOldPrice = ({key, valueTexts, installments}) => {
 
 const getOnlyDiscount = ({key, discountPercent}) => {
   const config = {
-    1: `(${discountPercent}% Discount)`,
-    2: `(${discountPercent}% Discount)`,
-    3: `(${discountPercent}% Discount)`,
-    4: `(${discountPercent}% Discount)`,
-    5: `(${discountPercent}% Discount)`
+    1: `(${discountPercent}% ${t('checkout_discount')})`,
+    2: `(${discountPercent}% ${t('checkout_discount')})`,
+    3: `(${discountPercent}% ${t('checkout_discount')})`,
+    4: `(${discountPercent}% ${t('checkout_discount')})`,
+    5: `(${discountPercent}% ${t('checkout_discount')})`
   };
 
   return config[key]
@@ -84,10 +86,10 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
         discountPercent,
         image: it.image,
         discountName:
-          it.is_bestseller ? 'BESTSELLER' :
-            it.is_popular ? 'BEST DEAL' :
+          it.is_bestseller ? t('checkout_bestseller') :
+            it.is_popular ? t('checkout_best_deal') :
               '',
-        text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' FREE' : ''}`,
+        text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' ' + t('checkout_free') : ''}`,
         newPrice: getNewPrice({
           key,
           valueTexts,

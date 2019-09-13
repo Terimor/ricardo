@@ -163,12 +163,15 @@ class OrderController extends Controller
             $total += $product['price'];
             if (isset($product['is_main']) && $product['is_main'])
             {
-                $total += $product['warranty_price'];
+                // check warranty price
+                if (isset($product['warranty_price']) && $product['warranty_price'] > 0 ) {
+                    $total += $product['warranty_price'];
+                }
             }
         }
         
         // get order currency
-        $currency = \Utils::getCurrency()
+        $currency = CurrencyService::getCurrency($order->currency);
 
         return [
             'total_text' => CurrencyService::getLocalTextValue($total, $currency)

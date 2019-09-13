@@ -11,7 +11,7 @@
   </div>
   <div class="product-item__bottom">
     <div class="product-item__bottom__price">
-      <p class="regular">Regular price: ${{regularPrice.toLocaleString()}}</p>
+      <p class="regular"><span v-html="textRegularPrice"></span>: ${{regularPrice.toLocaleString()}}</p>
       <p class="new">${{newPrice.toLocaleString()}}</p>
     </div>
     <div class="product-item__bottom__quantity-block">
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+  import { t } from '../../utils/i18n';
+
   export default {
     name: 'ProductItem',
     props: ['imageUrl', 'title', 'advantageList', 'regularPrice', 'newPrice', 'maxQuantity', 'keyProp', 'value'],
@@ -35,8 +37,9 @@
         get () {
           return this.value
         }
-      }
-    }
+      },
+      textRegularPrice: () => t('checkout_special_offer_popup_regular_price'),
+    },
   };
 </script>
 
