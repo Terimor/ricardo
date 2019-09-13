@@ -1,23 +1,23 @@
 <template>
   <div>
-      <smc7-component
-          :showPreloader="showPreloader"
-          v-if="queryParams.tpl === 'smc7'" />
-      <vmc4-component
-          :showPreloader="showPreloader"
-          :data="checkoutData"
-          v-else-if="queryParams.tpl === 'vmc4'" />
-      <emc1-component
-          :showPreloader="showPreloader"
-          :skusList="skusList"
-          v-else />
-      <preloader-3
-        v-if="+queryParams.preload === 3"
-        :countryCode="checkoutData.countryCode"
-        :show-preloader.sync="showPreloader">
-      </preloader-3>
+    <smc7-component
+      :showPreloader="showPreloader"
+      v-if="queryParams.tpl === 'smc7'" />
+    <vmc4-component
+      :showPreloader="showPreloader"
+      :data="checkoutData"
+      v-else-if="queryParams.tpl === 'vmc4'" />
+    <emc1-component
+      :showPreloader="showPreloader"
+      :skusList="skusList"
+      v-else />
+    <preloader-3
+      v-if="+queryParams.preload === 3"
+      :countryCode="checkoutData.countryCode"
+      :show-preloader.sync="showPreloader"/>
     <leave-modal
-      v-if="+queryParams.exit === 1"></leave-modal>
+      v-if="+queryParams.exit === 1"
+    />
   </div>
 </template>
 
