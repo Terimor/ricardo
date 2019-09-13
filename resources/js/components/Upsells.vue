@@ -31,7 +31,7 @@
                     :description="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].description"
                     :price="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsellPrices['1'].value"
                     :data="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity]"
-                    :image-url="product.skus[0].images[0]"
+                    :image-url="product.skus[0].quantity_image[1]"
                   />
                 </transition>
                 <p class="no">
@@ -45,7 +45,7 @@
             <div class="upsells-component__finish">
                 <h3 class="original-order">Your original order</h3>
                 <UpsellsItem
-                  :image-url="product.skus[0].images[0]"
+                  :image-url="product.skus[0].quantity_image[1]"
                   :name="product.long_name"
                   :benefitList="[
                     `Quantity: ${getOriginalOrder.quantity}`,
