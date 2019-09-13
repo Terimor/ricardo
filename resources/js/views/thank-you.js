@@ -50,17 +50,23 @@ const thankYou = new Vue({
             orders.push(currentOrder);
 
             this.addToCart(1)
-            this.getTotalPrice(groupBy(orders, 'id', 'quantity'), this.totalPrice);
+            // this.getTotalPrice(groupBy(orders, 'id', 'quantity'), Math.ceil(parseFloat(this.totalPrice)));
+            this.getTotalPrice(groupBy(orders, 'id', 'quantity'), {
+                upsells_total: this.totalPrice,
+                product_total: this.selectedProductData.prices.value,
+                product_quantity: this.selectedProductData.quantity,
+            });
         }
     },
 
     computed: {
         totalPrice() {
+            console.log(this.subOrder);
             const subOrdersTotal = this.subOrder.reduce((acc, item) => {
                 return acc += item.price * item.quantity;
             }, 0);
 
-            return subOrdersTotal + this.selectedProductData.prices.value;
+            return subOrdersTotal;
         },
 
         getShippingAddress() {

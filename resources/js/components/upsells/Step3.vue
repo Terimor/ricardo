@@ -22,6 +22,7 @@
       </div>
       <div class="upsells-component__bot">
         <select-field
+          v-if="upsellPrices"
           label="Please choose:"
           v-model="quantity"
           :list="selectList"
@@ -78,7 +79,7 @@ export default {
   data () {
     return {
       quantity: 1,
-      upsellPrices: {},
+      upsellPrices: null,
     }
   },
 
@@ -98,8 +99,8 @@ export default {
         const value = index + 1
 
         return item = {
-          label: `${value}x ${this.name} - ${this.upsellPrices[value] && this.upsellPrices[value].value_text}`,
-          text: `${value}x ${this.name} - ${this.upsellPrices[value] && this.upsellPrices[value].value_text}`,
+          label: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].value_text}`,
+          text: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].value_text}`,
           value: value,
         }
       })

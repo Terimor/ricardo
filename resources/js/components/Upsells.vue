@@ -113,10 +113,11 @@
       Step3,
       StepWithOneItem,
     },
+
     data() {
       return {
         total: 0,
-        view: 'Step1',
+        view: 'Step3',
         activeTab: 'second',
         accessoryStep: 0,
         accessoryList: [],
@@ -126,6 +127,7 @@
         isLoading: true,
       };
     },
+
     computed: {
       viewProps() {
         return this.accessoryStep === 0 ? {} :
@@ -223,6 +225,7 @@
     mounted() {
       this.setUpsellsAsProdsList();
     },
+
     watch: {
       accessoryStep(val) {
         if (val === this.upsellsAsProdsList.length) {
@@ -235,7 +238,7 @@
                 price: price *= quantity,
               }))
 
-              this.getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
+              this.getTotalPrice(this.upsellsForBack(accessoryList), { upsells_total: this.totalAccessoryPrice })
                 .finally(() => {
                   this.activeTab = 'third';
                 })
