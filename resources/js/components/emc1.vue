@@ -432,7 +432,6 @@ export default {
     },
     setDataToLocalStorage() {
       const currentVariant = this.skusList.find(it => it.code === this.form.variant);
-      console.log(currentVariant);
       const prices = this.checkoutData.product.prices;
       const selectedProductData = {
         upsells: this.productData.upsells,
