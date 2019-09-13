@@ -264,9 +264,9 @@
 		mounted() {
 			this.variantList = this.productData.skus.map((it) => ({
 				label: it.name,
-				text: `<div><img src="${it.images[0]}" alt=""><span>${it.name}</span></div>`,
+				text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
 				value: it.code,
-				imageUrl: it.images[0]
+				imageUrl: it.quantity_image[1]
 			}));
 
 			this.setPurchase({
@@ -283,7 +283,7 @@
       }
 
 			try {
-				this.productImage = checkoutData.product.skus[0].images[0];
+				this.productImage = checkoutData.product.skus[0].quantity_image[1];
 			} catch (_) {}
 		}
 	}

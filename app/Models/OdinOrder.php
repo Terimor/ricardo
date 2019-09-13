@@ -30,7 +30,6 @@ class OdinOrder extends OdinModel
         'shop_currency' => null, // enum string, //currency was used to display prices
         //'payment_provider' => null, // enum string
         //'payment_method' => null, // enum string
-        //'payer_id' => null, // string, payer ID in payment provider system
         'installments' => 0,
         'customer_email' => null, // * string
         'customer_first_name' => null, // * string

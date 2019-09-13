@@ -563,9 +563,9 @@ export default {
 
     this.variantList = this.skusList.map((it) => ({
       label: it.name,
-      text: `<div><img src="${it.quantity_image[0]}" alt=""><span>${it.name}</span></div>`,
+      text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
       value: it.code,
-      imageUrl: it.quantity_image[0]
+      imageUrl: it.quantity_image[1]
     }))
 
     this.setPurchase({
