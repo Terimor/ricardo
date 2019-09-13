@@ -367,7 +367,7 @@
 		mounted() {
 			this.variantList = this.productData.skus.map((it) => ({
 				label: it.name,
-				text: `<div><img src="/images/headphones-white.png" alt=""><span>${it.name}</span></div>`,
+				text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
 				value: it.code,
 				imageUrl: it.quantity_image[1]
 			}));
