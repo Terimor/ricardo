@@ -6,6 +6,8 @@ window.axios.defaults.headers.common = {
   'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 };
 
+window.axios.defaults.baseUrl = window.location.origin;
+
 Vue.config.productionTip = false
 
 Vue.use(VueMq, {

@@ -60,7 +60,14 @@ export function * getNotice (productName) {
     paypalNotice: `<b>paypalNotice</b>`
   }
 
-  const keyQueue = ['recentlyBought', 'recentlyBought', 'usersActive', 'paypal', 'recentlyBought', 'recentlyBought', 'bestsellerText']
+  const keyQueue = [
+    'recentlyBought',
+    'recentlyBought',
+    'usersActive', 'paypal',
+    'recentlyBought',
+    'recentlyBought',
+    'bestsellerText'
+  ]
 
   let lastIndex = 0
 
@@ -126,8 +133,10 @@ export function paypalOnApprove(data) {
   }).then(function(res) {
     return res.json();
   }).then(function(details) {
-    const currentOrder = details.order_id
-    goTo(`/thankyou-promos/?order=${currentOrder}`);
-    localStorage.setItem('order_id', currentOrder)
+    const currentOrder = details.order_id;
+    if (currentOrder) {
+      goTo(`/thankyou-promos/?order=${currentOrder}`);
+      localStorage.setItem('order_id', currentOrder);
+    }
   });
 }
