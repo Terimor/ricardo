@@ -2,19 +2,35 @@
     <div
         :id="id"
         class="upsells-item"
-        :class="{ 'main': !withRemoveButton, 'is-accessory': withRemoveButton }">
+        :class="{
+            'main': !withRemoveButton,
+            'is-accessory': withRemoveButton
+        }">
         <div class="upsells-item__image">
             <img :src="imageUrl" alt="">
         </div>
         <div class="upsells-item__content">
             <h5>{{name}}</h5>
             <ul class="benefit-list">
-                <li v-for="benefit in benefitList">{{benefit}}</li>
+                <li
+                    v-for="benefit in benefitList"
+                    :key="benefit"
+                >
+                    {{benefit}}
+                </li>
                 <li>Subtotatal: {{ subtotalValue }}</li>
             </ul>
         </div>
-        <div class="upsells-item__remove-block" v-if="withRemoveButton">
-            <el-button type="danger" @click="deleteAccessory">Remove</el-button>
+        <div
+            class="upsells-item__remove-block"
+            v-if="withRemoveButton"
+        >
+            <el-button
+                type="danger"
+                @click="deleteAccessory"
+            >
+                Remove
+            </el-button>
         </div>
     </div>
 </template>

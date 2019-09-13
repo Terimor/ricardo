@@ -6,11 +6,17 @@
                     :src="order.imageUrl"
                     alt=""
                 >
-                <div class="quantity">{{ order.quantity }}</div>
+                <div class="quantity">
+                    {{ order.quantity }}
+                </div>
             </div>
-            <div class="thank-you__order__name">{{ order.name }}</div>
+            <div class="thank-you__order__name">
+                {{ order.name }}
+            </div>
         </div>
-        <div class="thank-you__order__price">{{ price }}</div>
+        <div class="thank-you__order__price">
+            {{ price }}
+        </div>
     </div>
 </template>
 

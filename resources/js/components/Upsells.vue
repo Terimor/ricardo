@@ -21,7 +21,10 @@
         </div>
         <template v-if="activeTab === 'second'">
             <div class="upsells-component__content">
-                <transition name="component-fade" mode="out-in">
+                <transition
+                  name="component-fade"
+                  mode="out-in"
+                >
                   <component
                     :is-loading="isLoading"
                     v-bind:is="view"

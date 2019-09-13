@@ -25,13 +25,13 @@
               @click="addToCart(1)"
               :is-loading="isLoading"
             >
-                YES! I want to add 1 {{name}} TO My Order For Just {{priceFormatted}}
+                YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
             </green-button>
             <green-button
               @click="addToCart(2)"
               :is-loading="isLoading"
             >
-                YES! I want to add 2 {{name}} TO My Order For Just {{upsellPrices['2'] && upsellPrices['2'].value_text}}
+                YES! I want to add 2 {{ name }} TO My Order For Just {{ upsellPrices['2'] && upsellPrices['2'].value_text }}
             </green-button>
         </div>
       </div>
