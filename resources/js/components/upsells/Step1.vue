@@ -85,15 +85,11 @@
       upsellPrices: {},
     }),
 
-    watch: {
-      id(id) {
-        if (id) {
-          getUppSells(this.id, 2).then(({ data }) => {
-            this.upsellPrices = data.upsell.upsellPrices
-          });
-        }
-      }
-    },
+    mounted() {
+      getUppSells(this.id, 2).then(({ data }) => {
+        this.upsellPrices = data.upsell.upsellPrices
+      });
+    }
   };
 </script>
 

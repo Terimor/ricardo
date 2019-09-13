@@ -18,7 +18,7 @@
             @click="addToCart(1)"
             :is-loading="isLoading"
           >
-            YES! I want to add 1 {{ name }} TO My Order For Just {{price}}
+            YES! I want to add 1 {{ name }} TO My Order For Just {{priceFormatted}}
           </green-button>
       </div>
     </div>
@@ -26,7 +26,8 @@
 </template>
 
 <script>
-  import upsells from '../../mixins/upsells'
+  import upsells from '../../mixins/upsells';
+
   export default {
     name: 'StepWithOneItem',
     mixins: [upsells],

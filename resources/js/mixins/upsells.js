@@ -27,6 +27,10 @@ export default {
         localStorage.setItem('subOrder', JSON.stringify(oldSubOrders));
       }
 
+      if (!oldSubOrders) {
+        localStorage.setItem('subOrder', JSON.stringify([cartData]));
+      }
+
       this.$emit('addAccessory', cartData)
     },
   },

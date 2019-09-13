@@ -26,15 +26,16 @@
                   mode="out-in"
                 >
                   <component
+                    v-if="currentUpsellItem"
                     :is-loading="isLoading"
                     v-bind:is="view"
                     @addAccessory="addAccessory"
-                    :id="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsells[getEntity].product_id"
-                    :name="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].long_name"
-                    :description="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].description"
-                    :price="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsellPrices['1'].value"
-                    :price-formatted="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity].upsellPrices['1'].value_text"
-                    :data="upsellsAsProdsList[getEntity] && upsellsAsProdsList[getEntity]"
+                    :id="currentUpsellItem.upsells && currentUpsellItem.upsells[accessoryStep].product_id"
+                    :name="currentUpsellItem.long_name"
+                    :description="currentUpsellItem.description"
+                    :price="currentUpsellItem.upsellPrices['1'].value"
+                    :price-formatted="currentUpsellItem.upsellPrices['1'].value_text"
+                    :data="currentUpsellItem"
                     :image-url="product.skus[0].quantity_image[1]"
                   />
                 </transition>
@@ -120,7 +121,7 @@
     data() {
       return {
         total: 0,
-        view: 'Step3',
+        view: 'Step1',
         activeTab: 'second',
         accessoryStep: 0,
         accessoryList: [],
@@ -132,11 +133,7 @@
     },
 
     mounted() {
-      localStorage.removeItemItem('subOrder');
       this.setUpsellsAsProdsList();
-      if (this.upsellsAsProdsList.length === 0) {
-        goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
-      }
     },
 
     watch: {
@@ -200,6 +197,10 @@
         } else {
           return this.accessoryStep;
         }
+      },
+
+      currentUpsellItem() {
+        return this.upsellsAsProdsList[this.getEntity] && this.upsellsAsProdsList[this.getEntity];
       },
 
       getOriginalOrder() {
