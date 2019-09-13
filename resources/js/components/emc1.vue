@@ -55,7 +55,6 @@
               }"
               :list="variantList"
               warrantyPriceText="setWarrantyPriceText()"
-              @change="setDataToLocalStorage"
             />
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
@@ -392,6 +391,7 @@ export default {
           setTimeout(() => fade('in', 300, document.querySelector('#product-image'), true), 200)
         })
 
+      this.setDataToLocalStorage();
       this.setPurchase({
         variant: val,
         installments: this.form.installments,
@@ -414,13 +414,18 @@ export default {
       this.changeWarrantyValue();
     },
     setDataToLocalStorage() {
+      const currentVariant = this.skusList.find(it => it.code === this.form.variant);
+      console.log(currentVariant);
       const prices = this.checkoutData.product.prices;
-      return this.selectedProductData = {
+      const selectedProductData = {
         upsells: this.productData.upsells,
         prices: prices[this.radioIdx],
         quantity: this.radioIdx,
         variant: this.form.variant,
+        image: currentVariant && currentVariant.quantity_image[1]
       };
+
+      localStorage.setItem('selectedProductData', JSON.stringify(selectedProductData));
     },
     changeWarrantyValue () {
       const prices = this.checkoutData.product.prices;

@@ -132,6 +132,7 @@
     },
 
     mounted() {
+      localStorage.removeItemItem('subOrder');
       this.setUpsellsAsProdsList();
       if (this.upsellsAsProdsList.length === 0) {
         goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
@@ -150,7 +151,7 @@
                 price: price *= quantity,
               }))
 
-              getTotalPrice(this.upsellsForBack(accessoryList), this.totalAccessoryPrice)
+              getTotalPrice(accessoryList, this.totalAccessoryPrice)
               .then((total) => {
                 this.total = total;
               })
@@ -210,7 +211,7 @@
       },
 
       getOriginalOrderId() {
-        return localStorage.getItem('order_id');
+        return localStorage.getItem('odin_order_id');
       },
 
       totalAccessoryPrice() {
@@ -272,10 +273,6 @@
       redirect() {
         goTo(`/thankyou/?order=${this.getOriginalOrderId}`);
       },
-
-      upsellsForBack(array) {
-        return groupBy(array, 'id', 'quantity');
-      }
     },
   };
 </script>

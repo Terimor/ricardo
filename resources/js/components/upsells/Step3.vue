@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import upsells from '../../mixins/upsells'
+import upsells from '../../mixins/upsells';
 export default {
   name: 'Step3',
   mixins: [upsells],
