@@ -4,9 +4,9 @@ import { t } from './i18n';
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
   const config = {
-    1: `(${discountPercent}% ${t('checkout_discount')})`,
-    3: `(${discountPercent}% ${t('checkout_discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout_unit')})`,
-    5: `(${discountPercent}% ${t('checkout_discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout_unit')})`,
+    1: `(${discountPercent}% ${t('checkout.discount')})`,
+    3: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
+    5: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
   }
 
   return config[key]
@@ -36,11 +36,11 @@ const getOldPrice = ({key, valueTexts, installments}) => {
 
 const getOnlyDiscount = ({key, discountPercent}) => {
   const config = {
-    1: `(${discountPercent}% ${t('checkout_discount')})`,
-    2: `(${discountPercent}% ${t('checkout_discount')})`,
-    3: `(${discountPercent}% ${t('checkout_discount')})`,
-    4: `(${discountPercent}% ${t('checkout_discount')})`,
-    5: `(${discountPercent}% ${t('checkout_discount')})`
+    1: `(${discountPercent}% ${t('checkout.discount')})`,
+    2: `(${discountPercent}% ${t('checkout.discount')})`,
+    3: `(${discountPercent}% ${t('checkout.discount')})`,
+    4: `(${discountPercent}% ${t('checkout.discount')})`,
+    5: `(${discountPercent}% ${t('checkout.discount')})`
   };
 
   return config[key]
@@ -86,10 +86,10 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
         discountPercent,
         image: it.image,
         discountName:
-          it.is_bestseller ? t('checkout_bestseller') :
-            it.is_popular ? t('checkout_best_deal') :
+          it.is_bestseller ? t('checkout.bestseller') :
+            it.is_popular ? t('checkout.best_deal') :
               '',
-        text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' ' + t('checkout_free') : ''}`,
+        text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' ' + t('checkout.free') : ''}`,
         newPrice: getNewPrice({
           key,
           valueTexts,

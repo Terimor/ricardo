@@ -249,11 +249,11 @@ export default {
         ],
         creditCardRadioList: [
           {
-            label: t('checkout_credit_cards'),
+            label: t('checkout.credit_cards'),
             value: 'credit-card',
             class: 'green-button-animated'
           }, {
-            label: t('checkout_bank_payments'),
+            label: t('checkout.bank_payments'),
             value: 'bank-payment',
             class: 'bank-payment'
           }
@@ -269,16 +269,16 @@ export default {
       })),
       installmentsList: [
         {
-          label: t('checkout_installments_full_amount'),
-          text: t('checkout_installments_full_amount'),
+          label: t('checkout.installments.full_amount'),
+          text: t('checkout.installments.full_amount'),
           value: 1,
         }, {
-          label: t('checkout_installments_pay_3'),
-          text: t('checkout_installments_pay_3'),
+          label: t('checkout.installments.pay_3'),
+          text: t('checkout.installments.pay_3'),
           value: 3,
         }, {
-          label: t('checkout_installments_pay_6'),
-          text: t('checkout_installments_pay_6'),
+          label: t('checkout.installments.pay_6'),
+          text: t('checkout.installments.pay_6'),
           value: 6,
         }
       ],
@@ -370,28 +370,28 @@ export default {
 
       return currentDeal && Math.round((currentDeal.newPrice || currentDeal.price) * 10) / 100
     },
-    textDynamicSaleBadge: () => t('checkout_dynamic_sale_badge'),
-    textMainDealText: () => t('checkout_main_deal_text'),
-    textChooseDeal: () => t('checkout_choose_deal'),
-    textInstallmentsTitle: () => t('checkout_installments_title'),
-    textArtcile: () => t('checkout_article'),
-    textMainDealError: () => t('checkout_main_deal_error'),
-    textMainDealErrorPopupTitle: () => t('checkout_main_deal_error_popup_title'),
-    textMainDealErrorPopupMessage: () => t('checkout_main_deal_error_popup_message'),
-    textMainDealErrorPopupButton: () => t('checkout_main_deal_error_popup_button'),
-    textSelectVariant: () => t('checkout_select_variant'),
-    textWarranty: () => t('checkout_warranty'),
-    textPaymentMethod: () => t('checkout_payment_method'),
-    textPaySecurely: () => t('checkout_pay_securely'),
-    textSafeSSLEncryption: () => t('checkout_safe_sll_encryption'),
-    textCreditCardInvoiced: () => t('checkout_credit_card_invoiced'),
-    textContactInformation: () => t('checkout_contact_information'),
-    textDeliveryAddress: () => t('checkout_delivery_address'),
-    textPaymentDetails: () => t('checkout_payment_details'),
-    textSpecialOfferPopupTitle: () => t('checkout_special_offer_popup_title'),
-    textSpecialOfferPopupMessage: () => t('checkout_special_offer_popup_message'),
-    textSpecialOfferPopupButtonPurchase: () => t('checkout_special_offer_popup_button_purchase'),
-    textSpecialOfferPopupButtonEmpty: () => t('checkout_special_offer_popup_button_empty'),
+    textDynamicSaleBadge: () => t('checkout.dynamic_sale_badge'),
+    textMainDealText: () => t('checkout.main_deal.message'),
+    textChooseDeal: () => t('checkout.choose_deal'),
+    textInstallmentsTitle: () => t('checkout.installments.title'),
+    textArtcile: () => t('checkout.article'),
+    textMainDealError: () => t('checkout.main_deal.error'),
+    textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
+    textMainDealErrorPopupMessage: () => t('checkout.main_deal.error_popup.message'),
+    textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
+    textSelectVariant: () => t('checkout.select_variant'),
+    textWarranty: () => t('checkout.warranty'),
+    textPaymentMethod: () => t('checkout.payment_method'),
+    textPaySecurely: () => t('checkout.pay_securely'),
+    textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
+    textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
+    textContactInformation: () => t('checkout.contact_information'),
+    textDeliveryAddress: () => t('checkout.delivery_address'),
+    textPaymentDetails: () => t('checkout.payment_details'),
+    textSpecialOfferPopupTitle: () => t('checkout.special_offer_popup.title'),
+    textSpecialOfferPopupMessage: () => t('checkout.special_offer_popup.message'),
+    textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
+    textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
   },
   watch: {
     'form.installments' (val) {

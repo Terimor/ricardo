@@ -38,7 +38,7 @@
           return this.value
         }
       },
-      textRegularPrice: () => t('checkout_special_offer_popup_regular_price'),
+      textRegularPrice: () => t('checkout.special_offer_popup.regular_price'),
     },
   };
 </script>
