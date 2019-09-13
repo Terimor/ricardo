@@ -147,5 +147,28 @@ class OrderController extends Controller
             $result
         ], (!isset($result['success']) || !$result['success']) ? 402 : 200);
     }
+    
+    /**
+     * 
+     * @param type $orderId
+     */
+    public function orderAmountTotal($orderId) 
+    {
+        $order = OdinOrder::where('_id', $orderId)->first();
+        
+        $total = 0;
+        // calculate total
+        foreach ($order->products as $product) {
+            $total += $product['price'];
+            if (isset($product['is_main']) && $product['is_main']) {
+                $total += $product['warranty_price'];
+            }
+        }
+        
+        return [
+            'total_text' => ''
+        ];
+        
+    }
 
 }
