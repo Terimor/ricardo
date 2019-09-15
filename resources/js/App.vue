@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { t } from './utils/i18n';
 import emc1 from './components/emc1'
 import smc7 from './components/smc7'
 import vmc4 from './components/vmc4'
@@ -33,8 +34,8 @@ export default {
     return {
       showPreloader: true,
       title: checkoutData.product.skus[0].name,
-      additionalTitle: " Checkout",
-      waitTitle: 'WAIT! YOU FORGOT: You have active cart items!'
+      additionalTitle: ' ' + t('checkout.page_title'),
+      waitTitle: t('checkout.page_title.wait'),
     }
   },
   mixins: [queryToComponent],
