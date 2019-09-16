@@ -9,7 +9,7 @@ use App\Models\I18n;
 class I18nService
 {
     public $translations;
-    
+
     /**
      * Load phrases
      * @param string $category
@@ -20,7 +20,7 @@ class I18nService
         $language = app()->getLocale();
         if (empty(I18n::$loadedPhrases[$language])) {
             if ($language == 'en') {
-                $phrases = I18n::where(['categories' => $category])->select(['phrase', 'en'])->get();               
+                $phrases = I18n::where(['categories' => $category])->select(['phrase', 'en'])->get();
             } else {
                 $phrases = I18n::where(['categories' => $category])->select(['phrase', 'en', $language])->get();
             }
@@ -35,7 +35,7 @@ class I18nService
                     $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
                 }
             }
-            
+
             I18n::$loadedPhrases = $loadedPhrases;
         }
 
@@ -49,7 +49,7 @@ class I18nService
     * @param type $lang
     */
    public static function getTranslatedPhrase(string $phrase, string $language = 'en', $args = []): string
-   {   
+   {
         $translation = $phrase;
             $language = $language ? strtolower($language) : 'en';
 
@@ -57,28 +57,21 @@ class I18nService
             $language = static::$browser_codes[$language];
         }
 
-        //$translated_languages = I18n::getTranslationLanguages(true);	
+        //$translated_languages = I18n::getTranslationLanguages(true);
         $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : I18n::$loadedPhrases['en'];
 
         if (!empty($loadedPhrases[$translation])) {
             $translation = $loadedPhrases[$translation];
-        } else {            
+        } else {
             logger()->error("URGENT: `{$translation}` not found in translations. Args: ".json_encode($args));
-        }	
-
-        if (empty($args['shopname'])) {
-            $args['shopname'] = \Utils::getSetting('shop_name');		    
         }
-        if ($phrase !== 'global.support_team' && empty($args['support_team'])) {
-            $args['support_team'] = t('global.support_team');
-        }		
 
         if ($args) {
             foreach ($args as $key => $value) {
             $placeholderKey = "#".strtoupper($key)."#";
             $translation = str_replace($placeholderKey, $value, $translation);
             if (!in_array($placeholderKey, I18n::$placeholders)) {
-                logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");		  
+                logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
             }
             if ($value === null) {
                 logger()->error("Translation is null for {$placeholderKey}");
@@ -90,7 +83,7 @@ class I18nService
         if (substr_count($translation, '#') > 1) {
             $other_hashes_cnt = substr_count($translation, '/#/');
             if (substr_count($translation, '#') != $other_hashes_cnt) {
-            logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: ". json_encode($args));	      
+            logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: ". json_encode($args));
             }
         }
 
