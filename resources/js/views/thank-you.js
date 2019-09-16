@@ -30,14 +30,14 @@ const thankYou = new Vue({
 
     methods: {
         onClickSocialNetwork (type) {
-            this.socialType = type
-            document.querySelectorAll('#social-media-tabs li').forEach(item => item.classList.remove('active'))
-            document.querySelector('#' + type).classList.add('active')
+            this.socialType = type;
+            document.querySelectorAll('#social-media-tabs li').forEach(item => item.classList.remove('active'));
+            document.querySelector('#' + type).classList.add('active');
         },
 
         share() {
-            const quote = document.querySelector('#quote').value
-            window.open(this.sharingLinkList[this.socialType] + quote, null, "width=450,height=450")
+            const quote = document.querySelector('#quote').value;
+            window.open(this.sharingLinkList[this.socialType] + quote, null, "width=450,height=450");
         },
 
         getTotal() {

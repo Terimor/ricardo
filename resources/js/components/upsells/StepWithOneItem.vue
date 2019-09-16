@@ -64,6 +64,18 @@
         default: false,
       },
     },
+
+    data() {
+      return {
+        finalPrice: null,
+        finalPricePure: null,
+      }
+    },
+
+    mounted() {
+      this.finalPrice = this.priceFormatted;
+      this.finalPricePure = this.price;
+    }
   };
 </script>
 

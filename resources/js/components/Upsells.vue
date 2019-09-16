@@ -75,6 +75,7 @@
                     :item-data="it"
                     :price="it.price"
                     :quantity="it.quantity"
+                    :final-price="it.finalPrice"
                     :withRemoveButton="true"
                   />
                   <p class="total-price">
@@ -133,7 +134,11 @@
     },
 
     mounted() {
+      if(this.upsellsObj.length === 0) {
+        this.redirect();
+      }
       this.setUpsellsAsProdsList();
+      localStorage.removeItem('subOrder');
     },
 
     watch: {
@@ -142,13 +147,7 @@
           const node = document.querySelector('.upsells-component__content');
           fade('out', 250, node, true)
             .then(() => {
-              const accessoryList = this.accessoryList.map(({ quantity, id, price }) => ({
-                quantity,
-                id,
-                price: price *= quantity,
-              }))
-
-              getTotalPrice(accessoryList, this.totalAccessoryPrice)
+              getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
               .then((total) => {
                 this.total = total;
               })
@@ -181,6 +180,13 @@
     },
 
     computed: {
+      formattedAccessoryList() {
+        return this.accessoryList.map(({ quantity, id }) => ({
+          quantity,
+          id,
+        }))
+      },
+
       viewProps() {
         return this.accessoryStep === 0 ? {} :
           this.accessoryStep === 1 ? {
@@ -208,7 +214,7 @@
       },
 
       getOriginalOrderPrice() {
-        return this.getOriginalOrder.prices.value_text;
+        return this.getOriginalOrder.prices && this.getOriginalOrder.prices.value_text;
       },
 
       getOriginalOrderId() {
@@ -217,7 +223,7 @@
 
       totalAccessoryPrice() {
         return this.accessoryList
-          .map(it => it.price * it.quantity)
+          .map(it => it.finalPricePure)
           .reduce((acc, item) => acc + item, 0);
       },
     },
@@ -264,7 +270,12 @@
       },
 
       deleteAccessory(indexForDeleting) {
-        this.accessoryList.splice(indexForDeleting, 1)
+        this.accessoryList.splice(indexForDeleting, 1);
+
+        getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
+          .then((total) => {
+            this.total = total;
+        })
 
         if (this.accessoryList.length === 0) {
           this.redirect();

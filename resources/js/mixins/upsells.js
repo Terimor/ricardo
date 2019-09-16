@@ -4,6 +4,8 @@ export default {
       const {
         priceFormatted,
         benefitList,
+        finalPrice,
+        finalPricePure,
         imageUrl,
         price,
         name,
@@ -13,6 +15,8 @@ export default {
       const cartData = {
         priceFormatted,
         benefitList,
+        finalPrice,
+        finalPricePure,
         imageUrl,
         quantity,
         name,
