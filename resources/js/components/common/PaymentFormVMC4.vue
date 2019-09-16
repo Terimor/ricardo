@@ -55,8 +55,8 @@
               theme="variant-1"
               label="Your Phone Number"
               :rest="{
-                    autocomplete: 'off'
-                  }"
+                autocomplete: 'off'
+              }"
               v-model="form.stepTwo.phone"/>
         </div>
         <div class="step step-3" v-if="step === 3">
@@ -66,14 +66,14 @@
               v-model="form.paymentType">
             <div class="card-types">
               <pay-method-item
-                  :validation="$v.form.stepThree.cardType"
-                  v-for="item in cardNames"
-                  :key="item.value"
-                  :input="{
+                :validation="$v.form.stepThree.cardType"
+                v-for="item in cardNames"
+                :key="item.value"
+                :input="{
                   value: item.value,
                   imgUrl: item.imgUrl,
                 }"
-                  :value="form.paymentType"/>
+                :value="form.paymentType"/>
             </div>
           </radio-button-group>
           <form v-if="form.paymentType !== 'paypal' && form.paymentType">
@@ -102,23 +102,25 @@
                   </div>
                   <div class="card-date d-flex">
                     <select-field
-                        :validation="$v.form.stepThree.month"
-                        validationMessage="Required"
-                        :rest="{
-                          placeholder: 'Month'
-                        }"
-                        theme="variant-1"
-                        :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
-                        v-model="form.stepThree.month"/>
+                      :validation="$v.form.stepThree.month"
+                      validationMessage="Required"
+                      :rest="{
+                        placeholder: 'Month'
+                      }"
+                      theme="variant-1"
+                      :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
+                      v-model="form.stepThree.month"
+                    />
                     <select-field
-                        :validation="$v.form.stepThree.year"
-                        validationMessage="Required"
-                        :rest="{
-                          placeholder: 'Year'
-                        }"
-                        theme="variant-1"
-                        :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
-                        v-model="form.stepThree.year"/>
+                      :validation="$v.form.stepThree.year"
+                      validationMessage="Required"
+                      :rest="{
+                        placeholder: 'Year'
+                      }"
+                      theme="variant-1"
+                      :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+                      v-model="form.stepThree.year"
+                    />
                   </div>
                 </div>
                 <div>
@@ -127,73 +129,74 @@
                       <span class="label">CVV code</span>
                     </div>
                     <text-field
-                        :validation="$v.form.stepThree.cvv"
-                        @click-postfix="openCVVModal"
-                        validationMessage="Required"
-                        class="cvv-field"
-                        theme="variant-1"
-                        :rest="{
-                          maxlength: 4,
-                          pattern: '\\d*',
-                          type: 'tel',
-                          autocomplete: 'cc-csc',
-                          'data-bluesnap': 'encryptedCvv'
-                        }"
-                        v-model="form.stepThree.cvv"
-                        postfix="<i class='fa fa-question-circle cursor-pointer'></i>"
+                      :validation="$v.form.stepThree.cvv"
+                      @click-postfix="openCVVModal"
+                      validationMessage="Required"
+                      class="cvv-field"
+                      theme="variant-1"
+                      :rest="{
+                        maxlength: 4,
+                        pattern: '\\d*',
+                        type: 'tel',
+                        autocomplete: 'cc-csc',
+                        'data-bluesnap': 'encryptedCvv'
+                      }"
+                      v-model="form.stepThree.cvv"
+                      postfix="<i class='fa fa-question-circle cursor-pointer'></i>"
                     />
                   </div>
                 </div>
               </div>
               <text-field
-                  :validation="$v.form.stepThree.city"
-                  validationMessage="Please enter your city"
-                  element-loading-spinner="el-icon-loading"
-                  theme="variant-1"
-                  label="City"
-                  :rest="{
-                    placeholder: 'City',
-                    autocomplete: 'shipping locality'
-                  }"
-                  v-model="form.stepThree.city"/>
+                :validation="$v.form.stepThree.city"
+                validationMessage="Please enter your city"
+                element-loading-spinner="el-icon-loading"
+                theme="variant-1"
+                label="City"
+                :rest="{
+                  placeholder: 'City',
+                  autocomplete: 'shipping locality'
+                }"
+                v-model="form.stepThree.city"/>
               <text-field
-                  :validation="$v.form.stepThree.state"
-                  validationMessage="Please enter your state"
-                  element-loading-spinner="el-icon-loading"
-                  theme="variant-1"
-                  label="State"
-                  :rest="{
-                    placeholder: 'State',
-                    autocomplete: 'shipping locality'
-                  }"
-                  v-model="form.stepThree.state"/>
+                :validation="$v.form.stepThree.state"
+                validationMessage="Please enter your state"
+                element-loading-spinner="el-icon-loading"
+                theme="variant-1"
+                label="State"
+                :rest="{
+                  placeholder: 'State',
+                  autocomplete: 'shipping locality'
+                }"
+                v-model="form.stepThree.state"/>
               <text-field
-                  :validation="$v.form.stepThree.zipCode"
-                  validationMessage="Please enter your zip code"
-                  theme="variant-1"
-                  label="Zip Code"
-                  :rest="{
-                    placeholder: 'Zip code'
-                  }"
-                  id="zip-code-field"
-                  v-model="form.stepThree.zipCode"/>
+                :validation="$v.form.stepThree.zipCode"
+                validationMessage="Please enter your zip code"
+                theme="variant-1"
+                label="Zip Code"
+                :rest="{
+                  placeholder: 'Zip code'
+                }"
+                id="zip-code-field"
+                v-model="form.stepThree.zipCode"/>
               <select-field
-                  :validation="$v.form.stepThree.country"
-                  validationMessage="Invalid field"
-                  theme="variant-1"
-                  label="Country"
-                  class="country"
-                  :rest="{
-                    placeholder: 'Country'
-                  }"
-                  :list="countryList"
-                  v-model="form.stepThree.country"/>
+                :validation="$v.form.stepThree.country"
+                validationMessage="Invalid field"
+                theme="variant-1"
+                label="Country"
+                class="country"
+                :rest="{
+                  placeholder: 'Country'
+                }"
+                :list="countryList"
+                v-model="form.stepThree.country"/>
             </div>
             <el-dialog
-                @click="isOpenCVVModal = false"
-                class="cvv-popup"
-                title="Where do I find my security code?"
-                :visible.sync="isOpenCVVModal">
+              @click="isOpenCVVModal = false"
+              class="cvv-popup"
+              title="Where do I find my security code?"
+              :visible.sync="isOpenCVVModal"
+            >
               <div class="cvv-popup__content">
                 <p>The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it
                   is
@@ -207,17 +210,19 @@
         </div>
         <div class="buttons">
           <button
-              v-if="form.paymentType !== 'paypal' && step === 3"
-              @click="submit"
-              class="submit-btn"
-              type="button">
+            v-if="form.paymentType !== 'paypal' && step === 3"
+            @click="submit"
+            class="submit-btn"
+            type="button"
+          >
             YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW
           </button>
           <button
-              v-if="form.paymentType === 'paypal' && step === 3"
-              @click="submit"
-              class="submit-btn paypal-btn"
-              type="button">
+            v-if="form.paymentType === 'paypal' && step === 3"
+            @click="submit"
+            class="submit-btn paypal-btn"
+            type="button"
+          >
             <span class="purchase-button-text">Buy Now Risk-Free with</span>
             <img src="/images/cc-icons/paypal-highq.png" alt="Paypal">
           </button>
@@ -233,15 +238,19 @@
       class="deal-popup"
       title="Please select a product promotion."
       :lock-scroll="false"
-      :visible.sync="isOpenPromotionModal">
-        <div class="deal-popup__content">
-            <button
-                @click="isOpenPromotionModal = false"
-                type="button"
-                class="green-button-animated">
-                <span class="purchase-button-text">OK, I understand</span>
-            </button>
-        </div>
+      :visible.sync="isOpenPromotionModal"
+    >
+      <div class="deal-popup__content">
+        <button
+          @click="isOpenPromotionModal = false"
+          type="button"
+          class="green-button-animated"
+        >
+          <span class="purchase-button-text">
+            OK, I understand
+          </span>
+        </button>
+      </div>
     </el-dialog>
     </div>
   </div>

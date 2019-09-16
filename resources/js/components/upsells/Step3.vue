@@ -9,7 +9,7 @@
       <h5>
         Last chance! Get 1 more eazyclean for just
         <span class="price">
-          {{ price }}!
+          {{ priceFormatted }}!
         </span>
       </h5>
       <div class="content-with-image">
@@ -22,13 +22,14 @@
       </div>
       <div class="upsells-component__bot">
         <select-field
+          v-if="upsellPrices"
           label="Please choose:"
           v-model="quantity"
           :list="selectList"
         />
         <green-button
-          :is-loading="isLoading"
-          @click="addToCart(quantity)"
+          :is-loading="isLoading || !upsellPrices"
+          @click="add(quantity)"
         >
           Add To Cart
         </green-button>
@@ -38,7 +39,8 @@
 </template>
 
 <script>
-import upsells from '../../mixins/upsells'
+import upsells from '../../mixins/upsells';
+import { getUppSells } from '../../services/upsells';
 export default {
   name: 'Step3',
   mixins: [upsells],
@@ -47,55 +49,73 @@ export default {
       default: null
     },
     name: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     description: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     price: {
-    type: Number,
-    default: 0,
+      type: Number,
+      default: 0,
+    },
+    priceFormatted: {
+      type: String,
+      default: '',
     },
     id: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     imageUrl: {
-    type: String,
-    default: '',
+      type: String,
+      default: '',
     },
     isLoading: {
-    type: Boolean,
-    default: false,
+      type: Boolean,
+      default: false,
     },
   },
   data () {
     return {
       quantity: 1,
+      upsellPrices: null,
+      finalPrice: null,
+      finalPricePure: null,
     }
   },
 
   computed: {
     selectList() {
-      return [
-        {
-          label: `1x ${this.name} - ${this.price}`,
-          text: `1x ${this.name} - ${this.price}`,
-          value: 1,
-        }, {
-          label: `2x ${this.name} - ${this.price * 2}`,
-          text: `2x ${this.name} - ${this.price * 2}`,
-          value: 2,
-        }, {
-          label: `3x ${this.name} - ${this.price * 3}`,
-          text: `3x ${this.name} - ${this.price * 3}`,
-          value: 3,
-        },
-      ]
+      const data = Array(3).fill('').map((item, index) => {
+        const value = index + 1
+
+        return item = {
+          label: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].value_text}`,
+          text: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].value_text}`,
+          value: value,
+        }
+      })
+
+      return data;
     },
   },
+
+  mounted() {
+    getUppSells(this.id, 3).then(({ data }) => {
+      this.upsellPrices = data.upsell.upsellPrices;
+    });
+  },
+
+  methods: {
+    add(quantity) {
+      this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].value_text;
+      this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].value;
+
+      this.addToCart(quantity);
+    }
+  }
 };
 </script>
 

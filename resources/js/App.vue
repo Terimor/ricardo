@@ -1,27 +1,28 @@
 <template>
   <div>
-      <smc7-component
-          :showPreloader="showPreloader"
-          v-if="queryParams.tpl === 'smc7'" />
-      <vmc4-component
-          :showPreloader="showPreloader"
-          :data="checkoutData"
-          v-else-if="queryParams.tpl === 'vmc4'" />
-      <emc1-component
-          :showPreloader="showPreloader"
-          :skusList="skusList"
-          v-else />
-      <preloader-3
-        v-if="+queryParams.preload === 3"
-        :countryCode="checkoutData.countryCode"
-        :show-preloader.sync="showPreloader">
-      </preloader-3>
+    <smc7-component
+      :showPreloader="showPreloader"
+      v-if="queryParams.tpl === 'smc7'" />
+    <vmc4-component
+      :showPreloader="showPreloader"
+      :data="checkoutData"
+      v-else-if="queryParams.tpl === 'vmc4'" />
+    <emc1-component
+      :showPreloader="showPreloader"
+      :skusList="skusList"
+      v-else />
+    <preloader-3
+      v-if="+queryParams.preload === 3"
+      :countryCode="checkoutData.countryCode"
+      :show-preloader.sync="showPreloader"/>
     <leave-modal
-      v-if="+queryParams.exit === 1"></leave-modal>
+      v-if="+queryParams.exit === 1"
+    />
   </div>
 </template>
 
 <script>
+import { t } from './utils/i18n';
 import emc1 from './components/emc1'
 import smc7 from './components/smc7'
 import vmc4 from './components/vmc4'
@@ -33,8 +34,8 @@ export default {
     return {
       showPreloader: true,
       title: checkoutData.product.skus[0].name,
-      additionalTitle: " Checkout",
-      waitTitle: 'WAIT! YOU FORGOT: You have active cart items!'
+      additionalTitle: ' ' + t('checkout.page_title'),
+      waitTitle: t('checkout.page_title.wait'),
     }
   },
   mixins: [queryToComponent],

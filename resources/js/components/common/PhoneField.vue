@@ -22,6 +22,7 @@
 export default {
   name: 'PhoneField',
   props: ['value', 'label', 'theme', 'validation', 'validationMessage', 'countryCode'],
+
   computed: {
     id () {
       return 'phone-' + this.label.replace(/[ ]/g, '-').toLowerCase()
@@ -30,6 +31,7 @@ export default {
       return this.validation && this.validation.$dirty && this.validation.$invalid
     }
   },
+
   methods: {
     input (e) {
       this.$emit('input', e.target.value)
@@ -38,6 +40,7 @@ export default {
       }
     }
   },
+
   mounted () {
     const selector = document.querySelector(`#${this.id}`)
     window.intlTelInput(selector, {

@@ -1,17 +1,35 @@
 <template>
-    <div class="paypal-button-container d-flex justify-content-center"></div>
+    <div class="paypal-button-container d-flex justify-content-center" />
 </template>
 
 <script>
   export default {
     name: 'PaypalButton',
-    props: ['createOrder', 'onApprove', '$v'],
+    props: [
+      'createOrder',
+      'onApprove',
+      '$v'
+    ],
+
     data() {
       return {
         inputCheckbox: this.$v.required,
         action: null
       }
     },
+
+    watch: {
+      '$v.required' () {
+        if (this.action) {
+          this.action.enable();
+        }
+      }
+    },
+
+    mounted () {
+      this.initButton();
+    },
+
     methods: {
       initButton () {
         const { createOrder, onApprove, $v } = this;
@@ -48,16 +66,6 @@
         }).render('.paypal-button-container');
       }
     },
-    watch: {
-      '$v.required' () {
-        if (this.action) {
-          this.action.enable();
-        }
-      }
-    },
-    mounted () {
-      this.initButton()
-    }
   };
 </script>
 

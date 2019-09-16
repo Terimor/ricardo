@@ -1,41 +1,84 @@
 <template>
-    <div :id="id" class="upsells-item" :class="{ 'main': !withRemoveButton, 'is-accessory': withRemoveButton }">
+    <div
+        :id="id"
+        class="upsells-item"
+        :class="{
+            'main': !withRemoveButton,
+            'is-accessory': withRemoveButton
+        }">
         <div class="upsells-item__image">
             <img :src="imageUrl" alt="">
         </div>
         <div class="upsells-item__content">
             <h5>{{name}}</h5>
             <ul class="benefit-list">
-                <li v-for="benefit in benefitList">{{benefit}}</li>
+                <li
+                    v-for="benefit in benefitList"
+                    :key="benefit"
+                >
+                    {{benefit}}
+                </li>
+                <li>Subtotatal:
+                    {{ finalPrice || subtotal }}
+                </li>
             </ul>
         </div>
-        <div class="upsells-item__remove-block" v-if="withRemoveButton">
-            <el-button type="danger" @click="deleteAccessory">Remove</el-button>
+        <div
+            class="upsells-item__remove-block"
+            v-if="withRemoveButton"
+        >
+            <el-button
+                type="danger"
+                @click="deleteAccessory"
+            >
+                Remove
+            </el-button>
         </div>
     </div>
 </template>
 
 <script>
-  import { fade } from '../../utils/common';
+    import { fade } from '../../utils/common';
+    import upsellsMixin from '../../mixins/upsells';
+    import { getUppSells } from '../../services/upsells';
 
-  export default {
-    name: 'UpsellsItem',
-    props: ['name', 'benefitList', 'withRemoveButton', 'imageUrl', 'idx'],
-    computed: {
-      id () {
-        return 'upsells-item-' + this.idx
-      }
-    },
-    methods: {
-      deleteAccessory () {
-        const node = document.querySelector('#' + this.id)
-        fade('out', 250, node)
-          .then(() => {
-                this.$emit('deleteAccessory', this.idx)
-            })
-      }
-    }
-  };
+    export default {
+        name: 'UpsellsItem',
+        mixins: [upsellsMixin],
+        props: [
+            'name',
+            'benefitList',
+            'withRemoveButton',
+            'imageUrl',
+            'idx',
+            'itemData',
+            'price',
+            'quantity',
+            'subtotal',
+            'finalPrice',
+        ],
+
+        data: () => ({
+            upsellPrices: null,
+        }),
+
+        computed: {
+            id () {
+                return 'upsells-item-' + this.idx
+            },
+        },
+
+        methods: {
+            deleteAccessory () {
+                const subOrder = JSON.parse(localStorage.getItem('subOrder'));
+                const deleteIndex = subOrder.findIndex((item) => item.id == this.itemData.id);
+
+                subOrder.splice(deleteIndex, 1);
+                localStorage.setItem('subOrder', JSON.stringify(subOrder));
+                this.$emit('deleteAccessory', this.idx);
+            },
+        }
+    };
 </script>
 
 <style lang="scss">

@@ -1,6 +1,6 @@
 <template>
   <div class="date-picker-field">
-      <label :for="id">{{label}}</label>
+      <label :for="id">{{ label }}</label>
       <el-date-picker
         @input="input"
         :id="id"
@@ -15,20 +15,29 @@
 <script>
   export default {
     name: 'DatePicker',
-    props: ['value', 'theme', 'rest', 'label', 'pickerOptions'],
+    props: [
+      'value',
+      'theme',
+      'rest',
+      'label',
+      'pickerOptions'
+    ],
+
     data () {
       return {
         value1: null
       }
     },
+
     computed: {
       id () {
-        return 'date-picker-' + this.label.replace(/[ ]/g, '-').toLowerCase()
+        return 'date-picker-' + this.label.replace(/[ ]/g, '-').toLowerCase();
       }
     },
+
     methods: {
       input (val) {
-        this.$emit('input', val)
+        this.$emit('input', val);
       }
     }
   };

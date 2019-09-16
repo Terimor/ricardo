@@ -18,10 +18,9 @@
 
 @section('content')
     <div class="container thank-you" id="thank-you">
-        <p class="thank-you__order">Order: {{ $orderCustomer->_id }}</p>
+        <p class="thank-you__order">Order: {{ $orderCustomer->number }}</p>
         <h2 class="thank-you__name">Thank you {{ $orderCustomer->customer_first_name }}</h2>
         <div class="border-box thank-you__container">
-            @{{ getShippingAddress }}
             <div id="map">
                 <iframe
                     class="resp-iframe"
@@ -44,35 +43,40 @@
             <div class="thank-you__order">
                 <div class="d-flex">
                     <div class="thank-you__order__image">
-                        <img :src="selectedProductData.prices.image" alt="">
+                        <img :src="selectedProductData.image" alt="">
                         <div class="quantity">@{{ selectedProductData.quantity }}</div>
                     </div>
                     <div class="thank-you__order__name">{{ $product->long_name }}</div>
                 </div>
-                <div class="thank-you__order__price">@{{ selectedProductData.prices.value }}</div>
+                <div class="thank-you__order__price">@{{ selectedProductData.prices.value_text }}</div>
             </div>
-            <div
-                class="thank-you__order"
-                v-for="order in subOrder"
-            >
-                <div class="d-flex">
-                    <div class="thank-you__order__image">
-                        <img :src="order.imageUrl" alt="">
-                        <div class="quantity">@{{ order.quantity }}</div>
-                    </div>
-                    <div class="thank-you__order__name">@{{ order.name }}</div>
-                </div>
-                <div class="thank-you__order__price">@{{ order.price }}</div>
+            <div v-for="order in subOrder">
+                <thank-you-item
+                    :order="order"
+                ></thank-you-item>
             </div>
 
             <hr>
 
-            <p class="paragraph d-flex justify-content-between"><span>Subtotal:</span><span>@{{ totalPrice }}</span></p>
-            <p class="paragraph d-flex justify-content-between"><span>Payment method:</span><span>PayPal</span></p>
+            <p class="paragraph d-flex justify-content-between">
+                <span>Subtotal:</span>
+                <span>@{{ total }}</span>
+            </p>
+            <p class="paragraph d-flex justify-content-between">
+                <span>Payment method:</span>
+                <span>PayPal</span>
+            </p>
 
             <hr>
 
-            <p class="paragraph d-flex justify-content-between"><span>Order Total:</span><span class="bold">@{{ totalPrice }}</span></p>
+            <p class="paragraph d-flex justify-content-between">
+                <span>
+                    Order Total:
+                </span>
+                <span class="bold">
+                    @{{ total }}
+                </span>
+            </p>
 
         </div>
         <div class="border-box thank-you__customer-info">
@@ -105,7 +109,10 @@
                 </li>
             </ul>
 
-            <textarea id="quote" rows="10">I just bought this awesome product. Thought I’d share this with you</textarea>
+            <textarea id="quote" rows="10">
+                I just bought this awesome product. Thought I’d share this with you
+            </textarea>
+
             <div class="d-flex justify-content-center">
                 <button
                     id="share"

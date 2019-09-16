@@ -12,12 +12,14 @@
       product: @json($product),
       productImage: '{{$product->logo_image}}',
     }
+
+    const loadedPhrases = @json($loadedPhrases);
 </script>
 <script src="{{ asset('js/app.js') }}" defer></script>
 @endsection
 
 @section('content')
-@section('title', $product->skus[0]['name'] . ' Checkout')
+@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
 
 @include('components.product_offer')
 

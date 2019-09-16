@@ -22,7 +22,7 @@ class OrderService
         // In situation when we need single txn record.
         $model = Txn::firstOrNew(['hash' => $data['hash']]);
         $model->fill($data);
-		
+
         $validator = $model->validate();
         if ($validator->fails()) {
             logger()->error("Add Txn fails", ['errors' => $validator->errors()->messages()]);

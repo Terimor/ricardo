@@ -135,7 +135,7 @@ const promo = new Vue({
       this.checkoutData.countryCode === 'BR' ? '3' :
         this.checkoutData.countryCode === 'MX' ? '1' :
           1
-    this.changeWarrantyValue()
+    this.changeWarrantyValue();
 
     this.showNotice();
 
@@ -143,11 +143,11 @@ const promo = new Vue({
       label: it.name,
       text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
       value: it.code,
-      imageUrl: it.quantity_image[1]
+      imageUrl: it.quantity_image[1],
     }));
 
-    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
-    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
+    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty);
+    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null;
   },
 
   computed: {

@@ -34,22 +34,28 @@
 </template>
 
 <script>
-import isMobile from '../../mixins/isMobile'
 import moment from 'moment'
+import isMobile from '../../mixins/isMobile'
 import queryToComponent from '../../mixins/queryToComponent';
 
 let interval
 
 export default {
   name: 'Timer',
-  mixins: [isMobile, queryToComponent],
+  mixins: [
+    isMobile,
+    queryToComponent
+  ],
+
   finishTime: moment().add(15, 'minutes').add(4, 'seconds'),
+
   data () {
     return {
       time: '15:03',
       displayGreenTimer: false,
     }
   },
+
   methods: {
     changeTimeByDifference () {
       const newDiff = moment(this.$options.finishTime.diff(moment())).format('mm:ss')

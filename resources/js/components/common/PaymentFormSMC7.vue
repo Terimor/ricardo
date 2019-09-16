@@ -20,7 +20,7 @@
         :rest="{
           placeholder: 'Street and number',
           autocomplete: 'street-address'
-                }"
+        }"
         v-model="paymentForm.streetAndNumber"/>
     <text-field
         :validation="$v.form.city"
@@ -60,13 +60,14 @@
         v-model="paymentForm.paymentType">
       <div class="card-types">
         <pay-method-item
-            v-for="item in cardNames"
-            :key="item.value"
-            :input="{
+          v-for="item in cardNames"
+          :key="item.value"
+          :input="{
             value: item.value,
             imgUrl: item.imgUrl,
           }"
-            :value="paymentForm.paymentType" />
+          :value="paymentForm.paymentType"
+        />
       </div>
 
     </radio-button-group>

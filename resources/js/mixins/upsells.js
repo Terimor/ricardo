@@ -2,21 +2,40 @@ export default {
   methods: {
     addToCart (quantity) {
       const {
-        name,
+        priceFormatted,
         benefitList,
+        finalPrice,
+        finalPricePure,
         imageUrl,
         price,
+        name,
         id,
-      } = this
+      } = this;
 
-      this.$emit('addAccessory', {
+      const cartData = {
+        priceFormatted,
+        benefitList,
+        finalPrice,
+        finalPricePure,
+        imageUrl,
         quantity,
         name,
-        benefitList,
-        imageUrl,
         price,
         id,
-      })
-    }
-  }
+      }
+
+      const oldSubOrders = JSON.parse(localStorage.getItem('subOrder'));
+
+      if (oldSubOrders && id) {
+        oldSubOrders.push(cartData);
+        localStorage.setItem('subOrder', JSON.stringify(oldSubOrders));
+      }
+
+      if (!oldSubOrders) {
+        localStorage.setItem('subOrder', JSON.stringify([cartData]));
+      }
+
+      this.$emit('addAccessory', cartData)
+    },
+  },
 }
