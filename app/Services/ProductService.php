@@ -52,7 +52,7 @@ class ProductService
      * Get upsell product by ID
      * @param type $productId
      */
-    public function getUpsellProductById(OdinProduct $product, string $productId, $maxQuantity = 5)
+    public function getUpsellProductById($product, string $productId, $maxQuantity = 5)
     {	        
 		// check upsell product by ID
 		$productUpsells = !empty($product->upsells) ? $product->upsells : null;
@@ -110,7 +110,7 @@ class ProductService
 	 * @param array $ulsells
 	 * @param float $total
 	 */
-	public function calculateUpsellsTotal(OdinProduct $product, array $upsells, float $total) : array
+	public function calculateUpsellsTotal($product, array $upsells, float $total) : array
 	{   
 		// TODO: modify WHERE IN        
 		$upsellProducts = [];
