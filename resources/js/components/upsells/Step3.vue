@@ -28,8 +28,8 @@
           :list="selectList"
         />
         <green-button
-          :is-loading="isLoading"
-          @click="addToCart(quantity)"
+          :is-loading="isLoading || !upsellPrices"
+          @click="add(quantity)"
         >
           Add To Cart
         </green-button>
@@ -40,6 +40,7 @@
 
 <script>
 import upsells from '../../mixins/upsells';
+import { getUppSells } from '../../services/upsells';
 export default {
   name: 'Step3',
   mixins: [upsells],
@@ -80,16 +81,8 @@ export default {
     return {
       quantity: 1,
       upsellPrices: null,
-    }
-  },
-
-  watch: {
-    id(id) {
-      if(id) {
-        this.getUppSells(this.id, 3).then(({ data }) => {
-          this.upsellPrices = data.upsell.upsellPrices
-        });
-      }
+      finalPrice: null,
+      finalPricePure: null,
     }
   },
 
@@ -108,6 +101,21 @@ export default {
       return data;
     },
   },
+
+  mounted() {
+    getUppSells(this.id, 3).then(({ data }) => {
+      this.upsellPrices = data.upsell.upsellPrices;
+    });
+  },
+
+  methods: {
+    add(quantity) {
+      this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].value_text;
+      this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].value;
+
+      this.addToCart(quantity);
+    }
+  }
 };
 </script>
 

@@ -34,23 +34,26 @@
               :validation="$v.form.deal"
             />
 
-            <h2 v-html="textSelectVariant"></h2>
-            <!-- TODO: check if this is useless, remove it:
-            warrantyPriceText="setWarrantyPriceText()"  -->
-            <select-field
-              popperClass="emc1-popover-variant"
-              v-model="form.variant"
-              :validation="$v.form.variant"
-              validationMessage="Invalid field"
-              :config="{
-                prefix: 'EchoBeat7'
-              }"
-              :rest="{
-                placeholder: 'Variant'
-              }"
-              :list="variantList"
-              warrantyPriceText="setWarrantyPriceText()"
-            />
+            <div v-show="variantList.length > 1">
+              <h2 v-html="textSelectVariant"></h2>
+              <!-- TODO: check if this is useless, remove it:
+              warrantyPriceText="setWarrantyPriceText()"  -->
+              <select-field
+                popperClass="emc1-popover-variant"
+                v-model="form.variant"
+                :validation="$v.form.variant"
+                validationMessage="Invalid field"
+                :config="{
+                  prefix: 'EchoBeat7'
+                }"
+                :rest="{
+                  placeholder: 'Variant'
+                }"
+                :list="variantList"
+                warrantyPriceText="setWarrantyPriceText()"
+              />
+            </div>
+
             <transition name="el-zoom-in-top">
               <button v-show="warrantyPriceText" id="warranty-field-button">
                 <label for="warranty-field" class="label-container-checkbox">
@@ -611,8 +614,9 @@ export default {
     } else {
       this.showNotice()
     }
-    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
-    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
+
+    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty);
+    this.form.deal = qtyIndex !== -1 ? +this.queryParams.qty : null;
   }
 }
 </script>

@@ -15,24 +15,24 @@
           for 50% OFF!
           </h5>
         <div class="upsells-component__item">
-            <div
-              class="benefits"
-              v-html="description"
-            />
+          <div
+            class="benefits"
+            v-html="description"
+          />
         </div>
         <div class="upsells-component__bot">
-            <green-button
-              @click="addToCart(1)"
-              :is-loading="isLoading"
-            >
-                YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
-            </green-button>
-            <green-button
-              @click="addToCart(2)"
-              :is-loading="isLoading"
-            >
-                YES! I want to add 2 {{ name }} TO My Order For Just {{ upsellPrices['2'] && upsellPrices['2'].value_text }}
-            </green-button>
+          <green-button
+            @click="addProduct(1)"
+            :is-loading="!priceFormatted"
+          >
+              YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
+          </green-button>
+          <green-button
+            @click="addProduct(2)"
+            :is-loading="!upsellPrices['2']"
+          >
+              YES! I want to add 2 {{ name }} TO My Order For Just {{ upsellPrices['2'] && upsellPrices['2'].value_text }}
+          </green-button>
         </div>
       </div>
     </div>
@@ -83,12 +83,28 @@
 
     data: () => ({
       upsellPrices: {},
+      finalPrice: null,
+      finalPricePure: null,
     }),
 
     mounted() {
       getUppSells(this.id, 2).then(({ data }) => {
         this.upsellPrices = data.upsell.upsellPrices
       });
+    },
+
+    methods: {
+      addProduct(quantity) {
+        if (quantity == 1) {
+          this.finalPrice = this.priceFormatted;
+          this.finalPricePure = this.price;
+        } else {
+          this.finalPrice = this.upsellPrices['2'] && this.upsellPrices['2'].value_text;
+          this.finalPricePure = this.upsellPrices['2'] && this.upsellPrices['2'].value;
+        }
+
+        this.addToCart(quantity);
+      }
     }
   };
 </script>

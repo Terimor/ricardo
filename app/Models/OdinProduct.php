@@ -147,58 +147,58 @@ class OdinProduct extends Model
                     $value[$key][$quantity]['value'] = $price['price'];
                     $value[$key][$quantity]['value_text'] = $price['price_text'];
 
-          if ($quantity == 1) {
-          //save one item price
-          $oneItemPrice = $price['price'];
-          }
+                    if ($quantity == 1) {
+                        //save one item price
+                        $oneItemPrice = $price['price'];
+                    }
 
                     $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
 
-          $value[$key][$quantity]['unit_value_text'] = $numberFormatter->formatCurrency($price['price'] / $quantity, $currency->code);
+                    $value[$key][$quantity]['unit_value_text'] = $numberFormatter->formatCurrency($price['price'] / $quantity, $currency->code);
 
-          $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
-          $value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
+                    $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
+                    $value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
 
-          $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
+                    $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
 
-          if (!empty($this->warranty_percent)) {
-            $warranty_price = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
-            $value[$key][$quantity]['warranty_price'] = $warranty_price;
-            $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($warranty_price, $currency->code);
-            $installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
-            $installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
-            $value[$key][$quantity]['installments3_warranty_price_text'] = $numberFormatter->formatCurrency($installments3_warranty_price, $currency->code);
-            $value[$key][$quantity]['installments6_warranty_price_text'] = $numberFormatter->formatCurrency($installments6_warranty_price, $currency->code);
-          } else {
-            $value[$key][$quantity]['warranty_price'] = 0;
-            $value[$key][$quantity]['warranty_price_text'] = null;
-            $value[$key][$quantity]['installments3_warranty_price_text'] = null;
-            $value[$key][$quantity]['installments6_warranty_price_text'] = null;
-          }
+                    if (!empty($this->warranty_percent)) {
+                      $warranty_price = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
+                      $value[$key][$quantity]['warranty_price'] = $warranty_price;
+                      $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($warranty_price, $currency->code);
+                      $installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
+                      $installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
+                      $value[$key][$quantity]['installments3_warranty_price_text'] = $numberFormatter->formatCurrency($installments3_warranty_price, $currency->code);
+                      $value[$key][$quantity]['installments6_warranty_price_text'] = $numberFormatter->formatCurrency($installments6_warranty_price, $currency->code);
+                    } else {
+                      $value[$key][$quantity]['warranty_price'] = 0;
+                      $value[$key][$quantity]['warranty_price_text'] = null;
+                      $value[$key][$quantity]['installments3_warranty_price_text'] = null;
+                      $value[$key][$quantity]['installments6_warranty_price_text'] = null;
+                    }
 
-              //installments
-          $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
-          $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
-          $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
-          $installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
+                        //installments
+                    $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
+                    $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
+                    $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
+                    $installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
 
-          $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($installments3_value, $currency->code);
-          $value[$key][$quantity]['installments3_unit_value_text'] = $numberFormatter->formatCurrency($installments3_value / $quantity, $currency->code);
-          $value[$key][$quantity]['installments3_old_value_text'] = $numberFormatter->formatCurrency($installments3_old_value, $currency->code);
-          $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
-          $value[$key][$quantity]['installments6_unit_value_text'] = $numberFormatter->formatCurrency($installments6_value / $quantity, $currency->code);
-          $value[$key][$quantity]['installments6_old_value_text'] = $numberFormatter->formatCurrency($installments6_old_value, $currency->code);
-        } else {
-          logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
-        }
-      }
-      $value[$key]['currency'] = $currency->code;
-      $value[$key]['exchange_rate'] = $currency->usd_rate;
+                    $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($installments3_value, $currency->code);
+                    $value[$key][$quantity]['installments3_unit_value_text'] = $numberFormatter->formatCurrency($installments3_value / $quantity, $currency->code);
+                    $value[$key][$quantity]['installments3_old_value_text'] = $numberFormatter->formatCurrency($installments3_old_value, $currency->code);
+                    $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
+                    $value[$key][$quantity]['installments6_unit_value_text'] = $numberFormatter->formatCurrency($installments6_value / $quantity, $currency->code);
+                    $value[$key][$quantity]['installments6_old_value_text'] = $numberFormatter->formatCurrency($installments6_old_value, $currency->code);
+                  } else {
+                    logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
+                  }
+                }
+                $value[$key]['currency'] = $currency->code;
+                $value[$key]['exchange_rate'] = $currency->usd_rate;
 
-      if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
-        $returnedKey = $key;
-        break;
-      }
+                if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
+                  $returnedKey = $key;
+                  break;
+                }
         }
 
         if (request()->has('cop_id')) {
@@ -254,7 +254,7 @@ class OdinProduct extends Model
      */
     public function getLogoImageAttribute($value)
     {
-        return !empty($this->logo_image_id) ? $this->images[$this->logo_image_id] : null;
+        return (!empty($this->logo_image_id) && !empty( $this->images[$this->logo_image_id])) ? $this->images[$this->logo_image_id] : null;
     }
 
     /**
@@ -262,7 +262,7 @@ class OdinProduct extends Model
      */
     public function getUpsellHeroImageAttribute($value)
     {
-        return !empty($this->upsell_hero_image_id) ? $this->images[$this->upsell_hero_image_id] : null;
+        return (!empty($this->upsell_hero_image_id) && !empty($this->images[$this->upsell_hero_image_id])) ? $this->images[$this->upsell_hero_image_id] : null;
     }
 
     /**
@@ -271,8 +271,8 @@ class OdinProduct extends Model
      */
     public function getBillingDescriptorAttribute($value)
     {
-    $billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
-    return "*{$billingDescriptorPrefix}*{$value}";
+        $billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
+        return "*{$billingDescriptorPrefix}*{$value}";
     }
 
     /**

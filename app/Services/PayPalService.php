@@ -532,7 +532,7 @@ class PayPalService
      * @param OdinOrder|null $order
      * @return array
      */
-    private function getPrice(Request $request, OdinProduct $product, OdinOrder $order = null)
+    private function getPrice(Request $request, $product, OdinOrder $order = null)
     {
         if ($request->input('order_id', null)) {
             abort_if(!$order, 404);

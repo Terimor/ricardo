@@ -147,7 +147,7 @@ const promo = new Vue({
     }));
 
     const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty);
-    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null;
+    this.form.deal = qtyIndex !== -1 ? +this.queryParams.qty : null;
   },
 
   computed: {

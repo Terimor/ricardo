@@ -18,7 +18,9 @@
                 >
                     {{benefit}}
                 </li>
-                <li>Subtotal: {{ subtotalValue }}</li>
+                <li>Subtotal:
+                    {{ finalPrice || subtotal }}
+                </li>
             </ul>
         </div>
         <div
@@ -53,6 +55,7 @@
             'price',
             'quantity',
             'subtotal',
+            'finalPrice',
         ],
 
         data: () => ({
@@ -63,22 +66,6 @@
             id () {
                 return 'upsells-item-' + this.idx
             },
-
-            subtotalValue() {
-                if (this.upsellPrices && this.quantity) {
-                    return this.upsellPrices[this.quantity].value_text;
-                } else {
-                    return this.subtotal;
-                }
-            }
-        },
-
-        mounted() {
-            if (this.itemData) {
-                getUppSells(this.itemData.id, this.quantity).then(({ data }) => {
-                    this.upsellPrices = data.upsell.upsellPrices
-                });
-            }
         },
 
         methods: {

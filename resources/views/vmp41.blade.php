@@ -15,6 +15,8 @@
             product: @json($product),
             countries: @json($countries),
         };
+
+        window.loadedPhrases = @json($loadedPhrases);
     </script>
 
     <script src="{{ asset('js/views/promo.js') }}" defer></script>
@@ -122,7 +124,7 @@
                         <div class="promo__product-content">
                             <img
                                 :src="item.image"
-                                alt="item.text"
+                                :alt="item.text"
                                 class="promo__discount-image"
                             >
                             <div class="promo__product-info-wrapper">

@@ -69,7 +69,14 @@
 
             <hr>
 
-            <p class="paragraph d-flex justify-content-between"><span>Order Total:</span><span class="bold">@{{ total }}</span></p>
+            <p class="paragraph d-flex justify-content-between">
+                <span>
+                    Order Total:
+                </span>
+                <span class="bold">
+                    @{{ total }}
+                </span>
+            </p>
 
         </div>
         <div class="border-box thank-you__customer-info">
@@ -105,6 +112,7 @@
             <textarea id="quote" rows="10">
                 I just bought this awesome product. Thought I’d share this with you
             </textarea>
+
             <div class="d-flex justify-content-center">
                 <button
                     id="share"
