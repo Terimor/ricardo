@@ -32,7 +32,7 @@ class ProductController extends Controller
      * @param OdinProduct $product
      * @return OdinProduct
      */
-    public function getProduct(OdinProduct $product) : OdinProduct
+    public function getProduct($product)
     {
         $product->load([
             'category',

@@ -90,7 +90,7 @@ class EbanxService
      * @param OdinCustomer $customer
      * @param OdinProduct $product
      */
-    public function saveOrder(array $request, OdinCustomer $customer, OdinProduct $product)
+    public function saveOrder(array $request, OdinCustomer $customer, $product)
     {
         $price = (float)$product->prices[$request['quantity']]['value'];
 
