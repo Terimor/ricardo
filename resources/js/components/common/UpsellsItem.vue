@@ -18,7 +18,7 @@
                 >
                     {{benefit}}
                 </li>
-                <li>Subtotatal: {{ subtotalValue }}</li>
+                <li>Subtotal: {{ subtotalValue }}</li>
             </ul>
         </div>
         <div

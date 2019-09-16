@@ -30,7 +30,9 @@
                     :is-loading="isLoading"
                     v-bind:is="view"
                     @addAccessory="addAccessory"
-                    :id="currentUpsellItem.upsells && currentUpsellItem.upsells[accessoryStep].product_id"
+                    :id="currentUpsellItem.upsells
+                      && currentUpsellItem.upsells[accessoryStep]
+                      && currentUpsellItem.upsells[accessoryStep].product_id"
                     :name="currentUpsellItem.long_name"
                     :description="currentUpsellItem.description"
                     :price="currentUpsellItem.upsellPrices['1'].value"
