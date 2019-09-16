@@ -136,7 +136,7 @@ class ProductService
      * @return stdClass
      */
     public function localizeProduct(OdinProduct $product)
-    {        
+    {                
         // prepare localized product
         $lp = new stdClass();
         $lp->product_name = $product->product_name;
