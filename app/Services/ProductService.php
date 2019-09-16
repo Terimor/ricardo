@@ -42,6 +42,7 @@ class ProductService
             $product->setLocalImages();
         }
 
+        return $product;
         $localizedProduct = $this->localizeProduct($product);
 		
         return $localizedProduct;
@@ -136,7 +137,8 @@ class ProductService
      * @return stdClass
      */
     public function localizeProduct($product)
-    {                
+    {
+        //echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
         // prepare localized product
         $lp = new stdClass();
         $lp->product_name = $product->product_name;
@@ -152,10 +154,12 @@ class ProductService
             $prices[$quantity]['is_bestseller'] = $pricesOld[$quantity]['is_bestseller'];
             $prices[$quantity]['is_popular'] = $pricesOld[$quantity]['is_popular'];
             $prices[$quantity]['discount_percent'] = $pricesOld[$quantity]['discount_percent'];
+            $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
             $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
             $prices[$quantity]['unit_value_text'] = $pricesOld[$quantity]['unit_value_text'];
             $prices[$quantity]['old_value_text'] = $pricesOld[$quantity]['old_value_text'];
             $prices[$quantity]['warranty_price_text'] = $pricesOld[$quantity]['warranty_price_text'];
+            $prices[$quantity]['warranty_price'] = $pricesOld[$quantity]['warranty_price'];
             $prices[$quantity]['installments3_warranty_price_text'] = $pricesOld[$quantity]['installments3_warranty_price_text'];
             $prices[$quantity]['installments6_warranty_price_text'] = $pricesOld[$quantity]['installments6_warranty_price_text'];
             $prices[$quantity]['installments3_value_text'] = $pricesOld[$quantity]['installments3_value_text'];
@@ -165,6 +169,7 @@ class ProductService
             $prices[$quantity]['installments6_unit_value_text'] = $pricesOld[$quantity]['installments6_unit_value_text'];
             $prices[$quantity]['installments6_old_value_text'] = $pricesOld[$quantity]['installments6_old_value_text'];
         }
+        $prices['currency'] = $pricesOld['currency'];
         $lp->prices = $prices;
         
         $skus = [];
