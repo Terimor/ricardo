@@ -57,8 +57,7 @@ class PaypalController extends Controller
      */
     public function verifyOrder(PayPalVerfifyOrderRequest $request)
     {
-        //return $this->payPalService->verifyOrder($request);
-return ['order_id' => '5d7f73a649436003f365dc84'];
+        return $this->payPalService->verifyOrder($request);
     }
 
     /**
