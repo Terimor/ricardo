@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\OdinProduct;
 use App\Models\Domain;
 use Illuminate\Http\Request;
+use stdClass;
 
 /**
  * Class ProductService
@@ -16,7 +17,7 @@ class ProductService
      * @param Request $request
      * @return OdinProduct
      */
-    public function resolveProduct(Request $request, $needImages = false): OdinProduct
+    public function resolveProduct(Request $request, $needImages = false)
     {
         $product = null;
         if ($request->has('product')) {
@@ -41,15 +42,7 @@ class ProductService
             $product->setLocalImages();
         }
 
-		// check published status
-		/*$skus = [];
-		foreach ($product->skus as $key => $sku) {
-			if (!empty($sku['is_published'])) {
-				$skus[] = $sku;
-			}
-		}
-        
-		$product->skus = $skus;	*/			
+        $localizedProduct = $this->localizeProduct($product);
 		
         return $product;
         //abort(404);
@@ -136,4 +129,65 @@ class ProductService
 		];
 		
 	}
+    
+    /**
+     * 
+     * @param OdinProduct $product
+     * @return stdClass
+     */
+    public function localizeProduct(OdinProduct $product)
+    {
+        // prepare localized product
+        $lp = new stdClass();
+        $lp->product_name = $product->product_name;
+        $lp->description = $product->description;
+        $lp->long_name = $product->long_name;
+        $lp->billing_descriptor = $product->billing_descriptor;
+        $lp->logo_image = $product->logo_image;
+        $lp->upsell_logo_image = $product->upsell_logo_image;
+
+        $prices = [];
+        $pricesOld = $product->prices;
+        for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
+            $prices[$quantity]['is_bestseller'] = $pricesOld[$quantity]['is_bestseller'];
+            $prices[$quantity]['is_popular'] = $pricesOld[$quantity]['is_popular'];
+            $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
+            $prices[$quantity]['unit_value_text'] = $pricesOld[$quantity]['unit_value_text'];
+            $prices[$quantity]['old_value_text'] = $pricesOld[$quantity]['old_value_text'];
+            $prices[$quantity]['warranty_price_text'] = $pricesOld[$quantity]['warranty_price_text'];
+            $prices[$quantity]['installments3_warranty_price_text'] = $pricesOld[$quantity]['installments3_warranty_price_text'];
+            $prices[$quantity]['installments6_warranty_price_text'] = $pricesOld[$quantity]['installments6_warranty_price_text'];
+            $prices[$quantity]['installments3_value_text'] = $pricesOld[$quantity]['installments3_value_text'];
+            $prices[$quantity]['installments3_unit_value_text'] = $pricesOld[$quantity]['installments3_unit_value_text'];
+            $prices[$quantity]['installments3_old_value_text'] = $pricesOld[$quantity]['installments3_old_value_text'];
+            $prices[$quantity]['installments6_value_text'] = $pricesOld[$quantity]['installments6_value_text'];
+            $prices[$quantity]['installments6_unit_value_text'] = $pricesOld[$quantity]['installments6_unit_value_text'];
+            $prices[$quantity]['installments6_old_value_text'] = $pricesOld[$quantity]['installments6_old_value_text'];
+        }
+        $lp->prices = $prices;
+        
+        $skus = [];
+        $skusOld = $product->skus;
+        // skus, if not published skip it
+        foreach ($skusOld as $key => $sku) {
+            if (!$sku['is_published']) {
+                continue;
+            }
+            
+            $skus[$key]['code'] = $sku['code'];
+            $skus[$key]['name'] = $sku['name'];
+            $skus[$key]['brief'] = $sku['brief'];
+            $skus[$key]['has_battery'] = $sku['has_battery'];
+            $skus[$key]['quantity_image'] = $sku['quantity_image'];
+            
+        }
+        $lp->skus = $skus;
+        
+        $lp->upsell_plusone_text = $product->upsell_plusone_text;
+        $lp->upsell_hero_text = $product->upsell_hero_text;
+        $lp->upsells = $product->upsells;
+        $lp->image = $product->image;
+
+        return $lp;        
+    }
 }
