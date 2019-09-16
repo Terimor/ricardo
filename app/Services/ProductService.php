@@ -101,6 +101,7 @@ class ProductService
 		}		
 		$upsell->skus = $skus;
 		*/
+        
 		if (!$upsell->skus) {
 			logger()->error("UPSELL skus empty or not published", ['product' => $product->toArray()]);
 			abort(405, 'Method Not Allowed');
@@ -117,8 +118,8 @@ class ProductService
 	 * @param float $total
 	 */
 	public function calculateUpsellsTotal(OdinProduct $product, array $upsells, float $total) : array
-	{        
-		// TODO: modify WHERE IN
+	{   
+		// TODO: modify WHERE IN        
 		$upsellProducts = [];
 		$totalSumCalc = 0;
 		foreach ($upsells as $id => $quantity) {

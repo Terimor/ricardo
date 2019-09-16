@@ -156,24 +156,28 @@ class OrderController extends Controller
     {
         $order = OdinOrder::where('_id', $orderId)->first();
 
+        // get order currency
+        $currency = CurrencyService::getCurrency($order->currency);
+        
         $total = 0;
         // calculate total
-        foreach ($order->products as $product)
-        {
+        $productsTexts = [];
+        foreach ($order->products as $key => $product)
+        {            
             $total += $product['price'];
+            $productsTexts[$key]['price_text'] = CurrencyService::getLocalTextValue($product['price'], $currency);
             if (isset($product['is_main']) && $product['is_main'])
             {
                 // check warranty price
                 if (isset($product['warranty_price']) && $product['warranty_price'] > 0 ) {
                     $total += $product['warranty_price'];
+                    $productsTexts[$key]['warranty_price_text'] = CurrencyService::getLocalTextValue($product['warranty_price'], $currency);
                 }
             }
-        }
-        
-        // get order currency
-        $currency = CurrencyService::getCurrency($order->currency);
+        }        
 
         return [
+            'products' => $productsTexts,
             'total_text' => CurrencyService::getLocalTextValue($total, $currency)
         ];
     }
