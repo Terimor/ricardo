@@ -44,7 +44,7 @@ class ProductService
 
         $localizedProduct = $this->localizeProduct($product);
 		
-        return $product;
+        return $localizedProduct;
         //abort(404);
     }
     
@@ -136,7 +136,7 @@ class ProductService
      * @return stdClass
      */
     public function localizeProduct(OdinProduct $product)
-    {
+    {        
         // prepare localized product
         $lp = new stdClass();
         $lp->product_name = $product->product_name;
@@ -151,6 +151,7 @@ class ProductService
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
             $prices[$quantity]['is_bestseller'] = $pricesOld[$quantity]['is_bestseller'];
             $prices[$quantity]['is_popular'] = $pricesOld[$quantity]['is_popular'];
+            $prices[$quantity]['discount_percent'] = $pricesOld[$quantity]['discount_percent'];
             $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
             $prices[$quantity]['unit_value_text'] = $pricesOld[$quantity]['unit_value_text'];
             $prices[$quantity]['old_value_text'] = $pricesOld[$quantity]['old_value_text'];
@@ -169,7 +170,7 @@ class ProductService
         $skus = [];
         $skusOld = $product->skus;
         // skus, if not published skip it
-        foreach ($skusOld as $key => $sku) {
+        foreach ($skusOld as $key => $sku) {            
             if (!$sku['is_published']) {
                 continue;
             }
