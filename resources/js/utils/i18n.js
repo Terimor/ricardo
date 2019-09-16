@@ -10,6 +10,8 @@
 export function t(phrase, args = {}) {
   let translated = phrase;
 
+  const loadedPhrases = window.loadedPhrases || {};
+
   if (loadedPhrases[phrase]) {
     translated = loadedPhrases[phrase];
   } else {

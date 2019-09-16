@@ -259,12 +259,14 @@
 <script>
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
+  import queryToComponent from '../../mixins/queryToComponent';
 	import {getCardUrl, preparePurchaseData} from "../../utils/checkout";
 	import vmc4validation from "../../validation/vmc4-validation";
 	import {fade} from "../../utils/common";
 
 	export default {
 		name: "PaymentFormVMC4",
+    mixins: [queryToComponent],
 		components: {PayMethodItem, RadioButtonItemDeal},
 		validations: vmc4validation,
 		props: [
@@ -334,7 +336,11 @@
         if (+val !== 1 && this.countryCode === 'MX') {
           this.paymentForm.cardType = 'credit'
         }
-      }
+      },
+      list(value) {
+        const qtyIndex = value.findIndex(({ quantity }) => quantity === +this.queryParams.qty);
+        this.form.deal = qtyIndex !== -1 ? +this.queryParams.qty : null
+      },
 		},
 		methods: {
       setWarrantyPriceText(value) {
@@ -378,7 +384,7 @@
           this.step++
         }
 			}
-		}
+		},
 	}
 </script>
 <style lang="scss">
