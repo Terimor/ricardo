@@ -614,8 +614,9 @@ export default {
     } else {
       this.showNotice()
     }
-    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty)
-    this.form.deal = qtyIndex !== -1 ? qtyIndex + 1 : null
+
+    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty);
+    this.form.deal = qtyIndex !== -1 ? +this.queryParams.qty : null;
   }
 }
 </script>
