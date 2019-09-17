@@ -54,7 +54,7 @@
                 <UpsellsItem
                   :image-url="product.skus[0].quantity_image[1]"
                   :name="product.long_name"
-                  :subtotal="getOriginalOrderPrice"
+                  :subtotal="product.prices[getOriginalOrder.quantity].value_text"
                   :benefitList="[
                     `Quantity: ${getOriginalOrder.quantity}`,
                   ]"
@@ -125,7 +125,7 @@
       return {
         total: 0,
         view: 'Step1',
-        activeTab: 'second',
+        activeTab: 'third',
         accessoryStep: 0,
         accessoryList: [],
         product: upsellsData.product,
@@ -137,7 +137,7 @@
 
     mounted() {
       if(this.upsellsObj.length === 0) {
-        this.redirect();
+        // this.redirect();
       }
       this.setUpsellsAsProdsList();
       localStorage.removeItem('subOrder');
@@ -280,7 +280,7 @@
         })
 
         if (this.accessoryList.length === 0) {
-          this.redirect();
+          // this.redirect();
         }
       },
 
