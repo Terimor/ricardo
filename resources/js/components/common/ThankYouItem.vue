@@ -26,7 +26,7 @@
     import { getUppSells } from '../../services/upsells';
 
     export default {
-        name: 'UpsellsItem',
+        name: 'ThankYouItem',
         mixins: [upsellsMixin],
         props: ['order'],
 
@@ -37,7 +37,7 @@
         computed: {
             price() {
                 if (this.upsellPrices && this.order) {
-                    return this.upsellPrices[this.order.quantity].value_text
+                    return this.upsellPrices[this.order.quantity].price_text
                 }
                 return 0;
             }
