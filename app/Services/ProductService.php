@@ -123,10 +123,11 @@ class ProductService
 			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['price']) ? $upsellProduct->upsellPrices[$quantity]['price'] : 0;
 		}
         
-		if ($totalSumCalc != $total) {
+		/*if ($totalSumCalc != $total) {
 			logger()->error("Total summs not equally", ['total' => $total, 'totalSumCalc' => $totalSumCalc, 'product' => $product->toArray()]);
 			abort(409);
-		}		
+		}*/
+        
 		return [			
 			'value_text' => CurrencyService::getLocalTextValue($totalSumCalc)
 		];
