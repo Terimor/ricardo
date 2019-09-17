@@ -49,10 +49,6 @@ export default {
       type: String,
       default: '',
     },
-    imageUrl: {
-      type: String,
-      default: '',
-    },
     isLoading: {
       type: Boolean,
       default: false,
@@ -68,6 +64,7 @@ export default {
       description: null,
       priceFormatted: null,
       price: null,
+      imageUrl: null,
     }
   },
 
@@ -96,6 +93,7 @@ export default {
         this.name = data.upsell.long_name;
         this.description = data.upsell.description;
         this.upsellPrices = data.upsell.upsellPrices;
+        this.imageUrl = data.upsell.logo_image;
         this.priceFormatted = this.currentPrices.price_text;
         this.price = this.currentPrices.price;
         this.finalPrice = this.currentPrices.price_text;

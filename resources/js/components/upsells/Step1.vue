@@ -52,10 +52,6 @@
         type: String,
         default: '',
       },
-      imageUrl: {
-        type: String,
-        default: '',
-      },
       isLoading: {
         type: Boolean,
         default: false,
@@ -70,6 +66,7 @@
       name: null,
       price: null,
       priceFormatted: null,
+      imageUrl: null,
     }),
 
     mounted() {
@@ -77,6 +74,7 @@
         this.upsellPrices = data.upsell.upsellPrices;
         this.name = data.upsell.long_name;
         this.description = data.upsell.description;
+        this.imageUrl = data.upsell.image;
         this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text;
         this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price;
       });

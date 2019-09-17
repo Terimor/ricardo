@@ -32,7 +32,6 @@
                     :id="upsellsObj
                       && upsellsObj[getEntity]
                       && upsellsObj[getEntity].product_id"
-                    :image-url="product.skus[0].quantity_image[1]"
                   />
                 </transition>
                 <p class="no">
