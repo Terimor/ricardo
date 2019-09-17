@@ -101,7 +101,7 @@ class ProductService
 			abort(405, 'Method Not Allowed');
 		}
 
-		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
+		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);       
         
         //$upsellLocalize = $this->localizeUpsell($upsell);
         //return $upsellLocalize;

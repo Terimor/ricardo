@@ -6,6 +6,8 @@ use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\OdinCustomer;
 use App\Services\EmailService;
+use App\Models\OdinProduct;
+use Illuminate\Support\Arr;
 
 /**
  * Order Service class
@@ -151,4 +153,58 @@ class OrderService
 		])->first();
 		return $order;
 	}
+    
+    public function calculateOrderAmountTotal($orderId)
+    {
+        $order = OdinOrder::where('_id', $orderId)->first();
+
+        // get order currency
+        $currency = CurrencyService::getCurrency($order->currency);
+        
+        $total = 0;
+        // calculate total
+        $productsTexts = []; $skuCodes = [];
+        foreach ($order->products as $key => $product)
+        {       
+            $productsTexts[$key]['sku_code'] = $product['sku_code'];
+            $skuCodes[$product['sku_code']] = $product['sku_code'];
+            
+            $total += $product['price'];
+            $productsTexts[$key]['price_text'] = CurrencyService::getLocalTextValue($product['price'], $currency);
+            // if main add flag and check warranty
+            if (isset($product['is_main']) && $product['is_main'])
+            {
+                $productsTexts[$key]['is_main'] = true;
+                
+                // check warranty price
+                if (isset($product['warranty_price']) && $product['warranty_price'] > 0 ) {
+                    $total += $product['warranty_price'];
+                    $productsTexts[$key]['warranty_price_text'] = CurrencyService::getLocalTextValue($product['warranty_price'], $currency);
+                }
+            } else {
+                $productsTexts[$key]['is_main'] = false;
+            }
+        }
+        
+        
+        
+        // get products by skus
+        $productsData = OdinProduct::whereIn('skus.code', $skuCodes)->select('_id', 'skus')->pluck('skus', '_id');
+
+        // collect _id to array
+        foreach ($order->products as $key => $product) {
+            foreach ($productsData as $id => $data) {                
+                $dataJson = json_encode($data);
+                if (strpos($dataJson, $product['sku_code'])) {
+                    $productsTexts[$key]['_id'] = $id; 
+                    break;
+                }
+            }
+        }
+        
+        return [
+            'products' => $productsTexts,
+            'total_text' => CurrencyService::getLocalTextValue($total, $currency)
+        ];        
+    }
 }
