@@ -211,7 +211,7 @@ class OdinProduct extends Model
     /**
      * Set local images for object
      */
-    public function setLocalImages()
+    public function setLocalImages($isUpsell = false)
     {
         // get all images ids
         $ids = [];
@@ -226,20 +226,24 @@ class OdinProduct extends Model
         if (!empty($this->attributes['image_ids'])) {
             foreach($this->attributes['image_ids'] as $imgId) {
                 $ids[$imgId] = $imgId;
-            }
-        }
-
-        //for skus
-        if (!empty($this->attributes['skus'])) {
-            foreach ($this->attributes['skus'] as $key => $sku) {
-                for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
-                    if (!empty($sku['quantity_image_ids'][$i])) {
-                        $ids[$sku['quantity_image_ids'][$i]] = $sku['quantity_image_ids'][$i];
-                    }
+                if ($isUpsell) {
+                    break;
                 }
             }
         }
 
+        //for skus
+        if (!$isUpsell) {
+            if (!empty($this->attributes['skus'])) {
+                foreach ($this->attributes['skus'] as $key => $sku) {
+                    for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
+                        if (!empty($sku['quantity_image_ids'][$i])) {
+                            $ids[$sku['quantity_image_ids'][$i]] = $sku['quantity_image_ids'][$i];
+                        }
+                    }
+                }
+            }
+        }
         if ($ids) {
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();

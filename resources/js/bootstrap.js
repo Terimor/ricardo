@@ -1,4 +1,5 @@
 import VueMq from 'vue-mq'
+import './services/queryParams';
 import './UIsettings';
 
 window.axios.defaults.headers.common = {
