@@ -216,7 +216,7 @@
       },
 
       getOriginalOrderPrice() {
-        return this.getOriginalOrder.prices && this.getOriginalOrder.prices.price_text;
+        return this.getOriginalOrder.prices && this.getOriginalOrder.prices.value;
       },
 
       getOriginalOrderId() {
