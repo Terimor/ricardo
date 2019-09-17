@@ -615,8 +615,13 @@ export default {
       this.showNotice()
     }
 
-    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty);
-    this.form.deal = qtyIndex !== -1 ? +this.queryParams.qty : null;
+    const qty = +this.queryParams.qty;
+    const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
+
+    if (deal) {
+      this.setWarrantyPriceText(qty);
+      this.form.deal = qty;
+    }
   }
 }
 </script>

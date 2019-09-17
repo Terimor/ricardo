@@ -146,8 +146,17 @@ const promo = new Vue({
       imageUrl: it.quantity_image[1],
     }));
 
-    const qtyIndex = this.purchase.findIndex(({ totalQuantity }) => totalQuantity === +this.queryParams.qty);
-    this.form.deal = qtyIndex !== -1 ? +this.queryParams.qty : null;
+    const qty = +this.queryParams.qty;
+    const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
+
+    if (deal) {
+      const plan = deal.discountName || 'STARTER';
+      this.setSelectedPlan(plan, qty);
+
+      setTimeout(() => {
+        this.scrollTo('.j-variant-section');
+      }, 500);
+    }
   },
 
   computed: {

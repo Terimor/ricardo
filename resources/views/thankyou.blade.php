@@ -48,7 +48,7 @@
                     </div>
                     <div class="thank-you__order__name">{{ $product->long_name }}</div>
                 </div>
-                <div class="thank-you__order__price">@{{ selectedProductData.prices.value_text }}</div>
+                <div class="thank-you__order__price">@{{ productData.prices[selectedProductData.quantity].value_text }}</div>
             </div>
             <div v-for="order in subOrder">
                 <thank-you-item

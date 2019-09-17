@@ -20,6 +20,7 @@ const thankYou = new Vue({
     data: () => ({
         subOrder: JSON.parse(localStorage.getItem('subOrder')),
         selectedProductData: JSON.parse(localStorage.getItem('selectedProductData')),
+        productData: upsells.product,
         socialType: 'facebook',
         total: 0,
         sharingLinkList: {

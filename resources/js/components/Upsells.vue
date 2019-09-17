@@ -54,7 +54,7 @@
                 <UpsellsItem
                   :image-url="product.skus[0].quantity_image[1]"
                   :name="product.long_name"
-                  :subtotal="getOriginalOrderPrice"
+                  :subtotal="product.prices[getOriginalOrder.quantity].value_text"
                   :benefitList="[
                     `Quantity: ${getOriginalOrder.quantity}`,
                   ]"

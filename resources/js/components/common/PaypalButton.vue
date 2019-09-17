@@ -19,7 +19,7 @@
     },
 
     watch: {
-      '$v.required' () {
+      '$v.$invalid' () {
         if (this.action) {
           this.action.enable();
         }
@@ -38,7 +38,7 @@
         paypal.Buttons({
           onInit(data, actions) {
             that.action = actions;
-            if ($v.required || $v.$invalid) {
+            if ($v.$invalid) {
               actions.disable();
             }
           },
