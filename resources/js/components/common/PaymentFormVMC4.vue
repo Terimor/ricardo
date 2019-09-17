@@ -338,8 +338,13 @@
         }
       },
       list(value) {
-        const qtyIndex = value.findIndex(({ quantity }) => quantity === +this.queryParams.qty);
-        this.form.deal = qtyIndex !== -1 ? +this.queryParams.qty : null
+        const qty = +this.queryParams.qty;
+        const deal = value.find(({ quantity }) => qty === quantity);
+
+        if (deal) {
+          this.setWarrantyPriceText(qty);
+          this.form.deal = qty;
+        }
       },
 		},
 		methods: {
