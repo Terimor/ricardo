@@ -103,9 +103,9 @@ class ProductService
 
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);       
         
-        //$upsellLocalize = $this->localizeUpsell($upsell);
-        //return $upsellLocalize;
-		return $upsell;
+        $upsellLocalize = $this->localizeUpsell($upsell);
+        return $upsellLocalize;
+		//return $upsell;
     }
 	
 	/**
@@ -149,7 +149,7 @@ class ProductService
         $lp->long_name = $product->long_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
-        $lp->upsell_logo_image = $product->upsell_logo_image;
+        $lp->upsell_hero_image = $product->upsell_hero_image;
 
         $prices = [];
         $pricesOld = $product->prices;
@@ -208,15 +208,18 @@ class ProductService
     public function localizeUpsell(OdinProduct $product)
     {
         // prepare localize upsell
+        
+        $product->setLocalImages(true);
+        
         $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
-        $lp->upsell_logo_image = $product->upsell_logo_image;
+        $lp->upsell_hero_image = $product->upsell_hero_image;
         
-        $lp->image = $product->image;
+        $lp->image = !empty($product->image[0]) ? $product->image[0] : null;
         $lp->upsellPrices = $product->upsellPrices;
         
         return $lp;
