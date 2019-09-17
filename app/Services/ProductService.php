@@ -124,7 +124,7 @@ class ProductService
 		}
         
 		if ($totalSumCalc != $total) {
-			logger()->error("Total summs not equally", ['total' => $total, 'totalSumCalc' => $totalSumCalc, 'product' => $product->toArray(),]);
+			logger()->error("Total summs not equally", ['total' => $total, 'totalSumCalc' => $totalSumCalc, 'product' => $product->toArray()]);
 			abort(409);
 		}		
 		return [			
