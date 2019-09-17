@@ -125,7 +125,7 @@
       return {
         total: 0,
         view: 'Step1',
-        activeTab: 'third',
+        activeTab: 'second',
         accessoryStep: 0,
         accessoryList: [],
         product: upsellsData.product,
@@ -137,7 +137,7 @@
 
     mounted() {
       if(this.upsellsObj.length === 0) {
-        // this.redirect();
+        this.redirect();
       }
       this.setUpsellsAsProdsList();
       localStorage.removeItem('subOrder');
@@ -280,7 +280,7 @@
         })
 
         if (this.accessoryList.length === 0) {
-          // this.redirect();
+          this.redirect();
         }
       },
 
