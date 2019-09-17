@@ -78,7 +78,7 @@ class ProductService
 
 		if (!$fixedPrice && !$discountPercent) {
 			logger()->error("fixedPrice and discountPercent is null for productID {$product->id}", ['product' => $product, 'upsell_id' => $productId]);
-			abort(404);
+			abort(409);
 		}
 
 		if ($fixedPrice && $fixedPrice < 4.5) {
@@ -123,7 +123,7 @@ class ProductService
         
 		if ($totalSumCalc != $total) {
 			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
-			abort(404);
+			abort(409);
 		}		
 		return [			
 			'value_text' => CurrencyService::getLocalTextValue($totalSumCalc)
