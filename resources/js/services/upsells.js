@@ -7,7 +7,7 @@ export const getTotalPrice = (data, total) => {
   return axios
     .post(`/calculate-upsells-total`,
       {
-        ...queryParams,
+        ...queryParams(),
         upsells: formattedData,
         total,
       },
@@ -29,7 +29,7 @@ export const getUppSells = (product_id, quantity) => {
     .get(`/upsell-product/${product_id}`, {
       params: {
         quantity,
-        ...queryParams,
+        ...queryParams(),
       }
     })
     .then((res) => {
