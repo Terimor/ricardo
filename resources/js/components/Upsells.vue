@@ -131,7 +131,7 @@
 
     mounted() {
       if(this.upsellsObj.length === 0) {
-        // this.redirect();
+        this.redirect();
       }
       localStorage.removeItem('subOrder');
     },

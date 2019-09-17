@@ -82,18 +82,6 @@
         return this.upsellPrices['1'] && this.upsellPrices['1'];
       }
     },
-
-    // mounted() {
-    //   getUppSells(this.id, 1).then(({ data }) => {
-    //     this.name = data.upsell.long_name;
-    //     this.description = data.upsell.description;
-    //     this.upsellPrices = data.upsell.upsellPrices;
-    //     this.priceFormatted = this.currentPrices.price_text;
-    //     this.price = this.currentPrices.price;
-    //     this.finalPrice = this.currentPrices.price_text;
-    //     this.finalPricePure = this.currentPrices.price;
-    //   });
-    // }
   };
 </script>
 
