@@ -40,7 +40,6 @@
 <script>
     import { fade } from '../../utils/common';
     import upsellsMixin from '../../mixins/upsells';
-    import { getUppSells } from '../../services/upsells';
 
     export default {
         name: 'UpsellsItem',

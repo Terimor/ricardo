@@ -44,7 +44,7 @@ export function paypalOnApprove(data) {
       'X-Requested-With': 'XMLHttpRequest'
     },
     body: JSON.stringify({
-      orderID: odin_order_id
+      orderID: data.orderID
     })
   }).then(function(res) {
     return res.json();
