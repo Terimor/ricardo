@@ -31,7 +31,7 @@
             @click="addProduct(2)"
             :is-loading="!upsellPrices['2']"
           >
-              YES! I want to add 2 {{ name }} TO My Order For Just {{ upsellPrices['2'] && upsellPrices['2'].value_text }}
+              YES! I want to add 2 {{ name }} TO My Order For Just {{ upsellPrices['2'] && upsellPrices['2'].price_text }}
           </green-button>
         </div>
       </div>
@@ -99,8 +99,8 @@
           this.finalPrice = this.priceFormatted;
           this.finalPricePure = this.price;
         } else {
-          this.finalPrice = this.upsellPrices['2'] && this.upsellPrices['2'].value_text;
-          this.finalPricePure = this.upsellPrices['2'] && this.upsellPrices['2'].value;
+          this.finalPrice = this.upsellPrices['2'] && this.upsellPrices['2'].price_text;
+          this.finalPricePure = this.upsellPrices['2'] && this.upsellPrices['2'].price;
         }
 
         this.addToCart(quantity);

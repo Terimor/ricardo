@@ -35,8 +35,8 @@
                       && upsellsObj[getEntity].product_id"
                     :name="currentUpsellItem.long_name"
                     :description="currentUpsellItem.description"
-                    :price="currentUpsellItem.upsellPrices['1'].value"
-                    :price-formatted="currentUpsellItem.upsellPrices['1'].value_text"
+                    :price="currentUpsellItem.upsellPrices['1'].price"
+                    :price-formatted="currentUpsellItem.upsellPrices['1'].price_text"
                     :data="currentUpsellItem"
                     :image-url="product.skus[0].quantity_image[1]"
                   />
@@ -216,7 +216,7 @@
       },
 
       getOriginalOrderPrice() {
-        return this.getOriginalOrder.prices && this.getOriginalOrder.prices.value_text;
+        return this.getOriginalOrder.prices && this.getOriginalOrder.prices.value;
       },
 
       getOriginalOrderId() {

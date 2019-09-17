@@ -92,8 +92,8 @@ export default {
         const value = index + 1
 
         return item = {
-          label: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].value_text}`,
-          text: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].value_text}`,
+          label: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].price_text}`,
+          text: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].price_text}`,
           value: value,
         }
       })
@@ -110,8 +110,8 @@ export default {
 
   methods: {
     add(quantity) {
-      this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].value_text;
-      this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].value;
+      this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].price_text;
+      this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].price;
 
       this.addToCart(quantity);
     }
