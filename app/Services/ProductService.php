@@ -103,8 +103,8 @@ class ProductService
 
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
         
-        //$upsellLocalize = $upsell->localizeUpsell($upsell);
-        //echo '<pre>'; var_dump($upsellLocalize); echo '</pre>'; exit;
+        //$upsellLocalize = $this->localizeUpsell($upsell);
+        //return $upsellLocalize;
 		return $upsell;
     }
 	
@@ -124,7 +124,7 @@ class ProductService
 		}
         
 		if ($totalSumCalc != $total) {
-			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
+			logger()->error("Total summs not equally", ['product' => $product, 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
 			abort(409);
 		}		
 		return [			
@@ -204,7 +204,7 @@ class ProductService
      * @param OdinProduct $upsell
      * @return stdClass
      */
-    public function localizeUpsell(OdinProduct $upsell)
+    public function localizeUpsell(OdinProduct $product)
     {
         // prepare localize upsell
         $lp = new stdClass();
