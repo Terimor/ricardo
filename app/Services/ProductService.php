@@ -42,7 +42,7 @@ class ProductService
             $product->setLocalImages();
         }
 
-        return $product;
+        //return $product;
         $localizedProduct = $this->localizeProduct($product);
 		
         return $localizedProduct;
