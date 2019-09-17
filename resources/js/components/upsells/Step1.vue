@@ -1,6 +1,6 @@
 <template>
     <div class="step-1">
-      <div v-if="name">
+      <div v-if="id && name">
         <h3>
           <span class="congrats">
             CONGRATULATIONS!
@@ -23,9 +23,9 @@
         <div class="upsells-component__bot">
           <green-button
             @click="addProduct(1)"
-            :is-loading="!priceFormatted"
+            :is-loading="!upsellPrices['1']"
           >
-              YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
+              YES! I want to add 1 {{ name }} TO My Order For Just {{ upsellPrices['1'] && upsellPrices['1'].price_text }}
           </green-button>
           <green-button
             @click="addProduct(2)"
@@ -48,25 +48,6 @@
     mixins: [upsells],
 
     props: {
-      data: {
-        default: null,
-      },
-      name: {
-        type: String,
-        default: '',
-      },
-      description: {
-        type: String,
-        default: '',
-      },
-      price: {
-        type: Number,
-        default: 0,
-      },
-      priceFormatted: {
-        type: String,
-        default: '',
-      },
       id: {
         type: String,
         default: '',
@@ -83,21 +64,29 @@
 
     data: () => ({
       upsellPrices: {},
+      description: null,
       finalPrice: null,
       finalPricePure: null,
+      name: null,
+      price: null,
+      priceFormatted: null,
     }),
 
     mounted() {
       getUppSells(this.id, 2).then(({ data }) => {
-        this.upsellPrices = data.upsell.upsellPrices
+        this.upsellPrices = data.upsell.upsellPrices;
+        this.name = data.upsell.long_name;
+        this.description = data.upsell.description;
+        this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text;
+        this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price;
       });
     },
 
     methods: {
       addProduct(quantity) {
         if (quantity == 1) {
-          this.finalPrice = this.priceFormatted;
-          this.finalPricePure = this.price;
+          this.finalPrice = this.upsellPrices['1'] && this.upsellPrices['1'].price_text;
+          this.finalPricePure = this.upsellPrices['1'] && this.upsellPrices['1'].price;
         } else {
           this.finalPrice = this.upsellPrices['2'] && this.upsellPrices['2'].price_text;
           this.finalPricePure = this.upsellPrices['2'] && this.upsellPrices['2'].price;
