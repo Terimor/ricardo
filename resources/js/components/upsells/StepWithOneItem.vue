@@ -18,6 +18,7 @@
             @click="addToCart(1)"
             :is-loading="isLoading"
           >
+            {{ isLoading }}
             YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
           </green-button>
       </div>
@@ -37,10 +38,6 @@
         type: String,
         default: '',
       },
-      isLoading: {
-        type: Boolean,
-        default: false,
-      },
     },
 
     data() {
@@ -52,6 +49,7 @@
         finalPrice: null,
         finalPricePure: null,
         imageUrl: null,
+        isLoading: false,
       }
     },
 
@@ -60,6 +58,7 @@
         immediate: true,
         handler(newVal) {
           if (newVal) {
+            this.isLoading = true;
             getUppSells(newVal, 1).then(({ data }) => {
               this.name = data.upsell.long_name;
               this.description = data.upsell.description;
@@ -69,6 +68,8 @@
               this.price = this.currentPrices.price;
               this.finalPrice = this.currentPrices.price_text;
               this.finalPricePure = this.currentPrices.price;
+            }).then(() => {
+              this.isLoading = false;
             });
           }
         },

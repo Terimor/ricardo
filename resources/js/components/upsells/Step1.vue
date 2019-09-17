@@ -23,13 +23,13 @@
         <div class="upsells-component__bot">
           <green-button
             @click="addProduct(1)"
-            :is-loading="!upsellPrices['1']"
+            :is-loading="isLoading || !upsellPrices['1']"
           >
               YES! I want to add 1 {{ name }} TO My Order For Just {{ upsellPrices['1'] && upsellPrices['1'].price_text }}
           </green-button>
           <green-button
             @click="addProduct(2)"
-            :is-loading="!upsellPrices['2']"
+            :is-loading="isLoading || !upsellPrices['2']"
           >
               YES! I want to add 2 {{ name }} TO My Order For Just {{ upsellPrices['2'] && upsellPrices['2'].price_text }}
           </green-button>
@@ -52,10 +52,6 @@
         type: String,
         default: '',
       },
-      isLoading: {
-        type: Boolean,
-        default: false,
-      },
     },
 
     data: () => ({
@@ -67,9 +63,11 @@
       price: null,
       priceFormatted: null,
       imageUrl: null,
+      isLoading: false,
     }),
 
     mounted() {
+      this.isLoading = true;
       getUppSells(this.id, 2).then(({ data }) => {
         this.upsellPrices = data.upsell.upsellPrices;
         this.name = data.upsell.long_name;
@@ -77,7 +75,9 @@
         this.imageUrl = data.upsell.image;
         this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text;
         this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price;
-      });
+      }).then(() => {
+          this.isLoading = false;
+        });
     },
 
     methods: {

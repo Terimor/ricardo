@@ -49,10 +49,6 @@ export default {
       type: String,
       default: '',
     },
-    isLoading: {
-      type: Boolean,
-      default: false,
-    },
   },
   data () {
     return {
@@ -65,6 +61,7 @@ export default {
       priceFormatted: null,
       price: null,
       imageUrl: null,
+      isLoading: false,
     }
   },
 
@@ -89,6 +86,7 @@ export default {
   },
 
   mounted() {
+    this.isLoading = true;
     getUppSells(this.id, 3).then(({ data }) => {
         this.name = data.upsell.long_name;
         this.description = data.upsell.description;
@@ -98,6 +96,9 @@ export default {
         this.price = this.currentPrices.price;
         this.finalPrice = this.currentPrices.price_text;
         this.finalPricePure = this.currentPrices.price;
+      })
+      .then(() => {
+        this.isLoading = false;
       });
   },
 

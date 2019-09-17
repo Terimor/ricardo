@@ -26,7 +26,6 @@
                   mode="out-in"
                 >
                   <component
-                    :is-loading="isLoading"
                     v-bind:is="view"
                     @addAccessory="addAccessory"
                     :id="upsellsObj
