@@ -120,11 +120,11 @@ class ProductService
 		$totalSumCalc = 0;
 		foreach ($upsells as $id => $quantity) {
 			$upsellProduct = $this->getUpsellProductById($product, $id, $quantity);
-			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['value']) ? $upsellProduct->upsellPrices[$quantity]['value'] : 0;
+			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['price']) ? $upsellProduct->upsellPrices[$quantity]['price'] : 0;
 		}
         
 		if ($totalSumCalc != $total) {
-			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
+			logger()->error("Total summs not equally", ['total' => $total, 'totalSumCalc' => $totalSumCalc, 'product' => $product->toArray(),]);
 			abort(409);
 		}		
 		return [			
