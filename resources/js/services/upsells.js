@@ -1,4 +1,5 @@
 import { groupBy } from '../utils/groupBy';
+import { queryParams } from '../utils/queryParams';
 
 export const getTotalPrice = (data, total) => {
   const formattedData = groupBy(data, 'id', 'quantity')
@@ -6,6 +7,7 @@ export const getTotalPrice = (data, total) => {
   return axios
     .post(`/calculate-upsells-total`,
       {
+        ...queryParams,
         upsells: formattedData,
         total,
       },
@@ -24,7 +26,12 @@ export const getTotalPrice = (data, total) => {
 
 export const getUppSells = (product_id, quantity) => {
   return axios
-    .get(`/upsell-product/${product_id}?quantity=${quantity}`)
+    .get(`/upsell-product/${product_id}`, {
+      params: {
+        quantity,
+        ...queryParams,
+      }
+    })
     .then((res) => {
       return res;
     });
