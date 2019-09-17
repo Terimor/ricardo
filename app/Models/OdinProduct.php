@@ -318,26 +318,26 @@ class OdinProduct extends Model
     }
 
     if ($fixedPrice) {
-      // quantity loop
-      for ($i=1; $i <= $maxQuantity; $i++) {
-      $this->attributes['upsellPrices'][$i] = CurrencyService::getLocalPriceFromUsd($fixedPrice*$i, $currency);;
-      }
-    } else if ($discountPercent) {
-      // get price from 1 qty
-      $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
-      if ($discountPrice) {
-        $discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
-        if ($discountPrice < 4.5) {
-          logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
-          $discountPrice = 4.5;
+        // quantity loop
+        for ($i=1; $i <= $maxQuantity; $i++) {
+        $this->attributes['upsellPrices'][$i] = CurrencyService::getLocalPriceFromUsd($fixedPrice*$i, $currency);;
         }
-      }
+    } else if ($discountPercent) {
+        // get price from 1 qty
+        $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
+        if ($discountPrice) {
+          $discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
+          if ($discountPrice < 4.5) {
+            logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
+            $discountPrice = 4.5;
+          }
+        }
 
       // quantity loop
       for ($i=1; $i <= $maxQuantity; $i++) {
         $price = CurrencyService::getLocalPriceFromUsd($discountPrice * $i, $currency);
-        $this->attributes['upsellPrices'][$i]['value'] = $price['price'];
-        $this->attributes['upsellPrices'][$i]['value_text'] = $price['price_text'];
+        $this->attributes['upsellPrices'][$i]['price'] = $price['price'];
+        $this->attributes['upsellPrices'][$i]['price_text'] = $price['price_text'];
       }
     }
 
