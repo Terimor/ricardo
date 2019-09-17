@@ -42,7 +42,7 @@ class ProductService
             $product->setLocalImages();
         }
 
-        return $product;
+        //return $product;
         $localizedProduct = $this->localizeProduct($product);
 		
         return $localizedProduct;
@@ -78,7 +78,7 @@ class ProductService
 
 		if (!$fixedPrice && !$discountPercent) {
 			logger()->error("fixedPrice and discountPercent is null for productID {$product->id}", ['product' => $product, 'upsell_id' => $productId]);
-			abort(404);
+			abort(409);
 		}
 
 		if ($fixedPrice && $fixedPrice < 4.5) {
@@ -102,7 +102,9 @@ class ProductService
 		}
 
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
-
+        
+        //$upsellLocalize = $upsell->localizeUpsell($upsell);
+        //echo '<pre>'; var_dump($upsellLocalize); echo '</pre>'; exit;
 		return $upsell;
     }
 	
@@ -123,7 +125,7 @@ class ProductService
         
 		if ($totalSumCalc != $total) {
 			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
-			abort(404);
+			abort(409);
 		}		
 		return [			
 			'value_text' => CurrencyService::getLocalTextValue($totalSumCalc)
@@ -196,4 +198,27 @@ class ProductService
 
         return $lp;        
     }
+    
+    /**
+     * Localize upsell
+     * @param OdinProduct $upsell
+     * @return stdClass
+     */
+    public function localizeUpsell(OdinProduct $upsell)
+    {
+        // prepare localize upsell
+        $lp = new stdClass();
+        $lp->product_name = $product->product_name;
+        $lp->description = $product->description;
+        $lp->long_name = $product->long_name;
+        $lp->billing_descriptor = $product->billing_descriptor;
+        $lp->logo_image = $product->logo_image;
+        $lp->upsell_logo_image = $product->upsell_logo_image;
+        
+        $lp->image = $product->image;
+        $lp->upsellPrices = $product->upsellPrices;
+        
+        return $lp;
+    }
+    
 }
