@@ -198,7 +198,7 @@ class SiteController extends Controller
 		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
         $product = $productService->resolveProduct($request, true);
 echo '<pre>'; var_dump(app()->getLocale()); echo '</pre>';
-        echo '<pre>'; var_dump($product->description); echo '</pre>'; exit;
+        echo '<pre>'; var_dump($product); echo '</pre>'; exit;
         $currency = Currency::whereCode('USD')->first();
         echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
 

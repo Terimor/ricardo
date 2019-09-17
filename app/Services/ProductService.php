@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\OdinProduct;
 use App\Models\Domain;
 use Illuminate\Http\Request;
-use stdClass;
+use App\Models\Localize;
 
 /**
  * Class ProductService
@@ -42,7 +42,7 @@ class ProductService
             $product->setLocalImages();
         }
 
-        return $product;
+        //return $product;
         $localizedProduct = $this->localizeProduct($product);
 		
         return $localizedProduct;
@@ -78,7 +78,7 @@ class ProductService
 
 		if (!$fixedPrice && !$discountPercent) {
 			logger()->error("fixedPrice and discountPercent is null for productID {$product->id}", ['product' => $product, 'upsell_id' => $productId]);
-			abort(404);
+			abort(409);
 		}
 
 		if ($fixedPrice && $fixedPrice < 4.5) {
@@ -102,7 +102,9 @@ class ProductService
 		}
 
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
-
+        
+        //$upsellLocalize = $this->localizeUpsell($upsell);
+        //return $upsellLocalize;
 		return $upsell;
     }
 	
@@ -118,13 +120,14 @@ class ProductService
 		$totalSumCalc = 0;
 		foreach ($upsells as $id => $quantity) {
 			$upsellProduct = $this->getUpsellProductById($product, $id, $quantity);
-			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['value']) ? $upsellProduct->upsellPrices[$quantity]['value'] : 0;
+			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['price']) ? $upsellProduct->upsellPrices[$quantity]['price'] : 0;
 		}
         
-		if ($totalSumCalc != $total) {
-			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
-			abort(404);
-		}		
+		/*if ($totalSumCalc != $total) {
+			logger()->error("Total summs not equally", ['total' => $total, 'totalSumCalc' => $totalSumCalc, 'product' => $product->toArray()]);
+			abort(409);
+		}*/
+        
 		return [			
 			'value_text' => CurrencyService::getLocalTextValue($totalSumCalc)
 		];
@@ -140,7 +143,7 @@ class ProductService
     {
         //echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
         // prepare localized product
-        $lp = new stdClass();
+        $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
@@ -196,4 +199,27 @@ class ProductService
 
         return $lp;        
     }
+    
+    /**
+     * Localize upsell
+     * @param OdinProduct $upsell
+     * @return stdClass
+     */
+    public function localizeUpsell(OdinProduct $product)
+    {
+        // prepare localize upsell
+        $lp = new Localize();
+        $lp->product_name = $product->product_name;
+        $lp->description = $product->description;
+        $lp->long_name = $product->long_name;
+        $lp->billing_descriptor = $product->billing_descriptor;
+        $lp->logo_image = $product->logo_image;
+        $lp->upsell_logo_image = $product->upsell_logo_image;
+        
+        $lp->image = $product->image;
+        $lp->upsellPrices = $product->upsellPrices;
+        
+        return $lp;
+    }
+    
 }

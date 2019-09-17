@@ -54,6 +54,7 @@ class ProductController extends Controller
 		$product = $productService->resolveProduct(request());
 
 		$upsell = $productService->getUpsellProductById($product, $productId, request()->get('quantity'));
+        
 		return ['upsell' => $upsell];
     }
 	
