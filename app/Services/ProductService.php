@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\OdinProduct;
 use App\Models\Domain;
 use Illuminate\Http\Request;
-use stdClass;
+use App\Models\Localize;
 
 /**
  * Class ProductService
@@ -124,7 +124,7 @@ class ProductService
 		}
         
 		if ($totalSumCalc != $total) {
-			logger()->error("Total summs not equally", ['product' => $product, 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
+			logger()->error("Total summs not equally", ['product' => $product->toArray(), 'total' => $total, 'totalSumCalc' => $totalSumCalc]);
 			abort(409);
 		}		
 		return [			
@@ -142,7 +142,7 @@ class ProductService
     {
         //echo '<pre>'; var_dump($product->prices); echo '</pre>'; exit;
         // prepare localized product
-        $lp = new stdClass();
+        $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
@@ -207,7 +207,7 @@ class ProductService
     public function localizeUpsell(OdinProduct $product)
     {
         // prepare localize upsell
-        $lp = new stdClass();
+        $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
