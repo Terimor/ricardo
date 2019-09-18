@@ -50,7 +50,7 @@
                         <div class="thank-you__order__name">{{ $product->long_name }}</div>
                         <div
                             class="thank-you__order__name"
-                            v-if="!selectedProductData.isWarrantyChecked"
+                            v-if="selectedProductData.isWarrantyChecked"
                         >
                             Warranty: @{{ selectedProductData.prices.warranty_price_text }}
                         </div>
