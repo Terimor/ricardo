@@ -196,6 +196,8 @@ class SiteController extends Controller
 		$p2 = round(20/100 * 49.99, 2);
 		echo '<pre>'; var_dump($price); echo '</pre>';
 		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
+        
+        
         $product = $productService->resolveProduct($request, true);
 echo '<pre>'; var_dump(app()->getLocale()); echo '</pre>';
         echo '<pre>'; var_dump($product); echo '</pre>'; exit;
