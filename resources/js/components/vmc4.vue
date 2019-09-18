@@ -29,6 +29,7 @@
               <div class="col-content" id="form-steps">
                 <payment-form-vmc4
                     :installments="form.installments"
+                    :isWarrantyChecked="form.isWarrantyChecked"
                     :checkoutData="checkoutData"
                     :countryList="countryList"
                     @productImageChanged="setProductImage"
@@ -99,29 +100,6 @@
         warrantyPriceText: null,
 				billing_descriptor: checkoutData.product.billing_descriptor,
 				productImage: null,
-				countryList: [
-					{
-						value: 'US',
-						text: 'USA',
-						label: 'USA',
-					}, {
-						value: 'RU',
-						text: 'Russia',
-						label: 'Russia',
-					}, {
-						value: 'UA',
-						text: 'Ukraine',
-						label: 'Ukraine',
-					}, {
-						value: 'PT',
-						text: 'Portugal',
-						label: 'Portugal',
-					}, {
-						value: 'BR',
-						text: 'Brazil',
-						label: 'Brazil',
-					}
-				],
 				cardNames: [
 					{
 						value: 'visa',
@@ -211,6 +189,20 @@
           })
         }))
       },
+      countryList () {
+        const countries = checkoutData.countries;
+        let countriesList = [];
+
+        Object.keys(countries).map(function(key) {
+          countriesList.push({
+            value: key.toUpperCase(),
+            text: countries[key],
+            label: countries[key]
+          });
+        });
+
+        return countriesList;
+      },
 		},
 		methods: {
 			submit(val) {
@@ -285,10 +277,13 @@
 			try {
 				this.productImage = checkoutData.product.skus[0].quantity_image[1];
 			} catch (_) {}
-		}
+		},
+    beforeCreate() {
+      document.body.classList.add('tpl-vmc4');
+    },
 	}
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
   @import "../../sass/variables";
 
   .vmc4 {
@@ -404,6 +399,7 @@
         position: relative;
         height: 95px;
         margin-top: 22px;
+        margin-bottom: 22px;
         background-color: rgba(216, 216, 216, .71);
         border-radius: 5px;
         border: 1px solid rgba(0, 0, 0, 0.4);
@@ -420,7 +416,7 @@
           text-align: left;
           text-transform: capitalize;
           font-size: 16px;
-          padding: 23px 70px 30px;
+          padding: 17px 70px 30px;
           position: absolute;
           top: 0;
           right: 0;
@@ -458,81 +454,58 @@
       }
     }
 
-    #warranty-field-button {
-      width: 100%;
-      position: relative;
-      height: 95px;
-      margin-top: 22px;
-      background-color: rgba(216, 216, 216, .71);
-      border-radius: 5px;
-      border: 1px solid rgba(0, 0, 0, 0.4);
-      outline: none;
-
-      &:hover {
-        background-color: rgba(191,191,191,.71);
-        background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
-      }
-
-      label[for=warranty-field] {
-        font-weight: bold;
-        line-height: 1.8;
-        text-align: left;
-        text-transform: capitalize;
-        font-size: 16px;
-        padding: 23px 70px 30px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-
-        .checkmark {
-          top: 20px;
-          left: 40px;
-        }
-      }
-
-      input[type=checkbox] {
-        position: absolute;
-        top: 23px;
-        left: 45px;
-      }
-
-      & > img {
-        position: absolute;
-        width: 30px;
-        height: auto;
-        top: -7px;
-        right: -7px;
-      }
-
-      & > .fa-arrow-right {
-        position: absolute;
-        font-size: 18px;
-        color: #dc003a;
-        top: 20px;
-        left: 10px;
-        animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
-      }
-    }
   }
 
-  @media screen and (min-width: 1200px) {
-    .vmc4 {
-      max-width: 1170px;
-    }
-  }
+  .tpl-vmc4 {
 
-  @media screen and (max-width: 992px) {
-    .container {
-      max-width: 100%;
+    .footer {
+      background-color: transparent;
+      padding: 35px 15px 60px;
     }
-  }
 
-  @media screen and ($s-down) {
-    header {
-      margin-top: 25px;
+    .footer__row {
+      justify-content: center;
     }
-  }
 
+    .footer__row-item {
+      margin: 0;
+
+      &:before {
+        content: '\007c';
+        color: #6c6c6c;
+        padding: 5px 7px;
+      }
+
+      &:first-child:before {
+        display: none;
+      }
+    }
+
+    .footer__link {
+      color: #337ab7;
+      font-size: 13px;
+      font-weight: 400;
+      text-decoration: none;
+      text-transform: capitalize;
+    }
+
+    @media screen and (min-width: 1200px) {
+      .vmc4 {
+        max-width: 1170px;
+      }
+    }
+
+    @media screen and (max-width: 992px) {
+      .container {
+        max-width: 100%;
+      }
+    }
+
+    @media screen and ($s-down) {
+      header {
+        margin-top: 25px;
+      }
+    }
+
+  }
 </style>
