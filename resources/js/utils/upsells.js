@@ -47,7 +47,11 @@ export function paypalOnApprove(data) {
       orderID: data.orderID
     })
   }).then(function(res) {
-    return res.json();
+    if(res.ok) {
+      return res.json();
+    } else {
+      throw new Error(res.statusText);
+    }
   }).then(function(details) {
     if (odin_order_id) {
       goTo(`/thankyou-promos/?order=${odin_order_id}`);
