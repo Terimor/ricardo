@@ -1,23 +1,22 @@
-
-<footer class="footer">
+<footer class="footer {{ isset($isWhite) && $isWhite == true ? 'footer--white' : '' }}">
     <ul class="footer__row">
         @php
         $links = [
             [
                 'text' => 'Contact us',
-                'link' => 'contacts',
+                'link' => '#!',
             ],
             [
                 'text' => 'Terms of business',
-                'link' => 'terms',
+                'link' => '#!',
             ],
             [
                 'text' => 'Privacy',
-                'link' => 'privacy',
+                'link' => '#!',
             ],
             [
                 'text' => 'Affiliate program',
-                'link' => 'affiliate',
+                'link' => '#!',
             ]
         ];
         @endphp
