@@ -18,7 +18,6 @@
             @click="addToCart(1)"
             :is-loading="isLoading"
           >
-            {{ isLoading }}
             YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
           </green-button>
       </div>

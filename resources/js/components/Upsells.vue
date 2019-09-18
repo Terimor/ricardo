@@ -44,7 +44,7 @@
             <div class="upsells-component__finish">
                 <h3 class="original-order">Your original order</h3>
                 <UpsellsItem
-                  :image-url="product.skus[0].quantity_image[1]"
+                  :image-url="product.image[0]"
                   :name="product.long_name"
                   :subtotal="product.prices[getOriginalOrder.quantity].value_text"
                   :benefitList="[
