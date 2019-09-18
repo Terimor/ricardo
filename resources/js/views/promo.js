@@ -22,8 +22,8 @@ const promo = new Vue({
   data: () => ({
     showPreloader: true,
     isFormShown: false,
-    implValue: '1',
-    installments: '1',
+    implValue: 1,
+    installments: 1,
     isShownForm: false,
     selectedPlan: null,
     warrantyPriceText: null,
@@ -114,17 +114,17 @@ const promo = new Vue({
 
   installmentsList: [
     {
-      value: '1',
+      value: 1,
       text: 'Pay in 1 installments',
       label: 'Pay in 1 installments',
     },
     {
-      value: '3',
+      value: 3,
       text: 'Pay in 3 installments',
       label: 'Pay in 3 installments',
     },
     {
-      value: '6',
+      value: 6,
       text: 'Pay in 6 installments',
       label: 'Pay in 6 installments',
     }
@@ -132,8 +132,8 @@ const promo = new Vue({
 
   mounted() {
     this.installments =
-      this.checkoutData.countryCode === 'BR' ? '3' :
-        this.checkoutData.countryCode === 'MX' ? '1' :
+      this.checkoutData.countryCode === 'BR' ? 3 :
+        this.checkoutData.countryCode === 'MX' ? 1 :
           1
     this.changeWarrantyValue();
 
@@ -271,17 +271,17 @@ const promo = new Vue({
       this.implValue = this.implValue || 3;
 
       switch(this.implValue) {
-        case '1':
+        case 1:
           this.warrantyPriceText = prices[1].value_text;
           this.warrantyOldPrice = prices[1].old_value_text;
           this.discount = prices[1].discount_percent;
           break;
-        case '3':
+        case 3:
           this.warrantyPriceText = prices[1].installments3_value_text;
           this.warrantyOldPrice = prices[1].installments3_old_value_text;
           this.discount = prices[1].discount_percent;
           break;
-        case '6':
+        case 6:
           this.warrantyPriceText = prices[1].installments6_value_text;
           this.warrantyOldPrice = prices[1].installments6_old_value_text;
           this.discount = prices[1].discount_percent;
