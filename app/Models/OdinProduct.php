@@ -84,7 +84,7 @@ class OdinProduct extends Model
      */
     public function getVimeoIdAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+        return $this->getFieldLocalText($value);
     }
 
     /**
@@ -92,7 +92,7 @@ class OdinProduct extends Model
      */
     public function getUpsellPlusoneTextAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+        return $this->getFieldLocalText($value);
     }
 
     /**
@@ -100,7 +100,7 @@ class OdinProduct extends Model
      */
     public function getUpsellHeroTextAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+        return $this->getFieldLocalText($value);
     }
 
     /**
@@ -109,8 +109,8 @@ class OdinProduct extends Model
     public function getSkusAttribute($value)
     {
         foreach ($value as $key => $val) {
-            $value[$key]['name'] = !empty($val['name'][app()->getLocale()]) && $val['name'][app()->getLocale()] ? $val['name'][app()->getLocale()] : (!empty($val['name']['en']) ? $val['name']['en'] : '');
-            $value[$key]['brief'] = !empty($val['brief'][app()->getLocale()]) ? $val['brief'][app()->getLocale()] : (!empty($val['brief']['en']) ? $val['brief']['en'] : '');
+            $value[$key]['name'] = $this->getFieldLocalText($val['name']);
+            $value[$key]['brief'] = $this->getFieldLocalText($val['brief']);
 
             // images
             $value[$key]['quantity_image'] = [];
@@ -351,5 +351,15 @@ class OdinProduct extends Model
         }
 
         return true;
+    }
+    
+    /**
+     * Fet field local text
+     * @param type $value
+     * @return type
+     */
+    public function getFieldLocalText($value)
+    {
+        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
 }
