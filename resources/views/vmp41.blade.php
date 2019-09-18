@@ -298,7 +298,7 @@
                         :style="{ width: '300px' }"
                         :create-order="paypalCreateOrder"
                         :on-approve="paypalOnApprove"
-                        :$v="true"
+                        :$v="$v.form.deal"
                     >Buy Now Risk Free PAYPAL</paypal-button>
                 </div>
                 <div class="promo__alternative-payment">
