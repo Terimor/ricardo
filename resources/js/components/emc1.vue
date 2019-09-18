@@ -417,6 +417,9 @@ export default {
         installments: this.form.installments,
       })
     },
+    'form.isWarrantyChecked' () {
+       this.setDataToLocalStorage();
+     }
   },
   validations: emc1Validation,
   methods: {
