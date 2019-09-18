@@ -1,6 +1,6 @@
 <template>
   <div class="step-3">
-    <div v-if="data">
+    <div v-if="id && name">
       <h3>
         <span class="orange">
           You Can'y Leave Without Taking ADVANTAGE of this SPECIAL OFFER!
@@ -45,36 +45,9 @@ export default {
   name: 'Step3',
   mixins: [upsells],
   props: {
-    data: {
-      default: null
-    },
-    name: {
-      type: String,
-      default: '',
-    },
-    description: {
-      type: String,
-      default: '',
-    },
-    price: {
-      type: Number,
-      default: 0,
-    },
-    priceFormatted: {
-      type: String,
-      default: '',
-    },
     id: {
       type: String,
       default: '',
-    },
-    imageUrl: {
-      type: String,
-      default: '',
-    },
-    isLoading: {
-      type: Boolean,
-      default: false,
     },
   },
   data () {
@@ -83,6 +56,12 @@ export default {
       upsellPrices: null,
       finalPrice: null,
       finalPricePure: null,
+      name: null,
+      description: null,
+      priceFormatted: null,
+      price: null,
+      imageUrl: null,
+      isLoading: false,
     }
   },
 
@@ -100,12 +79,27 @@ export default {
 
       return data;
     },
+
+    currentPrices() {
+        return this.upsellPrices['1'] && this.upsellPrices['1'];
+      }
   },
 
   mounted() {
+    this.isLoading = true;
     getUppSells(this.id, 3).then(({ data }) => {
-      this.upsellPrices = data.upsell.upsellPrices;
-    });
+        this.name = data.upsell.long_name;
+        this.description = data.upsell.description;
+        this.upsellPrices = data.upsell.upsellPrices;
+        this.imageUrl = data.upsell.logo_image;
+        this.priceFormatted = this.currentPrices.price_text;
+        this.price = this.currentPrices.price;
+        this.finalPrice = this.currentPrices.price_text;
+        this.finalPricePure = this.currentPrices.price;
+      })
+      .then(() => {
+        this.isLoading = false;
+      });
   },
 
   methods: {

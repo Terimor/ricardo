@@ -43,7 +43,7 @@
             <div class="thank-you__order">
                 <div class="d-flex">
                     <div class="thank-you__order__image">
-                        <img :src="selectedProductData.image" alt="">
+                        <img src="{{ $product->image[0] }}" alt="">
                         <div class="quantity">@{{ selectedProductData.quantity }}</div>
                     </div>
                     <div class="thank-you__order__name">{{ $product->long_name }}</div>

@@ -26,19 +26,11 @@
                   mode="out-in"
                 >
                   <component
-                    v-if="currentUpsellItem"
-                    :is-loading="isLoading"
                     v-bind:is="view"
                     @addAccessory="addAccessory"
                     :id="upsellsObj
                       && upsellsObj[getEntity]
                       && upsellsObj[getEntity].product_id"
-                    :name="currentUpsellItem.long_name"
-                    :description="currentUpsellItem.description"
-                    :price="currentUpsellItem.upsellPrices['1'].price"
-                    :price-formatted="currentUpsellItem.upsellPrices['1'].price_text"
-                    :data="currentUpsellItem"
-                    :image-url="product.skus[0].quantity_image[1]"
                   />
                 </transition>
                 <p class="no">
@@ -52,7 +44,7 @@
             <div class="upsells-component__finish">
                 <h3 class="original-order">Your original order</h3>
                 <UpsellsItem
-                  :image-url="product.skus[0].quantity_image[1]"
+                  :image-url="product.image[0]"
                   :name="product.long_name"
                   :subtotal="product.prices[getOriginalOrder.quantity].value_text"
                   :benefitList="[
@@ -106,7 +98,7 @@
   import { groupBy } from '../utils/groupBy';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
   import upsellsMixin from '../mixins/upsells';
-  import { getUppSells, getTotalPrice } from '../services/upsells';
+  import { getTotalPrice } from '../services/upsells';
 
   export default {
     name: 'upsells',
@@ -131,7 +123,7 @@
         product: upsellsData.product,
         upsellsObj: upsellsData.product.upsells,
         upsellsAsProdsList: [],
-        isLoading: true,
+        isLoading: false,
       };
     },
 
@@ -139,13 +131,12 @@
       if(this.upsellsObj.length === 0) {
         this.redirect();
       }
-      this.setUpsellsAsProdsList();
       localStorage.removeItem('subOrder');
     },
 
     watch: {
       accessoryStep(val) {
-        if (val === this.upsellsAsProdsList.length) {
+        if (val === this.upsellsObj.length) {
           const node = document.querySelector('.upsells-component__content');
           fade('out', 250, node, true)
             .then(() => {
@@ -189,26 +180,12 @@
         }))
       },
 
-      viewProps() {
-        return this.accessoryStep === 0 ? {} :
-          this.accessoryStep === 1 ? {
-              imageUrl: '/image/headphones-black.png'
-            } :
-            this.accessoryStep === 2 ? {} :
-              this.accessoryStep === 3 ? {} :
-                {};
-      },
-
       getEntity() {
-        if (this.accessoryStep > this.upsellsAsProdsList.length) {
-          return this.upsellsAsProdsList.length;
+        if (this.accessoryStep > this.upsellsObj.length) {
+          return this.upsellsObj.length;
         } else {
           return this.accessoryStep;
         }
-      },
-
-      currentUpsellItem() {
-        return this.upsellsAsProdsList[this.getEntity] && this.upsellsAsProdsList[this.getEntity];
       },
 
       getOriginalOrder() {
@@ -231,24 +208,7 @@
     },
 
     methods: {
-      setUpsellsAsProdsList() {
-        Object.values(this.upsellsObj).map((value) => {
-          this.getUppsells(value);
-        });
-      },
-
-      getUppsells(value) {
-        this.isLoading = true;
-
-        getUppSells(value.product_id, 1)
-          .then((res) => {
-            this.upsellsAsProdsList.push(res.data.upsell);
-            if (this.upsellsAsProdsList.length === this.upsellsObj.length) this.isLoading = false;
-          })
-      },
-
       paypalCreateOrder() {
-        localStorage.setItem('subOrder', JSON.stringify(this.accessoryList));
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
           sku_code: this.getOriginalOrder.variant,

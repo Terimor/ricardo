@@ -1,6 +1,6 @@
 <template>
   <div class="step-2">
-    <div v-if="data">
+    <div v-if="id && name">
       <h5>
         To thank you, we would like to offer you this
         <span class="green-up">
@@ -27,55 +27,59 @@
 
 <script>
   import upsells from '../../mixins/upsells';
+  import { getUppSells } from '../../services/upsells';
 
   export default {
     name: 'StepWithOneItem',
     mixins: [upsells],
     props: {
-      data: {
-        default: null,
-      },
-      name: {
-        type: String,
-        default: '',
-      },
-      description: {
-        type: String,
-        default: '',
-      },
-      price: {
-        type: Number,
-        default: 0,
-      },
-      priceFormatted: {
-        type: String,
-        default: '',
-      },
       id: {
         type: String,
         default: '',
-      },
-      imageUrl: {
-        type: String,
-        default: '',
-      },
-      isLoading: {
-        type: Boolean,
-        default: false,
       },
     },
 
     data() {
       return {
+        upsellPrices: {},
+        name: '',
+        price: 0,
+        priceFormatted: '',
         finalPrice: null,
         finalPricePure: null,
+        imageUrl: null,
+        isLoading: false,
       }
     },
 
-    mounted() {
-      this.finalPrice = this.priceFormatted;
-      this.finalPricePure = this.price;
-    }
+    watch: {
+      id: {
+        immediate: true,
+        handler(newVal) {
+          if (newVal) {
+            this.isLoading = true;
+            getUppSells(newVal, 1).then(({ data }) => {
+              this.name = data.upsell.long_name;
+              this.description = data.upsell.description;
+              this.upsellPrices = data.upsell.upsellPrices;
+              this.imageUrl = data.upsell.image;
+              this.priceFormatted = this.currentPrices.price_text;
+              this.price = this.currentPrices.price;
+              this.finalPrice = this.currentPrices.price_text;
+              this.finalPricePure = this.currentPrices.price;
+            }).then(() => {
+              this.isLoading = false;
+            });
+          }
+        },
+      },
+    },
+
+    computed: {
+      currentPrices() {
+        return this.upsellPrices['1'] && this.upsellPrices['1'];
+      }
+    },
   };
 </script>
 
