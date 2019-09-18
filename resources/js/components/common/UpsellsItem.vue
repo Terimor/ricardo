@@ -16,10 +16,14 @@
                     v-for="benefit in benefitList"
                     :key="benefit"
                 >
-                    {{benefit}}
+                    {{ benefit }}
                 </li>
                 <li>Subtotal:
                     {{ finalPrice || subtotal }}
+                </li>
+                <li v-if="warranty">
+                    Warranty:
+                    {{ warranty }}
                 </li>
             </ul>
         </div>
@@ -55,6 +59,7 @@
             'quantity',
             'subtotal',
             'finalPrice',
+            'warranty',
         ],
 
         data: () => ({

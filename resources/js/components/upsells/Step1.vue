@@ -12,13 +12,22 @@
           <span class="green-up">
             {{ name }}
           </span>
-          for 50% OFF!
+          <span v-if="discount">
+            for {{ discount }}% OFF!
+          </span>
           </h5>
         <div class="upsells-component__item">
           <div
             class="benefits"
             v-html="description"
           />
+          <div class="image">
+            <img
+              :src="imageUrl"
+              :alt="`image for ${name}`"
+            >
+          </div>
+        </div>
         </div>
         <div class="upsells-component__bot">
           <green-button
@@ -51,6 +60,10 @@
       id: {
         type: String,
         default: '',
+      },
+      discount: {
+        type: Number,
+        default: 0,
       },
     },
 

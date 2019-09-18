@@ -1,12 +1,6 @@
-import { queryParams } from '../utils/queryParams';
-
 export const getOrderAmount = (orderId) => {
   return axios
-    .get(`/order-amount-total/${orderId}`, {
-      params: {
-        ...queryParams(),
-      }
-    })
+    .get(`/order-amount-total/${orderId}`)
     .then((res) => {
       return res.data;
     });

@@ -1,27 +1,41 @@
 <template>
   <div class="step-2">
-    <div v-if="id && name">
-      <h5>
-        To thank you, we would like to offer you this
-        <span class="green-up">
-          {{ name }}
-        </span> for 50% OFF!
-      </h5>
-      <div class="upsells-component__item">
-          <div
-            class="benefits"
-            v-html="description"
-          />
+    <transition
+      name="component-fade"
+      mode="out-in"
+    >
+      <div v-if="id && !isLoading">
+        <h5>
+          To thank you, we would like to offer you this
+          <span class="green-up">
+            {{ name }}
+          </span>
+          <span v-if="discount">
+            for {{ discount }}% OFF!
+          </span>
+        </h5>
+        <div class="upsells-component__item">
+            <div
+              class="benefits"
+              v-html="description"
+            />
+            <div class="image">
+              <img
+                :src="imageUrl"
+                :alt="`image for ${name}`"
+              >
+            </div>
+        </div>
+        <div class="upsells-component__bot justify-content-center">
+            <green-button
+              @click="addToCart(1)"
+              :is-loading="isLoading"
+            >
+              YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
+            </green-button>
+        </div>
       </div>
-      <div class="upsells-component__bot justify-content-center">
-          <green-button
-            @click="addToCart(1)"
-            :is-loading="isLoading"
-          >
-            YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
-          </green-button>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -36,6 +50,10 @@
       id: {
         type: String,
         default: '',
+      },
+      discount: {
+        type: Number,
+        default: 0,
       },
     },
 
@@ -82,7 +100,3 @@
     },
   };
 </script>
-
-<style scoped>
-
-</style>
