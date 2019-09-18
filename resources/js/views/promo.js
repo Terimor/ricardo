@@ -297,6 +297,7 @@ const promo = new Vue({
         long_name: this.productData.long_name,
         variant: currentVariant && currentVariant.name,
         installments: this.implValue,
+        image: this.productData.image[0],
       })
     },
   }

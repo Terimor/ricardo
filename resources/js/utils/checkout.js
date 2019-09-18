@@ -46,7 +46,16 @@ const getOnlyDiscount = ({key, discountPercent}) => {
   return config[key]
 };
 
-export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], long_name, variant, installments, customOrder=false, onlyDiscount=false}) {
+export function preparePurchaseData({
+  purchaseList,
+  quantityToShow = [1, 3, 5],
+  long_name,
+  variant,
+  installments,
+  customOrder=false,
+  onlyDiscount=false,
+  image,
+}) {
   const data = Object.keys(purchaseList)
     .filter((key) => quantityToShow.includes(+key))
     .map((key, idx) => {
@@ -84,7 +93,7 @@ export function preparePurchaseData({purchaseList, quantityToShow = [1, 3, 5], l
 
       return  {
         discountPercent,
-        image: it.image,
+        image: it.image || image,
         discountName:
           it.is_bestseller ? t('checkout.bestseller') :
             it.is_popular ? t('checkout.best_deal') :
