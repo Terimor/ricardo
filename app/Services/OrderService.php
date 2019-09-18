@@ -154,6 +154,11 @@ class OrderService
 		return $order;
 	}
     
+    /**
+     * Calculate order total
+     * @param type $orderId
+     * @return type
+     */
     public function calculateOrderAmountTotal($orderId)
     {
         $order = OdinOrder::where('_id', $orderId)->first();
