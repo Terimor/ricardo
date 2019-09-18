@@ -324,6 +324,10 @@ class OdinProduct extends Model
         if ($fixedPrice) {
             // quantity loop
             $localPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency);
+            // calculate discount percent
+            $priceOld = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
+            //$this->attributes['upsellPrices']['discount_percent'] = 100 - round($localPrice['price'] / $discountPrice * 100);
+            $this->attributes['upsellPrices']['discount_percent'] = CurrencyService::getDiscountPercent($priceOld, $localPrice['price']);
             for ($i=1; $i <= $maxQuantity; $i++) {                            
                 $this->attributes['upsellPrices'][$i]['price'] = $localPrice['price'] * $i;
                 $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($localPrice['price'] * $i, $currency);
@@ -332,7 +336,7 @@ class OdinProduct extends Model
         } else if ($discountPercent) {
             // get price from 1 qty
             $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
-            if ($discountPrice) {
+            if ($discountPrice) {             
               $discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
               if ($discountPrice < 4.5) {
                 logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
@@ -343,6 +347,7 @@ class OdinProduct extends Model
           // quantity loop
           // calculate for qty 1
           $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($discountPrice, $currency);
+          $this->attributes['upsellPrices']['discount_percent'] = $discountPercent;
           for ($i=1; $i <= $maxQuantity; $i++) {
             //$price = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * 1, $currency);
             $this->attributes['upsellPrices'][$i]['price'] = $discountLocalPrice['price']*$i;
