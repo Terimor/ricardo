@@ -1,3 +1,5 @@
+import { goTo } from './goTo';
+
 export function paypalCreateOrder ({
   xsrfToken = document.head.querySelector('meta[name="csrf-token"]').content,
   sku_code,
@@ -46,15 +48,17 @@ export function paypalOnApprove(data) {
     body: JSON.stringify({
       orderID: data.orderID
     })
-  }).then(function(res) {
-    if(res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.statusText);
-    }
-  }).then(function(details) {
-    if (odin_order_id) {
-      goTo(`/thankyou-promos/?order=${odin_order_id}`);
-    }
-  });
+  })
+    .then(function(res) {
+      if(res.ok) {
+        return res.json();
+      } else {
+        throw new Error(res.statusText);
+      }
+    })
+    .then(function() {
+      if (odin_order_id) {
+        goTo(`/thankyou-promos/?order=${odin_order_id}`);
+      }
+    });
 }
