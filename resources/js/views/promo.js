@@ -164,6 +164,12 @@ const promo = new Vue({
       return checkoutData;
     },
 
+    withInstallments () {
+      return this.checkoutData.countryCode === 'BR'
+        || this.checkoutData.countryCode === 'MX'
+        || this.checkoutData.countryCode === 'CO'
+    },
+
     countriesList() {
       let countries = []
 
