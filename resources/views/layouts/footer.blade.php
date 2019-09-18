@@ -5,25 +5,25 @@
         $links = [
             [
                 'text' => 'Contact us',
-                'link' => '#!',
+                'link' => 'contacts',
             ],
             [
                 'text' => 'Terms of business',
-                'link' => '#!',
+                'link' => 'terms',
             ],
             [
                 'text' => 'Privacy',
-                'link' => '#!',
+                'link' => 'privacy',
             ],
             [
                 'text' => 'Affiliate program',
-                'link' => '#!',
+                'link' => 'affiliate',
             ]
         ];
         @endphp
         @foreach ($links as $item)
             <li class="footer__row-item">
-                <a href="{{ $item['text'] }}" class="footer__link">{{ $item['text'] }}</a>
+                <a href="{{ $item['link'] }}" class="footer__link">{{ $item['text'] }}</a>
             </li>
         @endforeach
     </ul>

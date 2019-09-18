@@ -60,22 +60,20 @@
               v-model="form.stepTwo.phone"/>
         </div>
         <div class="step step-3" v-if="step === 3">
-          <h2>Pay Securely With:</h2>
+          <h3 v-html="textPaySecurely"></h3>
           <radio-button-group
-              :withCustomLabels="true"
-              v-model="form.paymentType">
-            <div class="card-types">
-              <pay-method-item
-                :validation="$v.form.stepThree.cardType"
-                v-for="item in cardNames"
-                :key="item.value"
-                :input="{
-                  value: item.value,
-                  imgUrl: item.imgUrl,
-                }"
-                :value="form.paymentType"/>
-            </div>
-          </radio-button-group>
+            class="main__credit-card-switcher"
+            v-model="form.paymentType"
+            :list="mockData.creditCardRadioList"
+          />
+          <paypal-button
+            :createOrder="paypalCreateOrder"
+            :onApprove="paypalOnApprove"
+            v-show="fullAmount"
+            :$v="$v.form.deal"
+            @click="paypalSubmit"
+          >Buy Now Risk Free PAYPAL</paypal-button>
+          <slot name="warranty" />
           <form v-if="form.paymentType !== 'paypal' && form.paymentType">
             <text-field
                 :validation="$v.form.stepThree.cardNumber"
@@ -205,18 +203,17 @@
                 <p>Where to find the 3 digit security code (Visa/Mastercard)</p>
               </div>
             </el-dialog>
+            <button
+              v-if="form.paymentType !== 'paypal' && step === 3"
+              @click="submit"
+              class="submit-btn"
+              type="button"
+            >
+              YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW
+            </button>
           </form>
-          <slot name="warranty" />
         </div>
         <div class="buttons">
-          <button
-            v-if="form.paymentType !== 'paypal' && step === 3"
-            @click="submit"
-            class="submit-btn"
-            type="button"
-          >
-            YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW
-          </button>
           <button
             v-if="form.paymentType === 'paypal' && step === 3"
             @click="submit"
@@ -257,10 +254,12 @@
 
 </template>
 <script>
+  import { t } from '../../utils/i18n';
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
 	import {getCardUrl, preparePurchaseData} from "../../utils/checkout";
+  import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
 	import {fade} from "../../utils/common";
 
@@ -276,6 +275,7 @@
 			'variantList',
       'countryCode',
       'installments',
+      'isWarrantyChecked',
 			'checkoutData'
 		],
 		data() {
@@ -305,15 +305,35 @@
 					countryCodePhoneField: checkoutData.countryCode,
 					deal: null,
 					variant: checkoutData.product.skus[0].code || "",
-					installments: 1,
+					//installments: 1,
 					paymentType: null,
-				}
+				},
+        mockData: {
+          creditCardRadioList: [
+            {
+              label: t('checkout.credit_cards'),
+              value: 'credit-card',
+              class: 'green-button-animated'
+            }, {
+              label: t('checkout.bank_payments'),
+              value: 'bank-payment',
+              class: 'bank-payment'
+            }
+          ],
+        },
 			}
     },
 		computed: {
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
-			}
+			},
+      fullAmount () {
+        return this.installments == 1;
+      },
+      codeOrDefault () {
+        return this.queryParams.product || this.checkoutData.product.skus[0].code;
+      },
+      textPaySecurely: () => t('checkout.pay_securely'),
 		},
 		watch: {
 			'form.variant'(val) {
@@ -355,6 +375,9 @@
 				this.$v.form.$touch();
 				this.$emit('onSubmit', this.form)
 			},
+      paypalSubmit() {
+
+      },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2.toUpperCase()
@@ -388,7 +411,23 @@
         } else {
           this.step++
         }
-			}
+			},
+      paypalCreateOrder() {
+        const searchParams = new URL(document.location.href).searchParams;
+        const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+
+        return paypalCreateOrder({
+          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+          sku_code: this.codeOrDefault,
+          sku_quantity: this.form.deal,
+          is_warranty_checked: this.isWarrantyChecked,
+          page_checkout: document.location.href,
+          cur: currency,
+          offer: searchParams.get('offer'),
+          affiliate: searchParams.get('affiliate'),
+        })
+      },
+      paypalOnApprove: paypalOnApprove,
 		},
 	}
 </script>
@@ -496,6 +535,13 @@
     }
 
     .step-3 {
+      h3 {
+        color: #0a0f0a;
+        margin-bottom: 10px;
+        padding: 0;
+        text-align: left;
+      }
+
       .pay-method-item img {
         max-height: 45px;
         margin-right: 15px;
@@ -558,6 +604,7 @@
       position: relative;
       padding: 18px 30px;
       margin: 10px 1px;
+      cursor: pointer;
       font-size: 16px;
       font-weight: 400;
       text-transform: uppercase;

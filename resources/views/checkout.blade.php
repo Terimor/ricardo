@@ -25,4 +25,6 @@
 
 <app-component></app-component>
 
+@include('layouts.footer')
+
 @endsection
