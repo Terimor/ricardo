@@ -440,6 +440,7 @@ export default {
         upsells: this.productData.upsells,
         prices: prices[this.radioIdx],
         quantity: this.radioIdx,
+        isWarrantyChecked: this.form.isWarrantyChecked,
         variant: this.form.variant,
         image: currentVariant && currentVariant.quantity_image[1]
       };

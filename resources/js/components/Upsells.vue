@@ -28,6 +28,9 @@
                   <component
                     v-bind:is="view"
                     @addAccessory="addAccessory"
+                    :discount="upsellsObj
+                      && upsellsObj[getEntity]
+                      && upsellsObj[getEntity].discount_percent"
                     :id="upsellsObj
                       && upsellsObj[getEntity]
                       && upsellsObj[getEntity].product_id"
@@ -47,6 +50,9 @@
                   :image-url="product.image[0]"
                   :name="product.long_name"
                   :subtotal="product.prices[getOriginalOrder.quantity].value_text"
+                  :warranty="getOriginalOrder.isWarrantyChecked
+                    ? getOriginalOrder.prices.warranty_price_text
+                    : null"
                   :benefitList="[
                     `Quantity: ${getOriginalOrder.quantity}`,
                   ]"
@@ -152,22 +158,16 @@
             });
         }
 
-        switch(val) {
-        case 0:
+        if (val === 0) {
           this.view = 'Step1';
-          break;
-        case 1:
-          this.view = 'StepWithOneItem';
-          break;
-        case 2:
+        }
+
+        if (val === this.upsellsObj.length - 1) {
           this.view = 'Step3';
-          break;
-        case 3:
+        }
+
+        else {
           this.view = 'StepWithOneItem';
-          break;
-        default:
-          this.view = 'StepWithOneItem';
-          break;
         }
       }
     },
@@ -308,7 +308,7 @@
             .benefits {
                 list-style-type: none;
                 width: 60%;
-                font-size: 18px;
+                font-size: 20px;
                 flex-grow: 1;
 
                 li {
