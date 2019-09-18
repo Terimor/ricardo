@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 
-class OdinHistory extends Model
+class DataHistory extends Model
 {
-    protected $collection = 'odin_history';
+    protected $collection = 'data_history';
     
     protected $dates = ['created_at'];
     
@@ -72,7 +72,7 @@ class OdinHistory extends Model
      */
     public static function saveHistoryData($data)
     {
-		$new = new OdinHistory($data);
+		$new = new DataHistory($data);
 		$new->save();
     }
 }
