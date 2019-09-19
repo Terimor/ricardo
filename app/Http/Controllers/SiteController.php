@@ -73,9 +73,7 @@ class SiteController extends Controller
 
 		if (request()->get('tpl') == 'vmp41') {
 			$viewTemplate = 'vmp41';
-		}
-
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
+		}       
 
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
@@ -87,8 +85,10 @@ class SiteController extends Controller
         $countries =  \Utils::getCountries();
 
 		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        
+        $countryCode = \Utils::getLocationCountryCode();
 
-        return view($viewTemplate, compact('location', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
+        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
     }
 
     /**
@@ -97,8 +97,7 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function upsells(Request $request, ProductService $productService)
-    {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
+    {        
 		$product = $productService->resolveProduct($request, true);
 
 		$setting = Setting::whereIn('key',[
@@ -106,11 +105,18 @@ class SiteController extends Controller
 		])->pluck('value', 'key');
 
 		$orderCustomer = null;
-		if (request()->get('order')) {
-			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+		if (request()->get('order')) {			
+            $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+            if (!$orderCustomer) {
+                // generate global get parameters
+                $params = \Utils::getGlobalGetParameters($request);
+                return redirect('/checkout?'.$params);
+            }
 		}
+        
+        $countryCode = \Utils::getLocationCountryCode();
 
-        return view('uppsells_funnel', compact('location', 'product', 'setting', 'orderCustomer'));
+        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer'));
     }
 
     /**
@@ -119,8 +125,7 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function thankyou(Request $request, ProductService $productService)
-    {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
+    {        
 		$product = $productService->resolveProduct($request, true);
 
 		$setting = Setting::whereIn('key',[
@@ -130,9 +135,15 @@ class SiteController extends Controller
 		$orderCustomer = null;
 		if (request()->get('order')) {
 			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+            if (!$orderCustomer) {
+                // generate global get parameters
+                $params = \Utils::getGlobalGetParameters($request);
+                return redirect('/checkout?'.$params);
+            }
 		}
+        $countryCode = \Utils::getLocationCountryCode();
 
-        return view('thankyou', compact('location', 'product' , 'setting', 'orderCustomer'));
+        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer'));
     }
 
     /**
@@ -141,8 +152,7 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function promo(Request $request, ProductService $productService)
-    {
-        $location = request()->get('_ip') ? Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? Location::get('42.112.209.164') : Location::get(request()->ip()));
+    {        
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
@@ -151,7 +161,8 @@ class SiteController extends Controller
                 ])->pluck('value', 'key');
 
         $countries =  \Utils::getCountries();
-        return view('promo', compact('location', 'product', 'isShowProductOffer', 'setting', 'countries'));
+        $countryCode = \Utils::getLocationCountryCode();
+        return view('promo', compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries'));
     }
 
     /**

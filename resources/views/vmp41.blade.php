@@ -11,7 +11,7 @@
 @section('script')
     <script defer>
         const checkoutData = {
-            countryCode: '{{ $location->countryCode }}',
+            countryCode: '{{ $countryCode }}',
             product: @json($product),
             countries: @json($countries),
         };
