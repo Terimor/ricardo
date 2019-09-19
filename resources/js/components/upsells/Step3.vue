@@ -3,7 +3,7 @@
     <div v-if="id && name">
       <h3>
         <span class="orange">
-          You Can'y Leave Without Taking ADVANTAGE of this SPECIAL OFFER!
+          You Can't Leave Without Taking ADVANTAGE of this SPECIAL OFFER!
         </span>
       </h3>
       <h5>
@@ -12,12 +12,16 @@
           {{ priceFormatted }}!
         </span>
       </h5>
-      <div class="content-with-image">
-        <div class="text-container">
-          <p
-            class="last"
-            v-html="description"
-          />
+      <div class="upsells-component__item">
+        <div
+          class="benefits"
+          v-html="description"
+        />
+        <div class="image">
+          <img
+            :src="imageUrl"
+            :alt="`image for ${name}`"
+          >
         </div>
       </div>
       <div class="upsells-component__bot">
@@ -91,7 +95,7 @@ export default {
         this.name = data.upsell.long_name;
         this.description = data.upsell.description;
         this.upsellPrices = data.upsell.upsellPrices;
-        this.imageUrl = data.upsell.logo_image;
+        this.imageUrl = data.upsell.upsell_hero_image;
         this.priceFormatted = this.currentPrices.price_text;
         this.price = this.currentPrices.price;
         this.finalPrice = this.currentPrices.price_text;

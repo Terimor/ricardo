@@ -119,7 +119,7 @@ class PaymentService
             ]
         ],
         self::PROVIDER_NOVALNET    => [
-            'name'      => 'EBANX',
+            'name'      => 'Novalnet',
             'is_active' => true,
             'methods'   => [
                 self::METHOD_PREZELEWY24 => [
@@ -215,7 +215,7 @@ class PaymentService
 
     public static $installments = [
         'mx' => [
-            
+
         ]
     ];
 

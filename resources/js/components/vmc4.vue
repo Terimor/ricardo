@@ -13,14 +13,7 @@
                     :src="productImage"
                   >
                 </div>
-                <div class="product_desc">
-                  <ul>
-                    <li>High Sound Quality</li>
-                    <li>Portable Charging</li>
-                    <li>Ergonomic Design</li>
-                    <li>iOs &amp; Android</li>
-                  </ul>
-                </div>
+                <div class="product_desc" v-html="productData.description"></div>
               </div>
             </div>
           </div>
@@ -29,6 +22,7 @@
               <div class="col-content" id="form-steps">
                 <payment-form-vmc4
                     :installments="form.installments"
+                    :isWarrantyChecked="form.isWarrantyChecked"
                     :checkoutData="checkoutData"
                     :countryList="countryList"
                     @productImageChanged="setProductImage"
@@ -51,7 +45,7 @@
                       <transition name="el-zoom-in-top">
                         <button v-show="warrantyPriceText" id="warranty-field-button">
                           <label for="warranty-field" class="label-container-checkbox">
-                            3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+                            <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
                             <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                             <span class="checkmark"></span>
                           </label>
@@ -69,8 +63,7 @@
                 <div class="text-content">
                   <p>
                     <img alt="" src="//static.saratrkr.com/images/lock.png">
-                    Safe 256-Bit SSL encryption. <br>Your credit card will be invoiced as:
-                    {{billing_descriptor}}
+                    <span v-html="textSafeSSLEncryption"></span><br><span v-html="textCreditCardInvoiced"></span> {{billing_descriptor}}
                   </p>
                 </div>
               </div>
@@ -84,6 +77,7 @@
 <script>
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import {preparePurchaseData} from "../utils/checkout";
+  import { t } from '../utils/i18n';
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
   import printf from 'printf'
@@ -99,29 +93,6 @@
         warrantyPriceText: null,
 				billing_descriptor: checkoutData.product.billing_descriptor,
 				productImage: null,
-				countryList: [
-					{
-						value: 'US',
-						text: 'USA',
-						label: 'USA',
-					}, {
-						value: 'RU',
-						text: 'Russia',
-						label: 'Russia',
-					}, {
-						value: 'UA',
-						text: 'Ukraine',
-						label: 'Ukraine',
-					}, {
-						value: 'PT',
-						text: 'Portugal',
-						label: 'Portugal',
-					}, {
-						value: 'BR',
-						text: 'Brazil',
-						label: 'Brazil',
-					}
-				],
 				cardNames: [
 					{
 						value: 'visa',
@@ -192,7 +163,9 @@
 				return checkoutData.product
 			},
       withInstallments () {
-        return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
+        return this.checkoutData.countryCode === 'BR'
+          || this.checkoutData.countryCode === 'MX'
+          || this.checkoutData.countryCode === 'CO'
       },
       quantityOfInstallments () {
         const { installments } = this.form
@@ -211,6 +184,23 @@
           })
         }))
       },
+      countryList () {
+        const countries = checkoutData.countries;
+        let countriesList = [];
+
+        Object.keys(countries).map(function(key) {
+          countriesList.push({
+            value: key.toUpperCase(),
+            text: countries[key],
+            label: countries[key]
+          });
+        });
+
+        return countriesList;
+      },
+      textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
+      textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
+      textWarranty: () => t('checkout.warranty'),
 		},
 		methods: {
 			submit(val) {
@@ -233,10 +223,10 @@
             this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           case 3:
-            this.warrantyPriceText = prices[this.radioIdx].installments3_warranty_price_text;
+            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           case 6:
-            this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
+            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           default:
             break;
@@ -285,10 +275,13 @@
 			try {
 				this.productImage = checkoutData.product.skus[0].quantity_image[1];
 			} catch (_) {}
-		}
+		},
+    beforeCreate() {
+      document.body.classList.add('tpl-vmc4');
+    },
 	}
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
   @import "../../sass/variables";
 
   .vmc4 {
@@ -360,7 +353,10 @@
         text-align: center;
 
         .logos-content {
+          display: flex;
+          justify-content: center;
           margin: 15px 0 20px;
+
           img {
             max-width: 350px;
           }
@@ -368,11 +364,14 @@
 
         .text-content {
           p {
+            font-size: 13px;
             text-align: center;
             margin-bottom: 10px;
 
             img {
-              max-width: 100%;
+              max-width: 12px;
+              position: relative;
+              top: 2px;
             }
           }
         }
@@ -404,6 +403,7 @@
         position: relative;
         height: 95px;
         margin-top: 22px;
+        margin-bottom: 22px;
         background-color: rgba(216, 216, 216, .71);
         border-radius: 5px;
         border: 1px solid rgba(0, 0, 0, 0.4);
@@ -420,7 +420,7 @@
           text-align: left;
           text-transform: capitalize;
           font-size: 16px;
-          padding: 23px 70px 30px;
+          padding: 17px 70px 30px;
           position: absolute;
           top: 0;
           right: 0;
@@ -458,81 +458,66 @@
       }
     }
 
-    #warranty-field-button {
-      width: 100%;
-      position: relative;
-      height: 95px;
-      margin-top: 22px;
-      background-color: rgba(216, 216, 216, .71);
-      border-radius: 5px;
-      border: 1px solid rgba(0, 0, 0, 0.4);
-      outline: none;
+  }
 
-      &:hover {
-        background-color: rgba(191,191,191,.71);
-        background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
+  .tpl-vmc4 {
+
+    .footer {
+      background-color: transparent;
+      padding: 35px 15px 60px;
+    }
+
+    .footer__row {
+      justify-content: center;
+    }
+
+    .footer__row-item {
+      margin: 0;
+
+      &:before {
+        content: '\007c';
+        color: #6c6c6c;
+        padding: 5px 7px;
       }
 
-      label[for=warranty-field] {
-        font-weight: bold;
-        line-height: 1.8;
-        text-align: left;
-        text-transform: capitalize;
-        font-size: 16px;
-        padding: 23px 70px 30px;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+      &:first-child:before {
+        display: none;
+      }
+    }
 
-        .checkmark {
-          top: 20px;
-          left: 40px;
+    .footer__link {
+      color: #337ab7;
+      font-size: 13px;
+      font-weight: 400;
+      text-decoration: none;
+      text-transform: capitalize;
+    }
+
+    @media screen and (max-width: 480px) {
+      .footer__row {
+        flex-direction: column;
+      }
+
+      .footer__row-item {
+        margin-bottom: 8px;
+
+        &:before {
+          display: none;
         }
       }
+    }
 
-      input[type=checkbox] {
-        position: absolute;
-        top: 23px;
-        left: 45px;
-      }
-
-      & > img {
-        position: absolute;
-        width: 30px;
-        height: auto;
-        top: -7px;
-        right: -7px;
-      }
-
-      & > .fa-arrow-right {
-        position: absolute;
-        font-size: 18px;
-        color: #dc003a;
-        top: 20px;
-        left: 10px;
-        animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+    @media screen and (min-width: 1200px) {
+      .vmc4 {
+        max-width: 1170px;
       }
     }
-  }
 
-  @media screen and (min-width: 1200px) {
-    .vmc4 {
-      max-width: 1170px;
+    @media screen and (max-width: 992px) {
+      .container {
+        max-width: 100%;
+      }
     }
-  }
 
-  @media screen and (max-width: 992px) {
-    .container {
-      max-width: 100%;
-    }
   }
-
-  @media screen and ($s-down) {
-    header {
-      margin-top: 25px;
-    }
-  }
-
 </style>

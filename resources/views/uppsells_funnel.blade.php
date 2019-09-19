@@ -5,7 +5,7 @@
     const upsellsData = {
       product: @json($product),
       orderCustomer: @json($orderCustomer),
-      countryCode: '{{ $location->countryCode }}'
+      countryCode: '{{ $countryCode }}'
     }
 </script>
 

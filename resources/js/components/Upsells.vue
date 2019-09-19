@@ -28,6 +28,9 @@
                   <component
                     v-bind:is="view"
                     @addAccessory="addAccessory"
+                    :discount="upsellsObj
+                      && upsellsObj[getEntity]
+                      && upsellsObj[getEntity].discount_percent"
                     :id="upsellsObj
                       && upsellsObj[getEntity]
                       && upsellsObj[getEntity].product_id"
@@ -44,9 +47,12 @@
             <div class="upsells-component__finish">
                 <h3 class="original-order">Your original order</h3>
                 <UpsellsItem
-                  :image-url="product.skus[0].quantity_image[1]"
+                  :image-url="product.image[0]"
                   :name="product.long_name"
                   :subtotal="product.prices[getOriginalOrder.quantity].value_text"
+                  :warranty="getOriginalOrder.isWarrantyChecked
+                    ? getOriginalOrder.prices.warranty_price_text
+                    : null"
                   :benefitList="[
                     `Quantity: ${getOriginalOrder.quantity}`,
                   ]"
@@ -75,14 +81,14 @@
                   <p class="total-price">
                     Total accessory order: {{ total }}
                   </p>
+                  <paypal-button
+                    :createOrder="paypalCreateOrder"
+                    :onApprove="paypalOnApprove"
+                    :$v="true"
+                  >
+                    Buy Now Risk Free PAYPAL
+                  </paypal-button>
                 </template>
-                <paypal-button
-                  :createOrder="paypalCreateOrder"
-                  :onApprove="paypalOnApprove"
-                  :$v="true"
-                >
-                  Buy Now Risk Free PAYPAL
-                </paypal-button>
             </div>
         </template>
     </div>
@@ -152,22 +158,16 @@
             });
         }
 
-        switch(val) {
-        case 0:
+        if (val === 0) {
           this.view = 'Step1';
-          break;
-        case 1:
-          this.view = 'StepWithOneItem';
-          break;
-        case 2:
+        }
+
+        if (val === this.upsellsObj.length - 1) {
           this.view = 'Step3';
-          break;
-        case 3:
+        }
+
+        else {
           this.view = 'StepWithOneItem';
-          break;
-        default:
-          this.view = 'StepWithOneItem';
-          break;
         }
       }
     },
@@ -306,7 +306,7 @@
             .benefits {
                 list-style-type: none;
                 width: 60%;
-                font-size: 18px;
+                font-size: 20px;
                 flex-grow: 1;
 
                 li {

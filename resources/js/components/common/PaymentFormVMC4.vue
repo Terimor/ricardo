@@ -5,7 +5,9 @@
       <div class="col-md-12">
         <h4 class="form-steps-title">
           <b>{{step}}/{{maxSteps}}</b>
-          <span>Choose your Deal</span>
+          <span v-if="step === 1" v-html="textChooseDeal"></span>
+          <span v-if="step === 2" v-html="textContactInformation"></span>
+          <span v-if="step === 3" v-html="textPaymentMethod"></span>
         </h4>
         <div class="step step-1" v-if="step === 1">
           <slot name="installment" />
@@ -15,7 +17,7 @@
             @input="setWarrantyPriceText"
             :list="list"
             />
-          <h2>Please select your variant</h2>
+          <h2 v-html="textSelectVariant"></h2>
           <select-field
               popperClass="smc7-popover-variant"
               v-model="form.variant"
@@ -28,54 +30,52 @@
           <div class="full-name">
             <text-field
                 :validation="$v.form.stepTwo.fname"
-                validationMessage="Please enter your first name"
+                :validationMessage="textFirstNameRequired"
                 theme="variant-1"
-                label="First Name"
+                :label="textFirstName"
                 class="first-name"
                 v-model="form.stepTwo.fname"/>
             <text-field
                 :validation="$v.form.stepTwo.lname"
-                validationMessage="Please enter your last name"
+                :validationMessage="textLastNameRequired"
                 theme="variant-1"
-                label="Last Name"
+                :label="textLastName"
                 class="last-name"
                 v-model="form.stepTwo.lname"/>
           </div>
           <text-field
               :validation="$v.form.stepTwo.email"
-              validationMessage="Please enter a valid e-mail"
+              :validationMessage="textEmailRequired"
               theme="variant-1"
-              label="Your Email Address"
+              :label="textEmail"
               v-model="form.stepTwo.email"/>
           <phone-field
               :validation="$v.form.stepTwo.phone"
               @onCountryChange="setCountryCodeByPhoneField"
-              validationMessage="Please enter a valid phone number"
+              :validationMessage="textPhoneRequired"
               :countryCode="form.countryCodePhoneField"
               theme="variant-1"
-              label="Your Phone Number"
+              :label="textPhone"
               :rest="{
                 autocomplete: 'off'
               }"
               v-model="form.stepTwo.phone"/>
         </div>
         <div class="step step-3" v-if="step === 3">
-          <h2>Pay Securely With:</h2>
+          <h3 v-html="textPaySecurely"></h3>
           <radio-button-group
-              :withCustomLabels="true"
-              v-model="form.paymentType">
-            <div class="card-types">
-              <pay-method-item
-                :validation="$v.form.stepThree.cardType"
-                v-for="item in cardNames"
-                :key="item.value"
-                :input="{
-                  value: item.value,
-                  imgUrl: item.imgUrl,
-                }"
-                :value="form.paymentType"/>
-            </div>
-          </radio-button-group>
+            class="main__credit-card-switcher"
+            v-model="form.paymentType"
+            :list="mockData.creditCardRadioList"
+          />
+          <paypal-button
+            :createOrder="paypalCreateOrder"
+            :onApprove="paypalOnApprove"
+            v-show="fullAmount"
+            :$v="$v.form.deal"
+            @click="paypalSubmit"
+          >Buy Now Risk Free PAYPAL</paypal-button>
+          <slot name="warranty" />
           <form v-if="form.paymentType !== 'paypal' && form.paymentType">
             <text-field
                 :validation="$v.form.stepThree.cardNumber"
@@ -86,10 +86,10 @@
                   autocomplete: 'cc-number',
                     'data-bluesnap': 'encryptedCreditCard'
                   }"
-                validationMessage="Please enter a credit card number."
+                :validationMessage="textCardNumberRequired"
                 class="card-number"
                 theme="variant-1"
-                label="Card Number"
+                :label="textCardNumber"
                 v-model="form.stepThree.cardNumber"
                 :prefix="`<img src='${cardUrl}' alt='Card Number' />`"
                 :postfix="`<i class='fa fa-lock'></i>`"
@@ -98,14 +98,14 @@
               <div class="d-flex">
                 <div>
                   <div class="card-info__labels">
-                    <span class="label">Card Valid Until</span>
+                    <span class="label" v-html="textCardValidUntil"></span>
                   </div>
                   <div class="card-date d-flex">
                     <select-field
                       :validation="$v.form.stepThree.month"
-                      validationMessage="Required"
+                      :validationMessage="textCardValidMonthRequired"
                       :rest="{
-                        placeholder: 'Month'
+                        placeholder: textCardValidMonthPlaceholder
                       }"
                       theme="variant-1"
                       :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
@@ -113,9 +113,9 @@
                     />
                     <select-field
                       :validation="$v.form.stepThree.year"
-                      validationMessage="Required"
+                      :validationMessage="textCardValidYearRequired"
                       :rest="{
-                        placeholder: 'Year'
+                        placeholder: textCardValidYearPlaceholder
                       }"
                       theme="variant-1"
                       :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
@@ -126,12 +126,12 @@
                 <div>
                   <div class="card-cvv">
                     <div class="card-info__labels">
-                      <span class="label">CVV code</span>
+                      <span class="label" v-html="textCardCVV"></span>
                     </div>
                     <text-field
                       :validation="$v.form.stepThree.cvv"
                       @click-postfix="openCVVModal"
-                      validationMessage="Required"
+                      :validationMessage="textCardCVVRequired"
                       class="cvv-field"
                       theme="variant-1"
                       :rest="{
@@ -149,44 +149,44 @@
               </div>
               <text-field
                 :validation="$v.form.stepThree.city"
-                validationMessage="Please enter your city"
+                :validationMessage="textCityRequired"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
-                label="City"
+                :label="textCity"
                 :rest="{
-                  placeholder: 'City',
+                  placeholder: textCityPlaceholder,
                   autocomplete: 'shipping locality'
                 }"
                 v-model="form.stepThree.city"/>
               <text-field
                 :validation="$v.form.stepThree.state"
-                validationMessage="Please enter your state"
+                :validationMessage="textStateRequired"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
-                label="State"
+                :label="textState"
                 :rest="{
-                  placeholder: 'State',
+                  placeholder: textStatePlaceholder,
                   autocomplete: 'shipping locality'
                 }"
                 v-model="form.stepThree.state"/>
               <text-field
                 :validation="$v.form.stepThree.zipCode"
-                validationMessage="Please enter your zip code"
+                :validationMessage="textZipcodeRequired"
                 theme="variant-1"
-                label="Zip Code"
+                :label="textZipcode"
                 :rest="{
-                  placeholder: 'Zip code'
+                  placeholder: textZipcodePlaceholder
                 }"
                 id="zip-code-field"
                 v-model="form.stepThree.zipCode"/>
               <select-field
                 :validation="$v.form.stepThree.country"
-                validationMessage="Invalid field"
+                :validationMessage="textCountryRequired"
                 theme="variant-1"
-                label="Country"
+                :label="textCountry"
                 class="country"
                 :rest="{
-                  placeholder: 'Country'
+                  placeholder: textCountryPlaceholder
                 }"
                 :list="countryList"
                 v-model="form.stepThree.country"/>
@@ -194,29 +194,26 @@
             <el-dialog
               @click="isOpenCVVModal = false"
               class="cvv-popup"
-              title="Where do I find my security code?"
+              :title="textCVVPopupTitle"
               :visible.sync="isOpenCVVModal"
             >
               <div class="cvv-popup__content">
-                <p>The CVV code is a 3 digit number that you can find on the back of your credit card. On AMEX cards it
-                  is
-                  a 4 digit number, found on the front of your credit card.</p>
+                <p v-html="textCVVPopupLine1"></p>
                 <div><img src="/images/cvv_popup.jpg" alt=""></div>
-                <p>Where to find the 3 digit security code (Visa/Mastercard)</p>
+                <p v-html="textCVVPopupLine2"></p>
               </div>
             </el-dialog>
+            <button
+              v-if="form.paymentType !== 'paypal' && step === 3"
+              v-html="textSubmitButton"
+              @click="submit"
+              class="submit-btn"
+              type="button"
+            ></button>
           </form>
-          <slot name="warranty" />
         </div>
         <div class="buttons">
-          <button
-            v-if="form.paymentType !== 'paypal' && step === 3"
-            @click="submit"
-            class="submit-btn"
-            type="button"
-          >
-            YES! SEND ME MY PURCHASE WITH FREE SHIPPING NOW
-          </button>
+          <!--
           <button
             v-if="form.paymentType === 'paypal' && step === 3"
             @click="submit"
@@ -226,9 +223,10 @@
             <span class="purchase-button-text">Buy Now Risk-Free with</span>
             <img src="/images/cc-icons/paypal-highq.png" alt="Paypal">
           </button>
+          -->
           <div class="form-navigation">
-            <button @click="isAllowNext(step)" v-if="step !== 3">Next</button>
-            <button v-if="step > 1" class="back-btn" @click="step--">&lt;&lt; Go Back</button>
+            <button @click="isAllowNext(step)" v-if="step !== 3" v-html="textNext"></button>
+            <button v-if="step > 1" class="back-btn" @click="step--">&lt;&lt; <span v-html="textBack"></span></button>
           </div>
         </div>
       </div>
@@ -236,7 +234,7 @@
     <el-dialog
       @click="isOpenPromotionModal = false"
       class="deal-popup"
-      title="Please select a product promotion."
+      :title="textMainDealErrorPopupTitle"
       :lock-scroll="false"
       :visible.sync="isOpenPromotionModal"
     >
@@ -246,9 +244,7 @@
           type="button"
           class="green-button-animated"
         >
-          <span class="purchase-button-text">
-            OK, I understand
-          </span>
+          <span class="purchase-button-text" v-html="textMainDealErrorPopupButton"></span>
         </button>
       </div>
     </el-dialog>
@@ -257,10 +253,12 @@
 
 </template>
 <script>
+  import { t } from '../../utils/i18n';
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
 	import {getCardUrl, preparePurchaseData} from "../../utils/checkout";
+  import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
 	import {fade} from "../../utils/common";
 
@@ -276,6 +274,7 @@
 			'variantList',
       'countryCode',
       'installments',
+      'isWarrantyChecked',
 			'checkoutData'
 		],
 		data() {
@@ -305,15 +304,76 @@
 					countryCodePhoneField: checkoutData.countryCode,
 					deal: null,
 					variant: checkoutData.product.skus[0].code || "",
-					installments: 1,
+					//installments: 1,
 					paymentType: null,
-				}
+				},
+        mockData: {
+          creditCardRadioList: [
+            {
+              label: t('checkout.credit_cards'),
+              value: 'credit-card',
+              class: 'green-button-animated'
+            }, {
+              label: t('checkout.bank_payments'),
+              value: 'bank-payment',
+              class: 'bank-payment'
+            }
+          ],
+        },
 			}
     },
 		computed: {
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
-			}
+			},
+      fullAmount () {
+        return this.installments == 1;
+      },
+      codeOrDefault () {
+        return this.queryParams.product || this.checkoutData.product.skus[0].code;
+      },
+      textChooseDeal: () => t('checkout.choose_deal'),
+      textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
+      textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
+      textSelectVariant: () => t('checkout.select_variant'),
+      textContactInformation: () => t('checkout.contact_information'),
+      textFirstName: () => t('checkout.payment_form.first_name'),
+      textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
+      textLastName: () => t('checkout.payment_form.last_name'),
+      textLastNameRequired: () => t('checkout.payment_form.last_name.required'),
+      textEmail: () => t('checkout.payment_form.email'),
+      textEmailRequired: () => t('checkout.payment_form.email.required'),
+      textPhone: () => t('checkout.payment_form.phone'),
+      textPhoneRequired: () => t('checkout.payment_form.phone.required'),
+      textPaymentMethod: () => t('checkout.payment_method'),
+      textPaySecurely: () => t('checkout.pay_securely'),
+      textCardNumber: () => t('checkout.payment_form.card_number'),
+      textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
+      textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),
+      textCardValidMonthRequired: () => t('checkout.payment_form.card_valid_month.required'),
+      textCardValidMonthPlaceholder: () => t('checkout.payment_form.card_valid_month.placeholder'),
+      textCardValidYearRequired: () => t('checkout.payment_form.card_valid_year.required'),
+      textCardValidYearPlaceholder: () => t('checkout.payment_form.card_valid_year.placeholder'),
+      textCardCVV: () => t('checkout.payment_form.card_cvv'),
+      textCardCVVRequired: () => t('checkout.payment_form.card_cvv.required'),
+      textCity: () => t('checkout.payment_form.city'),
+      textCityPlaceholder: () => t('checkout.payment_form.city.placeholder'),
+      textCityRequired: () => t('checkout.payment_form.city.required'),
+      textState: () => t('checkout.payment_form.state'),
+      textStatePlaceholder: () => t('checkout.payment_form.state.placeholder'),
+      textStateRequired: () => t('checkout.payment_form.state.required'),
+      textZipcode: () => t('checkout.payment_form.zipcode'),
+      textZipcodePlaceholder: () => t('checkout.payment_form.zipcode.placeholder'),
+      textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
+      textCountry: () => t('checkout.payment_form.сountry'),
+      textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),
+      textCountryRequired: () => t('checkout.payment_form.сountry.required'),
+      textSubmitButton: () => t('checkout.payment_form.submit_button'),
+      textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
+      textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
+      textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
+      textNext: () => t('checkout.next'),
+      textBack: () => t('checkout.back'),
 		},
 		watch: {
 			'form.variant'(val) {
@@ -355,6 +415,9 @@
 				this.$v.form.$touch();
 				this.$emit('onSubmit', this.form)
 			},
+      paypalSubmit() {
+
+      },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2.toUpperCase()
@@ -388,7 +451,23 @@
         } else {
           this.step++
         }
-			}
+			},
+      paypalCreateOrder() {
+        const searchParams = new URL(document.location.href).searchParams;
+        const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+
+        return paypalCreateOrder({
+          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+          sku_code: this.codeOrDefault,
+          sku_quantity: this.form.deal,
+          is_warranty_checked: this.isWarrantyChecked,
+          page_checkout: document.location.href,
+          cur: currency,
+          offer: searchParams.get('offer'),
+          affiliate: searchParams.get('affiliate'),
+        })
+      },
+      paypalOnApprove: paypalOnApprove,
 		},
 	}
 </script>
@@ -496,6 +575,13 @@
     }
 
     .step-3 {
+      h3 {
+        color: #0a0f0a;
+        margin-bottom: 10px;
+        padding: 0;
+        text-align: left;
+      }
+
       .pay-method-item img {
         max-height: 45px;
         margin-right: 15px;
@@ -558,6 +644,7 @@
       position: relative;
       padding: 18px 30px;
       margin: 10px 1px;
+      cursor: pointer;
       font-size: 16px;
       font-weight: 400;
       text-transform: uppercase;

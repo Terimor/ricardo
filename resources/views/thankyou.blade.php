@@ -7,7 +7,7 @@
 @section('script')
 <script defer>
     const upsells = {
-        countryCode: '{{ $location->countryCode }}',
+        countryCode: '{{ $countryCode }}',
         setting: @json($setting),
         product: @json($product),
         orderCustomer: @json($orderCustomer),
@@ -43,12 +43,20 @@
             <div class="thank-you__order">
                 <div class="d-flex">
                     <div class="thank-you__order__image">
-                        <img :src="selectedProductData.image" alt="">
+                        <img src="{{ $product->image[0] }}" alt="">
                         <div class="quantity">@{{ selectedProductData.quantity }}</div>
                     </div>
-                    <div class="thank-you__order__name">{{ $product->long_name }}</div>
+                    <div class="d-flex flex-column justify-content-center">
+                        <div class="thank-you__order__name">{{ $product->long_name }}</div>
+                        <div
+                            class="thank-you__order__name"
+                            v-if="selectedProductData.isWarrantyChecked"
+                        >
+                            Warranty: @{{ selectedProductData.prices.warranty_price_text }}
+                        </div>
+                    </div>
                 </div>
-                <!--<div class="thank-you__order__price">@{{ productData.prices[selectedProductData.quantity].value_text }}</div>-->
+                <div class="thank-you__order__price">@{{ productData.prices[selectedProductData.quantity].value_text }}</div>
             </div>
             <div v-for="order in subOrder">
                 <thank-you-item

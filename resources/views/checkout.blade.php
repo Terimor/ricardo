@@ -7,7 +7,7 @@
     }
 
     const checkoutData = {
-      countryCode: '{{ $location->countryCode }}',
+      countryCode: '{{ $countryCode }}',
       countries: @json($countries),
       product: @json($product),
       productImage: '{{$product->logo_image}}',
@@ -24,5 +24,7 @@
 @include('components.product_offer')
 
 <app-component></app-component>
+
+@include('layouts.footer', ['isWhite' => true])
 
 @endsection

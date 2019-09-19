@@ -11,7 +11,7 @@
 @section('script')
     <script defer>
         const checkoutData = {
-            countryCode: '{{ $location->countryCode }}',
+            countryCode: '{{ $countryCode }}',
             product: @json($product),
             countries: @json($countries),
         };
@@ -79,6 +79,7 @@
             </div>
             <div class="promo__installments">
                 <select-field
+                    v-if="withInstallments"
                     theme="variant-1"
                     :rest="{
                         placeholder: 'Installments'
@@ -298,7 +299,7 @@
                         :style="{ width: '300px' }"
                         :create-order="paypalCreateOrder"
                         :on-approve="paypalOnApprove"
-                        :$v="true"
+                        :$v="$v.form.deal"
                     >Buy Now Risk Free PAYPAL</paypal-button>
                 </div>
                 <div class="promo__alternative-payment">

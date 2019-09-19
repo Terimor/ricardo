@@ -1,4 +1,4 @@
-import { goTo } from '../utils/goTo';
+import { goTo } from './goTo';
 
 export function paypalCreateOrder ({
   xsrfToken = document.head.querySelector('meta[name="csrf-token"]').content,
@@ -50,11 +50,17 @@ export function paypalOnApprove(data) {
     body: JSON.stringify({
       orderID: data.orderID
     })
-  }).then(function(res) {
-    return res.json();
-  }).then(function(details) {
-    if (odin_order_id) {
-      goTo(`/thankyou/?order=${odin_order_id}`);
-    }
-  });
+  })
+    .then(function(res) {
+      if(res.ok) {
+        return res.json();
+      } else {
+        throw new Error(res.statusText);
+      }
+    })
+    .then(function() {
+      if (odin_order_id) {
+        goTo(`/thankyou/?order=${odin_order_id}`);
+      }
+    });
 }

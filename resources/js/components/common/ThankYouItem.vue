@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="thank-you__order__price">
-            {{ price }}
+            {{ order.finalPrice }}
         </div>
     </div>
 </template>
@@ -29,27 +29,6 @@
         name: 'ThankYouItem',
         mixins: [upsellsMixin],
         props: ['order'],
-
-        data: () => ({
-            upsellPrices: null,
-        }),
-
-        computed: {
-            price() {
-                if (this.upsellPrices && this.order) {
-                    return this.upsellPrices[this.order.quantity].price_text
-                }
-                return 0;
-            }
-        },
-
-        mounted() {
-            if (this.order) {
-                getUppSells(this.order.id, this.order.quantity).then(({ data }) => {
-                    this.upsellPrices = data.upsell.upsellPrices
-                });
-            }
-        },
     };
 </script>
 
