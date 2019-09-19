@@ -17,7 +17,7 @@ class ProductService
      * @param Request $request
      * @return OdinProduct
      */
-    public function resolveProduct(Request $request, $needImages = false)
+    public function resolveProduct(Request $request, $needImages = false, $currency = null)
     {
         $product = null;
         if ($request->has('product')) {
@@ -40,6 +40,10 @@ class ProductService
         // set local images
         if ($needImages) {
             $product->setLocalImages();
+        }
+        
+        if ($currency) {
+            $product->currency = $currency;
         }
 
         //return $product;

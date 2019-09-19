@@ -46,9 +46,11 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function contactUs()
+    public function contactUs(Request $request, ProductService $productService)
     {
-        return view('contact_us');
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $product = $productService->resolveProduct($request, true);
+        return view('contact_us', compact('loadedPhrases', 'product'));
     }
 
     /**
@@ -181,6 +183,16 @@ class SiteController extends Controller
     public function test(Request $request, ProductService $productService)
     {
 
+        $text = 'http://127.0.0.1:8000/checkout?cur=BYN&aff_id=60';
+        
+        $url = parse_url($text);
+        $params = null;
+        if ($url['query']) {
+            $params = explode("&", $url['query']);
+        }
+        
+        echo '<pre>'; var_dump($url); echo '</pre>'; exit;
+        
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
