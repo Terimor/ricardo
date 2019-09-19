@@ -201,7 +201,7 @@ class CurrencyService
      * @return Currency
      */
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
-    {        
+    {
         $currency = null;
         if ($currencyCode) {
             $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
@@ -210,7 +210,7 @@ class CurrencyService
                 $currencyCode = request()->input('cur');
             }
         }
-        
+
         if (!$currencyCode) {
             if (!$countryCode) {
                 $countryCode = strtoupper(\Utils::getLocationCountryCode());
@@ -220,11 +220,11 @@ class CurrencyService
             $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
             $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
         }
-        
+
         if (!$currency) {
             $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
         }
-        
+
         if (!empty($currency->countries)){
             if (!in_array(strtolower($countryCode), $currency->countries)) {
                 $countryCode = $currency->countries[0];
@@ -265,7 +265,7 @@ class CurrencyService
 	{
 		return floor(($warrantyPercent / 100) * $price * 100)/100;
 	}
-	
+
 	/**
 	 * Get local text value
 	 * @param float $price
@@ -277,15 +277,32 @@ class CurrencyService
 			if (!$currency) {
 				$currency = self::getCurrency(null, $countryCode);
 			}
-			$currencyCode = $currency->code;            
+			$currencyCode = $currency->code;
 			$countryCode = !empty($currency->countryCode) ? $currency->countryCode : (!empty($currency->countries[0]) ? $currency->countries[0] : 'us');
 		}
 
         //get fraction digits and locale string
         $localeString = \Utils::getCultureCode(null, $countryCode);
-        $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);        
-		
+        $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
+
 		return $numberFormatter->formatCurrency($price, $currencyCode);
 	}
+
+    /**
+     * Returns rounded value depending on currency rules
+     * @param float $value
+     * @param string $currencyCode
+     * @return float
+     */
+    public static function roundValueByCurrencyRules(float $value, string $currencyCode): float
+    {
+        $roundedValue = 0;
+        if ($currencyCode === 'JPY') {
+            $roundedValue = round($value);
+        } else {
+            $roundedValue = round($value, 2);
+        }
+        return $roundedValue;
+    }
 
 }
