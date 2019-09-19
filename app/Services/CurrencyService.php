@@ -202,6 +202,7 @@ class CurrencyService
      */
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
     {        
+        $currency = null;
         if ($currencyCode) {
             $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
         } else {

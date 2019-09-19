@@ -34,7 +34,7 @@ class SiteController extends Controller
         
         $product = $productService->resolveProduct($request, true);
         
-         $setting = Setting::whereIn('key',[
+        $setting = Setting::whereIn('key',[
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
         
