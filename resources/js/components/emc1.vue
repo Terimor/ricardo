@@ -82,7 +82,7 @@
             v-show="fullAmount"
             :$v="$v.form.deal"
             @click="paypalSubmit"
-          >Buy Now Risk Free PAYPAL</paypal-button>
+          >{{ paypalRiskFree }}</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
               :firstTitle="textStep + ' 4: ' + textContactInformation"
@@ -308,7 +308,7 @@ export default {
         city: null,
         state: null,
         zipcode: null,
-        country: checkoutData.countryCode,
+        country: checkoutData.countryCode.toUpperCase(),
         cardNumber: '',
         month: null,
         year: null,
@@ -398,6 +398,7 @@ export default {
     textSpecialOfferPopupMessage: () => t('checkout.special_offer_popup.message'),
     textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
     textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
+    paypalRiskFree: () => t('checkout.paypal.risk_free'),
   },
   watch: {
     'form.installments' (val) {

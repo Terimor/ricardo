@@ -5,6 +5,7 @@ import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
 import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
 import { preparePurchaseData } from '../utils/checkout';
+import { t } from '../utils/i18n';
 import { getNotice } from '../utils/emc1';
 import { scrollTo } from '../utils/common';
 import { getCountOfInstallments } from '../utils/installments';
@@ -57,7 +58,7 @@ const promo = new Vue({
       city: null,
       state: null,
       zipcode: null,
-      country: checkoutData.countryCode,
+      country: checkoutData.countryCode.toUpperCase(),
       cardNumber: '',
       month: null,
       year: null,
@@ -95,11 +96,11 @@ const promo = new Vue({
     mockData: {
       creditCardRadioList: [
         {
-          label: 'Credit cards',
+          label: t('checkout.credit_cards'),
           value: 'credit-card',
           class: 'green-button-animated'
         }, {
-          label: 'Bank payments',
+          label: t('checkout.bank_payments'),
           value: 'bank-payment',
           class: 'bank-payment'
         }
@@ -115,18 +116,18 @@ const promo = new Vue({
   installmentsList: [
     {
       value: 1,
-      text: 'Pay in 1 installments',
-      label: 'Pay in 1 installments',
+      label: t('checkout.installments.full_amount'),
+      text: t('checkout.installments.full_amount'),
     },
     {
       value: 3,
-      text: 'Pay in 3 installments',
-      label: 'Pay in 3 installments',
+      label: t('checkout.installments.pay_3'),
+      text: t('checkout.installments.pay_3'),
     },
     {
       value: 6,
-      text: 'Pay in 6 installments',
-      label: 'Pay in 6 installments',
+      label: t('checkout.installments.pay_6'),
+      text: t('checkout.installments.pay_6'),
     }
   ],
 
@@ -203,6 +204,12 @@ const promo = new Vue({
     hasTimer() {
       return document.getElementById('timer-component');
     },
+
+    textPromoDiscount() {
+      return t('checkout.promo.buy_now', { discount: this.discount || 0 });
+    },
+
+    textDiscountStarter: () => t('checkout.discount_starter'),
   },
 
   methods: {
