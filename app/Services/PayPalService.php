@@ -384,7 +384,7 @@ class PayPalService
             $order->save();
             if ($order) {
                 // send confirmation email
-//                (new EmailService())->sendConfirmationEmail($order);
+                (new EmailService())->sendConfirmationEmail($order);
                 return ['order_id' => $order->id];
             } else {
                 logger()->error(
@@ -474,7 +474,7 @@ class PayPalService
                 $order->save();
 
                 // send satisfaction email
-//                (new EmailService())->sendSatisfactionEmail($order);
+                (new EmailService())->sendSatisfactionEmail($order);
             }
         }
     }
