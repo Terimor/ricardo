@@ -71,7 +71,7 @@
           <img id="product-image" :src="productImage" alt="">
           <h2 v-html="textPaymentMethod"></h2>
           <h3 v-html="textPaySecurely"></h3>
-          <template v-if="!isPurchesAlreadyExists">
+          <template v-if="!isPurchasAlreadyExists">
             <radio-button-group
               class="main__credit-card-switcher"
               v-model="form.paymentType"
@@ -85,8 +85,8 @@
               @click="paypalSubmit"
             >Buy Now Risk Free PAYPAL</paypal-button>
           </template>
-          <PurchesAlreadyExists
-            v-if="isPurchesAlreadyExists"
+          <PurchasAlreadyExists
+            v-if="isPurchasAlreadyExists"
           />
           <transition name="el-zoom-in-top">
             <payment-form
@@ -189,7 +189,7 @@ import { getCountOfInstallments } from '../utils/installments';
 import { stateList } from '../resourses/state';
 import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
-import PurchesAlreadyExists from './common/PurchesAlreadyExists';
+import PurchasAlreadyExists from './common/PurchasAlreadyExists';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
 import { preparePurchaseData } from '../utils/checkout';
@@ -202,7 +202,7 @@ export default {
   components: {
     ProductItem,
     Cart,
-    PurchesAlreadyExists,
+    PurchasAlreadyExists,
   },
   props: ['showPreloader', 'skusList'],
   data () {
@@ -407,7 +407,7 @@ export default {
     textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
     textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
 
-    isPurchesAlreadyExists() {
+    isPurchasAlreadyExists() {
       const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
       const odin_order_created_at = localStorage.getItem('odin_order_created_at');
 

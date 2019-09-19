@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'PurchesAlreadyExists',
+  name: 'PurchasAlreadyExists',
 
   data: () => ({
     orderNumber: localStorage.getItem('odin_order_id'),
