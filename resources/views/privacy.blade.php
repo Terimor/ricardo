@@ -170,9 +170,11 @@
             <p>
                 For more information about our privacy practices,
                 if you have questions, or if you would like to make a complaint, please contact us by e-mail at
-                <a href="mailto:help@deals-support.com">
-                    help@deals-support.com
-                </a>
+                <strong>
+                    <a href="mailto:help@deals-support.com">
+                        help@deals-support.com
+                    </a>
+                </strong>
             </p>
 
             <br>

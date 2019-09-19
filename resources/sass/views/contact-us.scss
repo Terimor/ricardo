@@ -43,4 +43,16 @@
       display: inline-block;
     }
   }
+
+  .footer {
+    &__row {
+      justify-content: flex-start;
+      margin: 0;
+    }
+
+    &__link {
+      font-weight: 500;
+      font-size: 17px;
+    }
+  }
 }

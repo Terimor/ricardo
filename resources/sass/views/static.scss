@@ -22,12 +22,12 @@
     color: #337ab7;
     text-decoration: none;
     white-space: nowrap;
-    font-weight: 700;
   }
 
   .footer {
     &__row {
       justify-content: flex-start;
+      margin: 0;
     }
 
     &__link {

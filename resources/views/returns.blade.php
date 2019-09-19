@@ -89,7 +89,7 @@
                 Next contact your bank. There is often some processing time before a refund is posted.
             </p>
             <p>
-                If you’ve done all of this and you still have not received your refund yet, please contact us at <a href="mailto:help@deals-support.com">help@deals-support.com</a>
+                If you’ve done all of this and you still have not received your refund yet, please contact us at <strong><a href="mailto:help@deals-support.com">help@deals-support.com</a></strong>
             </p>
             <p>
                 <strong>
@@ -103,7 +103,7 @@
             </p>
             <p>
                 We only replace items if they are defective or damaged.
-                If you need to exchange it for the same item, send us an email at <a href="mailto:help@deals-support.com">help@deals-support.com</a>
+                If you need to exchange it for the same item, send us an email at <strong><a href="mailto:help@deals-support.com">help@deals-support.com</a></strong>
             </p>
             <br>
             <p>
@@ -123,7 +123,7 @@
                 </strong>
             </p>
             <p>
-                To return your product, please send us an email at <a href="mailto:help@deals-support.com">help@deals-support.com</a> so we can provide you the shipping address.
+                To return your product, please send us an email at <strong><a href="mailto:help@deals-support.com">help@deals-support.com</a></strong> so we can provide you the shipping address.
             </p>
             <br>
             <p>
