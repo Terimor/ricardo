@@ -9,6 +9,7 @@ export function paypalCreateOrder ({
   page_checkout = document.location.href,
   offer = new URL(document.location.href).searchParams.get('offer'),
   affiliate = new URL(document.location.href).searchParams.get('affiliate'),
+  upsells
 }) {
   return fetch('/paypal-create-order', {
     method: 'post',
@@ -26,6 +27,7 @@ export function paypalCreateOrder ({
       page_checkout,
       offer,
       affiliate,
+      upsells
     })
   }).then(function(res) {
     return res.json();
@@ -61,7 +63,7 @@ export function paypalOnApprove(data) {
     .then(function() {
       if (odin_order_id) {
         localStorage.setItem('odin_order_created_at', new Date);
-        goTo(`/thankyou-promos/?order=${odin_order_id}`);
+        goTo(`/thankyou/?order=${odin_order_id}`);
       }
     });
 }
