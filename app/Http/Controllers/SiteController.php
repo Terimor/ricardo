@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Location;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
 use App\Models\Currency;
@@ -110,7 +109,7 @@ class SiteController extends Controller
             if (!$orderCustomer) {
                 // generate global get parameters
                 $params = \Utils::getGlobalGetParameters($request);
-                return redirect('/checkout?'.$params);
+                return redirect('/checkout'.$params);
             }
 		}
         
@@ -138,7 +137,7 @@ class SiteController extends Controller
             if (!$orderCustomer) {
                 // generate global get parameters
                 $params = \Utils::getGlobalGetParameters($request);
-                return redirect('/checkout?'.$params);
+                return redirect('/checkout'.$params);
             }
 		}
         $countryCode = \Utils::getLocationCountryCode();

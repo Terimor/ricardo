@@ -691,7 +691,7 @@ class UtilsService
             }
         }
         if ($string) {            
-            $string = substr_replace($string , '', -1);
+            $string = '?'.substr_replace($string , '', -1);
         }
         return $string;
     }
