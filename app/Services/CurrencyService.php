@@ -218,7 +218,11 @@ class CurrencyService
             $localeString = \Utils::getCultureCode(null, $countryCode);
             $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
             $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
-        }        
+        }
+        
+        if (!$currency) {
+            $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
+        }
         
         if (!empty($currency->countries)){
             if (!in_array(strtolower($countryCode), $currency->countries)) {
