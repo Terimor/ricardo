@@ -286,11 +286,6 @@ header {
   height: 87px;
   display: flex;
   align-items: center;
-
-  &.transparent {
-    background-color: transparent;
-    box-shadow: none;
-  }
 }
 
 header img {
