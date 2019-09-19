@@ -1,6 +1,7 @@
 <template>
   <div class="alert">
-    You already made your purchase&nbsp;&mdash; your confirmation&nbsp;#&nbsp;is&nbsp;{{ orderNumber }} - If&nbsp;you have any questions, you can reach&nbsp;us under help@support-deals.com
+    You already made your purchase&nbsp;&mdash; your confirmation&nbsp;#&nbsp;is&nbsp;{{ orderNumber }} -
+    If&nbsp;you have any questions, you can reach&nbsp;us under help@support-deals.com
   </div>
 </template>
 
