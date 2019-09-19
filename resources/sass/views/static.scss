@@ -1,0 +1,43 @@
+.static {
+  &__wrapper {
+    background-color: #fff;
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 30px;
+    font-weight: 500;
+  }
+
+  h3 {
+    font-size: 24px;
+  }
+
+  p {
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+
+  a {
+    color: #337ab7;
+    text-decoration: none;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  .footer {
+    &__row {
+      justify-content: flex-start;
+    }
+
+    &__link {
+      font-weight: 500;
+      font-size: 17px;
+    }
+  }
+}
+
+header {
+  background-color: transparent;
+  box-shadow: none;
+}

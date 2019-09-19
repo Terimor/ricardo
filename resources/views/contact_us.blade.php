@@ -65,7 +65,12 @@
                 Malta<br>
             </p>
             <h2 class="contacts__sub-title">
-                THIS IS NOT A RETURN ADDRESS - FOR RETURNS PLEASE FIND ADDRESS <span class="contacts__text contacts__text--link">HERE</span>
+                THIS IS NOT A RETURN ADDRESS - FOR RETURNS PLEASE FIND ADDRESS
+                    <a
+                        href="/returns"
+                        class="contacts__text contacts__text--link">
+                        HERE
+                    </a>
             </h2>
             @include('layouts.footer', ['isWhite' => true])
         </div>
