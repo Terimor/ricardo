@@ -18,4 +18,5 @@ mix
   .js('resources/js/views/thank-you.js', 'public/js/views')
   .sass('resources/sass/app.scss', 'public/css')
   .sass('resources/sass/views/promo.scss', 'public/css')
+  .sass('resources/sass/views/contacts.scss', 'public/css')
   .version();

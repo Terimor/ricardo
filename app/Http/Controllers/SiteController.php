@@ -31,13 +31,13 @@ class SiteController extends Controller
     public function index(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('product_page');
-        
+
         $product = $productService->resolveProduct($request, true);
-        
+
          $setting = Setting::whereIn('key',[
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
-        
+
         return view('index', compact('product', 'setting'));
     }
 
@@ -46,9 +46,16 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function contactUs()
+    public function contactUs(Request $request, ProductService $productService)
     {
-        return view('contact_us');
+        $loadedPhrases = (new I18nService())->loadPhrases('product_page');
+        $product = $productService->resolveProduct($request, true);
+
+        $setting = Setting::whereIn('key',[
+            'instant_payment_paypal_client_id',
+        ])->pluck('value', 'key');
+
+        return view('contact_us', compact('product', 'setting'));
     }
 
     /**
@@ -72,7 +79,7 @@ class SiteController extends Controller
 
 		if (request()->get('tpl') == 'vmp41') {
 			$viewTemplate = 'vmp41';
-		}       
+		}
 
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
@@ -84,7 +91,7 @@ class SiteController extends Controller
         $countries =  \Utils::getCountries();
 
 		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
-        
+
         $countryCode = \Utils::getLocationCountryCode();
 
         return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
@@ -96,7 +103,7 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function upsells(Request $request, ProductService $productService)
-    {        
+    {
 		$product = $productService->resolveProduct($request, true);
 
 		$setting = Setting::whereIn('key',[
@@ -104,7 +111,7 @@ class SiteController extends Controller
 		])->pluck('value', 'key');
 
 		$orderCustomer = null;
-		if (request()->get('order')) {			
+		if (request()->get('order')) {
             $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
             if (!$orderCustomer) {
                 // generate global get parameters
@@ -112,7 +119,7 @@ class SiteController extends Controller
                 return redirect('/checkout'.$params);
             }
 		}
-        
+
         $countryCode = \Utils::getLocationCountryCode();
 
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer'));
@@ -124,7 +131,7 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function thankyou(Request $request, ProductService $productService)
-    {        
+    {
 		$product = $productService->resolveProduct($request, true);
 
 		$setting = Setting::whereIn('key',[
@@ -151,7 +158,7 @@ class SiteController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function promo(Request $request, ProductService $productService)
-    {        
+    {
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
@@ -206,8 +213,8 @@ class SiteController extends Controller
 		$p2 = round(20/100 * 49.99, 2);
 		echo '<pre>'; var_dump($price); echo '</pre>';
 		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
-        
-        
+
+
         $product = $productService->resolveProduct($request, true);
 echo '<pre>'; var_dump(app()->getLocale()); echo '</pre>';
         echo '<pre>'; var_dump($product); echo '</pre>'; exit;
