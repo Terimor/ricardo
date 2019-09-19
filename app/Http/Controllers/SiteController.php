@@ -48,7 +48,8 @@ class SiteController extends Controller
      */
     public function contactUs()
     {
-        return view('contact_us');
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        return view('contact_us', 'loadedPhrases');
     }
 
     /**

@@ -16,6 +16,7 @@ class OdinProduct extends Model
 
     protected $images;
     protected $upsellPrices;
+    protected $currency;
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
@@ -131,7 +132,7 @@ class OdinProduct extends Model
      */
     public function getPricesAttribute($value)
     {
-        $currency = CurrencyService::getCurrency();
+        $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
         $returnedKey = 0;
 
       //iteration by price sets array
@@ -305,7 +306,7 @@ class OdinProduct extends Model
      */
     public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
     {
-        $currency = CurrencyService::getCurrency();
+        $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
 
         // if null set quantity 1
         if (!$maxQuantity) {
