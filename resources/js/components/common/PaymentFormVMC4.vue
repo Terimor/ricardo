@@ -74,7 +74,7 @@
             v-show="fullAmount"
             :$v="$v.form.deal"
             @click="paypalSubmit"
-          >Buy Now Risk Free PAYPAL</paypal-button>
+          >{{ paypalRiskFree }}</paypal-button>
           <slot name="warranty" />
           <form v-if="form.paymentType !== 'paypal' && form.paymentType">
             <text-field
@@ -295,7 +295,7 @@
 						month: null,
 						year: null,
 						cvv: null,
-						country: checkoutData.countryCode,
+						country: checkoutData.countryCode.toUpperCase(),
 						city: null,
 						state: null,
 						zipCode: null,
@@ -372,6 +372,7 @@
       textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
       textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
+      paypalRiskFree: () => t('checkout.paypal.risk_free'),
       textNext: () => t('checkout.next'),
       textBack: () => t('checkout.back'),
 		},
