@@ -71,18 +71,23 @@
           <img id="product-image" :src="productImage" alt="">
           <h2 v-html="textPaymentMethod"></h2>
           <h3 v-html="textPaySecurely"></h3>
-          <radio-button-group
-            class="main__credit-card-switcher"
-            v-model="form.paymentType"
-            :list="mockData.creditCardRadioList"
+          <template v-if="!isPurchesAlreadyExists">
+            <radio-button-group
+              class="main__credit-card-switcher"
+              v-model="form.paymentType"
+              :list="mockData.creditCardRadioList"
+            />
+            <paypal-button
+              :createOrder="paypalCreateOrder"
+              :onApprove="paypalOnApprove"
+              v-show="fullAmount"
+              :$v="$v.form.deal"
+              @click="paypalSubmit"
+            >Buy Now Risk Free PAYPAL</paypal-button>
+          </template>
+          <PurchesAlreadyExists
+            v-if="isPurchesAlreadyExists"
           />
-          <paypal-button
-            :createOrder="paypalCreateOrder"
-            :onApprove="paypalOnApprove"
-            v-show="fullAmount"
-            :$v="$v.form.deal"
-            @click="paypalSubmit"
-          >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
               :firstTitle="textContactInformation"
@@ -175,6 +180,7 @@
 <script>
 import emc1Validation from '../validation/emc1-validation'
 import printf from 'printf'
+import moment from 'moment'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { t } from '../utils/i18n';
@@ -183,6 +189,7 @@ import { getCountOfInstallments } from '../utils/installments';
 import { stateList } from '../resourses/state';
 import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
+import PurchesAlreadyExists from './common/PurchesAlreadyExists';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
 import { preparePurchaseData } from '../utils/checkout';
@@ -195,10 +202,12 @@ export default {
   components: {
     ProductItem,
     Cart,
+    PurchesAlreadyExists,
   },
   props: ['showPreloader', 'skusList'],
   data () {
     return {
+      isShownPurcesBlock: false,
       selectedProductData: {
         prices: null,
         quantity: null,
@@ -397,6 +406,28 @@ export default {
     textSpecialOfferPopupMessage: () => t('checkout.special_offer_popup.message'),
     textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
     textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
+
+    isPurchesAlreadyExists() {
+      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+      const odin_order_created_at = localStorage.getItem('odin_order_created_at');
+
+      if (!odin_order_created_at || !selectedProductData) {
+        return false
+      }
+
+
+      if (selectedProductData.product_name === this.productData.product_name) {
+        const diff = moment.utc(moment().diff(moment(odin_order_created_at))).format("mm");
+        const timeLimit = 30;
+
+        if  (parseInt(diff) >= timeLimit) {
+          localStorage.removeItem('odin_order_created_at');
+          return false
+        } else {
+          return true;
+        }
+      }
+    }
   },
   watch: {
     'form.installments' (val) {
@@ -447,6 +478,7 @@ export default {
         quantity: this.radioIdx,
         isWarrantyChecked: this.form.isWarrantyChecked,
         variant: this.form.variant,
+        product_name: this.productData.product_name,
         image: currentVariant && currentVariant.quantity_image[1]
       };
 

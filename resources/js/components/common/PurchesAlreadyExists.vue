@@ -1,0 +1,25 @@
+<template>
+  <div class="alert">
+    You already made your purchase&nbsp;&mdash; your confirmation # is {{ orderNumber }} - If&nbsp;you have any questions, you can reach&nbsp;us under help@support-deals.com
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'PurchesAlreadyExists',
+
+  data: () => ({
+    orderNumber: localStorage.getItem('odin_order_id'),
+  }),
+}
+</script>
+
+<style>
+.alert {
+  width: 100%;
+  padding: 20px;
+  background-color: #6bbd6e;
+  color: white;
+  margin-bottom: 15px;
+}
+</style>

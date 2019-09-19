@@ -30,7 +30,9 @@ export function paypalCreateOrder ({
   }).then(function(res) {
     return res.json();
   }).then(function(data) {
-    localStorage.setItem('odin_order_id', data.odin_order_id);
+    if (data.odin_order_id) {
+      localStorage.setItem('odin_order_id', data.odin_order_id);
+    }
     return data.id;
   });
 }
@@ -58,6 +60,7 @@ export function paypalOnApprove(data) {
     })
     .then(function() {
       if (odin_order_id) {
+        localStorage.setItem('odin_order_created_at', new Date);
         goTo(`/thankyou-promos/?order=${odin_order_id}`);
       }
     });
