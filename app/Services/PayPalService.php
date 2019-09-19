@@ -194,6 +194,7 @@ class PayPalService
                     'offer' => $request->offer,
                     'affiliate' => $request->affiliate,
                     'shop_currency' => $shop_currency_code,
+                    'params' => !empty($request->params) ? $request->params : null
                 ], true);
 
                 $order = $order_reponse['order'];
