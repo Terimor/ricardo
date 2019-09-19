@@ -347,7 +347,9 @@ export default {
       return Object.values(this.cart).every(it => it === 0)
     },
     withInstallments () {
-      return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
+      return this.checkoutData.countryCode === 'BR'
+        || this.checkoutData.countryCode === 'MX'
+        || this.checkoutData.countryCode === 'CO'
     },
     quantityOfInstallments () {
       const { installments } = this.form

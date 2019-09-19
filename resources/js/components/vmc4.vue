@@ -170,7 +170,9 @@
 				return checkoutData.product
 			},
       withInstallments () {
-        return this.checkoutData.countryCode === 'BR' || this.checkoutData.countryCode === 'MX'
+        return this.checkoutData.countryCode === 'BR'
+          || this.checkoutData.countryCode === 'MX'
+          || this.checkoutData.countryCode === 'CO'
       },
       quantityOfInstallments () {
         const { installments } = this.form
@@ -355,7 +357,10 @@
         text-align: center;
 
         .logos-content {
+          display: flex;
+          justify-content: center;
           margin: 15px 0 20px;
+
           img {
             max-width: 350px;
           }
@@ -363,11 +368,14 @@
 
         .text-content {
           p {
+            font-size: 13px;
             text-align: center;
             margin-bottom: 10px;
 
             img {
-              max-width: 100%;
+              max-width: 12px;
+              position: relative;
+              top: 2px;
             }
           }
         }
@@ -489,6 +497,20 @@
       text-transform: capitalize;
     }
 
+    @media screen and (max-width: 480px) {
+      .footer__row {
+        flex-direction: column;
+      }
+
+      .footer__row-item {
+        margin-bottom: 8px;
+
+        &:before {
+          display: none;
+        }
+      }
+    }
+
     @media screen and (min-width: 1200px) {
       .vmc4 {
         max-width: 1170px;
@@ -498,12 +520,6 @@
     @media screen and (max-width: 992px) {
       .container {
         max-width: 100%;
-      }
-    }
-
-    @media screen and ($s-down) {
-      header {
-        margin-top: 25px;
       }
     }
 

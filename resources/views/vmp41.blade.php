@@ -79,6 +79,7 @@
             </div>
             <div class="promo__installments">
                 <select-field
+                    v-if="withInstallments"
                     theme="variant-1"
                     :rest="{
                         placeholder: 'Installments'

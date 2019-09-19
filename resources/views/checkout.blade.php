@@ -25,6 +25,6 @@
 
 <app-component></app-component>
 
-@include('layouts.footer')
+@include('layouts.footer', ['isWhite' => true])
 
 @endsection

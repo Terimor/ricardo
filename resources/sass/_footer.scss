@@ -1,4 +1,5 @@
 .footer {
+  $self: &;
   justify-content: space-between;
   align-items: center;
   padding: 20px 30px;
@@ -8,6 +9,34 @@
   color: white;
   font-size: 16px;
   font-weight: 300;
+
+  &--white {
+    background-color: transparent;
+
+    #{ $self }__row {
+      justify-content: center;
+    }
+
+    #{ $self }__row-item {
+      margin-left: 0;
+    }
+
+    #{ $self }__row-item + #{ $self }__row-item:before {
+      content: '\007c';
+      color: #6c6c6c;
+      padding: 5px;
+
+      @media screen and ($xs-down) {
+        display: none;
+      }
+    }
+
+    #{ $self }__link {
+      color: #337ab7;
+      text-decoration: none;
+      font-size: 13px;
+    }
+  }
 
   &__row {
     max-width: 1000px;
