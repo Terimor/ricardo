@@ -13,7 +13,7 @@
               </div>
               <p class="main__deal__text" v-html="textMainDealText"></p>
             </div>
-            <h2 v-html="textChooseDeal"></h2>
+            <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
               <select-field
                   v-if="withInstallments"
                   :label="textInstallmentsTitle"
@@ -35,7 +35,7 @@
             />
 
             <div v-show="variantList.length > 1">
-              <h2 v-html="textSelectVariant"></h2>
+              <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
               <!-- TODO: check if this is useless, remove it:
               warrantyPriceText="setWarrantyPriceText()"  -->
               <select-field
@@ -69,7 +69,7 @@
         </div>
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
-          <h2 v-html="textPaymentMethod"></h2>
+          <h2><span v-html="textStep"></span> 3: <span v-html="textPaymentMethod"></span></h2>
           <h3 v-html="textPaySecurely"></h3>
           <radio-button-group
             class="main__credit-card-switcher"
@@ -85,9 +85,9 @@
           >Buy Now Risk Free PAYPAL</paypal-button>
           <transition name="el-zoom-in-top">
             <payment-form
-              :firstTitle="textContactInformation"
-              :secondTitle="textDeliveryAddress"
-              :thirdTitle="textPaymentDetails"
+              :firstTitle="textStep + ' 4: ' + textContactInformation"
+              :secondTitle="textStep + ' 5: ' + textDeliveryAddress"
+              :thirdTitle="textStep + ' 6: ' + textPaymentDetails"
               v-if="form.paymentType"
               :stateList="stateList"
               @showCart="isOpenSpecialOfferModal = true"
@@ -377,6 +377,7 @@ export default {
     },
     textDynamicSaleBadge: () => t('checkout.dynamic_sale_badge'),
     textMainDealText: () => t('checkout.main_deal.message'),
+    textStep: () => t('checkout.step'),
     textChooseDeal: () => t('checkout.choose_deal'),
     textInstallmentsTitle: () => t('checkout.installments.title'),
     textArtcile: () => t('checkout.article'),
