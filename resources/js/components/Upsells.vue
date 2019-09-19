@@ -81,7 +81,6 @@
                   <p class="total-price">
                     Total accessory order: {{ total }}
                   </p>
-                </template>
                 <paypal-button
                   :createOrder="paypalCreateOrder"
                   :onApprove="paypalOnApprove"
@@ -89,6 +88,7 @@
                 >
                   Buy Now Risk Free PAYPAL
                 </paypal-button>
+                </template>
             </div>
         </template>
     </div>
@@ -146,13 +146,17 @@
           const node = document.querySelector('.upsells-component__content');
           fade('out', 250, node, true)
             .then(() => {
-              getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
-              .then((total) => {
-                this.total = total;
-              })
-                .finally(() => {
-                  this.activeTab = 'third';
+              if (this.accessoryList.length !== 0) {
+                getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
+                .then((total) => {
+                  this.total = total;
                 })
+                  .finally(() => {
+                    this.activeTab = 'third';
+                  })
+              } else {
+                this.redirect();
+              }
 
               setTimeout(() => fade('in', 250, node, true));
             });
