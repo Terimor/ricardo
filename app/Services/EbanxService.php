@@ -139,7 +139,7 @@ class EbanxService
             'shipping_street2' => $request['street_number'],
             'warehouse_id' => $product->warehouse_id,
             'products' => [$productForOrder],
-            'params' => !empty($request['params']) ? $request['params'] : null
+            'params' => !empty($request['params']) ? \Utils::getParamsFromUrl($request['params']) : null
         ];
 
         $res = $this->orderService->addOdinOrder($data, true);

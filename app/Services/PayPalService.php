@@ -312,7 +312,7 @@ class PayPalService
                     'offer' => $request->offer,
                     'affiliate' => $request->affiliate,
                     'shop_currency' => $shop_currency_code,
-                    'params' => !empty($request->params) ? $request->params : null
+                    'params' => !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null
                 ], true);
 
                 $order = $order_reponse['order'];
