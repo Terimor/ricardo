@@ -69,9 +69,9 @@
         </div>
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
-          <h2 v-html="textPaymentMethod"></h2>
-          <h3 v-html="textPaySecurely"></h3>
           <template v-if="!isPurchasAlreadyExists">
+            <h2 v-html="textPaymentMethod"></h2>
+            <h3 v-html="textPaySecurely"></h3>
             <radio-button-group
               class="main__credit-card-switcher"
               v-model="form.paymentType"
@@ -83,33 +83,35 @@
               v-show="fullAmount"
               :$v="$v.form.deal"
               @click="paypalSubmit"
-            >Buy Now Risk Free PAYPAL</paypal-button>
+            >
+              Buy Now Risk Free PAYPAL
+            </paypal-button>
+            <transition name="el-zoom-in-top">
+              <payment-form
+                :firstTitle="textContactInformation"
+                :secondTitle="textDeliveryAddress"
+                :thirdTitle="textPaymentDetails"
+                v-if="form.paymentType"
+                :stateList="stateList"
+                @showCart="isOpenSpecialOfferModal = true"
+                :$v="$v"
+                :installments="form.installments"
+                :paymentForm="form"
+                :countryCode="checkoutData.countryCode"
+                :isBrazil="checkoutData.countryCode === 'BR'"
+                :countryList="setCountryList"
+                @setPromotionalModal="setPromotionalModal"
+                @setAddress="setAddress"/>
+            </transition>
+            <div class="main__bottom">
+              <img src="/images/safe_payment_en.png" alt="safe payment">
+              <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
+              <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
+            </div>
           </template>
           <PurchasAlreadyExists
-            v-if="isPurchasAlreadyExists"
+            v-else
           />
-          <transition name="el-zoom-in-top">
-            <payment-form
-              :firstTitle="textContactInformation"
-              :secondTitle="textDeliveryAddress"
-              :thirdTitle="textPaymentDetails"
-              v-if="form.paymentType"
-              :stateList="stateList"
-              @showCart="isOpenSpecialOfferModal = true"
-              :$v="$v"
-              :installments="form.installments"
-              :paymentForm="form"
-              :countryCode="checkoutData.countryCode"
-              :isBrazil="checkoutData.countryCode === 'BR'"
-              :countryList="setCountryList"
-              @setPromotionalModal="setPromotionalModal"
-              @setAddress="setAddress"/>
-          </transition>
-          <div class="main__bottom">
-            <img src="/images/safe_payment_en.png" alt="safe payment">
-            <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
-            <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
-          </div>
         </div>
       </div>
     </div>
