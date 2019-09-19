@@ -602,7 +602,7 @@ class UtilsService
             $location = \Location::get($ip);
         } else {
             // TODO - REMOVE _ip and Location::get('42.112.209.164')
-            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? \Location::get('42.112.209.164') : \Location::get(request()->ip()));
+            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : \Location::get(request()->ip());            
         }
 
         return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
