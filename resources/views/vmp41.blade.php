@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->skus[0]['name'] . ' Checkout')
+@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
 
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
@@ -37,12 +37,12 @@
                 @click="scrollTo('.j-header-products')"
             >
                 <h2 class="promo__heading-battery">
-                    Limited offer
+                    {{ t('checkout.promo.title') }}
                 </h2>
                 <div class="text-content">
                     <p class="promo__offer">
                         <span class="bold">
-                            Special Offer:
+                            {{ t('checkout.header_banner.prefix') }}:
                         </span>
                         {{ $product->long_name }}
                     </p>
@@ -52,7 +52,7 @@
                     >
                         <div>
                             <span class="bold">
-                                Price:
+                                {{ t('checkout.header_banner.price') }}:
                             </span>
                             <span class="promo__price--double bold">
                                 @{{countOfInstallments}} @{{ warrantyOldPrice }}
@@ -68,12 +68,12 @@
                         class="promo__go-to-selector promo__text-red"
                         v-cloak
                     >
-                        BUY NOW - @{{ discount }}% OFF &amp; Free Shipping
+                        @{{ textPromoDiscount }}
                     </span>
                 </h3>
                 <div class="promo__subtitle">
                     <div>
-                        Take a look at these unbeatable offers - Stock is selling out fast
+                        {{ t('checkout.promo.subtitle') }}
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                     @input="getImplValue"
                 />
             </div>
-            <h2 class="promo__title j-header-products">Secure Your Discounted Deal Now</h2>
+            <h2 class="promo__title j-header-products">{{ t('checkout.secure_deal') }}</h2>
             <div
                 class="row promo__products-row"
                 v-cloak
@@ -119,7 +119,7 @@
                             style="max-width: 204px;"
                         >
                             <strong>
-                                @{{ item.discountName || 'STARTER CHOICE' }}
+                                @{{ item.discountName || textDiscountStarter }}
                             </strong>
                         </div>
                         <div class="promo__product-content">
@@ -143,14 +143,14 @@
                         </div>
                         </div>
                         <green-button class="promo__add-button">
-                            ADD TO CART
+                            {{ t('checkout.add_to_cart') }}
                         </green-button>
                     </div>
                 </div>
             </div>
             <template v-if="!selectedPlan">
                 <section class="carousel-section">
-                    <h1 class="promo__title">Also featured in</h1>
+                    <h1 class="promo__title">{{ t('checkout.also_featured_in') }}</h1>
                     <carousel
                         class="promo__carousel"
                         :items="4"
@@ -174,7 +174,7 @@
                 </section>
                 <section class="promo__reviews">
                     <h2 class="promo__title">
-                        Happy {{ $product->skus[0]['name'] }} users
+                        {{ t('checkout.happy_users', ['product' => $product->skus[0]['name']]) }}
                     </h2>
                     <div class="promo__review">
                         <div class="col-md-3 col-sm-3 col-xs-12">
@@ -252,7 +252,7 @@
                 v-if="selectedPlan"
                 class="promo__select-variant"
             >
-                Please select your variant
+                {{ t('checkout.select_variant') }}
             </div>
         </div>
         <template v-if="selectedPlan">
@@ -291,19 +291,19 @@
                 v-if="form.variant"
             >
                 <h2 class="promo__title">
-                    Complete order
+                    {{ t('checkout.complete_order') }}
                 </h2>
-                <div class="promo__step-title">Step 1: Pay securely with:</div>
+                <div class="promo__step-title">{{ t('checkout.step') }} 1: {{ t('checkout.pay_securely') }}</div>
                 <div class="promo__paypal-button-wrapper">
                     <paypal-button
                         :style="{ width: '300px' }"
                         :create-order="paypalCreateOrder"
                         :on-approve="paypalOnApprove"
                         :$v="$v.form.deal"
-                    >Buy Now Risk Free PAYPAL</paypal-button>
+                    >{{ t('checkout.paypal.risk_free') }}</paypal-button>
                 </div>
                 <div class="promo__alternative-payment">
-                    Or, you can also pay securely with:
+                    {{ t('checkout.pay_securely_also') }}
                 </div>
                 <div class="promo__row-payments">
                     <radio-button-group
@@ -316,9 +316,9 @@
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form
                         v-if="form && form.paymentType && isFormShown"
-                        first-title="Step 2: Contact Information"
-                        second-title="Step 3: Delivery Address"
-                        third-title="Step 4: Payment Details"
+                        first-title="{{ t('checkout.step') }} 4: {{ t('checkout.contact_information') }}"
+                        second-title="{{ t('checkout.step') }} 5: {{ t('checkout.delivery_address') }}"
+                        third-title="{{ t('checkout.step') }} 6: {{ t('checkout.payment_details') }}"
                         :state-list="stateList"
                         :$v="$v"
                         :installments="form.installments"
@@ -343,7 +343,7 @@
                         Many audio and tech companies tried to shut down this cheaper alternative to their overpriced bluetooth headphones. However, at last, finally {{ $product->skus[0]['name'] }} has made it to the public
                     </h2>
                     <green-button @click="scrollTo('.j-header-products')">
-                        Click here to claim your special 50% discount - This incredible offer will NOT last
+                        {{ t('checkout.people_rate.button') }}
                     </green-button>
                 </div>
             </div>
