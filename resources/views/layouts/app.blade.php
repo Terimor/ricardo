@@ -11,7 +11,7 @@
 
     <!-- Scripts -->
 
-    @if (Request::is('checkout'))
+    @if (Request::is('checkout') || Request::is('upsells'))
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js" defer></script>
         <script src="https://js.ebanx.com/ebanx-1.6.0.min.js" defer></script>
         <script src="/js/ebanx.js" defer></script>
