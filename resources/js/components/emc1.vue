@@ -13,7 +13,7 @@
               </div>
               <p class="main__deal__text" v-html="textMainDealText"></p>
             </div>
-            <h2 v-html="textChooseDeal"></h2>
+            <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
               <select-field
                   v-if="withInstallments"
                   :label="textInstallmentsTitle"
@@ -35,7 +35,7 @@
             />
 
             <div v-show="variantList.length > 1">
-              <h2 v-html="textSelectVariant"></h2>
+              <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
               <!-- TODO: check if this is useless, remove it:
               warrantyPriceText="setWarrantyPriceText()"  -->
               <select-field
@@ -69,42 +69,47 @@
         </div>
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
-          <h2 v-html="textPaymentMethod"></h2>
-          <h3 v-html="textPaySecurely"></h3>
-          <radio-button-group
-            class="main__credit-card-switcher"
-            v-model="form.paymentType"
-            :list="mockData.creditCardRadioList"
+          <template v-if="!isPurchasAlreadyExists">
+            <h2><span v-html="textStep"></span> 3: <span v-html="textPaymentMethod"></span></h2>
+            <h3 v-html="textPaySecurely"></h3>
+            <radio-button-group
+              class="main__credit-card-switcher"
+              v-model="form.paymentType"
+              :list="mockData.creditCardRadioList"
+            />
+            <paypal-button
+              :createOrder="paypalCreateOrder"
+              :onApprove="paypalOnApprove"
+              v-show="fullAmount"
+              :$v="$v.form.deal"
+              @click="paypalSubmit"
+            >Buy Now Risk Free PAYPAL</paypal-button>
+            <transition name="el-zoom-in-top">
+              <payment-form
+                :firstTitle="textStep + ' 4: ' + textContactInformation"
+                :secondTitle="textStep + ' 5: ' + textDeliveryAddress"
+                :thirdTitle="textStep + ' 6: ' + textPaymentDetails"
+                v-if="form.paymentType"
+                :stateList="stateList"
+                @showCart="isOpenSpecialOfferModal = true"
+                :$v="$v"
+                :installments="form.installments"
+                :paymentForm="form"
+                :countryCode="checkoutData.countryCode"
+                :isBrazil="checkoutData.countryCode === 'BR'"
+                :countryList="setCountryList"
+                @setPromotionalModal="setPromotionalModal"
+                @setAddress="setAddress"/>
+            </transition>
+            <div class="main__bottom">
+              <img src="/images/safe_payment_en.png" alt="safe payment">
+              <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
+              <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
+            </div>
+          </template>
+          <PurchasAlreadyExists
+            v-else
           />
-          <paypal-button
-            :createOrder="paypalCreateOrder"
-            :onApprove="paypalOnApprove"
-            v-show="fullAmount"
-            :$v="$v.form.deal"
-            @click="paypalSubmit"
-          >Buy Now Risk Free PAYPAL</paypal-button>
-          <transition name="el-zoom-in-top">
-            <payment-form
-              :firstTitle="textContactInformation"
-              :secondTitle="textDeliveryAddress"
-              :thirdTitle="textPaymentDetails"
-              v-if="form.paymentType"
-              :stateList="stateList"
-              @showCart="isOpenSpecialOfferModal = true"
-              :$v="$v"
-              :installments="form.installments"
-              :paymentForm="form"
-              :countryCode="checkoutData.countryCode"
-              :isBrazil="checkoutData.countryCode === 'BR'"
-              :countryList="setCountryList"
-              @setPromotionalModal="setPromotionalModal"
-              @setAddress="setAddress"/>
-          </transition>
-          <div class="main__bottom">
-            <img src="/images/safe_payment_en.png" alt="safe payment">
-            <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
-            <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
-          </div>
         </div>
       </div>
     </div>
@@ -175,6 +180,7 @@
 <script>
 import emc1Validation from '../validation/emc1-validation'
 import printf from 'printf'
+import moment from 'moment'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { t } from '../utils/i18n';
@@ -183,6 +189,7 @@ import { getCountOfInstallments } from '../utils/installments';
 import { stateList } from '../resourses/state';
 import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
+import PurchasAlreadyExists from './common/PurchasAlreadyExists';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
 import { preparePurchaseData } from '../utils/checkout';
@@ -195,6 +202,7 @@ export default {
   components: {
     ProductItem,
     Cart,
+    PurchasAlreadyExists,
   },
   props: ['showPreloader', 'skusList'],
   data () {
@@ -377,6 +385,7 @@ export default {
     },
     textDynamicSaleBadge: () => t('checkout.dynamic_sale_badge'),
     textMainDealText: () => t('checkout.main_deal.message'),
+    textStep: () => t('checkout.step'),
     textChooseDeal: () => t('checkout.choose_deal'),
     textInstallmentsTitle: () => t('checkout.installments.title'),
     textArtcile: () => t('checkout.article'),
@@ -397,6 +406,27 @@ export default {
     textSpecialOfferPopupMessage: () => t('checkout.special_offer_popup.message'),
     textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
     textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
+
+    isPurchasAlreadyExists() {
+      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+      const odin_order_created_at = localStorage.getItem('odin_order_created_at');
+
+      if (!odin_order_created_at || !selectedProductData) {
+        return false
+      }
+
+      if (selectedProductData.product_name === this.productData.product_name) {
+        const diff = moment.utc(moment().diff(moment(odin_order_created_at))).format("mm");
+        const timeLimit = 30;
+
+        if  (parseInt(diff) >= timeLimit) {
+          localStorage.removeItem('odin_order_created_at');
+          return false
+        } else {
+          return true;
+        }
+      }
+    }
   },
   watch: {
     'form.installments' (val) {
@@ -447,6 +477,7 @@ export default {
         quantity: this.radioIdx,
         isWarrantyChecked: this.form.isWarrantyChecked,
         variant: this.form.variant,
+        product_name: this.productData.product_name,
         image: currentVariant && currentVariant.quantity_image[1]
       };
 

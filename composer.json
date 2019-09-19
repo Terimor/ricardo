@@ -33,7 +33,7 @@
         "paypal/paypal-checkout-sdk": "^1.0",
         "sentry/sentry-laravel": "^1.2",
         "srmklive/paypal": "^1.6",
-        "stevebauman/location": "^4.0"
+        "stevebauman/location": "^5.0"
     },
     "require-dev": {
         "facade/ignition": "^1.6.0",

@@ -71,7 +71,7 @@ export default {
 
   computed: {
     selectList() {
-      const data = Array(3).fill('').map((item, index) => {
+      const data = Array(this.selectedProductData.quantity).fill('').map((item, index) => {
         const value = index + 1
 
         return item = {
@@ -85,13 +85,17 @@ export default {
     },
 
     currentPrices() {
-        return this.upsellPrices['1'] && this.upsellPrices['1'];
-      }
+      return this.upsellPrices['1'] && this.upsellPrices['1'];
+    },
+
+    selectedProductData() {
+      return JSON.parse(localStorage.getItem('selectedProductData'));
+    }
   },
 
   mounted() {
     this.isLoading = true;
-    getUppSells(this.id, 3).then(({ data }) => {
+    getUppSells(this.id, this.selectedProductData.quantity).then(({ data }) => {
         this.name = data.upsell.long_name;
         this.description = data.upsell.description;
         this.upsellPrices = data.upsell.upsellPrices;
