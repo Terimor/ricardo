@@ -46,10 +46,11 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function contactUs()
+    public function contactUs(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
-        return view('contact_us', 'loadedPhrases');
+        $product = $productService->resolveProduct($request, true);
+        return view('contact_us', compact('loadedPhrases', 'product'));
     }
 
     /**

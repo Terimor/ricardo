@@ -22,7 +22,7 @@
 
         <link rel="stylesheet" href="/css/checkout.css">
     @endif
-    <script src="https://www.paypal.com/sdk/js?disable-card=visa,mastercard,amex&client-id={{$setting['instant_payment_paypal_client_id']}}"></script>
+    
     {{--<script src="https://paypal.com/sdk/js?client-id={{env('PAYPAL_CLIENT_ID','')}}"></script>--}}
 
     @if (config('app.env') === 'local')
