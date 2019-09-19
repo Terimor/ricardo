@@ -1,3 +1,5 @@
+import { goTo } from '../utils/goTo';
+
 export function paypalCreateOrder ({
   xsrfToken = document.head.querySelector('meta[name="csrf-token"]').content,
   sku_code,
@@ -7,6 +9,7 @@ export function paypalCreateOrder ({
   page_checkout = document.location.href,
   offer = new URL(document.location.href).searchParams.get('offer'),
   affiliate = new URL(document.location.href).searchParams.get('affiliate'),
+  upsells
 }) {
   return fetch('/paypal-create-order', {
     method: 'post',
@@ -24,6 +27,7 @@ export function paypalCreateOrder ({
       page_checkout,
       offer,
       affiliate,
+      upsells
     })
   }).then(function(res) {
     return res.json();
@@ -50,7 +54,7 @@ export function paypalOnApprove(data) {
     return res.json();
   }).then(function(details) {
     if (odin_order_id) {
-      goTo(`/thankyou-promos/?order=${odin_order_id}`);
+      goTo(`/thankyou/?order=${odin_order_id}`);
     }
   });
 }

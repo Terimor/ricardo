@@ -53,6 +53,125 @@ class PayPalService
         $this->orderService = $orderService;
     }
 
+
+    public function createUpsellOrder(PayPalCrateOrderRequest $request): array
+    {
+        $upsell_order = OdinOrder::find($request->get('order_id'));
+        if (!$upsell_order) {
+            abort(404);
+        }
+
+        $this->checkIforderAllowedForAddingProducts($upsell_order);
+
+        $product = $this->findProductBySku($request->get('sku_code'));
+        $upsells_array = $request->get('upsells');
+        if (empty($upsells_array)) {
+            abort(404);
+        }
+
+        $priceData = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true);
+        $priceData['price'] = $priceData['value'];
+        $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
+
+        if (!$is_currency_supported) {
+            $priceData = CurrencyService::getLocalPriceFromUsd($priceData['value']);
+        }
+
+        $upsells_total_local_currency = $priceData['code'];
+        $upsells_total_price = $priceData['price'];
+        $upsells_total_price_usd = $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
+        $pp_items = [];
+        $upsell_order_products = []; // Will store upsell products that will be added to an existing order products array.
+
+        foreach ($request->get('upsells') as $upsell_product_id => $upsell_product_quantity) {
+            $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id);
+            $temp_upsell_product_usd_price = round($temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'] / $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['exchange_rate'], 2);
+            $temp_upsell_product_local_price = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'];
+
+            // Adding products to a paypal items list.
+            $pp_items[] = [
+                'name' => $temp_upsell_product->product_name,
+                'description' => $temp_upsell_product->long_name,
+                'unit_amount' => [
+                    'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $upsells_total_local_currency,
+                    'value' => !$is_currency_supported ? $temp_upsell_product_usd_price : $temp_upsell_product_local_price,
+                ],
+                'quantity' => $upsell_product_quantity
+            ];
+
+            // Creating array of an order upsell products
+            $upsell_order_products[] = [
+                'sku_code' => $temp_upsell_product['upsell_sku'],
+                'quantity' => (int)$upsell_product_quantity,
+                'price' => !$is_currency_supported ? $temp_upsell_product_usd_price : $temp_upsell_product_local_price,
+                'price_usd' => $temp_upsell_product_usd_price,
+                'warranty_price' => null,
+                'warranty_price_usd' => null,
+                'is_main' => false,
+                'is_exported' => false,
+                'is_plus_one' => false,
+                'price_set' => null,
+                'txn_hash' => null,
+                'is_upsells' => true,
+            ];
+        }
+
+        $pp_purchase_unit = [
+            'description' => 'Accessories',
+            'amount' => [
+                'currency_code' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $upsells_total_local_currency,
+                'value' => !$is_currency_supported ? $upsells_total_price_usd : $upsells_total_price,
+                'items' => $pp_items,
+            ]
+        ];
+
+        $pp_request = new OrdersCreateRequest();
+        $pp_request->prefer('return=representation');
+        $pp_request->body = [
+            'intent' => 'CAPTURE',
+            'purchase_units' => [$pp_purchase_unit]
+        ];
+
+        $response = $this->payPalHttpClient->execute($pp_request);
+
+        // If success create new txn and update order
+        if ($response->statusCode === 201) {
+            $paypal_order = $response->result;
+
+            // Creating a capture transaction
+            $txn_response = $this->orderService->addTxn([
+                'hash' => $paypal_order->id,
+                'value' => (float)$paypal_order->purchase_units[0]->amount->value,
+                'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
+                'provider_data' => $paypal_order,
+                'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
+                'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                'payer_id' => '',
+            ], true);
+
+            $txn_attributes = $txn_response['txn']->attributesToArray();
+
+            // Setting txn_hash for an upsell products
+            $upsell_order_products = collect($upsell_order_products)->transform(function($item, $key) use ($txn_attributes) {
+                $item['txn_hash'] = $txn_attributes['hash'];
+
+                return $item;
+            })->toArray();
+
+            // Update main order
+            $upsell_order->total_price += !$is_currency_supported ? $upsells_total_price_usd : $upsells_total_price;
+            $upsell_order->total_price_usd += $upsells_total_price_usd;
+            $upsell_order->status = $this->getOrderStatus($upsell_order);
+            $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
+            $upsell_order->save();
+        }
+
+        return [
+            'braintree_response' => $response,
+            'odin_order_id' => optional($upsell_order)->getIdAttribute()
+        ];
+    }
+
     /**
      * Creating order
      *
@@ -64,7 +183,7 @@ class PayPalService
         $upsell_order = $request->order_id ? $order = OdinOrder::find($request->order_id) : null;
 
         if ($upsell_order) {
-            $this->checkIforderAllowedForAddingProducts($upsell_order);
+            return $this->createUpsellOrder($request);
         }
         $order = $upsell_order;
         $product = $this->findProductBySku($request->sku_code);
@@ -170,7 +289,7 @@ class PayPalService
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
-                    'status' => $this->getPayPalOrderStatus($paypal_order),
+                    'status' =>  Txn::STATUS_CAPTURED,
                     'is_charged_back' => false,
                     'fee' => null,
                     'payment_provider' => $txn_response['txn']->payment_provider,
@@ -239,7 +358,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' => $this->getPayPalOrderStatus($paypal_order),
+                'status' => Txn::STATUS_APPROVED,
                 'is_charged_back' => false,
                 'fee' => null,
                 'payment_provider' => $txn_response['txn']->payment_provider,
@@ -268,7 +387,7 @@ class PayPalService
             $order->save();
             if ($order) {
                 // send confirmation email
-                (new EmailService())->sendConfirmationEmail($order);
+//                (new EmailService())->sendConfirmationEmail($order);
                 return ['order_id' => $order->id];
             } else {
                 logger()->error(
@@ -321,7 +440,7 @@ class PayPalService
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
-                    'status' => $this->getPayPalOrderStatus($paypal_order),
+                    'status' => Txn::STATUS_APPROVED,
                     'is_charged_back' => false,
                     'fee' => $fee,
                     'payment_provider' => $txn_response['txn']->payment_provider,
@@ -334,27 +453,31 @@ class PayPalService
                 });
                 $order->txns = array_merge($txns, [$order_txn_data]);
 
-                $product_key = collect($order->products)->search(function ($product) use ($txn) {
-                    return $product['txn_hash'] === $txn['hash'];
-                });
-                $products = $order->products;
 
-                if ($product_key !== null) {
-                    $products[$product_key]['is_txn_approved'] = true;
-                    $products[$product_key]['txn_value'] = $txn['value'];
-                    if ($fee) {
-                        $products[$product_key]['txn_fee'] = (float)$fee;
-                    }
+                // Check if sum of upsell prices = $paypal_order_value
+                $temp_upsell_products_prices = 0;
+                collect($order->products)
+                    ->reject(function ($item, $key) use ($txn) {
+                        return $item['txn_hash'] !== $txn['hash'];
+                    })
+                    ->each(function($item, $key) use (&$temp_upsell_products_prices) {
+                        $temp_upsell_products_prices+= $item['price'];
+                    });
+
+                // Amount paid !== Sum of prices of transaction items.
+                if ($temp_upsell_products_prices !== $paypal_order_value) {
+                    logger()->alert('Amount paid for an order: ' . $order->getIdAttribute() . ' in a transaction # ' . $txn_response['txn']->hash . ' differs from a total products price.');
                 }
 
-                $order->products = $products;
-                $this->calculateTotalPaid($order);
-                $this->calculateTotalFee($order);
+                $order->total_paid+= $paypal_order_value;
+                $currency = CurrencyService::getCurrency($order->currency);
+                $order->txns_fee_usd += round($fee / $currency->usd_rate, 2);
+
                 $order->status = $this->getOrderStatus($order);
                 $order->save();
-                
+
                 // send satisfaction email
-                (new EmailService())->sendSatisfactionEmail($order);
+//                (new EmailService())->sendSatisfactionEmail($order);
             }
         }
     }
