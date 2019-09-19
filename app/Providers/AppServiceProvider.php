@@ -40,10 +40,6 @@ class AppServiceProvider extends ServiceProvider
             )->get();
             $client_id = optional($credentials->where('key', 'instant_payment_paypal_client_id')->first())->value;
             $secret = optional($credentials->where('key', 'instant_payment_paypal_secret')->first())->value;
-
-            $client_id = 'Acb-X-ffLLPVtCPyyzLsmRPVMu_veR_r3JlLQr2-w0DNlzLEWYg-w25Zv0R796o1dlGt4olNcC6lkBGk';
-            $secret = 'EHrQ7FD0AnK1vw7Qg-hTtA0y7npO6sTvjoIGGm27J43_GxUHK31NBa_kpXzhjCPclKIBUj4Y1TTAvdU1';
-
             $mode = optional($credentials->where('key', 'instant_payment_paypal_mode')->first())->value;
             if($mode === 'sandbox') {
                 $env = new SandboxEnvironment($client_id, $secret);
