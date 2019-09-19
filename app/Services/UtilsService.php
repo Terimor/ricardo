@@ -602,7 +602,7 @@ class UtilsService
             $location = \Location::get($ip);
         } else {
             // TODO - REMOVE _ip and Location::get('42.112.209.164')
-            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? \Location::get('42.112.209.164') : \Location::get(request()->ip()));
+            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : \Location::get(request()->ip());            
         }
 
         return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
@@ -694,6 +694,32 @@ class UtilsService
             $string = '?'.substr_replace($string , '', -1);
         }
         return $string;
+    }
+    
+    /**
+     * Get params from url link
+     * @param string $url
+     * @return type
+     */
+    public static function getParamsFromUrl(string $url)
+    {
+        $url = parse_url($url);
+        $paramsArray = null;
+        $params = null;
+        if (!empty($url['query'])) {
+            $params = explode("&", $url['query']);
+        }
+        
+        if ($params) {
+            foreach ($params as $param) {
+                $val = explode("=", $param);
+                if (isset($val[0]) && isset($val[1])) {
+                    $paramsArray[$val[0]] = $val[1];
+                }
+            }
+        }
+        
+        return $paramsArray;
     }
 
 }
