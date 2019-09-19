@@ -72,14 +72,10 @@ class PayPalService
         $priceData = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true);
         $priceData['price'] = $priceData['value'];
         $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
-
-        if (!$is_currency_supported) {
-            $priceData = CurrencyService::getLocalPriceFromUsd($priceData['value']);
-        }
-
         $upsells_total_local_currency = $priceData['code'];
         $upsells_total_price = $priceData['price'];
         $upsells_total_price_usd = $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
+
         $pp_items = [];
         $upsell_order_products = []; // Will store upsell products that will be added to an existing order products array.
 
