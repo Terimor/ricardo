@@ -54,7 +54,7 @@ class ProductService
      * @param type $productId
      */
     public function getUpsellProductById($product, string $productId, $maxQuantity = 5)
-    {	        
+    {
 		// check upsell product by ID
 		$productUpsells = !empty($product->upsells) ? $product->upsells : null;
 		if (!$productUpsells) {
