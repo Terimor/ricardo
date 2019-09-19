@@ -81,14 +81,14 @@
                   <p class="total-price">
                     Total accessory order: {{ total }}
                   </p>
+                  <paypal-button
+                    :createOrder="paypalCreateOrder"
+                    :onApprove="paypalOnApprove"
+                    :$v="true"
+                  >
+                    Buy Now Risk Free PAYPAL
+                  </paypal-button>
                 </template>
-                <paypal-button
-                  :createOrder="paypalCreateOrder"
-                  :onApprove="paypalOnApprove"
-                  :$v="true"
-                >
-                  Buy Now Risk Free PAYPAL
-                </paypal-button>
             </div>
         </template>
     </div>
