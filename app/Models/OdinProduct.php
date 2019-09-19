@@ -327,7 +327,7 @@ class OdinProduct extends Model
             // calculate discount percent
             $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : null;           
             $this->attributes['upsellPrices']['discount_percent'] = CurrencyService::getDiscountPercent($priceOld, $localPrice['price']);             
-            for ($i=1; $i <= $maxQuantity; $i++) {                            
+            for ($i=1; $i <= $maxQuantity; $i++) {
                 $this->attributes['upsellPrices'][$i]['price'] = $localPrice['price'] * $i;
                 $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($localPrice['price'] * $i, $currency);
                 

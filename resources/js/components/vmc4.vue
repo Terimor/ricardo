@@ -13,14 +13,7 @@
                     :src="productImage"
                   >
                 </div>
-                <div class="product_desc">
-                  <ul>
-                    <li>High Sound Quality</li>
-                    <li>Portable Charging</li>
-                    <li>Ergonomic Design</li>
-                    <li>iOs &amp; Android</li>
-                  </ul>
-                </div>
+                <div class="product_desc" v-html="productData.description"></div>
               </div>
             </div>
           </div>
@@ -52,7 +45,7 @@
                       <transition name="el-zoom-in-top">
                         <button v-show="warrantyPriceText" id="warranty-field-button">
                           <label for="warranty-field" class="label-container-checkbox">
-                            3 Years Additional Warranty On Your Purchase & Accessories: {{quantityOfInstallments}} {{warrantyPriceText}}
+                            <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
                             <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                             <span class="checkmark"></span>
                           </label>
@@ -70,8 +63,7 @@
                 <div class="text-content">
                   <p>
                     <img alt="" src="//static.saratrkr.com/images/lock.png">
-                    Safe 256-Bit SSL encryption. <br>Your credit card will be invoiced as:
-                    {{billing_descriptor}}
+                    <span v-html="textSafeSSLEncryption"></span><br><span v-html="textCreditCardInvoiced"></span> {{billing_descriptor}}
                   </p>
                 </div>
               </div>
@@ -85,6 +77,7 @@
 <script>
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import {preparePurchaseData} from "../utils/checkout";
+  import { t } from '../utils/i18n';
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
   import printf from 'printf'
@@ -205,6 +198,9 @@
 
         return countriesList;
       },
+      textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
+      textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
+      textWarranty: () => t('checkout.warranty'),
 		},
 		methods: {
 			submit(val) {
@@ -227,10 +223,10 @@
             this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           case 3:
-            this.warrantyPriceText = prices[this.radioIdx].installments3_warranty_price_text;
+            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           case 6:
-            this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
+            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           default:
             break;

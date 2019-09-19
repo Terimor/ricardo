@@ -7,7 +7,7 @@
     }
 
     const checkoutData = {
-      countryCode: '{{ $location->countryCode }}',
+      countryCode: '{{ $countryCode }}',
       countries: @json($countries),
       product: @json($product),
       productImage: '{{$product->logo_image}}',

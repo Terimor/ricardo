@@ -7,7 +7,7 @@
 @section('script')
 <script defer>
     const upsells = {
-        countryCode: '{{ $location->countryCode }}',
+        countryCode: '{{ $countryCode }}',
         setting: @json($setting),
         product: @json($product),
         orderCustomer: @json($orderCustomer),

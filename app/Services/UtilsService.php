@@ -11,6 +11,8 @@ class UtilsService
 	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
 
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
+    
+    public static $globalGetParameters = ['product', 'cur', 'tpl', '_ip'];
 
     /**
      * Culture codes (for numberFormatter)
@@ -599,13 +601,10 @@ class UtilsService
         if ($ip) {
             $location = \Location::get($ip);
         } else {
-            $location = \Location::get(request()->ip());
+            // TODO - REMOVE _ip and Location::get('42.112.209.164')
+            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : ((in_array(request()->ip(), \Utils::$localhostIps)) ? \Location::get('42.112.209.164') : \Location::get(request()->ip()));
         }
 
-        // TODO - REMOVE
-        if (request()->get('_ip')) {
-            $location = \Location::get(request()->get('_ip'));
-        }
         return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
     }
 
@@ -671,5 +670,30 @@ class UtilsService
 		$url = str_replace('www.', '', $url);
 		return $url;
 	}
+    
+    /**
+     * Get global get parameters
+     * @param type $request
+     * @param type $excludeParams
+     * @return type
+     */
+    public static function getGlobalGetParameters($request = null, $excludeParams = [])
+    {
+        if (!$request) {
+            $request = request();
+        }
+        $string = '';
+        foreach (self::$globalGetParameters as $key => $param) {            
+            if (!in_array($param, $excludeParams)) {                
+                if ($request->get($param)) {
+                    $string.= $param.'='.$request->get($param).'&';
+                }
+            }
+        }
+        if ($string) {            
+            $string = '?'.substr_replace($string , '', -1);
+        }
+        return $string;
+    }
 
 }

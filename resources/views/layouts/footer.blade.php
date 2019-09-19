@@ -3,19 +3,19 @@
         @php
         $links = [
             [
-                'text' => 'Contact us',
+                'text' => t('footer.contact'),
                 'link' => '#!',
             ],
             [
-                'text' => 'Terms of business',
+                'text' => t('footer.terms'),
                 'link' => '#!',
             ],
             [
-                'text' => 'Privacy',
+                'text' => t('footer.privacy'),
                 'link' => '#!',
             ],
             [
-                'text' => 'Affiliate program',
+                'text' => t('footer.affiliate'),
                 'link' => '#!',
             ]
         ];
