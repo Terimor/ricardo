@@ -7,6 +7,12 @@ use Validator;
 
 class Txn extends Model
 {
+    const STATUS_NEW = 'new';
+    const STATUS_AUTHORIZED = 'authorized';
+    const STATUS_CAPTURED = 'captured';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_FAILED= 'failed';
+
     protected $collection = 'txn';
 
     protected $dates = ['created_at', 'updated_at'];
