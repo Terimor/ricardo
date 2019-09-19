@@ -227,10 +227,10 @@
             this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           case 3:
-            this.warrantyPriceText = prices[this.radioIdx].installments3_warranty_price_text;
+            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           case 6:
-            this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
+            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
             break;
           default:
             break;
