@@ -201,23 +201,30 @@ class CurrencyService
      * @return Currency
      */
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
-    {
-        if (request()->input('cur')) {
-            $currencyCode = request()->input('cur');
+    {        
+        $currency = null;
+        if ($currencyCode) {
+            $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
         } else {
-            if (!$currencyCode) {
-                if (!$countryCode) {
-                    $countryCode = strtoupper(\Utils::getLocationCountryCode());
-                }
-
-                $localeString = \Utils::getCultureCode(null, $countryCode);
-                $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
-                $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
+            if (request()->input('cur')) {
+                $currencyCode = request()->input('cur');
             }
         }
+        
+        if (!$currencyCode) {
+            if (!$countryCode) {
+                $countryCode = strtoupper(\Utils::getLocationCountryCode());
+            }
 
-        $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
-
+            $localeString = \Utils::getCultureCode(null, $countryCode);
+            $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
+            $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
+        }
+        
+        if (!$currency) {
+            $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
+        }
+        
         if (!empty($currency->countries)){
             if (!in_array(strtolower($countryCode), $currency->countries)) {
                 $countryCode = $currency->countries[0];

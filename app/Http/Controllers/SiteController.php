@@ -34,7 +34,7 @@ class SiteController extends Controller
         
         $product = $productService->resolveProduct($request, true);
         
-         $setting = Setting::whereIn('key',[
+        $setting = Setting::whereIn('key',[
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
         
@@ -48,7 +48,8 @@ class SiteController extends Controller
      */
     public function contactUs()
     {
-        return view('contact_us');
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        return view('contact_us', 'loadedPhrases');
     }
 
     /**
@@ -133,12 +134,12 @@ class SiteController extends Controller
 
 		$orderCustomer = null;
 		if (request()->get('order')) {
-			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'), true);
             if (!$orderCustomer) {
                 // generate global get parameters
                 $params = \Utils::getGlobalGetParameters($request);
                 return redirect('/checkout'.$params);
-            }
+            }            
 		}
         $countryCode = \Utils::getLocationCountryCode();
 

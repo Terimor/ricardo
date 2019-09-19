@@ -134,7 +134,7 @@ class OrderService
 	 * @param string $orderId
 	 * @return type
 	 */
-	public static function getCustomerDataByOrderId(string $orderId)
+	public static function getCustomerDataByOrderId(string $orderId, $calculateProducts = null)
 	{
 		$order = OdinOrder::where('_id', $orderId)->select([
 			'shipping_country',
@@ -149,8 +149,24 @@ class OrderService
 			'customer_last_name',
 			'customer_phone',
 			'customer_doc_id',
-            'number'
-		])->first();
+            'number',
+            'currency'
+		]);
+        
+        // select products array
+        if ($calculateProducts) {            
+            $order->select('products', 'currency');
+        }
+        
+        $order = $order->first();
+        
+        // calculate text for products
+        if ($calculateProducts) {
+            $data = self::getOrderProductsText($order);
+            $order->productsText = $data['products'];
+            $order->totalText = $data['total_text'];
+        }
+        
 		return $order;
 	}
     
@@ -163,6 +179,16 @@ class OrderService
     {
         $order = OdinOrder::where('_id', $orderId)->first();
 
+        return $this->getOrderProductsText($order);
+    }
+    
+    /**
+     * Prepate order products text
+     * @param type $order
+     * @return type
+     */
+    private static function getOrderProductsText($order)
+    {        
         // get order currency
         $currency = CurrencyService::getCurrency($order->currency);
         
@@ -190,9 +216,7 @@ class OrderService
                 $productsTexts[$key]['is_main'] = false;
             }
         }
-        
-        
-        
+
         // get products by skus
         $productsData = OdinProduct::whereIn('skus.code', $skuCodes)->select('_id', 'skus')->pluck('skus', '_id');
 
@@ -210,6 +234,6 @@ class OrderService
         return [
             'products' => $productsTexts,
             'total_text' => CurrencyService::getLocalTextValue($total, $currency)
-        ];        
+        ];
     }
 }

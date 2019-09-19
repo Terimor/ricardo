@@ -16,6 +16,7 @@ class OdinProduct extends Model
 
     protected $images;
     protected $upsellPrices;
+    protected $currency;
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
@@ -131,7 +132,7 @@ class OdinProduct extends Model
      */
     public function getPricesAttribute($value)
     {
-        $currency = CurrencyService::getCurrency();
+        $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
         $returnedKey = 0;
 
       //iteration by price sets array
@@ -305,7 +306,7 @@ class OdinProduct extends Model
      */
     public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
     {
-        $currency = CurrencyService::getCurrency();
+        $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
 
         // if null set quantity 1
         if (!$maxQuantity) {
@@ -325,17 +326,19 @@ class OdinProduct extends Model
             // quantity loop
             $localPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency);
             // calculate discount percent
-            $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : null;           
-            $this->attributes['upsellPrices']['discount_percent'] = CurrencyService::getDiscountPercent($priceOld, $localPrice['price']);             
+            $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : null;
+            $this->attributes['upsellPrices']['discount_percent'] = CurrencyService::getDiscountPercent($priceOld, $localPrice['price']);
             for ($i=1; $i <= $maxQuantity; $i++) {
                 $this->attributes['upsellPrices'][$i]['price'] = $localPrice['price'] * $i;
                 $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($localPrice['price'] * $i, $currency);
-                
+                $this->attributes['upsellPrices'][$i]['code'] = $localPrice['code'];
+                $this->attributes['upsellPrices'][$i]['exchange_rate'] = $localPrice['exchange_rate'];
+
             }
         } else if ($discountPercent) {
             // get price from 1 qty
             $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
-            if ($discountPrice) {             
+            if ($discountPrice) {
               $discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
               if ($discountPrice < 4.5) {
                 logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
@@ -351,12 +354,14 @@ class OdinProduct extends Model
             //$price = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * 1, $currency);
             $this->attributes['upsellPrices'][$i]['price'] = $discountLocalPrice['price']*$i;
             $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
+            $this->attributes['upsellPrices'][$i]['code'] = $discountLocalPrice['code'];
+            $this->attributes['upsellPrices'][$i]['exchange_rate'] = $discountLocalPrice['exchange_rate'];
           }
         }
 
         return true;
     }
-    
+
     /**
      * Fet field local text
      * @param type $value

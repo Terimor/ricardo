@@ -221,11 +221,9 @@
           order_id: this.getOriginalOrderId,
           page_checkout: document.location.href,
           offer: new URL(document.location.href).searchParams.get('offer'),
-          affiliate: new URL(document.location.href).searchParams.get('affiliate')
+          affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+          upsells: groupBy(this.accessoryList, 'id', 'quantity')
         })
-        .then(() => {
-          this.redirect();
-        });
       },
 
       paypalOnApprove: paypalOnApprove,
