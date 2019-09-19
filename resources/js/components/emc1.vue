@@ -207,7 +207,6 @@ export default {
   props: ['showPreloader', 'skusList'],
   data () {
     return {
-      isShownPurcesBlock: false,
       selectedProductData: {
         prices: null,
         quantity: null,
