@@ -11,7 +11,7 @@
 
     <!-- Scripts -->
 
-    @if (Request::is('checkout') || Request::is('upsells'))
+    @if (Request::is('checkout') || Route::is('upsells'))
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js" defer></script>
         <script src="https://js.ebanx.com/ebanx-1.6.0.min.js" defer></script>
         <script src="/js/ebanx.js" defer></script>
@@ -22,7 +22,7 @@
 
         <link rel="stylesheet" href="/css/checkout.css">
     @endif
-    
+
     {{--<script src="https://paypal.com/sdk/js?client-id={{env('PAYPAL_CLIENT_ID','')}}"></script>--}}
 
     @if (config('app.env') === 'local')
