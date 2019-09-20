@@ -37,6 +37,9 @@ class PaypalController extends Controller
      */
     public function createOrder(PayPalCrateOrderRequest $request)
     {
+        //fix for PayPal payments
+        ini_set('serialize_precision', 15);
+
         $response = $this->payPalService->createOrder($request);
         $braintree_response = $response['braintree_response'];
         $odin_order_id = $response['odin_order_id'];
@@ -57,6 +60,9 @@ class PaypalController extends Controller
      */
     public function verifyOrder(PayPalVerfifyOrderRequest $request)
     {
+        //fix for PayPal payments
+        ini_set('serialize_precision', 15);
+
         return $this->payPalService->verifyOrder($request);
     }
 
