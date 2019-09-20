@@ -360,7 +360,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' => Txn::STATUS_APPROVED,
+                'status' => Txn::STATUS_CAPTURED,
                 'is_charged_back' => false,
                 'fee' => null,
                 'payment_provider' => $txn_response['txn']->payment_provider,
