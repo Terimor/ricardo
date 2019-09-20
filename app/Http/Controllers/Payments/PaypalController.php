@@ -43,7 +43,7 @@ class PaypalController extends Controller
         $response = $this->payPalService->createOrder($request);
         $braintree_response = $response['braintree_response'];
         $odin_order_id = $response['odin_order_id'];
-        $currency = $response['order_currency'];
+        $currency = !empty($response['order_currency']) ? $response['order_currency'] : '';
 
         $response = json_encode($braintree_response->result);
         unset($braintree_response->headers['Set-Cookie']);
