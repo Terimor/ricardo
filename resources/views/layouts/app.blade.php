@@ -9,6 +9,8 @@
 
     <title>@yield('title', config('app.name'))</title>
 
+    @yield('head')
+
     <!-- Scripts -->
 
     @if (Request::is('checkout') || Route::is('upsells'))
