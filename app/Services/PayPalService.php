@@ -56,7 +56,7 @@ class PayPalService
 
     public function createUpsellOrder(PayPalCrateOrderRequest $request): array
     {
-        $upsell_order = OdinOrder::find($request->get('order_id'));
+        $upsell_order = OdinOrder::find($request->get('order'));
         if (!$upsell_order) {
             abort(404);
         }
