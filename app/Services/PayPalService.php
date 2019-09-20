@@ -180,7 +180,7 @@ class PayPalService
      */
     public function createOrder(PayPalCrateOrderRequest $request): array
     {
-        $upsell_order = $request->order_id ? $order = OdinOrder::find($request->order_id) : null;
+        $upsell_order = $request->order_id ? OdinOrder::find($request->order_id) : null;
 
         if ($upsell_order) {
             return $this->createUpsellOrder($request);
@@ -416,12 +416,21 @@ class PayPalService
                 return Str::contains($link['href'], '/orders/');
             })->first();
             $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
+            $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
+
+            $is_txn_approved = OdinOrder::where(
+                [
+                    'txns.hash' => $paypal_order_id,
+                    'txns.status' => Txn::STATUS_APPROVED
+                ]
+            )->exists();
+
             $response = $this->payPalHttpClient->execute(
                 new OrdersGetRequest(
-                    preg_split('/orders\//', $link['href'])[1]
+                    $paypal_order_id
                 )
             );
-            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
+            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS && !$is_txn_approved) {
                 $paypal_order = $response->result;
                 $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
                 $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
