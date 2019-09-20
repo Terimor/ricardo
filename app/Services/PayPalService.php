@@ -418,16 +418,13 @@ class PayPalService
             $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
 
-            $is_txn_approved = OdinOrder::where(
-                [
-                    'txns.hash' => $paypal_order_id,
-                    'txns.status' => Txn::STATUS_APPROVED
-                ]
-            )->exists();
-
-            if ($is_txn_approved) {
-                abort(200);
-            }
+            // Should prevent duplicated calls
+            $order = OdinOrder::where(['txns.hash' => $paypal_order_id])->first();
+            collect($order->txns)->each(function($item, $key) use ($paypal_order_id) {
+                if ($item['hash'] === $paypal_order_id && $item['status'] === Txn::STATUS_APPROVED) {
+                    abort(200);
+                }
+            });
 
             $response = $this->payPalHttpClient->execute(
                 new OrdersGetRequest(
