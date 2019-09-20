@@ -1,0 +1,22 @@
+.returns__wrapper {
+  background-color: #fff;
+  padding: 20px 10px;
+}
+
+.returns h1 {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.returns p {
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.returns a {
+  color: #337ab7;
+  text-decoration: none;
+  white-space: nowrap;
+  font-weight: 700;
+}
+

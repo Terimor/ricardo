@@ -18,6 +18,10 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     //Auth::routes();
 
     $router->get('/contact-us', 'SiteController@contactUs')->name('contact-us');
+    $router->get('/returns', 'SiteController@returns')->name('returns');
+    $router->get('/privacy', 'SiteController@privacy')->name('privacy');
+    $router->get('/terms', 'SiteController@terms')->name('terms');
+
     $router->get('/checkout', 'SiteController@checkout')->name('checkout');
     $router->get('/thankyou-promos', 'SiteController@upsells')->name('upsells');
     //$router->get('/promo', 'SiteController@promo')->name('promo');
@@ -45,7 +49,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
-    
+
     $router->post('/payments/three', 'Payments\EbanxController@sendTransaction');
     $router->post('/payments/ebanx-notification', 'Payments\EbanxController@notification');
 

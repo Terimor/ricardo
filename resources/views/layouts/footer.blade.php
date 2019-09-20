@@ -4,15 +4,15 @@
         $links = [
             [
                 'text' => t('footer.contact'),
-                'link' => '#!',
+                'link' => '/contact-us',
             ],
             [
                 'text' => t('footer.terms'),
-                'link' => '#!',
+                'link' => '/terms',
             ],
             [
                 'text' => t('footer.privacy'),
-                'link' => '#!',
+                'link' => '/privacy',
             ],
             [
                 'text' => t('footer.affiliate'),
@@ -20,6 +20,11 @@
             ]
         ];
         @endphp
+        @if (isset($hasHome) && $hasHome == true)
+            <li class="footer__row-item">
+                <a href="/" class="footer__link">Home</a>
+            </li>
+        @endif
         @foreach ($links as $item)
             <li class="footer__row-item">
                 <a href="{{ $item['link'] }}" class="footer__link">{{ $item['text'] }}</a>
