@@ -22,10 +22,11 @@ const thankYou = new Vue({
         selectedProductData: JSON.parse(localStorage.getItem('selectedProductData')),
         productData: upsells.product,
         socialType: 'facebook',
+        quote: 'I just bought this awesome product. Thought I’d share this with you',
         total: 0,
         sharingLinkList: {
-            facebook: 'http://www.facebook.com/sharer/sharer.php?u=https://landingpage.thor-be.host/checkout&quote=',
-            twitter: 'https://twitter.com/home?status=https://landingpage.thor-be.host/checkout%20'
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,
+            twitter: `https://twitter.com/home?status=${window.location.href}`
         }
     }),
 
