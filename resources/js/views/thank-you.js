@@ -46,24 +46,34 @@ const thankYou = new Vue({
             .then(({ total_text }) => {
                 this.total = total_text;
             });
+        },
+
+        getEntityPrice(index) {
+            return upsells
+            && upsells.orderCustomer
+            && upsells.orderCustomer.productsText[index].price_text;
+        },
+
+        saveOrderNumber() {
+            localStorage.setItem('order_number', upsells.orderCustomer.number)
         }
     },
 
     computed: {
         getShippingAddress() {
             const {
-                shipping_street,
                 shipping_city,
+                shipping_street,
                 shipping_state,
-                shipping_zip,
                 shipping_country,
             } = upsells.orderCustomer;
 
-            return `${shipping_street}${shipping_city}${shipping_state}${shipping_zip}${shipping_country}`;
+            return `${shipping_street}+${shipping_city}+${shipping_state}+${shipping_country}`;
         },
     },
 
     mounted() {
         this.getTotal();
+        this.saveOrderNumber();
     }
 })

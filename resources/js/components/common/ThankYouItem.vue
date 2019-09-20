@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="thank-you__order__price">
-            {{ order.finalPrice }}
+            {{ price }}
         </div>
     </div>
 </template>
@@ -28,7 +28,10 @@
     export default {
         name: 'ThankYouItem',
         mixins: [upsellsMixin],
-        props: ['order'],
+        props: [
+            'order',
+            'price'
+        ],
     };
 </script>
 
