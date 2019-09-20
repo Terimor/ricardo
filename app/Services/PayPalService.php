@@ -56,7 +56,7 @@ class PayPalService
 
     public function createUpsellOrder(PayPalCrateOrderRequest $request): array
     {
-        $upsell_order = OdinOrder::find($request->get('order_id'));
+        $upsell_order = OdinOrder::find($request->get('order'));
         if (!$upsell_order) {
             abort(404);
         }
@@ -180,7 +180,7 @@ class PayPalService
      */
     public function createOrder(PayPalCrateOrderRequest $request): array
     {
-        $upsell_order = $request->order_id ? OdinOrder::find($request->order_id) : null;
+        $upsell_order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
 
         if ($upsell_order) {
             return $this->createUpsellOrder($request);
@@ -360,7 +360,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' => Txn::STATUS_APPROVED,
+                'status' => Txn::STATUS_CAPTURED,
                 'is_charged_back' => false,
                 'fee' => null,
                 'payment_provider' => $txn_response['txn']->payment_provider,
@@ -418,19 +418,20 @@ class PayPalService
             $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
 
-            $is_txn_approved = OdinOrder::where(
-                [
-                    'txns.hash' => $paypal_order_id,
-                    'txns.status' => Txn::STATUS_APPROVED
-                ]
-            )->exists();
+            // Should prevent duplicated calls
+            $order = OdinOrder::where(['txns.hash' => $paypal_order_id])->first();
+            collect($order->txns)->each(function($item, $key) use ($paypal_order_id) {
+                if ($item['hash'] === $paypal_order_id && $item['status'] === Txn::STATUS_APPROVED) {
+                    abort(200);
+                }
+            });
 
             $response = $this->payPalHttpClient->execute(
                 new OrdersGetRequest(
                     $paypal_order_id
                 )
             );
-            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS && !$is_txn_approved) {
+            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
                 $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
                 $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
@@ -668,7 +669,7 @@ class PayPalService
      */
     private function getPrice(Request $request, $product, OdinOrder $order = null)
     {
-        if ($request->input('order_id', null)) {
+        if ($request->input('order', null)) {
             abort_if(!$order, 404);
             $main_order_product = collect($order->products)->where('is_main', true)->first();
             $main_order_product = $this->findProductBySku($main_order_product['sku_code']);

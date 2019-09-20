@@ -24,9 +24,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Show the application index.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Index page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
      */
     public function index(Request $request, ProductService $productService)
     {
@@ -42,9 +43,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Show the application Contact us.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Contacts page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
      */
     public function contactUs(Request $request, ProductService $productService)
     {
@@ -53,6 +55,12 @@ class SiteController extends Controller
         return view('contact_us', compact('loadedPhrases', 'product'));
     }
 
+    /**
+     * Returns page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
+     */
     public function returns(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
@@ -60,6 +68,12 @@ class SiteController extends Controller
         return view('returns', compact('loadedPhrases', 'product'));
     }
 
+    /**
+     * Privacy page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
+     */
     public function privacy(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
@@ -67,6 +81,12 @@ class SiteController extends Controller
         return view('privacy', compact('loadedPhrases', 'product'));
     }
 
+    /**
+     * Terms page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
+     */
     public function terms(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
@@ -75,9 +95,8 @@ class SiteController extends Controller
     }
 
     /**
-     * Show the application Order tracking.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Order traching page
+     * @return type
      */
     public function orderTracking()
     {
@@ -85,9 +104,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Show the application Checkout.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Checkout page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
      */
     public function checkout(Request $request, ProductService $productService)
     {
@@ -114,9 +134,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Show the application Checkout.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Upsells page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
      */
     public function upsells(Request $request, ProductService $productService)
     {
@@ -142,9 +163,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Show the application Checkout.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Thankyou page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
      */
     public function thankyou(Request $request, ProductService $productService)
     {
@@ -169,9 +191,10 @@ class SiteController extends Controller
     }
 
     /**
-     * Show the application Promo.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Promo page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
      */
     public function promo(Request $request, ProductService $productService)
     {
@@ -185,16 +208,6 @@ class SiteController extends Controller
         $countries =  \Utils::getCountries();
         $countryCode = \Utils::getLocationCountryCode();
         return view('promo', compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries'));
-    }
-
-    /**
-     * Show the application Product.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function products()
-    {
-        return view('products');
     }
 
     /**
