@@ -40,7 +40,7 @@ export function paypalCreateOrder ({
 }
 
 export function paypalOnApprove(data) {
-  localStorage.getItem('order_id', data.orderID);
+  localStorage.setItem('order_id', data.orderID);
   const odin_order_id = localStorage.getItem('odin_order_id');
   return fetch('/paypal-verify-order', {
     credentials: 'same-origin',
