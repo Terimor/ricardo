@@ -161,6 +161,9 @@ header {
     &.most-popular {
       #{ $self }__product-info-wrapper {
         padding: 25px 0;
+        @media screen and ($s-down) {
+          padding: 0;
+        }
       }
     }
 
