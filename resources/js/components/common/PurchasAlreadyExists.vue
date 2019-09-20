@@ -10,7 +10,7 @@ export default {
   name: 'PurchasAlreadyExists',
 
   data: () => ({
-    orderNumber: localStorage.getItem('order_id'),
+    orderNumber: localStorage.getItem('order_number'),
   }),
 }
 </script>
