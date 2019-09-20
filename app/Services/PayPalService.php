@@ -425,12 +425,16 @@ class PayPalService
                 ]
             )->exists();
 
+            if ($is_txn_approved) {
+                abort(200);
+            }
+
             $response = $this->payPalHttpClient->execute(
                 new OrdersGetRequest(
                     $paypal_order_id
                 )
             );
-            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS && !$is_txn_approved) {
+            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
                 $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
                 $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
