@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\Currency;
+use Cache;
 
 /**
  * Currency Service class
@@ -296,13 +297,32 @@ class CurrencyService
      */
     public static function roundValueByCurrencyRules(float $value, string $currencyCode): float
     {
-        $roundedValue = 0;
-        if ($currencyCode === 'JPY') {
-            $roundedValue = round($value);
-        } else {
-            $roundedValue = round($value, 2);
-        }
+        // cache culture code
+        $localeString = self::getCultureCodeByCurrency($currencyCode);
+
+        $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
+        // parse value
+        $roundedValue = $numberFormatter->parseCurrency($numberFormatter->formatCurrency($value, $currencyCode), $currencyCode);       
+
         return $roundedValue;
+    }
+    /**
+     * Return culture code by currency
+     * @param type $currencyCode
+     * @return type
+     */
+    public static function getCultureCodeByCurrency($currencyCode)
+    {
+        // cache culture code
+        $localeString = Cache::get('culture_code_'.$currencyCode);
+        
+        if (!$localeString) {
+            $currency = self::getCurrency($currencyCode);
+            $localeString = \Utils::getCultureCode(null, $currency->countryCode);
+            Cache::put('culture_code_'.$currencyCode, $localeString, 3600);
+        }
+        
+        return $localeString;
     }
 
 }

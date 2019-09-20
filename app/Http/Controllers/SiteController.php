@@ -243,6 +243,8 @@ class SiteController extends Controller
 		echo '<pre>'; var_dump($price); echo '</pre>';
 		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
 
+        $res = CurrencyService::roundValueByCurrencyRules('98.11111', 'EUR');
+        echo $res; exit;
 
         $product = $productService->resolveProduct($request, true);
 echo '<pre>'; var_dump(app()->getLocale()); echo '</pre>';
