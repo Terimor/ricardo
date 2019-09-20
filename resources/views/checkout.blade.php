@@ -19,11 +19,13 @@
 @endsection
 
 @section('content')
-@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
 
-@include('components.product_offer')
+<div id="app">
+  @section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
+  @include('components.product_offer')
 
-<app-component></app-component>
+  <app-component></app-component>
+</div>
 
 @include('layouts.footer', ['isWhite' => true])
 

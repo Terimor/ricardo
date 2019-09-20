@@ -2,7 +2,6 @@
   <div
     class="timer-component"
     id="timer-component"
-    v-if="+queryParams.show_timer === 1"
     :class="{ 'is-mobile': isMobile || displayGreenTimer }"
   >
     <div v-if="isMobile || displayGreenTimer" class="mobile">
