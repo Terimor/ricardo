@@ -219,7 +219,7 @@
           sku_code: this.getOriginalOrder.variant,
           sku_quantity: this.getOriginalOrder.quantity,
           is_warranty_checked: false,
-          order_id: this.getOriginalOrderId,
+          order: this.getOriginalOrderId,
           page_checkout: document.location.href,
           offer: new URL(document.location.href).searchParams.get('offer'),
           affiliate: new URL(document.location.href).searchParams.get('affiliate'),
