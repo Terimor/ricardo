@@ -68,9 +68,22 @@ const thankYou = new Vue({
                 shipping_street,
                 shipping_state,
                 shipping_country,
+                shipping_zip,
             } = upsells.orderCustomer;
 
-            return `${shipping_street}+${shipping_city}+${shipping_state}+${shipping_country}`;
+            const data = {
+                shipping_city,
+                shipping_street,
+                shipping_state,
+                shipping_country,
+                shipping_zip,
+            }
+
+            const queryString = Object.values(data).reduce((acc, string) => {
+                return acc += string ? string : '';
+            }, '')
+
+            return queryString;
         },
     },
 
