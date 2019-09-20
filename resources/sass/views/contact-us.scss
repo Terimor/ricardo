@@ -1,0 +1,58 @@
+@import '../variables';
+
+.contacts {
+  $self: &;
+  &__wrapper {
+    background-color: #fff;
+    padding: 20px 10px;
+  }
+
+  &__main-title {
+    font-size: 36px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #333;
+
+    @media screen and ($m-down) {
+      font-size: 30px;
+    }
+  }
+
+  &__sub-title {
+    font-size: 24px;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    #{ $self }__text {
+      &--link {
+        font-size: inherit;
+        display: inline-block;
+      }
+    }
+  }
+
+  &__text {
+    font-size: 17px;
+    color: #333;
+    margin-bottom: 10px;
+
+    &--link {
+      color: #337ab7;
+      text-decoration: none;
+      display: inline-block;
+    }
+  }
+
+  .footer {
+    &__row {
+      justify-content: flex-start;
+      margin: 0;
+    }
+
+    &__link {
+      font-weight: 500;
+      font-size: 17px;
+    }
+  }
+}

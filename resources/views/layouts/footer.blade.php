@@ -4,15 +4,15 @@
         $links = [
             [
                 'text' => t('footer.contact'),
-                'link' => '#!',
+                'link' => '/contact-us',
             ],
             [
                 'text' => t('footer.terms'),
-                'link' => '#!',
+                'link' => '/terms',
             ],
             [
                 'text' => t('footer.privacy'),
-                'link' => '#!',
+                'link' => '/privacy',
             ],
             [
                 'text' => t('footer.affiliate'),
