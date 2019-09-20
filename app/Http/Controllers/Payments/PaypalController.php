@@ -82,9 +82,6 @@ class PaypalController extends Controller
      */
     public function webhooks(Request $request)
     {
-        //fix for PayPal payments
-        ini_set('serialize_precision', 15);
-
         $this->payPalService->webhooks($request);
     }
 }
