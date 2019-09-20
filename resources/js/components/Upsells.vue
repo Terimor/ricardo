@@ -26,6 +26,7 @@
                   mode="out-in"
                 >
                   <component
+                    v-if="upsellsObj.length"
                     v-bind:is="view"
                     @addAccessory="addAccessory"
                     :discount="upsellsObj
