@@ -180,7 +180,6 @@
 <script>
 import emc1Validation from '../validation/emc1-validation'
 import printf from 'printf'
-import moment from 'moment'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { t } from '../utils/i18n';
@@ -417,10 +416,13 @@ export default {
       }
 
       if (selectedProductData.product_name === this.productData.product_name) {
-        const diff = moment.utc(moment().diff(moment(odin_order_created_at))).format("mm");
+        const now = new Date()
+        const then = odin_order_created_at
+        const diffinMilliseconds = Date.parse(now) - Date.parse(then);
+        const diffInMinutes = diffinMilliseconds / 1000 / 60;
         const timeLimit = 30;
 
-        if  (parseInt(diff) >= timeLimit) {
+        if  (parseInt(diffInMinutes) >= timeLimit) {
           localStorage.removeItem('odin_order_created_at');
           return false
         } else {
