@@ -298,19 +298,31 @@ class CurrencyService
     public static function roundValueByCurrencyRules(float $value, string $currencyCode): float
     {
         // cache culture code
-        $localeString = Cache::get('currency');
-        
-        if (!$localeString) {            
-            $currency = self::getCurrency($currencyCode);
-            $localeString = \Utils::getCultureCode(null, $currency->countryCode);
-            Cache::put('culture_code_'.$currencyCode, $localeString, 3600);
-        }
+        $localeString = self::getCultureCodeByCurrency($currencyCode);
 
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
         // parse value
         $roundedValue = $numberFormatter->parseCurrency($numberFormatter->formatCurrency($value, $currencyCode), $currencyCode);       
 
         return $roundedValue;
+    }
+    /**
+     * Return culture code by currency
+     * @param type $currencyCode
+     * @return type
+     */
+    public static function getCultureCodeByCurrency($currencyCode)
+    {
+        // cache culture code
+        $localeString = Cache::get('culture_code_'.$currencyCode);
+        
+        if (!$localeString) {
+            $currency = self::getCurrency($currencyCode);
+            $localeString = \Utils::getCultureCode(null, $currency->countryCode);
+            Cache::put('culture_code_'.$currencyCode, $localeString, 3600);
+        }
+        
+        return $localeString;
     }
 
 }
