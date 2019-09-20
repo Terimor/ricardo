@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Contacts')
+@section('title', $product->skus[0]['name'] . ' - ' . 'Contacts')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/contact-us.css') }}">
@@ -72,7 +72,7 @@
                         HERE
                     </a>
             </h2>
-            @include('layouts.footer', ['isWhite' => true])
+            @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>
 </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Returns')
+@section('title', $product->skus[0]['name'] . ' - ' . 'Terms & Conditions')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/static.css') }}">
@@ -279,7 +279,7 @@
             <p>
                 These Terms of Service and any separate agreements whereby we provide you Services shall be governed by and construed in accordance with the laws of Malta
                 <br>
-                <br><em><strong>FOR RETURNS PLEASE FIND ADDRESS <a href="refunds">HERE</a></strong></em>
+                <br><em><strong>FOR RETURNS PLEASE FIND ADDRESS <a href="/returns">HERE</a></strong></em>
                 <br>
                 <br>
             </p>
@@ -318,7 +318,7 @@
 
             <br>
             <br>
-            @include('layouts.footer', ['isWhite' => true])
+            @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>
 </div>

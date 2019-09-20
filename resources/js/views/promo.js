@@ -3,7 +3,7 @@ require('../bootstrap')
 import carousel from 'vue-owl-carousel';
 import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
-import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
+import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
 import { preparePurchaseData } from '../utils/checkout';
 import { t } from '../utils/i18n';
 import { getNotice } from '../utils/emc1';

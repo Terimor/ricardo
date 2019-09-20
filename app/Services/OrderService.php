@@ -155,7 +155,7 @@ class OrderService
         
         // select products array
         if ($calculateProducts) {            
-            $order->select('products', 'currency');
+            $order->addSelect('products', 'currency');
         }
         
         $order = $order->first();

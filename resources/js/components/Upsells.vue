@@ -26,6 +26,7 @@
                   mode="out-in"
                 >
                   <component
+                    v-if="upsellsObj.length"
                     v-bind:is="view"
                     @addAccessory="addAccessory"
                     :discount="upsellsObj
@@ -218,7 +219,7 @@
           sku_code: this.getOriginalOrder.variant,
           sku_quantity: this.getOriginalOrder.quantity,
           is_warranty_checked: false,
-          order_id: this.getOriginalOrderId,
+          order: this.getOriginalOrderId,
           page_checkout: document.location.href,
           offer: new URL(document.location.href).searchParams.get('offer'),
           affiliate: new URL(document.location.href).searchParams.get('affiliate'),

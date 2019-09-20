@@ -37,9 +37,13 @@ class PaypalController extends Controller
      */
     public function createOrder(PayPalCrateOrderRequest $request)
     {
+        //fix for PayPal payments
+        ini_set('serialize_precision', 15);
+
         $response = $this->payPalService->createOrder($request);
         $braintree_response = $response['braintree_response'];
         $odin_order_id = $response['odin_order_id'];
+        $currency = !empty($response['order_currency']) ? $response['order_currency'] : '';
 
         $response = json_encode($braintree_response->result);
         unset($braintree_response->headers['Set-Cookie']);
@@ -47,7 +51,8 @@ class PaypalController extends Controller
 
         return [
             'id' => optional($braintree_response->result)->id,
-            'odin_order_id' => $odin_order_id
+            'odin_order_id' => $odin_order_id,
+            'order_currency'   => $currency
         ];
     }
 
@@ -57,6 +62,9 @@ class PaypalController extends Controller
      */
     public function verifyOrder(PayPalVerfifyOrderRequest $request)
     {
+        //fix for PayPal payments
+        ini_set('serialize_precision', 15);
+
         return $this->payPalService->verifyOrder($request);
     }
 

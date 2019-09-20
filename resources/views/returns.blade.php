@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Returns')
+@section('title', $product->skus[0]['name'] . ' - ' . 'Refund Policy')
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/static.css') }}">
@@ -145,7 +145,7 @@
             </p>
 
 
-            @include('layouts.footer', ['isWhite' => true])
+            @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>
 </div>
