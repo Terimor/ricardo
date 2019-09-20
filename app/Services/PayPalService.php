@@ -180,7 +180,7 @@ class PayPalService
      */
     public function createOrder(PayPalCrateOrderRequest $request): array
     {
-        $upsell_order = $request->order_id ? OdinOrder::find($request->order_id) : null;
+        $upsell_order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
 
         if ($upsell_order) {
             return $this->createUpsellOrder($request);
@@ -668,7 +668,7 @@ class PayPalService
      */
     private function getPrice(Request $request, $product, OdinOrder $order = null)
     {
-        if ($request->input('order_id', null)) {
+        if ($request->input('order', null)) {
             abort_if(!$order, 404);
             $main_order_product = collect($order->products)->where('is_main', true)->first();
             $main_order_product = $this->findProductBySku($main_order_product['sku_code']);
