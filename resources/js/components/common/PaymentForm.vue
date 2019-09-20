@@ -71,18 +71,24 @@
                 }"
                 v-model="paymentForm.street"/>
             <text-field
+                v-if="isBrazil"
                 :validation="$v.form.number"
                 :validationMessage="textStreetNumberRequired"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
-                v-if="isBrazil"
                 theme="variant-1 number"
                 :label="textStreetNumber"
                 v-model="paymentForm.number"/>
+            <el-alert
+              v-if="isShownLengthNotification"
+              style="order: 1;"
+              title="Please use the field below for additional address instructions"
+              type="error">
+            </el-alert>
             <text-field
                 v-if="isBrazil"
                 theme="variant-1"
-                label="textComplemento"
+                :label="textComplemento"
                 v-model="paymentForm.complemento"/>
             <text-field
                 :validation="$v.form.city"
@@ -309,6 +315,13 @@
     },
 
     computed: {
+      isShownLengthNotification() {
+        const addressLength = this.paymentForm.street && this.paymentForm.street.length
+        const numberLength = this.paymentForm.number && this.paymentForm.number.length
+
+        return addressLength + numberLength >= 35;
+      },
+
       exp () {
         const { month, year } = this.paymentForm
 
