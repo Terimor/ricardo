@@ -25,7 +25,8 @@ const thankYou = new Vue({
         total: 0,
         sharingLinkList: {
             facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,
-            twitter: `https://twitter.com/home?status=${window.location.href}`
+            twitter: `https://twitter.com/share?&url=${window.location.href}text=`
+
         }
     }),
 
