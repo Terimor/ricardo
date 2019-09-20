@@ -51,6 +51,8 @@ const thankYou = new Vue({
         getEntityPrice(index) {
             return upsells
             && upsells.orderCustomer
+            && upsells.orderCustomer.productsText
+            && upsells.orderCustomer.productsText[index]
             && upsells.orderCustomer.productsText[index].price_text;
         },
 
