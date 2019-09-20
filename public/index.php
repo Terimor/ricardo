@@ -1,8 +1,5 @@
 <?php
 
-//fix for PayPal payments
-ini_set('serialize_precision', 15);
-
 /**
  * Laravel - A PHP Framework For Web Artisans
  *

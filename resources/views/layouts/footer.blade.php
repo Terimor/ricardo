@@ -20,6 +20,11 @@
             ]
         ];
         @endphp
+        @if (isset($hasHome) && $hasHome == true)
+            <li class="footer__row-item">
+                <a href="/" class="footer__link">Home</a>
+            </li>
+        @endif
         @foreach ($links as $item)
             <li class="footer__row-item">
                 <a href="{{ $item['link'] }}" class="footer__link">{{ $item['text'] }}</a>
