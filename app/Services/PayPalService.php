@@ -167,7 +167,8 @@ class PayPalService
 
         return [
             'braintree_response' => $response,
-            'odin_order_id' => optional($upsell_order)->getIdAttribute()
+            'odin_order_id' => optional($upsell_order)->getIdAttribute(),
+            'order_currency' => $upsell_order->currency
         ];
     }
 
