@@ -17,7 +17,6 @@
         "printf": "^0.5.1",
         "vue-mq": "^1.0.1",
         "vue-owl-carousel": "^2.0.3",
-        "vue-social-sharing": "^2.4.6",
         "vuelidate": "^0.7.4"
     },
     "devDependencies": {
