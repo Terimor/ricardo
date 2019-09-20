@@ -19,10 +19,14 @@ class I18nService
     {
         $language = app()->getLocale();
         if (empty(I18n::$loadedPhrases[$language])) {
+            $categories = [$category];
+            if (strpos($category, '_page')) {
+                $categories[] = 'global_page';
+            }
             if ($language == 'en') {
-                $phrases = I18n::where(['categories' => $category])->select(['phrase', 'en'])->get();
+                $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en'])->get();
             } else {
-                $phrases = I18n::where(['categories' => $category])->select(['phrase', 'en', $language])->get();
+                $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', $language])->get();
             }
             $loadedPhrases = [];
             // generate array of en and lang values
