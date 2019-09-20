@@ -56,10 +56,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="thank-you__order__price">@{{ productData.prices[selectedProductData.quantity].value_text }}</div>
+                <div class="thank-you__order__price">@{{ getEntityPrice(0) }}</div>
             </div>
-            <div v-for="order in subOrder">
+            <div v-for="(order, index) in subOrder">
                 <thank-you-item
+                    :key="index"
+                    :price="getEntityPrice(index + 1)"
                     :order="order"
                 ></thank-you-item>
             </div>
