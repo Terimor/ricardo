@@ -58,8 +58,8 @@ export default {
             content: getNoticeHtml(),
             position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
           })
-        }, 1000)
-      }, 1000)
+        }, 6000)
+      }, 9000)
     }
   },
 }
