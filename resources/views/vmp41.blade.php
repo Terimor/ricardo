@@ -17,6 +17,9 @@
             productImage: '{{$product->logo_image}}',
         };
 
+        const recentlyBoughtNames = @json($recentlyBoughtNames);
+        const recentlyBoughtCities = @json($recentlyBoughtCities)
+
         window.loadedPhrases = @json($loadedPhrases);
     </script>
 
