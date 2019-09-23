@@ -42,7 +42,7 @@ class I18nService
                 }
                 
                 // check if one phrase isset for this category
-                if (in_array($category, $phrase->categories) && !$issetCategory) {
+                if (!$issetCategory && in_array($category, $phrase->categories)) {
                     $issetCategory = true;
                 }
             }
