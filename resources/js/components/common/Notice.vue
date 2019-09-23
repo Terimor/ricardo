@@ -17,7 +17,7 @@ export default {
   ],
 
   data: () => ({
-    users: ['Oliver', 'asd', 'John'],
+    users: ['Oliver', 'asd', 'John', 'Dan'],
     cities: ['NY', 'LA', 'LONDON'],
     usersActive: getRandomInt(33, 44),
     bestsellerText: 'In high demand - This product is our bestseller right now...',

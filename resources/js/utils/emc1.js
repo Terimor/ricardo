@@ -14,7 +14,12 @@ export const getRadioHtml = ({ discountName, newPrice, text, price, discountText
   </p>
   <p class="label-container-radio__discount">${discountText}</p>`
 
-export function * getNotice ({ users, cities, usersActive, bestsellerText }) {
+export function * getNotice ({
+  users,
+  cities,
+  usersActive,
+  bestsellerText
+}) {
   let index = 0
   const messageMap = {
     paypal: `
@@ -74,7 +79,7 @@ export function * getNotice ({ users, cities, usersActive, bestsellerText }) {
             <img src="${checkoutData.productImage}" alt="">
           </div>
           <div class="recently-notice__right">
-            <p>${users[index]} . in ${cities[index]} just bought<br>1x ${checkoutData.product.product_name}</p>
+            <p>${users[index]} ${cities[index] ? 'in ' + cities[index] : ''} just bought<br>1x ${checkoutData.product.product_name}</p>
           </div>
         </div>
       `
