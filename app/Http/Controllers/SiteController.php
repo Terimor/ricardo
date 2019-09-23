@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OdinCustomer;
 use Illuminate\Http\Request;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
@@ -130,7 +131,9 @@ class SiteController extends Controller
 
         $countryCode = \Utils::getLocationCountryCode();
 
-        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
+        $notificationData = OdinCustomer::getNotificationData();
+
+        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'notificationData'));
     }
 
     /**
@@ -216,7 +219,7 @@ class SiteController extends Controller
      */
     public function test(Request $request, ProductService $productService)
     {
-        
+
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';

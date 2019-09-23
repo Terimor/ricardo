@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\UtilsService;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
@@ -9,16 +10,18 @@ use Illuminate\Support\Carbon;
 class OdinCustomer extends Model
 {
     public $timestamps = true;
-    
+
     protected $collection = 'odin_customer';
-    
+
     protected $dates = ['created_at', 'updated_at'];
-    
+
     protected $guarded = ['addresses', 'ip', 'phones'];
-    
+
+    const NOTIFICATIONS_CUSTOMERS_LIMIT = 25;
+
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $attributes = [
         'email' => null, // * unique string,
@@ -40,7 +43,7 @@ class OdinCustomer extends Model
         'paypal_payer_id' => null, // string
 		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
     ];
-        
+
     /**
     * The attributes that are mass assignable.
     *
@@ -49,7 +52,7 @@ class OdinCustomer extends Model
    protected $fillable = [
        'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses'
    ];
-   
+
     /**
      *
      */
@@ -62,9 +65,9 @@ class OdinCustomer extends Model
                 $model->number = self::generateCustomerNumber();
             }
         });
-    }   
-   
-   
+    }
+
+
    /**
      * Validator
      * @param array $data
@@ -72,30 +75,30 @@ class OdinCustomer extends Model
      */
     public function validate(array $data = [])
     {
-        
+
         if (!$data) {
             $data = $this->attributesToArray();
             if (!empty($data['_id'])) {
-                // skip unique for email                
+                // skip unique for email
                 $data['email'] .= $data['_id'];
             }
         }
-        
+
         return Validator::make($data, [
             'email'     => 'required|email|unique:odin_customer',
             'first_name'    => 'required',
             'last_name'    => 'required',
         ]);
     }
-    
+
     /**
      * Setter email
      */
-    public function setEmailAttribute($value) 
-    {        
+    public function setEmailAttribute($value)
+    {
         $this->attributes['email'] =  strtolower(trim($value));
     }
-	
+
     /**
      * Generate customer number
      * @param string $countryCode
@@ -117,5 +120,57 @@ class OdinCustomer extends Model
         } while ($model);
 
         return $numberString;
-    }	
+    }
+
+
+    /**
+     * Returns customers notification data
+     *
+     * @param string|null $country_code
+     * @return array
+     */
+    public static function getNotificationData(string $country_code = null): array
+    {
+        if (!$country_code) {
+            $country_code = UtilsService::getLocationCountryCode();
+        }
+
+        $recentlyBoughtNames = $recentlyBoughtCities = [];
+        OdinCustomer::select('first_name', 'last_name', 'addresses.city')
+            ->where('addresses.country', $country_code)
+            ->orderBy('_id', 'desc')
+            ->limit(SELF::NOTIFICATIONS_CUSTOMERS_LIMIT)
+            ->get()
+            ->each(function($item, $key) use (&$recentlyBoughtNames, &$recentlyBoughtCities) {
+                $recentlyBoughtNames[] = $item['first_name'] . ' ' . $item['last_name'];
+                if (!empty($item['addresses'])) {
+                    $city = collect($item['addresses'])->first();
+                    if (!in_array($city['city'], $recentlyBoughtCities)) {
+                        $recentlyBoughtCities[] = $city['city'];
+                    }
+                }
+            });
+
+        if (count($recentlyBoughtNames) < self::NOTIFICATIONS_CUSTOMERS_LIMIT && $country_code !== 'us') {
+            $recentlyBoughLeft = self::NOTIFICATIONS_CUSTOMERS_LIMIT - count($recentlyBoughtNames);
+            OdinCustomer::select('first_name', 'last_name', 'addresses.city')
+                ->where('addresses.country', 'us')
+                ->orderBy('_id', 'desc')
+                ->limit($recentlyBoughLeft)
+                ->get()
+                ->each(function($item, $key) use (&$recentlyBoughtNames) {
+                    $temp_full_name = $item['first_name'] . ' ' . $item['last_name'];
+                    if (!in_array($temp_full_name, $recentlyBoughtNames)) {
+                        $recentlyBoughtNames[] = $temp_full_name;
+                    }
+                });
+        }
+
+        $notification_data = [
+            'recentlyBoughtNames' => $recentlyBoughtNames,
+            'recentlyBoughtCities' => $recentlyBoughtCities
+        ];
+
+        return $notification_data;
+    }
 }
