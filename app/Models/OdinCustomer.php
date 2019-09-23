@@ -150,7 +150,7 @@ class OdinCustomer extends Model
                 }
             });
 
-        // If there are not enough customers from a current users country - add customers акщь USA
+        // If there are not enough customers from a current users country - add customers from USA
         if (count($recentlyBoughtNames) < $limit && $country_code !== 'us') {
             $temp_limit = $limit - count($recentlyBoughtNames);
             // Merge Customers from a current users country with a customers from a 'us' (USA)
