@@ -91,7 +91,7 @@ export default {
   },
   beforeCreate() {
     if (document.location.pathname.split('/').pop() === 'checkout') {
-      document.body.classList.add('tpl-' + new URL(document.location).searchParams.get('tpl') || 'emc1');
+      document.body.classList.add('tpl-' + (new URL(document.location).searchParams.get('tpl') || 'emc1'));
     }
   },
 }

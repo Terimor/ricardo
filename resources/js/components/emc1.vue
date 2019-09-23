@@ -890,9 +890,31 @@ export default {
             border: 1px solid #efefef;
             color: #333;
 
+            &:before {
+              opacity: 0;
+              font-family: FontAwesome!important;
+              content: '\f054';
+              width: 0;
+              height: 100%;
+              position: absolute;
+              top: 0;
+              left: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              border-radius: 0 50% 50% 0;
+              background-color: rgba(255,255,255,.3);
+              transition: all .2s linear 0s;
+            }
+
             &:hover {
-                background-color: #e6e6e6;
-                background-image: linear-gradient(to bottom,#e6e6e6 0,#ddd 53%,#d3d3d3 100%);
+              background-color: #e6e6e6;
+              background-image: linear-gradient(to bottom,#e6e6e6 0,#ddd 53%,#d3d3d3 100%);
+
+              &:before {
+                opacity: 1;
+                width: 30px;
+              }
             }
 
             .checkmark {
