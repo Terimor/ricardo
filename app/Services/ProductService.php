@@ -41,7 +41,7 @@ class ProductService
         if ($needImages) {
             $product->setLocalImages();
         }
-        
+
         if ($currency) {
             $product->currency = $currency;
         }
@@ -199,6 +199,7 @@ class ProductService
         }
         $lp->skus = $skus;
 
+        $lp->page_title = $product->page_title;
         $lp->upsell_plusone_text = $product->upsell_plusone_text;
         $lp->upsell_hero_text = $product->upsell_hero_text;
         $lp->upsells = $product->upsells;
