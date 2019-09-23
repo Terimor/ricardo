@@ -35,9 +35,7 @@ class SiteController extends Controller
 
         $product = $productService->resolveProduct($request, true);
 
-        $setting = Setting::whereIn('key',[
-                    'instant_payment_paypal_client_id',
-                ])->pluck('value', 'key');
+        $setting = Setting::getValue(['instant_payment_paypal_client_id']);
 
         return view('index', compact('product', 'setting', 'loadedPhrases'));
     }
@@ -134,9 +132,8 @@ class SiteController extends Controller
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
-        $setting = Setting::whereIn('key',[
-                    'instant_payment_paypal_client_id',
-                ])->pluck('value', 'key');
+        
+        $setting = Setting::getValue(['instant_payment_paypal_client_id']);
 
         $countries =  \Utils::getCountries();
 
@@ -157,9 +154,7 @@ class SiteController extends Controller
     {
 		$product = $productService->resolveProduct($request, true);
 
-		$setting = Setting::whereIn('key',[
-			'instant_payment_paypal_client_id',
-		])->pluck('value', 'key');
+		$setting = Setting::getValue(['instant_payment_paypal_client_id']);
 
 		$orderCustomer = null;
 		if (request()->get('order')) {
@@ -188,9 +183,7 @@ class SiteController extends Controller
     {
 		$product = $productService->resolveProduct($request, true);
 
-		$setting = Setting::whereIn('key',[
-			'instant_payment_paypal_client_id',
-		])->pluck('value', 'key');
+		$setting = Setting::getValue(['instant_payment_paypal_client_id']);
 
 		$orderCustomer = null;
 		if (request()->get('order')) {

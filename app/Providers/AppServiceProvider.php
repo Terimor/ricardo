@@ -30,17 +30,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->bind(PayPalHttpClient::class, function () {
-            $credentials = Setting::whereIn(
-                'key',
-                [
+            $credentials = Setting::getValue([
                     'instant_payment_paypal_client_id',
                     'instant_payment_paypal_secret',
                     'instant_payment_paypal_mode',
-                ]
-            )->get();
-            $client_id = optional($credentials->where('key', 'instant_payment_paypal_client_id')->first())->value;
-            $secret = optional($credentials->where('key', 'instant_payment_paypal_secret')->first())->value;
-            $mode = optional($credentials->where('key', 'instant_payment_paypal_mode')->first())->value;
+                ]);
+            $client_id = !empty($credentials['instant_payment_paypal_client_id']) ? $credentials['instant_payment_paypal_client_id'] : '';
+            $secret = !empty($credentials['instant_payment_paypal_secret']) ? $credentials['instant_payment_paypal_secret'] : '';
+            $mode = !empty($credentials['instant_payment_paypal_mode']) ? $credentials['instant_payment_paypal_mode'] : '';
             if($mode === 'sandbox') {
                 $env = new SandboxEnvironment($client_id, $secret);
             } else {
