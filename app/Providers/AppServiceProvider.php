@@ -35,9 +35,9 @@ class AppServiceProvider extends ServiceProvider
                     'instant_payment_paypal_secret',
                     'instant_payment_paypal_mode',
                 ]);
-            $client_id = !empty($credentials['instant_payment_paypal_client_id']) ? $credentials['instant_payment_paypal_client_id'] : '';
-            $secret = !empty($credentials['instant_payment_paypal_secret']) ? $credentials['instant_payment_paypal_secret'] : '';
-            $mode = !empty($credentials['instant_payment_paypal_mode']) ? $credentials['instant_payment_paypal_mode'] : '';
+            $client_id = $credentials['instant_payment_paypal_client_id'];
+            $secret = $credentials['instant_payment_paypal_secret'];
+            $mode = $credentials['instant_payment_paypal_mode'];
             if($mode === 'sandbox') {
                 $env = new SandboxEnvironment($client_id, $secret);
             } else {

@@ -27,29 +27,22 @@ class Setting extends Model
 	*/
 	public static function getValue($key, $default = null)
     {
-        $model = null;
-        
         if (is_array($key)) {
-            $model = static::whereIn('key', $key)->pluck('value', 'key');           
-        } else {        
-            $model = static::where(['key' => $key])->first();
-        }
-		if ($model) {
-            if (is_array($key)) {
-                return $model;
-            } else {
-                return $model->value;
-            }
-		} else {
-            if (is_array($key)) {
-                $defaultValues = [];
-                foreach ($key as $k) {
-                    $defaultValues[$k] = $default;
+            $returnedValues = static::whereIn('key', $key)->pluck('value', 'key');
+            // check isset values
+            foreach ($key as $keyName) {
+                if (empty($returnedValues[$keyName])) {
+                    $returnedValues[$keyName] = $defult;
                 }
-                return $defaultValues;
+            }             
+        } else {        
+            $returnedValues = static::where(['key' => $key])->first();
+            if ($model) {
+                $returnedValues = $model->value;
             } else {
-                return $default;
+                $returnedValues = $default;
             }
-		}
+        }
+        return $returnedValues;
 	}
 }
