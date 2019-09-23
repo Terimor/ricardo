@@ -17,7 +17,7 @@ export default {
   ],
 
   data: () => ({
-    names: ['Oliver', 'asd', 'John'],
+    users: ['Oliver', 'asd', 'John'],
     cities: ['NY', 'LA', 'LONDON'],
     usersActive: getRandomInt(33, 44),
     bestsellerText: 'In high demand - This product is our bestseller right now...',
@@ -42,11 +42,12 @@ export default {
 
   methods: {
     showNotice () {
+      const { users, cities, usersActive, bestsellerText } = this;
       const notice = getNotice({
-        users: this.names,
-        cities: this.cities,
-        usersActive: this.usersActive,
-        bestsellerText: this.bestsellerText
+        users,
+        cities,
+        usersActive,
+        bestsellerText
       });
 
       const getNoticeHtml = () => notice.next().value
