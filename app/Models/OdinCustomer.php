@@ -180,7 +180,7 @@ class OdinCustomer extends Model
         return self::select('first_name', 'last_name', 'addresses.city')
             ->where('addresses.country', $country_code)
             ->orderBy('_id', 'desc')
-            ->limit(self::RECENTLY_BOUGHT_LIMIT)
+            ->limit($limit)
             ->get();
     }
 }
