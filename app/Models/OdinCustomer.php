@@ -128,9 +128,10 @@ class OdinCustomer extends Model
      * Returns customers notification data
      *
      * @param string|null $country_code
+     * @param int $limit
      * @return array
      */
-    public static function getRecentlyBoughtData(string $country_code = null): array
+    public static function getRecentlyBoughtData(string $country_code = null, int $limit = self::RECENTLY_BOUGHT_LIMIT): array
     {
         if (!$country_code) {
             $country_code = UtilsService::getLocationCountryCode();
@@ -138,7 +139,7 @@ class OdinCustomer extends Model
 
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
-        $customersCollection = self::getCustomersByCountryCode($country_code)
+        $customersCollection = self::getCustomersByCountryCode($country_code, $limit)
             ->each(function($item, $key) use (&$recentlyBoughtCities) {
                 if (!empty($item['addresses']['0']['city'])) {
                     $city = $item['addresses']['0']['city'];
@@ -149,7 +150,8 @@ class OdinCustomer extends Model
             });
 
         if (count($recentlyBoughtNames) < self::RECENTLY_BOUGHT_LIMIT && $country_code !== 'us') {
-            $customersCollection = $customersCollection->merge(self::getCustomersByCountryCode('us'));
+            $temp_limit = self::RECENTLY_BOUGHT_LIMIT - count($recentlyBoughtNames);
+            $customersCollection = $customersCollection->merge(self::getCustomersByCountryCode('us', $temp_limit));
         }
 
         $customersCollection->each(function($item, $key) use (&$recentlyBoughtNames) {
