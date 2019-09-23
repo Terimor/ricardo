@@ -1,4 +1,3 @@
-import { getRandomInt } from './common';
 import { getCountOfInstallments } from './installments';
 import { goTo } from './goTo';
 
@@ -15,18 +14,9 @@ export const getRadioHtml = ({ discountName, newPrice, text, price, discountText
   </p>
   <p class="label-container-radio__discount">${discountText}</p>`
 
-export function * getNotice (productName) {
+export function * getNotice ({ users, cities, usersActive, bestsellerText }) {
+  let index = 0
   const messageMap = {
-    recentlyBought: `
-      <div class="recently-notice">
-        <div class="recently-notice__left">
-          <img src="/images/headphones-white.png" alt="">
-        </div>
-        <div class="recently-notice__right">
-          <p>Olivier B . in Tallinn just bought<br>1x ${productName}</p>
-        </div>
-      </div>
-    `,
     paypal: `
       <div class="recently-notice">
         <div class="recently-notice__left">
@@ -43,7 +33,7 @@ export function * getNotice (productName) {
           <i class="fa fa-user"></i>
         </div>
         <div class="recently-notice__right">
-          <p>Currently <text class="red">${getRandomInt(33, 44)}</text> people are looking at this product</p>
+          <p>Currently <text class="red">${usersActive}</text> people are looking at this product</p>
         </div>
       </div>
     `,
@@ -53,7 +43,7 @@ export function * getNotice (productName) {
           <i class="fa fa-user"></i>
         </div>
         <div class="recently-notice__right">
-          <p>In high demand - This product is our bestseller right now...</p>
+          <p>${bestsellerText}</p>
         </div>
       </div>
     `,
@@ -63,7 +53,8 @@ export function * getNotice (productName) {
   const keyQueue = [
     'recentlyBought',
     'recentlyBought',
-    'usersActive', 'paypal',
+    'usersActive',
+    'paypal',
     'recentlyBought',
     'recentlyBought',
     'bestsellerText'
@@ -73,9 +64,28 @@ export function * getNotice (productName) {
 
   while (true) {
     if (lastIndex < keyQueue.length - 1) {
-      yield messageMap[keyQueue[lastIndex]]
+      if (keyQueue[lastIndex] === 'recentlyBought') {
+        if (users.length === index) {
+          index = 0;
+        }
+
+        yield `<div class="recently-notice">
+          <div class="recently-notice__left">
+            <img src="${checkoutData.productImage}" alt="">
+          </div>
+          <div class="recently-notice__right">
+            <p>${users[index]} . in ${cities[index]} just bought<br>1x ${checkoutData.product.product_name}</p>
+          </div>
+        </div>
+      `
+        index++;
+
+      } else {
+        yield messageMap[keyQueue[lastIndex]]
+      }
       lastIndex++
     } else {
+      index = 0
       yield messageMap[keyQueue[lastIndex]]
       lastIndex = 0
     }

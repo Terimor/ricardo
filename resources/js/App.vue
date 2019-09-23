@@ -1,5 +1,8 @@
 <template>
   <div>
+    <notice
+      :showPreloader="showPreloader"
+    ></notice>
     <smc7-component
       :showPreloader="showPreloader"
       v-if="queryParams.tpl === 'smc7'" />
