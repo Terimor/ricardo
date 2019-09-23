@@ -154,6 +154,8 @@ class ProductService
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
+        $lp->home_description = $product->home_description;
+        $lp->home_name = $product->home_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
