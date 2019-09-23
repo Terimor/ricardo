@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OdinCustomer;
 use Illuminate\Http\Request;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
@@ -93,7 +94,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         return view('terms', compact('loadedPhrases', 'product'));
     }
-    
+
      /**
       * About page
       * @param Request $request
@@ -144,7 +145,11 @@ class SiteController extends Controller
 
         $countryCode = \Utils::getLocationCountryCode();
 
-        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases'));
+        $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
+        $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
+        $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
+
+        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'recentlyBoughtNames', 'recentlyBoughtCities'));
     }
 
     /**
@@ -172,7 +177,7 @@ class SiteController extends Controller
 		}
 
         $countryCode = \Utils::getLocationCountryCode();
-        
+
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
 
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases'));
@@ -202,9 +207,9 @@ class SiteController extends Controller
             }
 		}
         $countryCode = \Utils::getLocationCountryCode();
-        
+
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
-        
+
         return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases'));
     }
 
@@ -214,7 +219,7 @@ class SiteController extends Controller
      */
     public function test(Request $request, ProductService $productService)
     {
-
+        
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';

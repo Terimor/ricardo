@@ -6,6 +6,9 @@
       'Authorization': 'Basic {{base64_encode(env('BLUESNAP_API_KEY').':'.env('BLUESNAP_API_PASS'))}}',
     }
 
+    const recentlyBoughtNames = @json($recentlyBoughtNames);
+    const recentlyBoughtCities = @json($recentlyBoughtCities);
+
     const checkoutData = {
       countryCode: '{{ $countryCode }}',
       countries: @json($countries),

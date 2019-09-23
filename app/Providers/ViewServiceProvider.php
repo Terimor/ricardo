@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Services\PayPalService;
 use App\Services\UtilsService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
