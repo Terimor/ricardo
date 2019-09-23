@@ -55,7 +55,7 @@ class I18nService
             if (!$issetCategory) {
                 logger()->error('0 phrases for category '.$category);
             }
-echo '<pre>'; var_dump($issetCategory); echo '</pre>'; exit;
+
             I18n::$loadedPhrases = $loadedPhrases;
         }
 
