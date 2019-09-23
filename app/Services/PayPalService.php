@@ -14,6 +14,8 @@ use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
+use App\Services\CustomerService;
+use App\Services\OrderService;
 use App\Services\PaymentService;
 use App\Services\EmailService;
 
@@ -33,6 +35,11 @@ class PayPalService
     protected $payPalHttpClient;
 
     /**
+     * @var CustomerService
+     */
+    protected $customerService;
+
+    /**
      * @var OrderService
      */
     protected $orderService;
@@ -45,11 +52,13 @@ class PayPalService
     /**
      * PayPalService constructor.
      * @param PayPalHttpClient $payPalHttpClient
+     * @param CustomerService $customerService
      * @param OrderService $orderService
      */
-    public function __construct(PayPalHttpClient $payPalHttpClient, OrderService $orderService)
+    public function __construct(PayPalHttpClient $payPalHttpClient, CustomerService $customerService, OrderService $orderService)
     {
         $this->payPalHttpClient = $payPalHttpClient;
+        $this->customerService = $customerService;
         $this->orderService = $orderService;
     }
 
@@ -644,7 +653,7 @@ class PayPalService
      */
     private function saveCustomer($order, $paypal_order)
     {
-        $this->orderService->addCustomer([
+        $this->customerService->addOrUpdate([
             'email' => $order->customer_email,
             'first_name' => $order->customer_first_name,
             'last_name' => $order->customer_last_name,
