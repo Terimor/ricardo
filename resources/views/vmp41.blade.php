@@ -14,6 +14,7 @@
             countryCode: '{{ $countryCode }}',
             product: @json($product),
             countries: @json($countries),
+            productImage: '{{$product->logo_image}}',
         };
 
         window.loadedPhrases = @json($loadedPhrases);
