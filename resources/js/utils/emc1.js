@@ -76,10 +76,10 @@ export function * getNotice ({
 
         yield `<div class="recently-notice">
           <div class="recently-notice__left">
-            <img src="${checkoutData.productImage}" alt="">
+            <img src="${checkoutData.image[0]}" alt="">
           </div>
           <div class="recently-notice__right">
-            <p>${users[index]} ${cities[index] || cities[0]} just bought<br>1x ${checkoutData.product.product_name}</p>
+            <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>1x ${checkoutData.product.product_name}</p>
           </div>
         </div>
       `
