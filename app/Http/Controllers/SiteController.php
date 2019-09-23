@@ -36,9 +36,7 @@ class SiteController extends Controller
 
         $product = $productService->resolveProduct($request, true);
 
-        $setting = Setting::getValue(['instant_payment_paypal_client_id']);
-
-        return view('index', compact('product', 'setting', 'loadedPhrases'));
+        return view('index', compact('product', 'loadedPhrases'));
     }
 
     /**
@@ -134,7 +132,7 @@ class SiteController extends Controller
 
         $product = $productService->resolveProduct($request, true);
         
-        $setting = Setting::getValue(['instant_payment_paypal_client_id']);
+        $setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
 
         $countries =  \Utils::getCountries();
 
@@ -159,7 +157,7 @@ class SiteController extends Controller
     {
 		$product = $productService->resolveProduct($request, true);
 
-		$setting = Setting::getValue(['instant_payment_paypal_client_id']);
+		$setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
 
 		$orderCustomer = null;
 		if (request()->get('order')) {
@@ -188,7 +186,7 @@ class SiteController extends Controller
     {
 		$product = $productService->resolveProduct($request, true);
 
-		$setting = Setting::getValue(['instant_payment_paypal_client_id']);
+		$setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
 
 		$orderCustomer = null;
 		if (request()->get('order')) {

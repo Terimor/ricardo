@@ -29,7 +29,7 @@ class Setting extends Model
     {
         $model = null;
         
-        if (is_array($key)) {            
+        if (is_array($key)) {
             $model = static::whereIn('key', $key)->pluck('value', 'key');           
         } else {        
             $model = static::where(['key' => $key])->first();
@@ -41,7 +41,15 @@ class Setting extends Model
                 return $model->value;
             }
 		} else {
-			return $default;
+            if (is_array($key)) {
+                $defaultValues = [];
+                foreach ($key as $k) {
+                    $defaultValues[$k] = $default;
+                }
+                return $defaultValues;
+            } else {
+                return $default;
+            }
 		}
 	}
 }
