@@ -79,7 +79,7 @@ export function * getNotice ({
             <img src="${checkoutData.productImage}" alt="">
           </div>
           <div class="recently-notice__right">
-            <p>${users[index]} ${cities[index] ? 'in ' + cities[index] : ''} just bought<br>1x ${checkoutData.product.product_name}</p>
+            <p>${users[index]} ${cities[index] || cities[0]} just bought<br>1x ${checkoutData.product.product_name}</p>
           </div>
         </div>
       `
