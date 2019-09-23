@@ -31,6 +31,7 @@
         :show-preloader.sync="showPreloader">
     </preloader-3>
     <template v-if="+queryParams.preload !== 3 || !showPreloader">
+        <notice></notice>
         <div class="container">
             <div
                 class="promo__jumbotron"

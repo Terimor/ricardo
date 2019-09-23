@@ -17,12 +17,10 @@ export default {
   ],
 
   data: () => ({
-    data: {
-      names: ['Oliver', 'asd', 'John'],
-      cities: ['NY', 'LA', 'LONDON'],
-      usersActive: getRandomInt(33, 44),
-      bestsellerText: 'In high demand - This product is our bestseller right now...'
-    }
+    names: ['Oliver', 'asd', 'John'],
+    cities: ['NY', 'LA', 'LONDON'],
+    usersActive: getRandomInt(33, 44),
+    bestsellerText: 'In high demand - This product is our bestseller right now...',
   }),
 
   props: [
@@ -45,10 +43,10 @@ export default {
   methods: {
     showNotice () {
       const notice = getNotice({
-        users: this.data.names,
-        cities: this.data.cities,
-        usersActive: this.data.usersActive,
-        bestsellerText: this.data.bestsellerText
+        users: this.names,
+        cities: this.cities,
+        usersActive: this.usersActive,
+        bestsellerText: this.bestsellerText
       });
 
       const getNoticeHtml = () => notice.next().value
@@ -59,8 +57,8 @@ export default {
             content: getNoticeHtml(),
             position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
           })
-        }, 1000)
-      }, 1000)
+        }, 6000)
+      }, 9000)
     }
   },
 }
