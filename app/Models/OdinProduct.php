@@ -372,4 +372,14 @@ class OdinProduct extends Model
     {
         return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
+
+    /**
+     * Get virtual page_title attribute
+     *
+     * @return mixed
+     */
+    public function getPageTitleAttribute()
+    {
+        return $this->skus[0]['name'];
+    }
 }
