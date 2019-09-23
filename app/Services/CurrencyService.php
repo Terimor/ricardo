@@ -319,15 +319,33 @@ class CurrencyService
     public static function getCultureCodeByCurrency($currencyCode)
     {
         // cache culture code
-        $localeString = Cache::get('culture_code_'.$currencyCode);
-        
-        if (!$localeString) {
-            $currency = self::getCurrency($currencyCode);
-            $localeString = \Utils::getCultureCode(null, $currency->countryCode);
-            Cache::put('culture_code_'.$currencyCode, $localeString, 3600);
+        $currencyCultureCodes = Cache::get('currency_culture_code');
+        if (empty($currencyCultureCodes[$currencyCode])) {
+            $currencyCultureCodes = self::cacheCurrencyCultureCode();            
+        }
+        return $currencyCultureCodes[$currencyCode];
+    }
+    
+    /**
+     * Cache and return currency culture code array, for example US => en-US
+     * @return string
+     */
+    public static function cacheCurrencyCultureCode()
+    {
+        $currencies = Currency::all();
+        $currencyCultureCodes = [];
+        // check countries
+        foreach ($currencies as $currency) {
+            if (!empty($currency->countries[0])) {
+                $currencyCultureCodes[$currency->code] = \Utils::getCultureCode(null, $currency->countries[0]);                
+            } else {
+                $currencyCultureCodes[$currency->code] = 'en-US';        
+            }
         }
         
-        return $localeString;
+        Cache::put('currency_culture_code', $currencyCultureCodes, 3600);
+        
+        return $currencyCultureCodes;
     }
 
 }
