@@ -131,7 +131,7 @@ class SiteController extends Controller
 
         $countryCode = \Utils::getLocationCountryCode();
 
-        $notificationData = OdinCustomer::getNotificationData();
+        $notificationData = OdinCustomer::getRecentlyBoughtData();
 
         return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'notificationData'));
     }

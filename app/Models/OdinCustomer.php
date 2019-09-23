@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\UtilsService;
+use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
@@ -129,48 +130,55 @@ class OdinCustomer extends Model
      * @param string|null $country_code
      * @return array
      */
-    public static function getNotificationData(string $country_code = null): array
+    public static function getRecentlyBoughtData(string $country_code = null): array
     {
         if (!$country_code) {
             $country_code = UtilsService::getLocationCountryCode();
         }
 
         $recentlyBoughtNames = $recentlyBoughtCities = [];
-        OdinCustomer::select('first_name', 'last_name', 'addresses.city')
-            ->where('addresses.country', $country_code)
-            ->orderBy('_id', 'desc')
-            ->limit(self::RECENTLY_BOUGHT_LIMIT)
-            ->get()
-            ->each(function($item, $key) use (&$recentlyBoughtNames, &$recentlyBoughtCities) {
-                $recentlyBoughtNames[] = $item['first_name'] . ' ' . $item['last_name'];
-                if (!empty($item['addresses'])) {
-                    $city = collect($item['addresses'])->first();
-                    if (!in_array($city['city'], $recentlyBoughtCities)) {
-                        $recentlyBoughtCities[] = $city['city'];
+
+        $customersCollection = self::getCustomersByCountryCode($country_code)
+            ->each(function($item, $key) use (&$recentlyBoughtCities) {
+                if (!empty($item['addresses']['0']['city'])) {
+                    $city = $item['addresses']['0']['city'];
+                    if (!in_array($city, $recentlyBoughtCities)) {
+                        $recentlyBoughtCities[] = $city;
                     }
                 }
             });
 
         if (count($recentlyBoughtNames) < self::RECENTLY_BOUGHT_LIMIT && $country_code !== 'us') {
-            $recentlyBoughLeft = self::RECENTLY_BOUGHT_LIMIT - count($recentlyBoughtNames);
-            OdinCustomer::select('first_name', 'last_name', 'addresses.city')
-                ->where('addresses.country', 'us')
-                ->orderBy('_id', 'desc')
-                ->limit($recentlyBoughLeft)
-                ->get()
-                ->each(function($item, $key) use (&$recentlyBoughtNames) {
-                    $temp_full_name = $item['first_name'] . ' ' . $item['last_name'];
-                    if (!in_array($temp_full_name, $recentlyBoughtNames)) {
-                        $recentlyBoughtNames[] = $temp_full_name;
-                    }
-                });
+            $customersCollection = $customersCollection->merge(self::getCustomersByCountryCode('us'));
         }
 
-        $notification_data = [
+        $customersCollection->each(function($item, $key) use (&$recentlyBoughtNames) {
+            $temp_full_name = $item['first_name'] . ' ' . $item['last_name'];
+            if (!in_array($temp_full_name, $recentlyBoughtNames)) {
+                $recentlyBoughtNames[] = $temp_full_name;
+            }
+        });
+
+        $recently_bought_data = [
             'recentlyBoughtNames' => $recentlyBoughtNames,
             'recentlyBoughtCities' => $recentlyBoughtCities
         ];
 
-        return $notification_data;
+        return $recently_bought_data;
+    }
+
+    /**
+     *
+     * @param string|null $country_code
+     * @param int $limit
+     * @return Collection
+     */
+    private static function getCustomersByCountryCode(string $country_code = null, int $limit = self::RECENTLY_BOUGHT_LIMIT)
+    {
+        return self::select('first_name', 'last_name', 'addresses.city')
+            ->where('addresses.country', $country_code)
+            ->orderBy('_id', 'desc')
+            ->limit(self::RECENTLY_BOUGHT_LIMIT)
+            ->get();
     }
 }
