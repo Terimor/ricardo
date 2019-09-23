@@ -21,6 +21,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/returns', 'SiteController@returns')->name('returns');
     $router->get('/privacy', 'SiteController@privacy')->name('privacy');
     $router->get('/terms', 'SiteController@terms')->name('terms');
+    $router->get('/about', 'SiteController@about')->name('about');
 
     $router->get('/checkout', 'SiteController@checkout')->name('checkout');
     $router->get('/thankyou-promos', 'SiteController@upsells')->name('upsells');

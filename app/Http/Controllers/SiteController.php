@@ -31,7 +31,7 @@ class SiteController extends Controller
      */
     public function index(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('product_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 
         $product = $productService->resolveProduct($request, true);
 
@@ -39,7 +39,7 @@ class SiteController extends Controller
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
 
-        return view('index', compact('product', 'setting'));
+        return view('index', compact('loadedPhrases', 'product', 'setting'));
     }
 
     /**
@@ -92,6 +92,19 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
         $product = $productService->resolveProduct($request, true);
         return view('terms', compact('loadedPhrases', 'product'));
+    }
+
+    /**
+     * About page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
+     */
+    public function about(Request $request, ProductService $productService)
+    {
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $product = $productService->resolveProduct($request, true);
+        return view('about', compact('loadedPhrases', 'product'));
     }
 
     /**
@@ -216,7 +229,7 @@ class SiteController extends Controller
      */
     public function test(Request $request, ProductService $productService)
     {
-        
+
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';

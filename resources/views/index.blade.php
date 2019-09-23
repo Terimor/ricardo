@@ -6,10 +6,9 @@
         <div class="col-md-8">
             <div class="card">
                 <a href="/contact-us">Contact us</a>
+                <a href="/about">Who we are</a>
                 <a href="/order-tracking">Order tracking</a>
-                <a href="/product">Product</a>
                 <a href="/checkout">Checkout</a>
-
                 <div class="card-body">
 
                 </div>
