@@ -139,6 +139,7 @@ class OdinCustomer extends Model
 
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
+        // Get customers from a current users country and get their cities
         $customersCollection = self::getCustomersByCountryCode($country_code, $limit)
             ->each(function($item, $key) use (&$recentlyBoughtCities) {
                 if (!empty($item['addresses']['0']['city'])) {
@@ -149,11 +150,14 @@ class OdinCustomer extends Model
                 }
             });
 
+        // If there are not enough customers from a current users country - add customers акщь USA
         if (count($recentlyBoughtNames) < self::RECENTLY_BOUGHT_LIMIT && $country_code !== 'us') {
             $temp_limit = self::RECENTLY_BOUGHT_LIMIT - count($recentlyBoughtNames);
+            // Merge Customers from a current users country with a customers from a 'us' (USA)
             $customersCollection = $customersCollection->merge(self::getCustomersByCountryCode('us', $temp_limit));
         }
 
+        // Iterate over all customers and get their full names
         $customersCollection->each(function($item, $key) use (&$recentlyBoughtNames) {
             $temp_full_name = $item['first_name'] . ' ' . $item['last_name'];
             if (!in_array($temp_full_name, $recentlyBoughtNames)) {
