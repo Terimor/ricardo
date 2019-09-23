@@ -131,9 +131,11 @@ class SiteController extends Controller
 
         $countryCode = \Utils::getLocationCountryCode();
 
-        $notificationData = OdinCustomer::getRecentlyBoughtData();
+        $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
+        $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
+        $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
 
-        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'notificationData'));
+        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'recentlyBoughtNames', 'recentlyBoughtCities'));
     }
 
     /**
