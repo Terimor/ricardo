@@ -38,7 +38,7 @@ class Setting extends Model
         } else {        
             $returnedValues = static::where(['key' => $key])->first();
             if ($model) {
-                $returnedValues = $model->value;
+                $returnedValues = $returnedValues->value;
             } else {
                 $returnedValues = $default;
             }
