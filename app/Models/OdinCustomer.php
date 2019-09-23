@@ -17,7 +17,7 @@ class OdinCustomer extends Model
 
     protected $guarded = ['addresses', 'ip', 'phones'];
 
-    const NOTIFICATIONS_CUSTOMERS_LIMIT = 25;
+    const RECENTLY_BOUGHT_LIMIT = 25;
 
     /**
      *
@@ -139,7 +139,7 @@ class OdinCustomer extends Model
         OdinCustomer::select('first_name', 'last_name', 'addresses.city')
             ->where('addresses.country', $country_code)
             ->orderBy('_id', 'desc')
-            ->limit(SELF::NOTIFICATIONS_CUSTOMERS_LIMIT)
+            ->limit(self::RECENTLY_BOUGHT_LIMIT)
             ->get()
             ->each(function($item, $key) use (&$recentlyBoughtNames, &$recentlyBoughtCities) {
                 $recentlyBoughtNames[] = $item['first_name'] . ' ' . $item['last_name'];
@@ -151,8 +151,8 @@ class OdinCustomer extends Model
                 }
             });
 
-        if (count($recentlyBoughtNames) < self::NOTIFICATIONS_CUSTOMERS_LIMIT && $country_code !== 'us') {
-            $recentlyBoughLeft = self::NOTIFICATIONS_CUSTOMERS_LIMIT - count($recentlyBoughtNames);
+        if (count($recentlyBoughtNames) < self::RECENTLY_BOUGHT_LIMIT && $country_code !== 'us') {
+            $recentlyBoughLeft = self::RECENTLY_BOUGHT_LIMIT - count($recentlyBoughtNames);
             OdinCustomer::select('first_name', 'last_name', 'addresses.city')
                 ->where('addresses.country', 'us')
                 ->orderBy('_id', 'desc')
