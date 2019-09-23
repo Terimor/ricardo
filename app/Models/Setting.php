@@ -32,7 +32,7 @@ class Setting extends Model
             // check isset values
             foreach ($key as $keyName) {
                 if (empty($returnedValues[$keyName])) {
-                    $returnedValues[$keyName] = $defult;
+                    $returnedValues[$keyName] = $default;
                 }
             }             
         } else {        
