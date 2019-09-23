@@ -93,6 +93,19 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         return view('terms', compact('loadedPhrases', 'product'));
     }
+    
+     /**
+      * About page
+      * @param Request $request
+      * @param ProductService $productService
+      * @return type
+      */
+     public function about(Request $request, ProductService $productService)
+     {
+         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+         $product = $productService->resolveProduct($request, true);
+         return view('about', compact('loadedPhrases', 'product'));
+     }    
 
     /**
      * Order tracking page
