@@ -31,7 +31,7 @@ class SiteController extends Controller
      */
     public function index(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('product_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('index_page');
 
         $product = $productService->resolveProduct($request, true);
 
@@ -50,7 +50,7 @@ class SiteController extends Controller
      */
     public function contactUs(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('contacts_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('contact_page');
         $product = $productService->resolveProduct($request, true);
         return view('contact_us', compact('loadedPhrases', 'product'));
     }

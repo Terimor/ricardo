@@ -24,13 +24,15 @@ class I18nService
                 $categories[] = 'global_page';
             }
             if ($language == 'en') {
-                $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en'])->get();
+                $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories'])->get();
             } else {
-                $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', $language])->get();
+                $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories', $language])->get();
             }
+            
+            $issetCategory = false;
             $loadedPhrases = [];
-            // generate array of en and lang values
-            foreach ($phrases as $phrase) {
+            // generate array of en and lang values            
+            foreach ($phrases as $phrase) {                
                 if (!$phrase->en) {
                     logger()->error("Empty EN phrase", ['phrase' => $phrase->phrase]);
                 }
@@ -38,13 +40,22 @@ class I18nService
                 if ($language != 'en') {
                     $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
                 }
+                
+                // check if one phrase isset for this category
+                if (in_array($category, $phrase->categories) && !$issetCategory) {
+                    $issetCategory = true;
+                }
             }
             
             if (empty($loadedPhrases[$language])) {
                 logger()->error('Loaded phrases is empty', ['language' => $language, 'category' => $category]);
                 $loadedPhrases[$language] = [];
             }
-
+            
+            if (!$issetCategory) {
+                logger()->error('0 phrases for category '.$category);
+            }
+echo '<pre>'; var_dump($issetCategory); echo '</pre>'; exit;
             I18n::$loadedPhrases = $loadedPhrases;
         }
 

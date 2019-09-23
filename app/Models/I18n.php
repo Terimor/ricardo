@@ -15,8 +15,6 @@ class I18n extends Model
     public static $loadedPhrases = [];        
     
     protected static $languages = [
-        '_id'    => 'ID',
-        'phrase' => 'Phrase code',
         'en'     => 'English',
         'fi'     => 'Finnish',
         'pl'     => 'Polish',
@@ -113,11 +111,6 @@ class I18n extends Model
   public static function getTranslationLanguages($codes_only = false)
   {
     $langs = static::$languages;
-    foreach ($langs as $lang => $name) {
-      if (strlen($lang) != 2) {
-        unset($langs[$lang]);
-      }
-    }
     if ($codes_only) {
       $langs = array_keys($langs);
     }
