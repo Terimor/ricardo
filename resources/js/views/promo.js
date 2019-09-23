@@ -130,6 +130,10 @@ const promo = new Vue({
     }
   ],
 
+  beforeCreate() {
+    document.body.classList.add('tpl-vmp41');
+  },
+
   mounted() {
     this.installments =
       this.checkoutData.countryCode === 'BR' ? 3 :

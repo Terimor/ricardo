@@ -117,4 +117,29 @@
       }
     }
   }
+
+  .tpl-emc1 {
+    @media screen and (min-width: 768px) and (max-width: 991px) {
+      .paypal-shim {
+        flex-direction: column;
+
+        .image {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .tpl-vmc4 {
+    @media screen and (min-width: 576px) and (max-width: 800px), (max-width: 460px) {
+      .paypal-shim {
+        flex-direction: column;
+
+        .image {
+          margin: 0;
+        }
+      }
+    }
+  }
+
 </style>
