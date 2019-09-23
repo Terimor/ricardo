@@ -73,13 +73,8 @@ class PayPalService
         $this->checkIforderAllowedForAddingProducts($upsell_order);
 
         $product = $this->findProductBySku($request->get('sku_code'));
-        $upsells_array = $request->get('upsells');
-        if (empty($upsells_array)) {
-            abort(404);
-        }
 
-        $priceData = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true);
-        $priceData['price'] = $priceData['value'];
+        $priceData = $this->getPrice($request, $product, $upsell_order);
         $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
         $upsells_total_local_currency = $priceData['code'];
         $upsells_total_price = $priceData['price'];
@@ -678,20 +673,18 @@ class PayPalService
      */
     private function getPrice(Request $request, $product, OdinOrder $order = null)
     {
-        if ($request->input('order', null)) {
+        // If it's an upsell - calculate total upsell price.
+        if ($request->input('order', null) && $request->get('upsells')) {
             abort_if(!$order, 404);
-            $main_order_product = collect($order->products)->where('is_main', true)->first();
-            $main_order_product = $this->findProductBySku($main_order_product['sku_code']);
-            $upsell = collect($main_order_product->upsells)->where('product_id', $product->_id)->first();
+            $upsells_array = $request->get('upsells');
 
-            if ($upsell) {
-                if ($upsell['fixed_price']) {
-                    return CurrencyService::getLocalPriceFromUsd($upsell['fixed_price']);
-                } elseif ($upsell['discount_percent']) {
-                    $price = ((100 - $upsell['discount_percent']) / 100) * $product->prices[$request->sku_quantity]['value'];
-                    return CurrencyService::getLocalPriceFromUsd($price);
-                }
-            }
+            $upsells_price_data = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true);
+
+            return [
+                'price' => $upsells_price_data['value'],
+                'code' => $upsells_price_data['code'],
+                'exchange_rate' => $upsells_price_data['exchange_rate'],
+            ];
         } else {
             return [
                 'price' => $product->prices[$request->sku_quantity]['value'],
