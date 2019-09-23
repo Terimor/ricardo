@@ -25,12 +25,24 @@ class Setting extends Model
 	* @param object $default
 	* @return object
 	*/
-	public static function getValue($key, $default = null) {
-		$model = static::where(['key' => $key])->first();
-		if ($model) {
-			return $model->value;
-		} else {
-			return $default;
-		}
+	public static function getValue($key, $default = null)
+    {
+        if (is_array($key)) {
+            $returnedValues = static::whereIn('key', $key)->pluck('value', 'key');
+            // check isset values
+            foreach ($key as $keyName) {
+                if (empty($returnedValues[$keyName])) {
+                    $returnedValues[$keyName] = $default;
+                }
+            }             
+        } else {        
+            $returnedValues = static::where(['key' => $key])->first();
+            if ($returnedValues) {
+                $returnedValues = $returnedValues->value;
+            } else {
+                $returnedValues = $default;
+            }
+        }
+        return $returnedValues;
 	}
 }
