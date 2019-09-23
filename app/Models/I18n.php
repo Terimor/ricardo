@@ -12,45 +12,9 @@ class I18n extends Model
     
     public $timestamps = true;
 
-    public static $loadedPhrases = [];
+    public static $loadedPhrases = [];        
     
-    public $attributes = [
-        '_id',
-        'phrase',
-        'fi',
-        'pl',
-        'my',
-        'hu',
-        'tr',
-        'id',
-        'ar',
-        'ko',
-        'ja',
-        'no',
-        'sv',
-        'es',
-        'fr',
-        'it',
-        'nl',
-        'de',
-        'ru',
-        'en',
-        'pt',
-        'da',
-        'cs',
-        'he',
-        'el',
-        'br',
-        'th',
-        'af',
-        'hi', 'bg', 'hr', 'ro', 'zh', 'ee', 'lv', 'lt', 'sk', 'mt', 'sl', 'ur', 'jv', 'bn', 'vi',
-        'created_at',
-        'updated_at',
-    ];
-    
-    protected static $labels = [
-        '_id'    => 'ID',
-        'phrase' => 'Phrase code',
+    protected static $languages = [
         'en'     => 'English',
         'fi'     => 'Finnish',
         'pl'     => 'Polish',
@@ -146,12 +110,7 @@ class I18n extends Model
    */
   public static function getTranslationLanguages($codes_only = false)
   {
-    $langs = static::$labels;
-    foreach ($langs as $lang => $name) {
-      if (strlen($lang) != 2) {
-        unset($langs[$lang]);
-      }
-    }
+    $langs = static::$languages;
     if ($codes_only) {
       $langs = array_keys($langs);
     }

@@ -79,10 +79,16 @@
                 theme="variant-1 number"
                 :label="textStreetNumber"
                 v-model="paymentForm.number"/>
+            <el-alert
+              style="order: 1;"
+              v-if="maxStreetAndNumberLength"
+              title="Please use the field below for additional address instructions"
+              type="error">
+            </el-alert>
             <text-field
                 v-if="isBrazil"
                 theme="variant-1"
-                label="textComplemento"
+                :label="textComplemento"
                 v-model="paymentForm.complemento"/>
             <text-field
                 :validation="$v.form.city"
@@ -309,6 +315,13 @@
     },
 
     computed: {
+      maxStreetAndNumberLength() {
+        const numberLength = this.paymentForm.number && this.paymentForm.number.length
+        const streetLength = this.paymentForm.street && this.paymentForm.street.length
+
+        return numberLength + streetLength >= 35;
+      },
+
       exp () {
         const { month, year } = this.paymentForm
 

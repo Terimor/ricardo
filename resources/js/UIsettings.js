@@ -21,6 +21,7 @@ Vue.component('payment-form-smc7', require('./components/common/PaymentFormSMC7.
 Vue.component('payment-form-vmc4', require('./components/common/PaymentFormVMC4.vue').default)
 Vue.component('paypal-button', require('./components/common/PaypalButton.vue').default)
 Vue.component('pay-method-item', require('./components/common/PayMethodItem.vue').default)
+Vue.component('notice', require('./components/common/Notice.vue').default)
 // preloaders
 Vue.component('preloader-3', require('./components/common/preloaders/Preloader3').default)
 

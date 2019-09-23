@@ -4,7 +4,6 @@ namespace App\Services;
 use App\Models\Setting;
 use App\Models\Txn;
 use App\Models\OdinOrder;
-use App\Models\OdinCustomer;
 use App\Services\EmailService;
 use App\Models\OdinProduct;
 use Illuminate\Support\Arr;
@@ -69,66 +68,6 @@ class OrderService
         }
     }
 
-    /**
-     * Add customer
-     * @param array $data
-     * @return array
-     */
-    public function addCustomer(array $data, bool $returnModel = false): array
-    {
-        $model = OdinCustomer::firstOrNew(['email' => $data['email']]);
-        $model->fill($data);
-
-        // add ip if not in array
-        $ip = !empty($data['ip']) ? $data['ip'] : request()->ip();
-        if (!in_array($ip, $model->ip)) {
-            $model->ip = array_merge($model->ip, [$ip]);
-        }
-
-        // add phone if not in array
-        if (!empty($data['phone']) && !in_array($data['phone'], $model->phones)) {
-            $model->phones = array_merge($model->phones, [$data['phone']]);
-        }
-
-		// doc_ids
-		if (!empty($data['doc_id']) && !in_array($data['doc_id'], $model->doc_ids)) {
-            $model->doc_ids = array_merge($model->doc_ids, [$data['doc_id']]);
-        }
-
-        // addresses
-        $address = [
-            'country' => !empty($data['country']) ? trim($data['country']) : '',
-            'zip' => !empty($data['zip']) ? trim($data['zip']) : '',
-            'state' => !empty($data['state']) ? trim($data['state']) : '',
-            'city' => !empty($data['city']) ? trim($data['city']) : '',
-            'street' => !empty($data['street']) ? trim($data['street']) : '',
-            'street2' => !empty($data['street2']) ? trim($data['street2']) : '',
-        ];
-
-        $addressJson = json_encode($address);
-        $modelAddressesJson = json_encode($model->addresses);
-
-        // add address if not in array
-        if (!strstr(' '.$modelAddressesJson, $addressJson)) {
-            $model->addresses = array_merge($model->addresses, [$address]);
-        }
-
-        $validator = $model->validate();
-
-        if ($validator->fails()) {
-            logger()->error("Add odin customer fails", ['errors' => $validator->errors()->messages()]);
-            return [
-                'errors' => $validator->errors()->messages(),
-                'success' => false
-             ];
-        } else {
-            return [
-                'success' => $model->save(),
-                'customer' => $returnModel ? $model : $model->attributesToArray()
-             ];
-        }
-    }
-
 	/**
 	 * Get customer data by order ID
 	 * @param string $orderId
@@ -152,24 +91,24 @@ class OrderService
             'number',
             'currency'
 		]);
-        
+
         // select products array
-        if ($calculateProducts) {            
+        if ($calculateProducts) {
             $order->addSelect('products', 'currency');
         }
-        
+
         $order = $order->first();
-        
+
         // calculate text for products
         if ($calculateProducts) {
             $data = self::getOrderProductsText($order);
             $order->productsText = $data['products'];
             $order->totalText = $data['total_text'];
         }
-        
+
 		return $order;
 	}
-    
+
     /**
      * Calculate order total
      * @param type $orderId
@@ -181,32 +120,32 @@ class OrderService
 
         return $this->getOrderProductsText($order);
     }
-    
+
     /**
      * Prepate order products text
      * @param type $order
      * @return type
      */
     private static function getOrderProductsText($order)
-    {        
+    {
         // get order currency
         $currency = CurrencyService::getCurrency($order->currency);
-        
+
         $total = 0;
         // calculate total
         $productsTexts = []; $skuCodes = [];
         foreach ($order->products as $key => $product)
-        {       
+        {
             $productsTexts[$key]['sku_code'] = $product['sku_code'];
             $skuCodes[$product['sku_code']] = $product['sku_code'];
-            
+
             $total += $product['price'];
             $productsTexts[$key]['price_text'] = CurrencyService::getLocalTextValue($product['price'], $currency);
             // if main add flag and check warranty
             if (isset($product['is_main']) && $product['is_main'])
             {
                 $productsTexts[$key]['is_main'] = true;
-                
+
                 // check warranty price
                 if (isset($product['warranty_price']) && $product['warranty_price'] > 0 ) {
                     $total += $product['warranty_price'];
@@ -222,15 +161,15 @@ class OrderService
 
         // collect _id to array
         foreach ($order->products as $key => $product) {
-            foreach ($productsData as $id => $data) {                
+            foreach ($productsData as $id => $data) {
                 $dataJson = json_encode($data);
                 if (strpos($dataJson, $product['sku_code'])) {
-                    $productsTexts[$key]['_id'] = $id; 
+                    $productsTexts[$key]['_id'] = $id;
                     break;
                 }
             }
         }
-        
+
         return [
             'products' => $productsTexts,
             'total_text' => CurrencyService::getLocalTextValue($total, $currency)

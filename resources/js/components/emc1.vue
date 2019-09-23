@@ -580,21 +580,6 @@ export default {
         installments,
       })
     },
-    showNotice () {
-      const notice = getNotice('EchoBeat7')
-      const getNoticeHtml = () => notice.next().value
-
-      setTimeout(() => {
-        setInterval(() => {
-          if (!this.isOpenSpecialOfferModal) {
-            this.showNotification({
-              content: getNoticeHtml(),
-              position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
-            })
-          }
-        }, 6000)
-      }, 9000)
-    }
   },
   mounted () {
     window.setTestData = () => {
@@ -642,17 +627,6 @@ export default {
         this.checkoutData.countryCode === 'BR' ? 3 :
         this.checkoutData.countryCode === 'MX' ? 1 :
         1
-    }
-
-    if (+this.queryParams.preload === 3) {
-      const interval = setInterval(() => {
-        if (!this.showPreloader) {
-          this.showNotice()
-          clearInterval(interval)
-        }
-      }, 44)
-    } else {
-      this.showNotice()
     }
 
     const qty = +this.queryParams.qty;

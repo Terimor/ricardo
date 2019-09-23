@@ -5,6 +5,7 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Services\CurrencyService;
 use NumberFormatter;
+use App\Models\Setting;
 
 /**
  * Class OdinProduct
@@ -19,7 +20,7 @@ class OdinProduct extends Model
     protected $currency;
 
     protected $fillable = [
-        'product_name', 'description', 'long_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
+        'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
     'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
     'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label',
     'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency', 'image_ids'
@@ -276,7 +277,7 @@ class OdinProduct extends Model
      */
     public function getBillingDescriptorAttribute($value)
     {
-        $billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
+        $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
         return "*{$billingDescriptorPrefix}*{$value}";
     }
 
@@ -370,5 +371,37 @@ class OdinProduct extends Model
     public function getFieldLocalText($value)
     {
         return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+    }
+
+    /**
+     * Get virtual page_title attribute
+     *
+     * @return mixed
+     */
+    public function getPageTitleAttribute()
+    {
+        return $this->skus[0]['name'];
+    }
+
+    /**
+     * Returns translated home_description attribute
+     *
+     * @param $value
+     * @return string
+     */
+    public function getHomeDescriptionAttribute($value): string
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Returns translated home_name attribute
+     *
+     * @param $value
+     * @return string
+     */
+    public function getHomeNameAttribute($value): string
+    {
+        return $this->getFieldLocalText($value);
     }
 }

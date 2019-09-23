@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\OrderService;
 use StdClass;
+use Illuminate\Http\Request;
+use App\Models\Currency;
 use App\Models\Setting;
 use App\Models\OdinOrder;
+use App\Services\CustomerService;
+use App\Services\OrderService;
 use App\Services\CurrencyService;
-use App\Models\Currency;
 
 /* use com\checkout;
   use com\checkout\ApiServices; */
@@ -16,20 +17,30 @@ use App\Models\Currency;
 class OrderController extends Controller
 {
 
+    /**
+     * @var CustomerService
+     */
+    protected $customerService;
+
+    /**
+     * @var OrderService
+     */
     protected $orderService;
 
     /**
      * Create a new controller instance.
-     *
+     * @param CustomerService $customerService
+     * @param OrderService $orderService
      * @return void
      */
-    public function __construct(OrderService $orderService)
+    public function __construct(CustomerService $customerService, OrderService $orderService)
     {
+        $this->customerService = $customerService;
         $this->orderService = $orderService;
     }
 
     // TODO: REMOVE OLD
-    
+
     /**
      *
      * @param Request $request
@@ -143,7 +154,7 @@ class OrderController extends Controller
         ];
 
         //$data = $request->all();
-        $result = $this->orderService->addCustomer($data);
+        $result = $this->customerService->addOrUpdate($data);
 
         return response()->json([
                     $result
@@ -151,12 +162,12 @@ class OrderController extends Controller
     }
 
     /**
-     * 
+     *
      * @param type $orderId
      */
     public function orderAmountTotal($orderId)
-    {        
-        return $this->orderService->calculateOrderAmountTotal($orderId);                
+    {
+        return $this->orderService->calculateOrderAmountTotal($orderId);
     }
 
 }

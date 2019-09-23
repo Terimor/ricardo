@@ -4,6 +4,13 @@
     <link rel="stylesheet" href="{{ asset('css/thank-you.css') }}">
 @endsection
 
+@section('head')
+    <meta property="og:title" content="{{ $product->long_name }}" />
+    <meta property="og:description" content="I just bought this awesome product. Thought I’d share this with you" />
+    <meta property="og:image" content="{{ $product->image[0] }}" />
+@endsection
+
+
 @section('script')
 <script defer>
     const upsells = {
@@ -119,9 +126,7 @@
                 </li>
             </ul>
 
-            <textarea id="quote" rows="10">
-                I just bought this awesome product. Thought I’d share this with you
-            </textarea>
+            <textarea id="quote" rows="10">I just bought this awesome product. Thought I’d share this with you</textarea>
 
             <div class="d-flex justify-content-center">
                 <button

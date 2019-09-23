@@ -24,8 +24,9 @@ const thankYou = new Vue({
         socialType: 'facebook',
         total: 0,
         sharingLinkList: {
-            facebook: 'http://www.facebook.com/sharer/sharer.php?u=https://landingpage.thor-be.host/checkout&quote=',
-            twitter: 'https://twitter.com/home?status=https://landingpage.thor-be.host/checkout%20'
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,
+            twitter: `https://twitter.com/share?&url=${window.location.href}text=`
+
         }
     }),
 

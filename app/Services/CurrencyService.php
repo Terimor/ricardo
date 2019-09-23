@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\Currency;
+use Cache;
 
 /**
  * Currency Service class
@@ -102,8 +103,9 @@ class CurrencyService
             ];
         }
 
+        // when fraction digits = 0, cut decimals
         if ($fractionDigits == 0) {
-            $exchangedPrice = (int) $exchangedPrice;
+            $exchangedPrice = (int)$exchangedPrice;
         }
 
         $digits = strlen((int)$exchangedPrice);
@@ -195,7 +197,7 @@ class CurrencyService
     }
 
     /**
-     * Get currency array
+     * Returns currency model
      * @param string $currencyCode
      * @param string $countryCode
      * @return Currency
@@ -211,6 +213,7 @@ class CurrencyService
             }
         }
 
+        // if we still haven't currency get it by country
         if (!$currencyCode) {
             if (!$countryCode) {
                 $countryCode = strtoupper(\Utils::getLocationCountryCode());
@@ -221,10 +224,12 @@ class CurrencyService
             $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
         }
 
+        // if we still haven't currency get first active currency
         if (!$currency) {
             $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
         }
 
+        // check and compare countries in currency
         if (!empty($currency->countries)){
             if (!in_array(strtolower($countryCode), $currency->countries)) {
                 $countryCode = $currency->countries[0];
@@ -241,12 +246,13 @@ class CurrencyService
             } else {
                 $currencyCode = 'USD';
             }
+            // default USD currency
             $currency = Currency::whereCode($currencyCode)->first();
             $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
         }
-
+        
         $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
-
+        
         if (empty($localeString)) {
             $localeString = \Utils::getCultureCode(null, $currency->countryCode);
         }
@@ -296,13 +302,50 @@ class CurrencyService
      */
     public static function roundValueByCurrencyRules(float $value, string $currencyCode): float
     {
-        $roundedValue = 0;
-        if ($currencyCode === 'JPY') {
-            $roundedValue = round($value);
-        } else {
-            $roundedValue = round($value, 2);
-        }
+        // cache culture code
+        $localeString = self::getCultureCodeByCurrency($currencyCode);
+
+        $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
+        // parse value
+        $roundedValue = $numberFormatter->parseCurrency($numberFormatter->formatCurrency($value, $currencyCode), $currencyCode);       
+
         return $roundedValue;
+    }
+    /**
+     * Return culture code by currency
+     * @param type $currencyCode
+     * @return type
+     */
+    public static function getCultureCodeByCurrency($currencyCode)
+    {
+        // cache culture code
+        $currencyCultureCodes = Cache::get('currency_culture_code');
+        if (empty($currencyCultureCodes[$currencyCode])) {
+            $currencyCultureCodes = self::cacheCurrencyCultureCode();            
+        }
+        return !empty($currencyCultureCodes[$currencyCode]) ? $currencyCultureCodes[$currencyCode] : 'en-US';
+    }
+    
+    /**
+     * Cache and return currency culture code array, for example US => en-US
+     * @return string
+     */
+    public static function cacheCurrencyCultureCode()
+    {
+        $currencies = Currency::all();
+        $currencyCultureCodes = [];
+        // check countries
+        foreach ($currencies as $currency) {
+            if (!empty($currency->countries[0])) {
+                $currencyCultureCodes[$currency->code] = \Utils::getCultureCode(null, $currency->countries[0]);                
+            } else {
+                $currencyCultureCodes[$currency->code] = 'en-US';        
+            }
+        }
+        
+        Cache::put('currency_culture_code', $currencyCultureCodes, 3600);
+        
+        return $currencyCultureCodes;
     }
 
 }

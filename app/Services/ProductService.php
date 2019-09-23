@@ -41,7 +41,7 @@ class ProductService
         if ($needImages) {
             $product->setLocalImages();
         }
-        
+
         if ($currency) {
             $product->currency = $currency;
         }
@@ -66,6 +66,7 @@ class ProductService
 			abort(404);
 		}
 
+        // check product upsells and get dicounts/prices for setUpsellPrices
 		$upsell = null;
 		foreach ($productUpsells as $uproduct) {
 			if ($uproduct['product_id'] == $productId) {
@@ -89,16 +90,6 @@ class ProductService
 			$fixedPrice = 4.5;
 			logger()->error("UPSELL Price < 4.5", ['product' => $product->toArray()]);
 		}
-
-		// check published status
-		/*$skus = [];
-		foreach ($upsell->skus as $key => $sku) {
-			if (!empty($sku['is_published'])) {
-				$skus[] = $sku;
-			}
-		}
-		$upsell->skus = $skus;
-		*/
 
 		if (!$upsell->skus) {
 			logger()->error("UPSELL skus empty or not published", ['product' => $product->toArray()]);
@@ -163,6 +154,8 @@ class ProductService
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
+        $lp->home_description = $product->home_description;
+        $lp->home_name = $product->home_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
@@ -208,6 +201,7 @@ class ProductService
         }
         $lp->skus = $skus;
 
+        $lp->page_title = $product->page_title;
         $lp->upsell_plusone_text = $product->upsell_plusone_text;
         $lp->upsell_hero_text = $product->upsell_hero_text;
         $lp->upsells = $product->upsells;

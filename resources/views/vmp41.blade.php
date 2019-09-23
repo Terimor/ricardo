@@ -17,6 +17,9 @@
             productImage: '{{$product->logo_image}}',
         };
 
+        const recentlyBoughtNames = @json($recentlyBoughtNames);
+        const recentlyBoughtCities = @json($recentlyBoughtCities)
+
         window.loadedPhrases = @json($loadedPhrases);
     </script>
 
@@ -32,6 +35,7 @@
         :show-preloader.sync="showPreloader">
     </preloader-3>
     <template v-if="+queryParams.preload !== 3 || !showPreloader">
+        <notice></notice>
         <div class="container">
             <div
                 class="promo__jumbotron"
@@ -297,7 +301,7 @@
                 <div class="promo__step-title">{{ t('checkout.step') }} 1: {{ t('checkout.pay_securely') }}</div>
                 <div class="promo__paypal-button-wrapper">
                     <paypal-button
-                        :style="{ width: '300px' }"
+                        :style="{ width: '400px' }"
                         :create-order="paypalCreateOrder"
                         :on-approve="paypalOnApprove"
                         :$v="$v.form.deal"
