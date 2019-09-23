@@ -52,7 +52,7 @@
     @yield('styles')
 </head>
 <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
-    <div id="app">
+    <div>
         @include('layouts.header', ['product' => $product])
         <main class="pt-4">
             @yield('content')

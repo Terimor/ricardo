@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\Currency;
+use Cache;
 
 /**
  * Currency Service class
@@ -102,8 +103,9 @@ class CurrencyService
             ];
         }
 
+        // when fraction digits = 0, cut decimals
         if ($fractionDigits == 0) {
-            $exchangedPrice = (int) $exchangedPrice;
+            $exchangedPrice = (int)$exchangedPrice;
         }
 
         $digits = strlen((int)$exchangedPrice);
@@ -195,7 +197,7 @@ class CurrencyService
     }
 
     /**
-     * Get currency array
+     * Returns currency model
      * @param string $currencyCode
      * @param string $countryCode
      * @return Currency
@@ -211,6 +213,7 @@ class CurrencyService
             }
         }
 
+        // if we still haven't currency get it by country
         if (!$currencyCode) {
             if (!$countryCode) {
                 $countryCode = strtoupper(\Utils::getLocationCountryCode());
@@ -221,10 +224,12 @@ class CurrencyService
             $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
         }
 
+        // if we still haven't currency get first active currency
         if (!$currency) {
             $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
         }
 
+        // check and compare countries in currency
         if (!empty($currency->countries)){
             if (!in_array(strtolower($countryCode), $currency->countries)) {
                 $countryCode = $currency->countries[0];
@@ -241,12 +246,13 @@ class CurrencyService
             } else {
                 $currencyCode = 'USD';
             }
+            // default USD currency
             $currency = Currency::whereCode($currencyCode)->first();
             $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
         }
-
+        
         $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
-
+        
         if (empty($localeString)) {
             $localeString = \Utils::getCultureCode(null, $currency->countryCode);
         }
@@ -296,13 +302,32 @@ class CurrencyService
      */
     public static function roundValueByCurrencyRules(float $value, string $currencyCode): float
     {
-        $roundedValue = 0;
-        if ($currencyCode === 'JPY') {
-            $roundedValue = round($value);
-        } else {
-            $roundedValue = round($value, 2);
-        }
+        // cache culture code
+        $localeString = self::getCultureCodeByCurrency($currencyCode);
+
+        $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
+        // parse value
+        $roundedValue = $numberFormatter->parseCurrency($numberFormatter->formatCurrency($value, $currencyCode), $currencyCode);       
+
         return $roundedValue;
+    }
+    /**
+     * Return culture code by currency
+     * @param type $currencyCode
+     * @return type
+     */
+    public static function getCultureCodeByCurrency($currencyCode)
+    {
+        // cache culture code
+        $localeString = Cache::get('culture_code_'.$currencyCode);
+        
+        if (!$localeString) {
+            $currency = self::getCurrency($currencyCode);
+            $localeString = \Utils::getCultureCode(null, $currency->countryCode);
+            Cache::put('culture_code_'.$currencyCode, $localeString, 3600);
+        }
+        
+        return $localeString;
     }
 
 }

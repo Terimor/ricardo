@@ -6,6 +6,8 @@
 >
     <div class="container">
         <img src="{{$product->logo_image}}" alt="">
-        <timer-component></timer-component>
+
+        <timer-component
+          v-if="isTimerVisible" />
     </div>
 </header>

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\UtilsService;
+use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
@@ -9,16 +11,18 @@ use Illuminate\Support\Carbon;
 class OdinCustomer extends Model
 {
     public $timestamps = true;
-    
+
     protected $collection = 'odin_customer';
-    
+
     protected $dates = ['created_at', 'updated_at'];
-    
+
     protected $guarded = ['addresses', 'ip', 'phones'];
-    
+
+    const RECENTLY_BOUGHT_LIMIT = 25;
+
     /**
      *
-     * @var type 
+     * @var type
      */
     protected $attributes = [
         'email' => null, // * unique string,
@@ -40,7 +44,7 @@ class OdinCustomer extends Model
         'paypal_payer_id' => null, // string
 		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
     ];
-        
+
     /**
     * The attributes that are mass assignable.
     *
@@ -49,7 +53,7 @@ class OdinCustomer extends Model
    protected $fillable = [
        'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses'
    ];
-   
+
     /**
      *
      */
@@ -62,9 +66,9 @@ class OdinCustomer extends Model
                 $model->number = self::generateCustomerNumber();
             }
         });
-    }   
-   
-   
+    }
+
+
    /**
      * Validator
      * @param array $data
@@ -72,30 +76,30 @@ class OdinCustomer extends Model
      */
     public function validate(array $data = [])
     {
-        
+
         if (!$data) {
             $data = $this->attributesToArray();
             if (!empty($data['_id'])) {
-                // skip unique for email                
+                // skip unique for email
                 $data['email'] .= $data['_id'];
             }
         }
-        
+
         return Validator::make($data, [
             'email'     => 'required|email|unique:odin_customer',
             'first_name'    => 'required',
             'last_name'    => 'required',
         ]);
     }
-    
+
     /**
      * Setter email
      */
-    public function setEmailAttribute($value) 
-    {        
+    public function setEmailAttribute($value)
+    {
         $this->attributes['email'] =  strtolower(trim($value));
     }
-	
+
     /**
      * Generate customer number
      * @param string $countryCode
@@ -117,5 +121,70 @@ class OdinCustomer extends Model
         } while ($model);
 
         return $numberString;
-    }	
+    }
+
+
+    /**
+     * Returns customers notification data
+     *
+     * @param string|null $country_code
+     * @param int $limit
+     * @return array
+     */
+    public static function getRecentlyBoughtData(string $country_code = null, int $limit = self::RECENTLY_BOUGHT_LIMIT): array
+    {
+        if (!$country_code) {
+            $country_code = UtilsService::getLocationCountryCode();
+        }
+
+        $recentlyBoughtNames = $recentlyBoughtCities = [];
+
+        // Get customers from a current users country and get their cities
+        $customersCollection = self::getCustomersByCountryCode($country_code, $limit)
+            ->each(function($item, $key) use (&$recentlyBoughtCities) {
+                if (!empty($item['addresses']['0']['city'])) {
+                    $city = $item['addresses']['0']['city'];
+                    if (!in_array($city, $recentlyBoughtCities)) {
+                        $recentlyBoughtCities[] = $city;
+                    }
+                }
+            });
+
+        // If there are not enough customers from a current users country - add customers from USA
+        if (count($recentlyBoughtNames) < $limit && $country_code !== 'us') {
+            $temp_limit = $limit - count($recentlyBoughtNames);
+            // Merge Customers from a current users country with a customers from a 'us' (USA)
+            $customersCollection = $customersCollection->merge(self::getCustomersByCountryCode('us', $temp_limit));
+        }
+
+        // Iterate over all customers and get their full names
+        $customersCollection->each(function($item, $key) use (&$recentlyBoughtNames) {
+            $temp_full_name = $item['first_name'] . ' ' . $item['last_name'];
+            if (!in_array($temp_full_name, $recentlyBoughtNames)) {
+                $recentlyBoughtNames[] = $temp_full_name;
+            }
+        });
+
+        $recently_bought_data = [
+            'recentlyBoughtNames' => $recentlyBoughtNames,
+            'recentlyBoughtCities' => $recentlyBoughtCities
+        ];
+
+        return $recently_bought_data;
+    }
+
+    /**
+     *
+     * @param string|null $country_code
+     * @param int $limit
+     * @return Collection
+     */
+    private static function getCustomersByCountryCode(string $country_code = null, int $limit = self::RECENTLY_BOUGHT_LIMIT)
+    {
+        return self::select('first_name', 'last_name', 'addresses.city')
+            ->where('addresses.country', $country_code)
+            ->orderBy('_id', 'desc')
+            ->limit($limit)
+            ->get();
+    }
 }

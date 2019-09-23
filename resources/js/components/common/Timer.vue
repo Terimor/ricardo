@@ -2,19 +2,18 @@
   <div
     class="timer-component"
     id="timer-component"
-    v-if="+queryParams.show_timer === 1"
     :class="{ 'is-mobile': isMobile || displayGreenTimer }"
   >
     <div v-if="isMobile || displayGreenTimer" class="mobile">
       <template v-if="time === '00:00'">
-        Time is over! Some stock is still left available...
+        <span v-html="textTimeOver"></span>
       </template>
       <template v-else>
-        Offer Valid For: <span>{{time}}</span>
+        <span v-html="textValidFor"></span> <span>{{time}}</span>
       </template>
     </div>
     <div v-else class="desktop">
-      <span>Offer Valid For:</span>
+      <span v-html="textValidFor"></span>
       <div class="d-flex" dir="ltr">
         <div class="timer-component__minutes">
           <div><div class="line"></div>{{time[0]}}</div>
@@ -35,6 +34,7 @@
 
 <script>
 import moment from 'moment'
+import { t } from '../../utils/i18n';
 import isMobile from '../../mixins/isMobile'
 import queryToComponent from '../../mixins/queryToComponent';
 
@@ -56,6 +56,13 @@ export default {
     }
   },
 
+  computed: {
+
+    textValidFor: () => t('checkout.timer.valid_for'),
+    textTimeOver: () => t('checkout.timer.time_over'),
+
+  },
+
   methods: {
     changeTimeByDifference () {
       const newDiff = moment(this.$options.finishTime.diff(moment())).format('mm:ss')
@@ -66,8 +73,10 @@ export default {
     },
 
     setHeader() {
-      if ((this.isMobile || this.displayGreenTimer) && +this.queryParams.show_timer === 1) {
-        document.querySelector('header').style.marginTop = '45px'
+      if (this.displayGreenTimer || this.isMobile) {
+        document.querySelector('#header').style.marginTop = '51px';
+      } else {
+        document.querySelector('#header').style.marginTop = '';
       }
     },
 
@@ -83,6 +92,14 @@ export default {
 
     this.isVmpPage();
     this.setHeader();
+  },
+
+  watch: {
+
+    isMobile() {
+      this.setHeader();
+    },
+
   },
 }
 </script>

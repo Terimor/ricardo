@@ -7,6 +7,7 @@ use App\Models\OdinCustomer;
 use App\Models\OdinOrder;
 use App\Models\Txn;
 use App\Services\OrderService;
+use App\Services\CustomerService;
 use App\Services\EmailService;
 use App\Models\Setting;
 /**
@@ -14,13 +15,24 @@ use App\Models\Setting;
  */
 class EbanxService
 {
+    /**
+     * @var CustomerService
+     */
+    protected $customerService;
 
     /**
-     * EbanxController constructor.
+     * @var OrderService
+     */
+    protected $orderService;
+
+    /**
+     * EbanxController constructor
+     * @param CustomerService $customerService
      * @param OrderService $orderService
      */
-    public function __construct(OrderService $orderService)
+    public function __construct(CustomerService $customerService, OrderService $orderService)
     {
+        $this->customerService = $customerService;
         $this->orderService = $orderService;
         $this->currency = CurrencyService::getCurrency();
 
@@ -76,7 +88,7 @@ class EbanxService
             'doc_id' => !empty($request['document']) ? $request['document'] : null
         ];
 
-        $res = $this->orderService->addCustomer($data, true);
+        $res = $this->customerService->addOrUpdate($data, true);
         if ($res['success']) {
             return $res['customer'];
         } else {
@@ -208,9 +220,9 @@ class EbanxService
             'value' => !empty($response['payment']['amount_br']) ? $response['payment']['amount_br'] : null,
             'currency' => $this->currency->code,
             'provider_data' => $response,
-            'payment_provider' => 'ebanx',	   
+            'payment_provider' => 'ebanx',
             'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
-        ];	
+        ];
 
         $res = $this->orderService->addTxn($data, true);
 
@@ -332,7 +344,7 @@ class EbanxService
     }
 
     /**
-     * 
+     *
      * @param string $hash
      * @return string
      */

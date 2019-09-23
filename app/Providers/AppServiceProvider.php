@@ -54,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
 
-        $sentryDNS = \Utils::getSetting('sentry_dsn');
+        $sentryDNS = Setting::getValue('sentry_dsn');
         $this->app['config']['sentry'] = [
             'dsn' => $sentryDNS ? $sentryDNS : env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))
         ];

@@ -66,6 +66,7 @@ class ProductService
 			abort(404);
 		}
 
+        // check product upsells and get dicounts/prices for setUpsellPrices
 		$upsell = null;
 		foreach ($productUpsells as $uproduct) {
 			if ($uproduct['product_id'] == $productId) {
@@ -89,16 +90,6 @@ class ProductService
 			$fixedPrice = 4.5;
 			logger()->error("UPSELL Price < 4.5", ['product' => $product->toArray()]);
 		}
-
-		// check published status
-		/*$skus = [];
-		foreach ($upsell->skus as $key => $sku) {
-			if (!empty($sku['is_published'])) {
-				$skus[] = $sku;
-			}
-		}
-		$upsell->skus = $skus;
-		*/
 
 		if (!$upsell->skus) {
 			logger()->error("UPSELL skus empty or not published", ['product' => $product->toArray()]);

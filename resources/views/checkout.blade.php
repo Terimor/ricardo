@@ -6,6 +6,9 @@
       'Authorization': 'Basic {{base64_encode(env('BLUESNAP_API_KEY').':'.env('BLUESNAP_API_PASS'))}}',
     }
 
+    const recentlyBoughtNames = @json($recentlyBoughtNames);
+    const recentlyBoughtCities = @json($recentlyBoughtCities);
+
     const checkoutData = {
       countryCode: '{{ $countryCode }}',
       countries: @json($countries),
@@ -19,11 +22,13 @@
 @endsection
 
 @section('content')
-@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
 
-@include('components.product_offer')
+<div id="app">
+  @section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
+  @include('components.product_offer')
 
-<app-component></app-component>
+  <app-component></app-component>
+</div>
 
 @include('layouts.footer', ['isWhite' => true])
 
