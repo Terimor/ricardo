@@ -37,7 +37,7 @@ class EbanxService
         $this->currency = CurrencyService::getCurrency();
 
 
-        $this->key = Setting::where(['key' => 'ebanx_integration_key'])->first();
+        $this->key = Setting::getValue('ebanx_integration_key');
 
         if (!$this->key) {
             logger()->error("ebanx_integration_key parameter not found");

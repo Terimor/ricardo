@@ -17,6 +17,9 @@
             productImage: '{{$product->logo_image}}',
         };
 
+        const recentlyBoughtNames = @json($recentlyBoughtNames);
+        const recentlyBoughtCities = @json($recentlyBoughtCities)
+
         window.loadedPhrases = @json($loadedPhrases);
     </script>
 
@@ -32,6 +35,7 @@
         :show-preloader.sync="showPreloader">
     </preloader-3>
     <template v-if="+queryParams.preload !== 3 || !showPreloader">
+        <notice></notice>
         <div class="container">
             <div
                 class="promo__jumbotron"

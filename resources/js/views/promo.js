@@ -6,7 +6,6 @@ import emc1Validation from '../validation/emc1-validation'
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
 import { preparePurchaseData } from '../utils/checkout';
 import { t } from '../utils/i18n';
-import { getNotice } from '../utils/emc1';
 import { scrollTo } from '../utils/common';
 import { getCountOfInstallments } from '../utils/installments';
 import notification from '../mixins/notification';
@@ -138,8 +137,6 @@ const promo = new Vue({
           1
     this.changeWarrantyValue();
 
-    this.showNotice();
-
     this.variantList = this.skusList.map((it) => ({
       label: it.name,
       text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
@@ -252,20 +249,6 @@ const promo = new Vue({
         ...this.form,
         ...address
       }
-    },
-
-    showNotice () {
-      const notice = getNotice('EchoBeat7')
-      const getNoticeHtml = () => notice.next().value
-
-      setTimeout(() => {
-        setInterval(() => {
-          this.showNotification({
-            content: getNoticeHtml(),
-            position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
-          })
-        }, 6000)
-      }, 9000)
     },
 
     getImplValue(value) {
