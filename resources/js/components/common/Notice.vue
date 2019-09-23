@@ -31,8 +31,8 @@ export default {
     if (+this.queryParams.preload === 3) {
       const interval = setInterval(() => {
         if (!this.showPreloader) {
-          this.showNotice()
-          clearInterval(interval)
+          this.showNotice();
+          clearInterval(interval);
         }
       }, 44)
     } else {
@@ -47,10 +47,10 @@ export default {
         users,
         cities,
         usersActive,
-        bestsellerText
+        bestsellerText,
       });
 
-      const getNoticeHtml = () => notice.next().value
+      const getNoticeHtml = () => notice.next().value;
 
       setTimeout(() => {
         setInterval(() => {
@@ -64,7 +64,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-
-</style>
