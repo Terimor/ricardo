@@ -102,7 +102,7 @@ class SiteController extends Controller
       */
      public function about(Request $request, ProductService $productService)
      {
-         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+         $loadedPhrases = (new I18nService())->loadPhrases('about_page');
          $product = $productService->resolveProduct($request, true);
          return view('about', compact('loadedPhrases', 'product'));
      }    
