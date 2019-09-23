@@ -323,7 +323,7 @@ class CurrencyService
         if (empty($currencyCultureCodes[$currencyCode])) {
             $currencyCultureCodes = self::cacheCurrencyCultureCode();            
         }
-        return $currencyCultureCodes[$currencyCode];
+        return !empty($currencyCultureCodes[$currencyCode]) ? $currencyCultureCodes[$currencyCode] : 'en-US';
     }
     
     /**
