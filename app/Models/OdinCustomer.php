@@ -151,8 +151,8 @@ class OdinCustomer extends Model
             });
 
         // If there are not enough customers from a current users country - add customers акщь USA
-        if (count($recentlyBoughtNames) < self::RECENTLY_BOUGHT_LIMIT && $country_code !== 'us') {
-            $temp_limit = self::RECENTLY_BOUGHT_LIMIT - count($recentlyBoughtNames);
+        if (count($recentlyBoughtNames) < $limit && $country_code !== 'us') {
+            $temp_limit = $limit - count($recentlyBoughtNames);
             // Merge Customers from a current users country with a customers from a 'us' (USA)
             $customersCollection = $customersCollection->merge(self::getCustomersByCountryCode('us', $temp_limit));
         }
