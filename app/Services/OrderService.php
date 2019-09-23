@@ -105,6 +105,7 @@ class OrderService
             'street2' => !empty($data['street2']) ? trim($data['street2']) : '',
         ];
 
+        // json coding for compare strings
         $addressJson = json_encode($address);
         $modelAddressesJson = json_encode($model->addresses);
 

@@ -8,10 +8,15 @@ use App\Models\Setting;
  */
 class UtilsService
 {
+    /**
+     * Default Amazon s3 URL
+     */
 	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
 
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
-    
+    /**
+     * Array using global parameters on site     
+     */
     public static $globalGetParameters = ['product', 'cur', 'tpl', '_ip'];
 
     /**
@@ -609,16 +614,6 @@ class UtilsService
     }
 
     /**
-     * Get setting
-     * @param type $key
-     * @return type
-     */
-    public static function getSetting($key)
-    {
-        return Setting::getValue($key);
-    }
-
-    /**
      * Get list of countries
      */
     public static function getCountries()
@@ -643,6 +638,10 @@ class UtilsService
 	return in_array(strtolower(trim($country_code)), $eu);
     }
 
+    /**
+     * Return paypal currency code
+     * @return type
+     */
     public static function getPayPalCurrencyCode()
     {
         $local_currency = optional(CurrencyService::getCurrency())->code;
@@ -662,7 +661,7 @@ class UtilsService
 	{
 		$remoteHost = request()->server('HTTP_HOST');
 		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
-			$remoteHost = \Utils::getSetting('cf_host_default');
+			$remoteHost = Setting::getValue('cf_host_default');
 		}
 
 		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
@@ -672,7 +671,7 @@ class UtilsService
 	}
     
     /**
-     * Get global get parameters
+     * Return URL get parameters string from get parameters
      * @param type $request
      * @param type $excludeParams
      * @return type
@@ -690,6 +689,7 @@ class UtilsService
                 }
             }
         }
+        // remove last ? from string
         if ($string) {            
             $string = '?'.substr_replace($string , '', -1);
         }
@@ -697,7 +697,7 @@ class UtilsService
     }
     
     /**
-     * Get params from url link
+     * Return array params from url link
      * @param string $url
      * @return type
      */

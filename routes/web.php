@@ -33,20 +33,20 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/product', 'ProductController@view')->name('product');
     $router->get('/product/local-price', 'ProductController@getLocalPrice');
 
-    $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
-    $router->get('/test-checkoutcom', 'PaymentsController@testCheckoutCom');
-    $router->get('/test-paypal', 'PaymentsController@testPaypal');
+    //$router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
+    //$router->get('/test-checkoutcom', 'PaymentsController@testCheckoutCom');
+    //$router->get('/test-paypal', 'PaymentsController@testPaypal');
 
-    $router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
-    $router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
+    //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
+    //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
 
-    $router->post('/payment/bluesnap-transaction', 'Payments\BluesnapController@createTransaction')->name('bluesnap-payment');
+    //$router->post('/payment/bluesnap-transaction', 'Payments\BluesnapController@createTransaction')->name('bluesnap-payment');
 
     $router->get('/test', 'SiteController@test');
 
-    $router->post('/save-txn', 'OrderController@saveTxn');
-    $router->post('/send-order', 'OrderController@saveOrder');
-    $router->post('/save-customer', 'OrderController@saveCustomer');
+    //$router->post('/save-txn', 'OrderController@saveTxn');
+    //$router->post('/send-order', 'OrderController@saveOrder');
+    //$router->post('/save-customer', 'OrderController@saveCustomer');
 
     $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
@@ -60,7 +60,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
 
     // test route
-    $router->get('/test-checkout', 'Payments\PaypalController@checkout');
+    //$router->get('/test-checkout', 'Payments\PaypalController@checkout');
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
     $router->post('/paypal-webhooks', 'Payments\PaypalController@webhooks');

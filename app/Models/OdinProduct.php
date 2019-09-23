@@ -5,6 +5,7 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Services\CurrencyService;
 use NumberFormatter;
+use App\Models\Setting;
 
 /**
  * Class OdinProduct
@@ -276,7 +277,7 @@ class OdinProduct extends Model
      */
     public function getBillingDescriptorAttribute($value)
     {
-        $billingDescriptorPrefix = \Utils::getSetting('billing_descriptor_prefix');
+        $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
         return "*{$billingDescriptorPrefix}*{$value}";
     }
 

@@ -134,8 +134,9 @@ class OdinOrder extends OdinModel
         parent::boot();
 
         self::creating(function($model) {
+            // generate and check unique order number
             if (!isset($model->number) || !$model->number) {
-                $model->number = !empty($this->shipping_country) ? self::generateOrderNumber($this->shipping_country) : self::generateOrderNumber();
+                $model->number = !empty($model->shipping_country) ? self::generateOrderNumber($model->shipping_country) : self::generateOrderNumber();
             }
             if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $model->currency;

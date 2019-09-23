@@ -31,7 +31,7 @@ class SiteController extends Controller
      */
     public function index(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('product_page');
 
         $product = $productService->resolveProduct($request, true);
 
@@ -39,7 +39,7 @@ class SiteController extends Controller
                     'instant_payment_paypal_client_id',
                 ])->pluck('value', 'key');
 
-        return view('index', compact('loadedPhrases', 'product', 'setting'));
+        return view('index', compact('product', 'setting', 'loadedPhrases'));
     }
 
     /**
@@ -50,7 +50,7 @@ class SiteController extends Controller
      */
     public function contactUs(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('contacts_page');
         $product = $productService->resolveProduct($request, true);
         return view('contact_us', compact('loadedPhrases', 'product'));
     }
@@ -63,7 +63,7 @@ class SiteController extends Controller
      */
     public function returns(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('returns_page');
         $product = $productService->resolveProduct($request, true);
         return view('returns', compact('loadedPhrases', 'product'));
     }
@@ -76,7 +76,7 @@ class SiteController extends Controller
      */
     public function privacy(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('privacy_page');
         $product = $productService->resolveProduct($request, true);
         return view('privacy', compact('loadedPhrases', 'product'));
     }
@@ -89,31 +89,19 @@ class SiteController extends Controller
      */
     public function terms(Request $request, ProductService $productService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $loadedPhrases = (new I18nService())->loadPhrases('terms_page');
         $product = $productService->resolveProduct($request, true);
         return view('terms', compact('loadedPhrases', 'product'));
     }
 
     /**
-     * About page
-     * @param Request $request
-     * @param ProductService $productService
-     * @return type
-     */
-    public function about(Request $request, ProductService $productService)
-    {
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
-        $product = $productService->resolveProduct($request, true);
-        return view('about', compact('loadedPhrases', 'product'));
-    }
-
-    /**
-     * Order traching page
+     * Order tracking page
      * @return type
      */
     public function orderTracking()
     {
-        return view('order_tracking');
+        $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
+        return view('order_tracking', compact('loadedPhrases'));
     }
 
     /**
@@ -171,8 +159,10 @@ class SiteController extends Controller
 		}
 
         $countryCode = \Utils::getLocationCountryCode();
+        
+        $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
 
-        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer'));
+        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases'));
     }
 
     /**
@@ -199,28 +189,10 @@ class SiteController extends Controller
             }
 		}
         $countryCode = \Utils::getLocationCountryCode();
-
-        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer'));
-    }
-
-    /**
-     * Promo page
-     * @param Request $request
-     * @param ProductService $productService
-     * @return type
-     */
-    public function promo(Request $request, ProductService $productService)
-    {
-        $isShowProductOffer = request()->get('tpl') === 'emc1';
-
-        $product = $productService->resolveProduct($request, true);
-        $setting = Setting::whereIn('key',[
-                    'instant_payment_paypal_client_id',
-                ])->pluck('value', 'key');
-
-        $countries =  \Utils::getCountries();
-        $countryCode = \Utils::getLocationCountryCode();
-        return view('promo', compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries'));
+        
+        $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
+        
+        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases'));
     }
 
     /**

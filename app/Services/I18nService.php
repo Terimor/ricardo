@@ -39,6 +39,11 @@ class I18nService
                     $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
                 }
             }
+            
+            if (empty($loadedPhrases[$language])) {
+                logger()->error('Loaded phrases is empty', ['language' => $language, 'category' => $category]);
+                $loadedPhrases[$language] = [];
+            }
 
             I18n::$loadedPhrases = $loadedPhrases;
         }
