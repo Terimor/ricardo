@@ -87,11 +87,11 @@ class OdinOrder extends OdinModel
         'is_flagged' => false, // bool, default false
         'offer' => null, // string
         'affiliate' => null, // string
+        'is_invoice_sent' => false, // bool, default false
         'is_refunding' => false, // bool, default false, refund requested, processing
         'is_refunded' => false, // bool, order was fully or partially refunded
         'is_qc_passed' => false, // bool, additional control of order's correctness
         'params' => null, // object, //stores all GET parameters with content as object, for example {tpl: "emc1", cur: "BYN"}
-        'is_invoice_sent' => false, // bool, default false
     ];
 
     const STATUS_NEW = 'new';
