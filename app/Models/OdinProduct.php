@@ -14,6 +14,7 @@ use App\Models\Setting;
 class OdinProduct extends Model
 {
     const QUANTITY_PRICES = 5;
+    const MIN_PRICE = 4.5;
 
     protected $images;
     protected $upsellPrices;
@@ -331,12 +332,12 @@ class OdinProduct extends Model
             $this->attributes['upsellPrices']['discount_percent'] = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);
         } else if ($discountPercent) {
             // get price from 1 qty
-            $discountPrice = !empty($this->prices[1]['val']) ? $this->prices[1]['val'] : null;
+            $discountPrice = $this->prices[1]['val'] ?? null;
             if ($discountPrice) {
               $discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
-              if ($discountPrice < 4.5) {
+              if ($discountPrice < self::MIN_PRICE) {
                 logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
-                $discountPrice = 4.5;
+                $discountPrice = self::MIN_PRICE;
               }
             }
             $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($discountPrice, $currency);
@@ -344,7 +345,7 @@ class OdinProduct extends Model
         
         if (empty($discountLocalPrice['price']) || $discountLocalPrice['price'] <= 0) {
             logger()->error("Price is 0 for upsell product {$this->_id}", ['fixedPrice' => $fixedPrice, 'discountPercent' => $discountPercent]);
-            exit;
+            return false;
         }
         
         // quantity loop        

@@ -236,7 +236,7 @@ class ProductService
         $lp->upsell_sku = $product['skus'][0]['code'];
 
         $lp->image = !empty($product->image[0]) ? $product->image[0] : null;
-        $lp->upsellPrices = $product->upsellPrices;        
+        $lp->upsellPrices = $product->upsellPrices ?? null;        
 
         return $lp;
     }
