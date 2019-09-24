@@ -1,0 +1,48 @@
+@import '../variables';
+
+body {
+  background-color: #fff;
+}
+
+.index {
+  &__button {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #ef6129;
+    color: #fff;
+    text-decoration: none;
+    transition: all .3s;
+    margin-bottom: 30px;
+
+    &:hover {
+      background-color: darken(#ef6129, 15%);
+    }
+  }
+
+  &__title {
+    margin-top: 50px;
+    font-size: 36px;
+
+    @media screen and ($s-down) {
+      font-size: 30px;
+    }
+  }
+
+  &__description {
+    margin-bottom: 30px;
+
+    & * {
+      color: #8a8a8a;
+    }
+  }
+
+  &__image {
+    width: 100%;
+    object-fit: cover;
+    margin-bottom: 20px;
+  }
+
+  &__row {
+    margin-bottom: 100px;
+  }
+}
