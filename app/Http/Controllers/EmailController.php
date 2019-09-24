@@ -29,7 +29,7 @@ class EmailController extends Controller
     
     public function testConfirmationEmail()
     {
-        
+        exit;
         $customer = new StdClass();
         $customer->number = '25 3254 32432 54';
         $customer->name = 'Test name';
@@ -54,7 +54,7 @@ class EmailController extends Controller
        
     public function testSatisfactionEmail()
     {
-        
+        exit;
         $customer = new StdClass();        
         $customer->name = 'Test name';
         $customer->email = 'lorderetiks@gmail.com';
