@@ -2,9 +2,10 @@ import { groupBy } from '../utils/groupBy';
 
 export const getTotalPrice = (data, total) => {
   const formattedData = groupBy(data, 'id', 'quantity')
+  const cur = localStorage.getItem('order_currency');
 
   return axios
-    .post(`/calculate-upsells-total`,
+    .post(`/calculate-upsells-total/${cur ? '?cur=' + cur : ''}`,
       {
         upsells: formattedData,
         total,
@@ -23,8 +24,9 @@ export const getTotalPrice = (data, total) => {
 };
 
 export const getUppSells = (product_id, quantity) => {
+  const cur = localStorage.getItem('order_currency');
   return axios
-    .get(`/upsell-product/${product_id}`, {
+    .get(`/upsell-product/${product_id}/${cur ? '?cur=' + cur : ''}`, {
       params: {
         quantity,
       }

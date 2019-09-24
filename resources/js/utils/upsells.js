@@ -34,6 +34,7 @@ export function paypalCreateOrder ({
   }).then(function(data) {
     if (data.odin_order_id) {
       localStorage.setItem('odin_order_id', data.odin_order_id);
+      localStorage.setItem('order_currency', data.order_currency);
     }
     return data.id;
   });
