@@ -65,9 +65,7 @@ class EbanxController extends Controller
             $txn = $this->ebanxService->saveTxn($response);
             
             //update order product
-            $this->ebanxService->saveTxnResponseForOrder($order, $txn, $response);
-            // send email confirmation
-            (new EmailService())->sendConfirmationEmail($order, $customer);            
+            $this->ebanxService->saveTxnResponseForOrder($order, $txn, $response);           
             
             $result = ['status' => "SUCCESS"];
         } else {

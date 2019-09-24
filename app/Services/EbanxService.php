@@ -333,9 +333,6 @@ class EbanxService
 
                     $order->txnx = $txns;
                     $order->save();
-                    if ($approved) {
-                        (new EmailService())->sendConfirmationEmail($order);
-                    }
                     break;
                     }
                 }
