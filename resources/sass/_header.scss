@@ -1,0 +1,34 @@
+.header {
+  $self: &;
+  background: #fff;
+  padding: 3px;
+  box-shadow: 1px 1px 1px 1px rgba(214,214,214,.4);
+  height: 87px;
+  display: flex;
+  align-items: center;
+
+  &__menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding-left: 0;
+  }
+
+  &__menu-item {
+    margin-left: 15px;
+  }
+
+  &__menu-link {
+    color: inherit;
+    text-decoration: none;
+    color: #6c6c6c;
+
+    &--selected {
+      color: #ef6129;
+    }
+  }
+
+  img {
+    height: 47px;
+  }
+}

@@ -12,18 +12,17 @@ const header = new Vue({
 
   mounted() {
     window.addEventListener('scroll', () => {
-      const header = document.getElementById('header')
+      const header = document.getElementById('header');
 
       if (document.body.scrollTop > 100) {
         header.style.top = -header.clientHeight
       } else {
         header.style.top = 0
       }
-    })
+    });
   },
 
   computed: {
-
     isCheckout() {
       return document.location.pathname.split('/').pop() === 'checkout';
     },
@@ -31,7 +30,5 @@ const header = new Vue({
     isTimerVisible() {
       return this.isCheckout && +this.queryParams.show_timer === 1;
     },
-
   },
-
 })
