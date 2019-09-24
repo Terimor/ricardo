@@ -34,7 +34,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6">
-                <img class="index__image" src="{{ $product->image[1] }}" alt="">
+                <img class="index__image" src="{{ $product->image[0] }}" alt="">
             </div>
         </div>
         <div class="row justify-content-center align-items-center index__row">
@@ -51,5 +51,6 @@
             </div>
         </div>
     </div>
+    @include('layouts.footer', ['isWhite' => true])
 </div>
 @endsection

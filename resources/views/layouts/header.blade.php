@@ -7,7 +7,7 @@
     "
 >
     <div class="container {{ Request::is('/') ? 'd-flex flex-column flex-sm-row justify-content-between' : '' }}">
-        <img src="{{$product->logo_image}}" alt="">
+        <img src="{{$product->logo_image}}" class="header__logo" alt="">
             @if(Request::is('/'))
                 <ul class="header__menu">
                     <li class="header__menu-item">

@@ -7,6 +7,12 @@
   display: flex;
   align-items: center;
 
+  &__logo {
+    @media screen and ($s-down) {
+      margin-top: 10px;
+    }
+  }
+
   &__menu {
     display: flex;
     align-items: center;
