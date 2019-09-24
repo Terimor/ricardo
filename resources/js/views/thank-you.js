@@ -4,6 +4,7 @@ import queryToComponent from '../mixins/queryToComponent';
 import upsellsMixin from '../mixins/upsells';
 import { getOrderAmount } from '../services/order';
 import ThankYouItem from '../components/common/ThankYouItem';
+import { t } from '../utils/i18n';
 
 const thankYou = new Vue({
     el: '#thank-you',
@@ -63,6 +64,23 @@ const thankYou = new Vue({
     },
 
     computed: {
+        orderText: () => t('thankyou.order'),
+        thankYouText: () => t('thankyou.thankyou'),
+        orderConfirmedText: () => t('thankyou.order.confirmed'),
+        orderAcceptedText: () => t('thankyou.order.accepted'),
+        orderDetailsText: () => t('thankyou.order.details'),
+        warrantyText: () => t('thankyou.order.warranty'),
+        subtotalText: () => t('thankyou.subtotal'),
+        paymentMethodText: () => t('thankyou.payment.method'),
+        orderTotalText: () => t('thankyou.order.total'),
+        customerInfoText: () => t('thankyou.customer.info'),
+        shippingAddressText: () => t('thankyou.shipping.address'),
+        shareYourOrderText: () => t('thankyou.share'),
+        weHopeText: () => t('thankyou.hope'),
+        textareaBaseText: () => t('thankyou.bought'),
+        shareText: () => t('thankyou.order.share.item'),
+
+
         getShippingAddress() {
             const {
                 shipping_city,
