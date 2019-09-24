@@ -102,6 +102,7 @@
                 }"
                 v-model="paymentForm.city"/>
             <select-field
+                filterable
                 v-if="countryCode === 'BR' || countryCode === 'MX' || countryCode === 'CO'"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
@@ -129,6 +130,7 @@
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
             <select-field
+                filterable
                 :validation="$v.form.country"
                 :validationMessage="textCountryRequired"
                 theme="variant-1"
