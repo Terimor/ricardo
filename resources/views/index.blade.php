@@ -18,16 +18,20 @@
     <div class="index">
         <div class="row justify-content-center align-items-center index__row">
             <div class="col-12 col-md-6">
-                <h1 class="index__title">
-                    {{ $product->product_name }}
-                </h1>
-                <div class="index__description">
-                    {!! $product->description !!}
+                <div class="d-flex flex-column align-items-md-start align-items-center">
+                    <h1 class="index__title">
+                        {{ $product->product_name }}
+                    </h1>
+                    <div class="index__description">
+                        {!! $product->description !!}
+                    </div>
+                    <a
+                        class="index__button"
+                        href="/checkout"
+                    >
+                        Get it now
+                    </a>
                 </div>
-                <a
-                    class="index__button"
-                    href="/checkout"
-                >Get it now</a>
             </div>
             <div class="col-12 col-md-6">
                 <img class="index__image" src="{{ $product->image[1] }}" alt="">
