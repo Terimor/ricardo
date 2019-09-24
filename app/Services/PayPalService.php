@@ -436,7 +436,7 @@ class PayPalService
                 )
             );
 
-            logger()->debug(print_r($response, true));
+            logger()->info(print_r($response, true));
 
             if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
