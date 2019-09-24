@@ -439,7 +439,7 @@ class PayPalService
                 )
             );
 
-            logger()->info(print_r($response, true));
+            logger()->info($response->result->status);
 
             if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
@@ -489,6 +489,7 @@ class PayPalService
                 // Amount paid !== Sum of prices of transaction items.
                 if ($temp_upsell_products_prices !== $paypal_order_value) {
                     logger()->alert('Amount paid for an order: ' . $order->getIdAttribute() . ' in a transaction # ' . $txn_response['txn']->hash . ' differs from a total products price.');
+                    logger()->info('Paid: ' . $paypal_order_value . '; Item price: ' . $temp_upsell_products_prices);
                 }
 
                 $order->total_paid+= $paypal_order_value;
