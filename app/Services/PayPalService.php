@@ -416,6 +416,7 @@ class PayPalService
     {
         logger()->info($request->input('event_type', ''));
         if ($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
+            logger()->info(print_r($request->request, true));
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
             })->first();
