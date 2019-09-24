@@ -121,7 +121,7 @@ class OdinOrder extends OdinModel
         'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_price', 'total_price_usd', 'shop_currency',
         'customer_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country',
         'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id', 'trackings', 'products',
-        'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed', 'txns', 'params', 'is_invoise_sent'
+        'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed', 'txns', 'params', 'is_invoice_sent'
 
     ];
 
