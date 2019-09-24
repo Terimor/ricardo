@@ -98,6 +98,7 @@
       height: 55px;
       justify-content: center;
       left: 0;
+      overflow: hidden;
       pointer-events: none;
       position: absolute;
       right: 0;
@@ -125,6 +126,7 @@
         color: #000;
         font-size: 15px;
         font-weight: 700;
+        white-space: nowrap;
       }
  
       .image {
@@ -147,7 +149,7 @@
   }
 
   .tpl-emc1 {
-    @media screen and (min-width: 768px) and (max-width: 991px) {
+    @media screen and (min-width: 768px) and (max-width: 991px), (max-width: 420px) {
       .paypal-shim {
         flex-direction: column;
 
