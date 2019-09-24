@@ -98,16 +98,35 @@
       height: 55px;
       justify-content: center;
       left: 0;
+      overflow: hidden;
       pointer-events: none;
       position: absolute;
       right: 0;
       top: 0;
       z-index: 1000;
- 
+
+      &:before {
+        opacity: 0;
+        font-family: FontAwesome!important;
+        content: '\f054';
+        width: 0;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0 50% 50% 0;
+        background-color: rgba(255,255,255,.3);
+        transition: all .2s linear 0s;
+      }
+
       .title {
         color: #000;
         font-size: 15px;
         font-weight: 700;
+        white-space: nowrap;
       }
  
       .image {
@@ -116,5 +135,41 @@
         max-width: 90px;
       }
     }
+
+    &:hover {
+      .paypal-shim {
+        background-image: linear-gradient(#f9b421, #fff0a8);
+
+        &:before {
+          opacity: 1;
+          width: 30px;
+        }
+      }
+    }
   }
+
+  .tpl-emc1 {
+    @media screen and (min-width: 768px) and (max-width: 991px), (max-width: 420px) {
+      .paypal-shim {
+        flex-direction: column;
+
+        .image {
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .tpl-vmc4 {
+    @media screen and (min-width: 576px) and (max-width: 800px), (max-width: 460px) {
+      .paypal-shim {
+        flex-direction: column;
+
+        .image {
+          margin: 0;
+        }
+      }
+    }
+  }
+
 </style>

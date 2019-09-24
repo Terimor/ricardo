@@ -82,5 +82,9 @@
             font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
             outline: rgb(255, 255, 255) none 0;
         }
+
+        .checkmark {
+            top: 18px;
+        }
     }
 </style>

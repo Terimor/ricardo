@@ -276,9 +276,6 @@
 				this.productImage = checkoutData.product.skus[0].quantity_image[1];
 			} catch (_) {}
 		},
-    beforeCreate() {
-      document.body.classList.add('tpl-vmc4');
-    },
 	}
 </script>
 <style lang="scss">
