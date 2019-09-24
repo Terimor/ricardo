@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->skus[0]['name'] . ' - ' . 'Contacts')
+@section('title', $product->skus[0]['name'] . ' - ' . $loadedPhrases['contact_title'])
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/contact-us.css') }}">
