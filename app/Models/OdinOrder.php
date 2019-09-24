@@ -91,7 +91,7 @@ class OdinOrder extends OdinModel
         'is_refunded' => false, // bool, order was fully or partially refunded
         'is_qc_passed' => false, // bool, additional control of order's correctness
         'params' => null, // object, //stores all GET parameters with content as object, for example {tpl: "emc1", cur: "BYN"}
-        'is_invoise_sent' => false, // bool, default false
+        'is_invoice_sent' => false, // bool, default false
     ];
 
     const STATUS_NEW = 'new';
