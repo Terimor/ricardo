@@ -163,6 +163,10 @@ class ProductService
         $prices = [];
         $pricesOld = $product->prices;
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
+            if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
+                logger()->error("Price is 0 for {$product->product_name}", ['product' => $lp->toArray()]);
+                continue;
+            }
             $prices[$quantity]['is_bestseller'] = $pricesOld[$quantity]['is_bestseller'];
             $prices[$quantity]['is_popular'] = $pricesOld[$quantity]['is_popular'];
             $prices[$quantity]['discount_percent'] = $pricesOld[$quantity]['discount_percent'];
@@ -232,7 +236,7 @@ class ProductService
         $lp->upsell_sku = $product['skus'][0]['code'];
 
         $lp->image = !empty($product->image[0]) ? $product->image[0] : null;
-        $lp->upsellPrices = $product->upsellPrices;
+        $lp->upsellPrices = $product->upsellPrices;        
 
         return $lp;
     }
