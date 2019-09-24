@@ -336,7 +336,7 @@ class OdinProduct extends Model
             if ($discountPrice) {
               $discountPrice = $discountPrice - ($discountPercent/100 * $discountPrice);
               if ($discountPrice < self::MIN_PRICE) {
-                logger()->error("Discount Price < 4.5", ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
+                logger()->error("Discount Price < ".self::MIN_PRICE, ['product' => $this->toArray(), 'discountPercent' => $discountPercent, 'discountPrice' => $discountPrice]);
                 $discountPrice = self::MIN_PRICE;
               }
             }

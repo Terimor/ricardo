@@ -86,9 +86,9 @@ class ProductService
 			abort(409);
 		}
 
-		if ($fixedPrice && $fixedPrice < 4.5) {
-			$fixedPrice = 4.5;
-			logger()->error("UPSELL Price < 4.5", ['product' => $product->toArray()]);
+		if ($fixedPrice && $fixedPrice < OdinProduct::MIN_PRICE) {
+			$fixedPrice = OdinProduct::MIN_PRICE;
+			logger()->error("UPSELL Price < ".OdinProduct::MIN_PRICE, ['product' => $product->toArray()]);
 		}
 
 		if (!$upsell->skus) {
