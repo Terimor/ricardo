@@ -137,8 +137,6 @@ class OdinCustomer extends Model
             $country_code = UtilsService::getLocationCountryCode();
         }
 
-        $country_code = 'ee';
-
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
         // Get customers from a current users country and get their cities.
