@@ -426,6 +426,7 @@ class PayPalService
             $order = OdinOrder::where(['txns.hash' => $paypal_order_id])->first();
             collect($order->txns)->each(function($item, $key) use ($paypal_order_id) {
                 if ($item['hash'] === $paypal_order_id && $item['status'] === Txn::STATUS_APPROVED) {
+                    logger()->info('TXN with # ' . $paypal_order_id . ' was already approved');
                     abort(200);
                 }
             });
