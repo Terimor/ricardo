@@ -155,8 +155,9 @@ class PayPalService
             $txn_attributes = $txn_response['txn']->attributesToArray();
 
             // Setting txn_hash for an upsell products
-            $upsell_order_products = collect($upsell_order_products)->transform(function($item, $key) use ($txn_attributes) {
+            $upsell_order_products = collect($upsell_order_products)->transform(function($item, $key) use ($txn_attributes, $product) {
                 $item['txn_hash'] = $txn_attributes['hash'];
+                $item['is_plus_one'] = optional($this->findProductBySku($item['sku_code']))->_id === $product->_id;
 
                 return $item;
             })->toArray();
@@ -191,7 +192,7 @@ class PayPalService
         }
         $order = $upsell_order;
         $product = $this->findProductBySku($request->sku_code);
-        $priceData = $this->getPrice($request, $product, $upsell_order);
+        $priceData = $this->getPrice($request, $product);
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
 
         // Currency of the prices show on the shop page
@@ -415,6 +416,7 @@ class PayPalService
      */
     public function webhooks(Request $request)
     {
+        logger()->info($request->input('event_type', ''));
         if ($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
