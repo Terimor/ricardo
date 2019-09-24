@@ -16,18 +16,13 @@
                         </a>
                     </li>
                     <li class="header__menu-item">
-                        <a href="#!" class="header__menu-link">
+                        <a href="/about" class="header__menu-link">
                             Our History
                         </a>
                     </li>
                     <li class="header__menu-item">
-                        <a href="#!" class="header__menu-link">
-                            Content page
-                        </a>
-                    </li>
-                    <li class="header__menu-item">
                         <a href="/contact-us" class="header__menu-link">
-                            Contact-us
+                            Contact us
                         </a>
                     </li>
                 </ul>
