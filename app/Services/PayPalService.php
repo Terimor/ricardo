@@ -73,13 +73,8 @@ class PayPalService
         $this->checkIforderAllowedForAddingProducts($upsell_order);
 
         $product = $this->findProductBySku($request->get('sku_code'));
-        $upsells_array = $request->get('upsells');
-        if (empty($upsells_array)) {
-            abort(404);
-        }
 
-        $priceData = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true);
-        $priceData['price'] = $priceData['value'];
+        $priceData = $this->getPrice($request, $product, $upsell_order);
         $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
         $upsells_total_local_currency = $priceData['code'];
         $upsells_total_price = $priceData['price'];
@@ -160,8 +155,9 @@ class PayPalService
             $txn_attributes = $txn_response['txn']->attributesToArray();
 
             // Setting txn_hash for an upsell products
-            $upsell_order_products = collect($upsell_order_products)->transform(function($item, $key) use ($txn_attributes) {
+            $upsell_order_products = collect($upsell_order_products)->transform(function($item, $key) use ($txn_attributes, $product) {
                 $item['txn_hash'] = $txn_attributes['hash'];
+                $item['is_plus_one'] = optional($this->findProductBySku($item['sku_code']))->_id === $product->_id;
 
                 return $item;
             })->toArray();
@@ -196,7 +192,7 @@ class PayPalService
         }
         $order = $upsell_order;
         $product = $this->findProductBySku($request->sku_code);
-        $priceData = $this->getPrice($request, $product, $upsell_order);
+        $priceData = $this->getPrice($request, $product);
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
 
         // Currency of the prices show on the shop page
@@ -418,6 +414,7 @@ class PayPalService
      */
     public function webhooks(Request $request)
     {
+        logger()->info($request->input('event_type', ''));
         if ($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
@@ -425,10 +422,13 @@ class PayPalService
             $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
 
+            logger()->info('PP order id : ' . $paypal_order_id);
+
             // Should prevent duplicated calls
             $order = OdinOrder::where(['txns.hash' => $paypal_order_id])->first();
             collect($order->txns)->each(function($item, $key) use ($paypal_order_id) {
                 if ($item['hash'] === $paypal_order_id && $item['status'] === Txn::STATUS_APPROVED) {
+                    logger()->info('TXN with # ' . $paypal_order_id . ' was already approved');
                     abort(200);
                 }
             });
@@ -438,6 +438,9 @@ class PayPalService
                     $paypal_order_id
                 )
             );
+
+            logger()->info($response->result->status);
+
             if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
                 $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
@@ -486,6 +489,7 @@ class PayPalService
                 // Amount paid !== Sum of prices of transaction items.
                 if ($temp_upsell_products_prices !== $paypal_order_value) {
                     logger()->alert('Amount paid for an order: ' . $order->getIdAttribute() . ' in a transaction # ' . $txn_response['txn']->hash . ' differs from a total products price.');
+                    logger()->info('Paid: ' . $paypal_order_value . '; Item price: ' . $temp_upsell_products_prices);
                 }
 
                 $order->total_paid+= $paypal_order_value;
@@ -676,20 +680,18 @@ class PayPalService
      */
     private function getPrice(Request $request, $product, OdinOrder $order = null)
     {
-        if ($request->input('order', null)) {
+        // If it's an upsell - calculate total upsell price.
+        if ($request->input('order', null) && $request->get('upsells')) {
             abort_if(!$order, 404);
-            $main_order_product = collect($order->products)->where('is_main', true)->first();
-            $main_order_product = $this->findProductBySku($main_order_product['sku_code']);
-            $upsell = collect($main_order_product->upsells)->where('product_id', $product->_id)->first();
+            $upsells_array = $request->get('upsells');
 
-            if ($upsell) {
-                if ($upsell['fixed_price']) {
-                    return CurrencyService::getLocalPriceFromUsd($upsell['fixed_price']);
-                } elseif ($upsell['discount_percent']) {
-                    $price = ((100 - $upsell['discount_percent']) / 100) * $product->prices[$request->sku_quantity]['value'];
-                    return CurrencyService::getLocalPriceFromUsd($price);
-                }
-            }
+            $upsells_price_data = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true);
+
+            return [
+                'price' => $upsells_price_data['value'],
+                'code' => $upsells_price_data['code'],
+                'exchange_rate' => $upsells_price_data['exchange_rate'],
+            ];
         } else {
             return [
                 'price' => $product->prices[$request->sku_quantity]['value'],

@@ -19,14 +19,16 @@
         product: @json($product),
         orderCustomer: @json($orderCustomer),
     }
+
+    window.loadedPhrases = @json($loadedPhrases);
 </script>
 <script src="{{ asset('js/views/thank-you.js') }}" defer></script>
 @endsection
 
 @section('content')
     <div class="container thank-you" id="thank-you">
-        <p class="thank-you__order">Order: {{ $orderCustomer->number }}</p>
-        <h2 class="thank-you__name">Thank you {{ $orderCustomer->customer_first_name }}</h2>
+        <p class="thank-you__order">@{{ orderText }}: {{ $orderCustomer->number }}</p>
+        <h2 class="thank-you__name">@{{ thankYouText }} {{ $orderCustomer->customer_first_name }}</h2>
         <div class="border-box thank-you__container">
             <div id="map">
                 <iframe
@@ -41,11 +43,11 @@
                     marginwidth="0"
                 ></iframe>
             </div>
-            <h4>Your order is confirmed</h4>
-            <p>We’ve accepted your order, and we’re getting it ready. We’ll update on order status via email. A confirmation was sent to {{ $orderCustomer->customer_email }}</p>
+            <h4>@{{ orderConfirmedText }}</h4>
+            <p>@{{ orderAcceptedText }} {{ $orderCustomer->customer_email }}</p>
         </div>
         <div class="border-box thank-you__details">
-            <h4>Details of your order</h4>
+            <h4>@{{ orderDetailsText }}</h4>
 
             <div class="thank-you__order">
                 <div class="d-flex">
@@ -59,7 +61,7 @@
                             class="thank-you__order__name"
                             v-if="selectedProductData.isWarrantyChecked"
                         >
-                            Warranty: @{{ selectedProductData.prices.warranty_price_text }}
+                            @{{ warrantyText }}: @{{ selectedProductData.prices.warranty_price_text }}
                         </div>
                     </div>
                 </div>
@@ -76,11 +78,11 @@
             <hr>
 
             <p class="paragraph d-flex justify-content-between">
-                <span>Subtotal:</span>
+                <span>@{{ subtotalText }}:</span>
                 <span>@{{ total }}</span>
             </p>
             <p class="paragraph d-flex justify-content-between">
-                <span>Payment method:</span>
+                <span>@{{ paymentMethodText }}:</span>
                 <span>PayPal</span>
             </p>
 
@@ -88,7 +90,7 @@
 
             <p class="paragraph d-flex justify-content-between">
                 <span>
-                    Order Total:
+                    @{{ orderTotalText }}:
                 </span>
                 <span class="bold">
                     @{{ total }}
@@ -97,8 +99,8 @@
 
         </div>
         <div class="border-box thank-you__customer-info">
-            <h4>Customer Info</h4>
-            <p class="thank-you__shipping">Shipping Address</p>
+            <h4>@{{ customerInfoText }}</h4>
+            <p class="thank-you__shipping">@{{ shippingAddressText }}</p>
             <p class="paragraph">{{ $orderCustomer->customer_first_name }} {{ $orderCustomer->customer_last_name }}</p>
             <p class="paragraph">{{ $orderCustomer->shipping_street }}</p>
             <p class="paragraph">{{ $orderCustomer->shipping_city }} {{ strtoupper($orderCustomer->shipping_country)  }}</p>
@@ -106,9 +108,9 @@
 
         </div>
         <div class="border-box thank-you__share-order">
-            <h4 class="text-center">Share your order</h4>
+            <h4 class="text-center">@{{ shareYourOrderText }}</h4>
             <p class="text-center">
-                We hope you enjoyed shopping with us! Let your friends know about it and make our day!
+                @{{ weHopeText }}
             </p>
 
             <ul id="social-media-tabs" class="nav nav-tabs">
@@ -126,7 +128,7 @@
                 </li>
             </ul>
 
-            <textarea id="quote" rows="10">I just bought this awesome product. Thought I’d share this with you</textarea>
+            <textarea id="quote" rows="10">@{{ textareaBaseText }}</textarea>
 
             <div class="d-flex justify-content-center">
                 <button
@@ -134,7 +136,7 @@
                     class="green-button"
                     @click="share"
                 >
-                    Share this Item!
+                    @{{ shareText }}
                 </button>
             </div>
         </div>

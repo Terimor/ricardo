@@ -2,21 +2,21 @@
     <div class="upsells-component">
         <div class="upsells-component__top">
             <div class="upsells-component__step">
-              Step 1: Order Page
+                {{ textFirstStep }}
             </div>
             <div
                 class="upsells-component__step"
                 :class="{
                   'active': activeTab === 'second'
                 }">
-                Step 2: Special Offer
+                {{ textSecondStep }}
             </div>
             <div
                 class="upsells-component__step"
                 :class="{
                   'active': activeTab === 'third'
                 }">
-                Step 3: Confirmation
+                {{ textThirdStep }}
             </div>
         </div>
         <template v-if="activeTab === 'second'">
@@ -39,14 +39,14 @@
                 </transition>
                 <p class="no">
                   <a @click="accessoryStep++">
-                    No thanks...
+                    {{ textCancel }}
                   </a>
                 </p>
             </div>
         </template>
         <template v-if="activeTab === 'third'">
             <div class="upsells-component__finish">
-                <h3 class="original-order">Your original order</h3>
+                <h3 class="original-order">{{ textOriginalOrder }}</h3>
                 <UpsellsItem
                   :image-url="product.image[0]"
                   :name="product.long_name"
@@ -55,12 +55,12 @@
                     ? getOriginalOrder.prices.warranty_price_text
                     : null"
                   :benefitList="[
-                    `Quantity: ${getOriginalOrder.quantity}`,
+                    `${textQuantity}: ${getOriginalOrder.quantity}`,
                   ]"
                 />
                 <template v-if="accessoryList.length">
                   <h3 class="accessory-cart">
-                    Your accessory cart
+                    {{ textAccessoryCart }}
                   </h3>
                   <UpsellsItem
                     @deleteAccessory="deleteAccessory"
@@ -71,7 +71,7 @@
                     :key="idx"
                     :benefitList="[
                       it.name,
-                      `Quantity: ${it.quantity}`,
+                      `${textQuantity}: ${it.quantity}`,
                     ]"
                     :item-data="it"
                     :price="it.price"
@@ -80,14 +80,14 @@
                     :withRemoveButton="true"
                   />
                   <p class="total-price">
-                    Total accessory order: {{ total }}
+                    {{ textTotalAccessoryOrder }}: {{ total }}
                   </p>
                   <paypal-button
                     :createOrder="paypalCreateOrder"
                     :onApprove="paypalOnApprove"
                     :$v="true"
                   >
-                    Buy Now Risk Free PAYPAL
+                    {{ textBuyNow }}
                   </paypal-button>
                 </template>
             </div>
@@ -96,6 +96,7 @@
 </template>
 
 <script>
+  import { t } from '../utils/i18n';
   import UpsellsItem from './common/UpsellsItem';
   import Step1 from './upsells/Step1';
   import Step3 from './upsells/Step3';
@@ -184,6 +185,16 @@
           id,
         }))
       },
+
+      textFirstStep: () => t('upsells.step_1.title'),
+      textSecondStep: () => t('upsells.step_2.title'),
+      textThirdStep: () => t('upsells.step_3.title'),
+      textCancel: () => t('upsells.cancel'),
+      textOriginalOrder: () => t('upsells.original_order'),
+      textAccessoryCart: () => t('upsells.accessory_cart'),
+      textTotalAccessoryOrder: () => t('upsells.accessory_order'),
+      textBuyNow: () => t('upsells.paypal_button_text'),
+      textQuantity: () => t('upsells.quantity'),
 
       getEntity() {
         if (this.accessoryStep > this.upsellsObj.length) {
