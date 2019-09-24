@@ -3,17 +3,17 @@
       <div v-if="id && name">
         <h3>
           <span class="congrats">
-            CONGRATULATIONS!
+            {{ congratulationsText }}
           </span>
-          You are our 500th customer!
+          {{ customerNumberText }}
         </h3>
         <h5>
-          To thank you, we would like to offer you this
+          {{ thankYouText }}
           <span class="green-up">
             {{ name }}
           </span>
           <span v-if="discount">
-            for {{ discount }}% OFF!
+            {{ forText }} {{ discount }}% {{ offText }}!
           </span>
           </h5>
         <div class="upsells-component__item">
@@ -34,13 +34,13 @@
             @click="addProduct(1)"
             :is-loading="isLoading || !upsellPrices['1']"
           >
-              YES! I want to add 1 {{ name }} TO My Order For Just {{ upsellPrices['1'] && upsellPrices['1'].price_text }}
+              {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ upsellPrices['1'] && upsellPrices['1'].price_text }}
           </green-button>
           <green-button
             @click="addProduct(2)"
             :is-loading="isLoading || !upsellPrices['2']"
           >
-              YES! I want to add 2 {{ name }} TO My Order For Just {{ upsellPrices['2'] && upsellPrices['2'].price_text }}
+              {{ yesText }}! {{ iWantText }} 2 {{ name }} {{ toMyOrderTextText }} {{ upsellPrices['2'] && upsellPrices['2'].price_text }}
           </green-button>
         </div>
       </div>
@@ -48,7 +48,8 @@
 </template>
 
 <script>
-  import upsells from '../../mixins/upsells'
+  import { t } from '../../utils/i18n';
+  import upsells from '../../mixins/upsells';
   import { getUppSells } from '../../services/upsells';
 
   export default {
@@ -78,6 +79,17 @@
       imageUrl: null,
       isLoading: false,
     }),
+
+    computed: {
+      congratulationsText: () => t('upsells.congratulations'),
+      customerNumberText: () => t('upsells.customer_number'),
+      thankYouText: () => t('upsells.thank_you'),
+      forText: () => t('upsells.for'),
+      offText: () => t('upsells.off'),
+      yesText: () => t('upsells.yes'),
+      iWantText: () => t('upsells.want_add'),
+      toMyOrderTextText: () => t('upsells.to_order'),
+    },
 
     mounted() {
       this.isLoading = true;

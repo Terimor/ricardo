@@ -6,12 +6,12 @@
     >
       <div v-if="id && !isLoading">
         <h5>
-          To thank you, we would like to offer you this
+          {{ thankYouText }}
           <span class="green-up">
             {{ name }}
           </span>
           <span v-if="discount">
-            for {{ discount }}% OFF!
+            {{ forText }} {{ discount }}% {{ offText }}!
           </span>
         </h5>
         <div class="upsells-component__item">
@@ -31,7 +31,7 @@
               @click="addToCart(1)"
               :is-loading="isLoading"
             >
-              YES! I want to add 1 {{ name }} TO My Order For Just {{ priceFormatted }}
+              {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
             </green-button>
         </div>
       </div>
@@ -40,6 +40,7 @@
 </template>
 
 <script>
+  import { t } from '../../utils/i18n';
   import upsells from '../../mixins/upsells';
   import { getUppSells } from '../../services/upsells';
 
@@ -94,6 +95,13 @@
     },
 
     computed: {
+      thankYouText: () => t('upsells.thank_you'),
+      forText: () => t('upsells.for'),
+      offText: () => t('upsells.off'),
+      yesText: () => t('upsells.yes'),
+      iWantText: () => t('upsells.want_add'),
+      toMyOrderTextText: () => t('upsells.to_order'),
+
       currentPrices() {
         return this.upsellPrices['1'] && this.upsellPrices['1'];
       }

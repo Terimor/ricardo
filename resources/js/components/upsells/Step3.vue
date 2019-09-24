@@ -3,11 +3,11 @@
     <div v-if="id && name">
       <h3>
         <span class="orange">
-          You Can't Leave Without Taking ADVANTAGE of this SPECIAL OFFER!
+          {{ cantLeaveText }}
         </span>
       </h3>
       <h5>
-        Last chance! Get 1 more eazyclean for just
+        {{ lastChanceText }}
         <span class="price">
           {{ priceFormatted }}!
         </span>
@@ -27,7 +27,7 @@
       <div class="upsells-component__bot">
         <select-field
           v-if="upsellPrices"
-          label="Please choose:"
+          :label="`${pleaseChooseText}:`"
           v-model="quantity"
           :list="selectList"
         />
@@ -35,7 +35,7 @@
           :is-loading="isLoading || !upsellPrices"
           @click="add(quantity)"
         >
-          Add To Cart
+          {{ addToCartText }}
         </green-button>
       </div>
     </div>
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { t } from '../../utils/i18n';
 import upsells from '../../mixins/upsells';
 import { getUppSells } from '../../services/upsells';
 export default {
@@ -70,6 +71,11 @@ export default {
   },
 
   computed: {
+    cantLeaveText: () => t('upsells.cant_leave'),
+    lastChanceText: () => t('upsells.last_chance'),
+    addToCartText: () => t('upsells.add_to_cart'),
+    pleaseChooseText: () => t('upsells.choose'),
+
     selectList() {
       const data = Array(this.selectedProductData.quantity).fill('').map((item, index) => {
         const value = index + 1
