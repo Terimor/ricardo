@@ -63,7 +63,8 @@ class PaypalController extends Controller
     public function verifyOrder(PayPalVerfifyOrderRequest $request)
     {
         //fix for PayPal payments
-        ini_set('serialize_precision', 15);
+        ini_set('serialize_precision', 17);
+        ini_set('precision', 14);
 
         return $this->payPalService->verifyOrder($request);
     }
