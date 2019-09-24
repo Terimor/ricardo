@@ -203,7 +203,7 @@
       textWarranty: () => t('checkout.warranty'),
 		},
 		methods: {
-			submit(val) {
+			submit(val, val2) {
 
       },
       getImplValue(value) {

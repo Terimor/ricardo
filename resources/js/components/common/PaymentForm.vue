@@ -283,6 +283,7 @@
 
 <script>
   import apiUrlList from '../../constants/api-url'
+  import { check as ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
   import { goTo } from '../../utils/goTo'
@@ -312,7 +313,8 @@
           address: false
         },
         cardType: null,
-        isOpenCVVModal: false
+        isOpenCVVModal: false,
+        isSubmitted: false,
       }
     },
 
@@ -509,10 +511,13 @@
           })
       }, 333),
       submit () {
+        const { paymentForm, exp } = this;
+
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
-          this.$emit('setPromotionalModal', true)
+          this.$emit('setPromotionalModal', true);
+          return;
         }
 
         if (this.$v.form.$pending || this.$v.form.$error) {
@@ -525,23 +530,62 @@
           return;
         }
 
-        if (this.paymentForm.paymentType === 'bank-payment') {
-          this.$emit('showCart')
-        } else if (this.paymentForm.paymentType === 'credit-card') {
-          const { paymentForm, exp } = this
-          const creditCardData = {
-            card_number: paymentForm.cardNumber,
-            card_name: paymentForm.fname + ' ' + paymentForm.lname,
-            card_due_date: exp,
-            card_cvv: paymentForm.cvv
-          }
-
-          EBANX.card.createToken(creditCardData, resp => {
-
-          });
-
-          goTo('/thankyou-promos');
+        if (this.isSubmitted) {
+          return;
         }
+
+        this.isSubmitted = true;
+
+        let fields = {
+          billing_first_name: paymentForm.fname,
+          billing_last_name: paymentForm.lname,
+          billing_country: paymentForm.country,
+          billing_address_1: paymentForm.street,
+          billing_city: paymentForm.city,
+          billing_region: paymentForm.state,
+          billing_postcode: paymentForm.zipcode,
+          billing_email: paymentForm.email,
+          billing_phone: paymentForm.phone,
+        };
+
+        if (paymentForm.paymentType === 'credit-card') {
+          fields = {
+            ...fields,
+            credit_card_bin: paymentForm.cardNumber.substr(0, 6),
+            //credit_card_hash: sha256 hash of credit card number,
+            credit_card_expiration_month: ('0' + paymentForm.month).slice(-2),
+            credit_card_expiration_year: ('' + paymentForm.year).substr(2, 2),
+            cvv_code: paymentForm.cvv,
+          }
+        }
+
+        Promise.resolve()
+          .then(() => ipqsCheck(fields))
+          .then(result => {
+            //fraud_chance: result.fraud_chance,
+            //device_id: result.device_id,
+
+            if (paymentForm.paymentType === 'bank-payment') {
+              this.isSubmitted = false;
+              this.$emit('showCart');
+              return;
+            }
+
+            if (paymentForm.paymentType === 'credit-card') {
+              const creditCardData = {
+                card_number: paymentForm.cardNumber,
+                card_name: paymentForm.fname + ' ' + paymentForm.lname,
+                card_due_date: exp,
+                card_cvv: paymentForm.cvv
+              }
+
+              EBANX.card.createToken(creditCardData, resp => {
+
+              });
+
+              goTo('/thankyou-promos');
+            }
+          })
       }
     },
   };

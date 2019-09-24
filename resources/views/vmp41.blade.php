@@ -23,6 +23,8 @@
         window.loadedPhrases = @json($loadedPhrases);
     </script>
 
+    <script type="text/javascript">window.IPQ={Callback:()=>{}}</script><script src="https://www.ipqualityscore.com/api/*/AWUoMbxT7WcrE66bhaGsnqYtXLma2Bn8pSoPUSdbrW5xzMbRd3L82HQu7kQa2xBIKqkY4zCqvOvTvYCChebbZlWzZrpgs95jCYcivz669qLzFEpNlCXNCkB7yiHa1mpc7sb5IpBuTaKg24DbP2HtEVnop71JSXBxFaoxQhRtr5DVly7JRn8ENb9zI7B2XgebH9zadHR0wZlvg5pj7BnT7yfoUZgBFhlGE4kZOdkHzLDExXAHcXc0asI4K670heAb/learn.js"></script><noscript><img src="https://www.ipqualityscore.com/api/*/AWUoMbxT7WcrE66bhaGsnqYtXLma2Bn8pSoPUSdbrW5xzMbRd3L82HQu7kQa2xBIKqkY4zCqvOvTvYCChebbZlWzZrpgs95jCYcivz669qLzFEpNlCXNCkB7yiHa1mpc7sb5IpBuTaKg24DbP2HtEVnop71JSXBxFaoxQhRtr5DVly7JRn8ENb9zI7B2XgebH9zadHR0wZlvg5pj7BnT7yfoUZgBFhlGE4kZOdkHzLDExXAHcXc0asI4K670heAb/pixel.png" /></noscript>
+
     <script src="{{ asset('js/views/promo.js') }}" defer></script>
 @endsection
 

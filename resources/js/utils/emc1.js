@@ -1,4 +1,5 @@
 import { getCountOfInstallments } from './installments';
+import { check as ipqsCheck } from '../services/ipqs';
 import { goTo } from './goTo';
 
 export const getRadioHtml = ({ discountName, newPrice, text, price, discountText, currency = '$', installments, idx }) =>
@@ -108,33 +109,38 @@ export function paypalCreateOrder ({
   offer = new URL(document.location.href).searchParams.get('offer'),
   affiliate = new URL(document.location.href).searchParams.get('affiliate'),
 }) {
-  return fetch('/paypal-create-order', {
-    method: 'post',
-    credentials: 'same-origin',
-    headers: {
-      'X-CSRF-TOKEN': xsrfToken,
-      'content-type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    },
-    body: JSON.stringify({
-      sku_code,
-      sku_quantity,
-      is_warranty_checked,
-      order,
-      page_checkout,
-      cur,
-      offer,
-      affiliate,
-    })
-  }).then(function(res) {
-    return res.json();
-  }).then(function(data) {
-    if (data.odin_order_id) {
-      localStorage.setItem('odin_order_id', data.odin_order_id);
-      localStorage.setItem('order_currency', data.order_currency);
-    }
-    return data.id;
-  });
+  return Promise.resolve()
+    .then(() => ipqsCheck())
+    .then(result => fetch('/paypal-create-order', {
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'X-CSRF-TOKEN': xsrfToken,
+        'content-type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        sku_code,
+        sku_quantity,
+        is_warranty_checked,
+        order,
+        page_checkout,
+        cur,
+        offer,
+        affiliate,
+        fraud_chance: result.fraud_chance,
+        device_id: result.device_id,
+      }),
+    }))
+    .then(res => res.json())
+    .then(data => {
+      if (data.odin_order_id) {
+        localStorage.setItem('odin_order_id', data.odin_order_id);
+        localStorage.setItem('order_currency', data.order_currency);
+      }
+
+      return data.id;
+    });
 }
 
 export function paypalOnApprove(data) {
