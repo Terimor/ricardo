@@ -43,6 +43,7 @@ const thankYou = new Vue({
         },
 
         getTotal() {
+            console.log(localStorage.getItem('order_currency'))
             getOrderAmount(new URL(document.location.href).searchParams.get('order'))
             .then(({ total_text }) => {
                 this.total = total_text;
