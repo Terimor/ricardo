@@ -416,12 +416,13 @@ class PayPalService
     {
         logger()->info($request->input('event_type', ''));
         if ($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
-            logger()->info(print_r($request->request, true));
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
             })->first();
             $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
+
+            logger()->info('PP order id : ' . $paypal_order_id);
 
             // Should prevent duplicated calls
             $order = OdinOrder::where(['txns.hash' => $paypal_order_id])->first();
