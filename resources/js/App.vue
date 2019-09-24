@@ -87,6 +87,7 @@ export default {
     },
   },
   mounted () {
+    localStorage.removeItem('order_currency')
     this.initial();
   },
   beforeCreate() {
