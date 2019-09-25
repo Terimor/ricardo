@@ -111,7 +111,7 @@ export function paypalCreateOrder ({
 }) {
   return Promise.resolve()
     .then(() => ipqsCheck())
-    .then(result => fetch('/paypal-create-order', {
+    .then(ipqsResult => fetch('/paypal-create-order', {
       method: 'post',
       credentials: 'same-origin',
       headers: {
@@ -128,8 +128,7 @@ export function paypalCreateOrder ({
         cur,
         offer,
         affiliate,
-        fraud_chance: result.fraud_chance,
-        device_id: result.device_id,
+        ipqs: ipqsResult,
       }),
     }))
     .then(res => res.json())

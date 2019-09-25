@@ -36,6 +36,7 @@
     @if (config('app.env') !== 'local' && config('app.env') !== 'development')
       <script src="https://browser.sentry-cdn.com/5.6.3/bundle.min.js" crossorigin="anonymous"></script>
       <script src="https://browser.sentry-cdn.com/5.6.3/vue.min.js" crossorigin="anonymous"></script>
+      <script type="text/javascript">var SentryDsn = '{{ $SentryDsn }}';</script>
     @endif
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/index.js" defer></script>

@@ -132,7 +132,10 @@ class SiteController extends Controller
 
         $product = $productService->resolveProduct($request, true);
         
-        $setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
+        $setting = Setting::getValue(array(
+            'instant_payment_paypal_client_id',
+            'ipqualityscore_api_hash',
+        ))->all();
 
         $countries =  \Utils::getCountries();
 

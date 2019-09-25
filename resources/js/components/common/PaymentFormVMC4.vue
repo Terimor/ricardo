@@ -441,8 +441,8 @@
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
-          .then(result => {
-            this.$emit('onSubmit', this.form, result);
+          .then(ipqsResult => {
+            this.$emit('onSubmit', this.form, ipqsResult);
             this.isSubmitted = false;
           });
 			},
