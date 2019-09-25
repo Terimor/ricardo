@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', $product->page_title . ' - ' . $loadedPhrases['thankyou_title'])
+
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/thank-you.css') }}">
 @endsection

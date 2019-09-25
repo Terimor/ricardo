@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->skus[0]['name'] . ' - ' . $loadedPhrases['about_title'])
+@section('title', $product->page_title . ' - ' . $loadedPhrases['about_title'])
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/static.css') }}">
