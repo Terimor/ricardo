@@ -103,7 +103,7 @@
                 v-model="paymentForm.city"/>
             <select-field
                 filterable
-                v-if="countryCode === 'BR' || countryCode === 'MX' || countryCode === 'CO'"
+                v-if="isSpecialCountrySelected"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 :validationMessage="textStateRequired"
@@ -288,6 +288,7 @@
   import { debounce } from '../../utils/common'
   import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
+  import { stateList } from '../../resourses/state';
 
   export default {
     name: 'PaymentForm',
@@ -299,7 +300,6 @@
       'installments',
       'paymentForm',
       '$v',
-      'stateList',
       'firstTitle',
       'secondTitle',
       'thirdTitle',
@@ -328,6 +328,18 @@
         } else {
           return false;
         }
+      },
+      stateList() {
+        return (stateList[this.paymentForm.country] || []).map((it) => ({
+          value: it,
+          text: it,
+          label: it,
+        }));
+      },
+
+      isSpecialCountrySelected() {
+        const specialCountries = ['BR', 'MX', 'CO'];
+        return specialCountries.includes(this.countryCode) || specialCountries.includes(this.paymentForm.country);
       },
 
       exp () {

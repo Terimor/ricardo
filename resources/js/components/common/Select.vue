@@ -2,6 +2,8 @@
   <div class="select" :class="theme">
     <span v-if="label" class="label">{{label}}</span>
     <el-select
+      no-data-text="No match data"
+      no-match-text="No match text"
       v-bind="rest"
       @input="onChange"
       :value="value"
