@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
+@section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 

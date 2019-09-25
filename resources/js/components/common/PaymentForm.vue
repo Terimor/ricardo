@@ -86,7 +86,7 @@
               type="error">
             </el-alert>
             <text-field
-                v-if="isBrazil"
+                v-if="isSpecialCountrySelected"
                 theme="variant-1"
                 :label="textComplemento"
                 v-model="paymentForm.complemento"/>
@@ -103,7 +103,7 @@
                 v-model="paymentForm.city"/>
             <select-field
                 filterable
-                v-if="countryCode === 'BR' || countryCode === 'MX' || countryCode === 'CO'"
+                v-if="isSpecialCountrySelected"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 :validationMessage="textStateRequired"
@@ -146,7 +146,7 @@
               {{ thirdTitle }}
             </h2>
             <select-field
-                v-if="countryCode === 'MX'"
+                v-if="paymentForm.country === 'MX'"
                 :validation="$v.form.cardType"
                 :validationMessage="textCardTypeRequired"
                 :disabled="+installments !== 1"
@@ -228,7 +228,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'BR'"
+                v-if="countryCode === 'BR' || paymentForm.country === 'BR'"
                 placeholder="___.___.___-__"
                 :rest="{
                   'format': '___.___.___-__',
@@ -241,7 +241,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'CO'"
+                v-if="countryCode === 'CO' || paymentForm.country === 'CO'"
                 placeholder="1234567890"
                 :rest="{
                   'format': '1234567890',
@@ -288,6 +288,7 @@
   import { debounce } from '../../utils/common'
   import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
+  import { stateList } from '../../resourses/state';
 
   export default {
     name: 'PaymentForm',
@@ -299,7 +300,6 @@
       'installments',
       'paymentForm',
       '$v',
-      'stateList',
       'firstTitle',
       'secondTitle',
       'thirdTitle',
@@ -323,7 +323,23 @@
         const numberLength = this.paymentForm.number && this.paymentForm.number.length
         const streetLength = this.paymentForm.street && this.paymentForm.street.length
 
-        return numberLength + streetLength >= 35;
+        if (this.countryCode === 'BR' || this.countryCode === 'MX' || this.countryCode === 'CO') {
+          return numberLength + streetLength >= 35;
+        } else {
+          return false;
+        }
+      },
+      stateList() {
+        return (stateList[this.paymentForm.country] || []).map((it) => ({
+          value: it,
+          text: it,
+          label: it,
+        }));
+      },
+
+      isSpecialCountrySelected() {
+        const specialCountries = ['BR', 'MX', 'CO'];
+        return specialCountries.includes(this.countryCode) || specialCountries.includes(this.paymentForm.country);
       },
 
       exp () {
@@ -552,7 +568,7 @@
           fields = {
             ...fields,
             credit_card_bin: paymentForm.cardNumber.substr(0, 6),
-            //credit_card_hash: sha256 hash of credit card number,
+            credit_card_hash: sha256(paymentForm.cardNumber),
             credit_card_expiration_month: ('0' + paymentForm.month).slice(-2),
             credit_card_expiration_year: ('' + paymentForm.year).substr(2, 2),
             cvv_code: paymentForm.cvv,

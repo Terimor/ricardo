@@ -9,7 +9,6 @@ use App\Models\Setting;
 use App\Services\PayPalService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class PaypalController

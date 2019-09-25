@@ -114,6 +114,7 @@ class PayPalService
                 'warranty_price' => null,
                 'warranty_price_usd' => null,
                 'is_main' => false,
+                'is_paid' => false,
                 'is_exported' => false,
                 'is_plus_one' => false,
                 'price_set' => null,
@@ -157,6 +158,21 @@ class PayPalService
 
             $txn_attributes = $txn_response['txn']->attributesToArray();
 
+            $order_txn_data = [
+                'hash' => $txn_response['txn']->hash,
+                'value' => $txn_response['txn']->value,
+                'status' =>  Txn::STATUS_CAPTURED,
+                'is_charged_back' => false,
+                'fee' => null,
+                'payment_provider' => $txn_response['txn']->payment_provider,
+                'payment_method' => $txn_response['txn']->payment_method,
+                'payer_id' => $txn_response['txn']->payer_id,
+            ];
+
+            $txns = array_filter($upsell_order['txns'], function($item) use ($txn_response) {
+                return $item['hash'] !== $txn_response['txn']->hash;
+            });
+
             // Setting txn_hash for an upsell products
             $upsell_order_products = collect($upsell_order_products)->transform(function($item, $key) use ($txn_attributes, $product) {
                 $item['txn_hash'] = $txn_attributes['hash'];
@@ -169,6 +185,7 @@ class PayPalService
             $upsell_order->total_price += $upsell_order_total_price;
             $upsell_order->total_price_usd += $upsells_total_price_usd;
             $upsell_order->status = $this->getOrderStatus($upsell_order);
+            $upsell_order->txns = array_merge($txns, [$order_txn_data]);
             $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
             $upsell_order->save();
         }
@@ -281,6 +298,7 @@ class PayPalService
                 'warranty_price' => $is_currency_supported ? ($local_warranty_price ?? null) : ($local_warranty_usd ?? null),
                 'warranty_price_usd' => $local_warranty_usd ?? null,
                 'is_main' => !$upsell_order,
+                'is_paid' => false,
                 'is_exported' => false,
                 'is_plus_one' => false,
                 'price_set' => $product->prices['price_set'],
@@ -314,6 +332,7 @@ class PayPalService
                     'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
                     'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
                     'total_paid' => 0,
+                    'total_paid_usd' => 0,
                     'total_price' => !$is_currency_supported ? $total_price : $total_local_price,
                     'total_price_usd' => $total_price,
                     'customer_phone' => null,
@@ -422,7 +441,6 @@ class PayPalService
      */
     public function webhooks(Request $request)
     {
-        logger()->info($request->input('event_type', ''));
         if ($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
@@ -430,14 +448,18 @@ class PayPalService
             $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
 
-            logger()->info('PP order id : ' . $paypal_order_id);
-
             // Should prevent duplicated calls
             $order = OdinOrder::where(['txns.hash' => $paypal_order_id])->first();
+
+            // If order not found return 2xx code so PP wont retry
+            if (!$order) {
+                return response(null, 204);
+            }
+
             collect($order->txns)->each(function($item, $key) use ($paypal_order_id) {
                 if ($item['hash'] === $paypal_order_id && $item['status'] === Txn::STATUS_APPROVED) {
                     logger()->info('TXN with # ' . $paypal_order_id . ' was already approved');
-                    abort(200);
+                    return response(null, 200);
                 }
             });
 
@@ -446,8 +468,6 @@ class PayPalService
                     $paypal_order_id
                 )
             );
-
-            logger()->info($response->result->status);
 
             if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
@@ -483,24 +503,35 @@ class PayPalService
                 });
                 $order->txns = array_merge($txns, [$order_txn_data]);
 
+                // Set is_paid for order products of captured transaction
+                $temp_txn_products_prices = 0;
+                $order->products = collect($order->products)
+                    ->map(function($item, $key) use (&$temp_txn_products_prices, $txn) {
+                        if ($item['txn_hash'] == $txn['hash']) {
+                            $temp_txn_products_prices+= $item['price'];
+                            $item['is_paid'] = true;
+                        }
 
-                // Check if sum of upsell prices = $paypal_order_value
-                $temp_upsell_products_prices = 0;
-                collect($order->products)
-                    ->reject(function ($item, $key) use ($txn) {
-                        return $item['txn_hash'] !== $txn['hash'];
+                        return $item;
                     })
-                    ->each(function($item, $key) use (&$temp_upsell_products_prices) {
-                        $temp_upsell_products_prices+= $item['price'];
-                    });
+                    ->toArray();
 
                 // Amount paid !== Sum of prices of transaction items.
-                if ($temp_upsell_products_prices !== $paypal_order_value) {
+                if ($temp_txn_products_prices !== $paypal_order_value) {
                     logger()->alert('Amount paid for an order: ' . $order->getIdAttribute() . ' in a transaction # ' . $txn_response['txn']->hash . ' differs from a total products price.');
-                    logger()->info('Paid: ' . $paypal_order_value . '; Item price: ' . $temp_upsell_products_prices);
+                    logger()->info('Paid: ' . $paypal_order_value . '; Item price: ' . $temp_txn_products_prices);
                 }
 
                 $order->total_paid+= $paypal_order_value;
+
+                // Setting total_paid_usd value
+                $pp_total_paid_usd = $paypal_order_value;
+                if ($paypal_order_currency !== self::DEFAULT_CURRENCY) {
+                    $pp_order_currency_rate = CurrencyService::getCurrency($paypal_order_currency)->usd_rate;
+                    $pp_total_paid_usd = CurrencyService::roundValueByCurrencyRules(round($paypal_order_value / $pp_order_currency_rate, 2), self::DEFAULT_CURRENCY);
+                }
+                $order->total_paid_usd += $pp_total_paid_usd;
+
                 $currency = CurrencyService::getCurrency($order->currency);
                 $order->txns_fee_usd += CurrencyService::roundValueByCurrencyRules(round($fee / $currency->usd_rate, 2), self::DEFAULT_CURRENCY);
 
@@ -693,7 +724,7 @@ class PayPalService
             abort_if(!$order, 404);
             $upsells_array = $request->get('upsells');
 
-            $upsells_price_data = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true);
+            $upsells_price_data = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true, $order->currency);
 
             return [
                 'price' => $upsells_price_data['value'],

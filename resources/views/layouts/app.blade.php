@@ -32,10 +32,17 @@
     @else
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js" defer></script>
     @endif
+
+    @if (config('app.env') !== 'local' && config('app.env') !== 'development')
+      <script src="https://browser.sentry-cdn.com/5.6.3/bundle.min.js" crossorigin="anonymous"></script>
+      <script src="https://browser.sentry-cdn.com/5.6.3/vue.min.js" crossorigin="anonymous"></script>
+    @endif
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/index.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/js/intlTelInput.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js" defer></script>
     <script src="{{ asset('scripts/bioep.min.js') }}" defer></script>
     <script src="{{ asset('js/views/header.js') }}" defer></script>
 

@@ -1,7 +1,7 @@
 import { queryParams } from '../utils/queryParams';
 
 
-if (window.Startup && !window.ipqsPatched) {
+if (window.Startup && !window.ipqsLoaded) {
   Startup.success = () => {};
   Startup.failure = () => {};
 
@@ -13,7 +13,7 @@ if (window.Startup && !window.ipqsPatched) {
     Startup.failure(result);
   });
 
-  window.ipqsPatched = true;
+  window.ipqsLoaded = true;
 }
 
 

@@ -127,7 +127,7 @@
       color: #d4513a;
     }
 
-    & > h3 {
+    h3 {
       font-size: 30px;
       margin-bottom: 5px;
       text-align: center;
