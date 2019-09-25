@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->skus[0]['name'] . ' - ' . 'Refund Policy')
+@section('title', $product->skus[0]['name'] . ' - ' . $loadedPhrases['refunds_title'])
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/static.css') }}">

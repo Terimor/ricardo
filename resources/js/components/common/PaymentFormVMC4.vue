@@ -254,6 +254,7 @@
 </template>
 <script>
   import { t } from '../../utils/i18n';
+  import { check as ipqsCheck } from '../../services/ipqs';
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
@@ -283,6 +284,7 @@
 				maxSteps: 3,
 				isOpenCVVModal: false,
         isOpenPromotionModal: false,
+        isSubmitted: false,
 				form: {
 					stepTwo: {
 						fname: null,
@@ -414,7 +416,35 @@
       },
 			submit() {
 				this.$v.form.$touch();
-				this.$emit('onSubmit', this.form)
+
+        if (this.isSubmitted) {
+          return;
+        }
+
+        this.isSubmitted = true;
+
+        let fields = {
+          billing_first_name: this.form.stepTwo.fname,
+          billing_last_name: this.form.stepTwo.lname,
+          billing_country: this.form.stepThree.country,
+          billing_city: this.form.stepThree.city,
+          billing_region: this.form.stepThree.state,
+          billing_postcode: this.form.stepThree.zipCode,
+          billing_email: this.form.stepTwo.email,
+          billing_phone: this.form.stepTwo.phone,
+          credit_card_bin: this.form.stepThree.cardNumber.substr(0, 6),
+          //credit_card_hash: sha256 hash of credit card number,
+          credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
+          credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
+          cvv_code: this.form.stepThree.cvv,
+        };
+
+        Promise.resolve()
+          .then(() => ipqsCheck(fields))
+          .then(result => {
+            this.$emit('onSubmit', this.form, result);
+            this.isSubmitted = false;
+          });
 			},
       paypalSubmit() {
 
