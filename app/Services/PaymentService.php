@@ -31,6 +31,7 @@ class PaymentService
     const METHOD_EPS              = 'eps';
 
     /**
+     * Saga PaymentUtils::$providers     
      * Payment providers
      * +3ds — 3DS is required
      * -3ds — 3DS is optional
@@ -136,12 +137,13 @@ class PaymentService
     ];
 
     /**
+     * Saga PaymentUtils::$methods
      * Payment methods
      * @var type
      */
     public static $methods = [
         self::METHOD_INSTANT_TRANSFER => [
-            'name'      => 'Instant transfer',
+            'name'      => 'PayPal',
             'logo'      => 'https://static-backend.saratrkr.com/image_assets/paypal-curved-128px.png',
             'is_active' => true
         ],

@@ -333,7 +333,7 @@ class CurrencyService
      */
     public static function cacheCurrencyCultureCode()
     {
-        $currencies = Currency::all();
+        $currencies = Currency::where(['status' => 'status'])->get();
         $currencyCultureCodes = [];
         // check countries
         foreach ($currencies as $currency) {
