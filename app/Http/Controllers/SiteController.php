@@ -191,7 +191,7 @@ class SiteController extends Controller
 
 		$orderCustomer = null;
 		if (request()->get('order')) {
-            $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+            $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'), true);
 		}
         
         if (!$orderCustomer) {
