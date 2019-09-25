@@ -146,7 +146,7 @@
               {{ thirdTitle }}
             </h2>
             <select-field
-                v-if="countryCode === 'MX'"
+                v-if="paymentForm.country === 'MX'"
                 :validation="$v.form.cardType"
                 :validationMessage="textCardTypeRequired"
                 :disabled="+installments !== 1"

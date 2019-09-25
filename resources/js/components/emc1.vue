@@ -15,7 +15,7 @@
             </div>
             <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
               <select-field
-                  v-if="withInstallments"
+                  v-if="withInstallments && form.cardType === 'credit'"
                   :label="textInstallmentsTitle"
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
@@ -347,9 +347,9 @@ export default {
       return Object.values(this.cart).every(it => it === 0)
     },
     withInstallments () {
-      return this.checkoutData.countryCode === 'BR'
-        || this.checkoutData.countryCode === 'MX'
-        || this.checkoutData.countryCode === 'CO'
+      return this.form.country === 'BR'
+        || this.form.country === 'MX'
+        || this.form.country === 'CO'
     },
     quantityOfInstallments () {
       const { installments } = this.form
