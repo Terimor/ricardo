@@ -1,5 +1,6 @@
 @extends('layouts.app', ['product' => $product])
 
+@section('title', $product->page_title)
 
 @section('script')
 <script type="text/javascript">
