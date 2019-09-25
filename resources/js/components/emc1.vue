@@ -15,7 +15,7 @@
             </div>
             <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
               <select-field
-                  v-if="withInstallments && form.cardType === 'credit'"
+                  v-if="form.country === 'MX' && form.cardType === 'credit'"
                   :label="textInstallmentsTitle"
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
