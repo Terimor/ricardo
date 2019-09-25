@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', $product->page_title . ' - ' . $loadedPhrases['upsells.title'])
+
 @section('script')
 <script>
     const upsellsData = {
