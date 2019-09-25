@@ -228,7 +228,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'BR'"
+                v-if="countryCode === 'BR' || paymentForm.country === 'BR'"
                 placeholder="___.___.___-__"
                 :rest="{
                   'format': '___.___.___-__',
@@ -241,7 +241,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'CO'"
+                v-if="countryCode === 'CO' || paymentForm.country === 'CO'"
                 placeholder="1234567890"
                 :rest="{
                   'format': '1234567890',
