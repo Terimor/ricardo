@@ -162,12 +162,13 @@ class SiteController extends Controller
 		$orderCustomer = null;
 		if (request()->get('order')) {
             $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
-            if (!$orderCustomer) {
-                // generate global get parameters
-                $params = \Utils::getGlobalGetParameters($request);
-                return redirect('/checkout'.$params);
-            }
 		}
+        
+        if (!$orderCustomer) {
+            // generate global get parameters
+            $params = \Utils::getGlobalGetParameters($request);
+            return redirect('/checkout'.$params);
+        }
 
         $countryCode = \Utils::getLocationCountryCode();
 
@@ -190,13 +191,14 @@ class SiteController extends Controller
 
 		$orderCustomer = null;
 		if (request()->get('order')) {
-			$orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'), true);
-            if (!$orderCustomer) {
-                // generate global get parameters
-                $params = \Utils::getGlobalGetParameters($request);
-                return redirect('/checkout'.$params);
-            }
+            $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
 		}
+        
+        if (!$orderCustomer) {
+            // generate global get parameters
+            $params = \Utils::getGlobalGetParameters($request);
+            return redirect('/checkout'.$params);
+        }
         $countryCode = \Utils::getLocationCountryCode();
 
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
