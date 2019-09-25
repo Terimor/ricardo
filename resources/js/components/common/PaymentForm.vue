@@ -86,7 +86,7 @@
               type="error">
             </el-alert>
             <text-field
-                v-if="isBrazil"
+                v-if="isSpecialCountrySelected"
                 theme="variant-1"
                 :label="textComplemento"
                 v-model="paymentForm.complemento"/>
