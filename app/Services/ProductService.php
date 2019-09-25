@@ -55,9 +55,14 @@ class ProductService
 
     /**
      * Get upsell product by ID
-     * @param type $productId
+     *
+     * @param $product
+     * @param string $productId
+     * @param int $maxQuantity
+     * @param null $currency_code
+     * @return stdClass
      */
-    public function getUpsellProductById($product, string $productId, $maxQuantity = 5)
+    public function getUpsellProductById($product, string $productId, $maxQuantity = 5, $currency_code = null)
     {
 		// check upsell product by ID
 		$productUpsells = !empty($product->upsells) ? $product->upsells : null;
@@ -96,6 +101,10 @@ class ProductService
 			abort(405, 'Method Not Allowed');
 		}
 
+		if ($currency_code) {
+		    $upsell->currency = $currency_code;
+        }
+
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
 
         $upsellLocalize = $this->localizeUpsell($upsell);
@@ -108,15 +117,14 @@ class ProductService
 	 * @param array $ulsells
 	 * @param float $total
 	 */
-	public function calculateUpsellsTotal($product, array $upsells, float $total = null, $with_extra = false) : array
+	public function calculateUpsellsTotal($product, array $upsells, float $total = null, $with_extra = false, $currency_code = null) : array
 	{
 		// TODO: modify WHERE IN
 		$upsellProducts = [];
 		$totalSumCalc = 0;
-		$currency_code = null;
 		$exchange_rate = null;
 		foreach ($upsells as $id => $quantity) {
-			$upsellProduct = $this->getUpsellProductById($product, $id, $quantity);
+			$upsellProduct = $this->getUpsellProductById($product, $id, $quantity, $currency_code);
 			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['price']) ? $upsellProduct->upsellPrices[$quantity]['price'] : 0;
 		    $currency_code = $upsellProduct->upsellPrices[$quantity]['code'];
 		    $exchange_rate = $upsellProduct->upsellPrices[$quantity]['exchange_rate'];
@@ -236,7 +244,7 @@ class ProductService
         $lp->upsell_sku = $product['skus'][0]['code'];
 
         $lp->image = !empty($product->image[0]) ? $product->image[0] : null;
-        $lp->upsellPrices = $product->upsellPrices ?? null;        
+        $lp->upsellPrices = $product->upsellPrices ?? null;
 
         return $lp;
     }

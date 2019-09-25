@@ -36,7 +36,7 @@ class PayPalCrateOrderRequest extends FormRequest
             'is_warranty_checked' => [
                 'boolean',
             ],
-            'order_id' => [
+            'order' => [
                 'nullable',
                 'string'
             ],

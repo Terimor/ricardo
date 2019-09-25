@@ -18,7 +18,7 @@ class OdinProduct extends Model
 
     protected $images;
     protected $upsellPrices;
-    protected $currency;
+    public $currency;
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
@@ -342,21 +342,21 @@ class OdinProduct extends Model
             }
             $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($discountPrice, $currency);
         }
-        
+
         if (empty($discountLocalPrice['price']) || $discountLocalPrice['price'] <= 0) {
             logger()->error("Price is 0 for upsell product {$this->_id}", ['fixedPrice' => $fixedPrice, 'discountPercent' => $discountPercent]);
             return false;
         }
-        
-        // quantity loop        
+
+        // quantity loop
         $this->attributes['upsellPrices']['discount_percent'] = $discountPercent;
-        for ($i=1; $i <= $maxQuantity; $i++) {            
+        for ($i=1; $i <= $maxQuantity; $i++) {
           $this->attributes['upsellPrices'][$i]['price'] = $discountLocalPrice['price']*$i;
           $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
           $this->attributes['upsellPrices'][$i]['code'] = $discountLocalPrice['code'];
           $this->attributes['upsellPrices'][$i]['exchange_rate'] = $discountLocalPrice['exchange_rate'];
-        }        
-        
+        }
+
         return true;
     }
 
