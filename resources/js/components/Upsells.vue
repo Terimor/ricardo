@@ -137,9 +137,9 @@
 
     beforeCreate() {
       localStorage.removeItem('subOrder');
-      if (performance.navigation.type == 1 || upsellsData.product.upsells === 0) {
-        goTo(`/thankyou/?order=${localStorage.getItem('odin_order_id')}`);
-      }
+      // if (performance.navigation.type == 1 || upsellsData.product.upsells === 0) {
+      //   goTo(`/thankyou/?order=${localStorage.getItem('odin_order_id')}`);
+      // }
     },
 
     watch: {

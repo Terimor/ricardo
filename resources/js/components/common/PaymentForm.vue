@@ -323,7 +323,11 @@
         const numberLength = this.paymentForm.number && this.paymentForm.number.length
         const streetLength = this.paymentForm.street && this.paymentForm.street.length
 
-        return numberLength + streetLength >= 35;
+        if (this.countryCode === 'BR' || this.countryCode === 'MX' || this.countryCode === 'CO') {
+          return numberLength + streetLength >= 35;
+        } else {
+          return false;
+        }
       },
 
       exp () {

@@ -7,7 +7,7 @@
         </span>
       </h3>
       <h5>
-        {{ lastChanceText }}
+        {{ lastChanceText }} {{ name }} {{ forJustText }}
         <span class="price">
           {{ priceFormatted }}!
         </span>
@@ -73,6 +73,7 @@ export default {
   computed: {
     cantLeaveText: () => t('upsells.cant_leave'),
     lastChanceText: () => t('upsells.last_chance'),
+    forJustText: () => t('upsells.for_just'),
     addToCartText: () => t('upsells.add_to_cart'),
     pleaseChooseText: () => t('upsells.choose'),
 
