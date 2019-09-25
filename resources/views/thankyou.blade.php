@@ -29,8 +29,8 @@
 
 @section('content')
     <div class="container thank-you" id="thank-you">
-        <p class="thank-you__order">@{{ orderText }}: {{ $orderCustomer->number }}</p>
-        <h2 class="thank-you__name">@{{ thankYouText }} {{ $orderCustomer->customer_first_name }}</h2>
+        <p class="thank-you__order">{{ t('thankyou.order') }}: {{ $orderCustomer->number }}</p>
+        <h2 class="thank-you__name">{{ t('thankyou.thankyou') }} {{ $orderCustomer->customer_first_name }}</h2>
         <div class="border-box thank-you__container">
             <div id="map">
                 <iframe
@@ -45,11 +45,11 @@
                     marginwidth="0"
                 ></iframe>
             </div>
-            <h4>@{{ orderConfirmedText }}</h4>
-            <p>@{{ orderAcceptedText }} {{ $orderCustomer->customer_email }}</p>
+            <h4>{{ t('thankyou.order.confirmed') }}</h4>
+            <p>{{ t('thankyou.order.accepted') }} {{ $orderCustomer->customer_email }}</p>
         </div>
         <div class="border-box thank-you__details">
-            <h4>@{{ orderDetailsText }}</h4>
+            <h4>{{ t('thankyou.order.details') }}</h4>
 
             <div class="thank-you__order">
                 <div class="d-flex">
@@ -63,7 +63,7 @@
                             class="thank-you__order__name"
                             v-if="selectedProductData.isWarrantyChecked"
                         >
-                            @{{ warrantyText }}: @{{ selectedProductData.prices.warranty_price_text }}
+                            {{ t('thankyou.order.warranty') }}: @{{ selectedProductData.prices.warranty_price_text }}
                         </div>
                     </div>
                 </div>
@@ -80,11 +80,11 @@
             <hr>
 
             <p class="paragraph d-flex justify-content-between">
-                <span>@{{ subtotalText }}:</span>
+                <span>{{ t('thankyou.subtotal') }}:</span>
                 <span>@{{ total }}</span>
             </p>
             <p class="paragraph d-flex justify-content-between">
-                <span>@{{ paymentMethodText }}:</span>
+                <span>{{ t('thankyou.payment.method') }}:</span>
                 <span>PayPal</span>
             </p>
 
@@ -92,7 +92,7 @@
 
             <p class="paragraph d-flex justify-content-between">
                 <span>
-                    @{{ orderTotalText }}:
+                    {{ t('thankyou.order.total') }}:
                 </span>
                 <span class="bold">
                     @{{ total }}
@@ -101,8 +101,8 @@
 
         </div>
         <div class="border-box thank-you__customer-info">
-            <h4>@{{ customerInfoText }}</h4>
-            <p class="thank-you__shipping">@{{ shippingAddressText }}</p>
+            <h4>{{ t('thankyou.customer.info') }}</h4>
+            <p class="thank-you__shipping">{{ t('thankyou.shipping.address') }}</p>
             <p class="paragraph">{{ $orderCustomer->customer_first_name }} {{ $orderCustomer->customer_last_name }}</p>
             <p class="paragraph">{{ $orderCustomer->shipping_street }}</p>
             <p class="paragraph">{{ $orderCustomer->shipping_city }} {{ strtoupper($orderCustomer->shipping_country)  }}</p>
@@ -110,9 +110,9 @@
 
         </div>
         <div class="border-box thank-you__share-order">
-            <h4 class="text-center">@{{ shareYourOrderText }}</h4>
+            <h4 class="text-center">{{ t('thankyou.share') }}</h4>
             <p class="text-center">
-                @{{ weHopeText }}
+                {{ t('thankyou.hope') }}
             </p>
 
             <ul id="social-media-tabs" class="nav nav-tabs">
@@ -130,7 +130,7 @@
                 </li>
             </ul>
 
-            <textarea id="quote" rows="10">@{{ textareaBaseText }}</textarea>
+            <textarea id="quote" rows="10">{{ t('thankyou.bought') }}</textarea>
 
             <div class="d-flex justify-content-center">
                 <button
@@ -138,7 +138,7 @@
                     class="green-button"
                     @click="share"
                 >
-                    @{{ shareText }}
+                    {{ t('thankyou.order.share.item') }}
                 </button>
             </div>
         </div>
