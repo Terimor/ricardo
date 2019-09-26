@@ -4,6 +4,11 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\ProductNotFoundException;
+use App\Exceptions\CustomerUpdateException;
+use App\Exceptions\InvalidParamsException;
+use App\Exceptions\OrderUpdateException;
+use App\Exceptions\PaymentException;
 
 class Handler extends ExceptionHandler
 {
@@ -55,6 +60,27 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof InvalidParamsException) {
+            return response()->json([
+                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+            ], 400);
+        } else if ($exception instanceof ProductNotFoundException) {
+            return response()->json([
+                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+            ], 404);
+        } else if ($exception instanceof CustomerUpdateException) {
+            return response()->json([
+                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+            ], 500);
+        } else if ($exception instanceof OrderUpdateException) {
+            return response()->json([
+                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+            ], 500);
+        } else if ($exception instanceof PaymentException) {
+            return response()->json([
+                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+            ], 500);
+        }
         return parent::render($request, $exception);
     }
 }
