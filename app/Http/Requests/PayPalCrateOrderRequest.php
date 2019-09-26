@@ -52,6 +52,9 @@ class PayPalCrateOrderRequest extends FormRequest
                 'nullable',
                 'string'
             ],
+            'ipqs' => [
+                'nullable'
+            ]
         ];
     }
 }
