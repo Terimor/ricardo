@@ -502,18 +502,19 @@
         const { ebanxpay: { url, integration_key } } = apiUrlList
         this.isLoading.address = true
 
-        return axios.post('https://cors-anywhere.herokuapp.com/' + url + `/ws/zipcode`, null, { // TODO delete proxy
-          params: {
-            integration_key,
-            zipcode,
-          }
-        })
-          .then((res) => {
+        return Promise.resolve()
+          .then(() => {
+            return fetch('https://cors-anywhere.herokuapp.com/' + url + '/ws/zipcode?integration_key=' + encodeURIComponent(integration_key) + '&zipcode=' + encodeURIComponent(zipcode), {
+              method: 'post',
+            });
+          })
+          .then(res => res.json())
+          .then(res => {
             this.isLoading.address = false
 
-            if (res.data.status === 'ERROR') return
+            if (res.status === 'ERROR') return
 
-            const { data: { zipcode: { address, city, state } } } = res
+            const { zipcode: { address, city, state } } = res
 
             this.$emit('setAddress', {
               street: address,
