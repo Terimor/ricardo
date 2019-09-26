@@ -181,6 +181,7 @@ class ProductService
         $lp->home_name = $product->home_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
+        $lp->favicon_image = $product->favicon_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
 
         $prices = [];

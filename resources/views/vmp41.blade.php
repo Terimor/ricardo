@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['product' => $product])
 
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 

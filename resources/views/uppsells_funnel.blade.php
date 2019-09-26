@@ -1,6 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.app', ['product' => $product])
 
 @section('title', $product->page_title . ' - ' . $loadedPhrases['upsells.title'])
+
+@section('head')
+    @if (!empty($product->favicon_image))
+        <link rel="shortcut icon" href="{{ $product->favicon_image }}">
+    @endif
+@endsection
 
 @section('script')
 <script>

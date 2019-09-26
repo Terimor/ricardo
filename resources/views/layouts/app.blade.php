@@ -9,6 +9,10 @@
 
     <title>@yield('title', config('app.name'))</title>
 
+    @if (!empty(optional($product)->favicon_image))
+        <link rel="shortcut icon" href="{{ $product->favicon_image }}">
+    @endif
+
     @yield('head')
 
     <!-- Scripts -->
