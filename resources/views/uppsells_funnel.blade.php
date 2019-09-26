@@ -25,7 +25,7 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/uppsells.css') }}">
 
-    <div id="app" class="container upsells">
+    <div class="container upsells">
         <upsells-component></upsells-component>
     </div>
 @endsection

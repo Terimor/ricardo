@@ -1,6 +1,5 @@
 import VueMq from 'vue-mq'
 import './services/queryParams';
-import './services/sentry';
 import './services/ipqs';
 import './UIsettings';
 
