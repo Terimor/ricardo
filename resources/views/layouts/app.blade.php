@@ -6,6 +6,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="ga-id" content="{{ $ga_id }}">
 
     <title>@yield('title', config('app.name'))</title>
 

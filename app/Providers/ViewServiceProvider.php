@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Domain;
 use App\Models\Setting;
 use App\Services\UtilsService;
 use Illuminate\Support\Facades\View;
@@ -32,6 +33,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
+            $view->with('ga_id', Domain::where('name', request()->getHost())->pluck('ga_id')->first());
         });
     }
 }
