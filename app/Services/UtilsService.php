@@ -664,8 +664,6 @@ class UtilsService
 			$remoteHost = Setting::getValue('cf_host_default');
 		}
 
-        $remoteHost = 'odin.saga-be.host';
-
 		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
 		// cut www. from url
 		$url = str_replace('www.', '', $url);
