@@ -21,10 +21,12 @@ class OdinProduct extends Model
     public $currency;
 
     protected $fillable = [
-        'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout', 'logo_image_id', 'billing_descriptor', 'qty_default',
-    'is_shipping_cost_only', 'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
-    'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label',
-    'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency', 'image_ids'
+        'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout',
+        'logo_image_id', 'favicon_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only',
+        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
+        'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
+        'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency',
+        'image_ids'
     ];
 
     protected $hidden = [
@@ -224,6 +226,9 @@ class OdinProduct extends Model
         if(!empty($this->upsell_hero_image_id)) {
             $ids[$this->upsell_hero_image_id] = $this->upsell_hero_image_id;
         }
+        if (!empty($this->favicon_image_id)) {
+            $ids[$this->favicon_image_id] = $this->favicon_image_id;
+        }
 
         // Product images
         if (!empty($this->attributes['image_ids'])) {
@@ -262,6 +267,19 @@ class OdinProduct extends Model
     public function getLogoImageAttribute($value)
     {
         return (!empty($this->logo_image_id) && !empty( $this->images[$this->logo_image_id])) ? $this->images[$this->logo_image_id] : null;
+    }
+
+    /**
+     * Getter favicon_image
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function getFaviconImageAttribute($value)
+    {
+        return (!empty($this->favicon_image_id) && !empty( $this->images[$this->favicon_image_id]))
+            ? $this->images[$this->favicon_image_id]
+            : null;
     }
 
     /**

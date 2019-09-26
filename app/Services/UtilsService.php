@@ -15,7 +15,7 @@ class UtilsService
 
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
     /**
-     * Array using global parameters on site     
+     * Array using global parameters on site
      */
     public static $globalGetParameters = ['product', 'cur', 'tpl', '_ip'];
 
@@ -607,7 +607,7 @@ class UtilsService
             $location = \Location::get($ip);
         } else {
             // TODO - REMOVE _ip and Location::get('42.112.209.164')
-            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : \Location::get(request()->ip());            
+            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : \Location::get(request()->ip());
         }
 
         return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
@@ -664,12 +664,14 @@ class UtilsService
 			$remoteHost = Setting::getValue('cf_host_default');
 		}
 
+        $remoteHost = 'odin.saga-be.host';
+
 		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
 		// cut www. from url
 		$url = str_replace('www.', '', $url);
 		return $url;
 	}
-    
+
     /**
      * Return URL get parameters string from get parameters
      * @param type $request
@@ -682,20 +684,20 @@ class UtilsService
             $request = request();
         }
         $string = '';
-        foreach (self::$globalGetParameters as $key => $param) {            
-            if (!in_array($param, $excludeParams)) {                
+        foreach (self::$globalGetParameters as $key => $param) {
+            if (!in_array($param, $excludeParams)) {
                 if ($request->get($param)) {
                     $string.= $param.'='.$request->get($param).'&';
                 }
             }
         }
         // remove last ? from string
-        if ($string) {            
+        if ($string) {
             $string = '?'.substr_replace($string , '', -1);
         }
         return $string;
     }
-    
+
     /**
      * Return array params from url link
      * @param string $url
@@ -709,7 +711,7 @@ class UtilsService
         if (!empty($url['query'])) {
             $params = explode("&", $url['query']);
         }
-        
+
         if ($params) {
             foreach ($params as $param) {
                 $val = explode("=", $param);
@@ -718,7 +720,7 @@ class UtilsService
                 }
             }
         }
-        
+
         return $paramsArray;
     }
 
