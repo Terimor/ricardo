@@ -79,7 +79,7 @@ class OdinProduct extends Model
      */
     public function getLongNameAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+        return $this->getFieldLocalText($value);
     }
 
     /**
@@ -377,7 +377,7 @@ class OdinProduct extends Model
      */
     public function getPageTitleAttribute()
     {
-        return $this->skus[0]['name'];
+        return $this->long_name;
     }
 
     /**

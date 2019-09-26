@@ -36,7 +36,7 @@ export default {
   data () {
     return {
       showPreloader: true,
-      title: checkoutData.product.skus[0].name,
+      title: checkoutData.product.page_title,
       additionalTitle: ' ' + t('checkout.page_title'),
       waitTitle: t('checkout.page_title.wait'),
     }
