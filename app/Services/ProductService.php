@@ -6,6 +6,7 @@ use App\Models\OdinProduct;
 use App\Models\Domain;
 use Illuminate\Http\Request;
 use App\Models\Localize;
+use App\Exceptions\ProductNotFoundException;
 
 /**
  * Class ProductService
@@ -13,6 +14,20 @@ use App\Models\Localize;
  */
 class ProductService
 {
+    /**
+     * Returns product by Sku
+     * @param  string $sku
+     * @return OdinProduct
+     * @throws OdinProductNotFoundException
+     */
+    public function getBySku(string $sku)
+    {
+        $product = OdinProduct::where('skus.code', $sku)->first();
+        if (!$product) {
+            throw new ProductNotFoundException("Product {$sku} not found");
+        }
+        return $product;
+    }
     /**
      * @param Request $request
      * @return OdinProduct

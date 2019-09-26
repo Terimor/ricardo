@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Setting;
 use App\Services\UtilsService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +28,7 @@ class ViewServiceProvider extends ServiceProvider
     {
         View::composer('layouts.app', function($view) {
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
+            $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
         });
     }
 }

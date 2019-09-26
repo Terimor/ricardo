@@ -18,8 +18,13 @@ if (window.Startup && !window.ipqsLoaded) {
 
 
 export function check(fields = {}) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const params = queryParams();
+
+    if (!window.Startup) {
+      resolve(null);
+      return;
+    }
 
     for (const key of Object.keys(params)) {
       Startup.Store(key, params[key]);
@@ -50,7 +55,7 @@ export function check(fields = {}) {
     };
 
     Startup.failure = result => {
-      reject(result);
+      resolve(null);
     };
 
     Startup.Init();

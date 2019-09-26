@@ -577,10 +577,7 @@
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
-          .then(result => {
-            //fraud_chance: result.fraud_chance,
-            //device_id: result.device_id,
-
+          .then(ipqsResult => {
             if (paymentForm.paymentType === 'bank-payment') {
               this.isSubmitted = false;
               this.$emit('showCart');
