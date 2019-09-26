@@ -536,10 +536,8 @@ class PayPalService
                 $order->txns_fee_usd += CurrencyService::roundValueByCurrencyRules(round($fee / $currency->usd_rate, 2), self::DEFAULT_CURRENCY);
 
                 $order->status = $this->getOrderStatus($order);
+                $order->is_invoice_sent = false;
                 $order->save();
-
-                // send satisfaction email
-                (new EmailService())->sendSatisfactionEmail($order);
             }
         }
     }
