@@ -4,34 +4,28 @@ export const getTotalPrice = (data, total) => {
   const formattedData = groupBy(data, 'id', 'quantity')
   const cur = localStorage.getItem('order_currency');
 
-  return axios
-    .post(`/calculate-upsells-total/${cur ? '?cur=' + cur : ''}`,
-      {
+  return fetch(`/calculate-upsells-total/${cur ? '?cur=' + cur : ''}`, {
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({
         upsells: formattedData,
         total,
-      },
-      {
-        credentials: 'same-origin',
-        headers: {
-          accept:
-          'application/json',
-          'content-type': 'application/json'
-        },
-      })
-    .then(({ data }) => {
-      return data.value_text;
-    });
+      }),
+    })
+    .then(res => res.json())
+    .then(res => res.value_text);
 };
 
 export const getUppSells = (product_id, quantity) => {
   const cur = localStorage.getItem('order_currency');
-  return axios
-    .get(`/upsell-product/${product_id}/${cur ? '?cur=' + cur : ''}`, {
-      params: {
-        quantity,
-      }
-    })
-    .then((res) => {
-      return res;
-    });
+
+  return fetch(`/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`)
+    .then(res => res.json())
+    .then(res => ({ data: res }));
 };

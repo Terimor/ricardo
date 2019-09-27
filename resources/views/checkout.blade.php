@@ -30,11 +30,8 @@
 
 @section('content')
 
-<div id="app">
-  @include('components.product_offer')
-
-  <app-component></app-component>
-</div>
+@include('components.product_offer')
+<app-component></app-component>
 
 @include('layouts.footer', ['isWhite' => true])
 
