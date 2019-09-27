@@ -87,7 +87,7 @@
       height: 55px;
       overflow: hidden;
     }
- 
+
     .paypal-shim {
       align-items: center;
       background-color: #ffc438;
@@ -128,7 +128,7 @@
         font-weight: 700;
         white-space: nowrap;
       }
- 
+
       .image {
         margin-left: 10px;
         margin-top: -2px;

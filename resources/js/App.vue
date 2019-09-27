@@ -5,6 +5,7 @@
     ></notice>
     <smc7-component
       :showPreloader="showPreloader"
+      :skusList="skusList"
       v-if="queryParams.tpl === 'smc7'" />
     <vmc4-component
       :showPreloader="showPreloader"

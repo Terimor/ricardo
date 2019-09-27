@@ -30,8 +30,15 @@
 
 @section('content')
 
-@include('components.product_offer')
-<app-component></app-component>
+<div id="app">
+  @section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
+
+    @if (! Request::get('tpl') === 'smc7')
+        # @include('components.product_offer')
+    @endif
+
+  <app-component></app-component>
+</div>
 
 @include('layouts.footer', ['isWhite' => true])
 

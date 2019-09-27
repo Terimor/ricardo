@@ -5,8 +5,8 @@ import { t } from './i18n';
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
-    3: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
-    5: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
+    3: `(${discountPercent}% ${t('checkout.discount')}, <span class="red">${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}</span>/${t('checkout.unit')})`,
+    5: `(${discountPercent}% ${t('checkout.discount')}, <span class="red">${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}</span>/${t('checkout.unit')})`,
   }
 
   return config[key]
@@ -98,7 +98,7 @@ export function preparePurchaseData({
           it.is_bestseller ? t('checkout.bestseller') :
             it.is_popular ? t('checkout.best_deal') :
               '',
-        text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' ' + t('checkout.free') : ''}`,
+        text: `${mainQuantity + freeQuantity}x ${long_name}`,
         newPrice: getNewPrice({
           key,
           valueTexts,
