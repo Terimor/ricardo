@@ -1,12 +1,21 @@
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
+import { queryParams } from  './queryParams';
+
+
+
 
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
+
+  const currentPrice = queryParams().tpl === 'emc1b'
+    ? `${getCountOfInstallments(installments)}${valueTexts.valueText[installments]}`
+    : `${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')}`;
+
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
-    3: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
-    5: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
+    3: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
+    5: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
   }
 
   return config[key]
@@ -109,6 +118,7 @@ export function preparePurchaseData({
           valueTexts,
           installments,
         }),
+        pricePerUnit: valueTexts.unitValueText,
         discountText: onlyDiscount ?
           getOnlyDiscount({key, discountPercent}) :
           getDiscount({
