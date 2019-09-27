@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Models\Txn;
 use App\Services\OrderService;
 use App\Services\PaymentService;
+use Illuminate\Http\Request;
 use Checkout\CheckoutApi;
 use Checkout\Models\Payments\Payment;
 use Checkout\Models\Payments\CardSource;
@@ -23,10 +24,17 @@ class CheckoutDotComService
     const SUCCESS_CODE = 10000;
     const SUCCESS_FLAGGED_CODE = 10100;
 
+    const TYPE_WEBHOOK_CAPTURED = 'payment_captured';
+
     /**
      * @var string
      */
     private $secret_key;
+
+    /**
+     * @var string
+     */
+    private $captured_webhook_secret_key;
 
     /**
      * @var string
@@ -55,6 +63,12 @@ class CheckoutDotComService
             logger()->error("Checkout.com public_key not found");
         }
 
+        $this->captured_webhook_secret_key = Setting::getValue('checkout_dot_com_captured_webhook_secret_key');
+
+        if (!$this->captured_webhook_secret_key) {
+            logger()->error("Checkout.com captured_webhook_secret_key not found");
+        }
+
         $env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
 
         $this->checkout = new CheckoutApi($this->secret_key, $env === self::ENV_SANDBOX);
@@ -62,7 +76,7 @@ class CheckoutDotComService
 
     /**
      * Creates a new payment
-     * @param array $cardholder
+     * @param array $card
      * @param array $contact
      * @param OdinOrder $order
      * @return array
@@ -127,6 +141,37 @@ class CheckoutDotComService
         } catch (CheckoutException $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'errors' => $ex->getErrors()];
             logger()->error("Checkout.com", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Validates webhook
+     * @param  Request $req
+     * @return array
+     */
+    public function validateCaptureWebhook(Request $req)
+    {
+        $auth_secret = $req->header('authorization');
+        $auth_sign = $req->header('cko-signature');
+        $content = $req->getContent();
+        $type = $req->get('type');
+        $data = $req->get('data') ?? [];
+
+        $result = [ 'status' => false ];
+
+        if ($type === self::TYPE_WEBHOOK_CAPTURED && $auth_secret === $this->captured_webhook_secret_key) {
+            $sign = hash_hmac('sha256', $content, $this->secret_key);
+            if ($auth_sign === $sign && !empty($data)) {
+                $result = [
+                    'status'    => true,
+                    'hash'      => $data['id'],
+                    'number'    => $data['reference'],
+                    'value'     => $data['amount'],
+                    'currency'  => $data['currency']
+                ];
+            }
         }
 
         return $result;

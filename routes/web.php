@@ -35,8 +35,8 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/product/local-price', 'ProductController@getLocalPrice');
 
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
-    $router->get('/test-checkoutcom', 'PaymentsController@createCardOrder');
-    $router->post('/test-checkoutdotcom-captured', 'PaymentsController@capturedWebhook');
+    $router->post('/test-checkout-card', 'PaymentsController@createCardOrder');
+    $router->post('/test-checkoutdotcom-captured', 'PaymentsController@checkoutDotComCapturedWebhook');
     $router->get('/test-paypal', 'PaymentsController@testPaypal');
 
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
