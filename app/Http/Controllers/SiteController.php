@@ -208,6 +208,17 @@ class SiteController extends Controller
 
         return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases'));
     }
+    
+    /**
+     * Splash page
+     * @return type
+     */
+    public function splash(Request $request, ProductService $productService)
+    {
+        $loadedPhrases = (new I18nService())->loadPhrases('splash_page');
+        $product = $productService->resolveProduct($request, true);
+        return view('splash', compact('loadedPhrases', 'product'));
+    }    
 
     /**
      *
