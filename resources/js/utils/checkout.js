@@ -152,3 +152,21 @@ export function getCardUrl(cardType) {
   }
   return cardMap[cardType] || cardMap.iconcc
 }
+
+
+export function sendCheckoutRequest(data) {
+  const currency = queryParams().cur || checkoutData.product.prices.currency;
+
+  return Promise.resolve()
+    .then(() => fetch('/test-checkout-card?cur=' + currency, {
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify(data),
+    }))
+    .then(res => res.json());
+}
