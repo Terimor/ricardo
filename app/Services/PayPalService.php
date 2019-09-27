@@ -86,7 +86,7 @@ class PayPalService
         $pp_items = $upsell_order_products = [];
 
         foreach ($request->get('upsells') as $upsell_product_id => $upsell_product_quantity) {
-            $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id, 5, $upsell_order->currency);
+            $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id, $upsell_product_quantity, $upsell_order->currency);
             $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'];
 
             // Converting to USD.
