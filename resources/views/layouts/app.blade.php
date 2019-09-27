@@ -65,9 +65,7 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css">
     @endif
 
-    <link rel="stylesheet" href="/css/checkout.css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-
     @yield('styles')
 </head>
 <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
