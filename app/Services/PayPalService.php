@@ -71,46 +71,40 @@ class PayPalService
         }
 
         $this->checkIforderAllowedForAddingProducts($upsell_order);
-
         $product = $this->findProductBySku($request->get('sku_code'));
 
-        $priceData = $this->getPrice($request, $product, $upsell_order);
-        $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
-        $upsells_total_local_currency = $priceData['code'];
-        $upsells_total_price = $priceData['price'];
-        $upsells_total_price_usd = $price = CurrencyService::roundValueByCurrencyRules(round($priceData['price'] / $priceData['exchange_rate'], 2), self::DEFAULT_CURRENCY);
-
+        $total_upsell_price = $total_upsell_price_usd = 0;
         $pp_items = [];
-        $upsell_order_products = []; // Will store upsell products that will be added to an existing order products array.
-        $upsell_order_currency_code = !$is_currency_supported ? self::DEFAULT_CURRENCY : $upsells_total_local_currency;
-        $upsell_order_total_price = !$is_currency_supported ? $upsells_total_price_usd : $upsells_total_price;
+        $upsell_order_currency_code = null;
 
         foreach ($request->get('upsells') as $upsell_product_id => $upsell_product_quantity) {
-            $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id);
-            $temp_upsell_product_usd_price = CurrencyService::roundValueByCurrencyRules(
+            $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id, 5, $upsell_order->currency);
+            $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'];
+            $temp_upsell_item_usd_price = CurrencyService::roundValueByCurrencyRules(
                 round($temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'] / $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['exchange_rate'], 2),
-                self::DEFAULT_CURRENCY
-            );
-            $temp_upsell_product_local_price = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'];
+                self::DEFAULT_CURRENCY);
 
-            // Adding products to a paypal items list.
-            $temp_pp_price = !$is_currency_supported ? $temp_upsell_product_usd_price : $temp_upsell_product_local_price;
+            $total_upsell_price += $temp_upsell_item_price;
+            $total_upsell_price_usd += $temp_upsell_item_usd_price;
+            $upsell_order_currency_code = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['code'];
+
+            // Setting PayPal order items
             $pp_items[] = [
                 'name' => $temp_upsell_product->product_name,
                 'description' => $temp_upsell_product->long_name,
                 'unit_amount' => [
-                    'currency_code' => $upsell_order_currency_code,
-                    'value' => $temp_pp_price,
+                    'currency_code' => $upsell_order->currency,
+                    'value' => $temp_upsell_item_price,
                 ],
                 'quantity' => $upsell_product_quantity
             ];
 
-            // Creating array of an order upsell products
+            // Creating array of an order upsell products.
             $upsell_order_products[] = [
                 'sku_code' => $temp_upsell_product['upsell_sku'],
                 'quantity' => (int)$upsell_product_quantity,
-                'price' => $temp_pp_price,
-                'price_usd' => $temp_upsell_product_usd_price,
+                'price' => $temp_upsell_item_price,
+                'price_usd' => $temp_upsell_item_usd_price,
                 'warranty_price' => null,
                 'warranty_price_usd' => null,
                 'is_main' => false,
@@ -121,13 +115,14 @@ class PayPalService
                 'txn_hash' => null,
                 'is_upsells' => true,
             ];
+
         }
 
         $pp_purchase_unit = [
             'description' => $product->long_name,
             'amount' => [
                 'currency_code' => $upsell_order_currency_code,
-                'value' => $upsell_order_total_price,
+                'value' => $total_upsell_price,
                 'items' => $pp_items,
             ]
         ];
@@ -182,12 +177,13 @@ class PayPalService
             })->toArray();
 
             // Update main order
-            $upsell_order->total_price += $upsell_order_total_price;
-            $upsell_order->total_price_usd += $upsells_total_price_usd;
+            $upsell_order->total_price += $total_upsell_price;
+            $upsell_order->total_price_usd += $total_upsell_price_usd;
             $upsell_order->status = $this->getOrderStatus($upsell_order);
             $upsell_order->txns = array_merge($txns, [$order_txn_data]);
             $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
             $upsell_order->save();
+
         }
 
         return [
