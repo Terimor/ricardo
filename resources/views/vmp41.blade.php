@@ -23,10 +23,6 @@
         window.loadedPhrases = @json($loadedPhrases);
     </script>
 
-    <script type="text/javascript">var IPQ = { Callback: () => {} };</script>
-    <script src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/learn.js"></script>
-    <noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
-
     <script src="{{ asset('js/views/promo.js') }}" defer></script>
 @endsection
 
