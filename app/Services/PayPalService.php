@@ -70,23 +70,32 @@ class PayPalService
             abort(404);
         }
 
+        // If no upsells selected
+        if(!$request->get('upsells')) {
+            return [
+                'braintree_response' => null,
+                'odin_order_id' => optional($upsell_order)->getIdAttribute(),
+                'order_currency' => $upsell_order->currency
+            ];
+        }
+
         $this->checkIforderAllowedForAddingProducts($upsell_order);
         $product = $this->findProductBySku($request->get('sku_code'));
 
         $total_upsell_price = $total_upsell_price_usd = 0;
-        $pp_items = [];
-        $upsell_order_currency_code = null;
+        $pp_items = $upsell_order_products = [];
 
         foreach ($request->get('upsells') as $upsell_product_id => $upsell_product_quantity) {
             $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id, 5, $upsell_order->currency);
             $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'];
+
+            // Converting to USD.
             $temp_upsell_item_usd_price = CurrencyService::roundValueByCurrencyRules(
-                round($temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'] / $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['exchange_rate'], 2),
+                round($temp_upsell_item_price / $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['exchange_rate'], 2),
                 self::DEFAULT_CURRENCY);
 
             $total_upsell_price += $temp_upsell_item_price;
             $total_upsell_price_usd += $temp_upsell_item_usd_price;
-            $upsell_order_currency_code = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['code'];
 
             // Setting PayPal order items
             $pp_items[] = [
@@ -121,7 +130,7 @@ class PayPalService
         $pp_purchase_unit = [
             'description' => $product->long_name,
             'amount' => [
-                'currency_code' => $upsell_order_currency_code,
+                'currency_code' => $upsell_order->currency,
                 'value' => $total_upsell_price,
                 'items' => $pp_items,
             ]
@@ -169,12 +178,13 @@ class PayPalService
             });
 
             // Setting txn_hash for an upsell products
-            $upsell_order_products = collect($upsell_order_products)->transform(function($item, $key) use ($txn_attributes, $product) {
-                $item['txn_hash'] = $txn_attributes['hash'];
-                $item['is_plus_one'] = optional($this->findProductBySku($item['sku_code']))->_id === $product->_id;
+            $upsell_order_products = collect($upsell_order_products)
+                ->transform(function($item, $key) use ($txn_attributes, $product) {
+                    $item['txn_hash'] = $txn_attributes['hash'];
+                    $item['is_plus_one'] = optional($this->findProductBySku($item['sku_code']))->_id === $product->_id;
 
-                return $item;
-            })->toArray();
+                    return $item;
+                })->toArray();
 
             // Update main order
             $upsell_order->total_price += $total_upsell_price;
@@ -183,7 +193,6 @@ class PayPalService
             $upsell_order->txns = array_merge($txns, [$order_txn_data]);
             $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
             $upsell_order->save();
-
         }
 
         return [
