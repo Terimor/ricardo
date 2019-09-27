@@ -33,4 +33,17 @@ class Domain extends Model
     {
         return $this->hasOne(OdinProduct::class, '_id', 'odin_product_id');
     }
+
+    /**
+     * Returns domain by name
+     *
+     * @param null $name
+     * @return Domain|null
+     */
+     public static function getByName($name = null)
+     {
+         $name = $name ?? request()->getHost();
+
+         return Domain::where('name', $name)->first();
+     }
 }

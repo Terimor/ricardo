@@ -33,7 +33,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
-            $view->with('ga_id', Domain::where('name', request()->getHost())->pluck('ga_id')->first());
+            $view->with('ga_id', (optional(Domain::getByName()))->ga_id);
         });
     }
 }
