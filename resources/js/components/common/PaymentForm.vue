@@ -262,9 +262,12 @@
         </button>
         <button
             @click="submit"
+            :disabled="isSubmitted"
             id="purchase-button"
             type="button"
-            class="green-button-animated">
+            class="green-button-animated"
+            :class="{ 'green-button-active': !isSubmitted }">
+            <div v-if="isSubmitted" class="purchase-button-disabled"></div>
             <span class="purchase-button-text" v-html="textSubmitButton"></span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
         </button>
         <el-dialog
@@ -342,6 +345,14 @@
       isSpecialCountrySelected() {
         const specialCountries = ['BR', 'MX', 'CO'];
         return specialCountries.includes(this.countryCode) || specialCountries.includes(this.paymentForm.country);
+      },
+
+      dialCode() {
+        const allCountries = window.intlTelInputGlobals.getCountryData();
+        const phoneCountryCode = this.paymentForm.countryCodePhoneField.toLowerCase();
+        const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
+
+        return country ? country.dialCode : '1';
       },
 
       exp () {
@@ -564,7 +575,7 @@
           billing_region: paymentForm.state,
           billing_postcode: paymentForm.zipcode,
           billing_email: paymentForm.email,
-          billing_phone: paymentForm.phone,
+          billing_phone: this.dialCode + paymentForm.phone,
         };
 
         if (paymentForm.paymentType === 'credit-card') {
@@ -597,12 +608,12 @@
 
               const data = {
                 product: {
-                  sku: queryParams().product || checkoutData.product.skus[0].code,
-                  qty: parseInt(this.paymentForm.deal, 10),
+                  sku: paymentForm.variant,
+                  qty: parseInt(paymentForm.deal, 10),
                 },
                 contact: {
                   phone: {
-                    country_code: window.intlTelInputGlobals.getCountryData().filter(item => item.iso2 === paymentForm.countryCodePhoneField.toLowerCase())[0].dialCode,
+                    country_code: this.dialCode,
                     number: paymentForm.phone,
                   },
                   first_name: paymentForm.fname,
@@ -627,6 +638,8 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
+                  this.isSubmitted = false;
+
                   if (res.status === 'ok') {
                     localStorage.setItem('odin_order_id', res.order_id);
                     localStorage.setItem('order_currency', res.order_currency);
@@ -912,6 +925,17 @@
                 font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
                 outline: rgb(255, 255, 255) none 0;
             }
+        }
+
+        .purchase-button-disabled {
+          background-color: #fff;
+          bottom: 0;
+          left: 0;
+          opacity: .5;
+          position: absolute;
+          right: 0;
+          top: 0;
+          z-index: 1;
         }
 
         .purchase-button-image {

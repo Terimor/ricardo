@@ -1,7 +1,8 @@
 <template>
     <button
-        @click="$emit('click')"
+        @click="!isLoading ? $emit('click') : (() => {})"
         class="green-button-animated"
+        :class="{ 'green-button-active': !isLoading }"
         v-bind="rest"
         :disabled="isLoading"
     >
@@ -20,7 +21,6 @@
 
 <style lang="scss">
     .green-button-animated {
-        cursor: pointer;
         bottom: 0;
         box-shadow: rgb(180, 181, 181) 2px 2px 2px 0;
         color: rgb(255, 255, 255);
@@ -45,6 +45,10 @@
         padding: 20px;
         transition: all 0.2s linear 0s;
 
+        &.green-button-active {
+            cursor: pointer;
+        }
+
         &:before {
             opacity: 0;
             font-family: FontAwesome!important;
@@ -62,7 +66,7 @@
             transition: all .2s linear 0s;
         }
 
-        &:hover {
+        &.green-button-active:hover {
             background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
 
             &:before {
