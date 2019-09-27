@@ -347,8 +347,7 @@ class OdinProduct extends Model
             $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency);
             // calculate discount percent
             $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : null;
-            $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);
-            $this->attributes['upsellPrices']['$priceOld'] = $priceOld;
+            $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);            
         } else if ($discountPercent) {
             // get price from 1 qty
             $discountPrice = $this->prices[1]['val'] ?? null;
