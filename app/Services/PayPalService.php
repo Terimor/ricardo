@@ -462,12 +462,13 @@ class PayPalService
                 return response(null, 204);
             }
 
-            collect($order->txns)->each(function($item, $key) use ($paypal_order_id) {
-                if ($item['hash'] === $paypal_order_id && $item['status'] === Txn::STATUS_APPROVED) {
+            foreach($order->txns as $transaction) {
+                if ($transaction['hash'] === $paypal_order_id && $transaction['status'] === Txn::STATUS_APPROVED) {
                     logger()->info('TXN with # ' . $paypal_order_id . ' was already approved');
+
                     return response(null, 200);
                 }
-            });
+            }
 
             $response = $this->payPalHttpClient->execute(
                 new OrdersGetRequest(
@@ -522,12 +523,6 @@ class PayPalService
                     })
                     ->toArray();
 
-                // Amount paid !== Sum of prices of transaction items.
-                if ($temp_txn_products_prices !== $paypal_order_value) {
-                    logger()->alert('Amount paid for an order: ' . $order->getIdAttribute() . ' in a transaction # ' . $txn_response['txn']->hash . ' differs from a total products price.');
-                    logger()->info('Paid: ' . $paypal_order_value . '; Item price: ' . $temp_txn_products_prices);
-                }
-
                 $order->total_paid+= $paypal_order_value;
 
                 // Setting total_paid_usd value
@@ -544,6 +539,8 @@ class PayPalService
                 $order->status = $this->getOrderStatus($order);
                 $order->is_invoice_sent = false;
                 $order->save();
+
+                return response(null, 200);
             }
         }
     }
