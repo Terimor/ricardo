@@ -613,7 +613,8 @@
         bottom: 0;
         box-shadow: rgb(180, 181, 181) 2px 2px 2px 0;
         color: rgb(255, 255, 255);
-        height: 92px;
+        //min-height: 92px;
+        height: auto;
         position: relative;
         text-decoration: none solid rgb(255, 255, 255);
         text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;

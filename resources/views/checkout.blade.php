@@ -2,6 +2,10 @@
 
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+@endsection
+
 @section('script')
 <script type="text/javascript">
     const bluesnapCredential = {
@@ -21,17 +25,20 @@
     window.loadedPhrases = @json($loadedPhrases);
 </script>
 
-<script type="text/javascript">var IPQ = { Callback: () => {} };</script>
-<script src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/learn.js"></script>
-<noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
-
 <script src="{{ asset('js/app.js') }}" defer></script>
 @endsection
 
 @section('content')
 
-@include('components.product_offer')
-<app-component></app-component>
+<div id="app">
+  @section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
+
+    @if (! Request::get('tpl') === 'smc7')
+        # @include('components.product_offer')
+    @endif
+
+  <app-component></app-component>
+</div>
 
 @include('layouts.footer', ['isWhite' => true])
 

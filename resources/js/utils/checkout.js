@@ -1,12 +1,21 @@
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
+import { queryParams } from  './queryParams';
+
+
+
 
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
+
+  const currentPrice = queryParams().tpl === 'emc1b'
+    ? `<span class="red">${getCountOfInstallments(installments)}${valueTexts.valueText[installments]}</span>`
+    : `<span class="red">${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}</span>/${t('checkout.unit')}`;
+
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
-    3: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
-    5: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
+    3: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
+    5: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
   }
 
   return config[key]
@@ -98,7 +107,7 @@ export function preparePurchaseData({
           it.is_bestseller ? t('checkout.bestseller') :
             it.is_popular ? t('checkout.best_deal') :
               '',
-        text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' ' + t('checkout.free') : ''}`,
+        text: `${mainQuantity + freeQuantity}x ${long_name}`,
         newPrice: getNewPrice({
           key,
           valueTexts,
@@ -109,6 +118,7 @@ export function preparePurchaseData({
           valueTexts,
           installments,
         }),
+        pricePerUnit: valueTexts.unitValueText,
         discountText: onlyDiscount ?
           getOnlyDiscount({key, discountPercent}) :
           getDiscount({

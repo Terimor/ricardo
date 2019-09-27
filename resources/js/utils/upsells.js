@@ -65,7 +65,7 @@ export function paypalOnApprove(data) {
     .then(function() {
       if (odin_order_id) {
         localStorage.setItem('odin_order_created_at', new Date);
-        goTo(`/thankyou/?order=${odin_order_id}`);
+        goTo(`/thankyou/?`);
       }
     });
 }
