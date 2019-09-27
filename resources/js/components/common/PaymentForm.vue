@@ -286,6 +286,8 @@
   import { check as ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
+  import { queryParams } from  '../../utils/queryParams';
+  import { sendCheckoutRequest } from '../../utils/checkout';
   import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
@@ -593,11 +595,48 @@
                 card_cvv: paymentForm.cvv
               }
 
-              EBANX.card.createToken(creditCardData, resp => {
+              const data = {
+                product: {
+                  sku: queryParams().product || checkoutData.product.skus[0].code,
+                  qty: parseInt(this.paymentForm.deal, 10),
+                },
+                contact: {
+                  phone: {
+                    country_code: window.intlTelInputGlobals.getCountryData().filter(item => item.iso2 === paymentForm.countryCodePhoneField.toLowerCase())[0].dialCode,
+                    number: paymentForm.phone,
+                  },
+                  first_name: paymentForm.fname,
+                  last_name: paymentForm.lname,
+                  email: paymentForm.email,
+                },
+                address: {
+                  city: paymentForm.city,
+                  country: paymentForm.country.toLowerCase(),
+                  zip: paymentForm.zipcode,
+                  state: paymentForm.state,
+                  street: paymentForm.street,
+                },
+                card: {
+                  number: paymentForm.cardNumber,
+                  cvv: paymentForm.cvv,
+                  month: ('0' + paymentForm.month).slice(-2),
+                  year: '' + paymentForm.year,
+                  type: this.cardType,
+                },
+              };
 
-              });
+              sendCheckoutRequest(data)
+                .then(res => {
+                  if (res.status === 'ok') {
+                    localStorage.setItem('odin_order_id', data.order_id);
+                    localStorage.setItem('order_currency', data.order_currency);
 
-              goTo('/thankyou-promos');
+                    localStorage.setItem('order_id', data.order_id);
+                    localStorage.setItem('odin_order_created_at', new Date());
+
+                    goTo('/thankyou-promos/?order=' + data.order_id);
+                  }
+                });
             }
           })
       }
