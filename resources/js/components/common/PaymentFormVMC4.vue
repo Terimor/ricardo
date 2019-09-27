@@ -266,6 +266,7 @@
 	import { getCardUrl, preparePurchaseData, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
+  import { goTo } from '../../utils/goTo';
 	import {fade} from "../../utils/common";
 
 	export default {
