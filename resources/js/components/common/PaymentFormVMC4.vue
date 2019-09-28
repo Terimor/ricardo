@@ -504,8 +504,6 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
-                  this.isSubmitted = false;
-
                   if (res.status === 'ok') {
                     localStorage.setItem('odin_order_id', res.order_id);
                     localStorage.setItem('order_currency', res.order_currency);
@@ -514,6 +512,8 @@
                     localStorage.setItem('odin_order_created_at', new Date());
 
                     goTo('/thankyou-promos/?order=' + res.order_id);
+                  } else {
+                    this.isSubmitted = false;
                   }
                 });
             }
