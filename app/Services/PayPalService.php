@@ -83,15 +83,17 @@ class PayPalService
         $product = $this->findProductBySku($request->get('sku_code'));
 
         $total_upsell_price = $total_upsell_price_usd = 0;
+        $upsell_order_exchange_rate = null;
         $pp_items = $upsell_order_products = [];
 
         foreach ($request->get('upsells') as $upsell_product_id => $upsell_product_quantity) {
             $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id, $upsell_product_quantity, $upsell_order->currency);
             $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'];
+            $upsell_order_exchange_rate = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['exchange_rate'];
 
             // Converting to USD.
             $temp_upsell_item_usd_price = CurrencyService::roundValueByCurrencyRules(
-                round($temp_upsell_item_price / $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['exchange_rate'], 2),
+                $temp_upsell_item_price / $upsell_order_exchange_rate,
                 self::DEFAULT_CURRENCY);
 
             $total_upsell_price += $temp_upsell_item_price;
@@ -188,7 +190,9 @@ class PayPalService
 
             // Update main order
             $upsell_order->total_price += $total_upsell_price;
-            $upsell_order->total_price_usd += $total_upsell_price_usd;
+            $upsell_order->total_price_usd += CurrencyService::roundValueByCurrencyRules(
+                $total_upsell_price / $upsell_order_exchange_rate,
+                self::DEFAULT_CURRENCY);
             $upsell_order->status = $this->getOrderStatus($upsell_order);
             $upsell_order->txns = array_merge($txns, [$order_txn_data]);
             $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
@@ -529,12 +533,12 @@ class PayPalService
                 $pp_total_paid_usd = $paypal_order_value;
                 if ($paypal_order_currency !== self::DEFAULT_CURRENCY) {
                     $pp_order_currency_rate = CurrencyService::getCurrency($paypal_order_currency)->usd_rate;
-                    $pp_total_paid_usd = CurrencyService::roundValueByCurrencyRules(round($paypal_order_value / $pp_order_currency_rate, 2), self::DEFAULT_CURRENCY);
+                    $pp_total_paid_usd = CurrencyService::roundValueByCurrencyRules($paypal_order_value / $pp_order_currency_rate, self::DEFAULT_CURRENCY);
                 }
                 $order->total_paid_usd += $pp_total_paid_usd;
 
                 $currency = CurrencyService::getCurrency($order->currency);
-                $order->txns_fee_usd += CurrencyService::roundValueByCurrencyRules(round($fee / $currency->usd_rate, 2), self::DEFAULT_CURRENCY);
+                $order->txns_fee_usd += CurrencyService::roundValueByCurrencyRules($fee / $currency->usd_rate, self::DEFAULT_CURRENCY);
 
                 $order->status = $this->getOrderStatus($order);
                 $order->is_invoice_sent = false;
@@ -571,7 +575,7 @@ class PayPalService
             }
         }
         $currency = CurrencyService::getCurrency($order->currency);
-        $order->txns_fee_usd = CurrencyService::roundValueByCurrencyRules(round($total_fee / $currency->usd_rate, 2), self::DEFAULT_CURRENCY);
+        $order->txns_fee_usd = CurrencyService::roundValueByCurrencyRules($total_fee / $currency->usd_rate, self::DEFAULT_CURRENCY);
     }
 
     /**
@@ -680,7 +684,10 @@ class PayPalService
         switch (true) {
             case ($order->total_paid == 0):
                 return OdinOrder::STATUS_NEW;
-            case (number_format($order->total_paid, 2) === number_format($order->total_price, 2)):
+            case (
+                number_format($order->total_paid, 2) === number_format($order->total_price, 2)
+                && number_format($order->total_paid_usd, 2) === number_format($order->total_price_usd, 2)
+            ):
                 return OdinOrder::STATUS_PAID;
             default:
                 return OdinOrder::STATUS_HALFPAID;
