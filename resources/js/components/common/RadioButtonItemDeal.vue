@@ -27,13 +27,15 @@
       </div>
     </div>
     <div class="label-container-radio__subtitle" v-if="showPerUnitPrice && item.value !== 1">
-      {{item.pricePerUnit ? `${item.pricePerUnit['1']} / Utin` : ''}}
+      {{item.pricePerUnit ? `${item.pricePerUnit['1']} / ${textUnit}` : ''}}
     </div>
     <span class="checkmark"></span>
   </label>
 </template>
 
 <script>
+    import { t } from '../../utils/i18n';
+
 	export default {
 		name: 'radio-button-item-deal',
 		props: [
@@ -46,16 +48,19 @@
 		methods: {
 			isBestseller() {
 				return this.item.discountName.toLowerCase() === 'bestseller'
-      },
+            },
 			input(e) {
 				return this.$emit('checkDeal', e.target.value)
 			}
 		},
-    mounted(){
-			this.$nextTick(function () {
-				this.$emit('finish-render')
-			})
-    }
+        computed: {
+          textUnit: () => t('checkout.unit'),
+        },
+        mounted(){
+                this.$nextTick(function () {
+                    this.$emit('finish-render')
+                })
+        }
 	}
 </script>
 
