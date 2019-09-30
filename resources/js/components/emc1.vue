@@ -712,6 +712,9 @@ export default {
 
       .label-container-radio__discount {
         color: $color_niagara_approx;
+        &.red {
+          color: $red;
+        }
       }
 
       .label-container-radio.with-discount .label-container-radio__name-price > span:nth-child(2) {

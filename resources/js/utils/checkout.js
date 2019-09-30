@@ -9,8 +9,8 @@ import { queryParams } from  './queryParams';
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
 
   const currentPrice = queryParams().tpl === 'emc1b'
-    ? `<span class="red">${getCountOfInstallments(installments)}${valueTexts.valueText[installments]}</span>`
-    : `<span class="red">${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}</span>/${t('checkout.unit')}`;
+    ? `${getCountOfInstallments(installments)}${valueTexts.valueText[installments]}`
+    : `${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')}`;
 
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
