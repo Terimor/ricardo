@@ -102,7 +102,7 @@ class SiteController extends Controller
          $loadedPhrases = (new I18nService())->loadPhrases('about_page');
          $product = $productService->resolveProduct($request, true);
          return view('about', compact('loadedPhrases', 'product'));
-     }    
+     }
 
     /**
      * Order tracking page
@@ -131,7 +131,7 @@ class SiteController extends Controller
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
-        
+
         $setting = Setting::getValue(array(
             'instant_payment_paypal_client_id',
             'ipqualityscore_api_hash',
@@ -166,7 +166,7 @@ class SiteController extends Controller
 		if (request()->get('order')) {
             $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
 		}
-        
+
         if (!$orderCustomer) {
             // generate global get parameters
             $params = \Utils::getGlobalGetParameters($request);
@@ -196,7 +196,7 @@ class SiteController extends Controller
 		if (request()->get('order')) {
             $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'), true);
 		}
-        
+
         if (!$orderCustomer) {
             // generate global get parameters
             $params = \Utils::getGlobalGetParameters($request);
@@ -208,7 +208,7 @@ class SiteController extends Controller
 
         return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases'));
     }
-    
+
     /**
      * Splash page
      * @return type
@@ -218,7 +218,7 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('splash_page');
         $product = $productService->resolveProduct($request, true);
         return view('splash', compact('loadedPhrases', 'product'));
-    }    
+    }
 
     /**
      *

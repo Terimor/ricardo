@@ -17,7 +17,8 @@ class I18nService
      */
     public static function loadPhrases(string $category)
     {
-        $language = app()->getLocale();
+        $locale = app()->getLocale();
+        $language = self::getLanguageByLocale($locale);
         if (empty(I18n::$loadedPhrases[$language])) {
             $categories = [$category];
             if (strpos($category, '_page')) {
@@ -28,11 +29,11 @@ class I18nService
             } else {
                 $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories', $language])->get();
             }
-            
+
             $issetCategory = false;
             $loadedPhrases = [];
-            // generate array of en and lang values            
-            foreach ($phrases as $phrase) {                
+            // generate array of en and lang values
+            foreach ($phrases as $phrase) {
                 if (!$phrase->en) {
                     logger()->error("Empty EN phrase", ['phrase' => $phrase->phrase]);
                 }
@@ -40,18 +41,18 @@ class I18nService
                 if ($language != 'en') {
                     $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
                 }
-                
+
                 // check if one phrase isset for this category
                 if (!$issetCategory && in_array($category, $phrase->categories)) {
                     $issetCategory = true;
                 }
             }
-            
+
             if (empty($loadedPhrases[$language])) {
                 logger()->error('Loaded phrases is empty', ['language' => $language, 'category' => $category]);
                 $loadedPhrases[$language] = [];
             }
-            
+
             if (!$issetCategory) {
                 logger()->error('0 phrases for category '.$category);
             }
@@ -73,8 +74,8 @@ class I18nService
         $translation = $phrase;
             $language = $language ? strtolower($language) : 'en';
 
-        if (isset(static::$browser_codes[$language])) {
-            $language = static::$browser_codes[$language];
+       if (isset(I18n::$browser_codes[$language])) {
+            $language = I18n::$browser_codes[$language];
         }
 
         //$translated_languages = I18n::getTranslationLanguages(true);
@@ -110,4 +111,18 @@ class I18nService
         return $translation;
    }
 
+    /**
+     * Returns language by locale
+     *
+     * @param string $locale
+     * @return string
+     */
+   public static function getLanguageByLocale(string $locale): string
+   {
+       $mapping = [
+           'zh-tw' => 'tw'
+       ];
+
+       return !empty($mapping[$locale]) ? $mapping[$locale] : $locale;
+   }
 }
