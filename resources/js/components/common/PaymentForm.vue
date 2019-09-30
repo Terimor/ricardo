@@ -260,6 +260,7 @@
             <img src="/images/best-saller.png" alt="">
           </span>
         </button>
+        <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
         <button
             @click="submit"
             :disabled="isSubmitted"
@@ -267,8 +268,9 @@
             type="button"
             class="green-button-animated"
             :class="{ 'green-button-active': !isSubmitted }">
+            <Spinner v-if="isSubmitted" />
             <div v-if="isSubmitted" class="purchase-button-disabled"></div>
-            <span class="purchase-button-text" v-html="textSubmitButton"></span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
+            <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }" v-html="textSubmitButton"></span>
         </button>
         <el-dialog
           @click="isOpenCVVModal = false"
@@ -295,6 +297,7 @@
   import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
+  import Spinner from './preloaders/Spinner';
 
   export default {
     name: 'PaymentForm',
@@ -316,6 +319,9 @@
     mixins: [
       setDataToLocalStorage,
     ],
+    components: {
+      Spinner,
+    },
     data () {
       return {
         isLoading: {
@@ -323,6 +329,7 @@
         },
         cardType: null,
         isOpenCVVModal: false,
+        isPaymentError: false,
         isSubmitted: false,
       }
     },
@@ -433,6 +440,7 @@
       textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
       textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
+      textPaymentError: () => t('checkout.payment_error'),
     },
     watch: {
       'paymentForm.cardNumber' (cardNumber) {
@@ -568,6 +576,7 @@
           return;
         }
 
+        this.isPaymentError = false;
         this.isSubmitted = true;
 
         let fields = {
@@ -646,6 +655,7 @@
 
                     goTo('/thankyou-promos/?order=' + res.order_id);
                   } else {
+                    this.isPaymentError = true;
                     this.isSubmitted = false;
                   }
                 });
@@ -871,49 +881,10 @@
           z-index: 1;
         }
 
-        .purchase-button-image {
-            box-sizing: border-box;
-            color: rgb(255, 255, 255);
-            cursor: pointer;
-            display: none;
-            max-width: 100%;
-            text-align: center;
-            text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-            text-transform: capitalize;
-            vertical-align: middle;
-            column-rule-color: rgb(255, 255, 255);
-            caret-color: rgb(255, 255, 255);
-            border: 0 none rgb(255, 255, 255);
-            font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-            outline: rgb(255, 255, 255) none 0;
-
-            &:after {
-                box-sizing: border-box;
-                color: rgb(255, 255, 255);
-                cursor: pointer;
-                text-align: center;
-                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-                text-transform: capitalize;
-                column-rule-color: rgb(255, 255, 255);
-                caret-color: rgb(255, 255, 255);
-                border: 0 none rgb(255, 255, 255);
-                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-                outline: rgb(255, 255, 255) none 0;
-            }
-
-            &:before {
-                box-sizing: border-box;
-                color: rgb(255, 255, 255);
-                cursor: pointer;
-                text-align: center;
-                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-                text-transform: capitalize;
-                column-rule-color: rgb(255, 255, 255);
-                caret-color: rgb(255, 255, 255);
-                border: 0 none rgb(255, 255, 255);
-                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-                outline: rgb(255, 255, 255) none 0;
-            }
+        #payment-error {
+          font-size: 17px;
+          text-align: center;
+          width: 100%;
         }
     }
 

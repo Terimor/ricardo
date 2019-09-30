@@ -148,6 +148,7 @@
                                 :paymentForm="form"/>
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
+                            <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
                             <button
                               :disabled="isSubmitted"
                               v-if="form.paymentType !== 'paypal'"
@@ -156,8 +157,9 @@
                               type="button"
                               class="green-button-animated"
                               :class="{ 'green-button-active': !isSubmitted }">
+                              <Spinner v-if="isSubmitted" />
                               <div v-if="isSubmitted" class="purchase-button-disabled"></div>
-                              <span class="purchase-button-text">{{textSubmitButton}}</span>
+                              <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
                                     v-if="form.paymentType === 'paypal'"
@@ -210,11 +212,12 @@
   import queryToComponent from '../mixins/queryToComponent'
   import {fade} from "../utils/common";
   import { t } from '../utils/i18n';
-  import isPurchasAlreadyExists from '../mixins/purchas';
+  import purchasMixin from '../mixins/purchas';
   import setDataToLocalStorage from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { check as ipqsCheck } from '../services/ipqs';
   import { sendCheckoutRequest } from '../utils/checkout';
+  import Spinner from './common/preloaders/Spinner'; 
   import { goTo } from '../utils/goTo';
 
   export default {
@@ -223,12 +226,12 @@
       RadioButtonItemDeal,
       ProductOffer,
       PurchasAlreadyExists,
-      setDataToLocalStorage
+      Spinner,
     },
     validations: smc7validation,
     mixins: [
       queryToComponent,
-      isPurchasAlreadyExists
+      purchasMixin,
     ],
     props: ['showPreloader', 'skusList'],
     data() {
@@ -293,6 +296,7 @@
         variantList: [],
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
+        isPaymentError: false,
         isSubmitted: false,
       }
     },
@@ -319,6 +323,7 @@
       textLastNameRequired: () => t('checkout.payment_form.last_name.required'),
       textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
+      textPaymentError: () => t('checkout.payment_error'),
 
       checkoutData() {
         return checkoutData;
@@ -394,6 +399,7 @@
           return;
         }
 
+        this.isPaymentError = false;
         this.isSubmitted = true;
 
         let fields = {
@@ -459,6 +465,7 @@
 
                   goTo('/thankyou-promos/?order=' + res.order_id);
                 } else {
+                  this.isPaymentError = true;
                   this.isSubmitted = false;
                 }
               });

@@ -91,5 +91,14 @@
         .checkmark {
             top: 18px;
         }
+
+        .spinner {
+            left: 50%;
+            margin-left: -32px;
+            margin-top: -32px;
+            position: absolute;
+            top: 50%;
+            z-index: 0;
+        }
     }
 </style>
