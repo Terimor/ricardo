@@ -291,6 +291,7 @@
   import { debounce } from '../../utils/common'
   import { queryParams } from  '../../utils/queryParams';
   import { sendCheckoutRequest } from '../../utils/checkout';
+  import setDataToLocalStorage from '../../mixins/purchas';
   import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
@@ -311,6 +312,9 @@
       'hasWarranty',
       'quantityOfInstallments',
       'warrantyPriceText',
+    ],
+    mixins: [
+      setDataToLocalStorage,
     ],
     data () {
       return {
@@ -589,6 +593,8 @@
           }
         }
 
+        this.setDataToLocalStorage(paymentForm.variant, paymentForm.deal, paymentForm.isWarrantyChecked);
+
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
@@ -599,13 +605,6 @@
             }
 
             if (paymentForm.paymentType === 'credit-card') {
-              const creditCardData = {
-                card_number: paymentForm.cardNumber,
-                card_name: paymentForm.fname + ' ' + paymentForm.lname,
-                card_due_date: exp,
-                card_cvv: paymentForm.cvv
-              }
-
               const data = {
                 product: {
                   sku: paymentForm.variant,

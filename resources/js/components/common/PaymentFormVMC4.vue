@@ -266,12 +266,16 @@
 	import { getCardUrl, preparePurchaseData, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
+  import setDataToLocalStorage from '../../mixins/purchas';
   import { goTo } from '../../utils/goTo';
 	import {fade} from "../../utils/common";
 
 	export default {
 		name: "PaymentFormVMC4",
-    mixins: [queryToComponent],
+    mixins: [
+      queryToComponent,
+      setDataToLocalStorage,
+    ],
 		components: {PayMethodItem, RadioButtonItemDeal},
 		validations: vmc4validation,
 		props: [
@@ -463,6 +467,8 @@
           cvv_code: this.form.stepThree.cvv,
         };
 
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
+
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
@@ -558,7 +564,9 @@
 			},
       paypalCreateOrder() {
         const searchParams = new URL(document.location.href).searchParams;
-        const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+        const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
+
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
 
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,

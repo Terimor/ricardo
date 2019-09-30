@@ -150,12 +150,15 @@
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
                             <button
-                                    v-if="form.paymentType !== 'paypal'"
-                                    @click="submit"
-                                    id="purchase-button"
-                                    type="button"
-                                    class="green-button-animated">
-                                <span class="purchase-button-text">{{textSubmitButton}}</span>
+                              :disabled="isSubmitted"
+                              v-if="form.paymentType !== 'paypal'"
+                              @click="submit"
+                              id="purchase-button"
+                              type="button"
+                              class="green-button-animated"
+                              :class="{ 'green-button-active': !isSubmitted }">
+                              <div v-if="isSubmitted" class="purchase-button-disabled"></div>
+                              <span class="purchase-button-text">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
                                     v-if="form.paymentType === 'paypal'"
@@ -211,6 +214,9 @@
   import isPurchasAlreadyExists from '../mixins/purchas';
   import setDataToLocalStorage from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
+  import { check as ipqsCheck } from '../services/ipqs';
+  import { sendCheckoutRequest } from '../utils/checkout';
+  import { goTo } from '../utils/goTo';
 
   export default {
     name: 'smc7',
@@ -258,6 +264,7 @@
           }
         ],
         form: {
+          isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
           deal: null,
           fname: null,
@@ -287,6 +294,7 @@
         variantList: [],
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
+        isSubmitted: false,
       }
     },
     computed: {
@@ -341,7 +349,16 @@
 
       radioIdx() {
         return this.form.deal;
-      }
+      },
+
+      dialCode() {
+        const allCountries = window.intlTelInputGlobals.getCountryData();
+        const phoneCountryCode = this.form.countryCodePhoneField.toLowerCase();
+        const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
+
+        return country ? country.dialCode : '1';
+      },
+
     },
     watch: {
       'form.variant'(val) {
@@ -370,8 +387,83 @@
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
-          this.setPromotionalModal(true)
+          this.setPromotionalModal(true);
+          return;
         }
+
+        if (this.isSubmitted) {
+          return;
+        }
+
+        this.isSubmitted = true;
+
+        let fields = {
+          billing_first_name: this.form.fname,
+          billing_last_name: this.form.lname,
+          billing_country: this.form.country,
+          billing_address_1: this.form.streetAndNumber,
+          billing_city: this.form.city,
+          billing_region: this.form.state,
+          billing_postcode: this.form.zipCode,
+          billing_email: this.form.email,
+          billing_phone: this.dialCode + this.form.phone,
+          credit_card_bin: this.form.cardNumber.substr(0, 6),
+          credit_card_hash: sha256(this.form.cardNumber),
+          credit_card_expiration_month: ('0' + this.form.month).slice(-2),
+          credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
+          cvv_code: this.form.cvv,
+        };
+
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+
+        Promise.resolve()
+          .then(() => ipqsCheck(fields))
+          .then(ipqsResult => {
+            const data = {
+              product: {
+                sku: this.form.variant,
+                qty: parseInt(this.form.deal, 10),
+              },
+              contact: {
+                phone: {
+                  country_code: this.dialCode,
+                  number: this.form.phone,
+                },
+                first_name: this.form.fname,
+                last_name: this.form.lname,
+                email: this.form.email,
+              },
+              address: {
+                city: this.form.city,
+                country: this.form.country.toLowerCase(),
+                zip: this.form.zipCode,
+                state: this.form.state,
+                street: this.form.streetAndNumber,
+              },
+              card: {
+                number: this.form.cardNumber,
+                cvv: this.form.cvv,
+                month: ('0' + this.form.month).slice(-2),
+                year: '' + this.form.year,
+                type: this.form.paymentType,
+              },
+            };
+
+            sendCheckoutRequest(data)
+              .then(res => {
+                if (res.status === 'ok') {
+                  localStorage.setItem('odin_order_id', res.order_id);
+                  localStorage.setItem('order_currency', res.order_currency);
+
+                  localStorage.setItem('order_id', res.order_id);
+                  localStorage.setItem('odin_order_created_at', new Date());
+
+                  goTo('/thankyou-promos/?order=' + res.order_id);
+                } else {
+                  this.isSubmitted = false;
+                }
+              });
+          })
       },
       setCountryCodeByPhoneField (val) {
         if (val.iso2) {
@@ -395,6 +487,8 @@
         const searchParams = new URL(document.location.href).searchParams;
         const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
 
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
           sku_code: this.codeOrDefault,
@@ -409,7 +503,6 @@
       paypalOnApprove: paypalOnApprove,
 
       paypalSubmit() {
-        this.setDataToLocalStorage();
         if (this.$v.form.deal.$invalid) {
           this.isOpenPromotionModal = true;
         }
@@ -701,6 +794,61 @@
 
             #product-image-body {
                 max-height: 100px;
+            }
+
+            .purchase-button-text {
+              box-sizing: border-box;
+              color: rgb(255, 255, 255);
+              cursor: pointer;
+              text-align: center;
+              text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+              text-transform: capitalize;
+              column-rule-color: rgb(255, 255, 255);
+              perspective-origin: 0 0;
+              transform-origin: 0 0;
+              caret-color: rgb(255, 255, 255);
+              border: 0 none rgb(255, 255, 255);
+              font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+              outline: rgb(255, 255, 255) none 0;
+
+              &:after {
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                cursor: pointer;
+                text-align: center;
+                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+                text-transform: capitalize;
+                column-rule-color: rgb(255, 255, 255);
+                caret-color: rgb(255, 255, 255);
+                border: 0 none rgb(255, 255, 255);
+                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+                outline: rgb(255, 255, 255) none 0;
+              }
+
+              &:before {
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                cursor: pointer;
+                text-align: center;
+                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+                text-transform: capitalize;
+                column-rule-color: rgb(255, 255, 255);
+                caret-color: rgb(255, 255, 255);
+                border: 0 none rgb(255, 255, 255);
+                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
+                outline: rgb(255, 255, 255) none 0;
+              }
+            }
+
+            .purchase-button-disabled {
+              background-color: #fff;
+              bottom: 0;
+              left: 0;
+              opacity: .5;
+              position: absolute;
+              right: 0;
+              top: 0;
+              z-index: 1;
             }
         }
 
