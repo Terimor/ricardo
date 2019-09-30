@@ -1,16 +1,14 @@
 export default {
   methods: {
-    setDataToLocalStorage() {
-      const currentVariant = this.skusList.find(it => it.code === this.form.variant);
-      const prices = this.checkoutData.product.prices;
+    setDataToLocalStorage(variant, quantity, isWarrantyChecked) {
       const selectedProductData = {
-        upsells: this.productData.upsells,
-        prices: prices[this.radioIdx],
-        quantity: this.radioIdx,
-        isWarrantyChecked: this.form.isWarrantyChecked,
-        variant: this.form.variant,
-        product_name: this.productData.product_name,
-        image: currentVariant && currentVariant.quantity_image[1]
+        variant,
+        quantity,
+        isWarrantyChecked,
+        upsells: checkoutData.product.upsells,
+        prices: checkoutData.product.prices[quantity],
+        product_name: checkoutData.product.product_name,
+        image: checkoutData.product.skus.find(it => it.code === variant).quantity_image[1],
       };
 
       localStorage.setItem('selectedProductData', JSON.stringify(selectedProductData));

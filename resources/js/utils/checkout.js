@@ -9,8 +9,8 @@ import { queryParams } from  './queryParams';
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
 
   const currentPrice = queryParams().tpl === 'emc1b'
-    ? `<span class="red">${getCountOfInstallments(installments)}${valueTexts.valueText[installments]}</span>`
-    : `<span class="red">${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}</span>/${t('checkout.unit')}`;
+    ? `${getCountOfInstallments(installments)}${valueTexts.valueText[installments]}`
+    : `${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')}`;
 
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
@@ -100,6 +100,10 @@ export function preparePurchaseData({
           +key === 5 ? 2 :
             null;
 
+      const isTextComposite = (amount) => {
+        return amount ? ` + ${amount} ${t('checkout.free')}` : '';
+      };
+
       return  {
         discountPercent,
         image: it.image || image,
@@ -108,6 +112,7 @@ export function preparePurchaseData({
             it.is_popular ? t('checkout.best_deal') :
               '',
         text: `${mainQuantity + freeQuantity}x ${long_name}`,
+        textComposite: `${mainQuantity} ${long_name} ${isTextComposite(freeQuantity)}`,
         newPrice: getNewPrice({
           key,
           valueTexts,

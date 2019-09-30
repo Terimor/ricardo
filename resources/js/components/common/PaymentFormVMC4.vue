@@ -203,6 +203,7 @@
                 <p v-html="textCVVPopupLine2"></p>
               </div>
             </el-dialog>
+            <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
             <button
               v-if="form.paymentType !== 'paypal' && step === 3"
               @click="submit"
@@ -211,8 +212,9 @@
               class="submit-btn"
               type="button"
             >
+              <Spinner v-if="isSubmitted" />
               <div v-if="isSubmitted" class="btn-disabled"></div>
-              <span v-html="textSubmitButton"></span>
+              <span :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }" v-html="textSubmitButton"></span>
             </button>
           </form>
         </div>
@@ -266,13 +268,22 @@
 	import { getCardUrl, preparePurchaseData, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
+  import setDataToLocalStorage from '../../mixins/purchas';
+  import Spinner from './preloaders/Spinner';
   import { goTo } from '../../utils/goTo';
 	import {fade} from "../../utils/common";
 
 	export default {
 		name: "PaymentFormVMC4",
-    mixins: [queryToComponent],
-		components: {PayMethodItem, RadioButtonItemDeal},
+    mixins: [
+      queryToComponent,
+      setDataToLocalStorage,
+    ],
+		components: {
+      PayMethodItem,
+      RadioButtonItemDeal,
+      Spinner,
+    },
 		validations: vmc4validation,
 		props: [
 			'countryList',
@@ -290,6 +301,7 @@
 				maxSteps: 3,
 				isOpenCVVModal: false,
         isOpenPromotionModal: false,
+        isPaymentError: false,
         isSubmitted: false,
 				form: {
 					stepTwo: {
@@ -389,6 +401,7 @@
       textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
+      textPaymentError: () => t('checkout.payment_error'),
       textNext: () => t('checkout.next'),
       textBack: () => t('checkout.back'),
 		},
@@ -445,6 +458,7 @@
           return;
         }
 
+        this.isPaymentError = false;
         this.isSubmitted = true;
 
         let fields = {
@@ -462,6 +476,8 @@
           credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
           cvv_code: this.form.stepThree.cvv,
         };
+
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
@@ -513,6 +529,7 @@
 
                     goTo('/thankyou-promos/?order=' + res.order_id);
                   } else {
+                    this.isPaymentError = true;
                     this.isSubmitted = false;
                   }
                 });
@@ -558,7 +575,9 @@
 			},
       paypalCreateOrder() {
         const searchParams = new URL(document.location.href).searchParams;
-        const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+        const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
+
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
 
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -734,6 +753,10 @@
           border-bottom: 1px solid #d2d2d2;
         }
       }
+
+      #payment-error {
+        margin: 16px 0 0px;
+      }
     }
 
     .cursor-pointer:hover {
@@ -770,6 +793,16 @@
         box-shadow: -2px 2px 18px #4caf50;
         -moz-box-shadow: -2px 2px 18px #4caf50;
         -webkit-box-shadow: -2px 2px 18px #4caf50;
+      }
+
+      .spinner {
+        left: 50%;
+        margin-left: -32px;
+        margin-top: -32px;
+        position: absolute;
+        top: 50%;
+        transform: scale(.6);
+        z-index: 0;
       }
 
       .btn-disabled {
