@@ -134,38 +134,54 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="for-img">
-                        <img src="https://enence.com/theme/images/lang/en/safe.png" alt="">
-                    </div>
-                    <h3>
-                        {{ t('splash_page.video_of') }}
-                        {{ $product->product_name }}
-                        {{ t('splash_page.in_action') }}:</h3>
-                    <div class="iframe-wrap">
-                        <iframe src="https://www.youtube.com/embed/BNhFytVV7SY?rel=0&amp;controls=1&amp;modestbranding=1&amp;showinfo=0"
-                                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
-                    </div>
-                    <div class="text-center">
-                        <a href="#" class="green-button-animated">
-                            {{ t('splash_page.add_to_cart') }}
-                            {{ t('splash_page.with') }}
-                            50%
-                            {{ t('splash_page.discount') }}
-                        </a>
-                    </div>
-                    <h3>{{ $product->long_name }}</h3>
-                    <div class="for-img">
-                        <img src="{{ $product->image[1] }}" alt="">
-                    </div>
-                    <h3>{{ $product->long_name }}</h3>
-                    <div class="for-img">
-                        <img src="{{ $product->image[2] }}" alt="">
+                    <div class="product-media">
+                        <div class="for-img">
+                            <img src="https://enence.com/theme/images/lang/en/safe.png" alt="">
+                        </div>
+                        <h3>
+                            {{ t('splash_page.video_of') }}
+                            {{ $product->product_name }}
+                            {{ t('splash_page.in_action') }}:</h3>
+                        <div class="iframe-wrap">
+                            <iframe src="https://www.youtube.com/embed/BNhFytVV7SY?rel=0&amp;controls=1&amp;modestbranding=1&amp;showinfo=0"
+                                    frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                        </div>
+                        <div class="text-center">
+                            <a href="#" class="green-button-animated">
+                                {{ t('splash_page.add_to_cart') }}
+                                {{ t('splash_page.with') }}
+                                50%
+                                {{ t('splash_page.discount') }}
+                            </a>
+                        </div>
+                        <h3>{{ $product->long_name }}</h3>
+                        <div class="for-img">
+                            <img src="{{ $product->image[1] }}" alt="">
+                        </div>
+                        <h3>{{ $product->long_name }}</h3>
+                        <div class="for-img">
+                            {{--<img src="{{ $product->image[2] }}" alt="">--}}
+                        </div>
+                        <div class="text-center">
+                            <a href="#" class="green-button-animated">
+                                {{ t('splash_page.add_to_cart') }}
+                                {{ t('splash_page.with') }}
+                                50%
+                                {{ t('splash_page.discount') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="container">
-           {{--@include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])--}}
-        </div>
+        <footer class="splash-footer">
+                <div class="splash-footer-title">
+                    <div class="container">{{ t('splash_page.limited_time_promo') }}:</div>
+                </div>
+                <a href="#"></a>
+                <div class="splash-footer-subtitle">
+                    <div class="container"></div>
+                </div>
+        </footer>
     </div>
 @endsection
