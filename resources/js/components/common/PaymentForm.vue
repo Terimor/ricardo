@@ -262,9 +262,12 @@
         </button>
         <button
             @click="submit"
+            :disabled="isSubmitted"
             id="purchase-button"
             type="button"
-            class="green-button-animated">
+            class="green-button-animated"
+            :class="{ 'green-button-active': !isSubmitted }">
+            <div v-if="isSubmitted" class="purchase-button-disabled"></div>
             <span class="purchase-button-text" v-html="textSubmitButton"></span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
         </button>
         <el-dialog
@@ -342,6 +345,14 @@
       isSpecialCountrySelected() {
         const specialCountries = ['BR', 'MX', 'CO'];
         return specialCountries.includes(this.countryCode) || specialCountries.includes(this.paymentForm.country);
+      },
+
+      dialCode() {
+        const allCountries = window.intlTelInputGlobals.getCountryData();
+        const phoneCountryCode = this.paymentForm.countryCodePhoneField.toLowerCase();
+        const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
+
+        return country ? country.dialCode : '1';
       },
 
       exp () {
@@ -564,7 +575,7 @@
           billing_region: paymentForm.state,
           billing_postcode: paymentForm.zipcode,
           billing_email: paymentForm.email,
-          billing_phone: paymentForm.phone,
+          billing_phone: this.dialCode + paymentForm.phone,
         };
 
         if (paymentForm.paymentType === 'credit-card') {
@@ -597,12 +608,12 @@
 
               const data = {
                 product: {
-                  sku: queryParams().product || checkoutData.product.skus[0].code,
-                  qty: parseInt(this.paymentForm.deal, 10),
+                  sku: paymentForm.variant,
+                  qty: parseInt(paymentForm.deal, 10),
                 },
                 contact: {
                   phone: {
-                    country_code: window.intlTelInputGlobals.getCountryData().filter(item => item.iso2 === paymentForm.countryCodePhoneField.toLowerCase())[0].dialCode,
+                    country_code: this.dialCode,
                     number: paymentForm.phone,
                   },
                   first_name: paymentForm.fname,
@@ -628,13 +639,15 @@
               sendCheckoutRequest(data)
                 .then(res => {
                   if (res.status === 'ok') {
-                    localStorage.setItem('odin_order_id', data.order_id);
-                    localStorage.setItem('order_currency', data.order_currency);
+                    localStorage.setItem('odin_order_id', res.order_id);
+                    localStorage.setItem('order_currency', res.order_currency);
 
-                    localStorage.setItem('order_id', data.order_id);
+                    localStorage.setItem('order_id', res.order_id);
                     localStorage.setItem('odin_order_created_at', new Date());
 
-                    goTo('/thankyou-promos/?order=' + data.order_id);
+                    goTo('/thankyou-promos/?order=' + res.order_id);
+                  } else {
+                    this.isSubmitted = false;
                   }
                 });
             }
@@ -646,72 +659,6 @@
 
 <style lang="scss">
     @import "../../../sass/variables";
-
-    .green-button-animated {
-        cursor: pointer;
-        bottom: 0;
-        box-shadow: rgb(180, 181, 181) 2px 2px 2px 0;
-        color: rgb(255, 255, 255);
-        //min-height: 92px;
-        height: auto;
-        position: relative;
-        text-decoration: none solid rgb(255, 255, 255);
-        text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-        text-transform: capitalize;
-        top: 0;
-        width: 100%;
-        column-rule-color: rgb(255, 255, 255);
-        perspective-origin: 195.688px 46px;
-        transform-origin: 195.695px 46px;
-        caret-color: rgb(255, 255, 255);
-        background: rgb(255, 47, 33) linear-gradient(rgb(15, 155, 15), rgb(13, 132, 13)) repeat scroll 0% 0% / auto padding-box border-box;
-        border: 1px solid rgb(15, 155, 15);
-        border-radius: 3px 3px 3px 3px;
-        font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-        margin: 0 0 15px;
-        outline: rgb(255, 255, 255) none 0;
-        padding: 20px;
-        transition: all 0.2s linear 0s;
-
-        &:before {
-            opacity: 0;
-            font-family: FontAwesome!important;
-            content: '\f054';
-            width: 0;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0 50% 50% 0;
-            background-color: rgba(255,255,255,.3);
-            transition: all .2s linear 0s;
-        }
-
-        &:hover {
-            background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
-
-            &:before {
-                opacity: 1;
-                width: 30px;
-            }
-        }
-
-        &:after {
-            box-sizing: border-box;
-            color: rgb(255, 255, 255);
-            cursor: pointer;
-            text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-            text-transform: capitalize;
-            column-rule-color: rgb(255, 255, 255);
-            caret-color: rgb(255, 255, 255);
-            border: 0 none rgb(255, 255, 255);
-            font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-            outline: rgb(255, 255, 255) none 0;
-        }
-    }
 
     .payment-form {
         h2 {
@@ -912,6 +859,17 @@
                 font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
                 outline: rgb(255, 255, 255) none 0;
             }
+        }
+
+        .purchase-button-disabled {
+          background-color: #fff;
+          bottom: 0;
+          left: 0;
+          opacity: .5;
+          position: absolute;
+          right: 0;
+          top: 0;
+          z-index: 1;
         }
 
         .purchase-button-image {
