@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="label-container-radio__subtitle" v-if="showPerUnitPrice && item.value !== 1">
-      {{item.pricePerUnit ? `${item.pricePerUnit} / Utin` : ''}}
+      {{item.pricePerUnit ? `${item.pricePerUnit['1']} / Utin` : ''}}
     </div>
     <span class="checkmark"></span>
   </label>

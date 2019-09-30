@@ -100,6 +100,10 @@ export function preparePurchaseData({
           +key === 5 ? 2 :
             null;
 
+      const isTextComposite = (amount) => {
+        return amount ? ` + ${amount} ${t('checkout.free')}` : '';
+      };
+
       return  {
         discountPercent,
         image: it.image || image,
@@ -108,6 +112,7 @@ export function preparePurchaseData({
             it.is_popular ? t('checkout.best_deal') :
               '',
         text: `${mainQuantity + freeQuantity}x ${long_name}`,
+        textComposite: `${mainQuantity} ${long_name} ${isTextComposite(freeQuantity)}`,
         newPrice: getNewPrice({
           key,
           valueTexts,
