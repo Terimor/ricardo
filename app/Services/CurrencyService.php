@@ -356,11 +356,11 @@ class CurrencyService
      */
     public static function formatCurrency($numberFormatter, $price, $currency)
     {
-        // check use symbol from db for formatting
+        $priceText = $numberFormatter->formatCurrency($price, $currency->code);
+
+        // check use symbol from db for formatting        
         if (in_array($currency->code, static::$useDBSymbol)) {
-            $priceText = $price.' '.$currency->symbol;
-        } else {            
-            $priceText = $numberFormatter->formatCurrency($price, $currency->code);
+            $priceText = str_replace($currency->code, $currency->symbol, $priceText);
         }
         
         return $priceText;
