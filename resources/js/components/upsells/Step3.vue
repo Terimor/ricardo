@@ -86,9 +86,7 @@ export default {
           text: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].price_text}`,
           value: value,
         }
-      })
-
-      console.log(data);
+      });
 
       return data;
     },
