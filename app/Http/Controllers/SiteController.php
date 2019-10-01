@@ -226,9 +226,6 @@ class SiteController extends Controller
      */
     public function test(Request $request, ProductService $productService)
     {
-        $a = '123zzz';
-        $a = (int)$a;
-        echo '<pre>'; var_dump($a); echo '</pre>'; exit;
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
