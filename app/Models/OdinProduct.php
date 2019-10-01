@@ -27,7 +27,7 @@ class OdinProduct extends Model
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
         'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency',
-        'image_ids'
+        'image_ids', 'splash_description'
     ];
 
     protected $hidden = [
@@ -74,7 +74,7 @@ class OdinProduct extends Model
      */
     public function getDescriptionAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+        return $this->getFieldLocalText($value);
     }
 
     /**
@@ -348,7 +348,7 @@ class OdinProduct extends Model
             $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency);
             // calculate discount percent
             $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : null;
-            $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);            
+            $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);
         } else if ($discountPercent) {
             // get price from 1 qty
             $discountPrice = $this->prices[1]['val'] ?? null;
@@ -420,7 +420,7 @@ class OdinProduct extends Model
     {
         return $this->getFieldLocalText($value);
     }
-    
+
     /**
      * Retuen array skus -> product
      * SAGA: OdinProduct::cacheSkusProduct
@@ -444,4 +444,16 @@ class OdinProduct extends Model
         }
         return $skus;
     }        
+
+    /**
+     * Returns translated splash_description attribute
+     *
+     * @param array $value
+     * @return string
+     */
+    public function getSplashDescriptionAttribute($value): string
+    {
+        return $this->getFieldLocalText($value);
+    }
+
 }

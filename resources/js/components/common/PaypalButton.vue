@@ -10,6 +10,8 @@
 </template>
 
 <script>
+  import wait from '../../utils/wait';
+
   export default {
     name: 'PaypalButton',
     props: [
@@ -35,7 +37,10 @@
     },
 
     mounted () {
-      this.initButton();
+      wait(
+        () => !!window.paypal,
+        () => this.initButton(),
+      );
     },
 
     methods: {

@@ -1,5 +1,9 @@
-if (window.Vue) {
-  Sentry.init({
+import wait from '../utils/wait';
+
+
+wait(
+  () => !!window.Sentry && !!window.Vue,
+  () => Sentry.init({
     dsn: SentryDSN,
     integrations: [
       new Sentry.Integrations.Vue({
@@ -8,9 +12,5 @@ if (window.Vue) {
         logErrors: false,
       }),
     ],
-  });
-} else {
-  Sentry.init({
-    dsn: SentryDSN,
-  });
-}
+  }),
+);

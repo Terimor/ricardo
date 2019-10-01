@@ -23,9 +23,10 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/terms', 'SiteController@terms')->name('terms');
     $router->get('/about', 'SiteController@about')->name('about');
 
+    $router->get('/splash', 'SiteController@splash')->name('splash');
+
     $router->get('/checkout', 'SiteController@checkout')->name('checkout');
     $router->get('/thankyou-promos', 'SiteController@upsells')->name('upsells');
-    $router->get('/splash', 'SiteController@splash')->name('splash');
     //$router->get('/promo', 'SiteController@promo')->name('promo');
     $router->get('/thankyou', 'SiteController@thankyou')->name('thankyou');
     $router->get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
@@ -37,6 +38,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
     $router->post('/test-checkout-card', 'PaymentsController@createCardOrder');
     $router->post('/test-checkoutdotcom-captured', 'PaymentsController@checkoutDotComCapturedWebhook');
+    $router->post('/test-checkoutdotcom-failed', 'PaymentsController@checkoutDotComFailedWebhook');
     $router->get('/test-paypal', 'PaymentsController@testPaypal');
 
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');

@@ -8,21 +8,21 @@
 
 @section('script')
 <script type="text/javascript">
-    const bluesnapCredential = {
+    var bluesnapCredential = {
       'Authorization': 'Basic {{base64_encode(env('BLUESNAP_API_KEY').':'.env('BLUESNAP_API_PASS'))}}',
     }
 
-    const recentlyBoughtNames = @json($recentlyBoughtNames);
-    const recentlyBoughtCities = @json($recentlyBoughtCities);
+    var recentlyBoughtNames = @json($recentlyBoughtNames);
+    var recentlyBoughtCities = @json($recentlyBoughtCities);
 
-    const checkoutData = {
+    var checkoutData = {
       countryCode: '{{ $countryCode }}',
       countries: @json($countries),
       product: @json($product),
       productImage: '{{$product->logo_image}}',
     }
 
-    window.loadedPhrases = @json($loadedPhrases);
+    var loadedPhrases = @json($loadedPhrases);
 </script>
 
 <script src="{{ asset('js/app.js') }}" defer></script>
@@ -30,15 +30,13 @@
 
 @section('content')
 
-<div id="app">
-  @section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
+@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
 
-    @if (! Request::get('tpl') === 'smc7')
-        # @include('components.product_offer')
-    @endif
+@if (! Request::get('tpl') === 'smc7')
+  # @include('components.product_offer')
+@endif
 
-  <app-component></app-component>
-</div>
+<app-component></app-component>
 
 @include('layouts.footer', ['isWhite' => true])
 

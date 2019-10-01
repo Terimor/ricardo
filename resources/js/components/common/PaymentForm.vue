@@ -298,6 +298,7 @@
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
   import Spinner from './preloaders/Spinner';
+  import { sha256 } from 'js-sha256';
 
   export default {
     name: 'PaymentForm',

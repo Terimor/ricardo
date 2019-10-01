@@ -10,13 +10,13 @@
 
 @section('script')
 <script>
-    const upsellsData = {
+    var upsellsData = {
       product: @json($product),
       orderCustomer: @json($orderCustomer),
       countryCode: '{{ $countryCode }}'
     }
 
-    window.loadedPhrases = @json($loadedPhrases);
+    var loadedPhrases = @json($loadedPhrases);
 </script>
 
 <script src="{{ asset('js/app.js') }}" defer></script>

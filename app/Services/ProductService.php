@@ -179,6 +179,7 @@ class ProductService
         $lp->long_name = $product->long_name;
         $lp->home_description = $product->home_description;
         $lp->home_name = $product->home_name;
+        $lp->splash_description = $product->splash_description;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
         $lp->favicon_image = $product->favicon_image;

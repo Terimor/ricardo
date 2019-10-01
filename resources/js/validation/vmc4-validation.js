@@ -2,6 +2,7 @@ import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import postcode from 'postcode-validator'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import creditCardType from 'credit-card-type'
+import * as dateFns from 'date-fns';
 
 
 const vmc4validation = function () {

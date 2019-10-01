@@ -42,6 +42,7 @@ phpunit.phar
 /public/css/thank-you.css
 /public/css/contact-us.css
 /public/css/index.css
+/public/css/splash.css
 /public/css/static.css
 /public/mix-manifest.json
 /storage/*.key

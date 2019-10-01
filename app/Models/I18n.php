@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Arr;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class I18n extends Model
@@ -64,8 +65,8 @@ class I18n extends Model
 
     public static $browser_codes = [
         'ms'  => 'my',
-        'pt-br' => 'br',
-        'zh-tw' => 'tw',
+        'pt_BR' => 'br',
+        'zh_TW' => 'tw',
     ];
 
     /**
@@ -109,16 +110,20 @@ class I18n extends Model
         '#SURVEY_LINK',
     ];
 
-  /**
-   * Returns translation languages array
-   * @return type
-   */
-  public static function getTranslationLanguages($codes_only = false)
-  {
-    $langs = static::$languages;
-    if ($codes_only) {
-      $langs = array_keys($langs);
+    /**
+     * Returns translation languages array
+     *
+     * @param bool $codes_only
+     * @return array
+     */
+    public static function getTranslationLanguages(bool $codes_only = false): array
+    {
+        $langs = static::$languages;
+        $langs = array_merge(I18n::$browser_codes, $langs);
+        if ($codes_only) {
+            $langs = array_keys($langs);
+        }
+
+        return $langs;
     }
-    return $langs;
-  }
 }
