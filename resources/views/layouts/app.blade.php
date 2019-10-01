@@ -80,7 +80,12 @@
 </head>
 <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
     <div id="app">
-        @include('layouts.header', ['product' => $product])
+        @if (Request::is('splash'))
+            @include('layouts.header_splash', ['product' => $product])
+        @else
+            @include('layouts.header', ['product' => $product])
+        @endif
+
         <main class="pt-4">
             @yield('content')
         </main>

@@ -24,7 +24,7 @@
                             <p class="bunner-text_md">{{ t('splash_page.discount') }}</p>
                             <p class="bunner-text_xl">50%</p>
                             <p class="bunner-text_lg">{{ t('splash_page.last_chance') }}</p>
-                            <button type="button" class="green-button-animated">
+                            <a href="/checkout" type="button" class="green-button-animated">
                                 <span>
                                     {{ t('splash_page.get') }}
                                     {{ $product->product_name }}
@@ -33,7 +33,7 @@
                                     50%
                                     {{ t('splash_page.discount') }}
                                 </span>
-                            </button>
+                            </a>
                             <ul class="bunner-list">
                                 <li class="bunner-item">
                                     {{ t('splash_page.only') }}
@@ -56,7 +56,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="testimonials">
-                        <h2 class="testimonials-title">What Others are Saying... {{ $product->logo_image }} </h2>
+                        <h2 class="testimonials-title">What Others are Saying...</h2>
                         <ul class="testimonials-list">
                             <li class="testimonial">
                                 <div class="testimonial-left">
@@ -147,7 +147,7 @@
                                     frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
                         </div>
                         <div class="text-center">
-                            <a href="#" class="green-button-animated">
+                            <a href="/checkout" class="green-button-animated">
                                 {{ t('splash_page.add_to_cart') }}
                                 {{ t('splash_page.with') }}
                                 50%
@@ -156,14 +156,14 @@
                         </div>
                         <h3>{{ $product->long_name }}</h3>
                         <div class="for-img">
-                            <img src="{{ $product->image[1] }}" alt="">
+                            <img src="{{ $product->image[1] }}" alt="{{ $product->product_name }}">
                         </div>
                         <h3>{{ $product->long_name }}</h3>
                         <div class="for-img">
-                            {{--<img src="{{ $product->image[2] }}" alt="">--}}
+
                         </div>
                         <div class="text-center">
-                            <a href="#" class="green-button-animated">
+                            <a href="/checkout" class="green-button-animated">
                                 {{ t('splash_page.add_to_cart') }}
                                 {{ t('splash_page.with') }}
                                 50%
@@ -176,11 +176,11 @@
         </div>
         <footer class="splash-footer">
                 <div class="splash-footer-title">
-                    <div class="container">{{ t('splash_page.limited_time_promo') }}:</div>
+                    <div class="container">{{ t('splash_page.limited_time_promo') }}: 50% {{ t('splash_page.off') }} {{ $product->product_name }}!</div>
                 </div>
-                <a href="#"></a>
+                <a class="green-button-animated" href="#">{{ t('splash_page.claim_your') }} 50% {{ t('splash_page.discount_code_now') }}!</a>
                 <div class="splash-footer-subtitle">
-                    <div class="container"></div>
+                    <div class="container">{{ t('splash_page.secure_your') }} {{ $product->product_name }} {{ t('splash_page.now_before_this_promotion_ends') }}</div>
                 </div>
         </footer>
     </div>

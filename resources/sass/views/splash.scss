@@ -58,6 +58,7 @@
 }
 
 .splash {
+  margin-top: -1.5rem;
   background: #f1f4f8;
 }
 
@@ -193,14 +194,24 @@
   }
 }
 .splash-footer {
-  padding: 30px 0;
-  background: #4bc5f6 url("https://enence.com/theme/instant-translator/landing3/bg.jpg") no-repeat center top;
+  background: #4bc5f6 url("https://enence.com/theme/instant-translator/landing3/bg.jpg") no-repeat center;
   background-size: cover;
   text-align: center;
 }
 .splash-footer-title {
+  padding: 15px 0;
   font-size: 27px;
   line-height: 1.8;
+  font-weight: bold;
+  color: #ffffff;
+}
+.splash-footer-subtitle {
+  padding: 15px 0;
+  background: #2b2b2b;
+  border-bottom: 1px solid #0a2b4a;
+  text-align: center;
+  font-size: 32px;
+  line-height: 1.5;
   font-weight: bold;
   color: #ffffff;
 }
