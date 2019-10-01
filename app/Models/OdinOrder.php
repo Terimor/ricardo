@@ -88,6 +88,7 @@ class OdinOrder extends OdinModel
         'is_flagged' => false, // bool, default false
         'offer' => null, // string
         'affiliate' => null, // string
+        'is_reduced' => false,
         'is_invoice_sent' => false, // bool, default false
         'is_survey_sent' => false, // bool defaut false
         'is_refunding' => false, // bool, default false, refund requested, processing
@@ -220,4 +221,33 @@ class OdinOrder extends OdinModel
     {
         $this->attributes['customer_email'] =  strtolower(trim($value));
     }
+    /**
+     * Get first order product id (is_main)
+     * @return type
+     */
+    public function getFirstProductId()
+    {
+        $sku = null;
+        $productId = null;
+        if ($this->products) {
+            $products = $this->products;
+            foreach ($products as $product) {
+                if (!empty($product['is_main'])) {
+                    $sku = $product['sku_code'];
+                }
+            }
+        }
+        
+        if ($sku) {
+            $skus = OdinProduct::getCacheSkusProduct();
+            if (!empty($skus[$sku]['product_id'])) {
+                $productId = $skus[$sku]['product_id'];
+            } else {
+                logger()->error("Sku not found {$sku}");
+            }
+        } else {
+            logger()->error("Order have't main product: {$this->id}");
+        }
+        return $productId;
+    }    
 }

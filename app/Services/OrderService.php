@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Setting;
 use App\Models\Txn;
 use App\Models\OdinOrder;
+use App\Models\AffiliateSetting;
 use App\Services\EmailService;
 use App\Models\OdinProduct;
 use Illuminate\Support\Arr;
@@ -60,10 +61,28 @@ class OrderService
                 'errors' => $validator->errors()->messages(),
                 'success' => false
              ];
-        } else {
+        } else {            
+            // check affid
+            if (!empty($data['affiliate'])) {;
+                if ($data['affiliate']) {
+                    $affiliate = AffiliateSetting::getByHasOfferId($data['affiliate']);
+                    if (!$affiliate) {
+                        $affiliate = new AffiliateSetting();
+                        $affiliate->ho_affiliate_id = $data['affiliate'];
+                        $affiliate->save();
+                    }
+                    // get first main product
+                    $productId = $model->getFirstProductId();
+                    // check in affiliate product list
+                    $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
+                    $model->is_reduced = $isReduced;
+                }
+            }
+
             return [
                 'success' => $model->save(),
-                'order' => $returnModel ? $model : $model->attributesToArray()
+                'order' => $returnModel ? $model : $model->attributesToArray(),
+                'affiliate' => isset($affiliate) ? $affiliate : null
              ];
         }
     }

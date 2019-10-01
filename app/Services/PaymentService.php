@@ -328,7 +328,9 @@ class PaymentService
             'warehouse_id' => $product->warehouse_id,
             'products' => [$order_product],
             'page_checkout' => $req->fullUrl(),
-            'params' => $req->query()
+            'params' => $req->query(),
+            'offer' => $req->get('offerid'),
+            'affiliate' => $req->get('affid'),
         ], true);
 
         if (isset($reply['errors'])) {

@@ -6,6 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 use App\Services\CurrencyService;
 use NumberFormatter;
 use App\Models\Setting;
+use Cache;
 
 /**
  * Class OdinProduct
@@ -419,4 +420,28 @@ class OdinProduct extends Model
     {
         return $this->getFieldLocalText($value);
     }
+    
+    /**
+     * Retuen array skus -> product
+     * SAGA: OdinProduct::cacheSkusProduct
+     * @param type $life_time
+     */
+    public static function getCacheSkusProduct($cache_lifetime = 600)
+    {
+        $skus = Cache::get('sku_product');
+        if (!$skus) {            
+            $products = OdinProduct::all();
+
+            $skus = [];
+            foreach ($products as $product) {
+                foreach($product->skus as $sku) {
+                  $skus[$sku['code']]['name'] = $sku['name'];
+                  $skus[$sku['code']]['product_id'] = $product->id;
+                }
+            }
+
+            Cache::put('sku_product', $skus, $cache_lifetime);
+        }
+        return $skus;
+    }        
 }
