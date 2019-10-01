@@ -19,5 +19,6 @@ mix
   .sass('resources/sass/views/promo.scss', 'public/css')
   .sass('resources/sass/views/contact-us.scss', 'public/css')
   .sass('resources/sass/views/static.scss', 'public/css')
+  .sass('resources/sass/views/splash.scss', 'public/css')
   .sass('resources/sass/views/index.scss', 'public/css')
   .version();
