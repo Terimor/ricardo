@@ -14,15 +14,15 @@
 
 
 @section('script')
-<script defer>
-    const upsells = {
+<script>
+    var upsells = {
         countryCode: '{{ $countryCode }}',
         setting: @json($setting),
         product: @json($product),
         orderCustomer: @json($orderCustomer),
     }
 
-    window.loadedPhrases = @json($loadedPhrases);
+    var loadedPhrases = @json($loadedPhrases);
 </script>
 <script src="{{ asset('js/views/thank-you.js') }}" defer></script>
 @endsection
@@ -142,6 +142,7 @@
                 </button>
             </div>
         </div>
+        @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
     </div>
 
 @endsection

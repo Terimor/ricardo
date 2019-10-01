@@ -1,7 +1,8 @@
 <template>
   <div class="paypal-button-container">
     <div id="paypal-button"></div>
-    <div class="paypal-shim">
+    <div class="paypal-shim" :class="{ 'active': !isSubmitted }">
+      <div v-if="isSubmitted" class="disabled"></div>
       <div class="title"><slot /></div>
       <img class="image" src="/images/paypal-highq.png" />
     </div>
@@ -9,6 +10,8 @@
 </template>
 
 <script>
+  import wait from '../../utils/wait';
+
   export default {
     name: 'PaypalButton',
     props: [
@@ -20,6 +23,7 @@
     data() {
       return {
         inputCheckbox: this.$v.required,
+        isSubmitted: false,
         action: null
       }
     },
@@ -33,7 +37,10 @@
     },
 
     mounted () {
-      this.initButton();
+      wait(
+        () => !!window.paypal,
+        () => this.initButton(),
+      );
     },
 
     methods: {
@@ -50,7 +57,8 @@
           },
 
           createOrder(data, actions) {
-              return createOrder();
+            that.isSubmitted = true;
+            return createOrder();
           },
 
           onClick () {
@@ -61,11 +69,18 @@
           },
 
           onApprove (data, actions) {
-            return onApprove(data);
+            return onApprove(data)
+              .then(() => {
+                setTimeout(() => that.isSubmitted = false, 1000);
+              });
             // Commented out so order verification will pass (temporary change)
             // if ($v.required || $v.$dirty) {
             //     return onApprove(data);
             // }
+          },
+
+          onCancel(data, actions) {
+            that.isSubmitted = false;
           },
 
           style: {
@@ -87,7 +102,7 @@
       height: 55px;
       overflow: hidden;
     }
- 
+
     .paypal-shim {
       align-items: center;
       background-color: #ffc438;
@@ -99,11 +114,14 @@
       justify-content: center;
       left: 0;
       overflow: hidden;
-      pointer-events: none;
       position: absolute;
       right: 0;
       top: 0;
       z-index: 1000;
+
+      &.active {
+        pointer-events: none;
+      }
 
       &:before {
         opacity: 0;
@@ -128,16 +146,27 @@
         font-weight: 700;
         white-space: nowrap;
       }
- 
+
       .image {
         margin-left: 10px;
         margin-top: -2px;
         max-width: 90px;
       }
+
+      .disabled {
+        background-color: #fff;
+        bottom: 0;
+        left: 0;
+        opacity: .5;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1;
+      }
     }
 
     &:hover {
-      .paypal-shim {
+      .paypal-shim.active {
         background-image: linear-gradient(#f9b421, #fff0a8);
 
         &:before {

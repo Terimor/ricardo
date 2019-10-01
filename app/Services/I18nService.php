@@ -28,11 +28,11 @@ class I18nService
             } else {
                 $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories', $language])->get();
             }
-            
+
             $issetCategory = false;
             $loadedPhrases = [];
-            // generate array of en and lang values            
-            foreach ($phrases as $phrase) {                
+            // generate array of en and lang values
+            foreach ($phrases as $phrase) {
                 if (!$phrase->en) {
                     logger()->error("Empty EN phrase", ['phrase' => $phrase->phrase]);
                 }
@@ -40,18 +40,18 @@ class I18nService
                 if ($language != 'en') {
                     $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
                 }
-                
+
                 // check if one phrase isset for this category
                 if (!$issetCategory && in_array($category, $phrase->categories)) {
                     $issetCategory = true;
                 }
             }
-            
+
             if (empty($loadedPhrases[$language])) {
                 logger()->error('Loaded phrases is empty', ['language' => $language, 'category' => $category]);
                 $loadedPhrases[$language] = [];
             }
-            
+
             if (!$issetCategory) {
                 logger()->error('0 phrases for category '.$category);
             }
@@ -63,18 +63,22 @@ class I18nService
     }
 
     /**
-    * Get translation phrase
-    * From saga I18n::t
-    * @param type $phrase
-    * @param type $lang
-    */
-   public static function getTranslatedPhrase(string $phrase, string $language = 'en', $args = []): string
-   {
+     * Get translation phrase
+     * From saga I18n::t
+     *
+     * @param string $phrase
+     * @param string $language
+     * @param array $args
+     *
+     * @return string
+     */
+    public static function getTranslatedPhrase(string $phrase, string $language = 'en', array $args = []): string
+    {
         $translation = $phrase;
-            $language = $language ? strtolower($language) : 'en';
+        $language = $language ? strtolower($language) : 'en';
 
-        if (isset(static::$browser_codes[$language])) {
-            $language = static::$browser_codes[$language];
+        if (isset(I18n::$browser_codes[$language])) {
+            $language = I18n::$browser_codes[$language];
         }
 
         //$translated_languages = I18n::getTranslationLanguages(true);
@@ -83,19 +87,19 @@ class I18nService
         if (!empty($loadedPhrases[$translation])) {
             $translation = $loadedPhrases[$translation];
         } else {
-            logger()->error("URGENT: `{$translation}` not found in translations. Args: ".json_encode($args));
+            logger()->error("URGENT: `{$translation}` not found in translations. Args: " . json_encode($args));
         }
 
         if ($args) {
             foreach ($args as $key => $value) {
-            $placeholderKey = "#".strtoupper($key)."#";
-            $translation = str_replace($placeholderKey, $value, $translation);
-            if (!in_array($placeholderKey, I18n::$placeholders)) {
-                logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
-            }
-            if ($value === null) {
-                logger()->error("Translation is null for {$placeholderKey}");
-            }
+                $placeholderKey = "#" . strtoupper($key) . "#";
+                $translation = str_replace($placeholderKey, $value, $translation);
+                if (!in_array($placeholderKey, I18n::$placeholders)) {
+                    logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
+                }
+                if ($value === null) {
+                    logger()->error("Translation is null for {$placeholderKey}");
+                }
             }
         }
 
@@ -103,11 +107,21 @@ class I18nService
         if (substr_count($translation, '#') > 1) {
             $other_hashes_cnt = substr_count($translation, '/#/');
             if (substr_count($translation, '#') != $other_hashes_cnt) {
-            logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: ". json_encode($args));
+                logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: " . json_encode($args));
             }
         }
 
         return $translation;
-   }
+    }
 
+    /**
+     * Returns language by locale
+     *
+     * @param string $language_code
+     * @return string
+     */
+    public static function getInternalLanguageByLocaleLanguage(string $language_code): string
+    {
+        return !empty(I18n::$browser_codes[$language_code]) ? I18n::$browser_codes[$language_code] : $language_code;
+    }
 }

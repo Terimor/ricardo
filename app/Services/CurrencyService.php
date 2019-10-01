@@ -27,10 +27,12 @@ class CurrencyService
      * @var type
      */
     public static $upToNext10 = ['JPY'];
-
-    public function __construct()
-    {
-    }
+    
+    /**
+     * Use currency symbol from database
+     * @var type 
+     */
+    public static $useDBSymbol = ['HRK'];
 
     /**
      * Get local price from USD
@@ -40,16 +42,17 @@ class CurrencyService
      * @param type $ip
      * @return float
      */
-    public static function getLocalPriceFromUsd(float $price, Currency $currency = null, string $countryCode = null, $ip = null) : array
+    public static function getLocalPriceFromUsd(float $price, Currency $currency) : array
     {
         if (!$currency) {
-            $currency = self::getCurrency(null, $countryCode);
+            $currency = self::getCurrency();
         }
         $currencyCode = $currency->code;
         $countryCode = $currency->countryCode;
 
         //get fraction digits and locale string
-        $localeString = \Utils::getCultureCode($ip, $countryCode);
+        $localeString = \Utils::getCultureCode(null, $countryCode);
+        
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
         // if price < min set minimum price = min
@@ -157,7 +160,7 @@ class CurrencyService
 
         return [
             'price' => $exchangedPrice,
-            'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
+            'price_text' =>  CurrencyService::formatCurrency($numberFormatter, $exchangedPrice, $currency),
             'code' => $currencyCode,
             'exchange_rate' => $currency->usd_rate,
         ];
@@ -278,21 +281,19 @@ class CurrencyService
 	 * @param float $price
 	 * @param type $currency
 	 */
-	public static function getLocalTextValue(float $price, Currency $currency = null, string $countryCode = null) : string
+	public static function getLocalTextValue(float $price, Currency $currency = null) : string
 	{
-		if (!$countryCode) {
-			if (!$currency) {
-				$currency = self::getCurrency(null, $countryCode);
-			}
-			$currencyCode = $currency->code;
-			$countryCode = !empty($currency->countryCode) ? $currency->countryCode : (!empty($currency->countries[0]) ? $currency->countries[0] : 'us');
+		if (!$currency) {
+			$currency = self::getCurrency();			
 		}
+        
+        $countryCode = !empty($currency->countryCode) ? $currency->countryCode : (!empty($currency->countries[0]) ? $currency->countries[0] : 'us');
 
         //get fraction digits and locale string
         $localeString = \Utils::getCultureCode(null, $countryCode);
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
 
-		return $numberFormatter->formatCurrency($price, $currencyCode);
+		return CurrencyService::formatCurrency($numberFormatter, $price, $currency);
 	}
 
     /**
@@ -322,7 +323,7 @@ class CurrencyService
         // cache culture code
         $currencyCultureCodes = Cache::get('currency_culture_code');
         if (empty($currencyCultureCodes[$currencyCode])) {
-            $currencyCultureCodes = self::cacheCurrencyCultureCode();            
+            $currencyCultureCodes = static::cacheCurrencyCultureCode();            
         }
         return !empty($currencyCultureCodes[$currencyCode]) ? $currencyCultureCodes[$currencyCode] : 'en-US';
     }
@@ -333,7 +334,7 @@ class CurrencyService
      */
     public static function cacheCurrencyCultureCode()
     {
-        $currencies = Currency::all();
+        $currencies = Currency::where(['status' => 'status'])->get();
         $currencyCultureCodes = [];
         // check countries
         foreach ($currencies as $currency) {
@@ -347,6 +348,22 @@ class CurrencyService
         Cache::put('currency_culture_code', $currencyCultureCodes, 3600);
         
         return $currencyCultureCodes;
+    }
+    
+    /**
+     * Format currency
+     * @return type
+     */
+    public static function formatCurrency($numberFormatter, $price, $currency)
+    {
+        $priceText = $numberFormatter->formatCurrency($price, $currency->code);
+
+        // check use symbol from db for formatting        
+        if (in_array($currency->code, static::$useDBSymbol)) {
+            $priceText = str_replace($currency->code, $currency->symbol, $priceText);
+        }
+        
+        return $priceText;
     }
 
 }

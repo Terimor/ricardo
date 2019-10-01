@@ -1,0 +1,265 @@
+.green-btn  {
+  position: relative;
+  display: block;
+  margin: 12px 0 15px 0;
+  padding: 26px 0;
+  background: #1fba34;
+  border: 1px dashed #fff;
+  text-align: center;
+
+  text-decoration: none;
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: #fff;
+  transition: all .2s linear;
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2), inset 0 0 0 2px rgba(255, 255, 255, .2);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .2);
+  &:hover, &:focus, &:active {
+    box-shadow: inset 0 0 20px #fff;
+  }
+}
+
+.red-btn  {
+  position: relative;
+  display: block;
+  margin: 12px 0 15px 0;
+  padding: 12px 0;
+  background: #fe0002;
+  border: 1px dashed #fff;
+  text-align: center;
+
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: #fff;
+  transition: all .2s linear;
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2), inset 0 0 0 2px rgba(255, 255, 255, .2);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .2);
+  &:hover, &:focus, &:active {
+    background: #d81012;
+    text-decoration: none;
+    color: #fff;
+    box-shadow: inset 0 0 20px #fff;
+  }
+}
+
+.btn-iconed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:after {
+    order: -1;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    content: url("https://enence.com/theme/instant-translator/landing3/ex4.png");
+  }
+}
+
+ul, ol {
+  padding: 0;
+  list-style-type: none;
+}
+
+.for-img {
+  text-align: center;
+  overflow: hidden;
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+  }
+}
+.text-center {
+  text-align: center;
+}
+
+.header_splash {
+  padding: 10px 0;
+  background: #2b2b2b;
+  border-bottom: 1px solid #0a2b4a;
+  text-align: center;
+  font-size: 28px;
+  line-height: 1.5;
+  color: #ffffff;
+}
+
+.splash {
+  margin-top: -1.5rem;
+  background: #f1f4f8;
+}
+
+.bunner {
+  min-height: 365px;
+  padding: 30px 0;
+  background: #4bc5f6 url("https://enence.com/theme/instant-translator/landing3/bg.jpg") no-repeat center top;
+  background-size: cover;
+}
+.bunner-inner {
+  display: flex;
+  align-items: center;
+}
+.bunner-left {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 0 10px;
+}
+.bunner-right {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 0 10px;
+}
+.bunner-descr {
+  text-align: center;
+  line-height: 1;
+  color: #ffffff;
+  font-weight: bold;
+  .green-button-animated {
+    margin: 30px 0;
+  }
+}
+.bunner-text_md {
+  font-size: 27px;
+}
+.bunner-text_lg {
+  font-size: 37px;
+}
+.bunner-text_xl {
+  font-size: 100px;
+}
+.bunner-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  font-weight: normal;
+  line-height: 1.5;
+}
+.testimonials {
+  padding: 30px 0;
+}
+.testimonials-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.testimonial {
+  display: flex;
+  align-items: flex-start;
+  margin: 10px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #e1e1e1;
+  border-radius: 5px;
+  .testimonial-left {
+    flex: 0 0 70px;
+    max-width: 70px;
+    margin-right: 10px;
+  }
+  .testimonial-avatar {
+    width: 100%;
+    border-radius: 3px;
+  }
+  .testimonial-right {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+  .testimonial-header {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px dashed #000000;
+  }
+  .testimonial-author {
+    display: inline-block;
+    padding-right: 5px;
+    border-right: 1px solid #000000;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #1fba34;
+    font-weight: bold;
+  }
+  .testimonial-date {
+    display: inline-block;
+    padding: 0 5px;
+    line-height: 1.5;
+  }
+  .testimonial-rate {
+    margin-left: auto;
+  }
+  .testimonial-body {
+    padding: 5px 0;
+    font-size: 14px;
+  }
+  .testimonial-images {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -3px;
+  }
+  .testimonial-img {
+    padding: 3px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+}
+
+.product-media {
+  padding: 90px 0 30px;
+  text-align: center;
+}
+.iframe-wrap {
+  position: relative;
+  margin: 20px 0;
+  .iframe-stretch {
+    width: 100%;
+    padding-top: 55%;
+  }
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  iframe[src=""] ~ .iframe-stretch {
+    display: none;
+  }
+}
+
+.splash-footer {
+  background: #4bc5f6 url("https://enence.com/theme/instant-translator/landing3/bg.jpg") no-repeat center;
+  background-size: cover;
+  text-align: center;
+}
+.splash-footer-container {
+  padding: 0 15px;
+}
+.splash-footer-title {
+  padding: 15px 0 0;
+  font-size: 27px;
+  line-height: 1.8;
+  font-weight: bold;
+  color: #ffffff;
+}
+.splash-footer-subtitle {
+  padding: 15px 0;
+  background: #2b2b2b;
+  border-bottom: 1px solid #0a2b4a;
+  text-align: center;
+  font-size: 32px;
+  line-height: 1.5;
+  font-weight: bold;
+  color: #ffffff;
+}
+.splash-footer-copy {
+  padding: 12px 0 10px;
+  background: rgb(80, 80, 80);
+  text-align: center;
+  color: #d5d5d5;
+  font-size: 12px;
+}

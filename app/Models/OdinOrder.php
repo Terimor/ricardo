@@ -89,6 +89,7 @@ class OdinOrder extends OdinModel
         'offer' => null, // string
         'affiliate' => null, // string
         'is_invoice_sent' => false, // bool, default false
+        'is_survey_sent' => false, // bool defaut false
         'is_refunding' => false, // bool, default false, refund requested, processing
         'is_refunded' => false, // bool, order was fully or partially refunded
         'is_qc_passed' => false, // bool, additional control of order's correctness

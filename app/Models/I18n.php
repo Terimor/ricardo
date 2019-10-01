@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Arr;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class I18n extends Model
 {
     protected $collection = 'i18n';
-    
+
     protected $dates = ['created_at', 'updated_at'];
-    
+
     public $timestamps = true;
 
-    public static $loadedPhrases = [];        
-    
+    public static $loadedPhrases = [];
+
     protected static $languages = [
         'en'     => 'English',
         'fi'     => 'Finnish',
@@ -32,7 +33,7 @@ class I18n extends Model
         'it'     => 'Italian',
         'nl'     => 'Dutch',
         'de'     => 'German',
-        'ru'     => 'Russian',        
+        'ru'     => 'Russian',
         'pt'     => 'Portuguese',
         'da'     => 'Danish',
         'cs'     => 'Czech',
@@ -55,17 +56,22 @@ class I18n extends Model
         'ur'     => 'Urdu',
         'jv'     => 'Javanese',
         'bn'     => 'Bengali',
-        'vi'     => 'Vietnamese',            
+        'vi'     => 'Vietnamese',
+        'sr'     => 'Serbian',
+        'is'     => 'Icelandic',
+        'uk'     => 'Ukrainian',
+        'tw'     => 'Traditional Chinese Taiwan',
     ];
-        
+
     public static $browser_codes = [
         'ms'  => 'my',
-        'pt-br' => 'br'
+        'pt_BR' => 'br',
+        'zh_TW' => 'tw',
     ];
-    
+
     /**
      * Saga I18n::$placeholders
-     * @var type 
+     * @var type
      */
     public static $placeholders = [
         '#FIRST_NAME#',
@@ -103,17 +109,21 @@ class I18n extends Model
         '#PRODUCTS#',
         '#SURVEY_LINK',
     ];
-    
-  /**
-   * Returns translation languages array
-   * @return type
-   */
-  public static function getTranslationLanguages($codes_only = false)
-  {
-    $langs = static::$languages;
-    if ($codes_only) {
-      $langs = array_keys($langs);
+
+    /**
+     * Returns translation languages array
+     *
+     * @param bool $codes_only
+     * @return array
+     */
+    public static function getTranslationLanguages(bool $codes_only = false): array
+    {
+        $langs = static::$languages;
+        $langs = array_merge(I18n::$browser_codes, $langs);
+        if ($codes_only) {
+            $langs = array_keys($langs);
+        }
+
+        return $langs;
     }
-    return $langs;
-  }
 }

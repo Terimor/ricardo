@@ -1,12 +1,21 @@
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
+import { queryParams } from  './queryParams';
+
+
+
 
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
+
+  const currentPrice = queryParams().tpl === 'emc1b'
+    ? `${getCountOfInstallments(installments)}${valueTexts.valueText[installments]}`
+    : `${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')}`;
+
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
-    3: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
-    5: `(${discountPercent}% ${t('checkout.discount')}, ${getCountOfInstallments(installments)}${valueTexts.unitValueText[installments]}/${t('checkout.unit')})`,
+    3: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
+    5: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
   }
 
   return config[key]
@@ -91,6 +100,10 @@ export function preparePurchaseData({
           +key === 5 ? 2 :
             null;
 
+      const isTextComposite = (amount) => {
+        return amount ? ` + ${amount} ${t('checkout.free')}` : '';
+      };
+
       return  {
         discountPercent,
         image: it.image || image,
@@ -98,7 +111,8 @@ export function preparePurchaseData({
           it.is_bestseller ? t('checkout.bestseller') :
             it.is_popular ? t('checkout.best_deal') :
               '',
-        text: `${mainQuantity}x ${long_name} ${freeQuantity ? ' + ' + freeQuantity + ' ' + t('checkout.free') : ''}`,
+        text: `${mainQuantity + freeQuantity}x ${long_name}`,
+        textComposite: `${mainQuantity} ${long_name} ${isTextComposite(freeQuantity)}`,
         newPrice: getNewPrice({
           key,
           valueTexts,
@@ -109,6 +123,7 @@ export function preparePurchaseData({
           valueTexts,
           installments,
         }),
+        pricePerUnit: valueTexts.unitValueText,
         discountText: onlyDiscount ?
           getOnlyDiscount({key, discountPercent}) :
           getDiscount({
@@ -141,4 +156,22 @@ export function getCardUrl(cardType) {
     'visa': '/images/cc-icons/visa.png'
   }
   return cardMap[cardType] || cardMap.iconcc
+}
+
+
+export function sendCheckoutRequest(data) {
+  const currency = queryParams().cur || checkoutData.product.prices.currency;
+
+  return Promise.resolve()
+    .then(() => fetch('/test-checkout-card?cur=' + currency, {
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify(data),
+    }))
+    .then(res => res.json());
 }

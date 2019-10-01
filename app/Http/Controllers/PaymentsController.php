@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Services\CheckoutDotComService;
 use App\Services\PaymentService;
+use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
+use App\Http\Requests\CheckoutDotComCapturedWebhookRequest;
 use Illuminate\Http\Request;
 
 /*use com\checkout;
@@ -27,12 +29,39 @@ class PaymentsController extends Controller
         $this->paymentService = $paymentService;
     }
 
-    public function createCardOrder(PaymentCardCreateOrderRequest $req) {
+    /**
+     * Creates card payment
+     * @param  PaymentCardCreateOrderRequest $req
+     * @return array
+     */
+    public function createCardOrder(PaymentCardCreateOrderRequest $req)
+    {
         return $this->paymentService->createOrder($req);
     }
 
-    public function capturedWebhook(Request $req) {
-        logger()->error("Checkout.captured.webhook", ['req' => $req->toArray()]);
-        return [ 'status' => 'ok' ];
+    /**
+     * Accepts checkout.com charges.captured webhook
+     * @param  Request $req
+     * @return void
+     */
+    public function checkoutDotComCapturedWebhook(Request $req)
+    {
+        $checkoutService = new CheckoutDotComService();
+        $reply = $checkoutService->validateCapturedWebhook($req);
+
+        logger()->info('checkout.com', ['reply' => json_encode($reply)]);
+
+        if (!$reply['status']) {
+            logger()->error('checkout.com unauthorized captured webhook', [ 'ip' => $req->ip() ]);
+            throw new AuthException('checkout.com captured webhook unauthorized');
+        }
+
+        $this->paymentService->approveOrder($reply);
     }
+
+    public function checkoutDotComFailedWebhook(Request $req)
+    {
+        logger()->info('checkout.com', ['content' => json_encode($req->toArray())]);
+    }
+
 }

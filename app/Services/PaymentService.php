@@ -5,8 +5,11 @@ namespace App\Services;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Exceptions\CustomerUpdateException;
 use App\Exceptions\InvalidParamsException;
+use App\Exceptions\OrderNotFoundException;
 use App\Exceptions\OrderUpdateException;
 use App\Exceptions\PaymentException;
+use App\Exceptions\ProductNotFoundException;
+use App\Exceptions\TxnNotFoundException;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
@@ -42,6 +45,7 @@ class PaymentService
     const METHOD_EPS              = 'eps';
 
     /**
+     * Saga PaymentUtils::$providers
      * Payment providers
      * +3ds — 3DS is required
      * -3ds — 3DS is optional
@@ -147,12 +151,13 @@ class PaymentService
     ];
 
     /**
+     * Saga PaymentUtils::$methods
      * Payment methods
      * @var type
      */
     public static $methods = [
         self::METHOD_INSTANT_TRANSFER => [
-            'name'      => 'Instant transfer',
+            'name'      => 'PayPal',
             'logo'      => 'https://static-backend.saratrkr.com/image_assets/paypal-curved-128px.png',
             'is_active' => true
         ],
@@ -265,6 +270,7 @@ class PaymentService
     public function createOrder(PaymentCardCreateOrderRequest $req)
     {
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
+        $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
         $address = $req->get('address');
         $card = $req->get('card');
         $contact = $req->get('contact');
@@ -275,7 +281,7 @@ class PaymentService
 
         // update customer if it has been changed
         $reply = $this->customerService->addOrUpdate(
-            array_merge($address, $contact, ['phone' => $contact['phone']['country_code'] + $contact['phone']['number']])
+            array_merge($address, $contact, ['phone' => $contact['phone']['country_code'] . $contact['phone']['number']])
         );
         if (isset($reply['errors'])) {
             throw new CustomerUpdateException(json_encode($reply['errors']));
@@ -290,39 +296,50 @@ class PaymentService
         }
 
         $order_product = [
-            'sku_code' => $sku,
-            'quantity' => (int)$qty,
-            'price' => $price['value'],
-            'price_usd' => floor($price['value'] / $currency->usd_rate * 100) / 100,
-            'is_main' => true,
-            'price_set' => $product->prices['price_set'],
+            'sku_code'              => $sku,
+            'quantity'              => (int)$qty,
+            'price'                 => $price['value'],
+            'price_usd'             => floor($price['value'] / $currency->usd_rate * 100) / 100,
+            'warranty_price'        => 0,
+            'warranty_price_usd'    => 0,
+            'is_main'               => true,
+            'price_set'             => $product->prices['price_set'],
         ];
 
+        if ($is_warranty) {
+            $order_product['warranty_price'] = $price['warranty_price'];
+            $order_product['warranty_price_usd'] = CurrencyService::calculateWarrantyPrice(
+                $product->warranty_percent,
+                $order_product['price_usd']
+            );
+        }
+
         $reply = $this->orderService->addOdinOrder([
-            'status' => OdinOrder::STATUS_NEW,
-            'currency' => $currency->code,
-            'exchange_rate' => $currency->usd_rate,
-            'total_paid' => 0,
-            'total_price' => $order_product['price'],
-            'total_price_usd' => $order_product['price_usd'],
-            "txns_fee_usd" => 0,
-            'installments' => 0,
-            'customer_email' => $contact['email'],
-            'customer_first_name' => $contact['first_name'],
-            'customer_last_name' => $contact['last_name'],
-            'customer_phone' => $contact['phone'],
-            'language' => app()->getLocale(),
-            'ip' => $req->ip(),
-            'txns' => [],
-            'shipping_country' => $address['country'],
-            'shipping_zip' => $address['zip'],
-            'shipping_state' => $address['state'],
-            'shipping_city' => $address['city'],
-            'shipping_street' => $address['street'],
-            'warehouse_id' => $product->warehouse_id,
-            'products' => [$order_product],
-            'page_checkout' => $req->fullUrl(),
-            'params' => !empty($req->query()) ? $req->query : null
+            'status'                => OdinOrder::STATUS_NEW,
+            'currency'              => $currency->code,
+            'exchange_rate'         => $currency->usd_rate,
+            'total_paid'            => 0,
+            'total_price'           => $order_product['price'] + $order_product['warranty_price'],
+            'total_price_usd'       => $order_product['price_usd'] + $order_product['warranty_price_usd'],
+            'txns_fee_usd'          => 0,
+            'installments'          => 0,
+            'customer_email'        => $contact['email'],
+            'customer_first_name'   => $contact['first_name'],
+            'customer_last_name'    => $contact['last_name'],
+            'customer_phone'        => $contact['phone']['country_code'] . $contact['phone']['number'],
+            'language'              => app()->getLocale(),
+            'ip'                    => $req->ip(),
+            'txns'                  => [],
+            'shipping_country'      => $address['country'],
+            'shipping_zip'          => $address['zip'],
+            'shipping_state'        => $address['state'],
+            'shipping_city'         => $address['city'],
+            'shipping_street'       => $address['street'],
+            'shop_currency'         => $currency->code,
+            'warehouse_id'          => $product->warehouse_id,
+            'products'              => [$order_product],
+            'page_checkout'         => $req->fullUrl(),
+            'params'                => $req->query()
         ], true);
 
         if (isset($reply['errors'])) {
@@ -338,25 +355,27 @@ class PaymentService
         // add Txn, update OdinOrder
         if (!empty($reply['hash'])) {
             (new OrderService())->addTxn([
-                'hash' => $reply['hash'],
-                'value' => $reply['value'],
-                'currency' => $reply['currency'],
-                'provider_data' => $reply['provider_data'],
-                'payment_method' => $reply['payment_method'],
-                'payment_provider' => $reply['payment_provider'],
-                'payer_id' => $reply['payer_id']
+                'hash'              => $reply['hash'],
+                'value'             => $reply['value'],
+                'currency'          => $reply['currency'],
+                'provider_data'     => $reply['provider_data'],
+                'payment_method'    => $reply['payment_method'],
+                'payment_provider'  => $reply['payment_provider'],
+                'payer_id'          => $reply['payer_id']
             ]);
 
+            $order_product['txn_hash'] = $reply['hash'];
+            $order->products = array_merge([], [$order_product]);
             $order->is_flagged = $reply['is_flagged'];
             $order->txns = array_merge($order->txns, [
                 [
-                    'hash' => $reply['hash'],
-                    'value' => $reply['value'],
-                    'status' => $reply['status'],
-                    'fee' => $reply['fee'],
-                    'payment_method' => $reply['payment_method'],
-                    'payment_provider' => $reply['payment_provider'],
-                    'payer_id' => $reply['payer_id']
+                    'hash'              => $reply['hash'],
+                    'value'             => $reply['value'],
+                    'status'            => $reply['status'],
+                    'fee'               => $reply['fee'],
+                    'payment_method'    => $reply['payment_method'],
+                    'payment_provider'  => $reply['payment_provider'],
+                    'payer_id'          => $reply['payer_id']
                 ]
             ]);
 
@@ -371,10 +390,74 @@ class PaymentService
         }
 
         return [
-            'order_currency' => $order->currency,
-            'order_id' => $order->getIdAttribute(),
-            'status' => $reply['status'] === Txn::STATUS_CAPTURED ? 'ok' : 'fail'
+            'order_currency'    => $order->currency,
+            'order_id'          => $order->getIdAttribute(),
+            'status'            => $reply['status'] !== Txn::STATUS_FAILED ? 'ok' : 'fail',
+            'redirect_url'      => $reply['redirect_url']
         ];
+    }
+
+    /**
+     * Approves order
+     * @param array $data
+     */
+    public function approveOrder(array $data): void
+    {
+        $order = OdinOrder::where(['number' => $data['number']])->first();
+        if (!$order) {
+            throw new OrderNotFoundException("Order [{$data['number']}] not found");
+        }
+
+        $txn = collect($order->txns)->first(function ($v) use ($data) {
+            return $v['hash'] === $data['hash'];
+        });
+
+        if (empty($txn)) {
+            throw new TxnNotFoundException("Order Txn [{$data['hash']}] not found");
+        }
+
+        $product = collect($order->products)->first(function ($v) use ($data) {
+            return $v['txn_hash'] === $data['hash'];
+        });
+
+        if (empty($product)) {
+            throw new ProductNotFoundException("Order Product [{$data['hash']}] not found");
+        }
+
+        if ($txn['status'] !== Txn::STATUS_APPROVED || $txn['status'] !== Txn::STATUS_FAILED) {
+
+            $currency = CurrencyService::getCurrency($order->currency);
+
+            $order->total_paid += $data['value'];
+            $order->total_paid_usd += floor($data['value'] / $currency->usd_rate * 100) / 100;
+            $order->status = $order->total_paid >= $order->total_price ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+
+            $txn['status'] = Txn::STATUS_APPROVED;
+            $order->txns = array_merge(
+                collect($order->txns)->reject(function ($v) use ($data) {
+                    return $v['hash'] === $data['hash'];
+                })->all(),
+                [$txn]
+            );
+
+            $product['is_paid'] = true;
+            $order->products = array_merge(
+                collect($order->products)->reject(function ($v) use ($data) {
+                    return $v['txn_hash'] === $data['hash'];
+                })->all(),
+                [$product]
+            );
+
+            if (!$order->save()) {
+                $validator = $order->validate();
+                if ($validator->fails()) {
+                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
+                }
+            }
+        } else {
+            logger()->info('Unsuccessful attempt to approve Txn', ['hash' => $txn['hash'], 'status' => $txn['status']]);
+        }
+
     }
 
     /**

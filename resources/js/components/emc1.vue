@@ -190,12 +190,19 @@ import PurchasAlreadyExists from './common/PurchasAlreadyExists';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
 import { preparePurchaseData } from '../utils/checkout';
+import isPurchasAlreadyExists from '../mixins/purchas';
+import setDataToLocalStorage from '../mixins/purchas';
 import { preparePartByInstallments } from '../utils/installments';
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
 
 export default {
   name: 'emc1',
-  mixins: [notification, queryToComponent],
+  mixins: [
+    notification,
+    queryToComponent,
+    isPurchasAlreadyExists,
+    setDataToLocalStorage,
+  ],
   components: {
     ProductItem,
     Cart,
@@ -399,30 +406,6 @@ export default {
     textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
     textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
     paypalRiskFree: () => t('checkout.paypal.risk_free'),
-
-    isPurchasAlreadyExists() {
-      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
-      const odin_order_created_at = localStorage.getItem('odin_order_created_at');
-
-      if (!odin_order_created_at || !selectedProductData) {
-        return false
-      }
-
-      if (selectedProductData.product_name === this.productData.product_name) {
-        const now = new Date()
-        const then = odin_order_created_at
-        const diffinMilliseconds = Date.parse(now) - Date.parse(then);
-        const diffInMinutes = diffinMilliseconds / 1000 / 60;
-        const timeLimit = 30;
-
-        if  (parseInt(diffInMinutes) >= timeLimit) {
-          localStorage.removeItem('odin_order_created_at');
-          return false
-        } else {
-          return true;
-        }
-      }
-    }
   },
   watch: {
     'form.installments' (val) {
@@ -439,15 +422,11 @@ export default {
           setTimeout(() => fade('in', 300, document.querySelector('#product-image'), true), 200)
         })
 
-      this.setDataToLocalStorage();
       this.setPurchase({
         variant: val,
         installments: this.form.installments,
       })
     },
-    'form.isWarrantyChecked' () {
-       this.setDataToLocalStorage();
-     }
   },
   validations: emc1Validation,
   methods: {
@@ -464,21 +443,6 @@ export default {
       this.radioIdx = Number(radioIdx);
       this.changeWarrantyValue();
     },
-    setDataToLocalStorage() {
-      const currentVariant = this.skusList.find(it => it.code === this.form.variant);
-      const prices = this.checkoutData.product.prices;
-      const selectedProductData = {
-        upsells: this.productData.upsells,
-        prices: prices[this.radioIdx],
-        quantity: this.radioIdx,
-        isWarrantyChecked: this.form.isWarrantyChecked,
-        variant: this.form.variant,
-        product_name: this.productData.product_name,
-        image: currentVariant && currentVariant.quantity_image[1]
-      };
-
-      localStorage.setItem('selectedProductData', JSON.stringify(selectedProductData));
-    },
     changeWarrantyValue () {
       const prices = this.checkoutData.product.prices;
 
@@ -487,8 +451,6 @@ export default {
           ? 3
           : 1;
       }
-
-      this.setDataToLocalStorage();
 
       switch(this.implValue) {
         case 1:
@@ -506,7 +468,9 @@ export default {
     },
     paypalCreateOrder () {
       const searchParams = new URL(document.location.href).searchParams;
-      const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+      const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
+
+      this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
 
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -748,6 +712,9 @@ export default {
 
       .label-container-radio__discount {
         color: $color_niagara_approx;
+        &.red {
+          color: $red;
+        }
       }
 
       .label-container-radio.with-discount .label-container-radio__name-price > span:nth-child(2) {

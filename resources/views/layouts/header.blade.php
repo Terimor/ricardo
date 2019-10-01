@@ -30,7 +30,8 @@
             </ul>
         @endif
 
-        <timer-component
-            v-if="isTimerVisible" />
+        @if(Request::is('checkout') && Request::has('show_timer'))
+          <timer-component />
+        @endif
     </div>
 </header>

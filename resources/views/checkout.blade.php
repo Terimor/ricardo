@@ -2,39 +2,41 @@
 
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+@endsection
+
 @section('script')
 <script type="text/javascript">
-    const bluesnapCredential = {
+    var bluesnapCredential = {
       'Authorization': 'Basic {{base64_encode(env('BLUESNAP_API_KEY').':'.env('BLUESNAP_API_PASS'))}}',
     }
 
-    const recentlyBoughtNames = @json($recentlyBoughtNames);
-    const recentlyBoughtCities = @json($recentlyBoughtCities);
+    var recentlyBoughtNames = @json($recentlyBoughtNames);
+    var recentlyBoughtCities = @json($recentlyBoughtCities);
 
-    const checkoutData = {
+    var checkoutData = {
       countryCode: '{{ $countryCode }}',
       countries: @json($countries),
       product: @json($product),
       productImage: '{{$product->logo_image}}',
     }
 
-    window.loadedPhrases = @json($loadedPhrases);
+    var loadedPhrases = @json($loadedPhrases);
 </script>
-
-<script type="text/javascript">var IPQ = { Callback: () => {} };</script>
-<script src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/learn.js"></script>
-<noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
 
 <script src="{{ asset('js/app.js') }}" defer></script>
 @endsection
 
 @section('content')
 
-<div id="app">
-  @include('components.product_offer')
+@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
 
-  <app-component></app-component>
-</div>
+@if (! Request::get('tpl') === 'smc7')
+  # @include('components.product_offer')
+@endif
+
+<app-component></app-component>
 
 @include('layouts.footer', ['isWhite' => true])
 

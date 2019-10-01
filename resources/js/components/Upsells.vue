@@ -52,7 +52,7 @@
                   :name="product.long_name"
                   :subtotal="product.prices[getOriginalOrder.quantity].value_text"
                   :warranty="getOriginalOrder.isWarrantyChecked
-                    ? getOriginalOrder.prices.warranty_price_text
+                    ? product.prices.warranty_price_text
                     : null"
                   :benefitList="[
                     `${textQuantity}: ${getOriginalOrder.quantity}`,

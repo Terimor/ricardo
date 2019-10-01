@@ -159,21 +159,21 @@ class OdinProduct extends Model
 
                     $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
 
-                    $value[$key][$quantity]['unit_value_text'] = $numberFormatter->formatCurrency($price['price'] / $quantity, $currency->code);
+                    $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / $quantity), $currency);
 
                     $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
-                    $value[$key][$quantity]['old_value_text'] = $numberFormatter->formatCurrency($oldPriceValue, $currency->code);
+                    $value[$key][$quantity]['old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $oldPriceValue, $currency);
 
                     $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
 
                     if (!empty($this->warranty_percent)) {
                       $warranty_price = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
                       $value[$key][$quantity]['warranty_price'] = $warranty_price;
-                      $value[$key][$quantity]['warranty_price_text'] = $numberFormatter->formatCurrency($warranty_price, $currency->code);
+                      $value[$key][$quantity]['warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $warranty_price, $currency);
                       $installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
                       $installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
-                      $value[$key][$quantity]['installments3_warranty_price_text'] = $numberFormatter->formatCurrency($installments3_warranty_price, $currency->code);
-                      $value[$key][$quantity]['installments6_warranty_price_text'] = $numberFormatter->formatCurrency($installments6_warranty_price, $currency->code);
+                      $value[$key][$quantity]['installments3_warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_warranty_price, $currency);
+                      $value[$key][$quantity]['installments6_warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_warranty_price, $currency);
                     } else {
                       $value[$key][$quantity]['warranty_price'] = 0;
                       $value[$key][$quantity]['warranty_price_text'] = null;
@@ -187,12 +187,12 @@ class OdinProduct extends Model
                     $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
                     $installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
 
-                    $value[$key][$quantity]['installments3_value_text'] = $numberFormatter->formatCurrency($installments3_value, $currency->code);
-                    $value[$key][$quantity]['installments3_unit_value_text'] = $numberFormatter->formatCurrency($installments3_value / $quantity, $currency->code);
-                    $value[$key][$quantity]['installments3_old_value_text'] = $numberFormatter->formatCurrency($installments3_old_value, $currency->code);
-                    $value[$key][$quantity]['installments6_value_text'] = $numberFormatter->formatCurrency($installments6_value, $currency->code);
-                    $value[$key][$quantity]['installments6_unit_value_text'] = $numberFormatter->formatCurrency($installments6_value / $quantity, $currency->code);
-                    $value[$key][$quantity]['installments6_old_value_text'] = $numberFormatter->formatCurrency($installments6_old_value, $currency->code);
+                    $value[$key][$quantity]['installments3_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_value, $currency);
+                    $value[$key][$quantity]['installments3_unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_value / $quantity, $currency);
+                    $value[$key][$quantity]['installments3_old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_old_value, $currency);
+                    $value[$key][$quantity]['installments6_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value, $currency);
+                    $value[$key][$quantity]['installments6_unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value / $quantity, $currency);
+                    $value[$key][$quantity]['installments6_old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_old_value, $currency);
                   } else {
                     logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
                   }
@@ -347,7 +347,7 @@ class OdinProduct extends Model
             $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency);
             // calculate discount percent
             $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : null;
-            $this->attributes['upsellPrices']['discount_percent'] = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);
+            $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);            
         } else if ($discountPercent) {
             // get price from 1 qty
             $discountPrice = $this->prices[1]['val'] ?? null;

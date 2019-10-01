@@ -1,25 +1,52 @@
 import { getCountOfInstallments } from './installments';
 import { check as ipqsCheck } from '../services/ipqs';
 import { goTo } from './goTo';
+import { queryParams } from  './queryParams';
 
-export const getRadioHtml = ({ discountName, newPrice, text, price, discountText, currency = '$', installments, idx }) =>
-  `${discountName
-    ? `<p class="label-container-radio__best-seller">
-      <span>${discountName}</span><span>${`${getCountOfInstallments(installments)}` + newPrice.toLocaleString()}</span>
-    </p>`
-    : ''}
-  ${idx === 1 ? '<img class="share" src="/images/share.png">' : ''}
-  <p class="label-container-radio__name-price">
-    <span>${text}</span>
-    <span ${idx !== 0 && discountName ? 'class="strike"' : ''}>${`${getCountOfInstallments(installments)}` + (!discountName ? newPrice : price).toLocaleString()}</span>
-  </p>
-  <p class="label-container-radio__discount">${discountText}</p>`
+export const getRadioHtml = ({
+   discountName,
+   newPrice,
+   text,
+   price,
+   discountText,
+   currency = '$',
+   installments,
+   idx,
+   pricePerUnit
+}) => {
+  const isEmc1b = queryParams().tpl === 'emc1b';
+
+  const currentPrice = isEmc1b
+      ? pricePerUnit[installments]
+      : getCountOfInstallments(installments) + newPrice.toLocaleString();
+
+      return (`${discountName
+        ? `<p class="label-container-radio__best-seller">
+              <span>${discountName}</span>
+              <span>${currentPrice}</span>
+          </p>`
+        : ''}
+  
+        ${idx === 1 ? '<img class="share" src="/images/share.png">' : ''}
+    
+        <p class="label-container-radio__name-price">
+          <span>${text}</span>          
+          ${!isEmc1b
+            ? `<span ${idx !== 0 && discountName ? 'class="strike"' : ''}>
+                  ${getCountOfInstallments(installments) + (!discountName ? newPrice : price).toLocaleString()}
+              </span>`
+            : ''}
+        </p>
+        <p class="label-container-radio__discount ${idx === 1 ? 'red' : ''}">${discountText}</p>
+      `)
+};
+
 
 export function * getNotice ({
   users,
   cities,
   usersActive,
-  bestsellerText
+  bestsellerText,
 }) {
   let index = 0
   const messageMap = {

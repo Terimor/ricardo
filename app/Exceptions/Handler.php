@@ -5,10 +5,13 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use App\Exceptions\ProductNotFoundException;
+use App\Exceptions\TxnNotFoundException;
+use App\Exceptions\OrderNotFoundException;
 use App\Exceptions\CustomerUpdateException;
 use App\Exceptions\InvalidParamsException;
 use App\Exceptions\OrderUpdateException;
 use App\Exceptions\PaymentException;
+use App\Exceptions\AuthException;
 
 class Handler extends ExceptionHandler
 {
@@ -60,27 +63,30 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($exception instanceof InvalidParamsException) {
-            return response()->json([
-                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
-            ], 400);
-        } else if ($exception instanceof ProductNotFoundException) {
-            return response()->json([
-                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
-            ], 404);
-        } else if ($exception instanceof CustomerUpdateException) {
-            return response()->json([
-                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
-            ], 500);
-        } else if ($exception instanceof OrderUpdateException) {
-            return response()->json([
-                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
-            ], 500);
-        } else if ($exception instanceof PaymentException) {
-            return response()->json([
-                'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
-            ], 500);
-        }
-        return parent::render($request, $exception);
+        $class = get_class($exception);
+        switch ($class):
+            case InvalidParamsException::class:
+                return response()->json([
+                    'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+                ], 400);
+            case AuthException::class:
+                return response()->json([
+                    'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+                ], 401);
+            case OrderNotFoundException::class:
+            case ProductNotFoundException::class:
+            case TxnNotFoundException::class:
+                return response()->json([
+                    'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+                ], 404);
+            case CustomerUpdateException::class:
+            case OrderUpdateException::class:
+            case PaymentException::class:
+                return response()->json([
+                    'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+                ], 500);
+            default:
+                return parent::render($request, $exception);
+        endswitch;
     }
 }

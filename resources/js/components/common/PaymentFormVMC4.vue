@@ -203,13 +203,19 @@
                 <p v-html="textCVVPopupLine2"></p>
               </div>
             </el-dialog>
+            <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
             <button
               v-if="form.paymentType !== 'paypal' && step === 3"
-              v-html="textSubmitButton"
               @click="submit"
+              :disabled="isSubmitted"
+              :class="{ 'btn-active': !isSubmitted }"
               class="submit-btn"
               type="button"
-            ></button>
+            >
+              <Spinner v-if="isSubmitted" />
+              <div v-if="isSubmitted" class="btn-disabled"></div>
+              <span :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }" v-html="textSubmitButton"></span>
+            </button>
           </form>
         </div>
         <div class="buttons">
@@ -225,7 +231,7 @@
           </button>
           -->
           <div class="form-navigation">
-            <button @click="isAllowNext(step)" v-if="step !== 3" v-html="textNext"></button>
+            <button @click="isAllowNext(step)" v-if="step !== 3" v-html="textNext" class="next-btn btn-active"></button>
             <button v-if="step > 1" class="back-btn" @click="step--">&lt;&lt; <span v-html="textBack"></span></button>
           </div>
         </div>
@@ -254,19 +260,31 @@
 </template>
 <script>
   import { t } from '../../utils/i18n';
+  import creditCardType from 'credit-card-type';
   import { check as ipqsCheck } from '../../services/ipqs';
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
-	import {getCardUrl, preparePurchaseData} from "../../utils/checkout";
+	import { getCardUrl, preparePurchaseData, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
+  import setDataToLocalStorage from '../../mixins/purchas';
+  import Spinner from './preloaders/Spinner';
+  import { goTo } from '../../utils/goTo';
 	import {fade} from "../../utils/common";
+  import { sha256 } from 'js-sha256';
 
 	export default {
 		name: "PaymentFormVMC4",
-    mixins: [queryToComponent],
-		components: {PayMethodItem, RadioButtonItemDeal},
+    mixins: [
+      queryToComponent,
+      setDataToLocalStorage,
+    ],
+		components: {
+      PayMethodItem,
+      RadioButtonItemDeal,
+      Spinner,
+    },
 		validations: vmc4validation,
 		props: [
 			'countryList',
@@ -284,6 +302,7 @@
 				maxSteps: 3,
 				isOpenCVVModal: false,
         isOpenPromotionModal: false,
+        isPaymentError: false,
         isSubmitted: false,
 				form: {
 					stepTwo: {
@@ -308,6 +327,7 @@
 					variant: checkoutData.product.skus[0].code || "",
 					//installments: 1,
 					paymentType: null,
+          cardType: null,
 				},
         mockData: {
           creditCardRadioList: [
@@ -333,6 +353,13 @@
       },
       codeOrDefault () {
         return this.queryParams.product || this.checkoutData.product.skus[0].code;
+      },
+      dialCode() {
+        const allCountries = window.intlTelInputGlobals.getCountryData();
+        const phoneCountryCode = this.form.countryCodePhoneField.toLowerCase();
+        const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
+
+        return country ? country.dialCode : '1';
       },
       textChooseDeal: () => t('checkout.choose_deal'),
       textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
@@ -375,10 +402,17 @@
       textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
+      textPaymentError: () => t('checkout.payment_error'),
       textNext: () => t('checkout.next'),
       textBack: () => t('checkout.back'),
 		},
 		watch: {
+      'form.stepThree.cardNumber' (cardNumber) {
+        const creditCardTypeList = creditCardType(cardNumber)
+        this.form.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+          ? creditCardTypeList[0].type
+          : null
+      },
 			'form.variant'(val) {
 				fade('out', 300, document.querySelector('#main-prod-image'), true)
 					.then(() => {
@@ -397,7 +431,7 @@
       },
       installments (val) {
         if (+val !== 1 && this.countryCode === 'MX') {
-          this.paymentForm.cardType = 'credit'
+          this.form.stepThree.cardType = 'credit'
         }
       },
       list(value) {
@@ -417,10 +451,15 @@
 			submit() {
 				this.$v.form.$touch();
 
+        if (this.$v.form.$pending || this.$v.form.$error) {
+          return;
+        }
+
         if (this.isSubmitted) {
           return;
         }
 
+        this.isPaymentError = false;
         this.isSubmitted = true;
 
         let fields = {
@@ -431,7 +470,7 @@
           billing_region: this.form.stepThree.state,
           billing_postcode: this.form.stepThree.zipCode,
           billing_email: this.form.stepTwo.email,
-          billing_phone: this.form.stepTwo.phone,
+          billing_phone: this.dialCode + this.form.stepTwo.phone,
           credit_card_bin: this.form.stepThree.cardNumber.substr(0, 6),
           credit_card_hash: sha256(this.form.stepThree.cardNumber),
           credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
@@ -439,11 +478,63 @@
           cvv_code: this.form.stepThree.cvv,
         };
 
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
+
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
-            this.$emit('onSubmit', this.form, ipqsResult);
-            this.isSubmitted = false;
+            if (this.form.paymentType === 'bank-payment') {
+              this.isSubmitted = false;
+              return;
+            }
+
+            if (this.form.paymentType === 'credit-card') {
+              const data = {
+                product: {
+                  sku: this.form.variant,
+                  qty: parseInt(this.form.deal, 10),
+                },
+                contact: {
+                  phone: {
+                    country_code: this.dialCode,
+                    number: this.form.stepTwo.phone,
+                  },
+                  first_name: this.form.stepTwo.fname,
+                  last_name: this.form.stepTwo.lname,
+                  email: this.form.stepTwo.email,
+                },
+                address: {
+                  city: this.form.stepThree.city,
+                  country: this.form.stepThree.country.toLowerCase(),
+                  zip: this.form.stepThree.zipCode,
+                  state: this.form.stepThree.state,
+                  street: 'none',
+                },
+                card: {
+                  number: this.form.stepThree.cardNumber,
+                  cvv: this.form.stepThree.cvv,
+                  month: ('0' + this.form.stepThree.month).slice(-2),
+                  year: '' + this.form.stepThree.year,
+                  type: this.form.cardType,
+                },
+              };
+
+              sendCheckoutRequest(data)
+                .then(res => {
+                  if (res.status === 'ok') {
+                    localStorage.setItem('odin_order_id', res.order_id);
+                    localStorage.setItem('order_currency', res.order_currency);
+
+                    localStorage.setItem('order_id', res.order_id);
+                    localStorage.setItem('odin_order_created_at', new Date());
+
+                    goTo('/thankyou-promos/?order=' + res.order_id);
+                  } else {
+                    this.isPaymentError = true;
+                    this.isSubmitted = false;
+                  }
+                });
+            }
           });
 			},
       paypalSubmit() {
@@ -485,7 +576,9 @@
 			},
       paypalCreateOrder() {
         const searchParams = new URL(document.location.href).searchParams;
-        const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+        const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
+
+        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
 
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -661,6 +754,10 @@
           border-bottom: 1px solid #d2d2d2;
         }
       }
+
+      #payment-error {
+        margin: 16px 0 0px;
+      }
     }
 
     .cursor-pointer:hover {
@@ -675,7 +772,6 @@
       position: relative;
       padding: 18px 30px;
       margin: 10px 1px;
-      cursor: pointer;
       font-size: 16px;
       font-weight: 400;
       text-transform: uppercase;
@@ -687,13 +783,38 @@
       background-color: #4caf50;
       color: #fff;
 
-      &:hover {
+      &.btn-active {
+        cursor: pointer;
+      }
+
+      &.btn-active:hover {
         opacity: 1;
         -webkit-transition: box-shadow .5s, background .5s ease;
         transition: box-shadow .5s, background .5s ease;
         box-shadow: -2px 2px 18px #4caf50;
         -moz-box-shadow: -2px 2px 18px #4caf50;
         -webkit-box-shadow: -2px 2px 18px #4caf50;
+      }
+
+      .spinner {
+        left: 50%;
+        margin-left: -32px;
+        margin-top: -32px;
+        position: absolute;
+        top: 50%;
+        transform: scale(.6);
+        z-index: 0;
+      }
+
+      .btn-disabled {
+        background-color: #fff;
+        bottom: 0;
+        left: 0;
+        opacity: .5;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1;
       }
     }
 

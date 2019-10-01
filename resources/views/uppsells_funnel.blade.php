@@ -10,13 +10,13 @@
 
 @section('script')
 <script>
-    const upsellsData = {
+    var upsellsData = {
       product: @json($product),
       orderCustomer: @json($orderCustomer),
       countryCode: '{{ $countryCode }}'
     }
 
-    window.loadedPhrases = @json($loadedPhrases);
+    var loadedPhrases = @json($loadedPhrases);
 </script>
 
 <script src="{{ asset('js/app.js') }}" defer></script>
@@ -25,7 +25,8 @@
 @section('content')
     <link rel="stylesheet" href="{{ asset('css/uppsells.css') }}">
 
-    <div id="app" class="container upsells">
+    <div class="container upsells">
         <upsells-component></upsells-component>
+        @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
     </div>
 @endsection

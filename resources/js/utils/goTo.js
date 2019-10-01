@@ -1,3 +1,7 @@
 export const goTo = (url) => {
-  window.location.href = url+window.location.search.replace(/\?/g, '&');
+  let curr =  localStorage.getItem('order_currency') || '';
+
+
+  window.location.href = `${url}${window.location
+    .search.replace(/\?/g, '&')}&cur=${curr}`;
 };

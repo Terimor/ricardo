@@ -1,6 +1,10 @@
-if (window.Sentry && !window.sentryLoaded) {
-  Sentry.init({
-    dsn: window.SentryDsn,
+import wait from '../utils/wait';
+
+
+wait(
+  () => !!window.Sentry && !!window.Vue,
+  () => Sentry.init({
+    dsn: SentryDSN,
     integrations: [
       new Sentry.Integrations.Vue({
         Vue,
@@ -8,7 +12,5 @@ if (window.Sentry && !window.sentryLoaded) {
         logErrors: false,
       }),
     ],
-  });
-
-  window.sentryLoaded = true;
-}
+  }),
+);
