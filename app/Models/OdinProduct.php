@@ -73,7 +73,7 @@ class OdinProduct extends Model
      */
     public function getDescriptionAttribute($value)
     {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+        return $this->getFieldLocalText($value);
     }
 
     /**
