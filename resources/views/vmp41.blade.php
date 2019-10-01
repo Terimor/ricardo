@@ -9,18 +9,18 @@
 @endsection
 
 @section('script')
-    <script defer>
-        const checkoutData = {
+    <script>
+        var checkoutData = {
             countryCode: '{{ $countryCode }}',
             product: @json($product),
             countries: @json($countries),
             productImage: '{{$product->logo_image}}',
         };
 
-        const recentlyBoughtNames = @json($recentlyBoughtNames);
-        const recentlyBoughtCities = @json($recentlyBoughtCities)
+        var recentlyBoughtNames = @json($recentlyBoughtNames);
+        var recentlyBoughtCities = @json($recentlyBoughtCities)
 
-        window.loadedPhrases = @json($loadedPhrases);
+        var loadedPhrases = @json($loadedPhrases);
     </script>
 
     <script src="{{ asset('js/views/promo.js') }}" defer></script>

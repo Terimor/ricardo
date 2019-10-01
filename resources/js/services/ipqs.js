@@ -1,18 +1,22 @@
 import { queryParams } from '../utils/queryParams';
+import wait from '../utils/wait';
 
 
-if (window.Startup) {
-  Startup.success = () => {};
-  Startup.failure = () => {};
+wait(
+  () => !!window.Startup,
+  () => {
+    Startup.success = () => {};
+    Startup.failure = () => {};
 
-  Startup.AfterResult(result => {
-    Startup.success(result);
-  });
+    Startup.AfterResult(result => {
+      Startup.success(result);
+    });
 
-  Startup.AfterFailure(result => {
-    Startup.failure(result);
-  });
-}
+    Startup.AfterFailure(result => {
+      Startup.failure(result);
+    });
+  },
+);
 
 
 export function check(fields = {}) {

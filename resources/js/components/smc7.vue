@@ -219,6 +219,7 @@
   import { sendCheckoutRequest } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner'; 
   import { goTo } from '../utils/goTo';
+  import { sha256 } from 'js-sha256';
 
   export default {
     name: 'smc7',
