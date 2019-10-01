@@ -49,7 +49,6 @@
   }
 }
 
-
 .btn-iconed {
   display: flex;
   justify-content: center;
@@ -61,6 +60,11 @@
     margin-right: 10px;
     content: url("https://enence.com/theme/instant-translator/landing3/ex4.png");
   }
+}
+
+ul, ol {
+  padding: 0;
+  list-style-type: none;
 }
 
 .for-img {

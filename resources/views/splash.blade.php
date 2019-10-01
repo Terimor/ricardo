@@ -148,7 +148,7 @@
                         </div>
                         <h3>
                             {{ t('splash_page.video_of') }}
-                            {{ $product->product_name }}
+                            {{ $product->long_name }}
                             {{ t('splash_page.in_action') }}:</h3>
                         <div class="iframe-wrap">
                             <iframe src=""
@@ -165,12 +165,14 @@
                                 {{ t('splash_page.discount') }}
                             </a>
                         </div>
-                        <h3>{{ $product->long_name }}</h3>
+                        <h3>{!! $product->description !!}</h3>
                         @if (!empty($product->image[1]))
                             <div class="for-img">
                                 <img src="{{ $product->image[1] }}" alt="{{ $product->product_name }}">
                             </div>
                         @endif
+
+                        {{-- Here should be product description 2 --}}
                         <h3>{{ $product->long_name }}</h3>
 
                         @if (!empty($product->image[2]))
