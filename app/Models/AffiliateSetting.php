@@ -112,8 +112,9 @@ class AffiliateSetting extends Model
             if (isset($products[$productId])) {
                 $qty = $products[$productId];
             } else {
-                $qty = 1;
+                $qty = 0;
             }
+            $qty = $qty + 1;
             
             // check main rules for all sales
             foreach (static::$mainQtyRules as $salesQty => $percent) {
@@ -139,7 +140,7 @@ class AffiliateSetting extends Model
             if (!empty(static::$percentArray[$reducePercent][$qtyForCalculation])) {
                 $isReduce = static::$percentArray[$reducePercent][$qtyForCalculation];
                 // save affiliate products
-                $products[$productId] = $qty + 1;
+                $products[$productId] = $qty;
                 $affiliate->products = $products;
                 $affiliate->save();
             } else {
