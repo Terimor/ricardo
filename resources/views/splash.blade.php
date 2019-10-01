@@ -143,8 +143,11 @@
                             {{ $product->product_name }}
                             {{ t('splash_page.in_action') }}:</h3>
                         <div class="iframe-wrap">
-                            <iframe src="https://www.youtube.com/embed/BNhFytVV7SY?rel=0&amp;controls=1&amp;modestbranding=1&amp;showinfo=0"
-                                    frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+                            <iframe src=""
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen=""></iframe>
+                            <div class="iframe-stretch"></div>
                         </div>
                         <div class="text-center">
                             <a href="/checkout" class="green-button-animated">
