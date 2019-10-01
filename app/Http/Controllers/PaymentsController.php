@@ -29,20 +29,39 @@ class PaymentsController extends Controller
         $this->paymentService = $paymentService;
     }
 
-    public function createCardOrder(PaymentCardCreateOrderRequest $req) {
+    /**
+     * Creates card payment
+     * @param  PaymentCardCreateOrderRequest $req
+     * @return array
+     */
+    public function createCardOrder(PaymentCardCreateOrderRequest $req)
+    {
         return $this->paymentService->createOrder($req);
     }
 
-    public function checkoutDotComCapturedWebhook(Request $req) {
-
+    /**
+     * Accepts checkout.com charges.captured webhook
+     * @param  Request $req
+     * @return void
+     */
+    public function checkoutDotComCapturedWebhook(Request $req)
+    {
         $checkoutService = new CheckoutDotComService();
-        $reply = $checkoutService->validateCaptureWebhook($req);
+        $reply = $checkoutService->validateCapturedWebhook($req);
+
+        logger()->info('checkout.com', ['reply' => json_encode($reply)]);
 
         if (!$reply['status']) {
-            logger()->error('Checkout.com unauthorized captured webhook', [ 'ip' => $req->ip() ]);
-            throw new AuthException('Checkout.com captured webhook unauthorized');
+            logger()->error('checkout.com unauthorized captured webhook', [ 'ip' => $req->ip() ]);
+            throw new AuthException('checkout.com captured webhook unauthorized');
         }
 
         $this->paymentService->approveOrder($reply);
     }
+
+    public function checkoutDotComFailedWebhook(Request $req)
+    {
+        logger()->info('checkout.com', ['content' => json_encode($req->toArray())]);
+    }
+
 }
