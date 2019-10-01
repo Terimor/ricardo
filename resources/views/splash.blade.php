@@ -6,6 +6,14 @@
     <link rel="stylesheet" href="{{ asset('css/splash.css') }}">
 @endsection
 
+@section('script')
+    <script defer>
+      const checkoutData = {
+        product: @json($product)
+      };
+    </script>
+@endsection
+
 @section('content')
     <div class="splash">
         <div class="bunner">
@@ -22,24 +30,24 @@
                                 <img src="{{ $product->logo_image }}" alt="{{ $product->product_name }}">
                             </div>
                             <p class="bunner-text_md">{{ t('splash_page.discount') }}</p>
-                            <p class="bunner-text_xl">50%</p>
+                            <p class="bunner-text_xl">{{ $product->prices['1']['discount_percent'] }}%</p>
                             <p class="bunner-text_lg">{{ t('splash_page.last_chance') }}</p>
-                            <a href="/checkout" type="button" class="green-button-animated">
+                            <a href="/checkout" class="red-btn">
                                 <span>
                                     {{ t('splash_page.get') }}
                                     {{ $product->product_name }}
                                     {{ t('splash_page.now') }}
                                     {{ t('splash_page.with') }}
-                                    50%
-                                    {{ t('splash_page.discount') }}
+                                    {{ $product->prices['1']['discount_percent'] }}%
+                                    {{ t('splash_page.discount') }} >>
                                 </span>
                             </a>
                             <ul class="bunner-list">
                                 <li class="bunner-item">
                                     {{ t('splash_page.only') }}
-                                    $89.00
+                                    {{ $product->prices['1']['value_text'] }}
                                     {{ t('splash_page.vs') }}
-                                    $178.00
+                                    {{ $product->prices['1']['old_value_text'] }}
                                     ({{ t('splash_page.retail') }}) -
                                     {{ t('splash_page.available_online-only') }}
                                 </li>
@@ -150,27 +158,33 @@
                             <div class="iframe-stretch"></div>
                         </div>
                         <div class="text-center">
-                            <a href="/checkout" class="green-button-animated">
+                            <a href="/checkout" class="green-btn">
                                 {{ t('splash_page.add_to_cart') }}
                                 {{ t('splash_page.with') }}
-                                50%
+                                {{ $product->prices['1']['discount_percent'] }}%
                                 {{ t('splash_page.discount') }}
                             </a>
                         </div>
                         <h3>{{ $product->long_name }}</h3>
-                        <div class="for-img">
-                            <img src="{{ $product->image[1] }}" alt="{{ $product->product_name }}">
-                        </div>
+                        @if (!empty($product->image[1]))
+                            <div class="for-img">
+                                <img src="{{ $product->image[1] }}" alt="{{ $product->product_name }}">
+                            </div>
+                        @endif
                         <h3>{{ $product->long_name }}</h3>
-                        <div class="for-img">
 
-                        </div>
+                        @if (!empty($product->image[2]))
+                            <div class="for-img">
+                                <img src="{{ $product->image[2] }}" alt="{{ $product->product_name }}">
+                            </div>
+                        @endif
+
                         <div class="text-center">
-                            <a href="/checkout" class="green-button-animated">
+                            <a href="/checkout" class="btn-iconed green-btn">
                                 {{ t('splash_page.add_to_cart') }}
                                 {{ t('splash_page.with') }}
-                                50%
-                                {{ t('splash_page.discount') }}
+                                {{ $product->prices['1']['discount_percent'] }}%
+                                {{ t('splash_page.discount') }} >>
                             </a>
                         </div>
                     </div>
@@ -178,13 +192,18 @@
             </div>
         </div>
         <footer class="splash-footer">
-                <div class="splash-footer-title">
-                    <div class="container">{{ t('splash_page.limited_time_promo') }}: 50% {{ t('splash_page.off') }} {{ $product->product_name }}!</div>
-                </div>
-                <a class="green-button-animated" href="#">{{ t('splash_page.claim_your') }} 50% {{ t('splash_page.discount_code_now') }}!</a>
-                <div class="splash-footer-subtitle">
-                    <div class="container">{{ t('splash_page.secure_your') }} {{ $product->product_name }} {{ t('splash_page.now_before_this_promotion_ends') }}</div>
-                </div>
+            <div class="splash-footer-title">
+                <div class="container">{{ t('splash_page.limited_time_promo') }}: {{ $product->prices['1']['discount_percent'] }}% {{ t('splash_page.off') }} {{ $product->product_name }}!</div>
+            </div>
+            <div class="splash-footer-container">
+                <a class="red-btn" href="#">{{ t('splash_page.claim_your') }} {{ $product->prices['1']['discount_percent'] }}% {{ t('splash_page.discount_code_now') }}!</a>
+            </div>
+            <div class="splash-footer-subtitle">
+                <div class="container">{{ t('splash_page.secure_your') }} {{ $product->product_name }} {{ t('splash_page.now_before_this_promotion_ends') }}</div>
+            </div>
+            <div class="splash-footer-copy">
+                &copy; 2019 {{ t('splash_page.all_rights_reserved') }}.
+            </div>
         </footer>
     </div>
 @endsection

@@ -1,47 +1,66 @@
-.green-button-animated {
+.green-btn  {
   position: relative;
-  display: inline-block;
-  margin: 0 0 15px;
-  padding: 20px;
-  background: #ff2f21 linear-gradient(#0f9b0f, #0d840d) repeat scroll 0% 0%/auto padding-box border-box;
-  border: 1px solid #0f9b0f;
-  border-radius: 3px 3px 3px 3px;
-  box-shadow: #b4b5b5 2px 2px 2px 0;
-  outline: white none 0;
+  display: block;
+  margin: 12px 0 15px 0;
+  padding: 26px 0;
+  background: #1fba34;
+  border: 1px dashed #fff;
+  text-align: center;
 
-  font: normal normal 700 normal 18px/25.7143px "Noto Sans", sans-serif;
-  color: white;
-  text-transform: capitalize;
   text-decoration: none;
-  text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: #fff;
+  transition: all .2s linear;
 
-  perspective-origin: 195.688px 46px;
-  transform-origin: 195.695px 46px;
-  cursor: pointer;
-  transition: all 0.2s linear 0s;
-  &:before {
-    opacity: 0;
-    font-family: FontAwesome !important;
-    content: "\F054";
-    width: 0;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 0 50% 50% 0;
-    background-color: rgba(255, 255, 255, 0.3);
-    transition: all 0.2s linear 0s;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2), inset 0 0 0 2px rgba(255, 255, 255, .2);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .2);
+  &:hover, &:focus, &:active {
+    box-shadow: inset 0 0 20px #fff;
   }
 }
-.green-button-animated:hover {
-  background-image: linear-gradient(to bottom, #6d4 0, #3d6c04 100%);
+
+.red-btn  {
+  position: relative;
+  display: block;
+  margin: 12px 0 15px 0;
+  padding: 12px 0;
+  background: #fe0002;
+  border: 1px dashed #fff;
+  text-align: center;
+
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: #fff;
+  transition: all .2s linear;
+
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2), inset 0 0 0 2px rgba(255, 255, 255, .2);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .2);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .2);
+  &:hover, &:focus, &:active {
+    background: #d81012;
+    text-decoration: none;
+    color: #fff;
+    box-shadow: inset 0 0 20px #fff;
+  }
 }
-.green-button-animated:hover:before {
-  opacity: 1;
-  width: 30px;
+
+
+.btn-iconed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:after {
+    order: -1;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    content: url("https://enence.com/theme/instant-translator/landing3/ex4.png");
+  }
 }
 
 .for-img {
@@ -164,6 +183,7 @@
   .testimonial-date {
     display: inline-block;
     padding: 0 5px;
+    line-height: 1.5;
   }
   .testimonial-rate {
     margin-left: auto;
@@ -212,8 +232,11 @@
   background-size: cover;
   text-align: center;
 }
+.splash-footer-container {
+  padding: 0 15px;
+}
 .splash-footer-title {
-  padding: 15px 0;
+  padding: 15px 0 0;
   font-size: 27px;
   line-height: 1.8;
   font-weight: bold;
@@ -228,4 +251,11 @@
   line-height: 1.5;
   font-weight: bold;
   color: #ffffff;
+}
+.splash-footer-copy {
+  padding: 12px 0 10px;
+  background: rgb(80, 80, 80);
+  text-align: center;
+  color: #d5d5d5;
+  font-size: 12px;
 }
