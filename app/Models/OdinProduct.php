@@ -455,5 +455,4 @@ class OdinProduct extends Model
     {
         return $this->getFieldLocalText($value);
     }
-
 }

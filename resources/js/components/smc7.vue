@@ -217,7 +217,7 @@
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { check as ipqsCheck } from '../services/ipqs';
   import { sendCheckoutRequest } from '../utils/checkout';
-  import Spinner from './common/preloaders/Spinner'; 
+  import Spinner from './common/preloaders/Spinner';
   import { goTo } from '../utils/goTo';
   import { sha256 } from 'js-sha256';
 
