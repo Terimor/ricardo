@@ -17,8 +17,7 @@ class I18nService
      */
     public static function loadPhrases(string $category)
     {
-        $locale = app()->getLocale();
-        $language = self::getLanguageByLocale($locale);
+        $language = app()->getLocale();
         if (empty(I18n::$loadedPhrases[$language])) {
             $categories = [$category];
             if (strpos($category, '_page')) {
@@ -64,17 +63,21 @@ class I18nService
     }
 
     /**
-    * Get translation phrase
-    * From saga I18n::t
-    * @param type $phrase
-    * @param type $lang
-    */
-   public static function getTranslatedPhrase(string $phrase, string $language = 'en', $args = []): string
-   {
+     * Get translation phrase
+     * From saga I18n::t
+     *
+     * @param string $phrase
+     * @param string $language
+     * @param array $args
+     *
+     * @return string
+     */
+    public static function getTranslatedPhrase(string $phrase, string $language = 'en', array $args = []): string
+    {
         $translation = $phrase;
-            $language = $language ? strtolower($language) : 'en';
+        $language = $language ? strtolower($language) : 'en';
 
-       if (isset(I18n::$browser_codes[$language])) {
+        if (isset(I18n::$browser_codes[$language])) {
             $language = I18n::$browser_codes[$language];
         }
 
@@ -84,19 +87,19 @@ class I18nService
         if (!empty($loadedPhrases[$translation])) {
             $translation = $loadedPhrases[$translation];
         } else {
-            logger()->error("URGENT: `{$translation}` not found in translations. Args: ".json_encode($args));
+            logger()->error("URGENT: `{$translation}` not found in translations. Args: " . json_encode($args));
         }
 
         if ($args) {
             foreach ($args as $key => $value) {
-            $placeholderKey = "#".strtoupper($key)."#";
-            $translation = str_replace($placeholderKey, $value, $translation);
-            if (!in_array($placeholderKey, I18n::$placeholders)) {
-                logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
-            }
-            if ($value === null) {
-                logger()->error("Translation is null for {$placeholderKey}");
-            }
+                $placeholderKey = "#" . strtoupper($key) . "#";
+                $translation = str_replace($placeholderKey, $value, $translation);
+                if (!in_array($placeholderKey, I18n::$placeholders)) {
+                    logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
+                }
+                if ($value === null) {
+                    logger()->error("Translation is null for {$placeholderKey}");
+                }
             }
         }
 
@@ -104,25 +107,21 @@ class I18nService
         if (substr_count($translation, '#') > 1) {
             $other_hashes_cnt = substr_count($translation, '/#/');
             if (substr_count($translation, '#') != $other_hashes_cnt) {
-            logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: ". json_encode($args));
+                logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: " . json_encode($args));
             }
         }
 
         return $translation;
-   }
+    }
 
     /**
      * Returns language by locale
      *
-     * @param string $locale
+     * @param string $language_code
      * @return string
      */
-   public static function getLanguageByLocale(string $locale): string
-   {
-       $mapping = [
-           'zh-tw' => 'tw'
-       ];
-
-       return !empty($mapping[$locale]) ? $mapping[$locale] : $locale;
-   }
+    public static function getInternalLanguageByLocaleLanguage(string $language_code): string
+    {
+        return !empty(I18n::$browser_codes[$language_code]) ? I18n::$browser_codes[$language_code] : $language_code;
+    }
 }
