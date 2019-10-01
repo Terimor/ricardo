@@ -14,7 +14,9 @@ const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
 
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
+    2: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
     3: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
+    4: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
     5: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
   }
 
@@ -24,7 +26,9 @@ const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
 const getNewPrice = ({key, valueTexts, installments}) => {
   const config = {
     1: `${valueTexts.valueText[installments]}`,
+    2: `${valueTexts.valueText[installments]}`,
     3: `${valueTexts.valueText[installments]}`,
+    4: `${valueTexts.valueText[installments]}`,
     5: `${valueTexts.valueText[installments]}`,
   }
 

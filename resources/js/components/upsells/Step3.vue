@@ -78,7 +78,7 @@ export default {
     pleaseChooseText: () => t('upsells.choose'),
 
     selectList() {
-      const data = Array(this.selectedProductData.quantity).fill('').map((item, index) => {
+      const data = Array(Number(this.selectedProductData.quantity)).fill('').map((item, index) => {
         const value = index + 1
 
         return item = {
@@ -87,6 +87,8 @@ export default {
           value: value,
         }
       })
+
+      console.log(data);
 
       return data;
     },
