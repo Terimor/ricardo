@@ -142,7 +142,7 @@
                                     </p>
                                 </div>
                                 <div class="promo__fifty-discount">
-                                    <p>@{{ item.discountText }}</p>
+                                    <p v-html="item.discountText"></p>
                                 </div>
                             </div>
                         </div>

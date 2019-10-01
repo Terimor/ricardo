@@ -7,13 +7,13 @@ use Jenssegers\Mongodb\Eloquent\Model;
 class I18n extends Model
 {
     protected $collection = 'i18n';
-    
+
     protected $dates = ['created_at', 'updated_at'];
-    
+
     public $timestamps = true;
 
-    public static $loadedPhrases = [];        
-    
+    public static $loadedPhrases = [];
+
     protected static $languages = [
         'en'     => 'English',
         'fi'     => 'Finnish',
@@ -32,7 +32,7 @@ class I18n extends Model
         'it'     => 'Italian',
         'nl'     => 'Dutch',
         'de'     => 'German',
-        'ru'     => 'Russian',        
+        'ru'     => 'Russian',
         'pt'     => 'Portuguese',
         'da'     => 'Danish',
         'cs'     => 'Czech',
@@ -55,17 +55,22 @@ class I18n extends Model
         'ur'     => 'Urdu',
         'jv'     => 'Javanese',
         'bn'     => 'Bengali',
-        'vi'     => 'Vietnamese',            
+        'vi'     => 'Vietnamese',
+        'sr'     => 'Serbian',
+        'is'     => 'Icelandic',
+        'uk'     => 'Ukrainian',
+        'tw'     => 'Traditional Chinese Taiwan',
     ];
-        
+
     public static $browser_codes = [
         'ms'  => 'my',
-        'pt-br' => 'br'
+        'pt-br' => 'br',
+        'zh-tw' => 'tw',
     ];
-    
+
     /**
      * Saga I18n::$placeholders
-     * @var type 
+     * @var type
      */
     public static $placeholders = [
         '#FIRST_NAME#',
@@ -103,7 +108,7 @@ class I18n extends Model
         '#PRODUCTS#',
         '#SURVEY_LINK',
     ];
-    
+
   /**
    * Returns translation languages array
    * @return type

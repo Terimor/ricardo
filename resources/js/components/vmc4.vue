@@ -288,10 +288,6 @@
     margin-top: 30px;
     padding: 0;
 
-    button:not(disabled) {
-      cursor: pointer;
-    }
-
     .main-content {
       .col-content {
         margin: 30px 0;

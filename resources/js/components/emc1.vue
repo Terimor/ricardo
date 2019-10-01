@@ -431,7 +431,6 @@ export default {
   validations: emc1Validation,
   methods: {
     paypalSubmit() {
-      this.setDataToLocalStorage();
       if (this.$v.form.deal.$invalid) {
         this.isOpenPromotionModal = true;
       }
@@ -469,7 +468,9 @@ export default {
     },
     paypalCreateOrder () {
       const searchParams = new URL(document.location.href).searchParams;
-      const currency = searchParams.get('cur') || this.checkoutData.product.prices.currency;
+      const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
+
+      this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
 
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -711,6 +712,9 @@ export default {
 
       .label-container-radio__discount {
         color: $color_niagara_approx;
+        &.red {
+          color: $red;
+        }
       }
 
       .label-container-radio.with-discount .label-container-radio__name-price > span:nth-child(2) {

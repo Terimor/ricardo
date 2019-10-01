@@ -260,12 +260,17 @@
             <img src="/images/best-saller.png" alt="">
           </span>
         </button>
+        <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
         <button
             @click="submit"
+            :disabled="isSubmitted"
             id="purchase-button"
             type="button"
-            class="green-button-animated">
-            <span class="purchase-button-text" v-html="textSubmitButton"></span><img src="//static.saratrkr.com/images/paypal-button-text.png" class="purchase-button-image" alt='' />
+            class="green-button-animated"
+            :class="{ 'green-button-active': !isSubmitted }">
+            <Spinner v-if="isSubmitted" />
+            <div v-if="isSubmitted" class="purchase-button-disabled"></div>
+            <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }" v-html="textSubmitButton"></span>
         </button>
         <el-dialog
           @click="isOpenCVVModal = false"
@@ -286,9 +291,13 @@
   import { check as ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
+  import { queryParams } from  '../../utils/queryParams';
+  import { sendCheckoutRequest } from '../../utils/checkout';
+  import setDataToLocalStorage from '../../mixins/purchas';
   import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
+  import Spinner from './preloaders/Spinner';
 
   export default {
     name: 'PaymentForm',
@@ -307,6 +316,12 @@
       'quantityOfInstallments',
       'warrantyPriceText',
     ],
+    mixins: [
+      setDataToLocalStorage,
+    ],
+    components: {
+      Spinner,
+    },
     data () {
       return {
         isLoading: {
@@ -314,6 +329,7 @@
         },
         cardType: null,
         isOpenCVVModal: false,
+        isPaymentError: false,
         isSubmitted: false,
       }
     },
@@ -340,6 +356,14 @@
       isSpecialCountrySelected() {
         const specialCountries = ['BR', 'MX', 'CO'];
         return specialCountries.includes(this.countryCode) || specialCountries.includes(this.paymentForm.country);
+      },
+
+      dialCode() {
+        const allCountries = window.intlTelInputGlobals.getCountryData();
+        const phoneCountryCode = this.paymentForm.countryCodePhoneField.toLowerCase();
+        const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
+
+        return country ? country.dialCode : '1';
       },
 
       exp () {
@@ -416,6 +440,7 @@
       textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
       textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
+      textPaymentError: () => t('checkout.payment_error'),
     },
     watch: {
       'paymentForm.cardNumber' (cardNumber) {
@@ -551,6 +576,7 @@
           return;
         }
 
+        this.isPaymentError = false;
         this.isSubmitted = true;
 
         let fields = {
@@ -562,7 +588,7 @@
           billing_region: paymentForm.state,
           billing_postcode: paymentForm.zipcode,
           billing_email: paymentForm.email,
-          billing_phone: paymentForm.phone,
+          billing_phone: this.dialCode + paymentForm.phone,
         };
 
         if (paymentForm.paymentType === 'credit-card') {
@@ -576,6 +602,8 @@
           }
         }
 
+        this.setDataToLocalStorage(paymentForm.variant, paymentForm.deal, paymentForm.isWarrantyChecked);
+
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
@@ -586,18 +614,51 @@
             }
 
             if (paymentForm.paymentType === 'credit-card') {
-              const creditCardData = {
-                card_number: paymentForm.cardNumber,
-                card_name: paymentForm.fname + ' ' + paymentForm.lname,
-                card_due_date: exp,
-                card_cvv: paymentForm.cvv
-              }
+              const data = {
+                product: {
+                  sku: paymentForm.variant,
+                  qty: parseInt(paymentForm.deal, 10),
+                },
+                contact: {
+                  phone: {
+                    country_code: this.dialCode,
+                    number: paymentForm.phone,
+                  },
+                  first_name: paymentForm.fname,
+                  last_name: paymentForm.lname,
+                  email: paymentForm.email,
+                },
+                address: {
+                  city: paymentForm.city,
+                  country: paymentForm.country.toLowerCase(),
+                  zip: paymentForm.zipcode,
+                  state: paymentForm.state,
+                  street: paymentForm.street,
+                },
+                card: {
+                  number: paymentForm.cardNumber,
+                  cvv: paymentForm.cvv,
+                  month: ('0' + paymentForm.month).slice(-2),
+                  year: '' + paymentForm.year,
+                  type: this.cardType,
+                },
+              };
 
-              EBANX.card.createToken(creditCardData, resp => {
+              sendCheckoutRequest(data)
+                .then(res => {
+                  if (res.status === 'ok') {
+                    localStorage.setItem('odin_order_id', res.order_id);
+                    localStorage.setItem('order_currency', res.order_currency);
 
-              });
+                    localStorage.setItem('order_id', res.order_id);
+                    localStorage.setItem('odin_order_created_at', new Date());
 
-              goTo('/thankyou-promos');
+                    goTo('/thankyou-promos/?order=' + res.order_id);
+                  } else {
+                    this.isPaymentError = true;
+                    this.isSubmitted = false;
+                  }
+                });
             }
           })
       }
@@ -607,72 +668,6 @@
 
 <style lang="scss">
     @import "../../../sass/variables";
-
-    .green-button-animated {
-        cursor: pointer;
-        bottom: 0;
-        box-shadow: rgb(180, 181, 181) 2px 2px 2px 0;
-        color: rgb(255, 255, 255);
-        //min-height: 92px;
-        height: auto;
-        position: relative;
-        text-decoration: none solid rgb(255, 255, 255);
-        text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-        text-transform: capitalize;
-        top: 0;
-        width: 100%;
-        column-rule-color: rgb(255, 255, 255);
-        perspective-origin: 195.688px 46px;
-        transform-origin: 195.695px 46px;
-        caret-color: rgb(255, 255, 255);
-        background: rgb(255, 47, 33) linear-gradient(rgb(15, 155, 15), rgb(13, 132, 13)) repeat scroll 0% 0% / auto padding-box border-box;
-        border: 1px solid rgb(15, 155, 15);
-        border-radius: 3px 3px 3px 3px;
-        font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-        margin: 0 0 15px;
-        outline: rgb(255, 255, 255) none 0;
-        padding: 20px;
-        transition: all 0.2s linear 0s;
-
-        &:before {
-            opacity: 0;
-            font-family: FontAwesome!important;
-            content: '\f054';
-            width: 0;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0 50% 50% 0;
-            background-color: rgba(255,255,255,.3);
-            transition: all .2s linear 0s;
-        }
-
-        &:hover {
-            background-image: linear-gradient(to bottom,#6d4 0,#3d6c04 100%);
-
-            &:before {
-                opacity: 1;
-                width: 30px;
-            }
-        }
-
-        &:after {
-            box-sizing: border-box;
-            color: rgb(255, 255, 255);
-            cursor: pointer;
-            text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-            text-transform: capitalize;
-            column-rule-color: rgb(255, 255, 255);
-            caret-color: rgb(255, 255, 255);
-            border: 0 none rgb(255, 255, 255);
-            font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-            outline: rgb(255, 255, 255) none 0;
-        }
-    }
 
     .payment-form {
         h2 {
@@ -875,49 +870,21 @@
             }
         }
 
-        .purchase-button-image {
-            box-sizing: border-box;
-            color: rgb(255, 255, 255);
-            cursor: pointer;
-            display: none;
-            max-width: 100%;
-            text-align: center;
-            text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-            text-transform: capitalize;
-            vertical-align: middle;
-            column-rule-color: rgb(255, 255, 255);
-            caret-color: rgb(255, 255, 255);
-            border: 0 none rgb(255, 255, 255);
-            font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-            outline: rgb(255, 255, 255) none 0;
+        .purchase-button-disabled {
+          background-color: #fff;
+          bottom: 0;
+          left: 0;
+          opacity: .5;
+          position: absolute;
+          right: 0;
+          top: 0;
+          z-index: 1;
+        }
 
-            &:after {
-                box-sizing: border-box;
-                color: rgb(255, 255, 255);
-                cursor: pointer;
-                text-align: center;
-                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-                text-transform: capitalize;
-                column-rule-color: rgb(255, 255, 255);
-                caret-color: rgb(255, 255, 255);
-                border: 0 none rgb(255, 255, 255);
-                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-                outline: rgb(255, 255, 255) none 0;
-            }
-
-            &:before {
-                box-sizing: border-box;
-                color: rgb(255, 255, 255);
-                cursor: pointer;
-                text-align: center;
-                text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
-                text-transform: capitalize;
-                column-rule-color: rgb(255, 255, 255);
-                caret-color: rgb(255, 255, 255);
-                border: 0 none rgb(255, 255, 255);
-                font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
-                outline: rgb(255, 255, 255) none 0;
-            }
+        #payment-error {
+          font-size: 17px;
+          text-align: center;
+          width: 100%;
         }
     }
 

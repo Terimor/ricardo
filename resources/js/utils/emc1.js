@@ -37,7 +37,7 @@ export const getRadioHtml = ({
               </span>`
             : ''}
         </p>
-        <p class="label-container-radio__discount">${discountText}</p>
+        <p class="label-container-radio__discount ${idx === 1 ? 'red' : ''}">${discountText}</p>
       `)
 };
 

@@ -1,2 +1,2 @@
 #!/bin/bash
-ssh -i ~/.ssh/odin-dev.pem ubuntu@odin.saga-be.host 'deploy-stage.sh'
+ssh -i ~/.ssh/odin_staging.pem ubuntu@odin.saga-be.host 'deploy-stage.sh'

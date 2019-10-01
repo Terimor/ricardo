@@ -27,5 +27,6 @@
 
     <div class="container upsells">
         <upsells-component></upsells-component>
+        @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
     </div>
 @endsection

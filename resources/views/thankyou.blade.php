@@ -142,6 +142,7 @@
                 </button>
             </div>
         </div>
+        @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
     </div>
 
 @endsection
