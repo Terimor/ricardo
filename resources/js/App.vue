@@ -73,9 +73,7 @@ export default {
       }
 
       if (offer_id > 0 && aff_id > 0 && +direct === 1 && (txid !== 'transaction_id' || txid !== '{transaction_id}' || txid == null)) {
-        window.txidjs = txid
-
-        Cookies.set('txidjs', txid)
+        document.cookie = 'txid=' + encodeURIComponent(txid);
       }
     }
   },

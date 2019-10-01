@@ -272,6 +272,7 @@
   import Spinner from './preloaders/Spinner';
   import { goTo } from '../../utils/goTo';
 	import {fade} from "../../utils/common";
+  import { sha256 } from 'js-sha256';
 
 	export default {
 		name: "PaymentFormVMC4",
