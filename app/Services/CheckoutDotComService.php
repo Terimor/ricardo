@@ -21,6 +21,8 @@ class CheckoutDotComService
     const ENV_LIVE = 'live';
     const ENV_SANDBOX = 'sandbox';
 
+    const IPQS_LIMIT = 90;
+
     const STATUS_AUTHORIZED = 'Authorized';
     const STATUS_PENDING = 'Pending';
     const STATUS_CAPTURED = 'Captured';
@@ -87,10 +89,11 @@ class CheckoutDotComService
      * @param array $card
      * @param array $contact
      * @param OdinOrder $order
+     * @param int $ipqs
      * @param float $amount default: $order->total_price
      * @return array
      */
-    public function pay(array $card, array $contact, OdinOrder $order, float $amount = null)
+    public function pay(array $card, array $contact, OdinOrder $order, int $ipqs, float $amount = null)
     {
         $amount = isset($amount) ? $amount : $order->total_price;
 
@@ -114,10 +117,13 @@ class CheckoutDotComService
         $payment->shipping = (object)['address' => $source->billing_address, 'phone' => $source->phone];
         $payment->payment_ip = $order->ip;
 
-        $payment->{'3ds'} = (object)['enabled' => true];
+        $qs = http_build_query(array_merge(['3ds' => 1, 'order' => $order->getIdAttribute()], $order->params));
+        $payment->success_url = /*'https://odin.saga-be.host'*/request()->getHost() . PaymentService::SUCCESS_PATH . '?' . $qs;
+        $payment->failure_url = /*'https://odin.saga-be.host'*/request()->getHost() . PaymentService::FAILURE_PATH . '?' . $qs;
 
+        // enable 3ds
         $card_3ds_setting = PaymentService::$providers[PaymentService::PROVIDER_CHECKOUTCOM]['methods'][$card['type']] ?? [];
-        if (in_array($order->shipping_country, $card_3ds_setting['+3ds'] ?? [])) {
+        if (in_array($order->shipping_country, $card_3ds_setting['+3ds'] ?? []) || $ipqs > self::IPQS_LIMIT) {
             $payment->{'3ds'} = (object)['enabled' => true];
         }
 
