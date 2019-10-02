@@ -76,7 +76,8 @@
 </template>
 <script>
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
-	import {preparePurchaseData} from "../utils/checkout";
+	import { preparePurchaseData, goToThankYouPromos } from "../utils/checkout";
+  import queryToComponent from '../mixins/queryToComponent';
   import { t } from '../utils/i18n';
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
@@ -84,7 +85,12 @@
 
 	export default {
 		name: 'vmc4',
-		components: {RadioButtonItemDeal},
+		components: {
+      RadioButtonItemDeal,
+    },
+    mixins: [
+      queryToComponent,
+    ],
 		props: ['data'],
 		data() {
 			return {
@@ -143,6 +149,21 @@
           }
         ]
 			}
+    },
+    created() {
+      if (this.queryParams['3ds'] === 'success') {
+        goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+        return;
+      }
+
+      if (this.queryParams['3ds'] === 'failure') {
+        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+
+        if (selectedProductData) {
+          this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
+          this.form.installments = selectedProductData.installments || this.form.installments;
+        }
+      }
     },
     watch: {
       'form.installments' (val) {
