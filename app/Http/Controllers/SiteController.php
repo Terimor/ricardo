@@ -136,7 +136,9 @@ class SiteController extends Controller
         $setting = Setting::getValue(array(
             'instant_payment_paypal_client_id',
             'ipqualityscore_api_hash',
-        ))->all();
+            'ebanx_integration_key',
+            'ebanx_api_url',
+        ));
 
         $countries =  \Utils::getCountries();
 
@@ -148,7 +150,13 @@ class SiteController extends Controller
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
 
-        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'recentlyBoughtNames', 'recentlyBoughtCities'));
+        return view(
+            $viewTemplate,
+            compact(
+                'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
+                'recentlyBoughtNames', 'recentlyBoughtCities'
+            )
+        );
     }
 
     /**
@@ -177,14 +185,14 @@ class SiteController extends Controller
         $countryCode = \Utils::getLocationCountryCode();
 
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
-        
+
         // check affid
         $aff = null;
         if ($request->get('affid')) {
-            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
             $aff = $aff ? $aff->toArray() : null;
-        }        
-        
+        }
+
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
     }
 
@@ -219,8 +227,8 @@ class SiteController extends Controller
         if ($request->get('affid')) {
             $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
             $aff = $aff ? $aff->toArray() : null;
-        }          
-        
+        }
+
         return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
     }
 
