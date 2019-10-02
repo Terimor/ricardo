@@ -150,13 +150,6 @@ class SiteController extends Controller
         $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
-        
-        // check affid
-        $aff = null;
-        if ($request->get('affid')) {
-            $aff = AffiliateSetting::getLocaleAffiliateById($request->get('affid'));
-            $aff = $aff ? $aff->toArray() : null;
-        }   
 
         return view(
             $viewTemplate,
