@@ -112,7 +112,8 @@ class SiteController extends Controller
     public function orderTracking()
     {
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
-        return view('order_tracking', compact('loadedPhrases'));
+        $product = $productService->resolveProduct($request, true);
+        return view('order_tracking', compact('loadedPhrases', 'product'));
     }
 
     /**
@@ -147,8 +148,15 @@ class SiteController extends Controller
         $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
+        
+        // check affid
+        $aff = null;
+        if ($request->get('affid')) {
+            $aff = AffiliateSetting::getLocaleAffiliateById($request->get('affid'));
+            $aff = $aff ? $aff->toArray() : null;
+        }   
 
-        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'recentlyBoughtNames', 'recentlyBoughtCities'));
+        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'recentlyBoughtNames', 'recentlyBoughtCities', 'aff'));
     }
 
     /**
@@ -179,13 +187,13 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
         
         // check affid
-        $aff = null;
+        $order_aff = null;
         if ($request->get('affid')) {
-            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
-            $aff = $aff ? $aff->toArray() : null;
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $order_aff = $order_aff ? $order_aff->toArray() : null;
         }        
         
-        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
+        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 
     /**
@@ -215,13 +223,13 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 
         // check affid
-        $aff = null;
+        $order_aff = null;
         if ($request->get('affid')) {
-            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
-            $aff = $aff ? $aff->toArray() : null;
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $order_aff = $order_aff ? $order_aff->toArray() : null;
         }          
         
-        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
+        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 
     /**

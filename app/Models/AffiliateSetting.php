@@ -164,6 +164,11 @@ class AffiliateSetting extends Model
         
         return $isReduce;
     }
+    
+    public function getLocaleAffiliateById()
+    {
+        
+    }
 
 
 }
