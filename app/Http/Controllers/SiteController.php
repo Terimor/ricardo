@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
-use App\Services\EbanxService;
 use Illuminate\Http\Request;
 use App\Services\CurrencyService;
 use App\Services\ProductService;
