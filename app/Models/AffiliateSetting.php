@@ -26,6 +26,16 @@ class AffiliateSetting extends Model
         25 => 80
     ];
     
+    /**
+     * If more than this qty minus it for calculation
+     * @var type 
+     */
+    public static $maxQtyMainRules = 25;
+    
+    /**
+     * Default percent after mainQtyRules
+     * @var type 
+     */
     public static $defaultPercent = 65;
     
     public static $salesQtyInTable = 20;
@@ -125,6 +135,10 @@ class AffiliateSetting extends Model
             }
 
             $qtyForCalculation = $qty;
+            
+            if ($qtyForCalculation > static::$maxQtyMainRules) {
+                $qtyForCalculation = $qtyForCalculation - static::$maxQtyMainRules;
+            }
             
             // calculate value for $percentArray
             if ($qtyForCalculation > static::$salesQtyInTable) {

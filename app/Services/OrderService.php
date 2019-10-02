@@ -8,6 +8,7 @@ use App\Models\AffiliateSetting;
 use App\Services\EmailService;
 use App\Models\OdinProduct;
 use Illuminate\Support\Arr;
+use App\Models\Localize;
 
 /**
  * Order Service class
@@ -61,24 +62,7 @@ class OrderService
                 'errors' => $validator->errors()->messages(),
                 'success' => false
              ];
-        } else {            
-            // check affid
-            if (!empty($data['affiliate'])) {;
-                if ($data['affiliate']) {
-                    $affiliate = AffiliateSetting::getByHasOfferId($data['affiliate']);
-                    if (!$affiliate) {
-                        $affiliate = new AffiliateSetting();
-                        $affiliate->ho_affiliate_id = $data['affiliate'];
-                        $affiliate->save();
-                    }
-                    // get first main product
-                    $productId = $model->getFirstProductId();
-                    // check in affiliate product list
-                    $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
-                    $model->is_reduced = $isReduced;
-                }
-            }
-
+        } else {
             return [
                 'success' => $model->save(),
                 'order' => $returnModel ? $model : $model->attributesToArray(),
@@ -193,5 +177,44 @@ class OrderService
             'products' => $productsTexts,
             'total_text' => CurrencyService::getLocalTextValue($total, $currency)
         ];
+    }
+    
+    /**
+     * Check and return reduced order data
+     * @param type $orderId
+     * @param type $affiliate
+     */
+    public static function getReducedData(string $orderId, string $hoAffiliateId)
+    {
+        // get order and check is_reduced
+        $ol = null;
+        $order = OdinOrder::where('_id', $orderId)->first();
+
+        if ($order){
+            // check if order has the same affiliate
+            if ($order->affiliate == $hoAffiliateId) {
+                // check or create affiliate
+                $affiliate = AffiliateSetting::getByHasOfferId($hoAffiliateId);
+                if (!$affiliate) {
+                    $affiliate = new AffiliateSetting();
+                    $affiliate->ho_affiliate_id = $hoAffiliateId;
+                    $affiliate->save();
+                }            
+                if ($order->is_reduced === null) {
+                    // get first main product
+                    $productId = $order->getFirstProductId();                
+                    // check in affiliate product list
+                    $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
+                    $order->is_reduced = $isReduced;
+                    $order->save();
+                }
+                $ol = new Localize();
+                $ol->is_reduced = $order->is_reduced;
+                $ol->is_first_reduced = isset($isReduced) ? true : false;
+                $ol->affiliate = !empty($affiliate->ho_affiliate_id) ? $affiliate->ho_affiliate_id : null;
+                $ol->is_signup_hidden = isset($affiliate->is_signup_hidden) ? $affiliate->is_signup_hidden : null;
+            }
+        }        
+        return $ol;
     }
 }

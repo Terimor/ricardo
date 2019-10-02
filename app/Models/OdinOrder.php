@@ -88,7 +88,7 @@ class OdinOrder extends OdinModel
         'is_flagged' => false, // bool, default false
         'offer' => null, // string
         'affiliate' => null, // string
-        'is_reduced' => false,
+        'is_reduced' => null,
         'is_invoice_sent' => false, // bool, default false
         'is_survey_sent' => false, // bool defaut false
         'is_refunding' => false, // bool, default false, refund requested, processing
@@ -249,5 +249,5 @@ class OdinOrder extends OdinModel
             logger()->error("Order have't main product: {$this->id}");
         }
         return $productId;
-    }    
+    }        
 }

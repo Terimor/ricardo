@@ -11,6 +11,7 @@ use App\Models\Setting;
 use App\Services\I18nService;
 use App\Models\OdinOrder;
 use App\Services\OrderService;
+use App\Models\AffiliateSetting;
 
 class SiteController extends Controller
 {
@@ -163,8 +164,8 @@ class SiteController extends Controller
 		$setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
 
 		$orderCustomer = null;
-		if (request()->get('order')) {
-            $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'));
+		if ($request->get('order')) {
+            $orderCustomer = OrderService::getCustomerDataByOrderId($request->get('order'));
 		}
 
         if (!$orderCustomer) {
@@ -176,8 +177,15 @@ class SiteController extends Controller
         $countryCode = \Utils::getLocationCountryCode();
 
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
-
-        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases'));
+        
+        // check affid
+        $aff = null;
+        if ($request->get('affid')) {
+            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $aff = $aff ? $aff->toArray() : null;
+        }        
+        
+        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
     }
 
     /**
@@ -193,8 +201,8 @@ class SiteController extends Controller
 		$setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
 
 		$orderCustomer = null;
-		if (request()->get('order')) {
-            $orderCustomer = OrderService::getCustomerDataByOrderId(request()->get('order'), true);
+		if ($request->get('order')) {
+            $orderCustomer = OrderService::getCustomerDataByOrderId($request->get('order'), true);
 		}
 
         if (!$orderCustomer) {
@@ -206,7 +214,14 @@ class SiteController extends Controller
 
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 
-        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases'));
+        // check affid
+        $aff = null;
+        if ($request->get('affid')) {
+            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
+            $aff = $aff ? $aff->toArray() : null;
+        }          
+        
+        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
     }
 
     /**
