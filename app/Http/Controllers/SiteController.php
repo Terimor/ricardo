@@ -109,7 +109,7 @@ class SiteController extends Controller
      * Order tracking page
      * @return type
      */
-    public function orderTracking()
+    public function orderTracking(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
         $product = $productService->resolveProduct($request, true);
