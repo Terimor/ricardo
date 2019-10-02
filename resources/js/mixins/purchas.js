@@ -23,7 +23,7 @@ export default {
       }
 
 
-      if (selectedProductData.product_name === this.productData.product_name) {
+      if (selectedProductData.product_name === checkoutData.product.product_name) {
         const now = new Date()
         const then = odin_order_created_at
         const diffinMilliseconds = Date.parse(now) - Date.parse(then);
