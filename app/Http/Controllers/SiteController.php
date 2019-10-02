@@ -137,7 +137,7 @@ class SiteController extends Controller
             'instant_payment_paypal_client_id',
             'ipqualityscore_api_hash',
             'ebanx_integration_key',
-            'ebanx_api_key',
+            'ebanx_api_url',
         ))->all();
 
         $countries =  \Utils::getCountries();
