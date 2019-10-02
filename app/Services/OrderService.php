@@ -194,12 +194,7 @@ class OrderService
             // check if order has the same affiliate
             if ($order->affiliate == $hoAffiliateId) {
                 // check or create affiliate
-                $affiliate = AffiliateSetting::getByHasOfferId($hoAffiliateId);
-                if (!$affiliate) {
-                    $affiliate = new AffiliateSetting();
-                    $affiliate->ho_affiliate_id = $hoAffiliateId;
-                    $affiliate->save();
-                }            
+                $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);        
                 if ($order->is_reduced === null) {
                     // get first main product
                     $productId = $order->getFirstProductId();                

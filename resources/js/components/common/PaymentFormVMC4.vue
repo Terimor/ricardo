@@ -343,6 +343,34 @@
         },
 			}
     },
+    created() {
+      if (this.queryParams['3ds'] === 'failure') {
+        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+
+        if (selectedProductData) {
+          this.step = 3;
+          this.isPaymentError = true;
+          this.form.deal = selectedProductData.deal || this.form.deal;
+          this.form.variant = selectedProductData.variant || this.form.variant;
+          this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+          this.form.stepThree.cardType = selectedProductData.cardType || this.form.stepThree.cardType;
+          this.form.stepTwo.fname = selectedProductData.fname || this.form.stepTwo.fname;
+          this.form.stepTwo.lname = selectedProductData.lname || this.form.stepTwo.lname;
+          this.form.stepTwo.email = selectedProductData.email || this.form.stepTwo.email;
+          this.form.stepTwo.phone = selectedProductData.phone || this.form.stepTwo.phone;
+          this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
+          this.form.stepThree.city = selectedProductData.city || this.form.stepThree.city;
+          this.form.stepThree.state = selectedProductData.state || this.form.stepThree.state;
+          this.form.stepThree.zipCode = selectedProductData.zipcode || this.form.stepThree.zipCode;
+          this.form.stepThree.country = selectedProductData.country || this.form.stepThree.country;
+        }
+      }
+    },
+    mounted() {
+      if (this.isPaymentError && !this.isPurchasAlreadyExists) {
+        setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
+      }
+    },
 		computed: {
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
@@ -481,6 +509,18 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.isWarrantyChecked,
+          installments: this.installments,
+          paymentType: this.form.paymentType,
+          cardType: this.form.stepThree.cardType,
+          fname: this.form.stepTwo.fname,
+          lname: this.form.stepTwo.lname,
+          email: this.form.stepTwo.email,
+          phone: this.form.stepTwo.phone,
+          countryCodePhoneField: this.form.countryCodePhoneField,
+          city: this.form.stepThree.city,
+          state: this.form.stepThree.state,
+          zipcode: this.form.stepThree.zipCode,
+          country: this.form.stepThree.country,
         });
 
         Promise.resolve()

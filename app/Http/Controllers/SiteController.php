@@ -109,10 +109,11 @@ class SiteController extends Controller
      * Order tracking page
      * @return type
      */
-    public function orderTracking()
+    public function orderTracking(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
-        return view('order_tracking', compact('loadedPhrases'));
+        $product = $productService->resolveProduct($request, true);
+        return view('order_tracking', compact('loadedPhrases', 'product'));
     }
 
     /**
@@ -187,13 +188,13 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
 
         // check affid
-        $aff = null;
+        $order_aff = null;
         if ($request->get('affid')) {
-            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
-            $aff = $aff ? $aff->toArray() : null;
-        }
-
-        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $order_aff = $order_aff ? $order_aff->toArray() : null;
+        }        
+        
+        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 
     /**
@@ -223,13 +224,13 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 
         // check affid
-        $aff = null;
+        $order_aff = null;
         if ($request->get('affid')) {
-            $aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
-            $aff = $aff ? $aff->toArray() : null;
-        }
-
-        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'aff'));
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $order_aff = $order_aff ? $order_aff->toArray() : null;
+        }          
+        
+        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 
     /**

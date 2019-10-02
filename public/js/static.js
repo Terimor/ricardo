@@ -45,7 +45,7 @@ function populateLinksWithGetParams() {
   document.querySelectorAll('a[href]').forEach(link => {
     const href = link.getAttribute('href');
 
-    if (!href.match(/^https?:\/\//) && !link.href.match(/^mailto:/)) {
+    if (!href.match(/^https?:\/\//) && !link.href.match(/^mailto:/) && !link.href.match(/^tel:/)) {
       const url = new URL(link.href);
 
       new URL(location).searchParams.forEach((value, key) => {

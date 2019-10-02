@@ -150,8 +150,8 @@ class AffiliateSetting extends Model
             if (!isset($reducePercent)) {
                 $reducePercent = !empty($affiliate->postback_percent) ? $affiliate->postback_percent : static::$defaultPercent;
             }
-            
-            if (!empty(static::$percentArray[$reducePercent][$qtyForCalculation])) {
+
+            if (isset(static::$percentArray[$reducePercent][$qtyForCalculation])) {
                 $isReduce = static::$percentArray[$reducePercent][$qtyForCalculation];
                 // save affiliate products
                 $products[$productId] = $qty;
@@ -163,6 +163,11 @@ class AffiliateSetting extends Model
         }
         
         return $isReduce;
+    }
+    
+    public function getLocaleAffiliateById()
+    {
+        
     }
 
 
