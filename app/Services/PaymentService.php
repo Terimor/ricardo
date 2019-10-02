@@ -44,6 +44,9 @@ class PaymentService
     const METHOD_IDEAL            = 'ideal';
     const METHOD_EPS              = 'eps';
 
+    const SUCCESS_PATH  =   '/thankyou-promos';
+    const FAILURE_PATH  =   '/checkout';
+
     /**
      * Saga PaymentUtils::$providers
      * Payment providers
@@ -271,6 +274,7 @@ class PaymentService
     {
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
+        $ipqs = (int)$req->input('ipqs', 100);
         $address = $req->get('address');
         $card = $req->get('card');
         $contact = $req->get('contact');
@@ -300,10 +304,10 @@ class PaymentService
             'quantity'              => (int)$qty,
             'price'                 => $price['value'],
             'price_usd'             => floor($price['value'] / $currency->usd_rate * 100) / 100,
-            'warranty_price'        => 0,
-            'warranty_price_usd'    => 0,
             'is_main'               => true,
             'price_set'             => $product->prices['price_set'],
+            'warranty_price'        => 0,
+            'warranty_price_usd'    => 0
         ];
 
         if ($is_warranty) {
@@ -339,7 +343,9 @@ class PaymentService
             'warehouse_id'          => $product->warehouse_id,
             'products'              => [$order_product],
             'page_checkout'         => $req->fullUrl(),
-            'params'                => $req->query()
+            'params'                => $req->query() ?? [],
+            'offer'                 => $req->get('offerid'),
+            'affiliate'             => $req->get('affid'),
         ], true);
 
         if (isset($reply['errors'])) {
@@ -350,7 +356,7 @@ class PaymentService
 
         // provider selection in vacuum
         $checkoutService = new CheckoutDotComService();
-        $reply = $checkoutService->pay($card, array_merge($address, $contact), $order);
+        $reply = $checkoutService->pay($card, array_merge($address, $contact), $order, $ipqs);
 
         // add Txn, update OdinOrder
         if (!empty($reply['hash'])) {

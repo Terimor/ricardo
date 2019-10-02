@@ -294,7 +294,6 @@
   import { queryParams } from  '../../utils/queryParams';
   import { sendCheckoutRequest } from '../../utils/checkout';
   import setDataToLocalStorage from '../../mixins/purchas';
-  import { goTo } from '../../utils/goTo'
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
   import Spinner from './preloaders/Spinner';
@@ -619,6 +618,7 @@
                 product: {
                   sku: paymentForm.variant,
                   qty: parseInt(paymentForm.deal, 10),
+                  is_warranty_checked: paymentForm.isWarrantyChecked,
                 },
                 contact: {
                   phone: {
@@ -647,15 +647,7 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
-                  if (res.status === 'ok') {
-                    localStorage.setItem('odin_order_id', res.order_id);
-                    localStorage.setItem('order_currency', res.order_currency);
-
-                    localStorage.setItem('order_id', res.order_id);
-                    localStorage.setItem('odin_order_created_at', new Date());
-
-                    goTo('/thankyou-promos/?order=' + res.order_id);
-                  } else {
+                  if (res.status !== 'ok') {
                     this.isPaymentError = true;
                     this.isSubmitted = false;
                   }

@@ -96,6 +96,10 @@ class PaymentCardCreateOrderRequest extends FormRequest
             'product.is_warranty_checked' => [
                 'boolean'
             ],
+            'ipqs' => [
+                'numeric',
+                'between:1,100'
+            ]
         ];
     }
 }

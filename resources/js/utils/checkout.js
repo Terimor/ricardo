@@ -1,9 +1,7 @@
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
-
-
-
+import { goTo } from './goTo';
 
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
@@ -14,7 +12,9 @@ const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
 
   const config = {
     1: `(${discountPercent}% ${t('checkout.discount')})`,
+    2: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
     3: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
+    4: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
     5: `(${discountPercent}% ${t('checkout.discount')}, ${currentPrice})`,
   }
 
@@ -24,7 +24,9 @@ const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
 const getNewPrice = ({key, valueTexts, installments}) => {
   const config = {
     1: `${valueTexts.valueText[installments]}`,
+    2: `${valueTexts.valueText[installments]}`,
     3: `${valueTexts.valueText[installments]}`,
+    4: `${valueTexts.valueText[installments]}`,
     5: `${valueTexts.valueText[installments]}`,
   }
 
@@ -173,5 +175,22 @@ export function sendCheckoutRequest(data) {
       },
       body: JSON.stringify(data),
     }))
-    .then(res => res.json());
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === 'ok') {
+        localStorage.setItem('odin_order_id', res.order_id);
+        localStorage.setItem('order_currency', res.order_currency);
+
+        localStorage.setItem('order_id', res.order_id);
+        localStorage.setItem('odin_order_created_at', new Date());
+
+        if (!res.redirect_url) {
+          goTo('/thankyou-promos/?order=' + res.order_id + '&cur=' + res.order_currency);
+        } else {
+          location.href = res.redirect_url;
+        }
+      }
+
+      return res;
+    });
 }

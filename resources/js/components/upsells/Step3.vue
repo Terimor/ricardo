@@ -78,7 +78,7 @@ export default {
     pleaseChooseText: () => t('upsells.choose'),
 
     selectList() {
-      const data = Array(this.selectedProductData.quantity).fill('').map((item, index) => {
+      const data = Array(Number(this.selectedProductData.quantity)).fill('').map((item, index) => {
         const value = index + 1
 
         return item = {
@@ -86,7 +86,7 @@ export default {
           text: `${value}x ${this.name} - ${this.upsellPrices && this.upsellPrices[value].price_text}`,
           value: value,
         }
-      })
+      });
 
       return data;
     },

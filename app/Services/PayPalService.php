@@ -356,6 +356,8 @@ class PayPalService
                     'shop_currency' => $shop_currency_code,
                     'params' => !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null,
                     'ipqualityscore' => $request->get('ipqs'),
+                    'offer' => $request->get('offerid'),
+                    'affiliate' => $request->get('affid'),
                 ], true);
 
                 $order = $order_reponse['order'];
@@ -366,7 +368,7 @@ class PayPalService
         return [
             'braintree_response' => $response,
             'odin_order_id' => optional($order)->getIdAttribute(),
-            'order_currency' => !empty($order->currency) ? $order->currency : ''
+            'order_currency' => !empty($order->currency) ? $order->currency : '',
         ];
     }
 
