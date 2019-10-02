@@ -270,7 +270,6 @@
 	import vmc4validation from "../../validation/vmc4-validation";
   import setDataToLocalStorage from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
-  import { goTo } from '../../utils/goTo';
 	import {fade} from "../../utils/common";
   import { sha256 } from 'js-sha256';
 
@@ -493,6 +492,7 @@
                 product: {
                   sku: this.form.variant,
                   qty: parseInt(this.form.deal, 10),
+                  is_warranty_checked: this.isWarrantyChecked,
                 },
                 contact: {
                   phone: {
@@ -521,15 +521,7 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
-                  if (res.status === 'ok') {
-                    localStorage.setItem('odin_order_id', res.order_id);
-                    localStorage.setItem('order_currency', res.order_currency);
-
-                    localStorage.setItem('order_id', res.order_id);
-                    localStorage.setItem('odin_order_created_at', new Date());
-
-                    goTo('/thankyou-promos/?order=' + res.order_id);
-                  } else {
+                  if (res.status !== 'ok') {
                     this.isPaymentError = true;
                     this.isSubmitted = false;
                   }

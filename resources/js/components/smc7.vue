@@ -218,7 +218,6 @@
   import { check as ipqsCheck } from '../services/ipqs';
   import { sendCheckoutRequest } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
-  import { goTo } from '../utils/goTo';
   import { sha256 } from 'js-sha256';
 
   export default {
@@ -429,6 +428,7 @@
               product: {
                 sku: this.form.variant,
                 qty: parseInt(this.form.deal, 10),
+                is_warranty_checked: this.form.isWarrantyChecked,
               },
               contact: {
                 phone: {
@@ -457,15 +457,7 @@
 
             sendCheckoutRequest(data)
               .then(res => {
-                if (res.status === 'ok') {
-                  localStorage.setItem('odin_order_id', res.order_id);
-                  localStorage.setItem('order_currency', res.order_currency);
-
-                  localStorage.setItem('order_id', res.order_id);
-                  localStorage.setItem('odin_order_created_at', new Date());
-
-                  goTo('/thankyou-promos/?order=' + res.order_id);
-                } else {
+                if (res.status !== 'ok') {
                   this.isPaymentError = true;
                   this.isSubmitted = false;
                 }
