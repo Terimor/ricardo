@@ -30,7 +30,7 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('layouts.app', function($view) {
-            $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou'));
+            $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou') || Route::is('tracking'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
             $view->with('ga_id', (optional(Domain::getByName()))->ga_id);

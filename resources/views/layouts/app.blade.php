@@ -82,6 +82,7 @@
     <div id="app">
         @if (Request::is('splash'))
             @include('layouts.header_splash', ['product' => $product])
+        @elseif (Request::is('tracking'))
         @else
             @include('layouts.header', ['product' => $product])
         @endif
