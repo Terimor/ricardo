@@ -268,7 +268,7 @@
 	import { getCardUrl, preparePurchaseData, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
-  import setDataToLocalStorage from '../../mixins/purchas';
+  import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
 	import {fade} from "../../utils/common";
   import { sha256 } from 'js-sha256';
@@ -277,7 +277,7 @@
 		name: "PaymentFormVMC4",
     mixins: [
       queryToComponent,
-      setDataToLocalStorage,
+      purchasMixin,
     ],
 		components: {
       PayMethodItem,
@@ -477,7 +477,11 @@
           cvv_code: this.form.stepThree.cvv,
         };
 
-        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
+        this.setDataToLocalStorage({
+          deal: this.form.deal,
+          variant: this.form.variant,
+          isWarrantyChecked: this.isWarrantyChecked,
+        });
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
@@ -517,6 +521,7 @@
                   year: '' + this.form.stepThree.year,
                   type: this.form.cardType,
                 },
+                ipqs: ipqsResult,
               };
 
               sendCheckoutRequest(data)
@@ -570,7 +575,11 @@
         const searchParams = new URL(document.location.href).searchParams;
         const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
 
-        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.isWarrantyChecked);
+        this.setDataToLocalStorage({
+          deal: this.form.deal,
+          variant: this.form.variant,
+          isWarrantyChecked: this.isWarrantyChecked,
+        });
 
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,

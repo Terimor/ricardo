@@ -10,7 +10,7 @@ import { scrollTo } from '../utils/common';
 import { getCountOfInstallments } from '../utils/installments';
 import notification from '../mixins/notification';
 import queryToComponent from '../mixins/queryToComponent';
-import setDataToLocalStorage from '../mixins/purchas';
+import purchasMixin from '../mixins/purchas';
 
 const promo = new Vue({
   el: "#promo",
@@ -18,7 +18,7 @@ const promo = new Vue({
   mixins: [
     notification,
     queryToComponent,
-    setDataToLocalStorage,
+    purchasMixin,
   ],
 
   data: () => ({
@@ -223,7 +223,11 @@ const promo = new Vue({
       const searchParams = new URL(document.location.href).searchParams;
       const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
 
-      this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+      this.setDataToLocalStorage({
+        deal: this.form.deal,
+        variant: this.form.variant,
+        isWarrantyChecked: this.form.isWarrantyChecked,
+      });
 
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,

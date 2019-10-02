@@ -1,14 +1,13 @@
 export default {
   methods: {
-    setDataToLocalStorage(variant, quantity, isWarrantyChecked) {
+    setDataToLocalStorage(data) {
       const selectedProductData = {
-        variant,
-        quantity,
-        isWarrantyChecked,
+        ...data,
+        quantity: data.deal,
         upsells: checkoutData.product.upsells,
-        prices: checkoutData.product.prices[quantity],
+        prices: checkoutData.product.prices[data.deal],
         product_name: checkoutData.product.product_name,
-        image: checkoutData.product.skus.find(it => it.code === variant).quantity_image[1],
+        image: checkoutData.product.skus.find(it => it.code === data.variant).quantity_image[1],
       };
 
       localStorage.setItem('selectedProductData', JSON.stringify(selectedProductData));

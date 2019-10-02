@@ -178,14 +178,8 @@ export function sendCheckoutRequest(data) {
     .then(res => res.json())
     .then(res => {
       if (res.status === 'ok') {
-        localStorage.setItem('odin_order_id', res.order_id);
-        localStorage.setItem('order_currency', res.order_currency);
-
-        localStorage.setItem('order_id', res.order_id);
-        localStorage.setItem('odin_order_created_at', new Date());
-
         if (!res.redirect_url) {
-          goTo('/thankyou-promos/?order=' + res.order_id + '&cur=' + res.order_currency);
+          goToThankYouPromos(res.order_id, res.order_currency);
         } else {
           location.href = res.redirect_url;
         }
@@ -193,4 +187,14 @@ export function sendCheckoutRequest(data) {
 
       return res;
     });
+}
+
+
+export function goToThankYouPromos(order_id, order_currency) {
+  localStorage.setItem('odin_order_id', order_id);
+  localStorage.setItem('order_currency', order_currency);
+  localStorage.setItem('order_id', order_id);
+  localStorage.setItem('odin_order_created_at', new Date());
+
+  goTo('/thankyou-promos/?order=' + order_id + '&cur=' + order_currency);
 }

@@ -213,7 +213,6 @@
   import {fade} from "../utils/common";
   import { t } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
-  import setDataToLocalStorage from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { check as ipqsCheck } from '../services/ipqs';
   import { sendCheckoutRequest } from '../utils/checkout';
@@ -419,7 +418,11 @@
           cvv_code: this.form.cvv,
         };
 
-        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+        this.setDataToLocalStorage({
+          deal: this.form.deal,
+          variant: this.form.variant,
+          isWarrantyChecked: this.form.isWarrantyChecked,
+        });
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
@@ -453,6 +456,7 @@
                 year: '' + this.form.year,
                 type: this.form.paymentType,
               },
+              ipqs: ipqsResult,
             };
 
             sendCheckoutRequest(data)
@@ -486,7 +490,11 @@
         const searchParams = new URL(document.location.href).searchParams;
         const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
 
-        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+        this.setDataToLocalStorage({
+          deal: this.form.deal,
+          variant: this.form.variant,
+          isWarrantyChecked: this.form.isWarrantyChecked,
+        });
 
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,

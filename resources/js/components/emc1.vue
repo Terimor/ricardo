@@ -189,9 +189,8 @@ import Cart from './common/Cart';
 import PurchasAlreadyExists from './common/PurchasAlreadyExists';
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
-import { preparePurchaseData } from '../utils/checkout';
-import isPurchasAlreadyExists from '../mixins/purchas';
-import setDataToLocalStorage from '../mixins/purchas';
+import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
+import purchasMixin from '../mixins/purchas';
 import { preparePartByInstallments } from '../utils/installments';
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
 
@@ -200,8 +199,7 @@ export default {
   mixins: [
     notification,
     queryToComponent,
-    isPurchasAlreadyExists,
-    setDataToLocalStorage,
+    purchasMixin,
   ],
   components: {
     ProductItem,
@@ -324,6 +322,39 @@ export default {
       },
       isOpenPromotionModal: false,
       isOpenSpecialOfferModal: false,
+    }
+  },
+  created() {
+    if (this.queryParams['3ds'] === 'success') {
+      goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+      return;
+    }
+
+    if (this.queryParams['3ds'] === 'failure') {
+      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+
+      if (selectedProductData) {
+        this.form.deal = selectedProductData.deal || this.form.deal;
+        this.form.variant = selectedProductData.variant || this.form.variant;
+        this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
+        this.form.installments = selectedProductData.installments || this.form.installments;
+        this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+        this.form.cardType = selectedProductData.cardType || this.form.cardType;
+        this.form.fname = selectedProductData.fname || this.form.fname;
+        this.form.lname = selectedProductData.lname || this.form.lname;
+        this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
+        this.form.email = selectedProductData.email || this.form.email;
+        this.form.phone = selectedProductData.phone || this.form.phone;
+        this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
+        this.form.street = selectedProductData.street || this.form.street;
+        this.form.number = selectedProductData.streetNumber || this.form.number;
+        this.form.complemento = selectedProductData.complemento || this.form.complemento;
+        this.form.city = selectedProductData.city || this.form.city;
+        this.form.state = selectedProductData.state || this.form.state;
+        this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
+        this.form.country = selectedProductData.country || this.form.country;
+        this.setWarrantyPriceText(this.form.deal);
+      }
     }
   },
   computed: {
@@ -470,7 +501,11 @@ export default {
       const searchParams = new URL(document.location.href).searchParams;
       const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
 
-      this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+      this.setDataToLocalStorage({
+        deal: this.form.deal,
+        variant: this.form.variant,
+        isWarrantyChecked: this.form.isWarrantyChecked,
+      });
 
       return paypalCreateOrder({
         xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,

@@ -1,7 +1,12 @@
 export const goTo = (url) => {
-  let curr =  localStorage.getItem('order_currency') || '';
+  const urlObj = new URL(url, location);
+  const curObj = new URL(location);
 
+  curObj.searchParams.forEach((value, key) => {
+    if (!urlObj.searchParams.has(key)) {
+      urlObj.searchParams.set(key, value);
+    }
+  });
 
-  window.location.href = `${url}${window.location
-    .search.replace(/\?/g, '&')}&cur=${curr}`;
+  location.href = urlObj.pathname + urlObj.search;
 };
