@@ -44,7 +44,10 @@ class PaymentService
     const METHOD_IDEAL            = 'ideal';
     const METHOD_EPS              = 'eps';
 
-    const SUCCESS_PATH  =   '/thankyou-promos';
+    const FRAUD_CHANCE_LIMIT = 90;
+    const FRAUD_CHANCE_MAX = 100;
+
+    const SUCCESS_PATH  =   '/checkout';
     const FAILURE_PATH  =   '/checkout';
 
     /**
@@ -274,7 +277,7 @@ class PaymentService
     {
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $ipqs = (int)$req->input('ipqs', 100);
+        $ipqs = $req->input('ipqs', null);
         $address = $req->get('address');
         $card = $req->get('card');
         $contact = $req->get('contact');
@@ -346,6 +349,7 @@ class PaymentService
             'params'                => $req->query() ?? [],
             'offer'                 => $req->get('offerid'),
             'affiliate'             => $req->get('affid'),
+            'ipqualityscore'        => $ipqs
         ], true);
 
         if (isset($reply['errors'])) {
@@ -356,7 +360,8 @@ class PaymentService
 
         // provider selection in vacuum
         $checkoutService = new CheckoutDotComService();
-        $reply = $checkoutService->pay($card, array_merge($address, $contact), $order, $ipqs);
+        $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : self::FRAUD_CHANCE_MAX;
+        $reply = $checkoutService->pay($card, array_merge($address, $contact), $order, $fraud_chance);
 
         // add Txn, update OdinOrder
         if (!empty($reply['hash'])) {

@@ -171,7 +171,10 @@ export function paypalCreateOrder ({
 
 export function paypalOnApprove(data) {
   localStorage.setItem('order_id', data.orderID);
+
   const odin_order_id = localStorage.getItem('odin_order_id');
+  const order_currency = localStorage.getItem('order_currency');
+
   return fetch('/paypal-verify-order', {
     credentials: 'same-origin',
     method: 'post',
@@ -193,7 +196,7 @@ export function paypalOnApprove(data) {
     .then(function(res) {
       if (odin_order_id) {
         localStorage.setItem('odin_order_created_at', new Date);
-        goTo(`/thankyou-promos/?order=${odin_order_id}`);
+        goTo('/thankyou-promos/?order=' + odin_order_id + '&cur=' + order_currency);
       }
     });
 }

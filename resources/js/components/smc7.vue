@@ -213,12 +213,10 @@
   import {fade} from "../utils/common";
   import { t } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
-  import setDataToLocalStorage from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { check as ipqsCheck } from '../services/ipqs';
   import { sendCheckoutRequest } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
-  import { goTo } from '../utils/goTo';
   import { sha256 } from 'js-sha256';
 
   export default {
@@ -420,7 +418,11 @@
           cvv_code: this.form.cvv,
         };
 
-        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+        this.setDataToLocalStorage({
+          deal: this.form.deal,
+          variant: this.form.variant,
+          isWarrantyChecked: this.form.isWarrantyChecked,
+        });
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
@@ -429,6 +431,7 @@
               product: {
                 sku: this.form.variant,
                 qty: parseInt(this.form.deal, 10),
+                is_warranty_checked: this.form.isWarrantyChecked,
               },
               contact: {
                 phone: {
@@ -453,19 +456,12 @@
                 year: '' + this.form.year,
                 type: this.form.paymentType,
               },
+              ipqs: ipqsResult,
             };
 
             sendCheckoutRequest(data)
               .then(res => {
-                if (res.status === 'ok') {
-                  localStorage.setItem('odin_order_id', res.order_id);
-                  localStorage.setItem('order_currency', res.order_currency);
-
-                  localStorage.setItem('order_id', res.order_id);
-                  localStorage.setItem('odin_order_created_at', new Date());
-
-                  goTo('/thankyou-promos/?order=' + res.order_id);
-                } else {
+                if (res.status !== 'ok') {
                   this.isPaymentError = true;
                   this.isSubmitted = false;
                 }
@@ -494,7 +490,11 @@
         const searchParams = new URL(document.location.href).searchParams;
         const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
 
-        this.setDataToLocalStorage(this.form.variant, this.form.deal, this.form.isWarrantyChecked);
+        this.setDataToLocalStorage({
+          deal: this.form.deal,
+          variant: this.form.variant,
+          isWarrantyChecked: this.form.isWarrantyChecked,
+        });
 
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,

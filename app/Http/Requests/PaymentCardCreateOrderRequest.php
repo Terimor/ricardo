@@ -97,8 +97,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
                 'boolean'
             ],
             'ipqs' => [
-                'numeric',
-                'between:1,100'
+                'nullable'
             ]
         ];
     }

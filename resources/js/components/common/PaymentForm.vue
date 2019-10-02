@@ -291,10 +291,9 @@
   import { check as ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
-  import { queryParams } from  '../../utils/queryParams';
+  import queryToComponent from '../../mixins/queryToComponent';
   import { sendCheckoutRequest } from '../../utils/checkout';
-  import setDataToLocalStorage from '../../mixins/purchas';
-  import { goTo } from '../../utils/goTo'
+  import purchasMixin from '../../mixins/purchas';
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
   import Spinner from './preloaders/Spinner';
@@ -318,7 +317,8 @@
       'warrantyPriceText',
     ],
     mixins: [
-      setDataToLocalStorage,
+      queryToComponent,
+      purchasMixin,
     ],
     components: {
       Spinner,
@@ -332,6 +332,18 @@
         isOpenCVVModal: false,
         isPaymentError: false,
         isSubmitted: false,
+      }
+    },
+
+    created() {
+      if (this.queryParams['3ds'] === 'failure') {
+        this.isPaymentError = true;
+      }
+    },
+
+    mounted() {
+      if (this.isPaymentError) {
+        setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
     },
 
@@ -603,7 +615,27 @@
           }
         }
 
-        this.setDataToLocalStorage(paymentForm.variant, paymentForm.deal, paymentForm.isWarrantyChecked);
+        this.setDataToLocalStorage({
+          deal: paymentForm.deal,
+          variant: paymentForm.variant,
+          isWarrantyChecked: paymentForm.isWarrantyChecked,
+          installments: paymentForm.installments,
+          paymentType: paymentForm.paymentType,
+          cardType: paymentForm.cardType,
+          fname: paymentForm.fname,
+          lname: paymentForm.lname,
+          dateOfBirth: paymentForm.dateOfBirth,
+          email: paymentForm.email,
+          phone: paymentForm.phone,
+          countryCodePhoneField: paymentForm.countryCodePhoneField,
+          street: paymentForm.street,
+          streetNumber: paymentForm.number,
+          complemento: paymentForm.complemento,
+          city: paymentForm.city,
+          state: paymentForm.state,
+          zipcode: paymentForm.zipcode,
+          country: paymentForm.country,
+        });
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
@@ -619,6 +651,7 @@
                 product: {
                   sku: paymentForm.variant,
                   qty: parseInt(paymentForm.deal, 10),
+                  is_warranty_checked: paymentForm.isWarrantyChecked,
                 },
                 contact: {
                   phone: {
@@ -643,19 +676,12 @@
                   year: '' + paymentForm.year,
                   type: this.cardType,
                 },
+                ipqs: ipqsResult,
               };
 
               sendCheckoutRequest(data)
                 .then(res => {
-                  if (res.status === 'ok') {
-                    localStorage.setItem('odin_order_id', res.order_id);
-                    localStorage.setItem('order_currency', res.order_currency);
-
-                    localStorage.setItem('order_id', res.order_id);
-                    localStorage.setItem('odin_order_created_at', new Date());
-
-                    goTo('/thankyou-promos/?order=' + res.order_id);
-                  } else {
+                  if (res.status !== 'ok') {
                     this.isPaymentError = true;
                     this.isSubmitted = false;
                   }

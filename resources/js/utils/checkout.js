@@ -1,9 +1,7 @@
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
-
-
-
+import { goTo } from './goTo';
 
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
@@ -177,5 +175,26 @@ export function sendCheckoutRequest(data) {
       },
       body: JSON.stringify(data),
     }))
-    .then(res => res.json());
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === 'ok') {
+        if (!res.redirect_url) {
+          goToThankYouPromos(res.order_id, res.order_currency);
+        } else {
+          location.href = res.redirect_url;
+        }
+      }
+
+      return res;
+    });
+}
+
+
+export function goToThankYouPromos(order_id, order_currency) {
+  localStorage.setItem('odin_order_id', order_id);
+  localStorage.setItem('order_currency', order_currency);
+  localStorage.setItem('order_id', order_id);
+  localStorage.setItem('odin_order_created_at', new Date());
+
+  goTo('/thankyou-promos/?order=' + order_id + '&cur=' + order_currency);
 }
