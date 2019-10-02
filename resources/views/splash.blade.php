@@ -172,9 +172,7 @@
                             </div>
                         @endif
 
-                        {{-- Here should be product description 2 --}}
-                        <h3>{{ $product->long_name }}</h3>
-
+                        <h3>{{ $product->splash_description }}</h3>
                         @if (!empty($product->image[2]))
                             <div class="for-img">
                                 <img src="{{ $product->image[2] }}" alt="{{ $product->product_name }}">
