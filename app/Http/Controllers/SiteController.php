@@ -138,7 +138,7 @@ class SiteController extends Controller
             'ipqualityscore_api_hash',
             'ebanx_integration_key',
             'ebanx_api_url',
-        ))->all();
+        ));
 
         $countries =  \Utils::getCountries();
 
