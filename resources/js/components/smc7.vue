@@ -204,7 +204,7 @@
 </template>
 
 <script>
-  import {preparePurchaseData} from "../utils/checkout";
+  import { preparePurchaseData, goToThankYouPromos } from "../utils/checkout";
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import ProductOffer from '../components/common/ProductOffer';
@@ -297,6 +297,36 @@
         isOpenSpecialOfferModal: false,
         isPaymentError: false,
         isSubmitted: false,
+      }
+    },
+    created() {
+      if (this.queryParams['3ds'] === 'success') {
+        goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+        return;
+      }
+
+      if (this.queryParams['3ds'] === 'failure') {
+        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+
+        if (selectedProductData) {
+          this.isPaymentError = true;
+          this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
+          this.form.variant = selectedProductData.variant || this.form.variant;
+          this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
+          this.form.installments = selectedProductData.installments || this.form.installments;
+          this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+          this.form.cardType = selectedProductData.cardType || this.form.cardType;
+          this.form.fname = selectedProductData.fname || this.form.fname;
+          this.form.lname = selectedProductData.lname || this.form.lname;
+          this.form.email = selectedProductData.email || this.form.email;
+          this.form.phone = selectedProductData.phone || this.form.phone;
+          this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
+          this.form.streetAndNumber = selectedProductData.streetAndNumber || this.form.streetAndNumber;
+          this.form.city = selectedProductData.city || this.form.city;
+          this.form.state = selectedProductData.state || this.form.state;
+          this.form.zipCode = selectedProductData.zipcode || this.form.zipCode;
+          this.form.country = selectedProductData.country || this.form.country;
+        }
       }
     },
     computed: {
@@ -422,6 +452,19 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
+          installments: this.form.installments,
+          paymentType: this.form.paymentType,
+          cardType: this.form.cardType,
+          fname: this.form.fname,
+          lname: this.form.lname,
+          email: this.form.email,
+          phone: this.form.phone,
+          countryCodePhoneField: this.form.countryCodePhoneField,
+          streetAndNumber: this.form.streetAndNumber,
+          city: this.form.city,
+          state: this.form.state,
+          zipcode: this.form.zipCode,
+          country: this.form.country,
         });
 
         Promise.resolve()
@@ -527,6 +570,10 @@
         variant: this.form.variant,
         installments: 1,
       })
+
+      if (this.isPaymentError && !this.isPurchasAlreadyExists) {
+        setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
+      }
     }
   }
 </script>

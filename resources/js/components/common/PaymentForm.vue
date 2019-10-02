@@ -342,7 +342,7 @@
     },
 
     mounted() {
-      if (this.isPaymentError) {
+      if (this.isPaymentError && !this.isPurchasAlreadyExists) {
         setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
     },

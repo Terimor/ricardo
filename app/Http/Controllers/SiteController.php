@@ -137,7 +137,9 @@ class SiteController extends Controller
         $setting = Setting::getValue(array(
             'instant_payment_paypal_client_id',
             'ipqualityscore_api_hash',
-        ))->all();
+            'ebanx_integration_key',
+            'ebanx_api_url',
+        ));
 
         $countries =  \Utils::getCountries();
 
@@ -156,7 +158,13 @@ class SiteController extends Controller
             $aff = $aff ? $aff->toArray() : null;
         }   
 
-        return view($viewTemplate, compact('countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases', 'recentlyBoughtNames', 'recentlyBoughtCities', 'aff'));
+        return view(
+            $viewTemplate,
+            compact(
+                'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
+                'recentlyBoughtNames', 'recentlyBoughtCities'
+            )
+        );
     }
 
     /**
@@ -185,7 +193,7 @@ class SiteController extends Controller
         $countryCode = \Utils::getLocationCountryCode();
 
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
-        
+
         // check affid
         $order_aff = null;
         if ($request->get('affid')) {

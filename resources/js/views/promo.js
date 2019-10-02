@@ -4,7 +4,7 @@ import carousel from 'vue-owl-carousel';
 import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
-import { preparePurchaseData } from '../utils/checkout';
+import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
 import { t } from '../utils/i18n';
 import { scrollTo } from '../utils/common';
 import { getCountOfInstallments } from '../utils/installments';
@@ -134,6 +134,40 @@ const promo = new Vue({
 
   beforeCreate() {
     document.body.classList.add('tpl-vmp41');
+  },
+
+  created() {
+    if (this.queryParams['3ds'] === 'success') {
+      goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+      return;
+    }
+
+    if (this.queryParams['3ds'] === 'failure') {
+      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+
+      if (selectedProductData) {
+        this.form.deal = selectedProductData.deal || this.form.deal;
+        this.form.variant = selectedProductData.variant || this.form.variant;
+        this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
+        this.form.installments = selectedProductData.installments || this.form.installments;
+        this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+        this.form.cardType = selectedProductData.cardType || this.form.cardType;
+        this.form.fname = selectedProductData.fname || this.form.fname;
+        this.form.lname = selectedProductData.lname || this.form.lname;
+        this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
+        this.form.email = selectedProductData.email || this.form.email;
+        this.form.phone = selectedProductData.phone || this.form.phone;
+        this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
+        this.form.street = selectedProductData.street || this.form.street;
+        this.form.number = selectedProductData.streetNumber || this.form.number;
+        this.form.complemento = selectedProductData.complemento || this.form.complemento;
+        this.form.city = selectedProductData.city || this.form.city;
+        this.form.state = selectedProductData.state || this.form.state;
+        this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
+        this.form.country = selectedProductData.country || this.form.country;
+        this.isFormShown = true;
+      }
+    }
   },
 
   mounted() {
