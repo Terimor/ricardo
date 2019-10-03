@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\Setting;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Utils Service class
@@ -723,5 +724,14 @@ class UtilsService
 
         return $paramsArray;
     }
+    
+    /**
+     * Returns Mongo time object by timestamp
+     * @param type $ts
+     * @return UTCDateTime
+     */
+    public static function getMongoTimeFromTS($ts) {
+        return new UTCDateTime($ts * 1000);
+    }    
 
 }

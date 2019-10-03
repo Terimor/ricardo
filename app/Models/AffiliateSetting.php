@@ -9,6 +9,9 @@ class AffiliateSetting extends Model
 {
     protected $collection = 'affiliate_setting';
     
+    protected $dates = ['created_at', 'updated_at'];
+    
+    public $timestamps = true;    
     /**
      * The attributes that are mass assignable.
      *
@@ -183,6 +186,4 @@ class AffiliateSetting extends Model
         }
         return $al;
     }
-
-
 }
