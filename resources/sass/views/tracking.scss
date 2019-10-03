@@ -12,15 +12,105 @@
 }
 .tracking-form-wrap {
   width: 100%;
-  max-width: 626px;
+  max-width: 730px;
   margin: 0 auto;
 }
 .tracking-form {
-  padding: 10px 20px 20px 20px;
+  margin-bottom: 40px;
+  padding: 20px 20px 20px 20px;
   background: rgba(0,0,0,.8);
   color: #ffffff;
 }
 .tracking-form-title {
+  margin: 0 0 10px 0;
   font-size: 36px;
   color: #fff;
+}
+.tracking-form {
+  .input-container {
+    margin-bottom: 15px;
+  }
+  label {
+    font-weight: bold;
+  }
+  input {
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+  }
+}
+.tracking-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+  background-image: none;
+  background-color: #337ab7;
+  border: 1px solid #2e6da4;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #fff;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all .4s ease;
+  &:hover, &:focus, &:active {
+    background-color: #286090;
+    border-color: #204d74;
+    opacity: .75;
+  }
+  &:disabled {
+    background-color: #286090;
+    border-color: #204d74;
+    opacity: .5;
+    cursor: not-allowed;
+  }
+}
+.tracking-action {
+  display: flex;
+  justify-content: flex-end;
+  .btn {
+    display: inline-block;
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 30px 10px;
+    background: rgba(0,0,0,.8);
+    text-align: center;
+    font-size: 18px;
+    line-height: 1;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all .4s ease;
+    &:hover, &:focus, &:active {
+      background: rgba(255,255,255,.8);
+      color: #246bb2;
+    }
+
+  }
+}
+
+.tracking-iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.tracking-footer {
+  .footer__link {
+    color: #ffffff;
+  }
 }
