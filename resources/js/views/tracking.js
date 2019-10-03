@@ -2,7 +2,7 @@ require('../bootstrap');
 
 import { t } from '../utils/i18n';
 
-import { required, minLength,email } from 'vuelidate/lib/validators'
+import mainValidation from '../validation/main-validation'
 
 
 const tracking = new Vue({
@@ -16,18 +16,7 @@ const tracking = new Vue({
     iframeUrl: '',
     showModal: false,
   },
-  validations: {
-    formData: {
-      name: {
-        required,
-        minLength: minLength(4)
-      },
-      email: {
-        required,
-        email
-      },
-    },
-  },
+  validations: mainValidation,
   computed: {
     isValid() {
       return !this.$v.formData.name.$invalid && !this.$v.formData.email.$invalid;
@@ -66,14 +55,7 @@ const tracking = new Vue({
       const url = 'http://sprtdls.aftership.com/';
 
       if(this.isValid) {
-        // TODO here should be request to backend
-        /*axios.post('url', this.formData)
-          .then(function (response) {
-            console.log(response);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });*/
+        // TODO there should be request to backend
         this.showModal = true;
         this.iframeUrl = url + 'LL234085164LU';
       }
