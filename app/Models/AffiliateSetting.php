@@ -177,12 +177,11 @@ class AffiliateSetting extends Model
         if ($hasOfferId) {
             $affiliate = static::getByHasOfferId($hasOfferId);
             if ($affiliate) {
-                $al = new Localize();
-                $al->affiliate = $affiliate->ho_affiliate_id;
-                $al->is_signup_hidden = $affiliate->is_signup_hidden;
+                $al['affiliate'] = $affiliate->ho_affiliate_id;
+                $al['is_signup_hidden'] = $affiliate->is_signup_hidden;
             }
         }
-        return $al ? $al->toArray() : null;
+        return $al;
     }
 
 
