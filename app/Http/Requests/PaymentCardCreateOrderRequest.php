@@ -98,7 +98,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
             ],
             'ipqs' => [
                 'nullable'
-            ]
+            ],
         ];
     }
 }
