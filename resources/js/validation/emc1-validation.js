@@ -110,8 +110,8 @@ const emc1Validation = function () {
     },
     documentNumber: {
       isValidNumber (val) {
-        return checkoutData.countryCode === 'CO' ? val.length === 10 :
-          checkoutData.countryCode === 'BR' ? val.length === 14 :
+        return checkoutData.countryCode === 'co' ? val.length === 10 :
+          checkoutData.countryCode === 'br' ? val.length === 14 :
             true
       }
     }
