@@ -249,5 +249,16 @@ class OdinOrder extends OdinModel
             logger()->error("Order have't main product: {$this->id}");
         }
         return $productId;
-    }        
+    }
+    
+    /**
+     * Return param value
+     * @param type $param
+     * @return type
+     */
+    public function getParam(string $param)
+    {
+        $params = $this->params;
+        return isset($params[$param]) ? $params[$param] : null;
+    }
 }

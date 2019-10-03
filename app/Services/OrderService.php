@@ -5,6 +5,7 @@ use App\Models\Setting;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\AffiliateSetting;
+use App\Models\RequestQueue;
 use App\Services\EmailService;
 use App\Models\OdinProduct;
 use Illuminate\Support\Arr;
@@ -202,6 +203,12 @@ class OrderService
                     $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
                     $order->is_reduced = $isReduced;
                     $order->save();
+
+                    // save request queue if order has parameter txid and is_reduced
+                    $txid = $order->getParam('txid');
+                    if ($txid && $order->is_reduced) {
+                        RequestQueue::saveTxid($txid);
+                    }
                 }
                 $ol = new Localize();
                 $ol->is_reduced = $order->is_reduced;
