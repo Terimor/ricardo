@@ -1,5 +1,5 @@
 <template>
-  <div class="columns-content container vmc4">
+  <div v-if="!hidePage" class="columns-content container vmc4">
     <div class="main-content">
       <div class="container-fluid">
         <div class="row">
@@ -94,6 +94,7 @@
 		props: ['data'],
 		data() {
 			return {
+        hidePage: false,
         ImplValue: null,
         radioIdx: null,
         warrantyPriceText: null,
@@ -153,6 +154,7 @@
     created() {
       if (this.queryParams['3ds'] === 'success') {
         goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+        this.hidePage = true;
         return;
       }
 

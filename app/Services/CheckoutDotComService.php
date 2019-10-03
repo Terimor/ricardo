@@ -10,7 +10,10 @@ use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Checkout\CheckoutApi;
 use Checkout\Models\Payments\Payment;
+use Checkout\Models\Payments\Source;
 use Checkout\Models\Payments\CardSource;
+use Checkout\Models\Payments\TokenSource;
+use Checkout\Models\Tokens\Card;
 use Checkout\Library\Exceptions\CheckoutHttpException;
 use Checkout\Library\Exceptions\CheckoutException;
 /**
@@ -80,21 +83,17 @@ class CheckoutDotComService
         $env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
 
         $this->checkout = new CheckoutApi($this->secret_key, $env === self::ENV_SANDBOX);
+        $this->checkout->configuration()->setPublicKey($this->public_key);
     }
 
     /**
-     * Creates a new payment
-     * @param array $card
-     * @param array $contact
-     * @param OdinOrder $order
-     * @param int $fraud_chance
-     * @param float $amount default: $order->total_price
-     * @return array
+     * Returns checkout.com CardSource
+     * @param  array      $card
+     * @param  array      $contact
+     * @return CardSource
      */
-    public function pay(array $card, array $contact, OdinOrder $order, int $fraud_chance, float $amount = null)
+    public static function createCardSource(array $card, array $contact): CardSource
     {
-        $amount = isset($amount) ? $amount : $order->total_price;
-
         $source = new CardSource($card['number'], $card['month'], $card['year']);
         $source->cvv = $card['cvv'];
         $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
@@ -106,23 +105,76 @@ class CheckoutDotComService
             'state' => $contact['state'],
             'zip' => $contact['zip']
         ];
+        return $source;
+    }
+
+    /**
+     * Returns checkout.com TokenSource
+     * @param string $token
+     * @return TokenSource
+     */
+    public static function createTokenSource(string $token): TokenSource
+    {
+        return new TokenSource($token);
+    }
+
+    /**
+     * Creates checkout 3ds object for payment
+     * @param  string $card_type
+     * @param  string $country
+     * @param  array|null $ipqs
+     * @return object
+     */
+    public static function create3dsObj(string $card_type, string $country, ?array $ipqs): object
+    {
+        $result = (object)['enabled' => false];
+
+        $setting = PaymentService::$providers[PaymentService::PROVIDER_CHECKOUTCOM]['methods'][$card_type] ?? [];
+        $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : PaymentService::FRAUD_CHANCE_MAX;
+
+        if (in_array($country, $setting['+3ds'] ?? []) || $fraud_chance > PaymentService::FRAUD_CHANCE_LIMIT) {
+            $result = (object)['enabled' => true];
+        }
+        return $result;
+    }
+
+    /**
+     * Creates a new payment
+     * @param Source $source
+     * @param array $contact
+     * @param OdinOrder $order
+     * @param object|null $card_3ds
+     * @param float $amount default: $order->total_price
+     * @return array
+     */
+    public function pay(Source $source, array $contact, OdinOrder $order, ?object $card_3ds, float $amount = null)
+    {
+        $amount = isset($amount) ? $amount : $order->total_price;
 
         $payment = new Payment($source, $order->currency);
         $payment->reference = $order->number;
         $payment->amount = $amount;
         $payment->description = 'Product Description';
-        $payment->customer = (object)['email' => $contact['email'], 'name' => $source->name];
-        $payment->shipping = (object)['address' => $source->billing_address, 'phone' => $source->phone];
+        $payment->customer = (object)['email' => $contact['email'], 'name' => $contact['first_name'] . ' ' . $contact['last_name']];
+        $payment->shipping = (object)[
+            'address' => (object)[
+                'address_line1' => $contact['street'],
+                'city' => $contact['city'],
+                'country' => $contact['country'],
+                'state' => $contact['state'],
+                'zip' => $contact['zip']
+            ],
+            'phone' => (object)[$contact['phone']]
+        ];
         $payment->payment_ip = $order->ip;
 
-        $qs = http_build_query(array_merge(['order' => $order->getIdAttribute()], $order->params));
+        $qs = http_build_query(array_merge(['order' => $order->getIdAttribute()], $order->params ?? []));
         $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
         $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
 
         // enable 3ds
-        $card_3ds_setting = PaymentService::$providers[PaymentService::PROVIDER_CHECKOUTCOM]['methods'][$card['type']] ?? [];
-        if (in_array($order->shipping_country, $card_3ds_setting['+3ds'] ?? []) || $fraud_chance > PaymentService::FRAUD_CHANCE_LIMIT) {
-            $payment->{'3ds'} = (object)['enabled' => true];
+        if ($card_3ds) {
+            $payment->{'3ds'} = $card_3ds;
         }
 
         $result = [
@@ -134,7 +186,7 @@ class CheckoutDotComService
             'fee'               => 0,
             'provider_data'     => null,
             'payment_provider'  => PaymentService::PROVIDER_CHECKOUTCOM,
-            'payment_method'    => $card['type'],
+            'payment_method'    => PaymentService::METHOD_CREDITCARD,
             'payer_id'          => null,
             'redirect_url'      => null
         ];
@@ -165,12 +217,42 @@ class CheckoutDotComService
                 $result['hash'] = $body['request_id'];
             }
             $result['provider_data'] = $body;
-            logger()->error("Checkout.com HTTP", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
         } catch (CheckoutException $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'errors' => $ex->getErrors()];
-            logger()->error("Checkout.com", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
         }
 
+        return $result;
+    }
+
+    /**
+     * Tokenizes customer card
+     * @param  array  $card    [description]
+     * @param  array  $contact [description]
+     * @return string|null
+     */
+    public function requestToken(array $card, array $contact): ?string
+    {
+        $source = new Card($card['number'], $card['month'], $card['year']);
+        $source->cvv = $card['cvv'];
+        $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
+        $source->phone = (object)[$contact['phone']];
+        $source->billing_address = (object)[
+            'address_line1' => $contact['street'],
+            'city' => $contact['city'],
+            'country' => $contact['country'],
+            'state' => $contact['state'],
+            'zip' => $contact['zip']
+        ];
+
+        $result = null;
+        try {
+            $card_token = $this->checkout->tokens()->request($source);
+            $result = $card_token->token;
+        } catch (CheckoutException $ex) {
+            logger()->error("Checkout.com token", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+        }
         return $result;
     }
 
