@@ -6,16 +6,35 @@
         v-bind="rest"
         :disabled="isLoading"
     >
-        <span>
+        <Spinner v-if="isLoading" :style="styleSpinner" />
+        <div v-if="isLoading" class="green-button-disabled"></div>
+        <span class="green-button-text" :style="styleText">
             <slot></slot>
         </span>
     </button>
 </template>
 
 <script>
+  import Spinner from './preloaders/Spinner';
+
   export default {
     name: 'GreenButton',
-    props: ['label', 'rest', 'isLoading']
+    props: ['label', 'rest', 'isLoading', 'spinnerScale'],
+    components: {
+      Spinner,
+    },
+    computed: {
+      styleSpinner() {
+        return {
+          transform: 'scale(' + (this.spinnerScale || .8) + ')',
+        };
+      },
+      styleText() {
+        return {
+          visibility: this.isLoading ? 'hidden' : 'visible',
+        };
+      },
+    },
   };
 </script>
 
@@ -27,6 +46,7 @@
         //min-height: 92px;
         height: auto;
         position: relative;
+        display: block;
         text-decoration: none solid rgb(255, 255, 255);
         text-shadow: rgba(0, 0, 0, 0.3) -1px -1px 0;
         text-transform: capitalize;
@@ -86,6 +106,17 @@
             border: 0 none rgb(255, 255, 255);
             font: normal normal 700 normal 18px / 25.7143px "Noto Sans", sans-serif;
             outline: rgb(255, 255, 255) none 0;
+        }
+
+        .green-button-disabled {
+            background-color: #fff;
+            bottom: 0;
+            left: 0;
+            opacity: .5;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 1;
         }
 
         .checkmark {

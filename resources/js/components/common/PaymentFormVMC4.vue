@@ -575,7 +575,7 @@
           });
 			},
       paypalSubmit() {
-
+        this.form.paymentType = 'paypal';
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
@@ -619,6 +619,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.isWarrantyChecked,
+          paymentType: this.form.paymentType,
         });
 
         return paypalCreateOrder({

@@ -28,7 +28,7 @@
 
 @section('content')
 
-<div class="promo" id="promo">
+<div class="promo" id="promo" v-if="!hidePage">
     <preloader-3
         v-if="+queryParams.preload === 3"
         :country-code="checkoutData.countryCode"
@@ -305,6 +305,7 @@
                         :create-order="paypalCreateOrder"
                         :on-approve="paypalOnApprove"
                         :$v="$v.form.deal"
+                        @click="paypalSubmit"
                     >{{ t('checkout.paypal.risk_free') }}</paypal-button>
                 </div>
                 <div class="promo__alternative-payment">

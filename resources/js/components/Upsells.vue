@@ -82,7 +82,21 @@
                   <p class="total-price">
                     {{ textTotalAccessoryOrder }}: {{ total }}
                   </p>
+                  <p
+                    v-if="isPaymentError"
+                    id="payment-error"
+                    class="error-container"
+                    v-html="textPaymentError"></p>
+                  <green-button
+                    v-if="paymentType === 'credit-card'"
+                    class="submit-button"
+                    :isLoading="isSubmitted"
+                    @click="submit">
+                      {{ textBuyAccessories }}
+                    </green-button>
                   <paypal-button
+                    v-if="paymentType === 'paypal'"
+                    class="submit-button"
                     :createOrder="paypalCreateOrder"
                     :onApprove="paypalOnApprove"
                     :$v="true"
@@ -131,6 +145,8 @@
         product: upsellsData.product,
         upsellsObj: upsellsData.product.upsells,
         upsellsAsProdsList: [],
+        isPaymentError: false,
+        isSubmitted: false,
         isLoading: false,
       };
     },
@@ -195,6 +211,8 @@
       textTotalAccessoryOrder: () => t('upsells.accessory_order'),
       textBuyNow: () => t('upsells.paypal_button_text'),
       textQuantity: () => t('upsells.quantity'),
+      textBuyAccessories: () => t('upsells.step_3.buy_accessories'),
+      textPaymentError: () => t('upsells.step_3.payment_error'),
 
       getEntity() {
         if (this.accessoryStep > this.upsellsObj.length) {
@@ -221,9 +239,27 @@
           .map(it => it.finalPricePure)
           .reduce((acc, item) => acc + item, 0);
       },
+
+      paymentType() {
+        return this.getOriginalOrder.paymentType;
+      },
     },
 
     methods: {
+      submit() {
+        if (this.isSubmitted) {
+          return;
+        }
+
+        this.isPaymentError = false;
+        this.isSubmitted = true;
+
+        setTimeout(() => {
+          this.isPaymentError = true;
+          this.isSubmitted = false;
+        }, 2000);
+      },
+
       paypalCreateOrder() {
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -391,6 +427,22 @@
                     max-width: 780px;
                 }
             }
+        }
+
+        #payment-error {
+          font-size: 17px;
+          text-align: center;
+        }
+
+        .submit-button {
+          margin-left: auto;
+          margin-right: auto;
+          max-width: 670px;
+
+          &.green-button-animated {
+            font-size: 26px;
+            height: 79px;
+          }
         }
 
         @media screen and (max-width: 992px) {
