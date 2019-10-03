@@ -579,7 +579,16 @@
           if (this.$v.form.deal.$invalid) {
             document.querySelector('.main__deal').scrollIntoView()
           } else {
-            document.querySelector('.payment-form').scrollIntoView()
+            this.$nextTick(() => {
+                const inputsNodeList = document.querySelectorAll('.input-container');
+                const inputsArr = Array.from(inputsNodeList);
+
+                let targetInput = inputsArr.find((item) => {
+                   return item.classList.contains('invalid');
+                });
+
+                targetInput.scrollIntoView()
+            });
           }
 
           return;
