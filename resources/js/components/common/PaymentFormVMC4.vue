@@ -67,6 +67,7 @@
             class="main__credit-card-switcher"
             v-model="form.paymentType"
             :list="mockData.creditCardRadioList"
+            @input="isFormShown = true"
           />
           <paypal-button
             :createOrder="paypalCreateOrder"
@@ -76,7 +77,7 @@
             @click="paypalSubmit"
           >{{ paypalRiskFree }}</paypal-button>
           <slot name="warranty" />
-          <form v-if="form.paymentType !== 'paypal' && form.paymentType">
+          <form v-if="form.paymentType && isFormShown">
             <text-field
                 :validation="$v.form.stepThree.cardNumber"
                 :rest="{
@@ -299,6 +300,7 @@
 			return {
 				step: 1,
 				maxSteps: 3,
+        isFormShown: false,
 				isOpenCVVModal: false,
         isOpenPromotionModal: false,
         isPaymentError: false,
