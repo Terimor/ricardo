@@ -247,19 +247,6 @@ class SiteController extends Controller
     }
 
     /**
-     * Tracking page
-     * @return type
-     */
-    public function tracking(Request $request, ProductService $productService)
-    {
-        $setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
-
-        $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
-        $product = $productService->resolveProduct($request, true);
-        return view('tracking', compact('loadedPhrases', 'product', 'setting'));
-    }
-
-    /**
      *
      * @return type
      */
