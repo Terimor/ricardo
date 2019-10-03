@@ -18,7 +18,7 @@ class AffiliateSetting extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'ho_affiliate_id', 'postback_percent', 'is_signup_hidden', 'products'
+        'name', 'ho_affiliate_id', 'postback_percent', 'is_signup_hidden', 'product_sales'
     ];
     
     /*
@@ -99,7 +99,7 @@ class AffiliateSetting extends Model
     protected $attributes = [
         'name' => null,
         'is_signup_hidden' => false,
-        'products' => null,
+        'product_sales' => null,
         'postback_percent' => 0
     ];
     
@@ -122,7 +122,7 @@ class AffiliateSetting extends Model
     {
         $isReduce = false;
         if ($affiliate) {
-            $products = $affiliate->products;
+            $products = $affiliate->product_sales;
             if (isset($products[$productId])) {
                 $qty = $products[$productId];
             } else {
@@ -159,7 +159,7 @@ class AffiliateSetting extends Model
                 $isReduce = static::$percentArray[$reducePercent][$qtyForCalculation];
                 // save affiliate products
                 $products[$productId] = $qty;
-                $affiliate->products = $products;
+                $affiliate->product_sales = $products;
                 $affiliate->save();
             } else {
                 logger()->error("Wrong affiliate percent", ['productId' => $productId, 'qty' => $qty, 'affiliateId' => $affiliate->id, 'reducePercent' => $reducePercent]);
