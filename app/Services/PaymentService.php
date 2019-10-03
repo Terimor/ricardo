@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Exceptions\CustomerUpdateException;
 use App\Exceptions\InvalidParamsException;
@@ -49,6 +50,9 @@ class PaymentService
 
     const SUCCESS_PATH  =   '/checkout';
     const FAILURE_PATH  =   '/checkout';
+
+    const STATUS_OK     = 'ok';
+    const STATUS_FAIL   = 'fail';
 
     /**
      * Saga PaymentUtils::$providers
@@ -278,9 +282,8 @@ class PaymentService
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
         $ipqs = $req->input('ipqs', null);
-        $address = $req->get('address');
         $card = $req->get('card');
-        $contact = $req->get('contact');
+        $contact = array_merge($req->get('contact'), $req->get('address'));
 
         // get product and localize it
         $product = $this->productService->getBySku($sku);
@@ -288,7 +291,7 @@ class PaymentService
 
         // update customer if it has been changed
         $reply = $this->customerService->addOrUpdate(
-            array_merge($address, $contact, ['phone' => $contact['phone']['country_code'] . $contact['phone']['number']])
+            array_merge($contact, ['phone' => $contact['phone']['country_code'] . $contact['phone']['number']])
         );
         if (isset($reply['errors'])) {
             throw new CustomerUpdateException(json_encode($reply['errors']));
@@ -337,16 +340,16 @@ class PaymentService
             'language'              => app()->getLocale(),
             'ip'                    => $req->ip(),
             'txns'                  => [],
-            'shipping_country'      => $address['country'],
-            'shipping_zip'          => $address['zip'],
-            'shipping_state'        => $address['state'],
-            'shipping_city'         => $address['city'],
-            'shipping_street'       => $address['street'],
+            'shipping_country'      => $contact['country'],
+            'shipping_zip'          => $contact['zip'],
+            'shipping_state'        => $contact['state'],
+            'shipping_city'         => $contact['city'],
+            'shipping_street'       => $contact['street'],
             'shop_currency'         => $currency->code,
             'warehouse_id'          => $product->warehouse_id,
             'products'              => [$order_product],
-            'page_checkout'         => $req->fullUrl(),
-            'params'                => $req->query() ?? [],
+            'page_checkout'         => $req->header('Referer'),
+            'params'                => $req->header('Referer') ? \Utils::getParamsFromUrl($req->header('Referer')) : $req->query() ?? [],
             'offer'                 => $req->get('offerid'),
             'affiliate'             => $req->get('affid'),
             'ipqualityscore'        => $ipqs
@@ -360,33 +363,40 @@ class PaymentService
 
         // provider selection in vacuum
         $checkoutService = new CheckoutDotComService();
-        $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : self::FRAUD_CHANCE_MAX;
-        $reply = $checkoutService->pay($card, array_merge($address, $contact), $order, $fraud_chance);
+        $source = CheckoutDotComService::createCardSource($card, $contact);
+        $card_3ds = CheckoutDotComService::create3dsObj($card['type'], $contact['country'], $ipqs);
+        $payment = $checkoutService->pay($source, $contact, $order, $card_3ds);
+
+        //request and save token
+        if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $token = $checkoutService->requestToken($card, $contact);
+            PaymentService::setCardToken($token, $order->getIdAttribute());;
+        }
 
         // add Txn, update OdinOrder
-        if (!empty($reply['hash'])) {
+        if (!empty($payment['hash'])) {
             (new OrderService())->addTxn([
-                'hash'              => $reply['hash'],
-                'value'             => $reply['value'],
-                'currency'          => $reply['currency'],
-                'provider_data'     => $reply['provider_data'],
-                'payment_method'    => $reply['payment_method'],
-                'payment_provider'  => $reply['payment_provider'],
-                'payer_id'          => $reply['payer_id']
+                'hash'              => $payment['hash'],
+                'value'             => $payment['value'],
+                'currency'          => $payment['currency'],
+                'provider_data'     => $payment['provider_data'],
+                'payment_method'    => $card['type'],
+                'payment_provider'  => $payment['payment_provider'],
+                'payer_id'          => $payment['payer_id']
             ]);
 
-            $order_product['txn_hash'] = $reply['hash'];
+            $order_product['txn_hash'] = $payment['hash'];
             $order->products = array_merge([], [$order_product]);
-            $order->is_flagged = $reply['is_flagged'];
+            $order->is_flagged = $payment['is_flagged'];
             $order->txns = array_merge($order->txns, [
                 [
-                    'hash'              => $reply['hash'],
-                    'value'             => $reply['value'],
-                    'status'            => $reply['status'],
-                    'fee'               => $reply['fee'],
-                    'payment_method'    => $reply['payment_method'],
-                    'payment_provider'  => $reply['payment_provider'],
-                    'payer_id'          => $reply['payer_id']
+                    'hash'              => $payment['hash'],
+                    'value'             => $payment['value'],
+                    'status'            => $payment['status'],
+                    'fee'               => $payment['fee'],
+                    'payment_method'    => $card['type'],
+                    'payment_provider'  => $payment['payment_provider'],
+                    'payer_id'          => $payment['payer_id']
                 ]
             ]);
 
@@ -397,14 +407,14 @@ class PaymentService
                 }
             }
         } else {
-            throw new PaymentException(json_encode($reply['provider_data']));
+            throw new PaymentException(json_encode($payment['provider_data']));
         }
 
         return [
             'order_currency'    => $order->currency,
             'order_id'          => $order->getIdAttribute(),
-            'status'            => $reply['status'] !== Txn::STATUS_FAILED ? 'ok' : 'fail',
-            'redirect_url'      => $reply['redirect_url']
+            'status'            => $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
+            'redirect_url'      => $payment['redirect_url']
         ];
     }
 
@@ -532,6 +542,32 @@ class PaymentService
             }
         }
         return $result;
+    }
+
+    /**
+     * Returns card token from cache
+     * @param string $order_id
+     * @param boolean $is_remove default=true
+     * @return string|null
+     */
+    public static function getCardToken(string $order_id, bool $is_remove = true): ?string
+    {
+        if ($is_remove) {
+            return Cache::pull("cardtoken#order_id#{$order_id}");
+        }
+        return Cache::get("cardtoken#order_id#{$order_id}");
+    }
+
+    /**
+     * Puts card token to cache
+     * @param string  $token
+     * @param string  $order_id
+     * @param integer $ttl_min
+     * @return void
+     */
+    public static function setCardToken(string $token, string $order_id, int $ttl_min = 15): void
+    {
+        Cache::put("cardtoken#order_id#{$order_id}", $token, $ttl_min);
     }
 
     /**
