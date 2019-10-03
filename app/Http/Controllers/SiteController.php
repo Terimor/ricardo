@@ -111,9 +111,11 @@ class SiteController extends Controller
      */
     public function orderTracking(Request $request, ProductService $productService)
     {
+        $setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
+
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
         $product = $productService->resolveProduct($request, true);
-        return view('order_tracking', compact('loadedPhrases', 'product'));
+        return view('order_tracking', compact('loadedPhrases', 'product', 'setting'));
     }
 
     /**
@@ -190,10 +192,10 @@ class SiteController extends Controller
         // check affid
         $order_aff = null;
         if ($request->get('affid')) {
-            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
             $order_aff = $order_aff ? $order_aff->toArray() : null;
-        }        
-        
+        }
+
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 
@@ -226,10 +228,10 @@ class SiteController extends Controller
         // check affid
         $order_aff = null;
         if ($request->get('affid')) {
-            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));            
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
             $order_aff = $order_aff ? $order_aff->toArray() : null;
-        }          
-        
+        }
+
         return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 

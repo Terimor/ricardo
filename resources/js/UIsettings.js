@@ -30,3 +30,4 @@ Vue.component('upsells-component', require('./components/Upsells').default)
 
 // common
 Vue.component('green-button', require('./components/common/GreenButton').default)
+Vue.component('modal', require('./components/common/modal').default)
