@@ -1,4 +1,4 @@
-.tracking {
+.orderTracking {
   position: absolute;
   top: 0;
   left: 0;
@@ -6,27 +6,27 @@
   height: 100%;
   background: linear-gradient(135deg,#a7cfdf 0,#23538a 100%)
 }
-.tracking-header {
+.orderTracking-header {
   padding: 40px 0;
   text-align: center;
 }
-.tracking-form-wrap {
+.orderTracking-form-wrap {
   width: 100%;
   max-width: 730px;
   margin: 0 auto;
 }
-.tracking-form {
+.orderTracking-form {
   margin-bottom: 40px;
   padding: 20px 20px 20px 20px;
   background: rgba(0,0,0,.8);
   color: #ffffff;
 }
-.tracking-form-title {
+.orderTracking-form-title {
   margin: 0 0 10px 0;
   font-size: 36px;
   color: #fff;
 }
-.tracking-form {
+.orderTracking-form {
   .input-container {
     margin-bottom: 15px;
   }
@@ -49,7 +49,7 @@
     color: #555;
   }
 }
-.tracking-btn {
+.orderTracking-btn {
   display: inline-block;
   padding: 6px 12px;
   margin-bottom: 0;
@@ -81,7 +81,7 @@
     cursor: not-allowed;
   }
 }
-.tracking-action {
+.orderTracking-action {
   display: flex;
   justify-content: flex-end;
   .btn {
@@ -104,12 +104,12 @@
   }
 }
 
-.tracking-iframe {
+.orderTracking-iframe {
   width: 100%;
   height: 100%;
 }
 
-.tracking-footer {
+.orderTracking-footer {
   .footer__link {
     color: #ffffff;
   }

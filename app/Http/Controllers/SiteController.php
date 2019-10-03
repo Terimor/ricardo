@@ -111,9 +111,11 @@ class SiteController extends Controller
      */
     public function orderTracking(Request $request, ProductService $productService)
     {
+        $setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
+
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
         $product = $productService->resolveProduct($request, true);
-        return view('order_tracking', compact('loadedPhrases', 'product'));
+        return view('order_tracking', compact('loadedPhrases', 'product', 'setting'));
     }
 
     /**

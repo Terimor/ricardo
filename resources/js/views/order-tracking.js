@@ -5,8 +5,8 @@ import { t } from '../utils/i18n';
 import mainValidation from '../validation/main-validation'
 
 
-const tracking = new Vue({
-  el: '#tracking',
+const orderTracking = new Vue({
+  el: '#orderTracking',
 
   data: {
     formData: {
