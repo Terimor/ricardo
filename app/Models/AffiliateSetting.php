@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
+use App\Models\Localize;
 
 class AffiliateSetting extends Model
 {
@@ -165,9 +166,23 @@ class AffiliateSetting extends Model
         return $isReduce;
     }
     
-    public function getLocaleAffiliateById()
-    {
-        
+    /**
+     * Get locale affiliate id by hasOfferId
+     * @param string $hasOfferId
+     * @return Localize
+     */
+    public static function getLocaleAffiliate(string $hasOfferId = null)
+    {        
+        $al = null;
+        if ($hasOfferId) {
+            $affiliate = static::getByHasOfferId($hasOfferId);
+            if ($affiliate) {
+                $al = new Localize();
+                $al->affiliate = $affiliate->ho_affiliate_id;
+                $al->is_signup_hidden = $affiliate->is_signup_hidden;
+            }
+        }
+        return $al ? $al->toArray() : null;
     }
 
 
