@@ -22,6 +22,7 @@ const promo = new Vue({
   ],
 
   data: () => ({
+    hidePage: false,
     showPreloader: true,
     isFormShown: false,
     implValue: 1,
@@ -139,6 +140,7 @@ const promo = new Vue({
   created() {
     if (this.queryParams['3ds'] === 'success') {
       goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+      this.hidePage = true;
       return;
     }
 
@@ -253,6 +255,10 @@ const promo = new Vue({
     scrollTo: scrollTo,
     paypalOnApprove: paypalOnApprove,
 
+    paypalSubmit() {
+      this.form.paymentType = 'paypal';
+    },
+
     paypalCreateOrder () {
       const searchParams = new URL(document.location.href).searchParams;
       const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
@@ -261,6 +267,7 @@ const promo = new Vue({
         deal: this.form.deal,
         variant: this.form.variant,
         isWarrantyChecked: this.form.isWarrantyChecked,
+        paymentType: this.form.paymentType,
       });
 
       return paypalCreateOrder({

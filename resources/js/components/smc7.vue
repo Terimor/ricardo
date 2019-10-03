@@ -1,5 +1,5 @@
 <template>
-    <div v-if="$v">
+    <div v-if="$v && !hidePage">
         <div class="container smc7">
             <div class="row">
                 <div class="container paper smc7__product">
@@ -235,6 +235,7 @@
     props: ['showPreloader', 'skusList'],
     data() {
       return {
+        hidePage: false,
         productImage: checkoutData.product.image[0],
         cardNames: [
           {
@@ -302,6 +303,7 @@
     created() {
       if (this.queryParams['3ds'] === 'success') {
         goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+        this.hidePage = true;
         return;
       }
 
@@ -453,7 +455,7 @@
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
           installments: this.form.installments,
-          paymentType: this.form.paymentType,
+          paymentType: 'credit-card',
           cardType: this.form.cardType,
           fname: this.form.fname,
           lname: this.form.lname,
@@ -537,6 +539,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
+          paymentType: this.form.paymentType,
         });
 
         return paypalCreateOrder({
@@ -553,6 +556,8 @@
       paypalOnApprove: paypalOnApprove,
 
       paypalSubmit() {
+        this.form.paymentType = 'paypal';
+
         if (this.$v.form.deal.$invalid) {
           this.isOpenPromotionModal = true;
         }

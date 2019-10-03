@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$v">
+  <div v-if="$v && !hidePage">
     <div class="container main">
       <div class="row">
         <div class="col-md-7">
@@ -209,6 +209,7 @@ export default {
   props: ['showPreloader', 'skusList'],
   data () {
     return {
+      hidePage: false,
       selectedProductData: {
         prices: null,
         quantity: null,
@@ -327,6 +328,7 @@ export default {
   created() {
     if (this.queryParams['3ds'] === 'success') {
       goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
+      this.hidePage = true;
       return;
     }
 
@@ -462,6 +464,8 @@ export default {
   validations: emc1Validation,
   methods: {
     paypalSubmit() {
+      this.form.paymentType = 'paypal';
+
       if (this.$v.form.deal.$invalid) {
         this.isOpenPromotionModal = true;
       }
@@ -505,6 +509,7 @@ export default {
         deal: this.form.deal,
         variant: this.form.variant,
         isWarrantyChecked: this.form.isWarrantyChecked,
+        paymentType: this.form.paymentType,
       });
 
       return paypalCreateOrder({
