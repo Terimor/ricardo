@@ -76,6 +76,7 @@
               class="main__credit-card-switcher"
               v-model="form.paymentType"
               :list="mockData.creditCardRadioList"
+              @input="isFormShown = true"
             />
             <paypal-button
               :createOrder="paypalCreateOrder"
@@ -89,7 +90,7 @@
                 :firstTitle="textStep + ' 4: ' + textContactInformation"
                 :secondTitle="textStep + ' 5: ' + textDeliveryAddress"
                 :thirdTitle="textStep + ' 6: ' + textPaymentDetails"
-                v-if="form.paymentType"
+                v-if="form.paymentType && isFormShown"
                 @showCart="isOpenSpecialOfferModal = true"
                 :$v="$v"
                 :installments="form.installments"
@@ -210,6 +211,7 @@ export default {
   data () {
     return {
       hidePage: false,
+      isFormShown: false,
       selectedProductData: {
         prices: null,
         quantity: null,
