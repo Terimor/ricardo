@@ -564,8 +564,10 @@
 
       paypalSubmit() {
         this.form.paymentType = 'paypal';
+        const isValid = this.$v.form.deal.$touch();
 
-        if (this.$v.form.deal.$invalid) {
+        if (!isValid) {
+          document.querySelector('.smc7__deal').scrollIntoView();
           this.isOpenPromotionModal = true;
         }
       },

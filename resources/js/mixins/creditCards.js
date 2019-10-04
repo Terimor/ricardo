@@ -25,7 +25,7 @@ export default {
     },
 
     creditCardsAsianCountries() {
-      return ['jp', 'bd', 'cn', 'hk', 'id', 'la', 'mn', 'mm', 'ph', 'sg', 'kr', 'tw', 'th', 'vn'];
+      return ['in', 'jp', 'bd', 'cn', 'hk', 'id', 'la', 'mn', 'mm', 'ph', 'sg', 'kr', 'tw', 'th', 'vn'];
     },
 
     creditCardsAvailableList() {
