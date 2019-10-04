@@ -1,5 +1,5 @@
 <template>
-  <div class="select" :class="theme">
+  <div class="select scroll-when-error" :class="theme">
     <span v-if="label" class="label">{{label}}</span>
     <el-select
       no-data-text="No match data"

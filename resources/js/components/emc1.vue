@@ -15,7 +15,7 @@
             </div>
             <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
               <select-field
-                  v-if="form.country === 'MX' && form.cardType === 'credit'"
+                  v-if="form.country === 'mx' && form.cardType === 'credit'"
                   :label="textInstallmentsTitle"
                   popperClass="emc1-popover-variant"
                   :list="installmentsList"
@@ -76,6 +76,7 @@
               class="main__credit-card-switcher"
               v-model="form.paymentType"
               :list="mockData.creditCardRadioList"
+              @input="isFormShown = true"
             />
             <paypal-button
               :createOrder="paypalCreateOrder"
@@ -89,13 +90,13 @@
                 :firstTitle="textStep + ' 4: ' + textContactInformation"
                 :secondTitle="textStep + ' 5: ' + textDeliveryAddress"
                 :thirdTitle="textStep + ' 6: ' + textPaymentDetails"
-                v-if="form.paymentType"
+                v-if="form.paymentType && isFormShown"
                 @showCart="isOpenSpecialOfferModal = true"
                 :$v="$v"
                 :installments="form.installments"
                 :paymentForm="form"
                 :countryCode="checkoutData.countryCode"
-                :isBrazil="checkoutData.countryCode === 'BR'"
+                :isBrazil="checkoutData.countryCode === 'br'"
                 :countryList="setCountryList"
                 @setPromotionalModal="setPromotionalModal"
                 @setAddress="setAddress"/>
@@ -187,7 +188,6 @@ import { getCountOfInstallments } from '../utils/installments';
 import ProductItem from './common/ProductItem';
 import Cart from './common/Cart';
 import PurchasAlreadyExists from './common/PurchasAlreadyExists';
-import fieldsByCountry from '../resourses/fieldsByCountry';
 import { fade } from '../utils/common';
 import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
 import purchasMixin from '../mixins/purchas';
@@ -210,6 +210,7 @@ export default {
   data () {
     return {
       hidePage: false,
+      isFormShown: false,
       selectedProductData: {
         prices: null,
         quantity: null,
@@ -314,7 +315,7 @@ export default {
         city: null,
         state: null,
         zipcode: null,
-        country: checkoutData.countryCode.toUpperCase(),
+        country: checkoutData.countryCode,
         cardNumber: '',
         month: null,
         year: null,
@@ -356,6 +357,7 @@ export default {
         this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
         this.form.country = selectedProductData.country || this.form.country;
         this.setWarrantyPriceText(this.form.deal);
+        this.isFormShown = true;
       }
     }
   },
@@ -366,7 +368,7 @@ export default {
 
       Object.keys(countries).map(function(key) {
         countriesList.push({
-          value: key.toUpperCase(),
+          value: key,
           text: countries[key],
           label: countries[key]
         });
@@ -387,9 +389,9 @@ export default {
       return Object.values(this.cart).every(it => it === 0)
     },
     withInstallments () {
-      return this.form.country === 'BR'
-        || this.form.country === 'MX'
-        || this.form.country === 'CO'
+      return this.form.country === 'br'
+        || this.form.country === 'mx'
+        || this.form.country === 'co'
     },
     quantityOfInstallments () {
       const { installments } = this.form
@@ -621,8 +623,8 @@ export default {
 
     if (this.withInstallments) {
       this.form.installments =
-        this.checkoutData.countryCode === 'BR' ? 3 :
-        this.checkoutData.countryCode === 'MX' ? 1 :
+        this.checkoutData.countryCode === 'br' ? 3 :
+        this.checkoutData.countryCode === 'mx' ? 1 :
         1
     }
 

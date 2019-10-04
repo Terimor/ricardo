@@ -60,7 +60,7 @@ const promo = new Vue({
       city: null,
       state: null,
       zipcode: null,
-      country: checkoutData.countryCode.toUpperCase(),
+      country: checkoutData.countryCode,
       cardNumber: '',
       month: null,
       year: null,
@@ -174,8 +174,8 @@ const promo = new Vue({
 
   mounted() {
     this.installments =
-      this.checkoutData.countryCode === 'BR' ? 3 :
-        this.checkoutData.countryCode === 'MX' ? 1 :
+      this.checkoutData.countryCode === 'br' ? 3 :
+        this.checkoutData.countryCode === 'mx' ? 1 :
           1
     this.changeWarrantyValue();
 
@@ -205,9 +205,9 @@ const promo = new Vue({
     },
 
     withInstallments () {
-      return this.checkoutData.countryCode === 'BR'
-        || this.checkoutData.countryCode === 'MX'
-        || this.checkoutData.countryCode === 'CO'
+      return this.checkoutData.countryCode === 'br'
+        || this.checkoutData.countryCode === 'mx'
+        || this.checkoutData.countryCode === 'co'
     },
 
     countriesList() {
@@ -215,7 +215,7 @@ const promo = new Vue({
 
       Object.entries(checkoutData.countries).map(([key, value]) => {
         countries.push({
-          value: key.toUpperCase(),
+          value: key,
           text: value,
           label: value,
         });

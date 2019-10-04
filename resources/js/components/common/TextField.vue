@@ -1,6 +1,6 @@
 <template>
   <label
-    class="input-container"
+    class="input-container scroll-when-error"
     :class="{
       [theme]: theme,
       invalid: invalid
