@@ -39,6 +39,7 @@
               <!-- TODO: check if this is useless, remove it:
               warrantyPriceText="setWarrantyPriceText()"  -->
               <select-field
+                :disabled="isShowVariant"
                 popperClass="emc1-popover-variant"
                 v-model="form.variant"
                 :validation="$v.form.variant"
@@ -190,6 +191,7 @@ import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
 import purchasMixin from '../mixins/purchas';
 import { preparePartByInstallments } from '../utils/installments';
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
+import { queryParams } from  '../utils/queryParams';
 
 export default {
   name: 'emc1',
@@ -348,6 +350,9 @@ export default {
     }
   },
   computed: {
+    isShowVariant() {
+      return Number(queryParams().variant) === 0
+    },
     setCountryList () {
       const countries = checkoutData.countries;
       let countriesList = [];
