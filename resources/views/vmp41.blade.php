@@ -331,7 +331,7 @@
                         :payment-form="form"
                         :has-warranty="true"
                         :country-code="checkoutData.countryCode"
-                        :is-brazil="checkoutData.countryCode === 'BR'"
+                        :is-brazil="checkoutData.countryCode === 'br'"
                         :country-list="countriesList"
                         :quantity-of-installments="countOfInstallments"
                         :warranty-price-text="warrantyPriceText"

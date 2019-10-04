@@ -262,4 +262,13 @@ ul, ol {
   text-align: center;
   color: #d5d5d5;
   font-size: 12px;
+  .footer {
+    padding: 0;
+  }
+  .footer__row-item {
+    margin: 0;
+  }
+  .footer--white .footer__link {
+    color: #d5d5d5;
+  }
 }

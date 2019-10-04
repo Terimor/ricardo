@@ -8,10 +8,10 @@
 
 @section('script')
     <script>
-      const checkoutData = {
+      var checkoutData = {
         product: @json($product),
       };
-      const loadedPhrases = @json($loadedPhrases);
+      var loadedPhrases = @json($loadedPhrases);
     </script>
 
     <script src="{{ asset('js/views/order-tracking.js') }}" defer></script>

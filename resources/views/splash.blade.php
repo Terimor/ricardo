@@ -203,6 +203,7 @@
             </div>
             <div class="splash-footer-copy">
                 &copy; 2019 {{ t('splash_page.all_rights_reserved') }}.
+                @include('layouts.footer', ['isWhite' => true])
             </div>
         </footer>
     </div>

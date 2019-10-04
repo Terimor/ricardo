@@ -26,7 +26,7 @@
         <text-field-with-placeholder
             :validation="$v.form.dateOfBirth"
             :validationMessage="textBirthdayRequired"
-            v-if="countryCode === 'DE'"
+            v-if="countryCode === 'de'"
             :rest="{
               'format': 'dd/mm/yyyy',
             }"
@@ -146,7 +146,7 @@
               {{ thirdTitle }}
             </h2>
             <select-field
-                v-if="paymentForm.country === 'MX'"
+                v-if="paymentForm.country === 'mx'"
                 :validation="$v.form.cardType"
                 :validationMessage="textCardTypeRequired"
                 :disabled="+installments !== 1"
@@ -187,6 +187,7 @@
                 <div class="card-date" :class="{ 'with-error': $v.form.year && !$v.form.year.isValid && $v.form.year.$dirty }">
                     <span class="label" v-html="textCardValidUntil"></span>
                     <select-field
+                        filterable
                         :validation="$v.form.month"
                         :validationMessage="textCardValidMonthRequired"
                         :rest="{
@@ -196,6 +197,7 @@
                         :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
                         v-model="paymentForm.month"/>
                     <select-field
+                        filterable
                         :validation="$v.form.year"
                         :validationMessage="textCardValidYearRequired"
                         :rest="{
@@ -228,7 +230,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'BR' || paymentForm.country === 'BR'"
+                v-if="countryCode === 'br' || paymentForm.country === 'br'"
                 placeholder="___.___.___-__"
                 :rest="{
                   'format': '___.___.___-__',
@@ -241,7 +243,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'CO' || paymentForm.country === 'CO'"
+                v-if="countryCode === 'co' || paymentForm.country === 'co'"
                 placeholder="1234567890"
                 :rest="{
                   'format': '1234567890',
@@ -292,6 +294,7 @@
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
+  import scrollToError from '../../mixins/formScrollToError';
   import { sendCheckoutRequest } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import creditCardType from 'credit-card-type'
@@ -319,6 +322,7 @@
     mixins: [
       queryToComponent,
       purchasMixin,
+      scrollToError,
     ],
     components: {
       Spinner,
@@ -352,7 +356,7 @@
         const numberLength = this.paymentForm.number && this.paymentForm.number.length
         const streetLength = this.paymentForm.street && this.paymentForm.street.length
 
-        if (this.countryCode === 'BR' || this.countryCode === 'MX' || this.countryCode === 'CO') {
+        if (this.countryCode === 'br' || this.countryCode === 'mx' || this.countryCode === 'co') {
           return numberLength + streetLength >= 35;
         } else {
           return false;
@@ -367,13 +371,13 @@
       },
 
       isSpecialCountrySelected() {
-        const specialCountries = ['BR', 'MX', 'CO'];
+        const specialCountries = ['br', 'mx', 'co'];
         return specialCountries.includes(this.countryCode) || specialCountries.includes(this.paymentForm.country);
       },
 
       dialCode() {
         const allCountries = window.intlTelInputGlobals.getCountryData();
-        const phoneCountryCode = this.paymentForm.countryCodePhoneField.toLowerCase();
+        const phoneCountryCode = this.paymentForm.countryCodePhoneField;
         const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
 
         return country ? country.dialCode : '1';
@@ -485,7 +489,7 @@
       'paymentForm.documentNumber' (val) {
         const isNumber = (val) => !isNaN(val) && val !== ' '
 
-        if (this.countryCode === 'BR') {
+        if (this.countryCode === 'br') {
           let result = ''
           const configForDot = [3, 7]
           const configForDash = [11]
@@ -504,7 +508,7 @@
           }
 
           this.paymentForm.documentNumber = result
-        } else if (this.countryCode === 'CO') {
+        } else if (this.countryCode === 'co') {
           let result = ''
           for (let i = 0; i < val.length; i++) {
             if (isNumber(val[i])) {
@@ -515,7 +519,7 @@
         }
       },
       installments (val) {
-        if (+val !== 1 && this.countryCode === 'MX') {
+        if (+val !== 1 && this.countryCode === 'mx') {
           this.paymentForm.cardType = 'credit'
         }
       }
@@ -523,7 +527,7 @@
     methods: {
       setCountryCodeByPhoneField (val) {
         if (val.iso2) {
-          this.paymentForm.countryCodePhoneField = val.iso2.toUpperCase()
+          this.paymentForm.countryCodePhoneField = val.iso2;
         }
       },
       openCVVModal () {
@@ -571,17 +575,13 @@
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
+          document.querySelector('.main__deal').scrollIntoView();
           this.$emit('setPromotionalModal', true);
           return;
         }
 
         if (this.$v.form.$pending || this.$v.form.$error) {
-          if (this.$v.form.deal.$invalid) {
-            document.querySelector('.main__deal').scrollIntoView()
-          } else {
-            document.querySelector('.payment-form').scrollIntoView()
-          }
-
+          this.scrollToError();
           return;
         }
 
@@ -664,7 +664,7 @@
                 },
                 address: {
                   city: paymentForm.city,
-                  country: paymentForm.country.toLowerCase(),
+                  country: paymentForm.country,
                   zip: paymentForm.zipcode,
                   state: paymentForm.state,
                   street: paymentForm.street,

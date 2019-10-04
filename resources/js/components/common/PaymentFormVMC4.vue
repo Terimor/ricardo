@@ -317,7 +317,7 @@
 						month: null,
 						year: null,
 						cvv: null,
-						country: checkoutData.countryCode.toUpperCase(),
+						country: checkoutData.countryCode,
 						city: null,
 						state: null,
 						zipCode: null,
@@ -351,6 +351,7 @@
 
         if (selectedProductData) {
           this.step = 3;
+          this.isFormShown = true;
           this.isPaymentError = true;
           this.form.deal = selectedProductData.deal || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
@@ -385,7 +386,7 @@
       },
       dialCode() {
         const allCountries = window.intlTelInputGlobals.getCountryData();
-        const phoneCountryCode = this.form.countryCodePhoneField.toLowerCase();
+        const phoneCountryCode = this.form.countryCodePhoneField;
         const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
 
         return country ? country.dialCode : '1';
@@ -459,7 +460,7 @@
 					});
       },
       installments (val) {
-        if (+val !== 1 && this.countryCode === 'MX') {
+        if (+val !== 1 && this.countryCode === 'mx') {
           this.form.stepThree.cardType = 'credit'
         }
       },
@@ -551,7 +552,7 @@
                 },
                 address: {
                   city: this.form.stepThree.city,
-                  country: this.form.stepThree.country.toLowerCase(),
+                  country: this.form.stepThree.country,
                   zip: this.form.stepThree.zipCode,
                   state: this.form.stepThree.state,
                   street: 'none',
@@ -581,7 +582,7 @@
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
-					this.form.countryCodePhoneField = val.iso2.toUpperCase()
+					this.form.countryCodePhoneField = val.iso2;
 				}
 			},
 			openCVVModal() {

@@ -196,5 +196,5 @@ export function goToThankYouPromos(order_id, order_currency) {
   localStorage.setItem('order_id', order_id);
   localStorage.setItem('odin_order_created_at', new Date());
 
-  goTo('/thankyou-promos/?order=' + order_id + '&cur=' + order_currency);
+  goTo('/thankyou-promos/?order=' + order_id + '&cur=' + order_currency, { exclude: ['3ds'] });
 }
