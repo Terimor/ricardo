@@ -71,6 +71,6 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
 });
 
-Route::get('/debug-sentry', function () {
+/*Route::get('/debug-sentry', function () {
     throw new Exception('My first Sentry error!');
-});
+});*/
