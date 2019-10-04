@@ -262,7 +262,7 @@
             <img src="/images/best-saller.png" alt="">
           </span>
         </button>
-        <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
+        <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
         <button
             @click="submit"
             :disabled="isSubmitted"
@@ -334,19 +334,19 @@
         },
         cardType: null,
         isOpenCVVModal: false,
-        isPaymentError: false,
         isSubmitted: false,
+        paymentError: '',
       }
     },
 
     created() {
       if (this.queryParams['3ds'] === 'failure') {
-        this.isPaymentError = true;
+        this.paymentError = this.textPaymentError;
       }
     },
 
     mounted() {
-      if (this.isPaymentError && !this.isPurchasAlreadyExists) {
+      if (this.paymentError && !this.isPurchasAlreadyExists) {
         setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
     },
@@ -589,7 +589,7 @@
           return;
         }
 
-        this.isPaymentError = false;
+        this.paymentError = '';
         this.isSubmitted = true;
 
         let fields = {
@@ -682,7 +682,7 @@
               sendCheckoutRequest(data)
                 .then(res => {
                   if (res.status !== 'ok') {
-                    this.isPaymentError = true;
+                    this.paymentError = res.paymentError;
                     this.isSubmitted = false;
                   }
                 });

@@ -183,6 +183,16 @@ export function sendCheckoutRequest(data) {
         } else {
           location.href = res.redirect_url;
         }
+      } else {
+        res.paymentError = t('checkout.payment_error');
+
+        if (res.errors && Object.keys(res.errors).length > 0) {
+          res.paymentError = Object.values(res.errors).shift().shift();
+
+          for (const name of Object.keys(data)) {
+            res.paymentError = res.paymentError.replace(name + '.', '');
+          }
+        }
       }
 
       return res;

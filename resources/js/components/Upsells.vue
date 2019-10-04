@@ -83,10 +83,10 @@
                     {{ textTotalAccessoryOrder }}: {{ total }}
                   </p>
                   <p
-                    v-if="isPaymentError"
+                    v-if="paymentError"
                     id="payment-error"
                     class="error-container"
-                    v-html="textPaymentError"></p>
+                    v-html="paymentError"></p>
                   <green-button
                     v-if="paymentType === 'credit-card'"
                     class="submit-button"
@@ -145,7 +145,7 @@
         product: upsellsData.product,
         upsellsObj: upsellsData.product.upsells,
         upsellsAsProdsList: [],
-        isPaymentError: false,
+        paymentError: '',
         isSubmitted: false,
         isLoading: false,
       };
@@ -251,11 +251,11 @@
           return;
         }
 
-        this.isPaymentError = false;
+        this.paymentError = '';
         this.isSubmitted = true;
 
         setTimeout(() => {
-          this.isPaymentError = true;
+          this.paymentError = this.textPaymentError;
           this.isSubmitted = false;
         }, 2000);
       },

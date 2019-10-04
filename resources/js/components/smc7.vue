@@ -148,7 +148,7 @@
                                 :paymentForm="form"/>
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
-                            <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
+                            <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
                               v-if="form.paymentType !== 'paypal'"
@@ -298,8 +298,8 @@
         variantList: [],
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
-        isPaymentError: false,
         isSubmitted: false,
+        paymentError: '',
       }
     },
     created() {
@@ -313,12 +313,11 @@
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
         if (selectedProductData) {
-          this.isPaymentError = true;
+          this.paymentError = this.textPaymentError;
           this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
           this.form.installments = selectedProductData.installments || this.form.installments;
-          this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
           this.form.cardType = selectedProductData.cardType || this.form.cardType;
           this.form.fname = selectedProductData.fname || this.form.fname;
           this.form.lname = selectedProductData.lname || this.form.lname;
@@ -437,7 +436,7 @@
           return;
         }
 
-        this.isPaymentError = false;
+        this.paymentError = '';
         this.isSubmitted = true;
 
         let fields = {
@@ -514,7 +513,7 @@
             sendCheckoutRequest(data)
               .then(res => {
                 if (res.status !== 'ok') {
-                  this.isPaymentError = true;
+                  this.paymentError = res.paymentError;
                   this.isSubmitted = false;
                 }
               });
@@ -585,7 +584,7 @@
         installments: 1,
       })
 
-      if (this.isPaymentError && !this.isPurchasAlreadyExists) {
+      if (this.paymentError && !this.isPurchasAlreadyExists) {
         setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
     }
