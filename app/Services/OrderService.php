@@ -179,7 +179,7 @@ class OrderService
             'total_text' => CurrencyService::getLocalTextValue($total, $currency)
         ];
     }
-    
+
     /**
      * Check and return reduced order data
      * @param type $orderId
@@ -195,16 +195,18 @@ class OrderService
             // check if order has the same affiliate
             if ($order->affiliate == $hoAffiliateId) {
                 // check or create affiliate
-                $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);        
+                $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
                 if ($order->is_reduced === null) {
                     // get first main product
-                    $productId = $order->getFirstProductId();                
+                    $productId = $order->getFirstProductId();
                     // check in affiliate product list
                     $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
                     $order->is_reduced = $isReduced;
                     $order->save();
 
-                    // save request queue if order has parameter txid and is_reduced and affid > 10
+                    // save
+                    //
+                    // request queue if order has parameter txid and is_reduced and affid > 10
                     $txid = $order->getParam('txid');
                     if ($txid && $order->is_reduced && (int)$hoAffiliateId > 10) {
                         RequestQueue::saveTxid($txid);
@@ -216,7 +218,25 @@ class OrderService
                 $ol->affiliate = !empty($affiliate->ho_affiliate_id) ? $affiliate->ho_affiliate_id : null;
                 $ol->is_signup_hidden = isset($affiliate->is_signup_hidden) ? $affiliate->is_signup_hidden : null;
             }
-        }        
+        }
         return $ol;
+    }
+
+    /**
+     * Checks if the upsells are possible in order
+     * @param OdinOrder $order
+     * @return bool
+     */
+    public function checkIfUpsellsPossible(OdinOrder $order): bool
+    {
+        if (!in_array($order->status, [
+            OdinOrder::STATUS_NEW,
+            OdinOrder::STATUS_PAID,
+            OdinOrder::STATUS_HALFPAID,
+        ])) {
+            logger()->error('Trying to add product to order with status: ' . $order->status, ['order_id' => $order->getIdAttribute()]);
+            return false;
+        }
+        return true;
     }
 }

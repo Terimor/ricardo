@@ -16,7 +16,7 @@ class CustomerService
      */
     public function addOrUpdate(array $data, bool $returnModel = false): array
     {
-        $model = OdinCustomer::firstOrNew(['email' => $data['email']]);
+        $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
 
         // add ip if not in array

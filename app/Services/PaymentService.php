@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
+use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Exceptions\CustomerUpdateException;
 use App\Exceptions\InvalidParamsException;
 use App\Exceptions\OrderNotFoundException;
@@ -18,6 +19,7 @@ use App\Services\CurrencyService;
 use App\Services\CustomerService;
 use App\Services\CheckoutDotComService;
 use App\Services\OrderService;
+use Http\Client\Exception\HttpException;
 
 /**
  * Payment Service class
@@ -275,7 +277,8 @@ class PaymentService
 
     /**
      * Creates a new order
-     *
+     * @param PaymentCardCreateOrderRequest $req
+     * @return array
      */
     public function createOrder(PaymentCardCreateOrderRequest $req)
     {
@@ -286,7 +289,7 @@ class PaymentService
         $contact = array_merge($req->get('contact'), $req->get('address'));
 
         // get product and localize it
-        $product = $this->productService->getBySku($sku);
+        $product = OdinProduct::getBySku($sku);
         $localizedProduct = $this->productService->localizeProduct($product); // throwable
 
         // update customer if it has been changed
@@ -312,6 +315,7 @@ class PaymentService
             'price_usd'             => floor($price['value'] / $currency->usd_rate * 100) / 100,
             'is_main'               => true,
             'price_set'             => $product->prices['price_set'],
+            'txn_hash'              => null,
             'warranty_price'        => 0,
             'warranty_price_usd'    => 0
         ];
@@ -367,12 +371,6 @@ class PaymentService
         $card_3ds = CheckoutDotComService::create3dsObj($card['type'], $contact['country'], $ipqs);
         $payment = $checkoutService->pay($source, $contact, $order, $card_3ds);
 
-        //request and save token
-        if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $token = $checkoutService->requestToken($card, $contact);
-            PaymentService::setCardToken($token, $order->getIdAttribute());;
-        }
-
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
             (new OrderService())->addTxn([
@@ -386,18 +384,16 @@ class PaymentService
             ]);
 
             $order_product['txn_hash'] = $payment['hash'];
-            $order->products = array_merge([], [$order_product]);
             $order->is_flagged = $payment['is_flagged'];
-            $order->txns = array_merge($order->txns, [
-                [
-                    'hash'              => $payment['hash'],
-                    'value'             => $payment['value'],
-                    'status'            => $payment['status'],
-                    'fee'               => $payment['fee'],
-                    'payment_method'    => $card['type'],
-                    'payment_provider'  => $payment['payment_provider'],
-                    'payer_id'          => $payment['payer_id']
-                ]
+            $order->addProduct($order_product);
+            $order->addTxn([
+                'hash'              => $payment['hash'],
+                'value'             => $payment['value'],
+                'status'            => $payment['status'],
+                'fee'               => $payment['fee'],
+                'payment_method'    => $card['type'],
+                'payment_provider'  => $payment['payment_provider'],
+                'payer_id'          => $payment['payer_id']
             ]);
 
             if (!$order->save()) {
@@ -411,10 +407,121 @@ class PaymentService
         }
 
         return [
+            'order'         => $order,
+            'provider'      => $payment['payment_provider'],
+            'status'        => $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
+            'redirect_url'  => $payment['redirect_url']
+        ];
+    }
+
+    /**
+     * Adds upsells to order using CardToken
+     * @param  PaymentCardCreateUpsellsOrderRequest $req
+     * @return array
+     */
+    public function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req)
+    {
+        $upsells = $req->input('upsells', []);
+
+        $order = OdinOrder::getById($req->get('order')); // throwable
+        $order_main_product = $order->getMainProduct(); // throwable
+        $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
+        $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
+        $card_token = self::getCardToken($order->getIdAttribute());
+
+        // prepare upsells result
+        $upsells = array_map(function($v) {
+            $v['status'] = self::STATUS_FAIL;
+            return $v;
+        }, $upsells);
+
+        if ($this->orderService->checkIfUpsellsPossible($order) && !empty($card_token)) {
+            $upsell_products = [];
+            $checkout_price = 0;
+            $checkout_price_usd = 0;
+            foreach ($upsells as $key => $item) {
+                try {
+                    $product = $this->productService->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
+                    $upsell_price = $product->upsellPrices[$item['qty']];
+                    $upsell_product = [
+                        'sku_code'              => $product->upsell_sku,
+                        'quantity'              => (int)$item['qty'],
+                        'price'                 => $upsell_price['price'],
+                        'price_usd'             => floor($upsell_price['price'] / $upsell_price['exchange_rate'] * 100) / 100,
+                        'is_main'               => false,
+                        'is_upsells'            => true,
+                        'price_set'             => null,
+                        'warranty_price'        => 0,
+                        'warranty_price_usd'    => 0
+                    ];
+                    $checkout_price += $upsell_product['price'];
+                    $checkout_price_usd += $upsell_product['price_usd'];
+                    $upsell_products[] = $upsell_product;
+                } catch (HttpException $e) {
+                    $upsells[$key]['status'] = self::STATUS_FAIL;
+                }
+            }
+
+            if ($checkout_price >= OdinProduct::MIN_PRICE) {
+                // select provider by main txn
+                $checkoutService = new CheckoutDotComService();
+                $source = CheckoutDotComService::createTokenSource($card_token);
+                $payment = $checkoutService->pay($source, ['payer_id' => $order_main_txn['payer_id']], $order, null, $checkout_price);
+
+                // update order if transaction is passed
+                if (!empty($payment['hash'])) {
+                    (new OrderService())->addTxn([
+                        'hash'              => $payment['hash'],
+                        'value'             => $payment['value'],
+                        'currency'          => $payment['currency'],
+                        'provider_data'     => $payment['provider_data'],
+                        'payment_method'    => $order_main_txn['payment_method'],
+                        'payment_provider'  => $payment['payment_provider'],
+                        'payer_id'          => $payment['payer_id']
+                    ]);
+
+                    $upsells = array_map(function($v) use ($payment) {
+                        $v['status'] = $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL;
+                        return $v;
+                    }, $upsells);
+
+                    $order->addTxn([
+                        'hash'              => $payment['hash'],
+                        'value'             => $payment['value'],
+                        'status'            => $payment['status'],
+                        'fee'               => $payment['fee'],
+                        'payment_method'    => $order_main_txn['payment_method'],
+                        'payment_provider'  => $payment['payment_provider'],
+                        'payer_id'          => $payment['payer_id']
+                    ]);
+
+                    // add upsell products
+                    foreach ($upsell_products as $item) {
+                        $item['txn_hash'] = $payment['hash'];
+                        $order->addProduct($item);
+                    }
+
+                    if ($order->status === OdinOrder::STATUS_PAID) {
+                        $order->status = OdinOrder::STATUS_HALFPAID;
+                    }
+                    $order->total_price += $checkout_price;
+                    $order->total_price_usd += $checkout_price_usd;
+
+                    if (!$order->save()) {
+                        $validator = $order->validate();
+                        if ($validator->fails()) {
+                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
+                        }
+                    }
+                }
+            }
+        }
+
+        return [
             'order_currency'    => $order->currency,
             'order_id'          => $order->getIdAttribute(),
-            'status'            => $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
-            'redirect_url'      => $payment['redirect_url']
+            'status'            => $order_main_txn['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
+            'upsells'           => $upsells
         ];
     }
 
@@ -424,62 +531,53 @@ class PaymentService
      */
     public function approveOrder(array $data): void
     {
-        $order = OdinOrder::where(['number' => $data['number']])->first();
-        if (!$order) {
-            throw new OrderNotFoundException("Order [{$data['number']}] not found");
+        $order = OdinOrder::getByNumber($data['number']); // throwable
+
+        // check webhook reply
+        if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
+            return;
         }
 
-        $txn = collect($order->txns)->first(function ($v) use ($data) {
-            return $v['hash'] === $data['hash'];
-        });
-
-        if (empty($txn)) {
-            throw new TxnNotFoundException("Order Txn [{$data['hash']}] not found");
-        }
-
-        $product = collect($order->products)->first(function ($v) use ($data) {
-            return $v['txn_hash'] === $data['hash'];
-        });
-
-        if (empty($product)) {
-            throw new ProductNotFoundException("Order Product [{$data['hash']}] not found");
-        }
-
-        if ($txn['status'] !== Txn::STATUS_APPROVED || $txn['status'] !== Txn::STATUS_FAILED) {
-
-            $currency = CurrencyService::getCurrency($order->currency);
-
-            $order->total_paid += $data['value'];
-            $order->total_paid_usd += floor($data['value'] / $currency->usd_rate * 100) / 100;
-            $order->status = $order->total_paid >= $order->total_price ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
-
+        $txn = $order->getTxnByHash($data['hash'], false);
+        if ($txn) {
             $txn['status'] = Txn::STATUS_APPROVED;
-            $order->txns = array_merge(
-                collect($order->txns)->reject(function ($v) use ($data) {
-                    return $v['hash'] === $data['hash'];
-                })->all(),
-                [$txn]
-            );
+            $order->addTxn($txn);
+        }
 
+        $products = $order->getProductsByTxnHash($data['hash']);
+        foreach ($products as $product) {
             $product['is_paid'] = true;
-            $order->products = array_merge(
-                collect($order->products)->reject(function ($v) use ($data) {
-                    return $v['txn_hash'] === $data['hash'];
-                })->all(),
-                [$product]
-            );
+            $order->addProduct($product);
+        }
 
-            if (!$order->save()) {
-                $validator = $order->validate();
-                if ($validator->fails()) {
-                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                }
+        $currency = CurrencyService::getCurrency($order->currency);
+
+        $order->total_paid += $data['value'];
+        $order->total_paid_usd += floor($data['value'] / $currency->usd_rate * 100) / 100;
+        $order->status = $order->total_paid >= $order->total_price ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
             }
-        } else {
-            logger()->info('Unsuccessful attempt to approve Txn', ['hash' => $txn['hash'], 'status' => $txn['status']]);
         }
 
     }
+
+    /**
+     * Requests card token
+     * @param  array  $card
+     * @param  array  $contacts
+     * @param  string $provider default=checkoutcom
+     * @return array|null
+     */
+    public function requestCardToken(array $card, array $contacts, string $provider = self::PROVIDER_CHECKOUTCOM): ?array
+    {
+        // select provider and request token
+        return (new CheckoutDotComService())->requestToken($card, $contacts);
+    }
+
 
     /**
      * Returns payment methods array by country
@@ -560,14 +658,16 @@ class PaymentService
 
     /**
      * Puts card token to cache
-     * @param string  $token
-     * @param string  $order_id
-     * @param integer $ttl_min
+     * @param array $token
+     * @param string $order_id
      * @return void
      */
-    public static function setCardToken(string $token, string $order_id, int $ttl_min = 15): void
+    public static function setCardToken(array $token, string $order_id): void
     {
-        Cache::put("cardtoken#order_id#{$order_id}", $token, $ttl_min);
+        if (!empty($token)) {
+            $dt = $token['dt'] ?? (new \DateTime())->add(new \DateInterval('PT15M'));
+            Cache::put("cardtoken#order_id#{$order_id}", $token['token'], $dt);
+        }
     }
 
     /**

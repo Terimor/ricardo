@@ -15,20 +15,6 @@ use App\Exceptions\ProductNotFoundException;
 class ProductService
 {
     /**
-     * Returns product by Sku
-     * @param  string $sku
-     * @return OdinProduct
-     * @throws OdinProductNotFoundException
-     */
-    public function getBySku(string $sku)
-    {
-        $product = OdinProduct::where('skus.code', $sku)->first();
-        if (!$product) {
-            throw new ProductNotFoundException("Product {$sku} not found");
-        }
-        return $product;
-    }
-    /**
      * @param Request $request
      * @return OdinProduct
      */
