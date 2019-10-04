@@ -103,6 +103,7 @@
       <div class="card-date">
         <span class="label">{{textCardValidUntil}}</span>
         <select-field
+            filterable
             :validation="$v.form.month"
             :validationMessage="textCardValidMonthRequired"
             :rest="{
@@ -112,6 +113,7 @@
             :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
             v-model="paymentForm.month"/>
         <select-field
+            filterable
             :validation="$v.form.year"
             :validationMessage="textCardValidYearRequired"
             :rest="{
