@@ -84,7 +84,7 @@
             </template>
 
             <template v-slot:modal-footer>
-                <a href="/checkout"
+                <a href="/contact-us"
                    class="orderTracking-btn">@{{ textModalButton }}</a>
             </template>
         </modal>
