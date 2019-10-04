@@ -312,12 +312,10 @@
                     {{ t('checkout.pay_securely_also') }}
                 </div>
                 <div class="promo__row-payments">
-                    <radio-button-group
-                        class="main__credit-card-switcher promo__credit-card-switcher"
-                        v-model="form.paymentType"
-                        :list="mockData.creditCardRadioList"
-                        @input="activateForm"
-                    />
+                    <payment-type-radio-list
+                      class="promo__credit-card-switcher"
+                      v-model="form.paymentType"
+                      @input="activateForm" />
                 </div>
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form

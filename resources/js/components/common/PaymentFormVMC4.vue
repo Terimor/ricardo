@@ -63,12 +63,9 @@
         </div>
         <div class="step step-3" v-if="step === 3">
           <h3 v-html="textPaySecurely"></h3>
-          <radio-button-group
-            class="main__credit-card-switcher"
+          <payment-type-radio-list
             v-model="form.paymentType"
-            :list="mockData.creditCardRadioList"
-            @input="isFormShown = true"
-          />
+            @input="activateForm" />
           <paypal-button
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
@@ -475,6 +472,9 @@
       },
 		},
 		methods: {
+      activateForm() {
+        this.isFormShown = true;
+      },
       setWarrantyPriceText(value) {
         this.$emit('setWarrantyPriceText', value)
       },
