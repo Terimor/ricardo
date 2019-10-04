@@ -153,6 +153,7 @@
     },
     created() {
       if (this.queryParams['3ds'] === 'success') {
+console.log(this.queryParams)
         goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
         this.hidePage = true;
         return;
@@ -186,9 +187,9 @@
 				return checkoutData.product
 			},
       withInstallments () {
-        return this.checkoutData.countryCode === 'BR'
-          || this.checkoutData.countryCode === 'MX'
-          || this.checkoutData.countryCode === 'CO'
+        return this.checkoutData.countryCode === 'br'
+          || this.checkoutData.countryCode === 'mx'
+          || this.checkoutData.countryCode === 'co'
       },
       quantityOfInstallments () {
         const { installments } = this.form
@@ -213,7 +214,7 @@
 
         Object.keys(countries).map(function(key) {
           countriesList.push({
-            value: key.toUpperCase(),
+            value: key,
             text: countries[key],
             label: countries[key]
           });
@@ -257,7 +258,7 @@
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
-					this.form.countryCodePhoneField = val.iso2.toUpperCase()
+					this.form.countryCodePhoneField = val.iso2;
 				}
 			},
 			setPurchase({variant, installments}) {
@@ -290,8 +291,8 @@
       if (this.withInstallments) {
         // set default installments
         this.form.installments =
-          this.checkoutData.countryCode === 'BR' ? 3 :
-          this.checkoutData.countryCode === 'MX' ? 1 :
+          this.checkoutData.countryCode === 'br' ? 3 :
+          this.checkoutData.countryCode === 'mx' ? 1 :
           1
       }
 

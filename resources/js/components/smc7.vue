@@ -281,7 +281,7 @@
             } catch (_) {
             }
           }()),
-          country: checkoutData.countryCode.toUpperCase(),
+          country: checkoutData.countryCode,
           streetAndNumber: null,
           city: null,
           state: null,
@@ -371,7 +371,7 @@
 
         Object.entries(countries).map(function([key, value]) {
           countriesList.push({
-            value: key.toUpperCase(),
+            value: key,
             text: value,
             label: value
           });
@@ -390,7 +390,7 @@
 
       dialCode() {
         const allCountries = window.intlTelInputGlobals.getCountryData();
-        const phoneCountryCode = this.form.countryCodePhoneField.toLowerCase();
+        const phoneCountryCode = this.form.countryCodePhoneField;
         const country = allCountries.filter(item => item.iso2 === phoneCountryCode).shift();
 
         return country ? country.dialCode : '1';
@@ -496,7 +496,7 @@
               },
               address: {
                 city: this.form.city,
-                country: this.form.country.toLowerCase(),
+                country: this.form.country,
                 zip: this.form.zipCode,
                 state: this.form.state,
                 street: this.form.streetAndNumber,
@@ -522,7 +522,7 @@
       },
       setCountryCodeByPhoneField (val) {
         if (val.iso2) {
-          this.form.countryCodePhoneField = val.iso2.toUpperCase()
+          this.form.countryCodePhoneField = val.iso2;
         }
       },
       setPurchase({variant, installments}) {
