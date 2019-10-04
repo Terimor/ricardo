@@ -453,6 +453,9 @@ export default {
   methods: {
     activateForm() {
       this.isFormShown = true;
+      this.$nextTick(() => {
+        document.querySelector('.payment-form').scrollIntoView();
+      })
     },
     paypalSubmit() {
       this.form.paymentType = 'paypal';
