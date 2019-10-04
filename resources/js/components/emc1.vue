@@ -456,11 +456,14 @@ export default {
     },
     paypalSubmit() {
       this.form.paymentType = 'paypal';
+      const isValid = this.$v.form.deal.$touch();
 
-      if (this.$v.form.deal.$invalid) {
+      if (!isValid) {
+        document.querySelector('.main__deal').scrollIntoView();
         this.isOpenPromotionModal = true;
       }
     },
+
     setImplValue(value) {
       this.implValue = value;
       if (this.radioIdx) this.changeWarrantyValue();
