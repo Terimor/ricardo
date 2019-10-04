@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use App\Exceptions\OrderNotFoundException;
+use App\Exceptions\ProductNotFoundException;
+use App\Exceptions\TxnNotFoundException;
 
 class OdinOrder extends OdinModel
 {
@@ -171,6 +174,36 @@ class OdinOrder extends OdinModel
     }
 
     /**
+     * Returns OdinOrder by ID
+     * @param  string    $id
+     * @param  boolean   $throwable default=true
+     * @return OdinOrder|null
+     */
+    public static function getById(string $id, bool $throwable = true): ?OdinOrder
+    {
+        $order = OdinOrder::find($id);
+        if (!$order && $throwable) {
+            throw new OrderNotFoundException("Order [{$id}] not found");
+        }
+        return $order;
+    }
+
+    /**
+     * Returns OdinOrder by number
+     * @param  string    $number
+     * @param  boolean   $throwable default=true
+     * @return OdinOrder|null
+     */
+    public static function getByNumber(string $number, bool $throwable = true): ?OdinOrder
+    {
+        $order = OdinOrder::where(['number' => $number])->first();
+        if (!$order && $throwable) {
+            throw new OrderNotFoundException("Order [{$number}] not found");
+        }
+        return $order;
+    }
+
+    /**
      * Generate order number
      * @param string $countryCode
      * @return string
@@ -221,6 +254,7 @@ class OdinOrder extends OdinModel
     {
         $this->attributes['customer_email'] =  strtolower(trim($value));
     }
+
     /**
      * Get first order product id (is_main)
      * @return type
@@ -237,7 +271,7 @@ class OdinOrder extends OdinModel
                 }
             }
         }
-        
+
         if ($sku) {
             $skus = OdinProduct::getCacheSkusProduct();
             if (!empty($skus[$sku]['product_id'])) {
@@ -250,7 +284,7 @@ class OdinOrder extends OdinModel
         }
         return $productId;
     }
-    
+
     /**
      * Return param value
      * @param type $param
@@ -261,4 +295,98 @@ class OdinOrder extends OdinModel
         $params = $this->params;
         return isset($params[$param]) ? $params[$param] : null;
     }
+
+    /**
+     * Returns main product
+     * @param bool $throwable default=true
+     * @return array|null
+     */
+    public function getMainProduct(bool $throwable = true): ?array
+    {
+        $product = collect($this->products)->first(function($v) {
+            return $v['is_main'] === true;
+        });
+        if (empty($product) && $throwable) {
+            throw new ProductNotFoundException("Order main product not found, order [{$this->getIdAttribute()}]");
+        }
+        return $product;
+    }
+
+    /**
+     * Returns product by txn_hash
+     * @param string $hash
+     * @param bool $throwable default=true
+     * @return array|null
+     */
+    public function getProductByTxnHash(string $hash, bool $throwable = true): ?array
+    {
+        $product = collect($this->products)->first(function($v) use ($hash) {
+            return $v['txn_hash'] === $hash;
+        });
+        if (empty($product) && $throwable) {
+            throw new ProductNotFoundException("Order product [{$hash}] not found, order [{$this->getIdAttribute()}]");
+        }
+        return $product;
+    }
+
+    /**
+     * Returns products by txn_hash
+     * @param string $hash
+     * @return array
+     */
+    public function getProductsByTxnHash(string $hash): array
+    {
+        return collect($this->products)->filter(function($v) use ($hash) {
+            return $v['txn_hash'] === $hash;
+        })->all();
+    }
+
+    /**
+     * Returns txn by hash
+     * @param string $hash
+     * @param bool $throwable default=true
+     * @return array|null
+     */
+    public function getTxnByHash(string $hash, bool $throwable = true): ?array
+    {
+        $txn = collect($this->txns)->first(function($v) use($hash) {
+            return $v['hash'] === $hash;
+        });
+        if (empty($txn) && $throwable) {
+            throw new TxnNotFoundException("Order txn [{$hash}] not found, order [{$this->getIdAttribute()}]");
+        }
+        return $txn;
+    }
+
+    /**
+     * Adds product
+     * @param array $product
+     * @param void
+     */
+    public function addProduct(array $product): void
+    {
+        $this->products = collect($this->products)
+            ->reject(function ($v) use ($product) {
+                if ($v['sku_code'] === $product['sku_code']) {
+                    return empty($v['txn_hash']) ? true : $v['txn_hash'] === $product['txn_hash'];
+                }
+                return false;
+            })
+            ->merge([$product])->all();
+    }
+
+    /**
+     * Adds txn
+     * @param array $txn
+     * @param void
+     */
+    public function addTxn(array $txn): void
+    {
+        $this->txns =collect($this->txns)
+            ->reject(function ($v) use ($txn) {
+                return $v['hash'] === $txn['hash'];
+            })
+            ->merge([$txn])->all();
+    }
+
 }

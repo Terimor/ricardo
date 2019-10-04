@@ -7,6 +7,7 @@ use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Http\Requests\CheckoutDotComCapturedWebhookRequest;
+use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use Illuminate\Http\Request;
 
 /*use com\checkout;
@@ -36,7 +37,32 @@ class PaymentsController extends Controller
      */
     public function createCardOrder(PaymentCardCreateOrderRequest $req)
     {
-        return $this->paymentService->createOrder($req);
+        // create new order
+        $reply = $this->paymentService->createOrder($req);
+
+        //request and cache token
+        if ($reply['status'] === PaymentService::STATUS_OK) {
+            $contact = array_merge($req->get('address'), $req->get('contact'));
+            $token = $this->paymentService->requestCardToken($req->get('card'), $contact, $reply['provider']);
+            PaymentService::setCardToken($token, $reply['order']->getIdAttribute());;
+        }
+
+        return [
+            'order_currency'    => $reply['order']->currency,
+            'order_id'          => $reply['order']->getIdAttribute(),
+            'status'            => $reply['status'],
+            'redirect_url'      => stripslashes($reply['redirect_url'])
+        ];
+    }
+
+    /**
+     * Creates card upsells payment
+     * @param  PaymentCardCreateUpsellsOrderRequest $req
+     * @return array
+     */
+    public function createCardUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req)
+    {
+        return $this->paymentService->createUpsellsOrder($req);
     }
 
     /**
@@ -49,7 +75,7 @@ class PaymentsController extends Controller
         $checkoutService = new CheckoutDotComService();
         $reply = $checkoutService->validateCapturedWebhook($req);
 
-        logger()->info('checkout.com', ['reply' => json_encode($reply)]);
+        logger()->info('checkout.com', ['reply' => json_encode($req->toArray())]);
 
         if (!$reply['status']) {
             logger()->error('checkout.com unauthorized captured webhook', [ 'ip' => $req->ip() ]);
