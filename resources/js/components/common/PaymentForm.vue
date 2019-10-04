@@ -292,6 +292,7 @@
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
+  import scrollToError from '../../mixins/formScrollToError';
   import { sendCheckoutRequest } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import creditCardType from 'credit-card-type'
@@ -319,6 +320,7 @@
     mixins: [
       queryToComponent,
       purchasMixin,
+      scrollToError,
     ],
     components: {
       Spinner,
@@ -571,26 +573,13 @@
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
+          document.querySelector('.main__deal').scrollIntoView();
           this.$emit('setPromotionalModal', true);
           return;
         }
 
         if (this.$v.form.$pending || this.$v.form.$error) {
-          if (this.$v.form.deal.$invalid) {
-            document.querySelector('.main__deal').scrollIntoView()
-          } else {
-            this.$nextTick(() => {
-                const inputsNodeList = document.querySelectorAll('.input-container');
-                const inputsArr = Array.from(inputsNodeList);
-
-                let targetInput = inputsArr.find((item) => {
-                   return item.classList.contains('invalid');
-                });
-
-                targetInput.scrollIntoView()
-            });
-          }
-
+          this.scrollToError();
           return;
         }
 

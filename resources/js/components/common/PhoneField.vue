@@ -1,6 +1,6 @@
 <template>
   <label
-    class="phone-input-container"
+    class="phone-input-container scroll-when-error"
     :class="{
       [theme]: theme,
       invalid: invalid

@@ -209,7 +209,8 @@
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import ProductOffer from '../components/common/ProductOffer';
   import smc7validation from "../validation/smc7-validation";
-  import queryToComponent from '../mixins/queryToComponent'
+  import queryToComponent from '../mixins/queryToComponent';
+  import scrollToError from '../mixins/formScrollToError';
   import {fade} from "../utils/common";
   import { t } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
@@ -231,6 +232,7 @@
     mixins: [
       queryToComponent,
       purchasMixin,
+      scrollToError,
     ],
     props: ['showPreloader', 'skusList'],
     data() {
@@ -422,7 +424,12 @@
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
+          document.querySelector('.smc7__deal').scrollIntoView();
           this.setPromotionalModal(true);
+          return;
+        }
+        if (this.$v.form.$pending || this.$v.form.$error) {
+          this.scrollToError();
           return;
         }
 
