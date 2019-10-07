@@ -118,7 +118,7 @@
   import { fade } from '../utils/common';
   import { goTo } from '../utils/goTo';
   import { groupBy } from '../utils/groupBy';
-  import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
+  import { send1ClickRequest, paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
   import upsellsMixin from '../mixins/upsells';
   import { getTotalPrice } from '../services/upsells';
 
@@ -254,10 +254,21 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
-        setTimeout(() => {
-          this.paymentError = this.textPaymentError;
-          this.isSubmitted = false;
-        }, 2000);
+        const data = {
+          order: this.getOriginalOrderId,
+          upsells: this.accessoryList.map(upsell => ({
+            id: upsell.id,
+            qty: upsell.quantity,
+          })),
+        };
+
+        send1ClickRequest(data, this.accessoryList)
+          .then(res => {
+            if (res.paymentError) {
+              this.paymentError = res.paymentError;
+              this.isSubmitted = false;
+            }
+          });
       },
 
       paypalCreateOrder() {

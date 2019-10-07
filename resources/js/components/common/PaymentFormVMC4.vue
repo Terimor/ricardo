@@ -575,7 +575,7 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
-                  if (res.status !== 'ok') {
+                  if (res.paymentError) {
                     this.paymentError = res.paymentError;
                     this.isSubmitted = false;
                   }
