@@ -110,7 +110,8 @@
                 theme="variant-1"
                 :label="textState"
                 :rest="{
-                  placeholder: textStatePlaceholder
+                  placeholder: textStatePlaceholder,
+                  autocomplete: 'shipping address'
                 }"
                 :list="stateList"
                 v-model="paymentForm.state"/>
@@ -120,12 +121,18 @@
                 element-loading-spinner="el-icon-loading"
                 :validationMessage="textStateRequired"
                 theme="variant-1"
+                :rest="{
+                  autocomplete: 'shipping address'
+                }"
                 :label="textState"
                 v-model="paymentForm.state"/>
             <text-field
                 :validation="$v.form.zipcode"
                 :validationMessage="textZipcodeRequired"
                 theme="variant-1"
+                :rest="{
+                  autocomplete: 'shipping zip code'
+                }"
                 :label="textZipcode"
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
@@ -136,7 +143,7 @@
                 theme="variant-1"
                 :label="textCountry"
                 :rest="{
-                  placeholder: textCountryPlaceholder
+                  placeholder: textCountryPlaceholder,
                 }"
                 :list="countryList"
                 v-model="paymentForm.country"/>
