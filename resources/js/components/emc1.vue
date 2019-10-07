@@ -70,7 +70,7 @@
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
           <template v-if="!isPurchasAlreadyExists">
-            <h2><span v-html="textStep"></span> {{ variantList.length == 1 || isShowVariant ? 2 : 3 }}: <span v-html="textPaymentMethod"></span></h2>
+            <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
             <h3 v-html="textPaySecurely"></h3>
             <payment-type-radio-list
               v-model="form.paymentType"
@@ -84,9 +84,9 @@
             >{{ paypalRiskFree }}</paypal-button>
             <transition name="el-zoom-in-top">
               <payment-form
-                :firstTitle="textStep + ' 4: ' + textContactInformation"
-                :secondTitle="textStep + ' 5: ' + textDeliveryAddress"
-                :thirdTitle="textStep + ' 6: ' + textPaymentDetails"
+                :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"
+                :secondTitle="`${textStep} ${getStepOrder(5)}: ${textDeliveryAddress}`"
+                :thirdTitle="`${textStep} ${getStepOrder(6)}: ${textPaymentDetails}`"
                 v-if="form.paymentType && isFormShown"
                 @showCart="isOpenSpecialOfferModal = true"
                 :$v="$v"
@@ -578,6 +578,9 @@ export default {
         installments,
       })
     },
+    getStepOrder(number) {
+      return this.variantList.length == 1 || this.isShowVariant ? number - 1 : number
+    }
   },
   mounted () {
     window.setTestData = () => {
