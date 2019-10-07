@@ -613,9 +613,12 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                overflow: hidden;
 
                 img {
-                    height: 217px;
+                    height: 335px;
+                    object-fit: contain;
+                    padding: 34px;
                 }
             }
 
