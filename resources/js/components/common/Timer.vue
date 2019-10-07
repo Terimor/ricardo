@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { t } from '../../utils/i18n';
 import isMobile from '../../mixins/isMobile'
 import queryToComponent from '../../mixins/queryToComponent';
@@ -47,7 +46,7 @@ export default {
     queryToComponent
   ],
 
-  finishTime: moment().add(15, 'minutes').add(4, 'seconds'),
+  finishTime: new Date(new Date().getTime() + 15 * 60 * 1000 + 4 * 1000),
 
   data () {
     return {
@@ -65,9 +64,17 @@ export default {
 
   methods: {
     changeTimeByDifference () {
-      const newDiff = moment(this.$options.finishTime.diff(moment())).format('mm:ss')
-      this.time = moment(this.$options.finishTime.diff(moment())).format('mm:ss')
-      if (newDiff === '00:00') {
+      let diff = this.$options.finishTime.getTime() - new Date().getTime();
+      diff = Math.floor(diff / 1000);
+
+      const minutes = Math.floor(diff / 60) % 60;
+      const seconds = diff % 60;
+
+      this.time = [minutes, seconds]
+        .map(numbers => ('0' + numbers).slice(-2))
+        .join(':');
+
+      if (this.time === '00:00') {
         clearInterval(interval)
       }
     },
