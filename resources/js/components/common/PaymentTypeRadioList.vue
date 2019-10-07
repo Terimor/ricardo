@@ -35,11 +35,12 @@
             label: '<div class="title">' + t('checkout.credit_cards') + '</div>' + this.creditCardsAvailableHTML,
             value: 'credit-card',
             class: 'green-button-animated',
-          }, {
+          },
+          /*{
             label: t('checkout.bank_payments'),
             value: 'bank-payment',
             class: 'bank-payment',
-          }
+          },*/
         ];
       },
 

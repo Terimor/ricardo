@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DEPRECATED
+
 echo
 echo 'Deploying ODIN on odin.saga-be.host';
 echo

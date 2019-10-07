@@ -56,7 +56,6 @@
         v-model="paymentForm.zipCode"/>
     <h2><span>{{paySecurelyWith}}</span></h2>
     <radio-button-group
-        v-if="false"
         :withCustomLabels="true"
         v-model="paymentForm.paymentType">
       <div class="card-types">
@@ -74,7 +73,6 @@
     </radio-button-group>
 
     <select-field
-        v-if="false"
         :validation="$v.form.paymentType"
         :validationMessage="textCardTypeRequired"
         theme="variant-1"
