@@ -64,7 +64,6 @@
         <div class="step step-3" v-if="step === 3">
           <h3 v-html="textPaySecurely"></h3>
           <payment-type-radio-list
-            v-if="false"
             v-model="form.paymentType"
             @input="activateForm" />
           <paypal-button
