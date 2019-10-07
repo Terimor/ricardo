@@ -17,14 +17,16 @@
             @input="setWarrantyPriceText"
             :list="list"
             />
-          <h2 v-html="textSelectVariant"></h2>
-          <select-field
-              popperClass="smc7-popover-variant"
-              v-model="form.variant"
-              :rest="{
-                placeholder: 'Variant'
-              }"
-              :list="variantList"/>
+            <template v-if="!isShowVariant">
+              <h2 v-html="textSelectVariant"></h2>
+              <select-field
+                popperClass="smc7-popover-variant"
+                v-model="form.variant"
+                :rest="{
+                  placeholder: 'Variant'
+                }"
+                :list="variantList"/>
+            </template>
         </div>
         <div class="step step-2" v-if="step === 2">
           <div class="full-name">
@@ -271,6 +273,7 @@
   import Spinner from './preloaders/Spinner';
 	import {fade} from "../../utils/common";
   import { sha256 } from 'js-sha256';
+  import { queryParams } from  '../../utils/queryParams';
 
 	export default {
 		name: "PaymentFormVMC4",
@@ -373,6 +376,9 @@
       }
     },
 		computed: {
+      isShowVariant() {
+        return Number(queryParams().variant) === 0;
+      },
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
 			},
