@@ -1,6 +1,7 @@
 import { getCountOfInstallments } from './installments';
 import { check as ipqsCheck } from '../services/ipqs';
 import { goTo } from './goTo';
+import { t } from './i18n';
 import { queryParams } from  './queryParams';
 import { getRandomInt } from '../utils/common';
 
@@ -17,9 +18,12 @@ export const getRadioHtml = ({
 }) => {
   const isEmc1b = queryParams().tpl === 'emc1b';
 
+  const formattedPrice = discountName ? `${pricePerUnit[installments]}/${t('checkout.unit')}` : pricePerUnit[installments];
+
   const currentPrice = isEmc1b
-      ? pricePerUnit[installments]
+      ? formattedPrice
       : getCountOfInstallments(installments) + newPrice.toLocaleString();
+
 
       return (`${discountName
         ? `<p class="label-container-radio__best-seller">
@@ -27,16 +31,16 @@ export const getRadioHtml = ({
               <span>${currentPrice}</span>
           </p>`
         : ''}
-
+  
         ${idx === 1 ? '<img class="share" src="/images/share.png">' : ''}
-
+    
         <p class="label-container-radio__name-price">
-          <span>${text}</span>
+          <span>${text}</span>          
           ${!isEmc1b
             ? `<span ${idx !== 0 && discountName ? 'class="strike"' : ''}>
                   ${getCountOfInstallments(installments) + (!discountName ? newPrice : price).toLocaleString()}
               </span>`
-            : ''}
+            : `${discountName ? '' : currentPrice}`}
         </p>
         <p class="label-container-radio__discount ${idx === 1 ? 'red' : ''}">${discountText}</p>
       `)
