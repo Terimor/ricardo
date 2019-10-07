@@ -34,12 +34,11 @@
               :validation="$v.form.deal"
             />
 
-            <div v-show="variantList.length > 1">
+            <div v-show="variantList.length > 1 && !isShowVariant">
               <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
               <!-- TODO: check if this is useless, remove it:
               warrantyPriceText="setWarrantyPriceText()"  -->
               <select-field
-                :disabled="isShowVariant"
                 popperClass="emc1-popover-variant"
                 v-model="form.variant"
                 :validation="$v.form.variant"
@@ -71,7 +70,7 @@
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
           <template v-if="!isPurchasAlreadyExists">
-            <h2><span v-html="textStep"></span> 3: <span v-html="textPaymentMethod"></span></h2>
+            <h2><span v-html="textStep"></span> {{ isShowVariant ? 2 : 3 }}: <span v-html="textPaymentMethod"></span></h2>
             <h3 v-html="textPaySecurely"></h3>
             <payment-type-radio-list
               v-if="false"
