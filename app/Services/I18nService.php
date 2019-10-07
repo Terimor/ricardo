@@ -82,7 +82,7 @@ class I18nService
         }
 
         //$translated_languages = I18n::getTranslationLanguages(true);
-        $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : I18n::$loadedPhrases['en'];
+        $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : (!empty(I18n::$loadedPhrases['en']) ? I18n::$loadedPhrases['en'] : null);
 
         if (!empty($loadedPhrases[$translation])) {
             $translation = $loadedPhrases[$translation];
