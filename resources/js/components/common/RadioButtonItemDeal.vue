@@ -57,9 +57,9 @@
           textUnit: () => t('checkout.unit'),
         },
         mounted(){
-                this.$nextTick(function () {
-                    this.$emit('finish-render')
-                })
+          this.$nextTick(function () {
+            this.$emit('finish-render')
+          })
         }
 	}
 </script>

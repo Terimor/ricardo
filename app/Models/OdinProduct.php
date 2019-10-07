@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Services\CurrencyService;
+use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
 use App\Models\Setting;
 use Cache;
@@ -422,6 +423,20 @@ class OdinProduct extends Model
     }
 
     /**
+     * Returns product by Sku
+     * @param  string $sku
+     * @return OdinProduct|null
+     */
+    public static function getBySku(string $sku, bool $throwable = true): ?OdinProduct
+    {
+        $product = OdinProduct::where('skus.code', $sku)->first();
+        if (!$product && $throwable) {
+            throw new ProductNotFoundException("Product {$sku} not found");
+        }
+        return $product;
+    }
+
+    /**
      * Retuen array skus -> product
      * SAGA: OdinProduct::cacheSkusProduct
      * @param type $life_time
@@ -429,7 +444,7 @@ class OdinProduct extends Model
     public static function getCacheSkusProduct($cache_lifetime = 600)
     {
         $skus = Cache::get('sku_product');
-        if (!$skus) {            
+        if (!$skus) {
             $products = OdinProduct::all();
 
             $skus = [];
@@ -443,7 +458,7 @@ class OdinProduct extends Model
             Cache::put('sku_product', $skus, $cache_lifetime);
         }
         return $skus;
-    }        
+    }
 
     /**
      * Returns translated splash_description attribute

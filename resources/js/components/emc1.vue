@@ -34,7 +34,7 @@
               :validation="$v.form.deal"
             />
 
-            <div v-show="variantList.length > 1">
+            <div v-show="variantList.length > 1 && !isShowVariant">
               <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
               <!-- TODO: check if this is useless, remove it:
               warrantyPriceText="setWarrantyPriceText()"  -->
@@ -70,14 +70,11 @@
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
           <template v-if="!isPurchasAlreadyExists">
-            <h2><span v-html="textStep"></span> 3: <span v-html="textPaymentMethod"></span></h2>
+            <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
             <h3 v-html="textPaySecurely"></h3>
-            <radio-button-group
-              class="main__credit-card-switcher"
+            <payment-type-radio-list
               v-model="form.paymentType"
-              :list="mockData.creditCardRadioList"
-              @input="isFormShown = true"
-            />
+              @input="activateForm" />
             <paypal-button
               :createOrder="paypalCreateOrder"
               :onApprove="paypalOnApprove"
@@ -87,9 +84,9 @@
             >{{ paypalRiskFree }}</paypal-button>
             <transition name="el-zoom-in-top">
               <payment-form
-                :firstTitle="textStep + ' 4: ' + textContactInformation"
-                :secondTitle="textStep + ' 5: ' + textDeliveryAddress"
-                :thirdTitle="textStep + ' 6: ' + textPaymentDetails"
+                :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"
+                :secondTitle="`${textStep} ${getStepOrder(5)}: ${textDeliveryAddress}`"
+                :thirdTitle="`${textStep} ${getStepOrder(6)}: ${textPaymentDetails}`"
                 v-if="form.paymentType && isFormShown"
                 @showCart="isOpenSpecialOfferModal = true"
                 :$v="$v"
@@ -193,6 +190,7 @@ import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
 import purchasMixin from '../mixins/purchas';
 import { preparePartByInstallments } from '../utils/installments';
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
+import { queryParams } from  '../utils/queryParams';
 
 export default {
   name: 'emc1',
@@ -260,17 +258,6 @@ export default {
             ],
             regularPrice: 69.98,
             newPrice: 34.99,
-          }
-        ],
-        creditCardRadioList: [
-          {
-            label: t('checkout.credit_cards'),
-            value: 'credit-card',
-            class: 'green-button-animated'
-          }, {
-            label: t('checkout.bank_payments'),
-            value: 'bank-payment',
-            class: 'bank-payment'
           }
         ],
       },
@@ -362,6 +349,9 @@ export default {
     }
   },
   computed: {
+    isShowVariant() {
+      return Number(queryParams().variant) === 0
+    },
     setCountryList () {
       const countries = checkoutData.countries;
       let countriesList = [];
@@ -465,13 +455,22 @@ export default {
   },
   validations: emc1Validation,
   methods: {
+    activateForm() {
+      this.isFormShown = true;
+      this.$nextTick(() => {
+        document.querySelector('.payment-form').scrollIntoView();
+      })
+    },
     paypalSubmit() {
       this.form.paymentType = 'paypal';
+      const isValid = this.$v.form.deal.$touch();
 
-      if (this.$v.form.deal.$invalid) {
+      if (!isValid) {
+        document.querySelector('.main__deal').scrollIntoView();
         this.isOpenPromotionModal = true;
       }
     },
+
     setImplValue(value) {
       this.implValue = value;
       if (this.radioIdx) this.changeWarrantyValue();
@@ -579,6 +578,9 @@ export default {
         installments,
       })
     },
+    getStepOrder(number) {
+      return this.variantList.length == 1 || this.isShowVariant ? number - 1 : number
+    }
   },
   mounted () {
     window.setTestData = () => {

@@ -15,6 +15,7 @@ Vue.component('text-field-with-placeholder', require('./components/common/TextFi
 Vue.component('phone-field', require('./components/common/PhoneField.vue').default)
 Vue.component('select-field', require('./components/common/Select.vue').default)
 Vue.component('radio-button-group', require('./components/common/RadioButtonGroup.vue').default)
+Vue.component('payment-type-radio-list', require('./components/common/PaymentTypeRadioList.vue').default)
 Vue.component('leave-modal', require('./components/common/LeaveModal.vue').default)
 Vue.component('payment-form', require('./components/common/PaymentForm.vue').default)
 Vue.component('payment-form-smc7', require('./components/common/PaymentFormSMC7.vue').default)

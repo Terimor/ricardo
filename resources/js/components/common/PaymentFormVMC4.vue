@@ -17,14 +17,16 @@
             @input="setWarrantyPriceText"
             :list="list"
             />
-          <h2 v-html="textSelectVariant"></h2>
-          <select-field
-              popperClass="smc7-popover-variant"
-              v-model="form.variant"
-              :rest="{
-                placeholder: 'Variant'
-              }"
-              :list="variantList"/>
+            <template v-if="!isShowVariant">
+              <h2 v-html="textSelectVariant"></h2>
+              <select-field
+                popperClass="smc7-popover-variant"
+                v-model="form.variant"
+                :rest="{
+                  placeholder: 'Variant'
+                }"
+                :list="variantList"/>
+            </template>
         </div>
         <div class="step step-2" v-if="step === 2">
           <div class="full-name">
@@ -63,12 +65,9 @@
         </div>
         <div class="step step-3" v-if="step === 3">
           <h3 v-html="textPaySecurely"></h3>
-          <radio-button-group
-            class="main__credit-card-switcher"
+          <payment-type-radio-list
             v-model="form.paymentType"
-            :list="mockData.creditCardRadioList"
-            @input="isFormShown = true"
-          />
+            @input="activateForm" />
           <paypal-button
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
@@ -204,7 +203,7 @@
                 <p v-html="textCVVPopupLine2"></p>
               </div>
             </el-dialog>
-            <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
+            <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
             <button
               v-if="form.paymentType !== 'paypal' && step === 3"
               @click="submit"
@@ -273,6 +272,7 @@
   import Spinner from './preloaders/Spinner';
 	import {fade} from "../../utils/common";
   import { sha256 } from 'js-sha256';
+  import { queryParams } from  '../../utils/queryParams';
 
 	export default {
 		name: "PaymentFormVMC4",
@@ -303,7 +303,7 @@
         isFormShown: false,
 				isOpenCVVModal: false,
         isOpenPromotionModal: false,
-        isPaymentError: false,
+        paymentError: '',
         isSubmitted: false,
 				form: {
 					stepTwo: {
@@ -352,7 +352,7 @@
         if (selectedProductData) {
           this.step = 3;
           this.isFormShown = true;
-          this.isPaymentError = true;
+          this.paymentError = this.textPaymentError;
           this.form.deal = selectedProductData.deal || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
@@ -370,11 +370,14 @@
       }
     },
     mounted() {
-      if (this.isPaymentError && !this.isPurchasAlreadyExists) {
+      if (this.paymentError && !this.isPurchasAlreadyExists) {
         setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
     },
 		computed: {
+      isShowVariant() {
+        return Number(queryParams().variant) === 0;
+      },
 			cardUrl() {
 				return getCardUrl(this.form.cardType)
 			},
@@ -475,6 +478,9 @@
       },
 		},
 		methods: {
+      activateForm() {
+        this.isFormShown = true;
+      },
       setWarrantyPriceText(value) {
         this.$emit('setWarrantyPriceText', value)
       },
@@ -489,7 +495,7 @@
           return;
         }
 
-        this.isPaymentError = false;
+        this.paymentError = '';
         this.isSubmitted = true;
 
         let fields = {
@@ -569,8 +575,8 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
-                  if (res.status !== 'ok') {
-                    this.isPaymentError = true;
+                  if (res.paymentError) {
+                    this.paymentError = res.paymentError;
                     this.isSubmitted = false;
                   }
                 });

@@ -1,7 +1,9 @@
 import { getCountOfInstallments } from './installments';
 import { check as ipqsCheck } from '../services/ipqs';
 import { goTo } from './goTo';
+import { t } from './i18n';
 import { queryParams } from  './queryParams';
+import { getRandomInt } from '../utils/common';
 
 export const getRadioHtml = ({
    discountName,
@@ -16,9 +18,12 @@ export const getRadioHtml = ({
 }) => {
   const isEmc1b = queryParams().tpl === 'emc1b';
 
+  const formattedPrice = discountName ? `${pricePerUnit[installments]}/${t('checkout.unit')}` : pricePerUnit[installments];
+
   const currentPrice = isEmc1b
-      ? pricePerUnit[installments]
+      ? formattedPrice
       : getCountOfInstallments(installments) + newPrice.toLocaleString();
+
 
       return (`${discountName
         ? `<p class="label-container-radio__best-seller">
@@ -35,7 +40,7 @@ export const getRadioHtml = ({
             ? `<span ${idx !== 0 && discountName ? 'class="strike"' : ''}>
                   ${getCountOfInstallments(installments) + (!discountName ? newPrice : price).toLocaleString()}
               </span>`
-            : ''}
+            : `${discountName ? '' : currentPrice}`}
         </p>
         <p class="label-container-radio__discount ${idx === 1 ? 'red' : ''}">${discountText}</p>
       `)
@@ -102,12 +107,15 @@ export function * getNotice ({
           index = 0;
         }
 
+        const arr = [1, 3, 5];
+        const quantity = arr[getRandomInt(0, 2)]
+
         yield `<div class="recently-notice">
           <div class="recently-notice__left">
             <img src="${checkoutData.product.image[0]}" alt="">
           </div>
           <div class="recently-notice__right">
-            <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>1x ${checkoutData.product.product_name}</p>
+            <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>${quantity}&#9747; ${checkoutData.product.product_name}</p>
           </div>
         </div>
       `

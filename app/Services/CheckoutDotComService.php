@@ -98,13 +98,13 @@ class CheckoutDotComService
         $source->cvv = $card['cvv'];
         $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
         $source->phone = (object)[$contact['phone']];
-        $source->billing_address = (object)[
-            'address_line1' => $contact['street'],
-            'city' => $contact['city'],
-            'country' => $contact['country'],
-            'state' => $contact['state'],
-            'zip' => $contact['zip']
-        ];
+        // $source->billing_address = (object)[
+        //     'address_line1' => $contact['street'],
+        //     'city' => $contact['city'],
+        //     'country' => $contact['country'],
+        //     'state' => $contact['state'],
+        //     'zip' => $contact['zip']
+        // ];
         return $source;
     }
 
@@ -155,20 +155,24 @@ class CheckoutDotComService
         $payment->reference = $order->number;
         $payment->amount = $amount;
         $payment->description = 'Product Description';
-        $payment->customer = (object)['email' => $contact['email'], 'name' => $contact['first_name'] . ' ' . $contact['last_name']];
-        $payment->shipping = (object)[
-            'address' => (object)[
-                'address_line1' => $contact['street'],
-                'city' => $contact['city'],
-                'country' => $contact['country'],
-                'state' => $contact['state'],
-                'zip' => $contact['zip']
-            ],
-            'phone' => (object)[$contact['phone']]
-        ];
+        if (!empty($contact['payer_id'])) {
+            $payment->customer = (object)['id' => $contact['payer_id']];
+        } else {
+            $payment->customer = (object)['email' => $contact['email'], 'name' => $contact['first_name'] . ' ' . $contact['last_name']];
+            $payment->shipping = (object)[
+                'address' => (object)[
+                    'address_line1' => $contact['street'],
+                    'city' => $contact['city'],
+                    'country' => $contact['country'],
+                    'state' => $contact['state'],
+                    'zip' => $contact['zip']
+                ],
+                'phone' => (object)[$contact['phone']]
+            ];
+        }
         $payment->payment_ip = $order->ip;
 
-        $qs = http_build_query(array_merge(['order' => $order->getIdAttribute()], $order->params ?? []));
+        $qs = http_build_query(array_merge($order->params ?? [], ['order' => $order->getIdAttribute(), 'cur' => $order->currency]));
         $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
         $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
 
@@ -228,28 +232,24 @@ class CheckoutDotComService
 
     /**
      * Tokenizes customer card
-     * @param  array  $card    [description]
-     * @param  array  $contact [description]
-     * @return string|null
+     * @param array $card
+     * @param array $contact
+     * @return array|null
      */
-    public function requestToken(array $card, array $contact): ?string
+    public function requestToken(array $card, array $contact): ?array
     {
         $source = new Card($card['number'], $card['month'], $card['year']);
         $source->cvv = $card['cvv'];
         $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
         $source->phone = (object)[$contact['phone']];
-        $source->billing_address = (object)[
-            'address_line1' => $contact['street'],
-            'city' => $contact['city'],
-            'country' => $contact['country'],
-            'state' => $contact['state'],
-            'zip' => $contact['zip']
-        ];
 
         $result = null;
         try {
             $card_token = $this->checkout->tokens()->request($source);
-            $result = $card_token->token;
+            $result = [
+                'token' => $card_token->token,
+                'dt' => new \DateTime($card_token->expires_on)
+            ];
         } catch (CheckoutException $ex) {
             logger()->error("Checkout.com token", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
         }

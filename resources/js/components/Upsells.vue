@@ -83,10 +83,10 @@
                     {{ textTotalAccessoryOrder }}: {{ total }}
                   </p>
                   <p
-                    v-if="isPaymentError"
+                    v-if="paymentError"
                     id="payment-error"
                     class="error-container"
-                    v-html="textPaymentError"></p>
+                    v-html="paymentError"></p>
                   <green-button
                     v-if="paymentType === 'credit-card'"
                     class="submit-button"
@@ -118,7 +118,7 @@
   import { fade } from '../utils/common';
   import { goTo } from '../utils/goTo';
   import { groupBy } from '../utils/groupBy';
-  import { paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
+  import { send1ClickRequest, paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
   import upsellsMixin from '../mixins/upsells';
   import { getTotalPrice } from '../services/upsells';
 
@@ -145,7 +145,7 @@
         product: upsellsData.product,
         upsellsObj: upsellsData.product.upsells,
         upsellsAsProdsList: [],
-        isPaymentError: false,
+        paymentError: '',
         isSubmitted: false,
         isLoading: false,
       };
@@ -251,13 +251,24 @@
           return;
         }
 
-        this.isPaymentError = false;
+        this.paymentError = '';
         this.isSubmitted = true;
 
-        setTimeout(() => {
-          this.isPaymentError = true;
-          this.isSubmitted = false;
-        }, 2000);
+        const data = {
+          order: this.getOriginalOrderId,
+          upsells: this.accessoryList.map(upsell => ({
+            id: upsell.id,
+            qty: upsell.quantity,
+          })),
+        };
+
+        send1ClickRequest(data, this.accessoryList)
+          .then(res => {
+            if (res.paymentError) {
+              this.paymentError = res.paymentError;
+              this.isSubmitted = false;
+            }
+          });
       },
 
       paypalCreateOrder() {

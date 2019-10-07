@@ -53,81 +53,83 @@
                             <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid">{{ checkoutmainDealErrorText }}</span>
 
                             <radio-button-group
-                                    :withCustomLabels="true"
-                                    v-model="form.deal"
+                              :withCustomLabels="true"
+                              v-model="form.deal"
                             >
-                                <radio-button-item-deal
-                                        :value="form.deal"
-                                        :showDiscount=false
-                                        :customBackground=false
-                                        v-for="item in purchase"
-                                        :item="{
-                      ...item,
-                      value: item.totalQuantity,
-                    }"
-                                        :key="item.value"
-                                        :showShareArrow="item.totalQuantity === 5"/>
+                              <radio-button-item-deal
+                                      :value="form.deal"
+                                      :showDiscount=false
+                                      :customBackground=false
+                                      v-for="item in purchase"
+                                      :item="{
+                                        ...item,
+                                        value: item.totalQuantity,
+                                      }"
+                                      :key="item.value"
+                                      :showShareArrow="item.totalQuantity === 5"/>
                             </radio-button-group>
                         </div>
 
-                        <div class="smc7__step-2">
+                        <div class="smc7__step-2"
+                          v-if="!isShowVariant"
+                        >
                             <h2><span>{{textStep}}</span> 2: <span>{{textSelectVariant}}</span></h2>
                             <select-field
-                                    popperClass="smc7-popover-variant"
-                                    v-model="form.variant"
-                                    :rest="{
-                    placeholder: 'Variant'
-                  }"
-                                    :list="variantList"/>
+                              popperClass="smc7-popover-variant"
+                              v-model="form.variant"
+                              :rest="{
+                                placeholder: 'Variant'
+                              }"
+                              :list="variantList"/>
                         </div>
 
                         <div class="smc7__step-3">
-                            <h2><span>{{textStep}}</span> 3: <span>{{textContactInformation}}</span></h2>
+                            <h2><span>{{textStep}}</span> {{ isShowVariant ? 2 : 3  }}: <span>{{textContactInformation}}</span></h2>
                             <div class="full-name">
                                 <text-field
-                                        :validation="$v.form.fname"
-                                        :validationMessage="textFirstNameRequired"
-                                        theme="variant-1"
-                                        :label="textFirstName"
-                                        class="first-name"
-                                        :rest="{
-                      placeholder: textFirstName,
-                      autocomplete: 'given-name'
-                    }"
-                                        v-model="form.fname"/>
+                                  :validation="$v.form.fname"
+                                  :validationMessage="textFirstNameRequired"
+                                  theme="variant-1"
+                                  :label="textFirstName"
+                                  class="first-name"
+                                  :rest="{
+                                    placeholder: textFirstName,
+                                    autocomplete: 'given-name'
+                                  }"
+                                  v-model="form.fname"/>
                                 <text-field
-                                        :validation="$v.form.lname"
-                                        :validationMessage="textLastNameRequired"
-                                        theme="variant-1"
-                                        :label="textLastName"
-                                        class="last-name"
-                                        :rest="{
-                      placeholder: textLastName,
-                      autocomplete: 'family-name'
-                    }"
-                                        v-model="form.lname"/>
+                                  :validation="$v.form.lname"
+                                  :validationMessage="textLastNameRequired"
+                                  theme="variant-1"
+                                  :label="textLastName"
+                                  class="last-name"
+                                  :rest="{
+                                    placeholder: textLastName,
+                                    autocomplete: 'family-name'
+                                  }"
+                                  v-model="form.lname"/>
                             </div>
                             <text-field
-                                    :validation="$v.form.email"
-                                    :validationMessage="textEmailRequired"
-                                    theme="variant-1"
-                                    :label="textEmailAddress"
-                                    :rest="{
-                    placeholder: textEmailAddress,
-                    autocomplete: 'email'
-                  }"
-                                    v-model="form.email"/>
+                              :validation="$v.form.email"
+                              :validationMessage="textEmailRequired"
+                              theme="variant-1"
+                              :label="textEmailAddress"
+                              :rest="{
+                                placeholder: textEmailAddress,
+                                autocomplete: 'email'
+                              }"
+                              v-model="form.email"/>
                             <phone-field
-                                    @onCountryChange="setCountryCodeByPhoneField"
-                                    :validation="$v.form.phone"
-                                    :validationMessage="textPhoneRequired"
-                                    :countryCode="form.countryCodePhoneField"
-                                    theme="variant-1"
-                                    :label="textPhoneNumber"
-                                    :rest="{
-                    autocomplete: 'off'
-                  }"
-                                    v-model="form.phone"/>
+                              @onCountryChange="setCountryCodeByPhoneField"
+                              :validation="$v.form.phone"
+                              :validationMessage="textPhoneRequired"
+                              :countryCode="form.countryCodePhoneField"
+                              theme="variant-1"
+                              :label="textPhoneNumber"
+                              :rest="{
+                                autocomplete: 'off'
+                              }"
+                              v-model="form.phone"/>
                         </div>
                     </div>
                 </div>
@@ -140,7 +142,7 @@
                             </div>
                             <img id="product-image-body" :src="productImage" alt="Product image">
                         </div>
-                        <h2 class="step-title"><span>{{textStep}}</span> 4: <span>{{textContactInformation}}</span></h2>
+                        <h2 class="step-title"><span>{{textStep}}</span> {{ isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
                                 :countryList="setCountryList"
                                 :cardNames="cardNames"
@@ -148,7 +150,7 @@
                                 :paymentForm="form"/>
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
-                            <p v-if="isPaymentError" id="payment-error" class="error-container" v-html="textPaymentError"></p>
+                            <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
                               v-if="form.paymentType !== 'paypal'"
@@ -219,6 +221,7 @@
   import { sendCheckoutRequest } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
   import { sha256 } from 'js-sha256';
+  import { queryParams } from  '../utils/queryParams';
 
   export default {
     name: 'smc7',
@@ -298,8 +301,8 @@
         variantList: [],
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
-        isPaymentError: false,
         isSubmitted: false,
+        paymentError: '',
       }
     },
     created() {
@@ -313,12 +316,11 @@
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
         if (selectedProductData) {
-          this.isPaymentError = true;
+          this.paymentError = this.textPaymentError;
           this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
           this.form.installments = selectedProductData.installments || this.form.installments;
-          this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
           this.form.cardType = selectedProductData.cardType || this.form.cardType;
           this.form.fname = selectedProductData.fname || this.form.fname;
           this.form.lname = selectedProductData.lname || this.form.lname;
@@ -357,6 +359,10 @@
       textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaymentError: () => t('checkout.payment_error'),
+
+      isShowVariant() {
+        return Number(queryParams().variant) === 0;
+      },
 
       checkoutData() {
         return checkoutData;
@@ -437,7 +443,7 @@
           return;
         }
 
-        this.isPaymentError = false;
+        this.paymentError = '';
         this.isSubmitted = true;
 
         let fields = {
@@ -513,8 +519,8 @@
 
             sendCheckoutRequest(data)
               .then(res => {
-                if (res.status !== 'ok') {
-                  this.isPaymentError = true;
+                if (res.paymentError) {
+                  this.paymentError = res.paymentError;
                   this.isSubmitted = false;
                 }
               });
@@ -564,8 +570,10 @@
 
       paypalSubmit() {
         this.form.paymentType = 'paypal';
+        const isValid = this.$v.form.deal.$touch();
 
-        if (this.$v.form.deal.$invalid) {
+        if (!isValid) {
+          document.querySelector('.smc7__deal').scrollIntoView();
           this.isOpenPromotionModal = true;
         }
       },
@@ -583,7 +591,7 @@
         installments: 1,
       })
 
-      if (this.isPaymentError && !this.isPurchasAlreadyExists) {
+      if (this.paymentError && !this.isPurchasAlreadyExists) {
         setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
     }
@@ -605,9 +613,12 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                overflow: hidden;
 
                 img {
-                    height: 217px;
+                    height: 335px;
+                    object-fit: contain;
+                    padding: 34px;
                 }
             }
 

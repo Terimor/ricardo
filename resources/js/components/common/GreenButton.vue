@@ -120,7 +120,8 @@
         }
 
         .checkmark {
-            top: 18px;
+            margin-top: -9px;
+            top: 50%;
         }
 
         .spinner {

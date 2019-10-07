@@ -315,7 +315,6 @@ const promo = new Vue({
 
     activateForm() {
       this.isFormShown = true;
-
       this.scrollTo('.j-payment-form');
     },
 
