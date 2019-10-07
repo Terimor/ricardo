@@ -308,15 +308,18 @@
                         @click="paypalSubmit"
                     >{{ t('checkout.paypal.risk_free') }}</paypal-button>
                 </div>
-                <div class="promo__alternative-payment">
-                    {{ t('checkout.pay_securely_also') }}
-                </div>
-                <div class="promo__row-payments">
-                    <payment-type-radio-list
-                      class="promo__credit-card-switcher"
-                      v-model="form.paymentType"
-                      @input="activateForm" />
-                </div>
+                <template v-if="false">
+                    <div class="promo__alternative-payment">
+                        {{ t('checkout.pay_securely_also') }}
+                    </div>
+                    <div class="promo__row-payments">
+                        <payment-type-radio-list
+                            class="promo__credit-card-switcher"
+                            v-model="form.paymentType"
+                            @input="activateForm"
+                        />
+                    </div>
+                </template>
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form
                         v-if="form && form.paymentType && isFormShown"
