@@ -98,16 +98,14 @@ export function send1ClickRequest(data, upsells) {
         }
       } else {
         if (res.upsells.reduce((value, upsell) => upsell.status !== 'ok', false)) {
-          res.paymentError = t('upsells.step_3.payment_error');
+          res.paymentError = '';
 
           if (res.upsells) {
             for (const upsell of res.upsells) {
               if (upsells.status !== 'ok') {
-                res.paymentError = t('upsells.step_3.payment_error_one', {
+                res.paymentError += '<div>' + t('upsells.step_3.payment_error_one', {
                   upsell: upsells.filter(ups => ups.id === upsell.id).shift().name,
-                });
-
-                break;
+                }) + '</div>';
               }
             }
           }
