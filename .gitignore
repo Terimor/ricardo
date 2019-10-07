@@ -44,6 +44,7 @@ phpunit.phar
 /public/css/index.css
 /public/css/splash.css
 /public/css/static.css
+/public/css/order-tracking.css
 /public/mix-manifest.json
 /storage/*.key
 .env

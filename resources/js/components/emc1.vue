@@ -74,6 +74,7 @@
             <h2><span v-html="textStep"></span> 3: <span v-html="textPaymentMethod"></span></h2>
             <h3 v-html="textPaySecurely"></h3>
             <payment-type-radio-list
+              v-if="false"
               v-model="form.paymentType"
               @input="activateForm" />
             <paypal-button

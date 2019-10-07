@@ -287,7 +287,7 @@
           state: null,
           zipCode: null,
           installments: 1,
-          paymentType: null,
+          paymentType: 'paypal',
           cardNumber: '',
           month: null,
           year: null,
