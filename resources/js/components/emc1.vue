@@ -70,7 +70,7 @@
         <div class="paper col-md-5 main__payment">
           <img id="product-image" :src="productImage" alt="">
           <template v-if="!isPurchasAlreadyExists">
-            <h2><span v-html="textStep"></span> {{ isShowVariant ? 2 : 3 }}: <span v-html="textPaymentMethod"></span></h2>
+            <h2><span v-html="textStep"></span> {{ variantList.length == 1 || isShowVariant ? 2 : 3 }}: <span v-html="textPaymentMethod"></span></h2>
             <h3 v-html="textPaySecurely"></h3>
             <payment-type-radio-list
               v-if="false"
