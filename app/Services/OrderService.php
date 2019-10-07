@@ -10,6 +10,7 @@ use App\Services\EmailService;
 use App\Models\OdinProduct;
 use Illuminate\Support\Arr;
 use App\Models\Localize;
+use App\Services\AffiliateService;
 
 /**
  * Order Service class
@@ -190,7 +191,8 @@ class OrderService
         // get order and check is_reduced
         $ol = null;
         $order = OdinOrder::where('_id', $orderId)->first();
-
+//TODO: REMOVE        
+ $order->is_reduced = null;
         if ($order){
             // check if order has the same affiliate
             if ($order->affiliate == $hoAffiliateId) {
@@ -209,6 +211,10 @@ class OrderService
                     if ($txid && $order->is_reduced && (int)$hoAffiliateId > 10) {
                         RequestQueue::saveTxid($txid);
                     }
+                    
+                    // save postback
+                    AffiliateService::checkAffiliatePostback($hoAffiliateId, $order->params);
+                    
                 }
                 $ol = new Localize();
                 $ol->is_reduced = $order->is_reduced;

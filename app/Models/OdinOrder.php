@@ -261,4 +261,22 @@ class OdinOrder extends OdinModel
         $params = $this->params;
         return isset($params[$param]) ? $params[$param] : null;
     }
+    
+    /**
+     * Get main order SKU
+     * @return type
+     */
+    public function getMainSku()
+    {
+        $sku = null;        
+        if ($this->products) {
+            $products = $this->products;
+            foreach ($products as $product) {
+                if (!empty($product['is_main'])) {
+                    $sku = $product['sku_code'];
+                }
+            }
+        }
+        return $sku;
+    }
 }
