@@ -391,7 +391,9 @@ export default {
       return installments && installments !== 1 ? installments + '× ' : ''
     },
     dealList () {
-      const isSellOutArray = queryParams().sellout.split(',');
+      const isSellOutArray = queryParams().sellout
+        ? queryParams().sellout.split(',')
+        : [];
 
       return this.purchase.map((it, idx) => ({
         value: it.totalQuantity,

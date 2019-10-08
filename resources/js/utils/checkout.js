@@ -107,7 +107,9 @@ export function preparePurchaseData({
         return amount ? ` + ${amount} ${t('checkout.free')}` : '';
       };
 
-      const isSellOutArray = queryParams().sellout.split(',');
+      const isSellOutArray = queryParams().sellout
+        ? queryParams().sellout.split(',')
+        : [];
 
       return  {
         discountPercent,
