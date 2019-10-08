@@ -316,6 +316,7 @@
                     <payment-type-radio-list
                         class="promo__credit-card-switcher"
                         v-model="form.paymentType"
+                        :country="form.country"
                         @input="activateForm"
                     />
                 </div>

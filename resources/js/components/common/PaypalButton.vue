@@ -72,11 +72,18 @@
             return onApprove(data)
               .then(() => {
                 setTimeout(() => that.isSubmitted = false, 1000);
+              })
+              .catch(() => {
+                that.isSubmitted = false;
               });
             // Commented out so order verification will pass (temporary change)
             // if ($v.required || $v.$dirty) {
             //     return onApprove(data);
             // }
+          },
+
+          onError(err) {
+            that.isSubmitted = false;
           },
 
           onCancel(data, actions) {
