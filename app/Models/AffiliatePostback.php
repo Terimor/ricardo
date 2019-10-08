@@ -6,7 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class AffiliatePostback extends Model
 {
-    protected $collection = 'pixel';
+    protected $collection = 'affiliate_postback';
     
     protected $dates = ['created_at', 'updated_at'];
     

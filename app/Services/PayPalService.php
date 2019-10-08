@@ -355,9 +355,7 @@ class PayPalService
                     'affiliate' => $request->affiliate,
                     'shop_currency' => $shop_currency_code,
                     'params' => !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null,
-                    'ipqualityscore' => $request->get('ipqs'),
-                    'offer' => $request->get('offerid'),
-                    'affiliate' => $request->get('affid'),
+                    'ipqualityscore' => $request->get('ipqs')
                 ], true);
 
                 $order = $order_reponse['order'];
