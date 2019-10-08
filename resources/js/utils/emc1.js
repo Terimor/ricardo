@@ -61,7 +61,7 @@ export function * getNotice ({
           <img src="/images/paypal232.png" alt="">
         </div>
         <div class="recently-notice__right">
-          <p>0 Risk purchase! Buy now with PayPal and return the product for free...</p>
+          <p>${t('checkout.paypal.risk_free')}</p>
         </div>
       </div>
     `,
@@ -115,7 +115,7 @@ export function * getNotice ({
             <img src="${checkoutData.product.image[0]}" alt="">
           </div>
           <div class="recently-notice__right">
-            <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>${quantity}&#9747; ${checkoutData.product.product_name}</p>
+            <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>${quantity}x ${checkoutData.product.product_name}</p>
           </div>
         </div>
       `

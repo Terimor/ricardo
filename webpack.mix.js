@@ -1,5 +1,16 @@
 const mix = require('laravel-mix');
 
+
+mix.options({
+  extractVueStyles: 'public/css/vue-styles/[name].css',
+});
+
+mix.webpackConfig({
+  externals: {
+    vue: 'Vue',
+  }
+});
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management

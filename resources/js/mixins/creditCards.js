@@ -29,7 +29,7 @@ export default {
     },
 
     creditCardsAvailableList() {
-      const country = checkoutData.countryCode;
+      const country = this.country || checkoutData.countryCode;
 
       let cards = ['visa', 'mastercard', 'americanexpress', 'discover', 'dinersclub'];
 

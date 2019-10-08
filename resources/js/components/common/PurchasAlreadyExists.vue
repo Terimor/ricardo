@@ -15,7 +15,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .alert {
   width: 100%;
   padding: 20px;

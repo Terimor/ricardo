@@ -79,35 +79,35 @@ class PaymentService
             'is_active' => true,
             'methods'   => [
                 self::METHOD_CREDITCARD => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru'],
+                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_VISA       => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru'],
+                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_MASTERCARD => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru'],
+                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_AMEX       => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru'],
+                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_DISCOVER   => [
-                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru'],
+                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['us']
                 ],
                 self::METHOD_DINERSCLUB => [
-                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru'],
+                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['us', 'ko']
                 ],
                 self::METHOD_JCB        => [
-                    '+3ds' => ['europe', 'il', 'ko', 'id'],
+                    '+3ds' => ['europe', 'il', 'ko', 'id', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['sg', 'jp', 'tw', 'hk', 'mo', 'th', 'vn', 'kh', 'my', 'mm']
                 ],
             ]
@@ -276,6 +276,131 @@ class PaymentService
     }
 
     /**
+     * Updates or adds customer
+     * @param array $contact
+     * @return void
+     * @throws CustomerUpdateException
+     */
+    private function addCustomer(array $contact): void
+    {
+        $reply = $this->customerService->addOrUpdate(
+            array_merge($contact, ['phone' => $contact['phone']['country_code'] . $contact['phone']['number']])
+        );
+        if (isset($reply['errors'])) {
+            throw new CustomerUpdateException(json_encode($reply['errors']));
+        }
+    }
+
+    /**
+     * Adds a new OdinOrder
+     * @param array $data
+     * @return OdinOrder
+     * @throws OrderUpdateException
+     */
+    private function addOrder(array $data): OdinOrder
+    {
+        $reply = $this->orderService->addOdinOrder(array_merge(['status' => OdinOrder::STATUS_NEW], $data), true);
+
+        if (isset($reply['errors'])) {
+            throw new OrderUpdateException(json_encode($reply['errors']));
+        }
+
+        return $reply['order'];
+    }
+
+    /**
+     * Adds txn data to Order
+     * @param  OdinOrder &$order
+     * @param  array     $data
+     * @param  string    $payment_method
+     * @return void
+     */
+    private function addTxnToOrder(OdinOrder &$order, array $data, string $payment_method): void
+    {
+        // log txn
+        (new OrderService())->addTxn([
+            'hash'              => $data['hash'],
+            'value'             => $data['value'],
+            'currency'          => $data['currency'],
+            'provider_data'     => $data['provider_data'],
+            'payment_method'    => $payment_method,
+            'payment_provider'  => $data['payment_provider'],
+            'payer_id'          => $data['payer_id']
+        ]);
+
+        $order->addTxn([
+            'hash'              => $data['hash'],
+            'value'             => $data['value'],
+            'status'            => $data['status'],
+            'fee'               => $data['fee'],
+            'payment_method'    => $payment_method,
+            'payment_provider'  => $data['payment_provider'],
+            'payer_id'          => $data['payer_id']
+        ]);
+    }
+
+    /**
+     * Returns localizaed price
+     * @param  OdinProduct $product
+     * @param  int         $qty
+     * @return array
+     * @throws InvalidParamsException
+     */
+    private function getLocalizedPrice(OdinProduct $product, int $qty): array
+    {
+        $localized_product = $this->productService->localizeProduct($product);
+        if (empty($localized_product->prices[$qty])) {
+            throw new InvalidParamsException('Invalid parameter "qty"');
+        }
+
+        $currency = CurrencyService::getCurrency($localized_product->prices['currency']);
+
+        $price_usd = floor($localized_product->prices[$qty]['value'] / $currency->usd_rate * 100) / 100;
+
+        return [
+            'currency'          => $currency->code,
+            'price_set'         => $product->prices['price_set'],
+            'quantity'          => $qty,
+            'usd_rate'          => $currency->usd_rate,
+            'value'             => $localized_product->prices[$qty]['value'],
+            'value_usd'         => $price_usd,
+            'warranty_value'    => $localized_product->prices[$qty]['warranty_price'],
+            'warranty_value_usd'    => CurrencyService::calculateWarrantyPrice($product->warranty_percent, $price_usd)
+        ];
+    }
+
+    /**
+     * Creates OdinOrder['products'] item
+     * @param  string      $sku
+     * @param  array       $price
+     * @param  bool        $is_main
+     * @param  bool        $is_warranty
+     * @return array
+     * @throws InvalidParamsException
+     */
+    private function createOrderProduct(string $sku, array $price, bool $is_main = true, bool $is_warranty = false): array
+    {
+        $order_product = [
+            'sku_code'              => $sku,
+            'quantity'              => $price['quantity'],
+            'price'                 => $price['value'],
+            'price_usd'             => $price['value_usd'],
+            'price_set'             => $price['price_set'] ?? null,
+            'is_main'               => $is_main,
+            'is_upsells'            => !$is_main,
+            'txn_hash'              => null,
+            'warranty_price'        => 0,
+            'warranty_price_usd'    => 0
+        ];
+
+        if ($is_warranty) {
+            $order_product['warranty_price'] = $price['warranty_value'];
+            $order_product['warranty_price_usd'] = $price['warranty_value_usd'];
+        }
+        return $order_product;
+    }
+
+    /**
      * Creates a new order
      * @param PaymentCardCreateOrderRequest $req
      * @return array
@@ -287,51 +412,19 @@ class PaymentService
         $ipqs = $req->input('ipqs', null);
         $card = $req->get('card');
         $contact = array_merge($req->get('contact'), $req->get('address'));
+        $page_checkout = $req->input('page_checkout', $req->header('Referer'));
 
-        // get product and localize it
-        $product = OdinProduct::getBySku($sku);
-        $localizedProduct = $this->productService->localizeProduct($product); // throwable
+        $this->addCustomer($contact); // throwable
 
-        // update customer if it has been changed
-        $reply = $this->customerService->addOrUpdate(
-            array_merge($contact, ['phone' => $contact['phone']['country_code'] . $contact['phone']['number']])
-        );
-        if (isset($reply['errors'])) {
-            throw new CustomerUpdateException(json_encode($reply['errors']));
-        }
+        $product = OdinProduct::getBySku($sku); // throwable
 
-        // add order
-        $currency = CurrencyService::getCurrency($localizedProduct->prices['currency']);
+        $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 
-        $price = empty($localizedProduct->prices[$qty]) ? null : $localizedProduct->prices[$qty];
-        if (!$price) {
-            throw new InvalidParamsException('Invalid parameter "qty"');
-        }
+        $order_product = $this->createOrderProduct($sku, $price, true, $is_warranty);
 
-        $order_product = [
-            'sku_code'              => $sku,
-            'quantity'              => (int)$qty,
-            'price'                 => $price['value'],
-            'price_usd'             => floor($price['value'] / $currency->usd_rate * 100) / 100,
-            'is_main'               => true,
-            'price_set'             => $product->prices['price_set'],
-            'txn_hash'              => null,
-            'warranty_price'        => 0,
-            'warranty_price_usd'    => 0
-        ];
-
-        if ($is_warranty) {
-            $order_product['warranty_price'] = $price['warranty_price'];
-            $order_product['warranty_price_usd'] = CurrencyService::calculateWarrantyPrice(
-                $product->warranty_percent,
-                $order_product['price_usd']
-            );
-        }
-
-        $reply = $this->orderService->addOdinOrder([
-            'status'                => OdinOrder::STATUS_NEW,
-            'currency'              => $currency->code,
-            'exchange_rate'         => $currency->usd_rate,
+        $order = $this->addOrder([
+            'currency'              => $price['currency'],
+            'exchange_rate'         => $price['usd_rate'],
             'total_paid'            => 0,
             'total_price'           => $order_product['price'] + $order_product['warranty_price'],
             'total_price_usd'       => $order_product['price_usd'] + $order_product['warranty_price_usd'],
@@ -349,21 +442,15 @@ class PaymentService
             'shipping_state'        => $contact['state'],
             'shipping_city'         => $contact['city'],
             'shipping_street'       => $contact['street'],
-            'shop_currency'         => $currency->code,
+            'shop_currency'         => $price['currency'],
             'warehouse_id'          => $product->warehouse_id,
             'products'              => [$order_product],
-            'page_checkout'         => $req->header('Referer'),
-            'params'                => $req->header('Referer') ? \Utils::getParamsFromUrl($req->header('Referer')) : $req->query() ?? [],
+            'page_checkout'         => $page_checkout,
+            'params'                => \Utils::getParamsFromUrl($page_checkout),
             'offer'                 => $req->get('offerid'),
             'affiliate'             => $req->get('affid'),
             'ipqualityscore'        => $ipqs
-        ], true);
-
-        if (isset($reply['errors'])) {
-            throw new OrderUpdateException(json_encode($reply['errors']));
-        }
-
-        $order = $reply['order'];
+        ]);
 
         // provider selection in vacuum
         $checkoutService = new CheckoutDotComService();
@@ -373,29 +460,10 @@ class PaymentService
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
-            (new OrderService())->addTxn([
-                'hash'              => $payment['hash'],
-                'value'             => $payment['value'],
-                'currency'          => $payment['currency'],
-                'provider_data'     => $payment['provider_data'],
-                'payment_method'    => $card['type'],
-                'payment_provider'  => $payment['payment_provider'],
-                'payer_id'          => $payment['payer_id']
-            ]);
-
             $order_product['txn_hash'] = $payment['hash'];
-            $order->is_flagged = $payment['is_flagged'];
+            $this->addTxnToOrder($order, $payment, $card['type']);
             $order->addProduct($order_product);
-            $order->addTxn([
-                'hash'              => $payment['hash'],
-                'value'             => $payment['value'],
-                'status'            => $payment['status'],
-                'fee'               => $payment['fee'],
-                'payment_method'    => $card['type'],
-                'payment_provider'  => $payment['payment_provider'],
-                'payer_id'          => $payment['payer_id']
-            ]);
-
+            $order->is_flagged = $payment['is_flagged'];
             if (!$order->save()) {
                 $validator = $order->validate();
                 if ($validator->fails()) {
@@ -406,12 +474,26 @@ class PaymentService
             throw new PaymentException(json_encode($payment['provider_data']));
         }
 
-        return [
-            'order'         => $order,
-            'provider'      => $payment['payment_provider'],
-            'status'        => $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
-            'redirect_url'  => $payment['redirect_url']
+        $result = [
+            'order_currency'    => $order->currency,
+            'order_id'          => $order->getIdAttribute(),
+            'status'            => self::STATUS_FAIL
         ];
+
+        //request and cache token
+        if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $result['status'] = self::STATUS_OK;
+            $result['redirect_url'] = $payment['redirect_url'];
+            self::setCardToken(
+                $this->requestCardToken($card, $contact, $payment['payment_provider']),
+                $order->getIdAttribute()
+            );
+        } else {
+            $result['status_code'] = $payment['response_code'];
+            $result['status_desc'] = $payment['response_desc'];
+        }
+
+        return $result;
     }
 
     /**
@@ -443,17 +525,15 @@ class PaymentService
                 try {
                     $product = $this->productService->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
                     $upsell_price = $product->upsellPrices[$item['qty']];
-                    $upsell_product = [
-                        'sku_code'              => $product->upsell_sku,
-                        'quantity'              => (int)$item['qty'],
-                        'price'                 => $upsell_price['price'],
-                        'price_usd'             => floor($upsell_price['price'] / $upsell_price['exchange_rate'] * 100) / 100,
-                        'is_main'               => false,
-                        'is_upsells'            => true,
-                        'price_set'             => null,
-                        'warranty_price'        => 0,
-                        'warranty_price_usd'    => 0
-                    ];
+                    $upsell_product = $this->createOrderProduct(
+                        $product->upsell_sku,
+                        [
+                            'quantity'  => (int)$item['qty'],
+                            'value'     => $upsell_price['price'],
+                            'value_usd' => floor($upsell_price['price'] / $upsell_price['exchange_rate'] * 100) / 100
+                        ],
+                        false
+                    );
                     $checkout_price += $upsell_product['price'];
                     $checkout_price_usd += $upsell_product['price_usd'];
                     $upsell_products[] = $upsell_product;
@@ -470,36 +550,21 @@ class PaymentService
 
                 // update order if transaction is passed
                 if (!empty($payment['hash'])) {
-                    (new OrderService())->addTxn([
-                        'hash'              => $payment['hash'],
-                        'value'             => $payment['value'],
-                        'currency'          => $payment['currency'],
-                        'provider_data'     => $payment['provider_data'],
-                        'payment_method'    => $order_main_txn['payment_method'],
-                        'payment_provider'  => $payment['payment_provider'],
-                        'payer_id'          => $payment['payer_id']
-                    ]);
 
                     $upsells = array_map(function($v) use ($payment) {
                         $v['status'] = $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL;
+                        $v['status_code'] = $payment['response_code'];
+                        $v['status_desc'] = $payment['response_desc'];
                         return $v;
                     }, $upsells);
-
-                    $order->addTxn([
-                        'hash'              => $payment['hash'],
-                        'value'             => $payment['value'],
-                        'status'            => $payment['status'],
-                        'fee'               => $payment['fee'],
-                        'payment_method'    => $order_main_txn['payment_method'],
-                        'payment_provider'  => $payment['payment_provider'],
-                        'payer_id'          => $payment['payer_id']
-                    ]);
 
                     // add upsell products
                     foreach ($upsell_products as $item) {
                         $item['txn_hash'] = $payment['hash'];
                         $order->addProduct($item);
                     }
+
+                    $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method']);
 
                     if ($order->status === OdinOrder::STATUS_PAID) {
                         $order->status = OdinOrder::STATUS_HALFPAID;
@@ -577,7 +642,6 @@ class PaymentService
         // select provider and request token
         return (new CheckoutDotComService())->requestToken($card, $contacts);
     }
-
 
     /**
      * Returns payment methods array by country
