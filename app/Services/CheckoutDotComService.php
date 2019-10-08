@@ -98,13 +98,6 @@ class CheckoutDotComService
         $source->cvv = $card['cvv'];
         $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
         $source->phone = (object)[$contact['phone']];
-        // $source->billing_address = (object)[
-        //     'address_line1' => $contact['street'],
-        //     'city' => $contact['city'],
-        //     'country' => $contact['country'],
-        //     'state' => $contact['state'],
-        //     'zip' => $contact['zip']
-        // ];
         return $source;
     }
 
@@ -172,27 +165,28 @@ class CheckoutDotComService
         }
         $payment->payment_ip = $order->ip;
 
-        $qs = http_build_query(array_merge($order->params ?? [], ['order' => $order->getIdAttribute(), 'cur' => $order->currency]));
-        $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
-        $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
-
         // enable 3ds
         if ($card_3ds) {
+            $qs = http_build_query(array_merge($order->params ?? [], ['order' => $order->getIdAttribute(), 'cur' => $order->currency]));
+            $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
+            $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
             $payment->{'3ds'} = $card_3ds;
         }
 
         $result = [
+            'fee'               => 0,
             'is_flagged'        => false,
-            'hash'              => null,
             'currency'          => $order->currency,
             'value'             => $amount,
             'status'            => Txn::STATUS_FAILED,
-            'fee'               => 0,
-            'provider_data'     => null,
             'payment_provider'  => PaymentService::PROVIDER_CHECKOUTCOM,
             'payment_method'    => PaymentService::METHOD_CREDITCARD,
+            'hash'              => null,
             'payer_id'          => null,
-            'redirect_url'      => null
+            'provider_data'     => null,
+            'redirect_url'      => null,
+            'response_code'     => null,
+            'response_desc'     => null,
         ];
 
         // parse response
@@ -204,13 +198,15 @@ class CheckoutDotComService
             $result['payer_id'] = $res->customer['id'];
 
             if ($res->http_code === 201) { // authorized
+                $result['response_code'] = $res->response_code;
+                $result['response_desc'] = $res->response_summary;
                 $result['currency'] = $res->currency;
                 $result['value'] = $res->amount;
-                $res_code = (int)$res->response_code;
-                if ($res_code === self::SUCCESS_CODE || $res_code === self::SUCCESS_FLAGGED_CODE) {
+                $response_code = (int)$res->response_code;
+                if (in_array($response_code, [self::SUCCESS_CODE, self::SUCCESS_FLAGGED_CODE])) {
                     $result['status'] = Txn::STATUS_CAPTURED;
+                    $result['is_flagged'] = $response_code === self::SUCCESS_FLAGGED_CODE ? true : false;
                 }
-                $result['is_flagged'] = $res_code === self::SUCCESS_FLAGGED_CODE;
             } elseif ($res->http_code === 202 && $res->status === self::STATUS_PENDING) { // pending 3ds
                 $result['status'] = Txn::STATUS_NEW;
                 $result['redirect_url'] = $res->_links['redirect']['href'];
