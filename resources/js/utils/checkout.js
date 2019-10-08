@@ -66,6 +66,7 @@ export function preparePurchaseData({
   customOrder=false,
   onlyDiscount=false,
   image,
+  isOutOfStock = false
 }) {
   const data = Object.keys(purchaseList)
     .filter((key) => quantityToShow.includes(+key))
@@ -106,6 +107,8 @@ export function preparePurchaseData({
         return amount ? ` + ${amount} ${t('checkout.free')}` : '';
       };
 
+      const isSellOutArray = queryParams().sellout.split(',');
+
       return  {
         discountPercent,
         image: it.image || image,
@@ -134,7 +137,8 @@ export function preparePurchaseData({
             valueTexts,
             installments,
           }),
-        totalQuantity: +key
+        totalQuantity: +key,
+        isOutOfStock: isSellOutArray.includes(String(idx + 1)),
       }
     });
   if(customOrder) {
