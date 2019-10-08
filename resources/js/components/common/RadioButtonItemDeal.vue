@@ -1,11 +1,13 @@
 <template>
-  <label :class="`label-container-radio radio-button-deal item-${item.value}`">
+  <label class="label-container-radio radio-button-deal"
+          :class="[`item-${item.value}`, {disabled: item.isOutOfStock}]">
     <img class="share" src="/images/share.png" v-if="showShareArrow">
     <input type="radio"
            :checked="item.value === value"
            name="radio"
            @input="input"
-           :value="item.value">
+           :value="item.value"
+           :disabled="item.isOutOfStock">
     <div class="label-container-radio__label">
       <div>
         <div class="red">

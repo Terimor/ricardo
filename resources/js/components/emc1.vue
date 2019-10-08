@@ -391,9 +391,12 @@ export default {
       return installments && installments !== 1 ? installments + '× ' : ''
     },
     dealList () {
+      const isSellOutArray = queryParams().sellout.split(',');
+
       return this.purchase.map((it, idx) => ({
         value: it.totalQuantity,
         quantity: it.totalQuantity,
+        isOutOfStock: isSellOutArray.includes(String(idx + 1)),
         label: getRadioHtml({
           ...it,
           installments: this.form.installments,
@@ -466,9 +469,8 @@ export default {
     },
     paypalSubmit() {
       this.form.paymentType = 'paypal';
-      const isValid = this.$v.form.deal.$touch();
 
-      if (!isValid) {
+      if (this.$v.form.deal.$invalid) {
         document.querySelector('.main__deal').scrollIntoView();
         this.isOpenPromotionModal = true;
       }

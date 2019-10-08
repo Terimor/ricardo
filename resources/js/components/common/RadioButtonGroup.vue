@@ -7,9 +7,9 @@
       <slot/>
     </template>
     <template v-else v-for="input in list">
-      <label :style="input.styles" :key="input.value" class="label-container-radio" :class="input.class">
+      <label :style="input.styles" :key="input.value" class="label-container-radio"  :class="[input.class, {disabled: input.isOutOfStock}]">
         <div class="label-container-radio__label" v-html="input.label"></div>
-        <input type="radio" :checked="input.value == value" name="radio" :value="input.value">
+        <input type="radio" :checked="input.value == value" name="radio" :value="input.value" :disabled="input.isOutOfStock">
         <span class="checkmark"></span>
       </label>
     </template>
@@ -51,8 +51,32 @@ export default {
 
   .label-container-radio:hover {
     background: #fef9ae;
-    border: 1px solid rgba(0,0,0,.2);
+    border-color: rgba(0,0,0,.2);
     border-radius: 2px;
+  }
+
+  .label-container-radio.disabled {
+    background-color: transparent !important;
+    border: none;
+    opacity: .5;
+    text-decoration: line-through;
+    cursor: default;
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      content: '';
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,.5);
+      z-index: 100;
+    }
+    &:hover {
+      background: rgba(0,0,0,.5);
+      border-color: transparent;
+      border-radius: 0;
+    }
   }
 
   .label-container-radio input {
