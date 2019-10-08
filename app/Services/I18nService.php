@@ -18,6 +18,7 @@ class I18nService
     public static function loadPhrases(string $category)
     {
         $language = app()->getLocale();
+        $loadedPhrases = [];
         if (empty(I18n::$loadedPhrases[$language])) {
             $categories = [$category];
             if (strpos($category, '_page')) {
@@ -82,7 +83,7 @@ class I18nService
         }
 
         //$translated_languages = I18n::getTranslationLanguages(true);
-        $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : I18n::$loadedPhrases['en'];
+        $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : (!empty(I18n::$loadedPhrases['e-n']) ? I18n::$loadedPhrases['en'] : []);
 
         if (!empty($loadedPhrases[$translation])) {
             $translation = $loadedPhrases[$translation];
