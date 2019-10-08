@@ -22,6 +22,7 @@
         "guzzlehttp/psr7": "^1.6",
         "http-interop/http-factory-guzzle": "^1.0",
         "jean85/pretty-package-versions": "^1.2",
+        "jenssegers/agent": "^2.6",
         "jenssegers/mongodb": "^3.6",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",

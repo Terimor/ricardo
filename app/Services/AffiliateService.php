@@ -6,7 +6,11 @@ use App\Models\Setting;
 use App\Models\AffiliatePostback;
 use App\Models\AffiliateSetting;
 use App\Models\OdinOrder;
+use App\Models\OdinProduct;
 use App\Models\RequestQueue;
+use App\Models\Pixel;
+use App\Services\ProductService;
+use Illuminate\Http\Request;
 
 
 /**
@@ -43,16 +47,25 @@ class AffiliateService
                     $url = str_replace('#PRODUCT#', $sku, $url);
                 }
                 
+                // replace PRODUCT_NAME
+                $url = static::replaceProductNameBySku($sku, $url);
+                                
                 // replace amount
                 $url = str_replace('#AMOUNT#', $order->total_price, $url);
                 
                 // replace tpl if needed
                 if (!isset($params['tpl'])) {
-                    $url = str_replace('#TPL#', self::DEFAULT_TPL, $url);
+                    $url = str_replace('#TPL#', AffiliateService::DEFAULT_TPL, $url);
                 }
                 
                 // replace country
                 $url = str_replace('#COUNTRY#', strtoupper($order->shipping_country), $url);
+                
+                // replace COP_ID
+                $copId = $order->getPriceSet();
+                if ($copId) {
+                    $url = str_replace('#COP_ID#', $copId, $url);
+                }
                 
                 // send request query
                 RequestQueue::saveNewRequestQuery($url, $postback->delay);
@@ -62,17 +75,56 @@ class AffiliateService
     
     /**
      * Return string with replaced params
-     * @param string $url
+     * @param string $string
      * @param array $params
      */
-    public static function replaceQueryParams(string $url, array $params): string
+    public static function replaceQueryParams(string $string, array $params): string
     {
         if ($params){
             foreach ($params as $key => $value) {
                 $param = '#'.strtoupper($key).'#';
-                $url = str_replace($param, $value, $url);
+                $string = str_replace($param, $value, $string);
             }
         }
-        return $url;
+        return $string;
     }
+    
+    /**
+     * Return replaced text
+     * @param string $sku
+     * @param string $string
+     * @return string
+     */
+    public static function replaceProductNameBySku(string $sku, string $string): string
+    {        
+        $skus = OdinProduct::getCacheSkusProduct();
+        if ($sku) {
+            $productName = !empty($skus[$sku]['product_name']) ? $skus[$sku]['product_name'] : '';
+            if ($productName) {
+                $string = str_replace('#PRODUCT_NAME#', $skus[$sku]['product_name'], $string);
+            }
+        }
+        return $string;
+    }
+    
+    /**
+     * Get all pixels
+     */
+    public static function getPixels(Request $request, AffiliateSetting $affiliate = null)
+    {
+        $pixels = [];
+        if ($affiliate) {
+            $productService = new ProductService();
+            $product = $productService->resolveProduct($request, false, null, true);
+            $countryCode = \Utils::getLocationCountryCode();
+            
+            $route = $request->route()->getName() ? $request->route()->getName() : 'index';
+            $device = \Utils::getDevice();
+            
+            // get pixels
+            $pixels = Pixel::getPixelsByData($request, $product, $countryCode, $route, $device);
+            
+        }
+        return $pixels;
+    }        
 }

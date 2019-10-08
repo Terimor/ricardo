@@ -183,6 +183,7 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         //Jenssegers\Mongodb\Session\SessionServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
+        Jenssegers\Agent\AgentServiceProvider::class,
     ],
 
     /*
@@ -238,6 +239,7 @@ return [
         'Location' => Stevebauman\Location\Facades\Location::class,
         'Utils' => App\Services\UtilsService::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        'Agent' => Jenssegers\Agent\Facades\Agent::class,
 
     ],
 

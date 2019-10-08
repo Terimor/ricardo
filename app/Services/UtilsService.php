@@ -2,7 +2,9 @@
 
 namespace App\Services;
 use App\Models\Setting;
+use App\Models\Pixel;
 use MongoDB\BSON\UTCDateTime;
+use Jenssegers\Agent\Agent;
 
 /**
  * Utils Service class
@@ -730,8 +732,27 @@ class UtilsService
      * @param type $ts
      * @return UTCDateTime
      */
-    public static function getMongoTimeFromTS($ts) {
+    public static function getMongoTimeFromTS($ts)
+    {
         return new UTCDateTime($ts * 1000);
+    }
+
+    /**
+     * Get device
+     */
+    public static function getDevice(): string
+    {
+        $agent = new Agent();
+        
+        $device = Pixel::DEVICE_PC;
+                
+        if ($agent->isMobile()) {
+            $device = Pixel::DEVICE_MOBILE;
+        } else if($agent->isTablet()) {
+            $device = Pixel::DEVICE_TABLET;
+        }
+        
+        return $device;        
     }    
 
 }

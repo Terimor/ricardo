@@ -336,6 +336,7 @@ class PayPalService
                     'payment_method' => $txn_response['txn']->payment_method,
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
+                $params = !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null;
 
                 $order_reponse = $this->orderService->addOdinOrder([
                     'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
@@ -351,10 +352,10 @@ class PayPalService
                     'products' => [$odin_order_product],
                     'txns' => [$order_txn_data],
                     'page_checkout' => $request->page_checkout,
-                    'offer' => $request->offer,
-                    'affiliate' => $request->affiliate,
+                    'offer' => !empty($params['offid']) ? $params['offid'] : null,
+                    'affiliate' => !empty($params['affid']) ? $params['affid'] : null,
                     'shop_currency' => $shop_currency_code,
-                    'params' => !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null,
+                    'params' => $params,
                     'ipqualityscore' => $request->get('ipqs')
                 ], true);
 

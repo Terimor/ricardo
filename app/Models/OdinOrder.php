@@ -407,4 +407,22 @@ class OdinOrder extends OdinModel
         }
         return $sku;
     }
+    
+    /**
+     * Get main order SKU
+     * @return type
+     */
+    public function getPriceSet()
+    {
+        $priceSet = null;        
+        if ($this->products) {
+            $products = $this->products;
+            foreach ($products as $product) {
+                if (!empty($product['is_main'])) {
+                    $priceSet = $product['price_set'];
+                }
+            }
+        }
+        return $priceSet;
+    }    
 }
