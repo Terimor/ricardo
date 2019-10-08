@@ -192,8 +192,6 @@ class OrderService
         $ol = null;
         $order = OdinOrder::where('_id', $orderId)->first();
         
-//TODO: REMOVE        
- $order->is_reduced = null;
         if ($order){
             // check if order has the same affiliate
             if ($order->affiliate == $hoAffiliateId) {
