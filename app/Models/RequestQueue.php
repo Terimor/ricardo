@@ -25,6 +25,7 @@ class RequestQueue extends Model
     const STATUS_NEW = 'new';
     const TYPE_AFFILIATE_POSTBACK = 'affiliate_postback';
     const URL_AFFILIATE_POSTBACK = 'https://track.h8m8.com/aff_lsr?transaction_id=';
+    const DEFAULT_DELAY = 60;
     
     /**
      * Attributes with default values
@@ -48,7 +49,24 @@ class RequestQueue extends Model
             $rq->type = static::TYPE_AFFILIATE_POSTBACK;
             $rq->status = static::STATUS_NEW;
             $rq->url = static::URL_AFFILIATE_POSTBACK.$txid;
-            $rq->request_at = \Utils::getMongoTimeFromTS(time() + 60);
+            $rq->request_at = \Utils::getMongoTimeFromTS(time() + static::DEFAULT_DELAY);
+            $rq->save();
+        }
+    }
+    
+    /**
+     * 
+     * @param string $url
+     * @param int $delay
+     */
+    public static function saveNewRequestQuery(string $url, int $delay = self::DEFAULT_DELAY, $type = self::TYPE_AFFILIATE_POSTBACK)
+    {
+        if ($url) {
+            $rq = new RequestQueue();
+            $rq->type = $type;
+            $rq->status = static::STATUS_NEW;
+            $rq->url = $url;
+            $rq->request_at = \Utils::getMongoTimeFromTS(time() + $delay);
             $rq->save();
         }
     }

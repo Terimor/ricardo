@@ -174,16 +174,15 @@ class AffiliateSetting extends Model
      * @param string $hasOfferId
      * @return Localize
      */
-    public static function getLocaleAffiliate(string $hasOfferId = null)
+    public static function getLocaleAffiliate(AffiliateSetting $affiliate = null)
     {        
         $al = null;
-        if ($hasOfferId) {
-            $affiliate = static::getByHasOfferId($hasOfferId);
-            if ($affiliate) {
-                $al['affiliate'] = $affiliate->ho_affiliate_id;
-                $al['is_signup_hidden'] = $affiliate->is_signup_hidden;
-            }
+
+        if ($affiliate) {
+            $al['affiliate'] = $affiliate->ho_affiliate_id;
+            $al['is_signup_hidden'] = $affiliate->is_signup_hidden;
         }
+
         return $al;
     }
 }

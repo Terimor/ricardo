@@ -452,6 +452,7 @@ class OdinProduct extends Model
                 foreach($product->skus as $sku) {
                   $skus[$sku['code']]['name'] = $sku['name'];
                   $skus[$sku['code']]['product_id'] = $product->id;
+                  $skus[$sku['code']]['product_name'] = $product->product_name;
                 }
             }
 

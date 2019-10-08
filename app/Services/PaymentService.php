@@ -529,8 +529,8 @@ class PaymentService
                         $product->upsell_sku,
                         [
                             'quantity'  => (int)$item['qty'],
-                            'price'     => $upsell_price['price'],
-                            'price_usd' => floor($upsell_price['price'] / $upsell_price['exchange_rate'] * 100) / 100
+                            'value'     => $upsell_price['price'],
+                            'value_usd' => floor($upsell_price['price'] / $upsell_price['exchange_rate'] * 100) / 100
                         ],
                         false
                     );
