@@ -21,6 +21,7 @@
 
     props: [
       'value',
+      'country',
     ],
 
     mixins: [

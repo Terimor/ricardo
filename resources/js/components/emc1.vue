@@ -68,12 +68,13 @@
           </div>
         </div>
         <div class="paper col-md-5 main__payment">
-          <img id="product-image" :src="productImage" alt="">
+          <img id="product-image" :src="setProductImage" alt="">
           <template v-if="!isPurchasAlreadyExists">
             <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
             <h3 v-html="textPaySecurely"></h3>
             <payment-type-radio-list
               v-model="form.paymentType"
+              :country="form.country"
               @input="activateForm" />
             <paypal-button
               :createOrder="paypalCreateOrder"
@@ -216,7 +217,6 @@ export default {
       ImplValue: null,
       radioIdx: null,
       warrantyPriceText: null,
-      productImage: null,
       mockData: {
         productList: [
           {
@@ -349,6 +349,9 @@ export default {
     }
   },
   computed: {
+    setProductImage() {
+      return this.productData.image[this.queryParams['image'] - 1] || this.productData.image[0];
+    },
     isShowVariant() {
       return Number(queryParams().variant) === 0
     },

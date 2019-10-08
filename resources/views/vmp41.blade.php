@@ -5,7 +5,8 @@
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/promo.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/promo.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/promo.css') }}">
 @endsection
 
 @section('script')
@@ -315,6 +316,7 @@
                     <payment-type-radio-list
                         class="promo__credit-card-switcher"
                         v-model="form.paymentType"
+                        :country="form.country"
                         @input="activateForm"
                     />
                 </div>

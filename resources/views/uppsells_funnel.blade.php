@@ -8,6 +8,12 @@
     @endif
 @endsection
 
+@section('styles')
+  <link rel="stylesheet" href="{{ asset('css/uppsells.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/thank-you.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/thank-you.css') }}">
+@endsection
+
 @section('script')
 <script>
     var upsellsData = {
@@ -23,8 +29,6 @@
 @endsection
 
 @section('content')
-    <link rel="stylesheet" href="{{ asset('css/uppsells.css') }}">
-
     <div class="container upsells">
         <upsells-component></upsells-component>
         @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])

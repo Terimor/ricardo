@@ -37,22 +37,23 @@ class PaymentsController extends Controller
      */
     public function createCardOrder(PaymentCardCreateOrderRequest $req)
     {
-        // create new order
         $reply = $this->paymentService->createOrder($req);
 
-        //request and cache token
-        if ($reply['status'] === PaymentService::STATUS_OK) {
-            $contact = array_merge($req->get('address'), $req->get('contact'));
-            $token = $this->paymentService->requestCardToken($req->get('card'), $contact, $reply['provider']);
-            PaymentService::setCardToken($token, $reply['order']->getIdAttribute());;
+        $result = [
+            'order_currency'    => $reply['order_currency'],
+            'order_id'          => $reply['order_id'],
+            'status'            => $reply['status']
+        ];
+
+        if (!empty($reply['status_code'])) {
+            $result['status_code'] = $reply['status_code'];
+            $result['status_desc'] = $reply['status_desc'] ?? 'Unknown error';
+        }
+        if (!empty($reply['redirect_url'])) {
+            $result['redirect_url'] = stripslashes($reply['redirect_url']);
         }
 
-        return [
-            'order_currency'    => $reply['order']->currency,
-            'order_id'          => $reply['order']->getIdAttribute(),
-            'status'            => $reply['status'],
-            'redirect_url'      => stripslashes($reply['redirect_url'])
-        ];
+        return $result;
     }
 
     /**
@@ -62,7 +63,13 @@ class PaymentsController extends Controller
      */
     public function createCardUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req)
     {
-        return $this->paymentService->createUpsellsOrder($req);
+        $reply = $this->paymentService->createUpsellsOrder($req);
+        return [
+            'order_currency'    => $reply['order_currency'],
+            'order_id'          => $reply['order_id'],
+            'status'            => $reply['status'],
+            'upsells'           => $upsells
+        ];
     }
 
     /**

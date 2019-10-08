@@ -67,6 +67,7 @@
           <h3 v-html="textPaySecurely"></h3>
           <payment-type-radio-list
             v-model="form.paymentType"
+            :country="form.stepThree.country"
             @input="activateForm" />
           <paypal-button
             :createOrder="paypalCreateOrder"

@@ -3,7 +3,8 @@
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/app.css') }}">
 @endsection
 
 @section('script')

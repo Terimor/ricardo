@@ -3,7 +3,8 @@
 @section('title', $product->page_title )
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/order-tracking.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/order-tracking.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/order-tracking.css') }}">
 @endsection
 
 @section('script')

@@ -3,7 +3,8 @@
 @section('title', $product->page_title . ' - ' . $loadedPhrases['thankyou_title'])
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/thank-you.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/thank-you.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/thank-you.css') }}">
 @endsection
 
 @section('head')
@@ -11,7 +12,6 @@
     <meta property="og:description" content="I just bought this awesome product. Thought I’d share this with you" />
     <meta property="og:image" content="{{ $product->image[0] }}" />
 @endsection
-
 
 @section('script')
 <script>
