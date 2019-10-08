@@ -6,9 +6,6 @@ body {
 
 header {
   box-shadow: none;
-  position: fixed;
-  top: 0;
-  z-index: 4;
   width: 100%;
   transition: all .1s ease-in-out;
 }
@@ -19,7 +16,7 @@ header {
   text-align: center;
 
   &__title {
-    margin: 45px 0;
+    margin: 15px 0 35px;
     font-size: 38px;
 
     @media screen and ($l-down) {
@@ -37,7 +34,7 @@ header {
     max-width: 1100px;
     padding: 15px;
     margin: 0 auto;
-    margin-top: 150px;
+    margin-top: 60px;
     margin-bottom: 40px;
   }
 
@@ -440,7 +437,7 @@ header {
 
   &__complete-order {
     display: block;
-    padding: 60px 0;
+    padding: 20px 0 40px;
     background-color: white;
   }
 
