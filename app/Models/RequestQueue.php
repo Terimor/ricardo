@@ -25,7 +25,7 @@ class RequestQueue extends Model
     const STATUS_NEW = 'new';
     const TYPE_AFFILIATE_POSTBACK = 'affiliate_postback';
     const URL_AFFILIATE_POSTBACK = 'https://track.h8m8.com/aff_lsr?transaction_id=';
-    const DEFAULT_DELAY = 'https://track.h8m8.com/aff_lsr?transaction_id=';
+    const DEFAULT_DELAY = 60;
     
     /**
      * Attributes with default values
