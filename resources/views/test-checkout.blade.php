@@ -1,6 +1,6 @@
 <!DOCTYPE html><!-- PAYPAL required  -->
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- PAYPAL required  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"> <!-- PAYPAL required  -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" /><!-- PAYPAL required  -->
     <meta name="csrf-token" content="{{ csrf_token() }}"><!-- BACKEND required  -->
 </head>
