@@ -68,7 +68,7 @@ class PaymentsController extends Controller
             'order_currency'    => $reply['order_currency'],
             'order_id'          => $reply['order_id'],
             'status'            => $reply['status'],
-            'upsells'           => $upsells
+            'upsells'           => $reply['upsells']
         ];
     }
 
