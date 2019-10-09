@@ -6,7 +6,7 @@
                     <div class="col-md-7 image-wrapper">
                         <img
                                 id="product-image-head"
-                                :src="productImage"
+                                :src="setProductImage"
                                 alt=""
                         >
                     </div>
@@ -140,7 +140,7 @@
                                 <h2>{{ checkoutData.product.long_name }}</h2>
                                 <p>GET 50% OFF TODAY + FREE SHIPPING</p>
                             </div>
-                            <img id="product-image-body" :src="productImage" alt="Product image">
+                            <img id="product-image-body" :src="setProductImage" alt="Product image">
                         </div>
                         <h2 class="step-title"><span>{{textStep}}</span> {{ isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
@@ -359,6 +359,10 @@
       textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaymentError: () => t('checkout.payment_error'),
+
+      setProductImage() {
+          return this.productData.image[this.queryParams['image'] - 1] || this.productData.image[0];
+      },
 
       isShowVariant() {
         return Number(queryParams().variant) === 0;
