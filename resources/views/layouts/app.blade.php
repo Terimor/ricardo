@@ -43,6 +43,7 @@
       @if (Request::is('checkout'))
         <script type="text/javascript">var IPQ={Callback:()=>{}};</script>
         <script src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/learn.js" async></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/libphonenumber-js/1.7.25/libphonenumber-js.min.js" async></script>
       @endif
 
       @if (Request::get('exit'))
@@ -77,6 +78,10 @@
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @yield('styles')
+    
+    @foreach($pixels as $pixel)
+    {{ !empty($pixel['code']) ? $pixel['code'] : '' }}
+    @endforeach
 </head>
 <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
     <div id="app">

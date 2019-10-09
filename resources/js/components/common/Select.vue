@@ -5,6 +5,7 @@
       no-data-text="No match data"
       no-match-text="No match text"
       v-bind="rest"
+      @visible-change="onVisibleChange"
       @input="onChange"
       :value="value"
       :filterable="filterable"
@@ -18,7 +19,10 @@
           :key="item.value"
           :label="item.label"
           :value="item.value">
-          <div class="select__label" v-html="item.text || item.value"></div>
+          <div
+            v-if="opened"
+            class="select__label"
+            v-html="item.text || item.value"></div>
         </el-option>
       </template>
     </el-select>
@@ -41,12 +45,20 @@ export default {
     'validationMessage',
     'filterable',
   ],
+  data() {
+    return {
+      opened: false,
+    };
+  },
   computed: {
     invalid () {
       return this.validation && this.validation.$dirty && this.validation.$invalid
     }
   },
   methods: {
+    onVisibleChange(opened) {
+      this.opened = opened;
+    },
     onChange (e) {
       this.$emit('input', e, this.value)
       if (this.validation) {

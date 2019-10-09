@@ -13,7 +13,6 @@
         "credit-card-type": "^8.3.0",
         "date-fns": "^2.4.1",
         "js-sha256": "^0.9.0",
-        "libphonenumber-js": "^1.7.21",
         "postcode-validator": "^2.0.0",
         "printf": "^0.5.1",
         "vue-mq": "^1.0.1",
