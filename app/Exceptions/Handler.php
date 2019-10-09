@@ -43,7 +43,7 @@ class Handler extends ExceptionHandler
     public function report(Exception $exception)
     {
         // log to sentry
-        if (in_array(env('ENVIRONMENT'), ['staging', 'production'])) {
+        if (in_array(env('ENVIRONMENT'), ['production'])) {
             if (app()->bound('sentry') && $this->shouldReport($exception)) {
                 app('sentry')->captureException($exception);
             }
