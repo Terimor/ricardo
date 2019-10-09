@@ -177,7 +177,6 @@
 
 <script>
 import emc1Validation from '../validation/emc1-validation'
-import printf from 'printf'
 import notification from '../mixins/notification'
 import queryToComponent from '../mixins/queryToComponent'
 import { t } from '../utils/i18n';
@@ -402,7 +401,7 @@ export default {
         label: getRadioHtml({
           ...it,
           installments: this.form.installments,
-          text: printf(it.text, { color: this.form.variant }),
+          text: it.text,
           idx,
         })
       }))

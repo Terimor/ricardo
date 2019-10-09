@@ -14,7 +14,6 @@
         "date-fns": "^2.4.1",
         "js-sha256": "^0.9.0",
         "postcode-validator": "^2.0.0",
-        "printf": "^0.5.1",
         "vue-mq": "^1.0.1",
         "vue-owl-carousel": "^2.0.3",
         "vuelidate": "^0.7.4",
