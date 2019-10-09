@@ -184,6 +184,7 @@ return [
         //Jenssegers\Mongodb\Session\SessionServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
+        App\Providers\CacheServiceProvider::class,
     ],
 
     /*
