@@ -81,7 +81,6 @@
   import { t } from '../utils/i18n';
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
-  import printf from 'printf'
 
 	export default {
 		name: 'vmc4',
@@ -203,7 +202,7 @@ console.log(this.queryParams)
           label: getRadioHtml({
             ...it,
             installments: this.form.installments,
-            text: printf(it.text, { color: this.form.variant }),
+            text: it.text,
             idx
           })
         }))
