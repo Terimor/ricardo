@@ -9,6 +9,7 @@ export const getRadioHtml = ({
    discountName,
    newPrice,
    text,
+   totalQuantity,
    price,
    discountText,
    currency = '$',
@@ -22,7 +23,7 @@ export const getRadioHtml = ({
     ? queryParams().sellout.split(',')
     : [];
 
-  const isSoldOut = isSellOutArray.includes(String(idx + 1));
+  const isSoldOut = isSellOutArray.includes(String(totalQuantity));
 
   const formattedPrice = discountName ? `${pricePerUnit[installments]}/${t('checkout.unit')}` : pricePerUnit[installments];
 
@@ -45,7 +46,7 @@ export const getRadioHtml = ({
     
         <p class="label-container-radio__name-price">
                   
-          <span class="label-container-radio__name-price__name">${text}</span>   
+          <span class="label-container-radio__name-price__name">${text}</span>
           
           ${(!discountName && isSoldOut) ? `<span class='label-container-radio__name-price__soldout red'>${t('checkout.sold_out')}</span>` : ''}
 
