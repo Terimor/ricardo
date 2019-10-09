@@ -141,6 +141,8 @@ export function preparePurchaseData({
           }),
         totalQuantity: +key,
         isOutOfStock: isSellOutArray.includes(String(idx + 1)),
+        isBestseller: it.is_bestseller,
+        isPopular: it.is_popular
       }
     });
   if(customOrder) {

@@ -11,6 +11,7 @@ import { getCountOfInstallments } from '../utils/installments';
 import notification from '../mixins/notification';
 import queryToComponent from '../mixins/queryToComponent';
 import purchasMixin from '../mixins/purchas';
+import { queryParams } from  '../utils//queryParams';
 
 const promo = new Vue({
   el: "#promo",
@@ -200,6 +201,9 @@ const promo = new Vue({
   },
 
   computed: {
+    isShowVariant() {
+        return Number(queryParams().variant) === 0;
+    },
     checkoutData() {
       return checkoutData;
     },
@@ -283,9 +287,15 @@ const promo = new Vue({
     },
 
     setSelectedPlan(plan, deal) {
-      this.selectedPlan = plan;
-      this.form.deal = deal
-      this.scrollTo('.j-variant-section');
+      if(this.isShowVariant){
+          this.form.variant = this.skusList[0].code;
+          this.isShownForm = true;
+          this.scrollTo('.j-complete-order');
+      }else{
+          this.selectedPlan = plan;
+          this.form.deal = deal
+          this.scrollTo('.j-variant-section');
+      }
     },
 
     setSelectedVariant(variant) {

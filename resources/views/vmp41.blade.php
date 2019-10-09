@@ -108,8 +108,8 @@
                         class="promo__card"
                         :class="{
                             'selected-promotion': selectedPlan === item.discountName,
-                            'most-popular': item.discountName === 'BESTSELLER',
-                            'most-profitable': item.discountName === 'BEST DEAL',
+                            'most-popular': item.isBestseller,
+                            'most-profitable': item.isPopular,
                             'starter': item.discountName === '',
                         }"
                         @click="setSelectedPlan(item.discountName || 'STARTER', item.totalQuantity)"
@@ -152,6 +152,7 @@
                             {{ t('checkout.add_to_cart') }}
                         </green-button>
                     </div>
+
                 </div>
             </div>
             <template v-if="!selectedPlan">
@@ -250,6 +251,7 @@
             </template>
         </div>
         <div
+            v-if="!isShowVariant"
             class="j-variant-section"
             :class="{
                 'promo__select-variant-wrapper': hasTimer !== null
@@ -261,7 +263,7 @@
                 {{ t('checkout.select_variant') }}
             </div>
         </div>
-        <template v-if="selectedPlan">
+        <template v-if="selectedPlan && !isShowVariant">
             <div class="promo__choose-product">
                 <div class="promo__choose-product-item">
                     <div
