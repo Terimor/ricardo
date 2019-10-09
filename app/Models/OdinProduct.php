@@ -439,7 +439,7 @@ class OdinProduct extends Model
     /**
      * Retuen array skus -> product
      * SAGA: OdinProduct::cacheSkusProduct
-     * @param type $life_time
+     * @param type $cache_lifetime
      */
     public static function getCacheSkusProduct($cache_lifetime = 600)
     {

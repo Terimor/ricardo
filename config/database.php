@@ -34,8 +34,23 @@ return [
     'connections' => [
         'mongodb' => [
             'driver'   => 'mongodb',
-	    'dsn' => env('DB_DSN'),
-	    'database' => env('DB_DATABASE'),
+            'dsn' => env('MONGODB_DSN_ODIN'),
+            'database' => explode('/', env('MONGODB_DSN_ODIN'))[3]
+            //'database' => array_values(array_slice(explode('/', env('MONGODB_DSN_ODIN')), -1))[0],
+        ],
+    ],
+
+    'redis' => [
+        'client' => 'predis',
+        'options' => [
+            //'cluster' => 'predis',
+            'prefix' => '',
+        ],
+        'cache' => [
+            'host' => env('REDIS_HOST'),
+            'password' => null,
+            'port' => 6379,
+            'database' => 0,
         ],
     ],
 
@@ -49,7 +64,5 @@ return [
     | the migrations on disk haven't actually been run in the database.
     |
     */
-
     'migrations' => 'migration',
-
 ];

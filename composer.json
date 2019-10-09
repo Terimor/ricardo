@@ -32,6 +32,7 @@
         "mongodb/mongodb": "^1.4",
         "ocramius/package-versions": "^1.4",
         "paypal/paypal-checkout-sdk": "^1.0",
+        "predis/predis": "^1.1",
         "sentry/sentry-laravel": "^1.2",
         "srmklive/paypal": "^1.6",
         "stevebauman/location": "^5.0"

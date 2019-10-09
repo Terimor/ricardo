@@ -43,13 +43,12 @@ class Handler extends ExceptionHandler
     public function report(Exception $exception)
     {
         // log to sentry
-        if (env('APP_ENV') != 'local') {
+        if (in_array(env('ENVIRONMENT'), ['staging', 'production'])) {
             if (app()->bound('sentry') && $this->shouldReport($exception)) {
                 app('sentry')->captureException($exception);
             }
-        }
-        //remove log to file on remote server
-        if (env('APP_ENV') == 'local') {
+        } else {
+            //remove log to file on remote server
             parent::report($exception);
         }
     }
