@@ -2,14 +2,14 @@ import wait from '../utils/wait';
 
 
 wait(
-  () => !!window.Sentry && !!window.Vue,
-  () => Sentry.init({
-    dsn: SentryDSN,
+  () => !!window.Vue && !!window.Sentry && !!window.Sentry.init && !!window.Sentry.Integrations.Vue,
+  () => window.Sentry.init({
+    dsn: window.SentryDSN,
     integrations: [
-      new Sentry.Integrations.Vue({
-        Vue,
+      new window.Sentry.Integrations.Vue({
+        Vue: window.Vue,
         attachProps: true,
-        logErrors: false,
+        logErrors: true,
       }),
     ],
   }),

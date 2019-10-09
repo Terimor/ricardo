@@ -3,32 +3,24 @@
 
 // wait until condition returned true, then execute callback
 function wait(condition, callback, timeout = 100) {
-  let interval = null;
-
   function iteration() {
-    if (!condition()) {
-      return false;
-    }
-
-    if (interval) {
+    if (condition()) {
       clearInterval(interval);
+      callback();
     }
-
-    callback();
-
-    return true;
   }
 
-  if (!iteration()) {
-    interval = setInterval(iteration, timeout);
-  }
-};
+  const interval = setInterval(iteration, timeout);
+  iteration();
+}
 
 
 // init Sentry.io service
 wait(
-  () => !!window.Sentry,
-  () => Sentry.init({ dsn: SentryDSN }),
+  () => !!window.Sentry && !!window.Sentry.init,
+  () => window.Sentry.init({
+    dsn: window.SentryDSN,
+  }),
 );
 
 
