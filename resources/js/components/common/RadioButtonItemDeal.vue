@@ -1,6 +1,6 @@
 <template>
   <label class="label-container-radio radio-button-deal"
-          :class="[`item-${item.value}`, {disabled: item.isOutOfStock}]">
+          :class="[`item-${item.value}`, {disabled: item.isOutOfStock, 'labeled': item.discountName}]">
     <img class="share" src="/images/share.png" v-if="showShareArrow">
     <input type="radio"
            :checked="item.value === value"
@@ -10,9 +10,12 @@
            :disabled="item.isOutOfStock">
     <div class="label-container-radio__label">
       <div>
-        <div class="red">
+        <span class="label-container-radio__discount-name red">
           {{item.discountName}}
-        </div>
+        </span>
+        <span v-if="item.isOutOfStock" class="label-container-radio__soldout red">
+           {{textSoldOut}}
+        </span>
         <div>
           {{item.text}}
         </div>
@@ -33,6 +36,7 @@
     </div>
     <span class="checkmark"></span>
   </label>
+
 </template>
 
 <script>
@@ -57,6 +61,7 @@
 		},
         computed: {
           textUnit: () => t('checkout.unit'),
+          textSoldOut: () => t('checkout.sold_out'),
         },
         mounted(){
           this.$nextTick(function () {
@@ -84,6 +89,15 @@
 
       .price {
         margin-left: auto;
+      }
+    }
+  }
+  .label-container-radio.disabled.labeled {
+    .label-container-radio__soldout {
+      &:before {
+        display: inline-block;
+        content: '-';
+        text-decoration: inherit;
       }
     }
   }

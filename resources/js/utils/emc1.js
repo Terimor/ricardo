@@ -18,30 +18,44 @@ export const getRadioHtml = ({
 }) => {
   const isEmc1b = queryParams().tpl === 'emc1b';
 
+  const isSellOutArray = queryParams().sellout
+    ? queryParams().sellout.split(',')
+    : [];
+
+  const isSoldOut = isSellOutArray.includes(String(idx + 1));
+
   const formattedPrice = discountName ? `${pricePerUnit[installments]}/${t('checkout.unit')}` : pricePerUnit[installments];
 
   const currentPrice = isEmc1b
-      ? formattedPrice
-      : getCountOfInstallments(installments) + newPrice.toLocaleString();
+    ? formattedPrice
+    : getCountOfInstallments(installments) + newPrice.toLocaleString();
 
 
-      return (`${discountName
-        ? `<p class="label-container-radio__best-seller">
-              <span>${discountName}</span>
-              <span>${currentPrice}</span>
-          </p>`
-        : ''}
+  return (
+    `${discountName
+      ? `<p class="label-container-radio__best-seller">
+                <span class="label-container-radio__best-seller__name">${discountName}</span>
+                ${ isSoldOut ? `<span class="label-container-radio__best-seller__soldout red">${t('checkout.sold_out')}</span>` : ''}
+                <span class="label-container-radio__best-seller__price">${currentPrice}</span>
+            </p>`
+      : ''}
+
   
         ${idx === 1 ? '<img class="share" src="/images/share.png">' : ''}
     
         <p class="label-container-radio__name-price">
-          <span>${text}</span>          
+                  
+          <span class="label-container-radio__name-price__name">${text}</span>   
+          
+          ${(!discountName && isSoldOut) ? `<span class='label-container-radio__name-price__soldout red'>${t('checkout.sold_out')}</span>` : ''}
+
           ${!isEmc1b
             ? `<span ${idx !== 0 && discountName ? 'class="strike"' : ''}>
-                  ${getCountOfInstallments(installments) + (!discountName ? newPrice : price).toLocaleString()}
-              </span>`
+                    ${getCountOfInstallments(installments) + (!discountName ? newPrice : price).toLocaleString()}
+               </span>`
             : `${discountName ? '' : currentPrice}`}
         </p>
+
         <p class="label-container-radio__discount ${idx === 1 ? 'red' : ''}">${discountText}</p>
       `)
 };
@@ -55,8 +69,7 @@ export function * getNotice ({
 }) {
   let index = 0
   const messageMap = {
-    paypal: `
-      <div class="recently-notice">
+    paypal: `<div class="recently-notice">
         <div class="recently-notice__left">
           <img src="/images/paypal232.png" alt="">
         </div>

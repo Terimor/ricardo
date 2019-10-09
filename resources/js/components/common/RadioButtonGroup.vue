@@ -7,7 +7,8 @@
       <slot/>
     </template>
     <template v-else v-for="input in list">
-      <label :style="input.styles" :key="input.value" class="label-container-radio"  :class="[input.class, {disabled: input.isOutOfStock}]">
+      <label :style="input.styles" :key="input.value" class="label-container-radio"
+             :class="[input.class, {disabled: input.isOutOfStock, labeled: input.isLabeled}]">
         <div class="label-container-radio__label" v-html="input.label"></div>
         <input type="radio" :checked="input.value == value" name="radio" :value="input.value" :disabled="input.isOutOfStock">
         <span class="checkmark"></span>
@@ -59,7 +60,6 @@ export default {
     background-color: transparent !important;
     border: none;
     opacity: .5;
-    text-decoration: line-through;
     cursor: default;
     &:before {
       position: absolute;
@@ -76,6 +76,9 @@ export default {
       background: rgba(0,0,0,.5);
       border-color: transparent;
       border-radius: 0;
+    }
+    * {
+      text-decoration: line-through;
     }
   }
 
