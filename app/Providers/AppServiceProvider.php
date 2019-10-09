@@ -3,12 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Setting;
-use App\Services\I18nService;
 use Illuminate\Support\ServiceProvider;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
 use PayPalCheckoutSdk\Core\SandboxEnvironment;
-use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
                     'instant_payment_paypal_client_id',
                     'instant_payment_paypal_secret',
                     'instant_payment_paypal_mode',
-                ]);
+            ]);
             $client_id = $credentials['instant_payment_paypal_client_id'];
             $secret = $credentials['instant_payment_paypal_secret'];
             $mode = $credentials['instant_payment_paypal_mode'];
