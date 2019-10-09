@@ -89,6 +89,8 @@ class PaymentsController extends Controller
             throw new AuthException('checkout.com captured webhook unauthorized');
         }
 
+        $reply['fee'] = $checkoutService->requestFee($reply['hash']);
+
         $this->paymentService->approveOrder($reply);
     }
 

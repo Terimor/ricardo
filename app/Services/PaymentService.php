@@ -571,6 +571,7 @@ class PaymentService
                     }
                     $order->total_price += $checkout_price;
                     $order->total_price_usd += $checkout_price_usd;
+                    $order->is_invoice_sent = false;
 
                     if (!$order->save()) {
                         $validator = $order->validate();
@@ -605,6 +606,7 @@ class PaymentService
 
         $txn = $order->getTxnByHash($data['hash'], false);
         if ($txn) {
+            $txn['fee'] = $data['fee'];
             $txn['status'] = Txn::STATUS_APPROVED;
             $order->addTxn($txn);
         }
@@ -619,6 +621,7 @@ class PaymentService
 
         $order->total_paid += $data['value'];
         $order->total_paid_usd += floor($data['value'] / $currency->usd_rate * 100) / 100;
+        $order->txns_fee_usd += floor($data['fee'] / $currency->usd_rate * 100) / 100;
         $order->status = $order->total_paid >= $order->total_price ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
 
         if (!$order->save()) {

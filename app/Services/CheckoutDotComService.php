@@ -7,15 +7,16 @@ use App\Models\Setting;
 use App\Models\Txn;
 use App\Services\OrderService;
 use App\Services\PaymentService;
-use Illuminate\Http\Request;
 use Checkout\CheckoutApi;
+use Checkout\Models\Tokens\Card;
 use Checkout\Models\Payments\Payment;
 use Checkout\Models\Payments\Source;
 use Checkout\Models\Payments\CardSource;
 use Checkout\Models\Payments\TokenSource;
-use Checkout\Models\Tokens\Card;
 use Checkout\Library\Exceptions\CheckoutHttpException;
 use Checkout\Library\Exceptions\CheckoutException;
+use Illuminate\Http\Request;
+use GuzzleHttp\Client as GuzzHttpCli;
 /**
  * CheckoutDotComService class
  */
@@ -35,6 +36,8 @@ class CheckoutDotComService
     const SUCCESS_FLAGGED_CODE = 10100;
 
     const TYPE_WEBHOOK_CAPTURED = 'payment_captured';
+
+    const REPORTING_API_URL = 'https://api.checkout.com/reporting';
 
     /**
      * @var string
@@ -223,6 +226,44 @@ class CheckoutDotComService
             logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
         }
 
+        return $result;
+    }
+
+    /**
+     * Returns fee by payment_id
+     * @param  string $payment_id
+     * @return float
+     */
+    public function requestFee(string $payment_id): float
+    {
+        $client = new GuzzHttpCli(['base_uri' => self::REPORTING_API_URL]);
+        $res = $client->request('GET', "payments/{$payment_id}", [
+            'headers' => [
+                'Authorization' => $this->secret_key,
+                'Content-Type'  => 'application/json'
+            ]
+        ]);
+
+        logger()->info('Checkout.com Reporting API status -> ' . $res->getStatusCode());
+
+        $result = 0;
+        if ((int)$res->getStatusCode() === 200) {
+            logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
+
+            $body = \json_decode($res->getBody());
+
+            if (!empty($body['data']) && !empty($body['data']['actions'])) {
+                foreach ($body['data']['actions'] as $action) {
+                    $bds = $action['breakdown'] ?? [];
+                    foreach ($bds as $item) {
+                        $fee = (float)($item['processing_currency_amount'] ?? 0.0);
+                        if ($fee < 0) {
+                            $result += ($fee * -1);
+                        }
+                    }
+                }
+            }
+        }
         return $result;
     }
 
