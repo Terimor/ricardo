@@ -1,6 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import postcode from 'postcode-validator'
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import creditCardType from 'credit-card-type'
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import * as dateFns from 'date-fns';
@@ -28,8 +27,7 @@ const emc1Validation = function () {
     phone: {
       required,
       isValidPhone (val) {
-
-        const phoneNumber = parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField)
+        const phoneNumber = libphonenumber.parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField.toUpperCase())
 
         if (phoneNumber) {
           return phoneNumber.isValid()
