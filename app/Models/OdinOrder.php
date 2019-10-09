@@ -30,7 +30,7 @@ class OdinOrder extends OdinModel
         'total_paid_usd' => null, // Full USD paid amount (with warranty); calculated from local paid amount using exchange rate; recalculated after refund.
         'total_price' => null, // * float full price in local currency (with warranty)
         'total_price_usd' => null, // * float, full USD price (with warranty)
-        'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
+        'txns_fee_usd' => 0, //float, total amount of all txns' fee in USD
         'shop_currency' => null, // enum string, //currency was used to display prices
         //'payment_provider' => null, // enum string
         //'payment_method' => null, // enum string
@@ -389,14 +389,14 @@ class OdinOrder extends OdinModel
             ->merge([$txn])->all();
     }
 
-    
+
     /**
      * Get main order SKU
      * @return type
      */
     public function getMainSku()
     {
-        $sku = null;        
+        $sku = null;
         if ($this->products) {
             $products = $this->products;
             foreach ($products as $product) {
@@ -407,14 +407,14 @@ class OdinOrder extends OdinModel
         }
         return $sku;
     }
-    
+
     /**
      * Get main order SKU
      * @return type
      */
     public function getPriceSet()
     {
-        $priceSet = null;        
+        $priceSet = null;
         if ($this->products) {
             $products = $this->products;
             foreach ($products as $product) {
@@ -424,5 +424,5 @@ class OdinOrder extends OdinModel
             }
         }
         return $priceSet;
-    }    
+    }
 }

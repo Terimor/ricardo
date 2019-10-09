@@ -250,7 +250,7 @@ class CheckoutDotComService
         if ((int)$res->getStatusCode() === 200) {
             logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
 
-            $body = \json_decode($res->getBody());
+            $body = \json_decode($res->getBody(), true);
 
             if (!empty($body['data']) && !empty($body['data']['actions'])) {
                 foreach ($body['data']['actions'] as $action) {
