@@ -665,14 +665,15 @@ class UtilsService
 	 */
 	public static function replaceUrlForCdn	(string $url): string
 	{
-		$remoteHost = request()->server('HTTP_HOST');
-		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
-			$remoteHost = Setting::getValue('cf_host_default');            
-		} else {
-            $remoteHost = self::IMAGE_HOST;
+        $remoteHost = request()->server('HTTP_HOST');
+        if (env('ENVIRONMENT') == 'production') {
+            $url = str_replace(self::S3_URL, self::IMAGE_HOST, $url);
+        } else if (env('ENVIRONMENT') == 'staging') {            
+            $url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
+        } else {
+            $url = str_replace(self::S3_URL, 'cdn.'.Setting::getValue('cf_host_default'), $url);            
         }
 
-		$url = str_replace(self::S3_URL, $remoteHost, $url);
 		// cut www. from url
 		$url = str_replace('www.', '', $url);
 		return $url;
