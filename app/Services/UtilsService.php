@@ -668,6 +668,8 @@ class UtilsService
         $remoteHost = request()->server('HTTP_HOST');
         if (env('ENVIRONMENT') == 'production') {
             $url = str_replace(self::S3_URL, self::IMAGE_HOST, $url);
+        } else if (env('ENVIRONMENT') == 'staging') {            
+            $url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
         } else {
             $url = str_replace(self::S3_URL, 'cdn.'.Setting::getValue('cf_host_default'), $url);            
         }
