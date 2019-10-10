@@ -14,7 +14,7 @@ class UtilsService
     /**
      * Default Amazon s3 URL
      */
-	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
+	const S3_URL = 'cdn.backenddomainsecure.com';
 
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
     /**

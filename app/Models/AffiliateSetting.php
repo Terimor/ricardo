@@ -44,6 +44,8 @@ class AffiliateSetting extends Model
     
     public static $salesQtyInTable = 20;
     
+    const OWN_AFFILIATE_MAX = 11;
+    
     /**
      * [Percent] = [sales count]
      * @var type 

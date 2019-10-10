@@ -22,12 +22,15 @@ class GoogleTag extends Model
      * @var array
      */
     protected $fillable = [
-        'code', 'reducing_percent',
+        'code', 'type',
     ];
+
+    // display always at all pages
+    const TYPE_ALWAYS  = 'always';
+    // display only on thankyou-promos, thankyou page when we have get parameter order= and this order is_reduced=true and affid < 11
+    const TYPE_REDUCED  = 'reduced';    
     
-    const TAG_ALWAYS = 100;
-    const TAG_AFFILIATE = 60;
-    const TAG_AFFILIATE_PAGES = ['thankyou-promos', 'thankyou'];
+    const REDUCED_PAGES = ['upsells', 'thankyou'];
     
     /**
      * Get google tags to display
@@ -41,13 +44,14 @@ class GoogleTag extends Model
         $tags = [];
         // prepare tags
         foreach ($googleTags as $key => $googleTags) {
-            if ($googleTags->reducing_percent == self::TAG_ALWAYS) {
+            if ($googleTags->type == self::TYPE_ALWAYS) {
                 $tags[$key]['code'] = $googleTags->code; 
-            } else if ($googleTags->reducing_percent == self::TAG_AFFILIATE){
+            } else if ($googleTags->type == self::TYPE_REDUCED){                
                 // check affiliate < 11
-                if ($affiliate && (int)$affiliate->ho_affiliate_id < 11) {
+                if ($affiliate && (int)$affiliate->ho_affiliate_id < AffiliateSetting::OWN_AFFILIATE_MAX) {                    
                     // check order for is reduced
-                    if (!empty($request->order)) {
+                    $route = $request->route()->getName() ? $request->route()->getName() : 'index';                    
+                    if (!empty($request->order) && in_array($route, self::REDUCED_PAGES)) {                        
                         $order = OdinOrder::where('_id', $request->order)->first();
                         if (isset($order->is_reduced) && $order->is_reduced == true) {
                            $tags[$key]['code'] = $googleTags->code;
