@@ -32,7 +32,7 @@
 </script>
 
 <style lang="scss">
-#bio_ep {
+div#bio_ep {
     padding: 3% 4% 5%;
     height: auto;
 
