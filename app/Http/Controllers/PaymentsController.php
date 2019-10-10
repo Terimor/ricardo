@@ -103,4 +103,8 @@ class PaymentsController extends Controller
         logger()->info('checkout.com', ['content' => json_encode($req->toArray())]);
     }
 
+    public function testEbanx(Request $req)
+    {
+        return 'ok';
+    }
 }
