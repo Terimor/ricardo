@@ -60,10 +60,14 @@ export default {
             position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
           });
 
-          const target = document.querySelector('.recently-notice_paypal');
-          if(target) {
-              target.addEventListener('click', function () {
-                  document.querySelector('#paypal-button').scrollIntoView();
+          const targetNotice = document.querySelector('.recently-notice_paypal');
+          const targetButton = document.querySelector('#paypal-button');
+
+          if(targetNotice) {
+              targetNotice.addEventListener('click', function () {
+                  if(targetButton) {
+                      targetButton.scrollIntoView();
+                  }
               });
           };
         }, 6000)

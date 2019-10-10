@@ -79,7 +79,9 @@
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @yield('styles')
-    
+
+    <style></style>
+
     @foreach($pixels as $pixel)
     {{ !empty($pixel['code']) ? $pixel['code'] : '' }}
     @endforeach
