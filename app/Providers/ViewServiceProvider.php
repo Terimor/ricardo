@@ -41,7 +41,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
             $view->with('ga_id', optional(Domain::getByName())->ga_id);
-            $view->with('pixels', AffiliateService::getPixels(Request(), $affiliate));
+            $view->with('htmlToApp', AffiliateService::getHtmlToApp(Request(), $affiliate));
         });
 
         View::composer('layouts.footer', function($view) use ($affiliate) {

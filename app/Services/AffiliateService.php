@@ -9,6 +9,7 @@ use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Models\RequestQueue;
 use App\Models\Pixel;
+use App\Models\GoogleTag;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 
@@ -112,6 +113,22 @@ class AffiliateService
     }
     
     /**
+     * Return HTML for dispay on APP page
+     * @param Request $request
+     * @param AffiliateSetting $affiliate
+     * @return type
+     */
+    public static function getHtmlToApp(Request $request, AffiliateSetting $affiliate = null)
+    {
+        $htmls = [
+            'pixels' => AffiliateService::getPixels($request, $affiliate),
+            'google' => GoogleTag::getGoogleTagsForDisplay($request, $affiliate)
+        ];        
+        echo '2';
+        return $htmls;
+    }
+    
+    /**
      * Get pixels
      * @param Request $request
      * @param AffiliateSetting $affiliate
@@ -135,7 +152,7 @@ class AffiliateService
         return $pixels;
     }
     
-/**
+    /**
      * Return array pixel codes
      * @param string $productId
      * @param string $countryCode

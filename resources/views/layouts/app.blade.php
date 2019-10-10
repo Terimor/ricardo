@@ -79,9 +79,18 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @yield('styles')
     
-    @foreach($pixels as $pixel)
-    {{ !empty($pixel['code']) ? $pixel['code'] : '' }}
-    @endforeach
+    @if (!empty($htmlToApp['pixels']))
+        @foreach($htmlToApp['pixels'] as $pixel)
+        {{ !empty($pixel['code']) ? $pixel['code'] : '' }}
+        @endforeach
+    @endif
+    
+    @if (!empty($htmlToApp['google']))
+        @foreach($htmlToApp['google'] as $google)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ !empty($google['code']) ? $google['code'] : '' }}"></script>
+        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ !empty($google['code']) ? $google['code'] : '' }}');</script>        
+        @endforeach    
+    @endif
 </head>
 <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
     <div id="app">
