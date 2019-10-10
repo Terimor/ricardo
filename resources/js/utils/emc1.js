@@ -70,12 +70,13 @@ export function * getNotice ({
 }) {
   let index = 0
   const messageMap = {
-    paypal: `<div class="recently-notice">
+    paypal: `<div class="recently-notice recently-notice_paypal">
         <div class="recently-notice__left">
-          <img src="/images/paypal232.png" alt="">
+          <img src="/images/paypal232.png" alt="PayPal">
         </div>
         <div class="recently-notice__right">
           <p>${t('checkout.paypal.risk_free')}</p>
+          <img src="/images/paypal-highq.png" alt="PayPal">
         </div>
       </div>
     `,

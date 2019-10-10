@@ -54,10 +54,18 @@ export default {
 
       setTimeout(() => {
         setInterval(() => {
+
           this.showNotification({
             content: getNoticeHtml(),
             position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
-          })
+          });
+
+          const target = document.querySelector('.recently-notice_paypal');
+          if(target) {
+              target.addEventListener('click', function () {
+                  document.querySelector('#paypal-button').scrollIntoView();
+              });
+          };
         }, 6000)
       }, 9000)
     }
