@@ -220,7 +220,6 @@
   import { check as ipqsCheck } from '../services/ipqs';
   import { sendCheckoutRequest } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
-  import { sha256 } from 'js-sha256';
   import { queryParams } from  '../utils/queryParams';
 
   export default {
@@ -460,7 +459,7 @@
           billing_email: this.form.email,
           billing_phone: this.dialCode + this.form.phone,
           credit_card_bin: this.form.cardNumber.substr(0, 6),
-          credit_card_hash: sha256(this.form.cardNumber),
+          credit_card_hash: window.sha256(this.form.cardNumber),
           credit_card_expiration_month: ('0' + this.form.month).slice(-2),
           credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
           cvv_code: this.form.cvv,
