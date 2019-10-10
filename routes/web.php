@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 */
 if (env('ENVIRONMENT') !== 'development') {
     URL::forceScheme('https');
+    echo "Https used";
 }
 
 Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\Router $router) {
