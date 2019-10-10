@@ -14,7 +14,8 @@ class UtilsService
     /**
      * Default Amazon s3 URL
      */
-	const S3_URL = 'cdn.backenddomainsecure.com';
+	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
+    const IMAGE_HOST = 'cdn.backenddomainsecure.com';
 
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
     /**
@@ -666,10 +667,12 @@ class UtilsService
 	{
 		$remoteHost = request()->server('HTTP_HOST');
 		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
-			$remoteHost = Setting::getValue('cf_host_default');
-		}
+			$remoteHost = Setting::getValue('cf_host_default');            
+		} else {
+            $remoteHost = self::IMAGE_HOST;
+        }
 
-		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
+		$url = str_replace(self::S3_URL, $remoteHost, $url);
 		// cut www. from url
 		$url = str_replace('www.', '', $url);
 		return $url;

@@ -122,7 +122,7 @@ class AffiliateService
     {
         $htmls = [
             'pixels' => AffiliateService::getPixels($request, $affiliate),
-            'google' => GoogleTag::getGoogleTagsForDisplay($request, $affiliate)
+            'gtags' => GoogleTag::getGoogleTagsForDisplay($request, $affiliate)
         ];
         return $htmls;
     }

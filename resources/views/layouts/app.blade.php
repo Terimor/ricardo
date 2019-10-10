@@ -86,10 +86,10 @@
         @endforeach
     @endif
     
-    @if (!empty($htmlToApp['google']))
-        @foreach($htmlToApp['google'] as $google)
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ !empty($google['code']) ? $google['code'] : '' }}"></script>
-        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ !empty($google['code']) ? $google['code'] : '' }}');</script>        
+    @if (!empty($htmlToApp['gtags']))
+        @foreach($htmlToApp['gtags'] as $gtag)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ !empty($gtag['code']) ? $gtag['code'] : '' }}"></script>
+        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ !empty($gtag['code']) ? $gtag['code'] : '' }}');</script>        
         @endforeach    
     @endif
 </head>
