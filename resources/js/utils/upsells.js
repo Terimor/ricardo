@@ -77,7 +77,7 @@ export function paypalOnApprove(data) {
 
 export function send1ClickRequest(data, upsells) {
   return Promise.resolve()
-    .then(() => fetch('/test-checkout-card-upsells', {
+    .then(() => fetch('/pay-by-card-upsells', {
       method: 'post',
       credentials: 'same-origin',
       headers: {

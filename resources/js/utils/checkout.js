@@ -173,7 +173,7 @@ export function sendCheckoutRequest(data) {
   const currency = queryParams().cur || checkoutData.product.prices.currency;
 
   return Promise.resolve()
-    .then(() => fetch('/test-checkout-card?cur=' + currency, {
+    .then(() => fetch('/pay-by-card?cur=' + currency, {
       method: 'post',
       credentials: 'same-origin',
       headers: {
