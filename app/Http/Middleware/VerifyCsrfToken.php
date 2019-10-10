@@ -19,8 +19,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        'test-checkout-card',
-        'test-checkout-card-upsells',
         'test-checkoutdotcom-captured',
         'test-checkoutdotcom-failed',
         'paypal-webhooks',
