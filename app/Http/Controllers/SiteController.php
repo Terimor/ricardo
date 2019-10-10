@@ -195,7 +195,6 @@ class SiteController extends Controller
             $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
             $order_aff = $order_aff ? $order_aff->toArray() : null;
         }
-echo '1';
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 

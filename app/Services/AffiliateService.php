@@ -124,7 +124,6 @@ class AffiliateService
             'pixels' => AffiliateService::getPixels($request, $affiliate),
             'google' => GoogleTag::getGoogleTagsForDisplay($request, $affiliate)
         ];        
-        echo '2';
         return $htmls;
     }
     
@@ -146,7 +145,7 @@ class AffiliateService
             $device = \Utils::getDevice();
             
             // get pixels
-            $pixels = AffiliateService::getPixelsByData($request, $product, $countryCode, $route, $device);
+            $pixels = AffiliateService::getPixelsByData($request, $affiliate->ho_affiliate_id, $product, $countryCode, $route, $device);
             
         }
         return $pixels;
@@ -159,9 +158,9 @@ class AffiliateService
      * @param string $route
      * @param string $device
      */
-    public static function getPixelsByData(Request $request, $product, string $countryCode, string $route, string $device) : array
+    public static function getPixelsByData(Request $request, string $hoAffiliateID, $product, string $countryCode, string $route, string $device) : array
     {
-        $pixels = Pixel::where(['product_ids' => $product->id, 'countries' => $countryCode, 'placements' => $route, 'devices' => $device])->get();
+        $pixels = Pixel::where(['product_ids' => $product->id, 'ho_affiliate_id' => $hoAffiliateID, 'countries' => $countryCode, 'placements' => $route, 'devices' => $device])->get();
         
         $pixelsArray = [];
         foreach ($pixels as $pixel) {
