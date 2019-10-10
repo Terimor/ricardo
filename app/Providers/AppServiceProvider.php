@@ -29,7 +29,6 @@ class AppServiceProvider extends ServiceProvider
     {
         if (env('ENVIRONMENT') !== 'development') {
             \URL::forceScheme('https');
-            echo "Https used";
         }
 
         $this->app->bind(PayPalHttpClient::class, function () {
