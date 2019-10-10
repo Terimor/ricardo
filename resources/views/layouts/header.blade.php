@@ -1,6 +1,7 @@
 <header
     id="header"
     class="
+    hidden
     header
         {{ isset($isTransparent) ? 'transparent' : '' }}
         {{ Request::is('/') ? 'header--menu' : '' }}
