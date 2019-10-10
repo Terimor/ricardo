@@ -35,6 +35,7 @@
         :country-code="checkoutData.countryCode"
         :show-preloader.sync="showPreloader">
     </preloader-3>
+
     <template v-if="+queryParams.preload !== 3 || !showPreloader">
         <notice></notice>
         <div class="container">
@@ -358,6 +359,8 @@
             </div>
         </section>
     </template>
+
+    <leave-modal v-if="+queryParams.exit === 1" />
 </div>
 
 @include('layouts.footer')
