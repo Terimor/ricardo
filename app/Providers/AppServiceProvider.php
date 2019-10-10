@@ -27,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (env('ENVIRONMENT') !== 'development') {
+            \URL::forceScheme('https');
+            echo "Https used";
+        }
+
         $this->app->bind(PayPalHttpClient::class, function () {
             $credentials = Setting::getValue([
                     'instant_payment_paypal_client_id',

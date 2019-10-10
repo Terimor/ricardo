@@ -10,13 +10,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-if (env('ENVIRONMENT') !== 'development') {
-    URL::forceScheme('https');
-    echo "Https used";
-}
-
 Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\Router $router) {
-
     $router->get('/', 'SiteController@index');
     $router->get('/contact-us', 'SiteController@contactUs')->name('contact-us');
     $router->get('/returns', 'SiteController@returns')->name('returns');
