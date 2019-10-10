@@ -124,35 +124,15 @@ class CheckoutDotComService
     }
 
     /**
-     * Creates checkout 3ds object for payment
-     * @param  string $card_type
-     * @param  string $country
-     * @param  array|null $ipqs
-     * @return object
-     */
-    public static function create3dsObj(string $card_type, string $country, ?array $ipqs): object
-    {
-        $result = (object)['enabled' => false];
-
-        $setting = PaymentService::$providers[PaymentService::PROVIDER_CHECKOUTCOM]['methods'][$card_type] ?? [];
-        $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : PaymentService::FRAUD_CHANCE_MAX;
-
-        if (in_array($country, $setting['+3ds'] ?? []) || $fraud_chance > PaymentService::FRAUD_CHANCE_LIMIT) {
-            $result = (object)['enabled' => true];
-        }
-        return $result;
-    }
-
-    /**
      * Creates a new payment
      * @param Source $source
      * @param array $contact
      * @param OdinOrder $order
-     * @param object|null $card_3ds
+     * @param bool|null $is3ds
      * @param float $amount default: $order->total_price
      * @return array
      */
-    public function pay(Source $source, array $contact, OdinOrder $order, ?object $card_3ds, float $amount = null)
+    public function pay(Source $source, array $contact, OdinOrder $order, ?bool $is3ds, float $amount = null)
     {
         $amount = isset($amount) ? $amount : $order->total_price;
 
@@ -178,11 +158,11 @@ class CheckoutDotComService
         $payment->payment_ip = $order->ip;
 
         // enable 3ds
-        if ($card_3ds) {
+        if ($source instanceof CardSource) {
             $qs = http_build_query(array_merge($order->params ?? [], ['order' => $order->getIdAttribute(), 'cur' => $order->currency]));
             $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
             $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
-            $payment->{'3ds'} = $card_3ds;
+            $payment->{'3ds'} = (object)['enabled' => $is3ds];
         }
 
         $result = [

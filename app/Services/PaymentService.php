@@ -410,9 +410,10 @@ class PaymentService
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
         $ipqs = $req->input('ipqs', null);
-        $card = $req->get('card');
         $contact = array_merge($req->get('contact'), $req->get('address'));
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
+        $card = $req->get('card');
+        $card['type'] = self::getMethodByNumber($card['number']);
 
         $this->addCustomer($contact); // throwable
 
@@ -455,8 +456,7 @@ class PaymentService
         // provider selection in vacuum
         $checkoutService = new CheckoutDotComService();
         $source = CheckoutDotComService::createCardSource($card, $contact);
-        $card_3ds = CheckoutDotComService::create3dsObj($card['type'], $contact['country'], $ipqs);
-        $payment = $checkoutService->pay($source, $contact, $order, $card_3ds);
+        $payment = $checkoutService->pay($source, $contact, $order, self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs));
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
@@ -765,6 +765,74 @@ class PaymentService
         {
             $result = true;
         }
+        return $result;
+    }
+
+    /**
+     * Checks if 3ds is available
+     * @param  string $card_type
+     * @param  string $country
+     * @param  array|null $ipqs
+     * @return object
+     */
+    private static function checkIs3dsNeeded(string $card_type, string $country, ?array $ipqs): bool
+    {
+        $result = true;
+        $setting = PaymentService::$providers[PaymentService::PROVIDER_CHECKOUTCOM]['methods'][$card_type] ?? [];
+        $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : PaymentService::FRAUD_CHANCE_MAX;
+
+        if (in_array($country, $setting['+3ds'] ?? []) || $fraud_chance > PaymentService::FRAUD_CHANCE_LIMIT) {
+            $result = true;
+        } else if (in_array($country, $setting['-3ds'] ?? []) && $fraud_chance < PaymentService::FRAUD_CHANCE_LIMIT) {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns Credit Card type
+     * @param  string $number
+     * @return string
+     */
+    public static function getMethodByNumber(string $number): string
+    {
+        $card_masks = [
+            [
+                'mask' => '/^4[0-9]{0,15}$/i',
+                'type' => self::METHOD_VISA
+            ],
+            [
+                'mask' => '/^5[1-5][0-9]{5,}|222[1-9][0-9]{3,}|22[3-9][0-9]{4,}|2[3-6][0-9]{5,}|27[01][0-9]{4,}|2720[0-9]{3,}$/i',
+                'type' => self::METHOD_MASTERCARD
+            ],
+            [
+                'mask' => '/^3$|^3[47][0-9]{0,13}$/i',
+                'type' => self::METHOD_AMEX
+            ],
+            [
+                'mask' => '/^6$|^6[05]$|^601[1]?$|^65[0-9][0-9]?$|^6(?:011|5[0-9]{2})[0-9]{0,12}$/i',
+                'type' => self::METHOD_DISCOVER
+            ],
+            [
+                'mask' => '/^(?:2131|1800|35[0-9]{3})[0-9]{3,}$/i',
+                'type' => self::METHOD_JCB
+            ],
+            [
+                'mask' => '/^3(?:0[0-5]|[68][0-9])[0-9]{4,}$/i',
+                'type' => self::METHOD_DINERSCLUB
+            ],
+        ];
+
+        $result = self::METHOD_CREDITCARD;
+
+        foreach ($card_masks as $item) {
+            if (preg_match($item['mask'], $number)) {
+                $result = $item['type'];
+                break;
+            }
+        }
+
         return $result;
     }
 

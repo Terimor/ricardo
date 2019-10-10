@@ -48,11 +48,12 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 	$router->post('/calculate-upsells-total', 'ProductController@calculateUpsellsTotal');
     $router->get('/order-amount-total/{orderId}', 'OrderController@orderAmountTotal');
 
-    // test route
-    //$router->get('/test-checkout', 'Payments\PaypalController@checkout');
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
     $router->post('/paypal-webhooks', 'Payments\PaypalController@webhooks');
+
+    /* test routes */
+    $router->post('/test-ebanx', 'PaymentsController@testEbanx');
 });
 
 /*Route::get('/debug-sentry', function () {
