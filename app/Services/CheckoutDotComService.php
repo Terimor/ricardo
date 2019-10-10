@@ -57,6 +57,11 @@ class CheckoutDotComService
     private $public_key;
 
     /**
+     * @var string
+     */
+    private $env = self::ENV_LIVE;
+
+    /**
      * @var CheckoutApi
      */
     private $checkout;
@@ -86,6 +91,8 @@ class CheckoutDotComService
         }
 
         $env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
+
+        $this->env = $env;
 
         $this->checkout = new CheckoutApi($this->secret_key, $env === self::ENV_SANDBOX);
         $this->checkout->configuration()->setPublicKey($this->public_key);
@@ -238,8 +245,15 @@ class CheckoutDotComService
      */
     public function requestFee(string $payment_id): float
     {
+        // Reconciliation api isn't available in sandbox
+        if ($this->env !== self::ENV_LIVE) {
+            return 0.0;
+        }
+
         $client = new GuzzHttpCli(['base_uri' => self::REPORTING_API_URL]);
 
+        $res = null;
+        $result = 0.0;
         try {
             $res = $client->request('GET', "payments/{$payment_id}", [
                 'headers' => [
@@ -247,18 +261,16 @@ class CheckoutDotComService
                     'Content-Type'  => 'application/json'
                 ]
             ]);
+
+            logger()->info('Checkout.com Reporting API status -> ' . $res->getStatusCode());
         } catch (GuzzReqException $e) {
             logger()->error("Checkout.com Reporting API [{$payment_id}]", [
                 'request'   => Psr7\str($e->getRequest()),
                 'response'  => $e->hasResponse() ? Psr7\str($e->getResponse()) : null,
             ]);
-            return 0.0;
         }
 
-        logger()->info('Checkout.com Reporting API status -> ' . $res->getStatusCode());
-
-        $result = 0.0;
-        if ((int)$res->getStatusCode() === 200) {
+        if (isset($res) && (int)$res->getStatusCode() === 200) {
             logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
 
             $body = \json_decode($res->getBody(), true);
@@ -266,6 +278,7 @@ class CheckoutDotComService
             if (!empty($body['data']) && !empty($body['data']['actions'])) {
                 foreach ($body['data']['actions'] as $action) {
                     $bds = $action['breakdown'] ?? [];
+                    // sum negative items
                     foreach ($bds as $item) {
                         $fee = (float)($item['processing_currency_amount'] ?? 0.0);
                         if ($fee < 0) {
@@ -275,6 +288,7 @@ class CheckoutDotComService
                 }
             }
         }
+
         return $result;
     }
 

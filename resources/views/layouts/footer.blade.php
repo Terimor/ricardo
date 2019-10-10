@@ -1,4 +1,5 @@
-<footer class="footer {{ isset($isWhite) && $isWhite == true ? 'footer--white' : '' }}">
+<footer v-cloak
+        class="footer {{ isset($isWhite) && $isWhite == true ? 'footer--white' : '' }}">
     <ul class="footer__row">
         @php
         $links = [
@@ -30,6 +31,6 @@
             <li class="footer__row-item">
                 <a href="https://www.h8m8.com" target="_blank" class="footer__link">{{ t('footer.affiliate') }}</a>
             </li>
-        @endif        
+        @endif
     </ul>
 </footer>

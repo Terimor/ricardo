@@ -307,7 +307,6 @@
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
   import Spinner from './preloaders/Spinner';
-  import { sha256 } from 'js-sha256';
 
   export default {
     name: 'PaymentForm',
@@ -615,7 +614,7 @@
           fields = {
             ...fields,
             credit_card_bin: paymentForm.cardNumber.substr(0, 6),
-            credit_card_hash: sha256(paymentForm.cardNumber),
+            credit_card_hash: window.sha256(paymentForm.cardNumber),
             credit_card_expiration_month: ('0' + paymentForm.month).slice(-2),
             credit_card_expiration_year: ('' + paymentForm.year).substr(2, 2),
             cvv_code: paymentForm.cvv,

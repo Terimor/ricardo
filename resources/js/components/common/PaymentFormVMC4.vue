@@ -272,7 +272,6 @@
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
 	import {fade} from "../../utils/common";
-  import { sha256 } from 'js-sha256';
   import { queryParams } from  '../../utils/queryParams';
 
 	export default {
@@ -509,7 +508,7 @@
           billing_email: this.form.stepTwo.email,
           billing_phone: this.dialCode + this.form.stepTwo.phone,
           credit_card_bin: this.form.stepThree.cardNumber.substr(0, 6),
-          credit_card_hash: sha256(this.form.stepThree.cardNumber),
+          credit_card_hash: window.sha256(this.form.stepThree.cardNumber),
           credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
           credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
           cvv_code: this.form.stepThree.cvv,

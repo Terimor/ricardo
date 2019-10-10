@@ -47,6 +47,10 @@ html {
 header {
   display: flex;
 
+  &.hidden {
+    display: none;
+  }
+
   & > .container {
     display: flex;
     height: 100%;
@@ -183,7 +187,7 @@ header {
 
 .recently-notice {
   display: flex;
-  height: 80px;
+  min-height: 80px;
   font-weight: 700;
   color: #0a0f0a;
 
@@ -195,7 +199,7 @@ header {
 
     img {
       max-width: 100%;
-      max-height: 100%;
+      max-height: 80px;
       object-fit: contain;
     }
   }
@@ -221,6 +225,13 @@ header {
       i {
         font-size: 40px;
       }
+    }
+  }
+
+  &_paypal {
+    cursor: pointer;
+    img {
+      width: 120px;
     }
   }
 
