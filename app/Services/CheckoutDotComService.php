@@ -16,7 +16,9 @@ use Checkout\Models\Payments\TokenSource;
 use Checkout\Library\Exceptions\CheckoutHttpException;
 use Checkout\Library\Exceptions\CheckoutException;
 use Illuminate\Http\Request;
+use GuzzleHttp\Psr7;
 use GuzzleHttp\Client as GuzzHttpCli;
+use GuzzleHttp\Exception\RequestException as GuzzReqException;
 /**
  * CheckoutDotComService class
  */
@@ -37,7 +39,7 @@ class CheckoutDotComService
 
     const TYPE_WEBHOOK_CAPTURED = 'payment_captured';
 
-    const REPORTING_API_URL = 'https://api.checkout.com/reporting';
+    const REPORTING_API_URL = 'https://api.checkout.com/reporting/';
 
     /**
      * @var string
@@ -237,16 +239,25 @@ class CheckoutDotComService
     public function requestFee(string $payment_id): float
     {
         $client = new GuzzHttpCli(['base_uri' => self::REPORTING_API_URL]);
-        $res = $client->request('GET', "payments/{$payment_id}", [
-            'headers' => [
-                'Authorization' => $this->secret_key,
-                'Content-Type'  => 'application/json'
-            ]
-        ]);
+
+        try {
+            $res = $client->request('GET', "payments/{$payment_id}", [
+                'headers' => [
+                    'Authorization' => $this->secret_key,
+                    'Content-Type'  => 'application/json'
+                ]
+            ]);
+        } catch (GuzzReqException $e) {
+            logger()->error("Checkout.com Reporting API [{$payment_id}]", [
+                'request'   => Psr7\str($e->getRequest()),
+                'response'  => $e->hasResponse() ? Psr7\str($e->getResponse()) : null,
+            ]);
+            return 0.0;
+        }
 
         logger()->info('Checkout.com Reporting API status -> ' . $res->getStatusCode());
 
-        $result = 0;
+        $result = 0.0;
         if ((int)$res->getStatusCode() === 200) {
             logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
 
