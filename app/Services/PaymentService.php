@@ -476,7 +476,9 @@ class PaymentService
 
         $result = [
             'order_currency'    => $order->currency,
+            'order_number'      => $order->number,
             'order_id'          => $order->getIdAttribute(),
+            'id'                => !empty($payment['hash']) ? $payment['hash'] : '',
             'status'            => self::STATUS_FAIL
         ];
 
@@ -585,7 +587,9 @@ class PaymentService
 
         return [
             'order_currency'    => $order->currency,
+            'order_number'      => $order->number,
             'order_id'          => $order->getIdAttribute(),
+            'id'                => isset($payment) && !empty($payment['hash']) ? $payment['hash'] : $order_main_product['txn_hash'],
             'status'            => $order_main_txn['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
             'upsells'           => $upsells
         ];

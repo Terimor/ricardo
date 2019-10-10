@@ -43,6 +43,7 @@ class PaypalController extends Controller
         $braintree_response = $response['braintree_response'];
         $odin_order_id = $response['odin_order_id'];
         $currency = !empty($response['order_currency']) ? $response['order_currency'] : '';
+        $order_number = $response['order_number'];
 
         $response = json_encode($braintree_response->result);
         unset($braintree_response->headers['Set-Cookie']);
@@ -51,7 +52,8 @@ class PaypalController extends Controller
         return [
             'id' => optional($braintree_response->result)->id,
             'odin_order_id' => $odin_order_id,
-            'order_currency'   => $currency
+            'order_currency' => $currency,
+            'order_number' => $order_number,
         ];
     }
 

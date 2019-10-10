@@ -41,7 +41,9 @@ class PaymentsController extends Controller
 
         $result = [
             'order_currency'    => $reply['order_currency'],
+            'order_number'      => $reply['order_number'],
             'order_id'          => $reply['order_id'],
+            'id'                => $reply['id'],
             'status'            => $reply['status']
         ];
 
@@ -66,7 +68,9 @@ class PaymentsController extends Controller
         $reply = $this->paymentService->createUpsellsOrder($req);
         return [
             'order_currency'    => $reply['order_currency'],
+            'order_number'      => $reply['order_number'],
             'order_id'          => $reply['order_id'],
+            'id'                => $reply['id'],
             'status'            => $reply['status'],
             'upsells'           => $reply['upsells']
         ];

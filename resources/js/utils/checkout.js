@@ -196,10 +196,17 @@ export function sendCheckoutRequest(data) {
           }
         }
       } else {
+        if (res.order_id) {
+          localStorage.setItem('odin_order_id', res.order_id);
+          localStorage.setItem('order_currency', res.order_currency);
+          localStorage.setItem('order_number', res.order_number);
+          localStorage.setItem('order_id', res.id);
+        }
+
         if (res.redirect_url) {
           location.href = res.redirect_url;
         } else {
-          goToThankYouPromos(res.order_id, res.order_currency);
+          goToThankYouPromos();
         }
       }
 
@@ -208,11 +215,12 @@ export function sendCheckoutRequest(data) {
 }
 
 
-export function goToThankYouPromos(order_id, order_currency) {
-  localStorage.setItem('odin_order_id', order_id);
-  localStorage.setItem('odin_order_created_at', new Date());
-  localStorage.setItem('order_currency', order_currency);
-  localStorage.setItem('order_id', order_id);
+export function goToThankYouPromos() {
+  const odin_order_id = localStorage.getItem('odin_order_id');
+  const order_currency = localStorage.getItem('order_currency');
 
-  goTo('/thankyou-promos?order=' + order_id + '&cur=' + order_currency, { exclude: ['3ds'] });
+  if (odin_order_id) {
+    localStorage.setItem('odin_order_created_at', new Date());
+    goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency, { exclude: ['3ds'] });
+  }
 }

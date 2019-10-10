@@ -185,6 +185,8 @@ export function paypalCreateOrder ({
       if (data.odin_order_id) {
         localStorage.setItem('odin_order_id', data.odin_order_id);
         localStorage.setItem('order_currency', data.order_currency);
+        localStorage.setItem('order_number', data.order_number);
+        localStorage.setItem('order_id', data.id);
       }
 
       return data.id;
@@ -192,8 +194,6 @@ export function paypalCreateOrder ({
 }
 
 export function paypalOnApprove(data) {
-  localStorage.setItem('order_id', data.orderID);
-
   const odin_order_id = localStorage.getItem('odin_order_id');
   const order_currency = localStorage.getItem('order_currency');
 
@@ -217,8 +217,8 @@ export function paypalOnApprove(data) {
   })
     .then(function(res) {
       if (odin_order_id) {
-        localStorage.setItem('odin_order_created_at', new Date);
-        goTo('/thankyou-promos/?order=' + odin_order_id + '&cur=' + order_currency);
+        localStorage.setItem('odin_order_created_at', new Date());
+        goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency);
       }
     });
 }

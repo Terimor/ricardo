@@ -314,9 +314,8 @@
     },
     created() {
       if (this.queryParams['3ds'] === 'success') {
-        goToThankYouPromos(this.queryParams['order'], this.queryParams['cur']);
         this.hidePage = true;
-        return;
+        return goToThankYouPromos();
       }
 
       if (this.queryParams['3ds'] === 'failure') {

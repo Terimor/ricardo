@@ -36,14 +36,17 @@ export function paypalCreateOrder ({
     if (data.odin_order_id) {
       localStorage.setItem('odin_order_id', data.odin_order_id);
       localStorage.setItem('order_currency', data.order_currency);
+      localStorage.setItem('order_number', data.order_number);
+      localStorage.setItem('order_id', data.id);
     }
+
     return data.id;
   });
 }
 
 export function paypalOnApprove(data) {
-  localStorage.setItem('order_id', data.orderID);
   const odin_order_id = localStorage.getItem('odin_order_id');
+
   return fetch('/paypal-verify-order', {
     credentials: 'same-origin',
     method: 'post',
@@ -65,8 +68,8 @@ export function paypalOnApprove(data) {
     })
     .then(function() {
       if (odin_order_id) {
-        localStorage.setItem('odin_order_created_at', new Date);
-        goTo(`/thankyou/?`);
+        localStorage.setItem('odin_order_created_at', new Date());
+        goTo('/thankyou');
       }
     });
 }
@@ -110,7 +113,14 @@ export function send1ClickRequest(data, upsells) {
             }
           }
         } else {
-          goToThankYou(res.order_id, res.order_currency);
+          if (res.order_id) {
+            localStorage.setItem('odin_order_id', res.order_id);
+            localStorage.setItem('order_currency', res.order_currency);
+            localStorage.setItem('order_number', res.order_number);
+            localStorage.setItem('order_id', res.id);
+          }
+
+          goToThankYou();
         }
       }
 
@@ -119,11 +129,12 @@ export function send1ClickRequest(data, upsells) {
 }
 
 
-export function goToThankYou(order_id, order_currency) {
-  localStorage.setItem('odin_order_id', order_id);
-  localStorage.setItem('odin_order_created_at', new Date());
-  localStorage.setItem('order_currency', order_currency);
-  localStorage.setItem('order_id', order_id);
+export function goToThankYou() {
+  const odin_order_id = localStorage.getItem('odin_order_id');
+  const order_currency = localStorage.getItem('order_currency');
 
-  goTo('/thankyou?order=' + order_id + '&cur=' + order_currency);
+  if (odin_order_id) {
+    localStorage.setItem('odin_order_created_at', new Date());
+    goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
+  }
 }
