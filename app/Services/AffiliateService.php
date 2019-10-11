@@ -9,6 +9,7 @@ use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Models\RequestQueue;
 use App\Models\Pixel;
+use App\Models\GoogleTag;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 
@@ -112,6 +113,21 @@ class AffiliateService
     }
     
     /**
+     * Return HTML for dispay on APP page
+     * @param Request $request
+     * @param AffiliateSetting $affiliate
+     * @return type
+     */
+    public static function getHtmlToApp(Request $request, AffiliateSetting $affiliate = null)
+    {
+        $htmls = [
+            'pixels' => AffiliateService::getPixels($request, $affiliate),
+            'gtags' => GoogleTag::getGoogleTagsForDisplay($request, $affiliate)
+        ];
+        return $htmls;
+    }
+    
+    /**
      * Get pixels
      * @param Request $request
      * @param AffiliateSetting $affiliate
@@ -129,22 +145,22 @@ class AffiliateService
             $device = \Utils::getDevice();
             
             // get pixels
-            $pixels = AffiliateService::getPixelsByData($request, $product, $countryCode, $route, $device);
+            $pixels = AffiliateService::getPixelsByData($request, $affiliate->ho_affiliate_id, $product, $countryCode, $route, $device);
             
         }
         return $pixels;
     }
     
-/**
+    /**
      * Return array pixel codes
      * @param string $productId
      * @param string $countryCode
      * @param string $route
      * @param string $device
      */
-    public static function getPixelsByData(Request $request, $product, string $countryCode, string $route, string $device) : array
+    public static function getPixelsByData(Request $request, string $hoAffiliateID, $product, string $countryCode, string $route, string $device) : array
     {
-        $pixels = Pixel::where(['product_ids' => $product->id, 'countries' => $countryCode, 'placements' => $route, 'devices' => $device])->get();
+        $pixels = Pixel::where(['product_ids' => $product->id, 'ho_affiliate_id' => $hoAffiliateID, 'countries' => $countryCode, 'placements' => $route, 'devices' => $device])->get();
         
         $pixelsArray = [];
         foreach ($pixels as $pixel) {

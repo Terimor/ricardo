@@ -15,6 +15,8 @@ class UtilsService
      * Default Amazon s3 URL
      */
 	const S3_URL = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
+    const IMAGE_HOST_PRODUCTION = 'cdn.backenddomainsecure.com';
+    const IMAGE_HOST_STAGING = 'cdn.odin.saga-be.host';
 
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
     /**
@@ -663,13 +665,14 @@ class UtilsService
 	 * @return type
 	 */
 	public static function replaceUrlForCdn	(string $url): string
-	{
-		$remoteHost = request()->server('HTTP_HOST');
-		if (stristr(' '.$remoteHost, '127.0.0.1') || stristr(' '.$remoteHost, 'localhost') || stristr(' '.$remoteHost, '192.168.1.101') || stristr(' '.$remoteHost, '192.168.1.3')) {
-			$remoteHost = Setting::getValue('cf_host_default');
-		}
+	{        
+        if (env('ENVIRONMENT') == 'production') {
+            $urlReplace = self::IMAGE_HOST_PRODUCTION;
+        } else {        
+            $urlReplace = self::IMAGE_HOST_STAGING;
+        }
 
-		$url = str_replace(self::S3_URL, 'cdn.'.$remoteHost, $url);
+        $url = str_replace(self::S3_URL, $urlReplace, $url);
 		// cut www. from url
 		$url = str_replace('www.', '', $url);
 		return $url;
