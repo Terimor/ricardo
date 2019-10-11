@@ -1,18 +1,4 @@
-(function() {
-
-
-// wait until condition returned true, then execute callback
-function wait(condition, callback, timeout = 100) {
-  function iteration() {
-    if (condition()) {
-      clearInterval(interval);
-      callback();
-    }
-  }
-
-  const interval = setInterval(iteration, timeout);
-  iteration();
-}
+import wait from './utils/wait';
 
 
 // init Sentry.io service
@@ -56,6 +42,3 @@ if (document.readyState !== 'interactive' && document.readyState !== 'complete')
 } else {
   populateLinksWithGetParams();
 }
-
-
-})();

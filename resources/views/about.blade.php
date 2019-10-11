@@ -3,7 +3,7 @@
 @section('title', $product->page_title . ' - ' . $loadedPhrases['about_title'])
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/static.css') }}">
+    <link rel="stylesheet" href="{{ mix_cdn('assets/css/static.css') }}">
 @endsection
 
 

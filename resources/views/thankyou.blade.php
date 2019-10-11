@@ -3,8 +3,8 @@
 @section('title', $product->page_title . ' - ' . $loadedPhrases['thankyou_title'])
 
 @section('styles')
-  <link rel="stylesheet" href="{{ asset('css/thank-you.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/thank-you.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/thank-you.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}">
 @endsection
 
 @section('head')
@@ -24,7 +24,7 @@
 
     var loadedPhrases = @json($loadedPhrases);
 </script>
-<script src="{{ asset('js/views/thank-you.js') }}" defer></script>
+<script src="{{ mix_cdn('assets/js/views/thank-you.js') }}" defer></script>
 @endsection
 
 @section('content')

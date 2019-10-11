@@ -147,7 +147,7 @@
           :visible.sync="isOpenCVVModal">
         <div class="cvv-popup__content">
           <p>{{ textCVVPopupLine1 }}</p>
-          <div><img src="/images/cvv_popup.jpg" alt=""></div>
+          <div><img src="/assets/images/cvv_popup.jpg" alt=""></div>
           <p>{{ textCVVPopupLine2 }}</p>
         </div>
       </el-dialog>

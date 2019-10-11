@@ -61,7 +61,7 @@
                                     <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                                     <span class="checkmark"></span>
                                 </label>
-                                <img src="/images/best-saller.png" alt="">
+                                <img src="/assets/images/best-saller.png" alt="">
                                 <i class="fa fa-arrow-right slide-right"></i>
                             </button>
                         </transition>
@@ -100,7 +100,7 @@
                                     @setAddress="setAddress"/>
                         </transition>
                         <div class="main__bottom">
-                            <img src="/images/safe_payment_en.png" alt="safe payment">
+                            <img src="/assets/images/safe_payment_en.png" alt="safe payment">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
                             <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
                         </div>
@@ -222,7 +222,7 @@
               key: 0,
               name: 'Echo Beat - Wireless 3D Sound white',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: '/images/headphones-white.png',
+              imageUrl: '/assets/images/headphones-white.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',
@@ -235,7 +235,7 @@
               key: 1,
               name: 'Echo Beat - Wireless 3D Sound gold',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: '/images/headphones-gold.png',
+              imageUrl: '/assets/images/headphones-gold.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',
@@ -248,7 +248,7 @@
               key: 2,
               name: 'Echo Beat - Wireless 3D Sound red',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: '/images/headphones-red.png',
+              imageUrl: '/assets/images/headphones-red.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',

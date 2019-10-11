@@ -153,17 +153,17 @@ export function preparePurchaseData({
 
 export function getCardUrl(cardType) {
   const cardMap = {
-    'american-express': '/images/cc-icons/american-express.png',
-    'aura': '/images/cc-icons/aura.png',
-    'diners-club': '/images/cc-icons/diners-club.png',
-    'discover': '/images/cc-icons/discover.png',
-    'elo': '/images/cc-icons/elo.png',
-    'hipercard': '/images/cc-icons/hipercard.png',
-    'iconcc': '/images/cc-icons/iconcc.png',
-    'jcb': '/images/cc-icons/jcb.png',
-    'maestro': '/images/cc-icons/maestro.png',
-    'mastercard': '/images/cc-icons/mastercard.png',
-    'visa': '/images/cc-icons/visa.png'
+    'american-express': '/assets/images/cc-icons/american-express.png',
+    'aura': '/assets/images/cc-icons/aura.png',
+    'diners-club': '/assets/images/cc-icons/diners-club.png',
+    'discover': '/assets/images/cc-icons/discover.png',
+    'elo': '/assets/images/cc-icons/elo.png',
+    'hipercard': '/assets/images/cc-icons/hipercard.png',
+    'iconcc': '/assets/images/cc-icons/iconcc.png',
+    'jcb': '/assets/images/cc-icons/jcb.png',
+    'maestro': '/assets/images/cc-icons/maestro.png',
+    'mastercard': '/assets/images/cc-icons/mastercard.png',
+    'visa': '/assets/images/cc-icons/visa.png'
   }
   return cardMap[cardType] || cardMap.iconcc
 }

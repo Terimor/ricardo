@@ -3,8 +3,8 @@
 @section('title', $product->page_title )
 
 @section('styles')
-  <link rel="stylesheet" href="{{ asset('css/order-tracking.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/order-tracking.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/order-tracking.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/order-tracking.vue.css') }}">
 @endsection
 
 @section('script')
@@ -15,7 +15,7 @@
       var loadedPhrases = @json($loadedPhrases);
     </script>
 
-    <script src="{{ asset('js/views/order-tracking.js') }}" defer></script>
+    <script src="{{ mix_cdn('assets/js/views/order-tracking.js') }}" defer></script>
 @endsection
 
 

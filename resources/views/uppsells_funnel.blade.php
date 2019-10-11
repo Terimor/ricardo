@@ -9,9 +9,9 @@
 @endsection
 
 @section('styles')
-  <link rel="stylesheet" href="{{ asset('css/uppsells.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/thank-you.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/thank-you.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/uppsells.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/thank-you.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}">
 @endsection
 
 @section('script')
@@ -25,7 +25,7 @@
     var loadedPhrases = @json($loadedPhrases);
 </script>
 
-<script src="{{ asset('js/app.js') }}" defer></script>
+<script src="{{ mix_cdn('assets/js/app.js') }}" defer></script>
 @endsection
 
 @section('content')

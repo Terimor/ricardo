@@ -49,7 +49,7 @@
                             <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                             <span class="checkmark"></span>
                           </label>
-                          <img src="/images/best-saller.png" alt="">
+                          <img src="/assets/images/best-saller.png" alt="">
                           <i class="fa fa-arrow-right slide-right"></i>
                         </button>
                       </transition>
@@ -58,7 +58,7 @@
               </div>
               <div class="secure-pay-content">
                 <div class="logos-content">
-                  <img src="/images/safe_payment_en.png" alt="safe payment">
+                  <img src="/assets/images/safe_payment_en.png" alt="safe payment">
                 </div>
                 <div class="text-content">
                   <p>
@@ -104,27 +104,27 @@
 						value: 'visa',
 						text: 'VISA',
 						label: 'VISA',
-						imgUrl: '/images/cc-icons/visa.png'
+						imgUrl: '/assets/images/cc-icons/visa.png'
 					}, {
 						value: 'mastercard',
 						text: 'MasterCard',
 						label: 'MasterCard',
-						imgUrl: '/images/cc-icons/mastercard.png'
+						imgUrl: '/assets/images/cc-icons/mastercard.png'
 					}, {
 						value: 'diners-club',
 						text: 'DinnersClub',
 						label: 'DinnersClub',
-						imgUrl: '/images/cc-icons/diners-club.png'
+						imgUrl: '/assets/images/cc-icons/diners-club.png'
 					}, {
 						value: 'discover',
 						text: 'Discover',
 						label: 'Discover',
-						imgUrl: '/images/cc-icons/discover.png'
+						imgUrl: '/assets/images/cc-icons/discover.png'
 					}, {
 						value: 'paypal',
 						text: 'PayPal',
 						label: 'PayPal',
-						imgUrl: '/images/cc-icons/payPal.png'
+						imgUrl: '/assets/images/cc-icons/payPal.png'
 					}
 				],
 				form: {

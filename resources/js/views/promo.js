@@ -73,27 +73,27 @@ const promo = new Vue({
         value: 'visa',
         text: 'VISA',
         label: 'VISA',
-        imgUrl: '/images/cc-icons/visa.png'
+        imgUrl: '/assets/images/cc-icons/visa.png'
       }, {
         value: 'mastercard',
         text: 'MasterCard',
         label: 'MasterCard',
-        imgUrl: '/images/cc-icons/mastercard.png'
+        imgUrl: '/assets/images/cc-icons/mastercard.png'
       }, {
         value: 'diners-club',
         text: 'DinnersClub',
         label: 'DinnersClub',
-        imgUrl: '/images/cc-icons/diners-club.png'
+        imgUrl: '/assets/images/cc-icons/diners-club.png'
       }, {
         value: 'discover',
         text: 'Discover',
         label: 'Discover',
-        imgUrl: '/images/cc-icons/discover.png'
+        imgUrl: '/assets/images/cc-icons/discover.png'
       }, {
         value: 'paypal',
         text: 'PayPal',
         label: 'PayPal',
-        imgUrl: '/images/cc-icons/payPal.png'
+        imgUrl: '/assets/images/cc-icons/payPal.png'
       }
     ],
     mockData: {

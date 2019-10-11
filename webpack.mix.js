@@ -1,14 +1,19 @@
 const mix = require('laravel-mix');
+const rimraf = require('rimraf');
 
+
+if (mix.inProduction()) {
+  rimraf.sync('public/assets');
+}
 
 mix.options({
-  extractVueStyles: 'public/css/vue-styles/[name].css',
+  extractVueStyles: 'public[name].vue.css',
 });
 
 mix.webpackConfig({
   externals: {
     vue: 'Vue',
-  }
+  },
 });
 
 /*
@@ -23,15 +28,24 @@ mix.webpackConfig({
  */
 
 mix
-  .js('resources/js/app.js', 'public/js')
-  .js('resources/js/views/promo.js', 'public/js/views')
-  .js('resources/js/views/thank-you.js', 'public/js/views')
-  .js('resources/js/views/order-tracking.js', 'public/js/views')
-  .sass('resources/sass/app.scss', 'public/css')
-  .sass('resources/sass/views/promo.scss', 'public/css')
-  .sass('resources/sass/views/contact-us.scss', 'public/css')
-  .sass('resources/sass/views/static.scss', 'public/css')
-  .sass('resources/sass/views/splash.scss', 'public/css')
-  .sass('resources/sass/views/order-tracking.scss', 'public/css')
-  .sass('resources/sass/views/index.scss', 'public/css')
-  .version();
+  .js('resources/js/app.js', 'public/assets/js')
+  .js('resources/js/static.js', 'public/assets/js')
+  .js('resources/js/views/promo.js', 'public/assets/js/views')
+  .js('resources/js/views/thank-you.js', 'public/assets/js/views')
+  .js('resources/js/views/order-tracking.js', 'public/assets/js/views')
+  .sass('resources/sass/app.scss', 'public/assets/css')
+  .sass('resources/sass/views/promo.scss', 'public/assets/css')
+  .sass('resources/sass/views/contact-us.scss', 'public/assets/css')
+  .sass('resources/sass/views/static.scss', 'public/assets/css')
+  .sass('resources/sass/views/splash.scss', 'public/assets/css')
+  .sass('resources/sass/views/uppsells.scss', 'public/assets/css')
+  .sass('resources/sass/views/thank-you.scss', 'public/assets/css')
+  .sass('resources/sass/views/returns.scss', 'public/assets/css')
+  .sass('resources/sass/views/order-tracking.scss', 'public/assets/css')
+  .sass('resources/sass/views/index.scss', 'public/assets/css')
+  .copyDirectory('resources/images', 'public/assets/images')
+  .copy('resources/scripts/bioep.min.js', 'public/assets/scripts');
+
+if (mix.inProduction()) {
+  mix.version();
+}

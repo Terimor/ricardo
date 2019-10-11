@@ -3,7 +3,7 @@
 @section('title', $product->page_title . ' - ' . $loadedPhrases['contact_title'])
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/contact-us.css') }}">
+    <link rel="stylesheet" href="{{ mix_cdn('assets/css/contact-us.css') }}">
 @endsection
 
 

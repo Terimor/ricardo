@@ -42,7 +42,7 @@ export const getRadioHtml = ({
       : ''}
 
   
-        ${idx === 1 ? '<img class="share" src="/images/share.png">' : ''}
+        ${idx === 1 ? '<img class="share" src="/assets/images/share.png">' : ''}
     
         <p class="label-container-radio__name-price">
                   
@@ -72,11 +72,11 @@ export function * getNotice ({
   const messageMap = {
     paypal: `<div class="recently-notice recently-notice_paypal">
         <div class="recently-notice__left">
-          <img src="/images/paypal232.png" alt="PayPal">
+          <img src="/assets/images/paypal232.png" alt="PayPal">
         </div>
         <div class="recently-notice__right">
           <p>${t('checkout.paypal.risk_free')}</p>
-          <img src="/images/paypal-highq.png" alt="PayPal">
+          <img src="/assets/images/paypal-highq.png" alt="PayPal">
         </div>
       </div>
     `,

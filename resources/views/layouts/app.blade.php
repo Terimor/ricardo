@@ -48,7 +48,7 @@
       @endif
 
       @if (Request::get('exit'))
-        <script src="{{ asset('scripts/bioep.min.js') }}" async></script>
+        <script src="{{ mix_cdn('assets/scripts/bioep.min.js') }}" async></script>
       @endif
 
       @if (config('app.env') !== 'local' && config('app.env') !== 'development')
@@ -60,7 +60,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/index.js" defer></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/js/intlTelInput.min.js" defer></script>
     @else
-      <script src="/js/static.js" async></script>
+      <script src="{{ mix_cdn('/assets/js/static.js') }}" async></script>
     @endif
     @yield('script')
 
@@ -77,7 +77,7 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css">
     @endif
 
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix_cdn('assets/css/app.css') }}" rel="stylesheet">
     @yield('styles')
     
     @if (!empty($htmlToApp['pixels']))

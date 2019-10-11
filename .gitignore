@@ -36,16 +36,7 @@ phpunit.phar
 /node_modules
 /public/hot
 /public/storage
-/public/js
-/public/css/app.css
-/public/css/promo.css
-/public/css/thank-you.css
-/public/css/contact-us.css
-/public/css/index.css
-/public/css/splash.css
-/public/css/static.css
-/public/css/order-tracking.css
-/public/css/vue-styles
+/public/assets
 /public/mix-manifest.json
 /storage/*.key
 .env

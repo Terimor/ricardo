@@ -3,7 +3,7 @@
 @section('title', $product->page_title)
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('css/splash.css') }}">
+    <link rel="stylesheet" href="{{ mix_cdn('assets/css/splash.css') }}">
 @endsection
 
 @section('script')

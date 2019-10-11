@@ -5,8 +5,8 @@
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
 @section('styles')
-  <link rel="stylesheet" href="{{ asset('css/promo.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/vue-styles/js/views/promo.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/promo.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/promo.vue.css') }}">
 @endsection
 
 @section('script')
@@ -24,7 +24,7 @@
         var loadedPhrases = @json($loadedPhrases);
     </script>
 
-    <script src="{{ asset('js/views/promo.js') }}" defer></script>
+    <script src="{{ mix_cdn('assets/js/views/promo.js') }}" defer></script>
 @endsection
 
 @section('content')
