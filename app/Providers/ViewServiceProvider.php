@@ -36,7 +36,8 @@ class ViewServiceProvider extends ServiceProvider
             $affiliate = AffiliateSetting::getByHasOfferId(Request::get('affid'));
         }
         
-        View::composer('layouts.app', function($view) use ($affiliate) {            
+        View::composer('layouts.app', function($view) use ($affiliate) {
+            $view->with('cdnUrl', 'https://cdn.odin.saga-be.host');
             $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
@@ -46,6 +47,10 @@ class ViewServiceProvider extends ServiceProvider
 
         View::composer('layouts.footer', function($view) use ($affiliate) {
             $view->with('aff', AffiliateSetting::getLocaleAffiliate($affiliate));
+        });
+
+        View::composer('thankyou', function($view) use ($affiliate) {
+            $view->with('cdnUrl', UtilsService::getCdnUrl());
         });
     }
 }

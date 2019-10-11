@@ -2,6 +2,7 @@ require('../bootstrap');
 
 import queryToComponent from '../mixins/queryToComponent';
 import upsellsMixin from '../mixins/upsells';
+import globals from '../mixins/globals';
 import { getOrderAmount } from '../services/order';
 import ThankYouItem from '../components/common/ThankYouItem';
 import { t } from '../utils/i18n';
@@ -14,6 +15,7 @@ const thankYou = new Vue({
     },
 
     mixins: [
+        globals,
         queryToComponent,
         upsellsMixin,
     ],

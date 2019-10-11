@@ -172,7 +172,7 @@
                             >{{ paypalRiskFree }}</paypal-button>
                         </template>
                         <div class="smc7__bottom">
-                            <img src="/assets/images/safe_payment_en.png" alt="safe payment">
+                            <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
                             <div class="smc7__bottom__safe">
                                 <p><i class="fa fa-lock"></i>{{ textSafeSSLEncryption }}</p>
                                 <p>{{ textCreditCardInvoiced }} "{{ productData.billing_descriptor }}"</p>
@@ -246,27 +246,27 @@
             value: 'visa',
             text: 'VISA',
             label: 'VISA',
-            imgUrl: '/assets/images/cc-icons/visa.png'
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
           }, {
             value: 'mastercard',
             text: 'MasterCard',
             label: 'MasterCard',
-            imgUrl: '/assets/images/cc-icons/mastercard.png'
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
           }, {
             value: 'diners-club',
             text: 'DinnersClub',
             label: 'DinnersClub',
-            imgUrl: '/assets/images/cc-icons/diners-club.png'
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
           }, {
             value: 'discover',
             text: 'Discover',
             label: 'Discover',
-            imgUrl: '/assets/images/cc-icons/discover.png'
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
           }, {
             value: 'paypal',
             text: 'PayPal',
             label: 'PayPal',
-            imgUrl: '/assets/images/cc-icons/payPal.png'
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
           }
         ],
         form: {

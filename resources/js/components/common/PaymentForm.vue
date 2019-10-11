@@ -266,7 +266,7 @@
             <span class="checkmark"></span>
           </label>
           <span class="warranty-field-icon">
-            <img src="/assets/images/best-saller.png" alt="">
+            <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
           </span>
         </button>
         <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
@@ -288,7 +288,7 @@
           :visible.sync="isOpenCVVModal">
             <div class="cvv-popup__content">
                 <p v-html="textCVVPopupLine1"></p>
-                <div><img src="/assets/images/cvv_popup.jpg" alt=""></div>
+                <div><img :src="$root.cdnUrl + '/assets/images/cvv_popup.jpg'" alt=""></div>
                 <p v-html="textCVVPopupLine2"></p>
             </div>
         </el-dialog>
@@ -400,17 +400,17 @@
       },
       cardUrl () {
         const cardMap = {
-          'american-express': '/assets/images/cc-icons/american-express.png',
-          'aura': '/assets/images/cc-icons/aura.png',
-          'diners-club': '/assets/images/cc-icons/diners-club.png',
-          'discover': '/assets/images/cc-icons/discover.png',
-          'elo': '/assets/images/cc-icons/elo.png',
-          'hipercard': '/assets/images/cc-icons/hipercard.png',
-          'iconcc': '/assets/images/cc-icons/iconcc.png',
-          'jcb': '/assets/images/cc-icons/jcb.png',
-          'maestro': '/assets/images/cc-icons/maestro.png',
-          'mastercard': '/assets/images/cc-icons/mastercard.png',
-          'visa': '/assets/images/cc-icons/visa.png'
+          'american-express': window.cdnUrl + '/assets/images/cc-icons/american-express.png',
+          'aura': window.cdnUrl + '/assets/images/cc-icons/aura.png',
+          'diners-club': window.cdnUrl + '/assets/images/cc-icons/diners-club.png',
+          'discover': window.cdnUrl + '/assets/images/cc-icons/discover.png',
+          'elo': window.cdnUrl + '/assets/images/cc-icons/elo.png',
+          'hipercard': window.cdnUrl + '/assets/images/cc-icons/hipercard.png',
+          'iconcc': window.cdnUrl + '/assets/images/cc-icons/iconcc.png',
+          'jcb': window.cdnUrl + '/assets/images/cc-icons/jcb.png',
+          'maestro': window.cdnUrl + '/assets/images/cc-icons/maestro.png',
+          'mastercard': window.cdnUrl + '/assets/images/cc-icons/mastercard.png',
+          'visa': window.cdnUrl + '/assets/images/cc-icons/visa.png'
         }
 
         return cardMap[this.cardType] || cardMap.iconcc

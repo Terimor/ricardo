@@ -1,13 +1,13 @@
 require('../bootstrap');
 
 import { t } from '../utils/i18n';
-
+import globals from '../mixins/globals';
 import mainValidation from '../validation/main-validation'
 
 
 const orderTracking = new Vue({
   el: '#orderTracking',
-
+  mixins: [globals],
   data: {
     formData: {
       name: '',
