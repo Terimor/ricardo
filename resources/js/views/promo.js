@@ -147,6 +147,7 @@ const promo = new Vue({
     carouselFormHeight: 'auto',
     step: 0,
     steps: 0,
+    isShownFooter: true,
   }),
   validations: emc1Validation,
 
@@ -337,6 +338,7 @@ const promo = new Vue({
           this.isShownForm = true;
           if(this.slideForm) {
               this.nextStep();
+              this.isShownFooter = false;
           }else{
               this.scrollTo('.j-complete-order');
           }
@@ -345,6 +347,7 @@ const promo = new Vue({
           this.form.deal = deal;
           if(this.slideForm) {
               this.nextStep();
+              this.isShownFooter = false;
           }else{
               this.scrollTo('.j-variant-section');
           }

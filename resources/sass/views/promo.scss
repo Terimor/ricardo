@@ -484,7 +484,7 @@ header {
     &__step {
       flex: 0 0 100% ;
       padding: 0 0 30px 0;
-      transition: all .5s;
+      transition: all .67s;
       &__title {
         margin-top: 0;
       }
@@ -499,8 +499,36 @@ header {
       padding: 0;
     }
     &__back-btn {
-      max-width: 300px;
+      display: inline-block;
+      background-color: transparent;
+      border: none;
       margin: 30px auto 20px;
+      text-decoration: underline;
+      cursor: pointer;
+      &:hover, &:focus, &:active {
+        text-decoration: none;
+      }
+    }
+    &__variant-item {
+      padding: 40px 0;
+      .promo__variant-icon {
+        transition: all .3s;
+      }
+      .variant-name {
+        display: inline-block;
+        padding: 3px 5px;
+        border-bottom: 2px solid transparent;
+        transition: all .3s;
+      }
+      &:hover, &:focus, &:active {
+        .promo__variant-icon {
+          transform: scale(1.25);
+        }
+        .variant-name {
+          font-weight: bold;
+          border-bottom-color: #e3342f;
+        }
+      }
     }
   }
 }

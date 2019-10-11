@@ -187,7 +187,7 @@
                                 <div class="variant-name">@{{ variantItem.label }}</div>
                             </div>
                         </div>
-                        <green-button @click="firstStep()" class="promo__back-btn">{{ t('checkout.payment_form.back_to_selection') }}</green-button>
+                        <button @click="firstStep()" class="promo__back-btn"> < {{ t('checkout.payment_form.back_to_selection') }}</button>
                     </div>
                 </div>
 
@@ -218,7 +218,7 @@
                             />
                         </div>
 
-                        <green-button @click="firstStep()" class="promo__back-btn">{{ t('checkout.payment_form.back_to_selection') }}</green-button>
+                        <button @click="firstStep()" class="promo__back-btn"> < {{ t('checkout.payment_form.back_to_selection') }}</button>
 
                         <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                             <payment-form
@@ -307,7 +307,7 @@
             </template>
 
 
-            <section class="promo__scroll-to-top">
+            <section v-if="isShownFooter" class="promo__scroll-to-top">
                 <div class="container">
                     <div class="promo__people-rate-block">
                         <h1 class="bold promo__title">
