@@ -664,9 +664,9 @@ class UtilsService
      * @return string
      */
     public static function getCdnUrl() {
-        return (env('ENVIRONMENT') === 'production'
+        return (env('ENVIRONMENT') == 'production'
             ? 'https://' . self::IMAGE_HOST_PRODUCTION
-            : (env('ENVIRONMENT') === 'staging'
+            : (env('ENVIRONMENT') == 'staging'
                 ? 'https://' . self::IMAGE_HOST_STAGING
                 : ''));
     }
