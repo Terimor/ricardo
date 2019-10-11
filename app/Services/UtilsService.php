@@ -664,9 +664,11 @@ class UtilsService
      * @return string
      */
     public static function getCdnUrl() {
-        return (env('ENVIRONMENT') == 'production'
+        $env = \App::environment();
+
+        return ($env === 'production'
             ? 'https://' . self::IMAGE_HOST_PRODUCTION
-            : (env('ENVIRONMENT') == 'staging'
+            : ($env === 'staging'
                 ? 'https://' . self::IMAGE_HOST_STAGING
                 : ''));
     }
@@ -677,7 +679,7 @@ class UtilsService
 	 * @return type
 	 */
 	public static function replaceUrlForCdn	(string $url): string
-	{        
+	{
         if (env('ENVIRONMENT') == 'production') {
             $urlReplace = self::IMAGE_HOST_PRODUCTION;
         } else {
