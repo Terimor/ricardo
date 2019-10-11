@@ -223,9 +223,9 @@
                         <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                             <payment-form
                                 v-if="form && form.paymentType && isFormShown"
-                                first-title="{{ t('checkout.step') }} 4: {{ t('checkout.contact_information') }}"
-                                second-title="{{ t('checkout.step') }} 5: {{ t('checkout.delivery_address') }}"
-                                third-title="{{ t('checkout.step') }} 6: {{ t('checkout.payment_details') }}"
+                                first-title="{{ t('checkout.step') }} 2: {{ t('checkout.contact_information') }}"
+                                second-title="{{ t('checkout.step') }} 3: {{ t('checkout.delivery_address') }}"
+                                third-title="{{ t('checkout.step') }} 4: {{ t('checkout.payment_details') }}"
                                 :state-list="stateList"
                                 :$v="$v"
                                 :installments="form.installments"
