@@ -660,21 +660,15 @@ class UtilsService
     }
 
     /**
-     * Get CDN Host
-     * @return string
-     */
-    public static function getCdnHost() {
-        return env('ENVIRONMENT') === 'production'
-            ? self::IMAGE_HOST_PRODUCTION
-            : self::IMAGE_HOST_STAGING;
-    }
-
-    /**
      * Get CDN URL
      * @return string
      */
     public static function getCdnUrl() {
-        return 'https://' . self::getCdnHost();
+        return (env('ENVIRONMENT') === 'production'
+            ? 'https://' . self::IMAGE_HOST_PRODUCTION
+            : (env('ENVIRONMENT') === 'staging'
+                ? 'https://' . self::IMAGE_HOST_STAGING
+                : ''));
     }
 
 	/**
@@ -684,7 +678,12 @@ class UtilsService
 	 */
 	public static function replaceUrlForCdn	(string $url): string
 	{        
-        $urlReplace = self::getCdnHost();
+        if (env('ENVIRONMENT') == 'production') {
+            $urlReplace = self::IMAGE_HOST_PRODUCTION;
+        } else {
+            $urlReplace = self::IMAGE_HOST_STAGING;
+        }
+
         $url = str_replace(self::S3_URL, $urlReplace, $url);
 		// cut www. from url
 		$url = str_replace('www.', '', $url);
