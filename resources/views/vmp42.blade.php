@@ -41,7 +41,7 @@
 
 
             <!-- promo__jumbotron -->
-            <div class="container">
+            <div v-if="isShownJumbotron" class="container">
                 <div class="promo__jumbotron"
                      @click="scrollTo('.j-header-products')">
                     <h2 class="promo__heading-battery">{{ t('checkout.promo.title') }}</h2>
@@ -307,16 +307,16 @@
             </template>
 
 
-            <section v-if="isShownFooter" class="promo__scroll-to-top">
+            <section class="promo__scroll-to-top">
                 <div class="container">
                     <div class="promo__people-rate-block">
                         <h1 class="bold promo__title">
-                            Revolutionary Sound Quality at an Unbeatable Price
+                            {{ t('checkout.vmp41.footer_title') }}
                         </h1>
                         <h2 class="bold promo__people-rate">
-                            Many audio and tech companies tried to shut down this cheaper alternative to their overpriced
-                            bluetooth headphones. However, at last, finally {{ $product->skus[0]['name'] }} has made it to the
-                            public
+                            {{ t('checkout.vmp41.footer_subtitle.first') }}
+                            {{ $product->skus[0]['name'] }}
+                            {{ t('checkout.vmp41.footer_subtitle.second') }}
                         </h2>
                         <green-button @click="scrollTo('.j-header-products')">
                             {{ t('checkout.people_rate.button') }}

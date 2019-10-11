@@ -1,0 +1,52 @@
+.contacts__wrapper {
+  background-color: #fff;
+  padding: 20px 10px;
+}
+
+.contacts__main-title {
+  font-size: 36px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+@media screen and (max-width: 959px) {
+  .contacts__main-title {
+    font-size: 30px;
+  }
+}
+
+.contacts__sub-title {
+  font-size: 24px;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.contacts__sub-title .contacts__text--link {
+  font-size: inherit;
+  display: inline-block;
+}
+
+.contacts__text {
+  font-size: 17px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.contacts__text--link {
+  color: #337ab7;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.contacts .footer__row {
+  justify-content: flex-start;
+  margin: 0;
+}
+
+.contacts .footer__link {
+  font-weight: 500;
+  font-size: 17px;
+}
+
