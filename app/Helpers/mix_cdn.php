@@ -9,11 +9,11 @@ if (!function_exists('mix_cdn')) {
     $cdnUrl = env('ENVIRONMENT') === 'production'
       ? \Utils::IMAGE_HOST_PRODUCTION
       : \Utils::IMAGE_HOST_STAGING;
-/*
+
     if (env('ENVIRONMENT') !== 'development') {
       $mixPath = 'https://' . $cdnUrl . $mixPath;
     }
-*/
+
     return $mixPath;
   }
 
