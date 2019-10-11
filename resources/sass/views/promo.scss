@@ -402,6 +402,16 @@ header {
   }
 
   &__variant-item {
+    padding: 40px 0;
+    &:hover, &:focus, &:active {
+      .promo__variant-icon {
+        transform: scale(1.25);
+      }
+      .variant-name {
+        font-weight: bold;
+        border-bottom-color: #e3342f;
+      }
+    }
     @media screen and ($m-down) {
       margin: 10px 0;
       flex-basis: 50%;
@@ -412,6 +422,7 @@ header {
     max-width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: all .3s;
   }
 
   &__variant-icon-wrapper {
@@ -424,6 +435,13 @@ header {
     &.selected-variant {
       border: 2px solid $red;
     }
+  }
+
+  .variant-name {
+    display: inline-block;
+    padding: 3px 5px;
+    border-bottom: 2px solid transparent;
+    transition: all .3s;
   }
 
   &__step-title {
@@ -507,27 +525,6 @@ header {
       cursor: pointer;
       &:hover, &:focus, &:active {
         text-decoration: none;
-      }
-    }
-    &__variant-item {
-      padding: 40px 0;
-      .promo__variant-icon {
-        transition: all .3s;
-      }
-      .variant-name {
-        display: inline-block;
-        padding: 3px 5px;
-        border-bottom: 2px solid transparent;
-        transition: all .3s;
-      }
-      &:hover, &:focus, &:active {
-        .promo__variant-icon {
-          transform: scale(1.25);
-        }
-        .variant-name {
-          font-weight: bold;
-          border-bottom-color: #e3342f;
-        }
       }
     }
   }
