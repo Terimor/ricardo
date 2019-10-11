@@ -108,7 +108,45 @@ const promo = new Vue({
           class: 'bank-payment'
         }
       ],
-    }
+      reviews: [
+          {
+            user: {
+              userName: 'Harriet S.',
+              userImg: 'https://static-backend.saratrkr.com/image_assets/third_1.jpg'
+            },
+            title: 'My best companions!',
+            text: 'The color wasn\'t what I expected but other than that, perfect! Seems to last quite a\n' +
+              'while and I enjoy not having to untangle cords anymore.',
+            rate: 5
+          },
+          {
+              user: {
+                  userName: 'Adrian P.',
+                  userImg: 'https://static-backend.saratrkr.com/image_assets/first_1.jpg'
+              },
+              title: 'Better than expected',
+              text: 'Love the color, love the style, and comfortable too! The battery lasts for ages and\n' +
+                'I like that it charges in the case. Well worth the money.',
+              rate: 4
+          },
+          {
+              user: {
+                  userName: 'Jack P.',
+                  userImg: 'https://static-backend.saratrkr.com/image_assets/second_1.jpg'
+              },
+              title: 'Thoroughly worth the money',
+              text: 'I looked at other wireless earphones and these were the cheapest.\n' +
+                'I didn\'t think they would be any good but I tried my friends and these are far\n' +
+                'better! The sound quality is good and so is the carry case. I love them.',
+              rate: 5
+          }
+      ],
+    },
+
+    slideForm: null,
+    carouselFormHeight: 'auto',
+    step: 0,
+    steps: 0,
   }),
   validations: emc1Validation,
 
@@ -133,10 +171,6 @@ const promo = new Vue({
       text: t('checkout.installments.pay_6'),
     }
   ],
-
-  beforeCreate() {
-    document.body.classList.add('tpl-vmp41');
-  },
 
   created() {
     if (this.queryParams['3ds'] === 'success') {
@@ -170,6 +204,15 @@ const promo = new Vue({
         this.isFormShown = true;
       }
     }
+
+    if (this.queryParams['tpl'] === 'vmp41') {
+        document.body.classList.add('tpl-vmp41');
+        this.slideForm = false;
+    }
+    if (this.queryParams['tpl'] === 'vmp42') {
+        document.body.classList.add('tpl-vmp42');
+        this.slideForm = true;
+    }
   },
 
   mounted() {
@@ -197,6 +240,8 @@ const promo = new Vue({
         this.scrollTo('.j-variant-section');
       }, 500);
     }
+
+    this.steps = [...document.querySelectorAll('.promo__step')];
   },
 
   computed: {
@@ -252,6 +297,7 @@ const promo = new Vue({
     },
 
     textDiscountStarter: () => t('checkout.discount_starter'),
+
   },
 
   methods: {
@@ -289,11 +335,19 @@ const promo = new Vue({
       if(this.isShowVariant){
           this.form.variant = this.skusList[0].code;
           this.isShownForm = true;
-          this.scrollTo('.j-complete-order');
+          if(this.slideForm) {
+              this.nextStep();
+          }else{
+              this.scrollTo('.j-complete-order');
+          }
       }else{
           this.selectedPlan = plan;
-          this.form.deal = deal
-          this.scrollTo('.j-variant-section');
+          this.form.deal = deal;
+          if(this.slideForm) {
+              this.nextStep();
+          }else{
+              this.scrollTo('.j-variant-section');
+          }
       }
     },
 
@@ -301,7 +355,11 @@ const promo = new Vue({
       this.form.variant = variant;
       this.isShownForm = true;
 
-      this.scrollTo('.j-complete-order');
+      if(this.slideForm) {
+          this.nextStep();
+      }else{
+          this.scrollTo('.j-complete-order');
+      }
     },
 
     selectPaymentMethod(method) {
@@ -325,6 +383,15 @@ const promo = new Vue({
     activateForm() {
       this.isFormShown = true;
       this.scrollTo('.j-payment-form');
+
+      if(this.slideForm) {
+          this.$nextTick(()=>{this.getFormHeight()});
+          setTimeout(()=>{
+                this.scrollTo('.j-payment-form');
+          }, 300)
+      }else{
+          this.scrollTo('.j-payment-form')
+      }
     },
 
     changeWarrantyValue () {
@@ -360,6 +427,38 @@ const promo = new Vue({
         installments: this.implValue,
         image: this.productData.image[0],
       })
+    },
+
+
+    firstStep() {
+        this.step = 0;
+        this.stepAnimation();
+        this.$nextTick(()=>{this.getFormHeight()});
+    },
+
+    nextStep() {
+      this.step++;
+      this.stepAnimation();
+      if(this.step > this.steps.length) {this.step = this.steps.length};
+      this.$nextTick(()=>{this.getFormHeight()});
+    },
+
+    prevStep() {
+        this.step--;
+        this.stepAnimation();
+        if(this.step < 1) {this.step = 0};
+        this.$nextTick(()=>{this.getFormHeight()});
+    },
+
+    stepAnimation () {
+        this.steps.forEach((item) => {
+          const stepPosition = `-${this.step * 100}%`;
+          item.style.transform = `translate(${stepPosition})`
+        })
+    },
+
+    getFormHeight() {
+        this.carouselFormHeight = `${this.steps[this.step].offsetHeight}px`;
     },
   }
 })

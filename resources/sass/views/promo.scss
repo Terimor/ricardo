@@ -302,7 +302,7 @@ header {
     align-items: center;
     margin: auto;
     background: rgb(226, 241, 243);
-    padding-bottom: 50px;
+    padding: 30px 0 50px;
 
     .green-button-animated {
       max-width: 430px;
@@ -437,6 +437,7 @@ header {
 
   &__complete-order {
     display: block;
+    margin-bottom: 20px;
     padding: 20px 0 40px;
     background-color: white;
   }
@@ -468,6 +469,38 @@ header {
     .green-button-animated {
       padding: 10px;
       height: 92px;
+    }
+  }
+}
+
+.tpl-vmp42 {
+  .promo {
+    $self: &;
+    &__wrapper {
+      display: flex;
+      align-items: flex-start;
+      overflow: hidden;
+    }
+    &__step {
+      flex: 0 0 100% ;
+      padding: 0 0 30px 0;
+      transition: all .5s;
+      &__title {
+        margin-top: 0;
+      }
+    }
+    &__choose-product {
+      padding-top: 0;
+    }
+    &__select-variant {
+      margin-top: 0;
+    }
+    &__complete-order {
+      padding: 0;
+    }
+    &__back-btn {
+      max-width: 300px;
+      margin: 30px auto 20px;
     }
   }
 }

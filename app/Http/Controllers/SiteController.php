@@ -131,6 +131,9 @@ class SiteController extends Controller
 		if (request()->get('tpl') == 'vmp41') {
 			$viewTemplate = 'vmp41';
 		}
+        if (request()->get('tpl') == 'vmp42') {
+            $viewTemplate = 'vmp42';
+        }
 
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
