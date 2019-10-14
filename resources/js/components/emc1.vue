@@ -1,5 +1,10 @@
 <template>
     <div v-if="$v && !hidePage">
+        <div class="row">
+            <div class="container">
+                <ProductOffer :product="checkoutData.product" />
+            </div>
+        </div>
         <div class="container main">
             <div class="row">
                 <div class="col-md-7">
@@ -184,6 +189,7 @@
   import { getCountOfInstallments } from '../utils/installments';
   import ProductItem from './common/ProductItem';
   import Cart from './common/Cart';
+  import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import { fade } from '../utils/common';
   import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
@@ -202,6 +208,7 @@
     components: {
       ProductItem,
       Cart,
+      ProductOffer,
       PurchasAlreadyExists,
     },
     props: ['showPreloader', 'skusList'],
@@ -653,6 +660,12 @@
     $color_flush_mahogany_approx: #e74c3c;
     $red: #e74c3c;
     $color_niagara_approx: #16a085;
+
+    .tpl-emc1 {
+      .offer {
+        text-align: center;
+      }
+    }
 
     .accessories-modal {
         & > p {
