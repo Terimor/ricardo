@@ -150,6 +150,7 @@ const promo = new Vue({
     step: 0,
     steps: 0,
     isShownFooter: true,
+      isShownJumbotron: true,
   }),
   validations: emc1Validation,
 
@@ -341,6 +342,7 @@ const promo = new Vue({
           if(this.slideForm) {
               this.nextStep();
               this.isShownFooter = false;
+              this.$nextTick(() => {this.isShownJumbotron = false;})
           }else{
               this.scrollTo('.j-complete-order');
           }
@@ -350,6 +352,7 @@ const promo = new Vue({
           if(this.slideForm) {
               this.nextStep();
               this.isShownFooter = false;
+              this.$nextTick(() => {this.isShownJumbotron = false;})
           }else{
               this.scrollTo('.j-variant-section');
           }
@@ -438,6 +441,7 @@ const promo = new Vue({
     firstStep() {
         this.step = 0;
         this.stepAnimation();
+        this.isShownJumbotron = true;
         this.$nextTick(()=>{this.getFormHeight()});
     },
 
