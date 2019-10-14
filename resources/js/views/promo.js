@@ -297,7 +297,7 @@ const promo = new Vue({
     },
 
     textPromoDiscount() {
-      return t('checkout.promo.buy_now', { discount: this.discount || 0 });
+      return t('checkout.promo.buy_now', { amount: this.discount || 0 });
     },
 
     textDiscountStarter: () => t('checkout.discount_starter'),
