@@ -1,9 +1,7 @@
 <template>
     <div v-if="$v && !hidePage">
-        <div class="row">
-            <div class="container">
-                <ProductOffer :product="checkoutData.product" />
-            </div>
+        <div class="container">
+            <ProductOffer :product="checkoutData.product" />
         </div>
         <div class="container main">
             <div class="row">
