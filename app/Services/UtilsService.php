@@ -668,9 +668,9 @@ class UtilsService
         $env = \App::environment();
 
         return ($env === 'production'
-            ? 'https://' . self::IMAGE_HOST_PRODUCTION
+            ? 'https://' . self::CDN_HOST_PRODUCTION
             : ($env === 'staging'
-                ? 'https://' . self::IMAGE_HOST_STAGING
+                ? 'https://' . self::CDN_HOST_STAGING
                 : ''));
     }
 
