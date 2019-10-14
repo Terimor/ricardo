@@ -35,9 +35,8 @@ return [
         'mongodb' => [
             'driver'   => 'mongodb',
             'dsn' => env('MONGODB_DSN_ODIN'),
-            'database' => explode('/', env('MONGODB_DSN_ODIN'))[3],
+            'database' => explode('/', env('MONGODB_DSN_ODIN'))[3]
             //'database' => array_values(array_slice(explode('/', env('MONGODB_DSN_ODIN')), -1))[0],
-            'host' => str_replace('mongodb://', '', env('MONGODB_DSN_ODIN'))
         ],
     ],
 
