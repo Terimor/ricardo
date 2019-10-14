@@ -253,8 +253,7 @@ class SiteController extends Controller
      * @return type
      */
     public function test(Request $request, ProductService $productService)
-    {
-        echo '<pre>'; var_dump(env('ENVIRONMENT')); echo '</pre>';
+    {        
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';
