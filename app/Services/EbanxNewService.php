@@ -326,7 +326,7 @@ class EbanxNewService
      */
     public function validateWebhook(Request $req)
     {
-        $sign = $req->header('X-­Signature­Content');
+        $sign = $req->header('x-signature-content');
         $content = $req->getContent();
         $notification = new Notification($req->get('operation'), $req->get('notification_type'), explode(',', $req->get('hash_codes')));
 
@@ -337,7 +337,7 @@ class EbanxNewService
         $is_sign_valid = \openssl_verify($content, \base64_decode($sign), $cert);
 
         if ($is_sign_valid && EbanxUtils::isValidNotification($notification)) {
-            $result = ['status' => true, 'hashes' => $notification->hash_codes];
+            $result = ['status' => true, 'hashes' => $notification->getHashCodes()];
         }
 
         return $result;
