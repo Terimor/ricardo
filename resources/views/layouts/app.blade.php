@@ -75,8 +75,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap-grid.min.css" media="none" onload="if(media!='all')media='all'">
 
     @if ($HasVueApp)
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css" media="none" onload="if(media!='all')media='all'">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css" media="none" onload="if(media!='all')media='all'">
     @endif
 
     <link href="{{ mix_cdn('assets/css/app.css') }}" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
