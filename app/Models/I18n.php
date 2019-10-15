@@ -118,8 +118,8 @@ class I18n extends Model
      */
     public static function getTranslationLanguages(bool $codes_only = false): array
     {
-        $langs = static::$languages;
-        $langs = array_merge(I18n::$browser_codes, $langs);
+        $langs = static::$languages;        
+        $langs = array_merge($langs, I18n::$browser_codes);
         if ($codes_only) {
             $langs = array_keys($langs);
         }

@@ -83,11 +83,13 @@ class I18nService
         }
 
         //$translated_languages = I18n::getTranslationLanguages(true);
-        $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : (!empty(I18n::$loadedPhrases['e-n']) ? I18n::$loadedPhrases['en'] : []);
+        $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : (!empty(I18n::$loadedPhrases['en']) ? I18n::$loadedPhrases['en'] : []);
 
         if (!empty($loadedPhrases[$translation])) {
             $translation = $loadedPhrases[$translation];
         } else {
+            // return empty string instead of code if no EN translation for this phrase in Odin 
+            $translation = '';
             logger()->error("URGENT: `{$translation}` not found in translations. Args: " . json_encode($args));
         }
 
