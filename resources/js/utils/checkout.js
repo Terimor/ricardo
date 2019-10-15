@@ -153,17 +153,17 @@ export function preparePurchaseData({
 
 export function getCardUrl(cardType) {
   const cardMap = {
-    'american-express': '/assets/images/cc-icons/american-express.png',
-    'aura': '/assets/images/cc-icons/aura.png',
-    'diners-club': '/assets/images/cc-icons/diners-club.png',
-    'discover': '/assets/images/cc-icons/discover.png',
-    'elo': '/assets/images/cc-icons/elo.png',
-    'hipercard': '/assets/images/cc-icons/hipercard.png',
-    'iconcc': '/assets/images/cc-icons/iconcc.png',
-    'jcb': '/assets/images/cc-icons/jcb.png',
-    'maestro': '/assets/images/cc-icons/maestro.png',
-    'mastercard': '/assets/images/cc-icons/mastercard.png',
-    'visa': '/assets/images/cc-icons/visa.png'
+    'american-express': window.cdnUrl + '/assets/images/cc-icons/american-express.png',
+    'aura': window.cdnUrl + '/assets/images/cc-icons/aura.png',
+    'diners-club': window.cdnUrl + '/assets/images/cc-icons/diners-club.png',
+    'discover': window.cdnUrl + '/assets/images/cc-icons/discover.png',
+    'elo': window.cdnUrl + '/assets/images/cc-icons/elo.png',
+    'hipercard': window.cdnUrl + '/assets/images/cc-icons/hipercard.png',
+    'iconcc': window.cdnUrl + '/assets/images/cc-icons/iconcc.png',
+    'jcb': window.cdnUrl + '/assets/images/cc-icons/jcb.png',
+    'maestro': window.cdnUrl + '/assets/images/cc-icons/maestro.png',
+    'mastercard': window.cdnUrl + '/assets/images/cc-icons/mastercard.png',
+    'visa': window.cdnUrl + '/assets/images/cc-icons/visa.png'
   }
   return cardMap[cardType] || cardMap.iconcc
 }

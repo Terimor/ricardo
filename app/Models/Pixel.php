@@ -26,6 +26,31 @@ class Pixel extends Model
     const DEVICE_PC = 'pc';
     const DEVICE_TABLET = 'tablet';
     const DEVICE_MOBILE = 'mobile';
-    const DEVICE_TV = 'tv';        
+    const DEVICE_TV = 'tv';
+    
+    /**
+     * Return pixels by params
+     * @param string $hoAffiliateID
+     * @param type $product
+     * @param string $countryCode
+     * @param string $route
+     * @param string $device
+     */
+    public static function getPixels(string $hoAffiliateID, $product, string $countryCode, string $route, string $device)
+    {
+        $pixels = Pixel::where(['ho_affiliate_id' => $hoAffiliateID, 'countries' => $countryCode, 'devices' => $device])
+                // if we have empty product_ids it's mean ALL
+                ->where(function ($query) use ($product) {
+                    $query->where('product_ids', '=', $product->id)
+                          ->orWhere('product_ids', '=', '');
+                })
+                // if we have empty placements it's mean on ALL pages
+                ->where(function ($query) use ($route) {
+                    $query->where('placements', '=', $route)
+                          ->orWhere('placements', '=', '');
+                })
+                ->get();                
+        return $pixels;
+    }
 
 }

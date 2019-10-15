@@ -7,6 +7,9 @@
  *
  */
 
+const textarea = document.createElement('textarea');
+
+
 export function t(phrase, args = {}) {
   let translated = phrase;
 
@@ -32,6 +35,9 @@ export function t(phrase, args = {}) {
   if (nonTranslated.length > 0) {
     console.error('URGENT: Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args));
   }
+
+  textarea.innerHTML = translated;
+  translated = textarea.innerText;
 
   return translated;
 }

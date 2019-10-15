@@ -107,7 +107,7 @@ export function send1ClickRequest(data, upsells) {
             for (const upsell of res.upsells) {
               if (upsells.status !== 'ok') {
                 res.paymentError += '<div>' + t('upsells.step_3.payment_error_one', {
-                  upsell: upsells.filter(ups => ups.id === upsell.id).shift().name,
+                  product: upsells.filter(ups => ups.id === upsell.id).shift().name,
                 }) + '</div>';
               }
             }

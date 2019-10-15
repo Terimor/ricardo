@@ -17,6 +17,8 @@
 
     @yield('head')
 
+    <script type="text/javascript">window.cdnUrl='{{ $cdnUrl }}';</script>
+
     @if (!empty($ga_id))
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga_id }}"></script>
@@ -26,7 +28,7 @@
     <!-- Scripts -->
 
     @if (config('app.env') !== 'local' && config('app.env') !== 'development')
-      <script type="text/javascript">var SentryDSN='{{ $SentryDsn }}';</script>
+      <script type="text/javascript">window.SentryDSN='{{ $SentryDsn }}';</script>
       <script src="https://browser.sentry-cdn.com/5.6.3/bundle.min.js" crossorigin="anonymous" async></script>
       @if ($HasVueApp)
         <script src="https://browser.sentry-cdn.com/5.6.3/vue.min.js" crossorigin="anonymous" async></script>
@@ -41,7 +43,7 @@
       @endif
 
       @if (Request::is('checkout'))
-        <script type="text/javascript">var IPQ={Callback:()=>{}};</script>
+        <script type="text/javascript">window.IPQ={Callback:()=>{}};</script>
         <script src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/learn.js" async></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/libphonenumber-js/1.7.25/libphonenumber-js.min.js" async></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js" async></script>

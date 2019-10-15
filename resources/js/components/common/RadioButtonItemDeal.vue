@@ -1,7 +1,7 @@
 <template>
   <label class="label-container-radio radio-button-deal"
           :class="[`item-${item.value}`, {disabled: item.isOutOfStock, 'labeled': item.discountName}]">
-    <img class="share" src="/assets/images/share.png" v-if="showShareArrow">
+    <img class="share" :src="$root.cdnUrl + '/assets/images/share.png'" v-if="showShareArrow">
     <input type="radio"
            :checked="item.value === value"
            name="radio"
@@ -24,7 +24,7 @@
       </div>
       <div class="price">
         <div class="bestseller" v-if="isBestseller()">
-          <img src="/assets/images/best-seller-checkout4.png" alt="Bestseller">
+          <img :src="$root.cdnUrl + '/assets/images/best-seller-checkout4.png'" alt="Bestseller">
         </div>
         <span>
           {{ item.newPrice || item.price }}

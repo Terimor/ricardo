@@ -311,7 +311,7 @@
             </template>
 
 
-            <section class="promo__scroll-to-top">
+            <section v-if="isShownFooter" class="promo__scroll-to-top">
                 <div class="container">
                     <div class="promo__people-rate-block">
                         <h1 class="bold promo__title">

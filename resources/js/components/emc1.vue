@@ -1,5 +1,8 @@
 <template>
     <div v-if="$v && !hidePage">
+        <div class="container">
+            <ProductOffer :product="checkoutData.product" />
+        </div>
         <div class="container main">
             <div class="row">
                 <div class="col-md-7">
@@ -61,7 +64,7 @@
                                     <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                                     <span class="checkmark"></span>
                                 </label>
-                                <img src="/assets/images/best-saller.png" alt="">
+                                <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
                                 <i class="fa fa-arrow-right slide-right"></i>
                             </button>
                         </transition>
@@ -100,7 +103,7 @@
                                     @setAddress="setAddress"/>
                         </transition>
                         <div class="main__bottom">
-                            <img src="/assets/images/safe_payment_en.png" alt="safe payment">
+                            <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
                             <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
                         </div>
@@ -184,6 +187,7 @@
   import { getCountOfInstallments } from '../utils/installments';
   import ProductItem from './common/ProductItem';
   import Cart from './common/Cart';
+  import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import { fade } from '../utils/common';
   import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
@@ -202,6 +206,7 @@
     components: {
       ProductItem,
       Cart,
+      ProductOffer,
       PurchasAlreadyExists,
     },
     props: ['showPreloader', 'skusList'],
@@ -222,7 +227,7 @@
               key: 0,
               name: 'Echo Beat - Wireless 3D Sound white',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: '/assets/images/headphones-white.png',
+              imageUrl: window.cdnUrl + '/assets/images/headphones-white.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',
@@ -235,7 +240,7 @@
               key: 1,
               name: 'Echo Beat - Wireless 3D Sound gold',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: '/assets/images/headphones-gold.png',
+              imageUrl: window.cdnUrl + '/assets/images/headphones-gold.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',
@@ -248,7 +253,7 @@
               key: 2,
               name: 'Echo Beat - Wireless 3D Sound red',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: '/assets/images/headphones-red.png',
+              imageUrl: window.cdnUrl + '/assets/images/headphones-red.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',
@@ -654,6 +659,12 @@
     $red: #e74c3c;
     $color_niagara_approx: #16a085;
 
+    .tpl-emc1 {
+      .offer {
+        text-align: center;
+      }
+    }
+
     .accessories-modal {
         & > p {
             text-align: center;
@@ -844,10 +855,13 @@
             }
 
             #warranty-field-button {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
                 width: 100%;
                 position: relative;
-                height: 95px;
                 margin-top: 22px;
+                padding: 0;
                 background-color: rgba(216, 216, 216, .71);
                 border-radius: 5px;
                 border: 1px solid rgba(0, 0, 0, 0.4);
@@ -862,18 +876,14 @@
                     font-weight: bold;
                     line-height: 1.8;
                     text-align: left;
+                    margin: 18px 70px 18px 100px;
+                    padding: 0;
                     text-transform: capitalize;
                     font-size: 16px;
-                    padding: 23px 70px 30px;
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    bottom: 0;
-                    left: 0;
 
                     .checkmark {
-                        top: 20px;
-                        left: 40px;
+                        top: 3px;
+                        left: -30px;
                     }
                 }
 
@@ -1028,7 +1038,17 @@
             }
         }
 
-        @media screen and (max-width: 768px) {
+        @media screen and (max-width: 991px) {
+          &__deal {
+            #warranty-field-button {
+              label[for=warranty-field] {
+                margin-right: 40px;
+              }
+            }
+          }
+        }
+
+        @media screen and (max-width: 767px) {
             .col-md-7 {
                 padding: 0;
             }
@@ -1036,10 +1056,11 @@
             &__deal {
                 #warranty-field-button {
                     label[for=warranty-field] {
-                        padding: 0 0 0 70px;
-                        display: flex;
-                        align-items: center;
-                        font-size: 0.8rem;
+                        font-size: 14px;
+
+                        .checkmark {
+                          top: 2px;
+                        }
                     }
                 }
             }

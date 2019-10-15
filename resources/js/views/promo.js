@@ -12,11 +12,13 @@ import notification from '../mixins/notification';
 import queryToComponent from '../mixins/queryToComponent';
 import purchasMixin from '../mixins/purchas';
 import { queryParams } from  '../utils//queryParams';
+import globals from '../mixins/globals';
 
 const promo = new Vue({
   el: "#promo",
 
   mixins: [
+    globals,
     notification,
     queryToComponent,
     purchasMixin,
@@ -73,27 +75,27 @@ const promo = new Vue({
         value: 'visa',
         text: 'VISA',
         label: 'VISA',
-        imgUrl: '/assets/images/cc-icons/visa.png'
+        imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
       }, {
         value: 'mastercard',
         text: 'MasterCard',
         label: 'MasterCard',
-        imgUrl: '/assets/images/cc-icons/mastercard.png'
+        imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
       }, {
         value: 'diners-club',
         text: 'DinnersClub',
         label: 'DinnersClub',
-        imgUrl: '/assets/images/cc-icons/diners-club.png'
+        imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
       }, {
         value: 'discover',
         text: 'Discover',
         label: 'Discover',
-        imgUrl: '/assets/images/cc-icons/discover.png'
+        imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
       }, {
         value: 'paypal',
         text: 'PayPal',
         label: 'PayPal',
-        imgUrl: '/assets/images/cc-icons/payPal.png'
+        imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
       }
     ],
     mockData: {
@@ -148,7 +150,7 @@ const promo = new Vue({
     step: 0,
     steps: 0,
     isShownFooter: true,
-      isShownJumbotron: true,
+    isShownJumbotron: true,
   }),
   validations: emc1Validation,
 
@@ -295,7 +297,7 @@ const promo = new Vue({
     },
 
     textPromoDiscount() {
-      return t('checkout.promo.buy_now', { discount: this.discount || 0 });
+      return t('checkout.promo.buy_now', { amount: this.discount || 0 });
     },
 
     textDiscountStarter: () => t('checkout.discount_starter'),

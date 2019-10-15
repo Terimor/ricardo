@@ -200,7 +200,7 @@
             >
               <div class="cvv-popup__content">
                 <p v-html="textCVVPopupLine1"></p>
-                <div><img src="/assets/images/cvv_popup.jpg" alt=""></div>
+                <div><img :src="$root.cdnUrl + '/assets/images/cvv_popup.jpg'" alt=""></div>
                 <p v-html="textCVVPopupLine2"></p>
               </div>
             </el-dialog>
@@ -228,7 +228,7 @@
             type="button"
           >
             <span class="purchase-button-text">Buy Now Risk-Free with</span>
-            <img src="/assets/images/cc-icons/paypal-highq.png" alt="Paypal">
+            <img :src="$root.cdnUrl + '/assets/images/cc-icons/paypal-highq.png'" alt="Paypal">
           </button>
           -->
           <div class="form-navigation">

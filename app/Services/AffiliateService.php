@@ -72,6 +72,12 @@ class AffiliateService
                     $url = str_replace('#COP_ID#', $copId, $url);
                 }
                 
+                // domain
+                 if (!isset($params['domain'])) {
+                     $domain = \Utils::getDomain();
+                     $url = str_replace('#DOMAIN#', $domain, $url);
+                 }
+                
                 // send request query
                 RequestQueue::saveNewRequestQuery($url, $postback->delay);
             }
@@ -160,8 +166,8 @@ class AffiliateService
      */
     public static function getPixelsByData(Request $request, string $hoAffiliateID, $product, string $countryCode, string $route, string $device) : array
     {
-        $pixels = Pixel::where(['product_ids' => $product->id, 'ho_affiliate_id' => $hoAffiliateID, 'countries' => $countryCode, 'placements' => $route, 'devices' => $device])->get();
-        
+        $pixels = Pixel::getPixels($hoAffiliateID, $product, $countryCode, $route, $device);
+                
         $pixelsArray = [];
         foreach ($pixels as $pixel) {
             // skip if direct only true and &direct is't true or 1            
@@ -206,6 +212,12 @@ class AffiliateService
                 if ($order) {
                     $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
                 }
+            }
+            
+            // domain
+            if (empty($request->domain)) {
+                $domain = \Utils::getDomain();
+                $code = str_replace('#DOMAIN#', $domain, $code);
             }
             
             $pixelsArray[] = [

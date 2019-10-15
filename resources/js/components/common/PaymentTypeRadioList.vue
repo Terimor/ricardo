@@ -35,7 +35,7 @@
           {
             label: '<div class="title">' + t('checkout.credit_cards') + '</div>' + this.creditCardsAvailableHTML,
             value: 'credit-card',
-            class: 'green-button-animated',
+            class: 'green-button-animated green-button-active',
           },
           /*{
             label: t('checkout.bank_payments'),
