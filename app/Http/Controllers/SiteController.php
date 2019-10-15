@@ -276,7 +276,7 @@ class SiteController extends Controller
     public function test(Request $request)
     {
         echo '<pre>'; var_dump(request()->getHost()); echo '</pre>';
-        echo '<pre>'; var_dump(request()->server()); echo '</pre>';
+        echo '<pre>'; var_dump(request()->server()); echo '</pre>';        
     }
 
 }
