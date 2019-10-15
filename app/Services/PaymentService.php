@@ -639,12 +639,12 @@ class PaymentService
 
             $currency = CurrencyService::getCurrency($order->currency);
 
-            $price_paid_diff = floor(($order->total_paid - $order->total_price) * 100) / 100;
-
             $order->total_paid      += $data['value'];
             $order->total_paid_usd  += floor($data['value'] / $currency->usd_rate * 100) / 100;
             $order->txns_fee_usd    += floor($data['fee'] / $currency->usd_rate * 100) / 100;
-            $order->status          = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+
+            $price_paid_diff    = floor(($order->total_paid - $order->total_price) * 100) / 100;
+            $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
         }
 
         if (!$order->save()) {
