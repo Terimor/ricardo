@@ -438,13 +438,14 @@ class OdinProduct extends Model
 
     /**
      * Retuen array skus -> product
-     * SAGA: OdinProduct::cacheSkusProduct
-     * @param type $cache_lifetime
+     * SAGA: OdinProduct::getCachedSkuProduct
      */
-    public static function getCacheSkusProduct($cache_lifetime = 600)
+    public static function getCacheSkusProduct()
     {
-        $skus = Cache::get('sku_product');
-        if (!$skus) {
+        $skus = Cache::get('SkuProduct');
+        
+        //disabled because should be generated in Saga daemons
+        /*if (!$skus) {
             $products = OdinProduct::all();
 
             $skus = [];
@@ -456,8 +457,8 @@ class OdinProduct extends Model
                 }
             }
 
-            Cache::put('sku_product', $skus, $cache_lifetime);
-        }
+            Cache::put('SkuProduct', $skus, $cache_lifetime);
+        }*/
         return $skus;
     }
 

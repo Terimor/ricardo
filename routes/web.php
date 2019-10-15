@@ -23,6 +23,8 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     //$router->get('/promo', 'SiteController@promo')->name('promo');
     $router->get('/thankyou', 'SiteController@thankyou')->name('thankyou');
     $router->get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
+    $router->get('/prober', 'SiteController@prober')->name('prober');
+
     //$router->get('/products', 'SiteController@products')->name('products');
     $router->get('/product/{product}', 'ProductController@getProduct')->name('ajax.product');
     $router->get('/product', 'ProductController@view')->name('product');
