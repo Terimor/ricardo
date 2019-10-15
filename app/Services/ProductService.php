@@ -29,14 +29,14 @@ class ProductService
         if (!$product) {
             $host = request()->getHost();
             $host = str_replace('www.', '', $host);
-            $domain = Domain::where('name', request()->getHost())->first();
+            $domain = Domain::where('name', $host)->first();
             if ($domain && !empty($domain->product)) {
                 $product =  $domain->product;
             }
         }
 
         if (!$product) {
-            logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => request()->getHost()]);
+            logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => $host]);
             $product = OdinProduct::orderBy('_id', 'desc')->where('skus.is_published', true)->firstOrFail();
         }
 

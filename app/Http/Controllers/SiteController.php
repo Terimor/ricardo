@@ -272,11 +272,5 @@ class SiteController extends Controller
 
         return view('prober', compact('result', 'redis'));
     }
-    
-    public function test(Request $request)
-    {
-        echo '<pre>'; var_dump(request()->getHost()); echo '</pre>';
-        echo '<pre>'; var_dump(request()->server()); echo '</pre>';        
-    }
 
 }
