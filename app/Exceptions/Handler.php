@@ -84,6 +84,12 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
                 ], 500);
+            case PPCurrencyNotSupportedException::class:
+                $message = json_decode($exception->getMessage(), true);
+
+                return response()->json([
+                    'error' => ['code' => $exception->getCode(), 'message' => $message]
+                ], 500);
             default:
                 return parent::render($request, $exception);
         endswitch;

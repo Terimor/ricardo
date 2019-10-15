@@ -2,22 +2,20 @@
 
 namespace App\Services;
 
+use App\Exceptions\PPCurrencyNotSupportedException;
 use App\Http\Requests\PayPalCrateOrderRequest;
 use App\Http\Requests\PayPalVerfifyOrderRequest;
+use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Models\Txn;
-use BraintreeHttp\HttpResponse;
+use BraintreeHttp\HttpException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
-use App\Services\CustomerService;
-use App\Services\OrderService;
-use App\Services\PaymentService;
-use App\Services\EmailService;
 
 /**
  * Class PayPalService
@@ -145,7 +143,12 @@ class PayPalService
             'purchase_units' => [$pp_purchase_unit]
         ];
 
-        $response = $this->payPalHttpClient->execute($pp_request);
+        try {
+            $response = $this->payPalHttpClient->execute($pp_request);
+        } catch (HttpException $e) {
+            $shop_currency = CurrencyService::getCurrency($upsell_order->currency);
+            $this->handlePPBraintreeException($e, $shop_currency);
+        }
 
         // If success create new txn and update order
         if ($response->statusCode === 201) {
@@ -226,7 +229,8 @@ class PayPalService
         $price = round($priceData['price'] / $priceData['exchange_rate'], 2);
 
         // Currency of the prices show on the shop page
-        $shop_currency_code = CurrencyService::getCurrency()->code;
+        $shop_currency = CurrencyService::getCurrency();
+        $shop_currency_code = $shop_currency->code;
 
         $local_currency = $priceData['code'];
         $local_price = $priceData['price'];
@@ -282,7 +286,11 @@ class PayPalService
             'purchase_units' => [$unit]
         ];
 
-        $response = $this->payPalHttpClient->execute($pp_request);
+        try {
+            $response = $this->payPalHttpClient->execute($pp_request);
+        } catch (HttpException $e) {
+            $this->handlePPBraintreeException($e, $shop_currency);
+        }
 
         if ($response->statusCode === 201) {
             $paypal_order = $response->result;
@@ -762,5 +770,28 @@ class PayPalService
     private function findProductBySku(string $sku)
     {
         return OdinProduct::where('skus.code', $sku)->firstOrFail();
+    }
+
+    /**
+     * Handles Braintree PP exception
+     *
+     * @param HttpException $exception
+     * @param Currency $currency
+     * @throws PPCurrencyNotSupportedException
+     */
+    private function handlePPBraintreeException(HttpException $exception, Currency $currency) {
+        $decoded_message = json_decode($exception->getMessage(), true);
+        if (!empty($decoded_message['details'][0]['issue']) && $decoded_message['details'][0]['issue'] === 'CURRENCY_NOT_SUPPORTED') {
+            $country = UtilsService::$countryCodes[$currency->countryCode];
+            $message = [
+                'phrase' => 'paypal.error.currency_not_supported',
+                'args' => [
+                    'currency' => $currency->name,
+                    'country' => $country
+                ],
+            ];
+
+            throw new PPCurrencyNotSupportedException(json_encode($message), $exception->getCode());
+        }
     }
 }
