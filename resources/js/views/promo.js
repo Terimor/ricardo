@@ -13,6 +13,7 @@ import queryToComponent from '../mixins/queryToComponent';
 import purchasMixin from '../mixins/purchas';
 import { queryParams } from  '../utils//queryParams';
 import globals from '../mixins/globals';
+import wait from '../utils/wait';
 
 const promo = new Vue({
   el: "#promo",
@@ -147,8 +148,8 @@ const promo = new Vue({
 
     slideForm: null,
     carouselFormHeight: 'auto',
-    step: 0,
-    steps: 0,
+    slideFormStep: 0,
+    slideFormSteps: 0,
     isShownFooter: true,
     isShownJumbotron: true,
   }),
@@ -245,7 +246,14 @@ const promo = new Vue({
       }, 500);
     }
 
-    this.steps = [...document.querySelectorAll('.promo__step')];
+    if(this.queryParams['preload'] === undefined || Number(this.queryParams['preload']) !== 3) {
+      this.showPreloader = false;
+    }
+
+    wait(
+      () => !this.showPreloader,
+      () => {this.slideFormSteps = [...document.querySelectorAll('.promo__step')]},
+    );
   },
 
   computed: {
@@ -438,30 +446,30 @@ const promo = new Vue({
     },
 
     nextStep() {
-      this.step++;
+      this.slideFormStep++;
       this.stepAnimation();
       this.isShownJumbotron = false;
-      if(this.step > this.steps.length) {this.step = this.steps.length};
+      if(this.slideFormStep > this.slideFormSteps.length) {this.slideFormStep = this.slideFormSteps.length};
       this.$nextTick(()=>{this.getFormHeight()});
     },
 
     prevStep() {
-        this.step--;
+        this.slideFormStep--;
         this.stepAnimation();
         this.isShownJumbotron = true;
-        if(this.step < 1) {this.step = 0};
+        if(this.slideFormStep < 1) {this.slideFormStep = 0};
         this.$nextTick(()=>{this.getFormHeight()});
     },
 
     stepAnimation () {
-        this.steps.forEach((item) => {
-          const stepPosition = `-${this.step * 100}%`;
+        this.slideFormSteps.forEach((item) => {
+          const stepPosition = `-${this.slideFormStep * 100}%`;
           item.style.transform = `translate(${stepPosition})`
         })
     },
 
     getFormHeight() {
-        this.carouselFormHeight = `${this.steps[this.step].offsetHeight}px`;
+        this.carouselFormHeight = `${this.slideFormSteps[this.slideFormStep].offsetHeight}px`;
     },
   }
 })

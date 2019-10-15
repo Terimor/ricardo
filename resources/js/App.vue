@@ -21,6 +21,7 @@
       :show-preloader.sync="showPreloader"/>
     <leave-modal
       v-if="+queryParams.exit === 1"
+      :show-preloader="showPreloader"
     />
   </div>
 </template>
@@ -86,6 +87,10 @@ export default {
     },
   },
   mounted () {
+    if (this.queryParams['preload'] === undefined || Number(this.queryParams['preload']) !== 3) {
+        this.showPreloader = false
+    };
+
     localStorage.removeItem('order_currency')
     this.initial();
   },

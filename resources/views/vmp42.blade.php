@@ -330,7 +330,9 @@
             </section>
         </template>
 
-        <leave-modal v-if="+queryParams.exit === 1"/>
+        <leave-modal
+            v-if="+queryParams.exit === 1"
+            :show-preloader="showPreloader"/>
     </div>
 
     @include('layouts.footer')

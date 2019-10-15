@@ -4,14 +4,24 @@
     import wait from '../../utils/wait';
 
     export default {
+        props: {
+            showPreloader: {
+                type: Boolean,
+                default: false
+            }
+        },
+
         mounted() {
             window.closeLeaveModal = () => document.querySelector('#bio_ep_close').dispatchEvent(new CustomEvent('click'))
             window.agreeLeaveModal = () => {
                 window.closeLeaveModal()
                 document.querySelector('.main__deal').scrollIntoView()
-            }
+            };
+
             wait(
-                () => !!window.bioEp,
+                () => {
+                    return !!window.bioEp && !this.showPreloader;
+                },
                 () => bioEp.init({
                     width: 450,
                     html: `
