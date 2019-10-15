@@ -683,7 +683,7 @@ class UtilsService
 	{
         if (\App::environment() == 'production') {
             $urlReplace = self::CDN_HOST_PRODUCTION;
-            $s3Url = self::S3_URL_STAGING;
+            $s3Url = self::S3_URL_PRODUCTION;
         } else {        
             $urlReplace = self::CDN_HOST_STAGING;
             $s3Url = self::S3_URL_STAGING;            
