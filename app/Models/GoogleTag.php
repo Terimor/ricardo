@@ -71,10 +71,10 @@ class GoogleTag extends Model
      */
     public static function getCacheGoogleTags($cache_lifetime = 600)
     {
-        $tags = Cache::get('google_tags');
+        $tags = Cache::get('GoogleTags');
         if (!$tags) {
             $tags = GoogleTag::all();
-            Cache::put('google_tags', $tags, $cache_lifetime);
+            Cache::put('GoogleTags', $tags, $cache_lifetime);
         }
         return $tags;  
     }
