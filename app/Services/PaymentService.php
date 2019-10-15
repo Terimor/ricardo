@@ -288,7 +288,12 @@ class PaymentService
     private function addCustomer(array $contact): void
     {
         $reply = $this->customerService->addOrUpdate(
-            array_merge($contact, ['phone' => $contact['phone']['country_code'] . $contact['phone']['number']])
+            array_merge($contact,
+                [
+                    'doc_id'    => $contact['document_number'],
+                    'phone'     => $contact['phone']['country_code'] . $contact['phone']['number']
+                ]
+            )
         );
         if (isset($reply['errors'])) {
             throw new CustomerUpdateException(json_encode($reply['errors']));
