@@ -194,7 +194,7 @@ class EbanxNewService
         $result = null;
 
         try {
-            $res = EBANX($config)->findByHash($hash);
+            $res = EBANX($config)->paymentInfo()->findByHash($hash);
 
             $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
 
@@ -333,6 +333,8 @@ class EbanxNewService
         $result = ['status' => false];
 
         $cert = File::get(\config_path("cert/ebanx-notifications-public.pem"));
+
+        logger()->info('Ebanx', ['cert' => $cert, 'content' => $content, 'sign' => $sign]);
 
         $is_sign_valid = \openssl_verify($content, \base64_decode($sign), $cert);
 
