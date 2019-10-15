@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Extensions\MongoStore;
+use App\Extensions\SagaRedisStore;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,8 +25,8 @@ class CacheServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Cache::extend('redis', function ($app) {
-            return Cache::repository(new MongoStore(
+        Cache::extend('sagaredis', function ($app) {
+            return Cache::repository(new SagaRedisStore(
                 $app['redis'],
                 $app['config']['cache.prefix'],
                 $app['config']['cache.stores.redis.connection']

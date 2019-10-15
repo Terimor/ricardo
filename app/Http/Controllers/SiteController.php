@@ -9,9 +9,7 @@ use App\Services\ProductService;
 use App\Models\Currency;
 use App\Models\Setting;
 use App\Services\I18nService;
-use App\Models\OdinOrder;
 use App\Services\OrderService;
-use App\Models\AffiliateSetting;
 
 class SiteController extends Controller
 {
@@ -22,7 +20,6 @@ class SiteController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth');
     }
 
     /**
@@ -34,9 +31,7 @@ class SiteController extends Controller
     public function index(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('index_page');
-
         $product = $productService->resolveProduct($request, true);
-
         return view('index', compact('product', 'loadedPhrases'));
     }
 
@@ -253,7 +248,7 @@ class SiteController extends Controller
      * @return type
      */
     public function test(Request $request, ProductService $productService)
-    {        
+    {
         /*$start = microtime(true);
         $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
         echo '<pre>'; var_dump($location); echo '</pre>';

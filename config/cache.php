@@ -1,6 +1,5 @@
 <?php
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Cache Store
@@ -14,9 +13,7 @@ return [
     |            "memcached", "redis", "dynamodb"
     |
     */
-
-    //'default' => 'redis',
-    'default' => 'file',
+    'default' => env('ENVIRONMENT', 'production') === 'development' ? 'file' : 'redis',
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +28,7 @@ return [
 
     'stores' => [
         'redis' => [
-            'driver' => 'redis',
+            'driver' => 'sagaredis',
             'connection' => 'cache',
         ],
         'file' => [
@@ -50,7 +47,5 @@ return [
     | value to get prefixed to all our keys so we can avoid collisions.
     |
     */
-
     'prefix' => '',
-
 ];
