@@ -153,9 +153,14 @@
 
     beforeCreate() {
       localStorage.removeItem('subOrder');
+
       if (performance.navigation.type == 1 || upsellsData.product.upsells === 0) {
-        goTo(`/thankyou/?`);
+        return goTo('/thankyou');
       }
+
+      setTimeout(() => {
+        window.location = '#';
+      }, 500);
     },
 
     watch: {

@@ -33,6 +33,12 @@ const thankYou = new Vue({
         }
     }),
 
+    beforeCreate() {
+      setTimeout(() => {
+        window.location = '#';
+      }, 500);
+    },
+
     methods: {
         onClickSocialNetwork (type) {
             this.socialType = type;
