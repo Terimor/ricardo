@@ -196,6 +196,8 @@ class EbanxNewService
         try {
             $res = EBANX($config)->paymentInfo()->findByHash($hash);
 
+            logger()->info('Ebanx query', ['reply' => \json_encode($res)]);
+
             $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
 
             if ($res['status'] === self::STATUS_OK) {
