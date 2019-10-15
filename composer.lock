@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7522e540250c2fd2ef57eea95d92cfc3",
+    "content-hash": "ee44953414f3ae3e93cc279cc96e0ccf",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -173,56 +173,6 @@
                 }
             ],
             "time": "2018-04-17T20:53:31+00:00"
-        },
-        {
-            "name": "checkout/checkout-php-api",
-            "version": "1.2.18",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/checkout/checkout-php-library.git",
-                "reference": "c0cc174baf1e0b93388f58b27c6e35f6fa17ea83"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/checkout/checkout-php-library/zipball/c0cc174baf1e0b93388f58b27c6e35f6fa17ea83",
-                "reference": "c0cc174baf1e0b93388f58b27c6e35f6fa17ea83",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "com\\checkout\\": "com/checkout"
-                },
-                "psr-0": {
-                    "CheckoutApi_": "com/checkout/packages"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dhiraj Gangoosirdar",
-                    "email": "integration@checkout.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Checkout PHP API Library",
-            "homepage": "https://github.com/checkout/checkout-php-library",
-            "keywords": [
-                "CKO",
-                "GW3",
-                "checkout.com",
-                "checkoutcom",
-                "gateway",
-                "online payment",
-                "payment"
-            ],
-            "time": "2019-03-04T17:38:58+00:00"
         },
         {
             "name": "checkout/checkout-sdk-php",
@@ -602,6 +552,48 @@
                 "schedule"
             ],
             "time": "2019-03-31T00:38:28+00:00"
+        },
+        {
+            "name": "ebanx/benjamin",
+            "version": "1.19.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ebanx/benjamin.git",
+                "reference": "d30887026c4fcfe3ce0288d686d061d74261ecf8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ebanx/benjamin/zipball/d30887026c4fcfe3ce0288d686d061d74261ecf8",
+                "reference": "d30887026c4fcfe3ce0288d686d061d74261ecf8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.2.3",
+                "fzaninotto/faker": "^1.6@dev",
+                "justinrainbow/json-schema": "^5.0@dev",
+                "phpunit/phpunit": "^4.8",
+                "sebastian/phpcpd": "^2.0.4",
+                "vlucas/phpdotenv": "^2.4@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ebanx\\Benjamin\\": "src/"
+                },
+                "files": [
+                    "main.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Business rule provider lib for plugin implementations",
+            "time": "2019-07-03T12:45:29+00:00"
         },
         {
             "name": "egulias/email-validator",

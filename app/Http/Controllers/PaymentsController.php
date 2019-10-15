@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\CheckoutDotComService;
+use App\Services\EbanxNewService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
@@ -93,9 +94,7 @@ class PaymentsController extends Controller
             throw new AuthException('checkout.com captured webhook unauthorized');
         }
 
-        $reply['fee'] = $checkoutService->requestFee($reply['hash']);
-
-        $this->paymentService->approveOrder($reply);
+        $this->paymentService->approveOrder($reply['txn']);
     }
 
     public function checkoutDotComFailedWebhook(Request $req)
@@ -103,8 +102,35 @@ class PaymentsController extends Controller
         logger()->info('checkout.com', ['content' => json_encode($req->toArray())]);
     }
 
-    public function testEbanx(Request $req)
+    public function testEbanx(PaymentCardCreateOrderRequest $req)
     {
-        return 'ok';
+        $reply = $this->paymentService->testCreateOrder($req);
+        return [
+            'order_currency'    => $reply['order_currency'],
+            'order_number'      => $reply['order_number'],
+            'order_id'          => $reply['order_id'],
+            'id'                => $reply['id'],
+            'status'            => $reply['status']
+        ];
+    }
+
+    public function testEbanxWebhook(Request $req)
+    {
+        $ebanxService = new EbanxNewService();
+        $reply = $ebanxService->validateWebhook($req);
+
+        logger()->info('ebanx notification', [
+            'body' => json_encode($req->getContent()),
+            'headers' => json_encode($req->header())
+        ]);
+
+        if (!$reply['status']) {
+            logger()->error('Ebanx unauthorized webhook', [ 'ip' => $req->ip() ]);
+            throw new AuthException('Notification unauthorized');
+        }
+
+        foreach ($reply['hashes'] as $hash) {
+            $this->paymentService->approveOrder($ebanxService->requestStatusByHash($hash));
+        }
     }
 }

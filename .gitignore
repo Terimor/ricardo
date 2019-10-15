@@ -31,8 +31,6 @@ phpunit.phar
 #vagrant folder
 /.vagrant
 
-*.pem
-
 /node_modules
 /public/hot
 /public/storage

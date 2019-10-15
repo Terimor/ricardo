@@ -67,7 +67,7 @@ class CheckoutDotComService
     private $checkout;
 
     /**
-     * CheckoutDotController constructor.
+     * CheckoutDotComService constructor
      */
     public function __construct()
     {
@@ -276,7 +276,7 @@ class CheckoutDotComService
      * Tokenizes customer card
      * @param array $card
      * @param array $contact
-     * @return array|null
+     * @return string|null
      */
     public function requestToken(array $card, array $contact): ?array
     {
@@ -288,10 +288,7 @@ class CheckoutDotComService
         $result = null;
         try {
             $card_token = $this->checkout->tokens()->request($source);
-            $result = [
-                'token' => $card_token->token,
-                'dt' => new \DateTime($card_token->expires_on)
-            ];
+            $result = $card_token->token;
         } catch (CheckoutException $ex) {
             logger()->error("Checkout.com token", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
         }
@@ -340,10 +337,14 @@ class CheckoutDotComService
         if ($is_valid && !empty($data)) {
             $result = [
                 'status'    => true,
-                'hash'      => $data['id'],
-                'number'    => $data['reference'],
-                'value'     => $data['amount'],
-                'currency'  => $data['currency']
+                'txn' => [
+                    'status'    => Txn::STATUS_APPROVED,
+                    'fee'       => $this->requestFee($data['id']),
+                    'hash'      => $data['id'],
+                    'number'    => $data['reference'],
+                    'value'     => $data['amount'],
+                    'currency'  => $data['currency']
+                ]
             ];
         }
 
