@@ -162,11 +162,11 @@ class EbanxNewService
 
     /**
      * Returns TXN status
-     * @param   string  $status     Ebanx status
-     * @param   bool    $is_webhook
+     * @param   string      $status     Ebanx status
+     * @param   bool|null   $is_webhook
      * @return  string
      */
-    public static function mapPaymentStatus(string $status, bool $is_webhook): string
+    public static function mapPaymentStatus(string $status, ?bool $is_webhook = false): string
     {
         switch ($status):
             case self::PAYMENT_STATUS_PENDING:
