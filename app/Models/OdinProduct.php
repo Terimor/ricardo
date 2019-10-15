@@ -443,7 +443,7 @@ class OdinProduct extends Model
      */
     public static function getCacheSkusProduct($cache_lifetime = 600)
     {
-        $skus = Cache::get('sku_product');
+        $skus = Cache::get('SkuProduct');
         if (!$skus) {
             $products = OdinProduct::all();
 
@@ -456,7 +456,7 @@ class OdinProduct extends Model
                 }
             }
 
-            Cache::put('sku_product', $skus, $cache_lifetime);
+            Cache::put('SkuProduct', $skus, $cache_lifetime);
         }
         return $skus;
     }

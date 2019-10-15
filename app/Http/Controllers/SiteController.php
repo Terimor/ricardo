@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
 use Illuminate\Http\Request;
-use App\Services\CurrencyService;
 use App\Services\ProductService;
-use App\Models\Currency;
 use App\Models\Setting;
 use App\Services\I18nService;
 use App\Services\OrderService;
+use Cache;
 
 class SiteController extends Controller
 {
@@ -244,57 +243,34 @@ class SiteController extends Controller
     }
 
     /**
-     *
-     * @return type
+     * Prober
+     * @param Request $request
+     * @return string
      */
-    public function test(Request $request, ProductService $productService)
-    {
-        /*$start = microtime(true);
-        $location = \Location::get('240d:2:d30b:5600:55ee:f486:1527:27a8');
-        echo '<pre>'; var_dump($location); echo '</pre>';
-        echo 'Script time: '.(microtime(true) - $start).' sec.';
+    public function prober(Request $request) {
+        $pw = 'WGJuhSJtxUEzKZxyx7v2CzeEJFpTuM';
+        if ($pw !== $request->get('pw')) {
+            return '?';
+        }
 
-        echo '123'; exit;*/
+        $good = 'TUDO BEM';
+        $bad = 'ALARME!';
+        $ok = 'OK';
+        $fail = 'FAIL';
+        $result = $bad;
+        $redis = $fail;
 
-	//5d6d166a14dec6079e07d171
-	/*$order = OdinOrder::where('_id','5d6d166a14dec6079e07d171')->first();
-	$order->status = 'v';
-	$i = 6;
-	$txns = $order->txns;
-	$txns[$i]['status'] = 'axc';
-	$txns[] = $txns[$i];
-	unset($txns[$i]);
-	$order->txns = $txns;
-	$order->save();
-	echo '<pre>'; var_dump($order); echo '</pre>';
+        //check Redis
+        $redisContent = Cache::get('SkuProduct');
+        if ($redisContent) {
+            $redisValidation = current($redisContent)['name']['en'] ?? null;
+            if (!empty($redisValidation)) {
+                $redis = $ok;
+                $result = $good;
+            }
+        }
 
-	exit;*/
-
-		/*$price = CurrencyService::calculateWarrantyPrice(20, 49.99);
-		$p2 = round(20/100 * 49.99, 2);
-		echo '<pre>'; var_dump($price); echo '</pre>';
-		echo '<pre>'; var_dump($p2); echo '</pre>';exit;*/
-
-        $res = CurrencyService::roundValueByCurrencyRules('98.11111', 'EUR');
-        echo $res; exit;
-
-        $product = $productService->resolveProduct($request, true);
-echo '<pre>'; var_dump(app()->getLocale()); echo '</pre>';
-        echo '<pre>'; var_dump($product); echo '</pre>'; exit;
-        $currency = Currency::whereCode('USD')->first();
-        echo '<pre>'; var_dump($currency); echo '</pre>'; exit;
-
-        $price = 99.81;
-        $exchangedPrice = CurrencyService::getLocalPriceFromUsd($price);
-        echo '<pre>'; var_dump($exchangedPrice); echo '</pre>'; exit;
-
-        $odinOrder = new \App\Models\OdinOrder();
-        $odinOrder->number = $odinOrder->generateOrderNumber('US');
-        $odinOrder->customer_email = 'asdaASDSAD@ccc.a     ';
-        echo '<pre>'; var_dump($odinOrder->customer_email); echo '</pre>'; exit;
-        //$odinOrder->save();
-
-        return view('index');
+        return view('prober', compact('result', 'redis'));
     }
 
 }
