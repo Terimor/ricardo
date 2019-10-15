@@ -773,6 +773,14 @@ class UtilsService
         }
         
         return $device;        
-    }    
+    }
+    
+    /**
+     * Return current domain
+     */
+    public static function getDomain(): string
+    {
+        return request()->server('SERVER_NAME');
+    }
 
 }
