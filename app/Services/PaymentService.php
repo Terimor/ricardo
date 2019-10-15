@@ -909,13 +909,12 @@ class PaymentService
         ]);
 
         $ebanxService = new EbanxNewService();
-        $order_details = [
-            'amount' => $order->total_price,
-            'currency' => $order->currency,
-            'number' => (int)$qty,
-            'installments' => $installments
-        ];
-        $payment = $ebanxService->payByCard($card, $contact, $order_details);
+        $payment = $ebanxService->payByCard($card, $contact, [
+            'amount'        => $order->total_price,
+            'currency'      => $order->currency,
+            'number'        => $order->number,
+            'installments'  => $installments
+        ]);
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {

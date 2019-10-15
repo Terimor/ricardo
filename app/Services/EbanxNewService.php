@@ -196,7 +196,7 @@ class EbanxNewService
         try {
             $res = EBANX($config)->paymentInfo()->findByHash($hash);
 
-            logger()->info('Ebanx query', ['reply' => \json_encode($res)]);
+            // logger()->info('Ebanx query', ['reply' => \json_encode($res)]);
 
             $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
 
@@ -296,7 +296,7 @@ class EbanxNewService
         try {
             $res = EBANX($config, new CreditCardConfig())->create($payment);
 
-            logger()->info('Ebanx pay', ['reply' => \json_encode($res)]);
+            // logger()->info('Ebanx pay', ['reply' => \json_encode($res)]);
 
             $result['provider_data'] = $res;
             if ($res['status'] === self::STATUS_OK) {
@@ -335,8 +335,6 @@ class EbanxNewService
         $result = ['status' => false];
 
         $cert = File::get(\config_path("cert/ebanx-notifications-public.pem"));
-
-        logger()->info('Ebanx', ['cert' => $cert, 'content' => $content, 'sign' => $sign]);
 
         $is_sign_valid = \openssl_verify($content, \base64_decode($sign), $cert);
 
