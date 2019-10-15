@@ -10,6 +10,18 @@
     <meta name="ga-id" content="{{ $ga_id }}">
 
     <title>@yield('title', config('app.name'))</title>
+    
+    @if (!empty($htmlToApp['gtags']))
+        @foreach($htmlToApp['gtags'] as $gtag)
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','{{ !empty($gtag['code']) ? $gtag['code'] : '' }}');</script>
+        <!-- End Google Tag Manager -->
+        @endforeach
+    @endif    
 
     @if (!empty(optional($product)->favicon_image))
         <link rel="shortcut icon" href="{{ $product->favicon_image }}">
@@ -88,18 +100,19 @@
         @endforeach
     @endif
 
-    @if (!empty($htmlToApp['gtags']))
-        @foreach($htmlToApp['gtags'] as $gtag)
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ !empty($gtag['code']) ? $gtag['code'] : '' }}"></script>
-        <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ !empty($gtag['code']) ? $gtag['code'] : '' }}');</script>
-        @endforeach
-    @endif
-
     {{--Do not remove this empty style tag--}}
     <style></style>
 
 </head>
 <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
+    @if (!empty($htmlToApp['gtags']))
+        @foreach($htmlToApp['gtags'] as $gtag)
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ !empty($gtag['code']) ? $gtag['code'] : '' }}"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+        @endforeach
+    @endif
     <div id="app">
         @if (Request::is('splash'))
             @include('layouts.header_splash', ['product' => $product])
