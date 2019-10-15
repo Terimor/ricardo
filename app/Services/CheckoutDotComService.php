@@ -278,7 +278,7 @@ class CheckoutDotComService
      * @param array $contact
      * @return string|null
      */
-    public function requestToken(array $card, array $contact): ?array
+    public function requestToken(array $card, array $contact): ?string
     {
         $source = new Card($card['number'], $card['month'], $card['year']);
         $source->cvv = $card['cvv'];
