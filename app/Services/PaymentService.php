@@ -945,7 +945,6 @@ class PaymentService
 
         if ($payment['status'] !== Txn::STATUS_FAILED) {
             $result['status'] = self::STATUS_OK;
-            $result['redirect_url'] = $payment['redirect_url'];
         } else {
             $result['status_code'] = $payment['response_code'];
             $result['status_desc'] = $payment['response_desc'];
