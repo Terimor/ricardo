@@ -56,8 +56,7 @@ export default {
         setInterval(() => {
 
           this.showNotification({
-            content: getNoticeHtml(),
-            position: document.body.offsetWidth < 768 ? 'top-left' : 'bottom-left'
+            content: getNoticeHtml()
           });
 
           const targetNotice = document.querySelector('.recently-notice_paypal');
