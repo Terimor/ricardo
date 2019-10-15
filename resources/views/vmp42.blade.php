@@ -203,7 +203,7 @@
                         <div class="promo__step-title">{{ t('checkout.step') }} 1: {{ t('checkout.pay_securely') }}</div>
                         <div class="promo__paypal-button-wrapper">
                             <paypal-button
-                                    :style="{ width: '400px' }"
+                                    :style="{ 'max-width': '400px' }"
                                     :create-order="paypalCreateOrder"
                                     :on-approve="paypalOnApprove"
                                     :$v="$v.form.deal"
