@@ -30,6 +30,7 @@ class VerifyCsrfToken extends Middleware
         'paypal-verify-order',
 		'calculate-upsells-total',
         /* test routes */
-        'test-ebanx'
+        'test-ebanx',
+        'test-ebanx-webhook'
     ];
 }

@@ -56,6 +56,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     /* test routes */
     $router->post('/test-ebanx', 'PaymentsController@testEbanx');
+    $router->post('/test-ebanx-webhook', 'PaymentsController@testEbanxWebhook');
 });
 
 /*Route::get('/debug-sentry', function () {
