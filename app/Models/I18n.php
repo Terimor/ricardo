@@ -108,6 +108,7 @@ class I18n extends Model
         '#CUSTOMER_NUMBER#',
         '#PRODUCTS#',
         '#SURVEY_LINK',
+        '#DATE#,'
     ];
 
     /**
