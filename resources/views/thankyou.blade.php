@@ -3,8 +3,8 @@
 @section('title', $product->page_title . ' - ' . $loadedPhrases['thankyou_title'])
 
 @section('styles')
-  <link rel="stylesheet" href="{{ mix_cdn('assets/css/thank-you.css') }}">
-  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/thank-you.css') }}" media="none" onload="if(media!='all')media='all'">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}" media="none" onload="if(media!='all')media='all'">
 @endsection
 
 @section('head')

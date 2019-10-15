@@ -11,7 +11,7 @@
 @endsection
 
 @section('styles')
-    <link rel="stylesheet" href="{{ mix_cdn('assets/css/index.css') }}">
+    <link rel="stylesheet" href="{{ mix_cdn('assets/css/index.css') }}" media="none" onload="if(media!='all')media='all'">
 @endsection
 
 @section('content')

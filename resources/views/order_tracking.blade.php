@@ -3,8 +3,8 @@
 @section('title', $product->page_title )
 
 @section('styles')
-  <link rel="stylesheet" href="{{ mix_cdn('assets/css/order-tracking.css') }}">
-  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/order-tracking.vue.css') }}">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/order-tracking.css') }}" media="none" onload="if(media!='all')media='all'">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/order-tracking.vue.css') }}" media="none" onload="if(media!='all')media='all'">
 @endsection
 
 @section('script')
