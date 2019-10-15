@@ -321,7 +321,7 @@ class CurrencyService
     public static function getCultureCodeByCurrency($currencyCode)
     {
         // cache culture code
-        $currencyCultureCodes = Cache::get('currency_culture_code');
+        $currencyCultureCodes = Cache::get('CurrencyCultureCode');
         if (empty($currencyCultureCodes[$currencyCode])) {
             $currencyCultureCodes = static::cacheCurrencyCultureCode();            
         }
@@ -345,7 +345,7 @@ class CurrencyService
             }
         }
         
-        Cache::put('currency_culture_code', $currencyCultureCodes, 3600);
+        Cache::put('CurrencyCultureCode', $currencyCultureCodes, 3600);
         
         return $currencyCultureCodes;
     }
