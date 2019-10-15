@@ -435,17 +435,10 @@ const promo = new Vue({
       })
     },
 
-
-    firstStep() {
-        this.step = 0;
-        this.stepAnimation();
-        this.isShownJumbotron = true;
-        this.$nextTick(()=>{this.getFormHeight()});
-    },
-
     nextStep() {
       this.step++;
       this.stepAnimation();
+      this.isShownJumbotron = false;
       if(this.step > this.steps.length) {this.step = this.steps.length};
       this.$nextTick(()=>{this.getFormHeight()});
     },
@@ -453,6 +446,7 @@ const promo = new Vue({
     prevStep() {
         this.step--;
         this.stepAnimation();
+        this.isShownJumbotron = true;
         if(this.step < 1) {this.step = 0};
         this.$nextTick(()=>{this.getFormHeight()});
     },

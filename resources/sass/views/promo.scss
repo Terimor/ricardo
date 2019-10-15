@@ -494,6 +494,7 @@ header {
 .tpl-vmp42 {
   .promo {
     $self: &;
+    margin-top: -1.5rem;
     &__wrapper {
       display: flex;
       align-items: flex-start;
@@ -527,5 +528,24 @@ header {
         text-decoration: none;
       }
     }
+  }
+  .fade-wrapper {
+    max-height: 1000px;
+    padding: 40px 0 60px;
+    transition: all .5s;
+    &_empty {
+      max-height: 0;
+      padding: 0;
+    }
+    .promo__jumbotron {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .67s;
+  }
+  .fade-enter, .fade-leave-to  {
+    opacity: 0;
   }
 }

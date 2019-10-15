@@ -41,36 +41,40 @@
 
 
             <!-- promo__jumbotron -->
-            <div v-if="isShownJumbotron" class="container">
-                <div class="promo__jumbotron"
-                     @click="scrollTo('.j-header-products')">
-                    <h2 class="promo__heading-battery">{{ t('checkout.promo.title') }}</h2>
-                    <div class="text-content">
-                        <p class="promo__offer">
-                            <span class="bold">{{ t('checkout.header_banner.prefix') }}:</span>
-                            {{ $product->long_name }}
-                        </p>
-                        <div class="promo__discount" v-cloak>
-                            <div>
-                                <span class="bold">{{ t('checkout.header_banner.price') }}:</span>
-                                <span class="promo__price--double bold">
-                                    @{{countOfInstallments}} @{{ warrantyOldPrice }}
-                                </span>
+            <div class="fade-wrapper" :class="{'fade-wrapper_empty': !isShownJumbotron}">
+                <transition name="fade">
+                    <div v-if="isShownJumbotron" class="container">
+                        <div class="promo__jumbotron"
+                             @click="scrollTo('.j-header-products')">
+                            <h2 class="promo__heading-battery">{{ t('checkout.promo.title') }}</h2>
+                            <div class="text-content">
+                                <p class="promo__offer">
+                                    <span class="bold">{{ t('checkout.header_banner.prefix') }}:</span>
+                                    {{ $product->long_name }}
+                                </p>
+                                <div class="promo__discount" v-cloak>
+                                    <div>
+                                        <span class="bold">{{ t('checkout.header_banner.price') }}:</span>
+                                        <span class="promo__price--double bold">
+                                            @{{countOfInstallments}} @{{ warrantyOldPrice }}
+                                        </span>
+                                    </div>
+                                    <span class="promo__price promo__text-red bold">
+                                        @{{countOfInstallments}} @{{ warrantyPriceText }}
+                                    </span>
+                                </div>
                             </div>
-                            <span class="promo__price promo__text-red bold">
-                                @{{countOfInstallments}} @{{ warrantyPriceText }}
-                            </span>
+                            <h3>
+                                <span class="promo__go-to-selector promo__text-red" v-cloak>
+                                    @{{ textPromoDiscount }}
+                                </span>
+                            </h3>
+                            <div class="promo__subtitle">
+                                <div>{{ t('checkout.promo.subtitle') }}</div>
+                            </div>
                         </div>
                     </div>
-                    <h3>
-                        <span class="promo__go-to-selector promo__text-red" v-cloak>
-                            @{{ textPromoDiscount }}
-                        </span>
-                    </h3>
-                    <div class="promo__subtitle">
-                        <div>{{ t('checkout.promo.subtitle') }}</div>
-                    </div>
-                </div>
+                </transition>
             </div>
             <!-- promo__jumbotron end -->
 
@@ -187,7 +191,7 @@
                                 <div class="variant-name">@{{ variantItem.label }}</div>
                             </div>
                         </div>
-                        <button @click="firstStep()" class="promo__back-btn"> < {{ t('checkout.payment_form.back_to_selection') }}</button>
+                        <button @click="prevStep()" class="promo__back-btn"> < {{ t('checkout.payment_form.back_to_selection') }}</button>
                     </div>
                 </div>
 
@@ -218,7 +222,7 @@
                             />
                         </div>
 
-                        <button @click="firstStep()" class="promo__back-btn"> < {{ t('checkout.payment_form.back_to_selection') }}</button>
+                        <button @click="prevStep()" class="promo__back-btn"> < {{ t('checkout.payment_form.back_to_selection') }}</button>
 
                         <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                             <payment-form
