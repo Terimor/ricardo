@@ -166,16 +166,7 @@ class AffiliateService
      */
     public static function getPixelsByData(Request $request, string $hoAffiliateID, $product, string $countryCode, string $route, string $device) : array
     {
-        $pixels = Pixel::where(['ho_affiliate_id' => $hoAffiliateID, 'countries' => $countryCode, 'devices' => $device])
-                ->where(function ($query) use ($product) {
-                    $query->where('product_ids', '=', $product->id)
-                          ->orWhere('product_ids', '=', '');
-                })
-                ->where(function ($query) use ($route) {
-                    $query->where('placements', '=', $route)
-                          ->orWhere('placements', '=', '');
-                })
-                ->get();
+        $pixels = Pixel::getPixels($hoAffiliateID, $product, $countryCode, $route, $device);
                 
         $pixelsArray = [];
         foreach ($pixels as $pixel) {
