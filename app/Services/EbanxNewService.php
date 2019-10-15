@@ -162,21 +162,21 @@ class EbanxNewService
 
     /**
      * Returns TXN status
-     * @param  string $status Ebanx status
-     * @return string
+     * @param   string  $status     Ebanx status
+     * @param   bool    $is_webhook
+     * @return  string
      */
-    public static function mapPaymentStatus(string $status): string
+    public static function mapPaymentStatus(string $status, bool $is_webhook): string
     {
         switch ($status):
             case self::PAYMENT_STATUS_PENDING:
                 return Txn::STATUS_AUTHORIZED;
             case self::PAYMENT_STATUS_CONFIRMED:
-                return Txn::STATUS_CAPTURED;
+                return $is_webhook ? Txn::STATUS_APPROVED : Txn::STATUS_CAPTURED;
             default:
                 return Txn::STATUS_FAILED;
         endswitch;
     }
-
 
     /**
      * Returns payment status info by hash
@@ -196,7 +196,7 @@ class EbanxNewService
         try {
             $res = EBANX($config)->paymentInfo()->findByHash($hash);
 
-            // logger()->info('Ebanx query', ['reply' => \json_encode($res)]);
+            logger()->info('Ebanx query', ['reply' => \json_encode($res)]);
 
             $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
 
@@ -205,7 +205,7 @@ class EbanxNewService
                 $result['currency'] = $res['payment']['currency_ext'];
                 $result['fee']      = $res['payment']['amount_iof'];
                 $result['value']    = $res['payment']['amount_ext'];
-                $result['status']   = self::mapPaymentStatus($res['payment']['status']);
+                $result['status']   = self::mapPaymentStatus($res['payment']['status'], true);
             } else {
                 logger()->error("Ebanx cancelled", ['reply' => \json_encode($res)]);
             }
