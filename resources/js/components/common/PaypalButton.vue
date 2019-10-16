@@ -58,7 +58,11 @@
 
           createOrder(data, actions) {
             that.isSubmitted = true;
-            return createOrder();
+
+            return createOrder()
+              .then(res => {
+                return res.id || null;
+              });
           },
 
           onClick () {
@@ -72,9 +76,6 @@
             return onApprove(data)
               .then(() => {
                 setTimeout(() => that.isSubmitted = false, 1000);
-              })
-              .catch(() => {
-                that.isSubmitted = false;
               });
             // Commented out so order verification will pass (temporary change)
             // if ($v.required || $v.$dirty) {

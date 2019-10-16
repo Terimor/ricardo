@@ -76,6 +76,7 @@
             :$v="$v.form.deal"
             @click="paypalSubmit"
           >{{ paypalRiskFree }}</paypal-button>
+          <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
           <slot name="warranty" />
           <form v-if="form.paymentType && isFormShown">
             <text-field
@@ -304,6 +305,7 @@
 				isOpenCVVModal: false,
         isOpenPromotionModal: false,
         paymentError: '',
+        paypalPaymentError: '',
         isSubmitted: false,
 				form: {
 					stepTwo: {
@@ -632,15 +634,22 @@
         });
 
         return paypalCreateOrder({
-          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-          sku_code: this.codeOrDefault,
-          sku_quantity: this.form.deal,
-          is_warranty_checked: this.isWarrantyChecked,
-          page_checkout: document.location.href,
-          cur: currency,
-          offer: searchParams.get('offer'),
-          affiliate: searchParams.get('affiliate'),
-        })
+            xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+            sku_code: this.codeOrDefault,
+            sku_quantity: this.form.deal,
+            is_warranty_checked: this.isWarrantyChecked,
+            page_checkout: document.location.href,
+            cur: currency,
+            offer: searchParams.get('offer'),
+            affiliate: searchParams.get('affiliate'),
+          })
+          .then(res => {
+            if (res.paypalPaymentError) {
+              this.paypalPaymentError = res.paypalPaymentError;
+            }
+
+            return res;
+          });
       },
       paypalOnApprove: paypalOnApprove,
 		},
