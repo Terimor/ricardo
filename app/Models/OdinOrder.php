@@ -262,7 +262,7 @@ class OdinOrder extends OdinModel
     public function getFirstProductId()
     {
         $sku = null;
-        $productId = null;
+        $productId = null;        
         if ($this->products) {
             $products = $this->products;
             foreach ($products as $product) {

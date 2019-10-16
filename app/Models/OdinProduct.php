@@ -445,20 +445,22 @@ class OdinProduct extends Model
         $skus = Cache::get('SkuProduct');
         
         //disabled because should be generated in Saga daemons
-        /*if (!$skus) {
-            $products = OdinProduct::all();
+        if (\App::environment() == 'development') {
+            if (!$skus) {
+                $products = OdinProduct::all();
 
-            $skus = [];
-            foreach ($products as $product) {
-                foreach($product->skus as $sku) {
-                  $skus[$sku['code']]['name'] = $sku['name'];
-                  $skus[$sku['code']]['product_id'] = $product->id;
-                  $skus[$sku['code']]['product_name'] = $product->product_name;
+                $skus = [];
+                foreach ($products as $product) {
+                    foreach($product->skus as $sku) {
+                      $skus[$sku['code']]['name'] = $sku['name'];
+                      $skus[$sku['code']]['product_id'] = $product->id;
+                      $skus[$sku['code']]['product_name'] = $product->product_name;
+                    }
                 }
-            }
 
-            Cache::put('SkuProduct', $skus, $cache_lifetime);
-        }*/
+                Cache::put('SkuProduct', $skus);
+            }
+        }
         return $skus;
     }
 
