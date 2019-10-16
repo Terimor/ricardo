@@ -35,15 +35,16 @@ return [
         'mongodb' => [
             'driver'   => 'mongodb',
             'dsn' => env('MONGODB_DSN_ODIN'),
-            'database' => explode('/', env('MONGODB_DSN_ODIN'))[3],
+            'database' => 'odin',
+            //'database' => explode('/', env('MONGODB_DSN_ODIN'))[3],
             //'database' => array_values(array_slice(explode('/', env('MONGODB_DSN_ODIN')), -1))[0],
-            'options'  => env('ENVIRONMENT', 'production') === 'production' ? [
+            /*'options'  => env('ENVIRONMENT', 'production') === 'production' ? [
                 'ssl' => true,
                 'replicaSet' => 'odin-prod-shard-0',
                 'authSource' => 'admin',
                 'retryWrites' => true,
                 'w' => 'majority'
-            ] : []
+            ] : []*/
         ],
     ],
 
