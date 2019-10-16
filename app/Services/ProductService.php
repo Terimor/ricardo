@@ -28,15 +28,11 @@ class ProductService
         // Domain resolve logic
         if (!$product) {
             $host = request()->getHost();
-print_r($host);
             $host = str_replace('www.', '', $host);
-print_r($host);
             $domain = Domain::where('name', $host)->first();
-print_r($domain);
             if ($domain && !empty($domain->product)) {
                 $product =  $domain->product;
             }
-print_r($product);
         }
 
         if (!$product) {
