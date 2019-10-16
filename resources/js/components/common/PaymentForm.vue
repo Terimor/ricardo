@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
+    <form class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
         <h2>
           {{ firstTitle }}
         </h2>
@@ -10,7 +10,8 @@
             :label="textFirstName"
             class="first-name"
             :rest="{
-              autocomplete: 'given-name'
+              autocomplete: 'name',
+              name: 'name'
             }"
             v-model="paymentForm.fname"/>
         <text-field
@@ -20,7 +21,8 @@
             :label="textLastName"
             class="last-name"
             :rest="{
-              autocomplete: 'family-name'
+              autocomplete: 'family-name',
+              name: 'family-name'
             }"
             v-model="paymentForm.lname"/>
         <text-field-with-placeholder
@@ -41,7 +43,8 @@
             theme="variant-1"
             :label="textEmail"
             :rest="{
-              autocomplete: 'email'
+              autocomplete: 'email',
+              name: 'email'
             }"
             v-model="paymentForm.email"/>
         <phone-field
@@ -52,7 +55,8 @@
             theme="variant-1"
             :label="textPhone"
             :rest="{
-              autocomplete: 'off'
+              autocomplete: 'off',
+              name: 'phone'
             }"
             v-model="paymentForm.phone"/>
         <h2>
@@ -67,7 +71,8 @@
                 theme="variant-1 street"
                 :label="textStreet"
                 :rest="{
-                  autocomplete: 'street-address'
+                  autocomplete: 'shipping street-address',
+                  name: 'ship-address'
                 }"
                 v-model="paymentForm.street"/>
             <text-field
@@ -80,10 +85,10 @@
                 :label="textStreetNumber"
                 v-model="paymentForm.number"/>
             <el-alert
-              style="order: 1;"
-              v-if="maxStreetAndNumberLength"
-              title="Please use the field below for additional address instructions"
-              type="error">
+                style="order: 1;"
+                v-if="maxStreetAndNumberLength"
+                title="Please use the field below for additional address instructions"
+                type="error">
             </el-alert>
             <text-field
                 v-if="isSpecialCountrySelected"
@@ -98,7 +103,8 @@
                 theme="variant-1"
                 :label="textCity"
                 :rest="{
-                    autocomplete: 'shipping locality'
+                    autocomplete: 'shipping locality',
+                    name: 'city'
                 }"
                 v-model="paymentForm.city"/>
             <select-field
@@ -111,7 +117,8 @@
                 :label="textState"
                 :rest="{
                   placeholder: textStatePlaceholder,
-                  autocomplete: 'shipping address'
+                  autocomplete: 'shipping region',
+                  name: 'ship-state'
                 }"
                 :list="stateList"
                 v-model="paymentForm.state"/>
@@ -122,7 +129,8 @@
                 :validationMessage="textStateRequired"
                 theme="variant-1"
                 :rest="{
-                  autocomplete: 'shipping address'
+                  autocomplete: 'shipping region',
+                  name: 'ship-state'
                 }"
                 :label="textState"
                 v-model="paymentForm.state"/>
@@ -131,7 +139,8 @@
                 :validationMessage="textZipcodeRequired"
                 theme="variant-1"
                 :rest="{
-                  autocomplete: 'shipping zip code'
+                  autocomplete: 'postal-code',
+                  name: 'postal-code'
                 }"
                 :label="textZipcode"
                 id="zip-code-field"
@@ -144,6 +153,8 @@
                 :label="textCountry"
                 :rest="{
                   placeholder: textCountryPlaceholder,
+                  autocomplete: 'country-name',
+                  name: 'country-name'
                 }"
                 :list="countryList"
                 v-model="paymentForm.country"/>
@@ -174,15 +185,15 @@
                         text: textCardTypeCredit,
                     }
                 ]"/>
-            <form id="payment-data-form">
+            <div id="payment-data-form">
                 <text-field
                     :validation="$v.form.cardNumber"
                     :rest="{
-                  pattern: '\\d*',
-                  type: 'tel',
-                  autocomplete: 'cc-number',
-                    'data-bluesnap': 'encryptedCreditCard'
-                  }"
+                      pattern: '\\d*',
+                      type: 'tel',
+                      autocomplete: 'cc-number',
+                        'data-bluesnap': 'encryptedCreditCard'
+                      }"
                     :validationMessage="textCardNumberRequired"
                     class="card-number"
                     theme="variant-1"
@@ -198,8 +209,8 @@
                         :validation="$v.form.month"
                         :validationMessage="textCardValidMonthRequired"
                         :rest="{
-                      placeholder: textCardValidMonthPlaceholder
-                    }"
+                          placeholder: textCardValidMonthPlaceholder
+                        }"
                         theme="variant-1"
                         :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
                         v-model="paymentForm.month"/>
@@ -208,8 +219,8 @@
                         :validation="$v.form.year"
                         :validationMessage="textCardValidYearRequired"
                         :rest="{
-                      placeholder: textCardValidYearPlaceholder
-                    }"
+                          placeholder: textCardValidYearPlaceholder
+                        }"
                         theme="variant-1"
                         :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                         v-model="paymentForm.year"/>
@@ -223,16 +234,16 @@
                     theme="variant-1"
                     :label="textCardCVV"
                     :rest="{
-                  maxlength: 4,
-                  pattern: '\\d*',
-                  type: 'tel',
-                  autocomplete: 'cc-csc',
-                  'data-bluesnap': 'encryptedCvv'
-                }"
+                      maxlength: 4,
+                      pattern: '\\d*',
+                      type: 'tel',
+                      autocomplete: 'cc-csc',
+                      'data-bluesnap': 'encryptedCvv'
+                    }"
                     v-model="paymentForm.cvv"
                     postfix="<i class='fa fa-question-circle'></i>"
                 />
-            </form>
+            </div>
             <text-field-with-placeholder
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
@@ -292,7 +303,7 @@
                 <p v-html="textCVVPopupLine2"></p>
             </div>
         </el-dialog>
-    </div>
+    </form>
 </template>
 
 <script>
@@ -927,6 +938,9 @@
       display: flex;
       padding: 10px;
       margin: 40px 0;
+      .label-container-checkbox {
+          font-size: 18px;
+      }
     }
 
     &-icon {
