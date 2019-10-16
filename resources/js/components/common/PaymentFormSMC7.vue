@@ -131,9 +131,6 @@
           theme="variant-1"
           :label="textCardCVV"
           :rest="{
-            maxlength: 4,
-            pattern: '\\d*',
-            type: 'tel',
             autocomplete: 'cc-csc',
             'data-bluesnap': 'encryptedCvv'
           }"
@@ -213,7 +210,16 @@
 				this.paymentForm.paymentType = this.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
 					? creditCardTypeList[0].type
 					: null
-			}
+			},
+            'paymentForm.cvv' (newVal, oldValue) {
+                if(this.paymentForm.cvv) {
+                    if(newVal.match(/^[0-9]{0,4}$/g)) {
+                        this.paymentForm.cvv = newVal;
+                    } else {
+                        this.paymentForm.cvv = oldValue;
+                    }
+                }
+            }
 		},
 		methods: {
 			openCVVModal () {
