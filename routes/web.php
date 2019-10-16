@@ -34,6 +34,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/pay-by-card-upsells', 'PaymentsController@createCardUpsellsOrder');
     $router->post('/checkoutdotcom-captured-webhook', 'PaymentsController@checkoutDotComCapturedWebhook');
     $router->post('/checkoutdotcom-failed-webhook', 'PaymentsController@checkoutDotComFailedWebhook');
+    $router->post('/ebanx-webhook', 'PaymentsController@ebanxWebhook');
     $router->get('/test-paypal', 'PaymentsController@testPaypal');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
@@ -55,8 +56,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/paypal-webhooks', 'Payments\PaypalController@webhooks');
 
     /* test routes */
-    $router->post('/test-ebanx', 'PaymentsController@testEbanx');
-    $router->post('/test-ebanx-webhook', 'PaymentsController@testEbanxWebhook');
+    $router->post('/test-ebanx-upsells', 'PaymentsController@testEbanx');
 });
 
 /*Route::get('/debug-sentry', function () {

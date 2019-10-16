@@ -23,6 +23,7 @@ class VerifyCsrfToken extends Middleware
         'pay-by-card-upsells',
         'checkoutdotcom-captured-webhook',
         'checkoutdotcom-failed-webhook',
+        'ebanx-webhook',
         'paypal-webhooks',
         'payments/three',
         'payments/ebanx-notification',
@@ -30,7 +31,6 @@ class VerifyCsrfToken extends Middleware
         'paypal-verify-order',
 		'calculate-upsells-total',
         /* test routes */
-        'test-ebanx',
-        'test-ebanx-webhook'
+        'test-ebanx-upsells'
     ];
 }

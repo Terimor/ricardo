@@ -6,6 +6,6 @@ use Exception;
 
 class OrderNotFoundException extends Exception
 {
-    public $code = 10006;
+    public $code = Handler::ECODE_ORDER_NOT_FOUND;
     public $message = 'OdinOrder not found';
 }

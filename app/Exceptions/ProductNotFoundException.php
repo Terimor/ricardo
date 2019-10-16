@@ -6,6 +6,6 @@ use Exception;
 
 class ProductNotFoundException extends Exception
 {
-    public $code = 10001;
+    public $code = Handler::ECODE_PRODUCT_NOT_FOUND;
     public $message = 'OdinProduct not found';
 }

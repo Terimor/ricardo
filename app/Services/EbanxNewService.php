@@ -145,12 +145,13 @@ class EbanxNewService
 
     /**
      * Returns available currency for country
-     * @param  string $country
+     * @param  string $country_code
      * @param  string|null $currency
      * @return string|null
      */
-    public static function getCurrencyByCountry(string $country, ?string $currency): ?string
+    public static function getCurrencyByCountry(string $country_code, ?string $currency): ?string
     {
+        $country = Country::fromIso($country_code);
         if (isset(self::CUR_PER_COUNTRY[$country])) {
             if ($currency && \in_array($currency, self::CUR_PER_COUNTRY[$country])) {
                 return $currency;
@@ -289,8 +290,10 @@ class EbanxNewService
             'hash'              => null,
             'payer_id'          => null,
             'provider_data'     => null,
+            'redirect_url'      => null,
             'response_code'     => null,
-            'response_desc'     => null
+            'response_desc'     => null,
+            'token'             => null
         ];
 
         try {

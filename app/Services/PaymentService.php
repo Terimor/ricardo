@@ -12,6 +12,7 @@ use App\Exceptions\OrderUpdateException;
 use App\Exceptions\PaymentException;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
+use App\Exceptions\ProviderNotFoundException;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
@@ -151,7 +152,7 @@ class PaymentService
         ],
         self::PROVIDER_NOVALNET    => [
             'name'      => 'Novalnet',
-            'is_active' => true,
+            'is_active' => false,
             'methods'   => [
                 self::METHOD_PREZELEWY24 => [
                     '-3ds' => ['pl']
@@ -423,15 +424,32 @@ class PaymentService
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
         $installments = (int)$req->input('product.installments', 0);
-        $ipqs = $req->input('ipqs', null);
         $contact = array_merge($req->get('contact'), $req->get('address'));
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
+        $ipqs = $req->input('ipqs', null);
+        $cur = $req->get('cur');
         $card = $req->get('card');
         $card['type'] = self::getMethodByNumber($card['number']);
 
-        $this->addCustomer($contact); // throwable
-
         $product = OdinProduct::getBySku($sku); // throwable
+
+        // select provider by country
+        $provider = self::getProviderByCountryAndMethod($contact['country'], $card['type']);
+        if (!$provider) {
+            throw new ProviderNotFoundException("Country {$contact['country']}, Card {$card['type']} not supported");
+        } else if ($provider === self::PROVIDER_EBANX) {
+            // check if ebanx supports country and currency, switch to default currency
+            $product->currency = EbanxNewService::getCurrencyByCountry($contact['country'], $cur);
+            if (!$product->currency) {
+                // change provider
+                $provider = self::getProviderByCountryAndMethod($contact['country'], $card['type'], [self::PROVIDER_EBANX]);
+                if (!$provider) {
+                    throw new ProviderNotFoundException("Country {$contact['country']}, Card {$card['type']} not supported");
+                }
+            }
+        }
+
+        $this->addCustomer($contact); // throwable
 
         $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 
@@ -469,10 +487,27 @@ class PaymentService
             'ipqualityscore'        => $ipqs
         ]);
 
-        // provider selection in vacuum
-        $checkoutService = new CheckoutDotComService();
-        $source = CheckoutDotComService::createCardSource($card, $contact);
-        $payment = $checkoutService->pay($source, $contact, $order, self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs));
+        // select provider and create payment
+        $payment = [];
+        if ($provider === self::PROVIDER_EBANX) {
+            $ebanxService = new EbanxNewService();
+            $payment = $ebanxService->payByCard($card, $contact, [
+                'amount'        => $order->total_price,
+                'currency'      => $order->currency,
+                'number'        => $order->number,
+                'installments'  => $installments
+            ]);
+        } else {
+            $checkoutService = new CheckoutDotComService();
+            $source = CheckoutDotComService::createCardSource($card, $contact);
+            $payment = $checkoutService->pay($source, $contact, $order, self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs));
+            if ($payment['status'] !== Txn::STATUS_FAILED) {
+                $payment['token'] = $checkoutService->requestToken($card, $contact);
+            }
+        }
+
+        // cache token
+        self::setCardToken($order->number, $payment['token']);
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
@@ -486,12 +521,9 @@ class PaymentService
                     throw new OrderUpdateException(json_encode($validator->errors()->all()));
                 }
             }
-            // cache token
-            self::setCardToken($order->number, $checkoutService->requestToken($card, $contact));
         } else {
             throw new PaymentException(json_encode($payment['provider_data']));
         }
-
 
         // response
         $result = [
@@ -720,6 +752,27 @@ class PaymentService
     }
 
     /**
+     * Returns available provider for country and payment method
+     * @param   string $country
+     * @param   string $method
+     * @param   array  $excl
+     * @return  string|null
+     */
+    public static function getProviderByCountryAndMethod(string $country, string $method, array $excl = []): ?string
+    {
+        $providers = self::getPaymentMethodsByCountry($country);
+
+        $result = null;
+        foreach ($providers as $prv => $methods) {
+            if (isset($methods[$method]) && !in_array($prv, $excl)) {
+                $result = $prv;
+                break;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Returns card token from cache
      * @param string $order_number
      * @param boolean $is_remove default=true
@@ -809,7 +862,7 @@ class PaymentService
                 'type' => self::METHOD_VISA
             ],
             [
-                'mask' => '/^5[1-5][0-9]{5,}|222[1-9][0-9]{3,}|22[3-9][0-9]{4,}|2[3-6][0-9]{5,}|27[01][0-9]{4,}|2720[0-9]{3,}$/i',
+                'mask' => '/^5[1-5][0-9]{5,}|^222[1-9][0-9]{3,}|^22[3-9][0-9]{4,}|^2[3-6][0-9]{5,}|^27[01][0-9]{4,}|^2720[0-9]{3,}$/i',
                 'type' => self::METHOD_MASTERCARD
             ],
             [
@@ -842,7 +895,7 @@ class PaymentService
                 'type' => self::METHOD_ELO
             ],
             [
-                'mask' => '',
+                'mask' => '/^(5078\d{2})(\d{2})(\d{11})$/i',
                 'type' => self::METHOD_AURA
             ]
         ];
@@ -859,107 +912,8 @@ class PaymentService
         return $result;
     }
 
-    public function testCreateOrder(PaymentCardCreateOrderRequest $req)
+    public function testEbanxUpsells(PaymentCardCreateUpsellsOrderRequest $req)
     {
-        ['sku' => $sku, 'qty' => $qty] = $req->get('product');
-        $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $installments = (int)$req->input('product.installments', 0);
-        $ipqs = $req->input('ipqs', null);
-        $contact = array_merge($req->get('contact'), $req->get('address'));
-        $page_checkout = $req->input('page_checkout', $req->header('Referer'));
-        $card = $req->get('card');
-        $cur = $req->get('cur');
-        $card['type'] = self::getMethodByNumber($card['number']);
-
-        $this->addCustomer($contact); // throwable
-
-        $product = OdinProduct::getBySku($sku); // throwable
-
-        // select provider by country
-        // $providers = self::getPaymentMethodsByCountry($contact['country']);
-        $product->currency = EbanxNewService::getCurrencyByCountry($contact['country'], $cur);
-        // if provider is ebanx check currency
-        if (!$product->currency) {
-            // change provider
-        }
-
-        $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
-
-        $order_product = $this->createOrderProduct($sku, $price, true, $is_warranty);
-
-        $order = $this->addOrder([
-            'currency'              => $price['currency'],
-            'exchange_rate'         => $price['usd_rate'],
-            'total_paid'            => 0,
-            'total_price'           => $order_product['total_price'],
-            'total_price_usd'       => $order_product['total_price_usd'],
-            'txns_fee_usd'          => 0,
-            'installments'          => $installments,
-            'customer_email'        => $contact['email'],
-            'customer_first_name'   => $contact['first_name'],
-            'customer_last_name'    => $contact['last_name'],
-            'customer_phone'        => $contact['phone']['country_code'] . $contact['phone']['number'],
-            'customer_doc_id'       => $contact['document_number'] ?? null,
-            'language'              => app()->getLocale(),
-            'ip'                    => $req->ip(),
-            'txns'                  => [],
-            'shipping_country'      => $contact['country'],
-            'shipping_zip'          => $contact['zip'],
-            'shipping_state'        => $contact['state'],
-            'shipping_city'         => $contact['city'],
-            'shipping_street'       => $contact['street'],
-            'shipping_street2'      => $contact['district'] ?? null,
-            'shop_currency'         => $price['currency'],
-            'warehouse_id'          => $product->warehouse_id,
-            'products'              => [$order_product],
-            'page_checkout'         => $page_checkout,
-            'params'                => \Utils::getParamsFromUrl($page_checkout),
-            'offer'                 => $req->get('offer_id'),
-            'affiliate'             => $req->get('aff_id'),
-            'ipqualityscore'        => $ipqs
-        ]);
-
-        $ebanxService = new EbanxNewService();
-        $payment = $ebanxService->payByCard($card, $contact, [
-            'amount'        => $order->total_price,
-            'currency'      => $order->currency,
-            'number'        => $order->number,
-            'installments'  => $installments
-        ]);
-
-        // add Txn, update OdinOrder
-        if (!empty($payment['hash'])) {
-            $order_product['txn_hash'] = $payment['hash'];
-            $this->addTxnToOrder($order, $payment, $card['type']);
-            $order->addProduct($order_product);
-            $order->is_flagged = $payment['is_flagged'];
-            if (!$order->save()) {
-                $validator = $order->validate();
-                if ($validator->fails()) {
-                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                }
-            }
-            self::setCardToken($order->number, $payment['token']);
-        } else {
-            throw new PaymentException(json_encode($payment['provider_data']));
-        }
-
-        // response
-        $result = [
-            'order_currency'    => $order->currency,
-            'order_number'      => $order->number,
-            'order_id'          => $order->getIdAttribute(),
-            'id'                => !empty($payment['hash']) ? $payment['hash'] : '',
-            'status'            => self::STATUS_FAIL
-        ];
-
-        if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['status'] = self::STATUS_OK;
-        } else {
-            $result['status_code'] = $payment['response_code'];
-            $result['status_desc'] = $payment['response_desc'];
-        }
-
-        return $result;
+        return ['msg' => '@todo upsells'];
     }
 }
