@@ -205,9 +205,9 @@ class OrderService
                     $order->is_reduced = $isReduced;
                     $order->save();
 
-                    // request queue if order has parameter txid and is_reduced and aff_id > 10
+                    // request queue if order has parameter txid and is_reduced and aff_id > 11
                     $txid = $order->getParam('txid');
-                    if ($txid && $order->is_reduced && (int)$hoAffiliateId > 10) {
+                    if ($txid && $order->is_reduced && (int)$hoAffiliateId > AffiliateSetting::OWN_AFFILIATE_MAX) {
                         RequestQueue::saveTxid($txid);
                     }
                     
