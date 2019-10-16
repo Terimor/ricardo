@@ -108,12 +108,12 @@
                     <div
                         class="promo__card"
                         :class="{
-                            'selected-promotion': selectedPlan === item.discountName,
+                            'selected-promotion': selectedPlan === item.totalQuantity,
                             'most-popular': item.isBestseller,
                             'most-profitable': item.isPopular,
                             'starter': item.discountName === '',
                         }"
-                        @click="setSelectedPlan(item.discountName || 'STARTER', item.totalQuantity)"
+                        @click="setSelectedPlan(item.totalQuantity)"
                     >
                     <div class="promo__product-info">
                         <div
@@ -126,6 +126,7 @@
                             style="max-width: 204px;"
                         >
                             <strong>
+
                                 @{{ item.discountName || textDiscountStarter }}
                             </strong>
                         </div>
@@ -149,8 +150,10 @@
                             </div>
                         </div>
                         </div>
-                        <green-button class="promo__add-button">
-                            {{ t('checkout.add_to_cart') }}
+                        <green-button class="promo__add-button" :class="{'disabled': selectedPlan === item.totalQuantity,
+                            }">
+                            <span v-if="selectedPlan === item.totalQuantity">{{ t('checkout.selected') }}</span>
+                            <span v-else>{{ t('checkout.add_to_cart') }}</span>
                         </green-button>
                     </div>
 
@@ -343,7 +346,7 @@
                 </div>
             </div>
         </section>
-        <section class="promo__scroll-to-top">
+        <section v-if="isShownFooter" class="promo__scroll-to-top">
             <div class="container">
                 <div class="promo__people-rate-block">
                     <h1 class="bold promo__title">

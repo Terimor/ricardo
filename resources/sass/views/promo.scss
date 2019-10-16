@@ -121,7 +121,6 @@ header {
   }
 
   .selected-promotion {
-    border: 3px solid $blue;
     .product-info {
       margin: 20px;
 
@@ -147,11 +146,13 @@ header {
   }
 
   &__card {
-    &.starter:hover {
+    &.starter:hover,
+    &.starter.selected-promotion {
       border: 3px solid $blue;
     }
 
-    &.most-profitable:hover {
+    &.most-profitable:hover,
+    &.most-profitable.selected-promotion {
       border: 3px solid $orange;
     }
 
@@ -164,8 +165,20 @@ header {
       }
     }
 
-    &.most-popular:hover {
+    &.most-popular:hover,
+    &.most-popular.selected-promotion {
       border: 3px solid $green;
+    }
+  }
+
+  .promo__add-button.disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    &:hover {
+      background: #ff2f21 linear-gradient(#0f9b0f, #0d840d) repeat scroll 0% 0%/auto padding-box border-box;
+      &:before {
+        opacity: 0;
+      }
     }
   }
 
@@ -208,9 +221,10 @@ header {
     margin: 2px;
   }
 
-  .green-button-animated {
+  &__add-button.green-button-animated {
     padding: 14px;
     height: auto;
+    text-transform: uppercase;
   }
 
   &__reviews {
