@@ -288,7 +288,12 @@ class PaymentService
     private function addCustomer(array $contact): void
     {
         $reply = $this->customerService->addOrUpdate(
-            array_merge($contact, ['phone' => $contact['phone']['country_code'] . $contact['phone']['number']])
+            array_merge($contact,
+                [
+                    'doc_id'    => $contact['document_number'],
+                    'phone'     => $contact['phone']['country_code'] . $contact['phone']['number']
+                ]
+            )
         );
         if (isset($reply['errors'])) {
             throw new CustomerUpdateException(json_encode($reply['errors']));
@@ -394,12 +399,16 @@ class PaymentService
             'is_upsells'            => !$is_main,
             'txn_hash'              => null,
             'warranty_price'        => 0,
-            'warranty_price_usd'    => 0
+            'warranty_price_usd'    => 0,
+            'total_price'           => $price['value'],
+            'total_price_usd'       => $price['value_usd']
         ];
 
         if ($is_warranty) {
-            $order_product['warranty_price'] = $price['warranty_value'];
-            $order_product['warranty_price_usd'] = $price['warranty_value_usd'];
+            $order_product['warranty_price']        = $price['warranty_value'];
+            $order_product['warranty_price_usd']    = $price['warranty_value_usd'];
+            $order_product['total_price']           = floor(($price['value'] + $price['warranty_value']) * 100) / 100;
+            $order_product['total_price_usd']       = floor(($price['value_usd'] + $price['warranty_value_usd']) * 100) / 100;
         }
         return $order_product;
     }
@@ -432,8 +441,8 @@ class PaymentService
             'currency'              => $price['currency'],
             'exchange_rate'         => $price['usd_rate'],
             'total_paid'            => 0,
-            'total_price'           => $order_product['price'] + $order_product['warranty_price'],
-            'total_price_usd'       => $order_product['price_usd'] + $order_product['warranty_price_usd'],
+            'total_price'           => $order_product['total_price'],
+            'total_price_usd'       => $order_product['total_price_usd'],
             'txns_fee_usd'          => 0,
             'installments'          => $installments,
             'customer_email'        => $contact['email'],
@@ -542,8 +551,8 @@ class PaymentService
                         ],
                         false
                     );
-                    $checkout_price += $upsell_product['price'];
-                    $checkout_price_usd += $upsell_product['price_usd'];
+                    $checkout_price += $upsell_product['total_price'];
+                    $checkout_price_usd += $upsell_product['total_price_usd'];
                     $upsell_products[] = $upsell_product;
                 } catch (HttpException $e) {
                     $upsells[$key]['status'] = self::STATUS_FAIL;
@@ -630,10 +639,12 @@ class PaymentService
 
             $currency = CurrencyService::getCurrency($order->currency);
 
-            $order->total_paid += $data['value'];
-            $order->total_paid_usd += floor($data['value'] / $currency->usd_rate * 100) / 100;
-            $order->txns_fee_usd += floor($data['fee'] / $currency->usd_rate * 100) / 100;
-            $order->status = $order->total_paid >= $order->total_price ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+            $order->total_paid      += $data['value'];
+            $order->total_paid_usd  += floor($data['value'] / $currency->usd_rate * 100) / 100;
+            $order->txns_fee_usd    += floor($data['fee'] / $currency->usd_rate * 100) / 100;
+
+            $price_paid_diff    = floor(($order->total_paid - $order->total_price) * 100) / 100;
+            $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
         }
 
         if (!$order->save()) {
@@ -880,8 +891,8 @@ class PaymentService
             'currency'              => $price['currency'],
             'exchange_rate'         => $price['usd_rate'],
             'total_paid'            => 0,
-            'total_price'           => $order_product['price'] + $order_product['warranty_price'],
-            'total_price_usd'       => $order_product['price_usd'] + $order_product['warranty_price_usd'],
+            'total_price'           => $order_product['total_price'],
+            'total_price_usd'       => $order_product['total_price_usd'],
             'txns_fee_usd'          => 0,
             'installments'          => $installments,
             'customer_email'        => $contact['email'],
@@ -909,13 +920,12 @@ class PaymentService
         ]);
 
         $ebanxService = new EbanxNewService();
-        $order_details = [
-            'amount' => $order->total_price,
-            'currency' => $order->currency,
-            'number' => (int)$qty,
-            'installments' => $installments
-        ];
-        $payment = $ebanxService->payByCard($card, $contact, $order_details);
+        $payment = $ebanxService->payByCard($card, $contact, [
+            'amount'        => $order->total_price,
+            'currency'      => $order->currency,
+            'number'        => $order->number,
+            'installments'  => $installments
+        ]);
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
@@ -945,7 +955,6 @@ class PaymentService
 
         if ($payment['status'] !== Txn::STATUS_FAILED) {
             $result['status'] = self::STATUS_OK;
-            $result['redirect_url'] = $payment['redirect_url'];
         } else {
             $result['status_code'] = $payment['response_code'];
             $result['status_desc'] = $payment['response_desc'];

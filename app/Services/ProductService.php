@@ -48,13 +48,13 @@ class ProductService
         if ($currency) {
             $product->currency = $currency;
         }
-        
+
         $localizedProduct = $this->localizeProduct($product);
         if ($isPostback) {
             $localizedProduct->id = $product->id;
             // price set
-            $prices = $product->prices;            
-            $localizedProduct->price_set = !empty($prices['price_set']) ? $prices['price_set'] : null;            
+            $prices = $product->prices;
+            $localizedProduct->price_set = !empty($prices['price_set']) ? $prices['price_set'] : null;
         }
 
         return $localizedProduct;
@@ -163,7 +163,7 @@ class ProductService
      * @return stdClass
      */
     public function localizeProduct($product)
-    {                
+    {
         // prepare localized product
         $lp = new Localize();
         $lp->product_name = $product->product_name;
@@ -179,7 +179,7 @@ class ProductService
 
         $prices = [];
         $pricesOld = $product->prices;
-        
+
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
                 logger()->error("Price is 0 for {$product->product_name}", ['product' => $lp->toArray()]);

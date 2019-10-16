@@ -125,7 +125,7 @@ class OdinOrder extends OdinModel
      */
     protected $fillable = [
         'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'shop_currency',
-        'customer_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country',
+        'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country',
         'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id', 'trackings', 'products',
         'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed', 'txns', 'params', 'is_invoice_sent'
 
@@ -164,12 +164,12 @@ class OdinOrder extends OdinModel
         }
 
         return Validator::make($data, [
-            'number'     => 'required|unique:odin_order',
-            'currency'     => 'required',
-            'total_paid'     => 'required|numeric',
-            'total_price' => 'required|numeric',
-            'total_price_usd' => 'required|numeric',
-            'exchange_rate' => 'required|numeric',
+            'number'            => 'required|unique:odin_order',
+            'currency'          => 'required',
+            'total_paid'        => 'required|numeric',
+            'total_price'       => 'required|numeric',
+            'total_price_usd'   => 'required|numeric',
+            'exchange_rate'     => 'required|numeric',
         ]);
     }
 
