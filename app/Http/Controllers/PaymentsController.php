@@ -87,7 +87,7 @@ class PaymentsController extends Controller
         $checkoutService = new CheckoutDotComService();
         $reply = $checkoutService->validateCapturedWebhook($req);
 
-        logger()->info('checkout.com', ['reply' => json_encode($req->toArray())]);
+        logger()->info('checkout.com', ['content' => $req->getContent()]);
 
         if (!$reply['status']) {
             logger()->error('checkout.com unauthorized captured webhook', [ 'ip' => $req->ip() ]);
@@ -127,8 +127,4 @@ class PaymentsController extends Controller
         }
     }
 
-    public function testEbanxUpsells(PaymentCardCreateUpsellsOrderRequest $req)
-    {
-        return $this->paymentService->testEbanxUpsells($req);
-    }
 }

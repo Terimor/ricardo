@@ -593,9 +593,19 @@ class PaymentService
 
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
-                $checkoutService = new CheckoutDotComService();
-                $source = CheckoutDotComService::createTokenSource($card_token);
-                $payment = $checkoutService->pay($source, ['payer_id' => $order_main_txn['payer_id']], $order, null, $checkout_price);
+                if ($order_main_txn['payment_provider'] === self::PROVIDER_EBANX) {
+                    $ebanxService = new EbanxNewService();
+                    $payment = $ebanxService->payByToken($card_token, $contact, [
+                        'amount'        => $checkout_price,
+                        'currency'      => $order->currency,
+                        'number'        => $order->number,
+                        'installments'  => $order->installments
+                    ]);
+                } else {
+                    $checkoutService = new CheckoutDotComService();
+                    $source = CheckoutDotComService::createTokenSource($card_token);
+                    $payment = $checkoutService->pay($source, ['payer_id' => $order_main_txn['payer_id']], $order, null, $checkout_price);
+                }
 
                 // update order if transaction is passed
                 if (!empty($payment['hash'])) {

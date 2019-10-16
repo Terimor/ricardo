@@ -304,7 +304,6 @@ class EbanxNewService
             $result['provider_data'] = $res;
             if ($res['status'] === self::STATUS_OK) {
                 $result['hash']             = $res['payment']['hash'];
-                $result['payer_id']         = $res['payment']['pin'];
                 $result['currency']         = $res['payment']['currency_ext'];
                 $result['value']            = $res['payment']['amount_ext'];
                 $result['fee']              = $res['payment']['amount_iof'];
