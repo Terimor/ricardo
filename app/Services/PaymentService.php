@@ -595,7 +595,19 @@ class PaymentService
                 // select provider by main txn
                 if ($order_main_txn['payment_provider'] === self::PROVIDER_EBANX) {
                     $ebanxService = new EbanxNewService();
-                    $payment = $ebanxService->payByToken($card_token, $contact, [
+                    $payment = $ebanxService->payByToken($card_token, [
+                        'street'            => $order->shipping_street,
+                        'city'              => $order->shipping_city,
+                        'country'           => $order->shipping_country,
+                        'state'             => $order->shipping_state,
+                        'district'          => $order->shipping_street2,
+                        'zip'               => $order->shipping_zip,
+                        'document_number'   => $order->customer_doc_id,
+                        'email'             => $order->customer_email,
+                        'first_name'        => $order->customer_first_name,
+                        'last_name'         => $order->customer_last_name,
+                        'phoneNumber'       => $order->customer_phone
+                    ], [
                         'amount'        => $checkout_price,
                         'currency'      => $order->currency,
                         'number'        => $order->number,

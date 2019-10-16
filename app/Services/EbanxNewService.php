@@ -106,12 +106,16 @@ class EbanxNewService
      */
     public static function createPerson(array $contact): Person
     {
+        $phone = $contact['phone'];
+        if (\gettype($contact['phone']) === 'array') {
+            $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
+        }
         return new Person([
             'type' => Person::TYPE_PERSONAL,
             'document' => $contact['document_number'],
             'email' => $contact['email'],
             'name' => $contact['first_name'] . ' ' . $contact['last_name'],
-            'phoneNumber' => $contact['phone']['country_code'] . $contact['phone']['number']
+            'phoneNumber' => $phone
         ]);
     }
 
