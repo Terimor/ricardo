@@ -89,7 +89,7 @@ class Handler extends ExceptionHandler
 
                 return response()->json([
                     'error' => ['code' => $exception->getCode(), 'message' => $message]
-                ], 500);
+                ], 200);
             default:
                 return parent::render($request, $exception);
         endswitch;
