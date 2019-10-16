@@ -48,7 +48,7 @@ class GoogleTag extends Model
                 $tags[$key]['code'] = $googleTags->code; 
             } else if ($googleTags->type == self::TYPE_REDUCED){                
                 // check affiliate < 11
-                if ($affiliate && (int)$affiliate->ho_affiliate_id < AffiliateSetting::OWN_AFFILIATE_MAX) {                    
+                if ($affiliate && (int)$affiliate->ho_affiliate_id > AffiliateSetting::OWN_AFFILIATE_MAX) {                    
                     // check order for is reduced
                     $route = $request->route()->getName() ? $request->route()->getName() : 'index';                    
                     if (!empty($request->order) && in_array($route, self::REDUCED_PAGES)) {                        
