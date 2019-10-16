@@ -362,7 +362,7 @@ class PayPalService
                     'txns' => [$order_txn_data],
                     'page_checkout' => $request->page_checkout,
                     'offer' => !empty($params['offer_id']) ? $params['offer_id'] : null,
-                    'affiliate' => !empty($params['offer_id']) ? $params['offer_id'] : null,
+                    'affiliate' => !empty($params['aff_id']) ? $params['aff_id'] : null,
                     'shop_currency' => $shop_currency_code,
                     'params' => $params,
                     'ipqualityscore' => $request->get('ipqs')
