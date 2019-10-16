@@ -27,7 +27,7 @@ class GoogleTag extends Model
 
     // display always at all pages
     const TYPE_ALWAYS  = 'always';
-    // display only on thankyou-promos, thankyou page when we have get parameter order= and this order is_reduced=true and affid < 11
+    // display only on thankyou-promos, thankyou page when we have get parameter order= and this order is_reduced=true and aff_id < 11
     const TYPE_REDUCED  = 'reduced';    
     
     const REDUCED_PAGES = ['upsells', 'thankyou'];
@@ -48,7 +48,7 @@ class GoogleTag extends Model
                 $tags[$key]['code'] = $googleTags->code; 
             } else if ($googleTags->type == self::TYPE_REDUCED){                
                 // check affiliate < 11
-                if ($affiliate && (int)$affiliate->ho_affiliate_id < AffiliateSetting::OWN_AFFILIATE_MAX) {                    
+                if ($affiliate && (int)$affiliate->ho_affiliate_id > AffiliateSetting::OWN_AFFILIATE_MAX) {                    
                     // check order for is reduced
                     $route = $request->route()->getName() ? $request->route()->getName() : 'index';                    
                     if (!empty($request->order) && in_array($route, self::REDUCED_PAGES)) {                        

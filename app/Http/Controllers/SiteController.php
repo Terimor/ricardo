@@ -186,10 +186,10 @@ class SiteController extends Controller
 
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
 
-        // check affid
+        // check aff_id
         $order_aff = null;
-        if ($request->get('affid')) {
-            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
+        if ($request->get('aff_id')) {
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('aff_id'));
             $order_aff = $order_aff ? $order_aff->toArray() : null;
         }
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
@@ -221,10 +221,10 @@ class SiteController extends Controller
 
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 
-        // check affid
+        // check aff_id
         $order_aff = null;
-        if ($request->get('affid')) {
-            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('affid'));
+        if ($request->get('aff_id')) {
+            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('aff_id'));
             $order_aff = $order_aff ? $order_aff->toArray() : null;
         }
 
