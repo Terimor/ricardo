@@ -290,7 +290,7 @@ class PaymentService
         $reply = $this->customerService->addOrUpdate(
             array_merge($contact,
                 [
-                    'doc_id'    => $contact['document_number'],
+                    'doc_id'    => $contact['document_number'] ?? null,
                     'phone'     => $contact['phone']['country_code'] . $contact['phone']['number']
                 ]
             )

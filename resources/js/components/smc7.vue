@@ -170,6 +170,7 @@
                                     :$v="$v.form.deal"
                                     @click="paypalSubmit"
                             >{{ paypalRiskFree }}</paypal-button>
+                            <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         </template>
                         <div class="smc7__bottom">
                             <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
@@ -241,6 +242,7 @@
       return {
         hidePage: false,
         productImage: checkoutData.product.image[0],
+        paypalPaymentError: '',
         cardNames: [
           {
             value: 'visa',
@@ -557,24 +559,32 @@
           paymentType: this.form.paymentType,
         });
 
+        this.paypalPaymentError = '';
+
         return paypalCreateOrder({
-          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-          sku_code: this.codeOrDefault,
-          sku_quantity: this.form.deal,
-          is_warranty_checked: this.form.isWarrantyChecked,
-          page_checkout: document.location.href,
-          cur: currency,
-          offer: searchParams.get('offer'),
-          affiliate: searchParams.get('affiliate'),
-        })
+            xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+            sku_code: this.codeOrDefault,
+            sku_quantity: this.form.deal,
+            is_warranty_checked: this.form.isWarrantyChecked,
+            page_checkout: document.location.href,
+            cur: currency,
+            offer: searchParams.get('offer'),
+            affiliate: searchParams.get('affiliate'),
+          })
+          .then(res => {
+            if (res.paypalPaymentError) {
+              this.paypalPaymentError = res.paypalPaymentError;
+            }
+
+            return res;
+          });
       },
       paypalOnApprove: paypalOnApprove,
 
       paypalSubmit() {
         this.form.paymentType = 'paypal';
-        const isValid = this.$v.form.deal.$touch();
 
-        if (!isValid) {
+        if (this.$v.form.deal.$invalid) {
           document.querySelector('.smc7__deal').scrollIntoView();
           this.isOpenPromotionModal = true;
         }
