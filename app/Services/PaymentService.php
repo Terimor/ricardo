@@ -606,7 +606,7 @@ class PaymentService
                         'email'             => $order->customer_email,
                         'first_name'        => $order->customer_first_name,
                         'last_name'         => $order->customer_last_name,
-                        'phoneNumber'       => $order->customer_phone
+                        'phone'             => $order->customer_phone
                     ], [
                         'amount'        => $checkout_price,
                         'currency'      => $order->currency,

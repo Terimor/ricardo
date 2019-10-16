@@ -245,7 +245,7 @@ class EbanxNewService
      * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
      * @return array
      */
-    public function payByToken(array $token, array $contact, array $order_details): array
+    public function payByToken(string $token, array $contact, array $order_details): array
     {
         return $this->pay(
             self::createTokenSource($token),
