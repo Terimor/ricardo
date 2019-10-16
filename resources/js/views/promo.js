@@ -40,6 +40,7 @@ const promo = new Vue({
     purchase: [],
     variantList: [],
     paymentMethod: null,
+    paypalPaymentError: '',
     stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
       value: it,
       text: it,
@@ -330,16 +331,25 @@ const promo = new Vue({
         paymentType: this.form.paymentType,
       });
 
+      this.paypalPaymentError = '';
+
       return paypalCreateOrder({
-        xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-        sku_code: this.form.variant,
-        sku_quantity: this.form.deal,
-        is_warranty_checked: this.form.isWarrantyChecked,
-        page_checkout: document.location.href,
-        cur: currency,
-        offer: new URL(document.location.href).searchParams.get('offer'),
-        affiliate: new URL(document.location.href).searchParams.get('affiliate'),
-      })
+          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+          sku_code: this.form.variant,
+          sku_quantity: this.form.deal,
+          is_warranty_checked: this.form.isWarrantyChecked,
+          page_checkout: document.location.href,
+          cur: currency,
+          offer: new URL(document.location.href).searchParams.get('offer'),
+          affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+        })
+        .then(res => {
+          if (res.paypalPaymentError) {
+            this.paypalPaymentError = res.paypalPaymentError;
+          }
+
+          return res;
+        });
     },
 
     setSelectedPlan(deal) {

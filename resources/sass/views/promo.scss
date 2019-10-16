@@ -324,8 +324,9 @@ header {
   }
 
   &__paypal-button-wrapper {
+    align-items: center;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
   }
 
   &__select-variant {

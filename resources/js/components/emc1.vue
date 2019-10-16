@@ -86,6 +86,7 @@
                                 :$v="$v.form.deal"
                                 @click="paypalSubmit"
                         >{{ paypalRiskFree }}</paypal-button>
+                        <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         <transition name="el-zoom-in-top">
                             <payment-form
                                     :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"
@@ -214,6 +215,7 @@
       return {
         hidePage: false,
         isFormShown: false,
+        paypalPaymentError: '',
         selectedProductData: {
           prices: null,
           quantity: null,
@@ -524,16 +526,25 @@
           paymentType: this.form.paymentType,
         });
 
+        this.paypalPaymentError = '';
+
         return paypalCreateOrder({
-          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-          sku_code: this.codeOrDefault,
-          sku_quantity: this.form.deal,
-          is_warranty_checked: this.form.isWarrantyChecked,
-          page_checkout: document.location.href,
-          cur: currency,
-          offer: searchParams.get('offer'),
-          affiliate: searchParams.get('affiliate'),
-        })
+            xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+            sku_code: this.codeOrDefault,
+            sku_quantity: this.form.deal,
+            is_warranty_checked: this.form.isWarrantyChecked,
+            page_checkout: document.location.href,
+            cur: currency,
+            offer: searchParams.get('offer'),
+            affiliate: searchParams.get('affiliate'),
+          })
+          .then(res => {
+            if (res.paypalPaymentError) {
+              this.paypalPaymentError = res.paypalPaymentError;
+            }
+
+            return res;
+          });
       },
       paypalOnApprove: paypalOnApprove,
       setCart (cart) {

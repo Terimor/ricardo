@@ -182,15 +182,19 @@ export function paypalCreateOrder ({
       }),
     }))
     .then(res => res.json())
-    .then(data => {
-      if (data.odin_order_id) {
-        localStorage.setItem('odin_order_id', data.odin_order_id);
-        localStorage.setItem('order_currency', data.order_currency);
-        localStorage.setItem('order_number', data.order_number);
-        localStorage.setItem('order_id', data.id);
+    .then(res => {
+      if (res.error) {
+        if (res.error.code === 10008) {
+          res.paypalPaymentError = t(res.error.message.phrase, res.error.message.args);
+        }
+      } else if (res.odin_order_id) {
+        localStorage.setItem('odin_order_id', res.odin_order_id);
+        localStorage.setItem('order_currency', res.order_currency);
+        localStorage.setItem('order_number', res.order_number);
+        localStorage.setItem('order_id', res.id);
       }
 
-      return data.id;
+      return res;
     });
 }
 
