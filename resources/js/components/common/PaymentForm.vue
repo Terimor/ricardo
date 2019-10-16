@@ -349,8 +349,7 @@
         cardType: null,
         isOpenCVVModal: false,
         isSubmitted: false,
-        paymentError: '',
-          prevText: null
+        paymentError: ''
       }
     },
 
