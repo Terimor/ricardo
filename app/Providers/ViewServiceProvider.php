@@ -32,8 +32,8 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
     {
         $affiliate = null;
-        if (Request::get('affid')) {
-            $affiliate = AffiliateSetting::getByHasOfferId(Request::get('affid'));
+        if (Request::get('aff_id')) {
+            $affiliate = AffiliateSetting::getByHasOfferId(Request::get('aff_id'));
         }
         
         View::composer('layouts.app', function($view) use ($affiliate) {

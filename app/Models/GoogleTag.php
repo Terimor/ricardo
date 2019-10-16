@@ -27,7 +27,7 @@ class GoogleTag extends Model
 
     // display always at all pages
     const TYPE_ALWAYS  = 'always';
-    // display only on thankyou-promos, thankyou page when we have get parameter order= and this order is_reduced=true and affid < 11
+    // display only on thankyou-promos, thankyou page when we have get parameter order= and this order is_reduced=true and aff_id < 11
     const TYPE_REDUCED  = 'reduced';    
     
     const REDUCED_PAGES = ['upsells', 'thankyou'];

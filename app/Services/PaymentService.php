@@ -464,8 +464,8 @@ class PaymentService
             'products'              => [$order_product],
             'page_checkout'         => $page_checkout,
             'params'                => \Utils::getParamsFromUrl($page_checkout),
-            'offer'                 => $req->get('offerid'),
-            'affiliate'             => $req->get('affid'),
+            'offer'                 => $req->get('offer_id'),
+            'affiliate'             => $req->get('aff_id'),
             'ipqualityscore'        => $ipqs
         ]);
 
@@ -915,7 +915,7 @@ class PaymentService
             'page_checkout'         => $page_checkout,
             'params'                => \Utils::getParamsFromUrl($page_checkout),
             'offer'                 => $req->get('offerid'),
-            'affiliate'             => $req->get('affid'),
+            'affiliate'             => $req->get('aff_id'),
             'ipqualityscore'        => $ipqs
         ]);
 

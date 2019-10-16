@@ -361,8 +361,8 @@ class PayPalService
                     'products' => [$odin_order_product],
                     'txns' => [$order_txn_data],
                     'page_checkout' => $request->page_checkout,
-                    'offer' => !empty($params['offid']) ? $params['offid'] : null,
-                    'affiliate' => !empty($params['affid']) ? $params['affid'] : null,
+                    'offer' => !empty($params['offer_id']) ? $params['offer_id'] : null,
+                    'affiliate' => !empty($params['offer_id']) ? $params['offer_id'] : null,
                     'shop_currency' => $shop_currency_code,
                     'params' => $params,
                     'ipqualityscore' => $request->get('ipqs')
