@@ -466,6 +466,13 @@ const promo = new Vue({
         this.slideFormStep--;
         this.stepAnimation();
         this.isShownJumbotron = true;
+
+        if(this.slideFormStep === 0) {
+          this.selectedPlan = null;
+        }else if(this.slideFormStep === 1) {
+          this.form.variant = '';
+        }
+
         if(this.slideFormStep < 1) {this.slideFormStep = 0};
         this.$nextTick(()=>{this.getFormHeight()});
     },
