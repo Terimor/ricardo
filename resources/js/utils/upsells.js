@@ -30,17 +30,17 @@ export function paypalCreateOrder ({
       affiliate,
       upsells
     })
-  }).then(function(res) {
-    return res.json();
-  }).then(function(data) {
-    if (data.odin_order_id) {
-      localStorage.setItem('odin_order_id', data.odin_order_id);
-      localStorage.setItem('order_currency', data.order_currency);
-      localStorage.setItem('order_number', data.order_number);
-      localStorage.setItem('order_id', data.id);
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.odin_order_id) {
+      localStorage.setItem('odin_order_id', res.odin_order_id);
+      localStorage.setItem('order_currency', res.order_currency);
+      localStorage.setItem('order_number', res.order_number);
+      localStorage.setItem('order_id', res.id);
     }
 
-    return data.id;
+    return res;
   });
 }
 
