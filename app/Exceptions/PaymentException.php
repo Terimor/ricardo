@@ -6,6 +6,6 @@ use Exception;
 
 class PaymentException extends Exception
 {
-    public $code = 10005;
+    public $code = Handler::ECODE_PAYMENT;
     public $message = 'Payment can\'t be processed';
 }

@@ -3,18 +3,22 @@
 namespace App\Exceptions;
 
 use Exception;
+use App\Exceptions\ProviderNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use App\Exceptions\ProductNotFoundException;
-use App\Exceptions\TxnNotFoundException;
-use App\Exceptions\OrderNotFoundException;
-use App\Exceptions\CustomerUpdateException;
-use App\Exceptions\InvalidParamsException;
-use App\Exceptions\OrderUpdateException;
-use App\Exceptions\PaymentException;
-use App\Exceptions\AuthException;
 
 class Handler extends ExceptionHandler
 {
+    const ECODE_AUTH                    = 10401;
+    const ECODE_PRODUCT_NOT_FOUND       = 10001;
+    const ECODE_CUSTOMER_UPDATE         = 10002;
+    const ECODE_ORDER_UPDATE            = 10003;
+    const ECODE_INVALID_PARAMS          = 10004;
+    const ECODE_PAYMENT                 = 10005;
+    const ECODE_ORDER_NOT_FOUND         = 10006;
+    const ECODE_TXN_NOT_FOUND           = 10007;
+    const ECODE_PP_CUR_NOT_SUPPORTED    = 10008;
+    const ECODE_PROVIDER_NOT_FOUND      = 10009;
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -75,6 +79,7 @@ class Handler extends ExceptionHandler
             case OrderNotFoundException::class:
             case ProductNotFoundException::class:
             case TxnNotFoundException::class:
+            case ProviderNotFoundException::class:
                 return response()->json([
                     'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
                 ], 404);

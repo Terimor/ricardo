@@ -106,12 +106,16 @@ class EbanxNewService
      */
     public static function createPerson(array $contact): Person
     {
+        $phone = $contact['phone'];
+        if (\gettype($contact['phone']) === 'array') {
+            $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
+        }
         return new Person([
             'type' => Person::TYPE_PERSONAL,
             'document' => $contact['document_number'],
             'email' => $contact['email'],
             'name' => $contact['first_name'] . ' ' . $contact['last_name'],
-            'phoneNumber' => $contact['phone']['country_code'] . $contact['phone']['number']
+            'phoneNumber' => $phone
         ]);
     }
 
@@ -145,12 +149,13 @@ class EbanxNewService
 
     /**
      * Returns available currency for country
-     * @param  string $country
+     * @param  string $country_code
      * @param  string|null $currency
      * @return string|null
      */
-    public static function getCurrencyByCountry(string $country, ?string $currency): ?string
+    public static function getCurrencyByCountry(string $country_code, ?string $currency): ?string
     {
+        $country = Country::fromIso($country_code);
         if (isset(self::CUR_PER_COUNTRY[$country])) {
             if ($currency && \in_array($currency, self::CUR_PER_COUNTRY[$country])) {
                 return $currency;
@@ -240,7 +245,7 @@ class EbanxNewService
      * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
      * @return array
      */
-    public function payByToken(array $token, array $contact, array $order_details): array
+    public function payByToken(string $token, array $contact, array $order_details): array
     {
         return $this->pay(
             self::createTokenSource($token),
@@ -289,8 +294,10 @@ class EbanxNewService
             'hash'              => null,
             'payer_id'          => null,
             'provider_data'     => null,
+            'redirect_url'      => null,
             'response_code'     => null,
-            'response_desc'     => null
+            'response_desc'     => null,
+            'token'             => null
         ];
 
         try {
@@ -301,7 +308,6 @@ class EbanxNewService
             $result['provider_data'] = $res;
             if ($res['status'] === self::STATUS_OK) {
                 $result['hash']             = $res['payment']['hash'];
-                $result['payer_id']         = $res['payment']['pin'];
                 $result['currency']         = $res['payment']['currency_ext'];
                 $result['value']            = $res['payment']['amount_ext'];
                 $result['fee']              = $res['payment']['amount_iof'];

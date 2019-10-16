@@ -110,6 +110,7 @@
 </template>
 
 <script>
+  import wait from '../utils/wait';
   import { t } from '../utils/i18n';
   import UpsellsItem from './common/UpsellsItem';
   import Step1 from './upsells/Step1';
@@ -158,9 +159,10 @@
         return goTo('/thankyou');
       }
 
-      setTimeout(() => {
-        window.location = '#';
-      }, 500);
+      wait(
+        () => document.readyState === 'complete',
+        () => setTimeout(() => window.location = '#', 500),
+      );
     },
 
     watch: {

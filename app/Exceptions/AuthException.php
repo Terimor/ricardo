@@ -6,6 +6,6 @@ use Exception;
 
 class AuthException extends Exception
 {
-    public $code = 10401;
+    public $code = Handler::ECODE_AUTH;
     public $message = 'Authorization error';
 }

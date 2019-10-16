@@ -6,6 +6,6 @@ use Exception;
 
 class OrderUpdateException extends Exception
 {
-    public $code = 10003;
+    public $code = Handler::ECODE_ORDER_UPDATE;
     public $message = 'OdinOrder can\'t be updated';
 }

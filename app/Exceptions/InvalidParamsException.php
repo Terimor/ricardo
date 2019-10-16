@@ -6,6 +6,6 @@ use Exception;
 
 class InvalidParamsException extends Exception
 {
-    public $code = 10004;
+    public $code = Handler::ECODE_INVALID_PARAMS;
     public $message = 'Invalid Params';
 }
