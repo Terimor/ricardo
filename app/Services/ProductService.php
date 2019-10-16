@@ -228,6 +228,12 @@ class ProductService
         $lp->upsell_hero_text = $product->upsell_hero_text;
         $lp->upsells = $product->upsells;
         $lp->image = $product->image;
+        
+        //FB and GA
+        $lp->fb_pixel_id = $product->fb_pixel_id;
+        $lp->gads_retarget_id = $product->gads_retarget_id;
+        $lp->gads_conversion_id = $product->gads_conversion_id;
+        $lp->gads_conversion_label = $product->gads_conversion_label;
 
         return $lp;
     }
