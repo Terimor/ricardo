@@ -197,9 +197,9 @@ class OrderService
             if ($order->affiliate == $hoAffiliateId) {
                 // check or create affiliate
                 $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
-                if ($order->is_reduced === null) {
-                    // get first main product
-                    $productId = $order->getFirstProductId();
+                // get first main product
+                $productId = $order->getFirstProductId();                
+                if ($order->is_reduced === null && $productId) {
                     // check in affiliate product list
                     $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
                     $order->is_reduced = $isReduced;
