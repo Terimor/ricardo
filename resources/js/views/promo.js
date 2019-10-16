@@ -239,8 +239,7 @@ const promo = new Vue({
     const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
 
     if (deal) {
-      const plan = deal.discountName || 'STARTER';
-      this.setSelectedPlan(plan, qty);
+      this.setSelectedPlan(qty);
 
       setTimeout(() => {
         this.scrollTo('.j-variant-section');
@@ -353,23 +352,23 @@ const promo = new Vue({
         });
     },
 
-    setSelectedPlan(plan, deal) {
+    setSelectedPlan(deal) {
       if(this.isShowVariant){
           this.form.variant = this.skusList[0].code;
           this.isShownForm = true;
+          this.isShownFooter = false;
           if(this.slideForm) {
               this.nextStep();
-              this.isShownFooter = false;
               this.$nextTick(() => {this.isShownJumbotron = false;})
           }else{
               this.scrollTo('.j-complete-order');
           }
       }else{
-          this.selectedPlan = plan;
+          this.selectedPlan = deal;
           this.form.deal = deal;
+          this.isShownFooter = false;
           if(this.slideForm) {
               this.nextStep();
-              this.isShownFooter = false;
               this.$nextTick(() => {this.isShownJumbotron = false;})
           }else{
               this.scrollTo('.j-variant-section');
