@@ -45,8 +45,6 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     //$router->post('/save-customer', 'OrderController@saveCustomer');
     $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
     $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
-    $router->post('/payments/three', 'Payments\EbanxController@sendTransaction');
-    $router->post('/payments/ebanx-notification', 'Payments\EbanxController@notification');
     $router->get('/upsell-product/{productId}', 'ProductController@getUpsellProduct');
 	$router->post('/calculate-upsells-total', 'ProductController@calculateUpsellsTotal');
     $router->get('/order-amount-total/{orderId}', 'OrderController@orderAmountTotal');

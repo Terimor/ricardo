@@ -46,13 +46,10 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
-        // log to sentry
-        if (in_array(env('ENVIRONMENT'), ['production'])) {
-            if (app()->bound('sentry') && $this->shouldReport($exception)) {
-                app('sentry')->captureException($exception);
-            }
+        if (\App::environment() === 'production' && app()->bound('sentry') && $this->shouldReport($exception)) {
+            //log to sentry in production only
+            app('sentry')->captureException($exception);
         } else {
-            //remove log to file on remote server
             parent::report($exception);
         }
     }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\CheckoutDotComService;
-use App\Services\EbanxNewService;
+use App\Services\EbanxService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
@@ -114,7 +114,7 @@ class PaymentsController extends Controller
      */
     public function ebanxWebhook(Request $req)
     {
-        $ebanxService = new EbanxNewService();
+        $ebanxService = new EbanxService();
         $reply = $ebanxService->validateWebhook($req);
 
         if (!$reply['status']) {
