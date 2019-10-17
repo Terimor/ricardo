@@ -10,7 +10,7 @@
     <meta name="ga-id" content="{{ $ga_id }}">
 
     <title>@yield('title', config('app.name'))</title>
-    
+
     @if (!empty($htmlToApp['gtags']))
         @foreach($htmlToApp['gtags'] as $gtag)
         <!-- Google Tag Manager -->
@@ -21,7 +21,7 @@
         })(window,document,'script','dataLayer','{{ !empty($gtag['code']) ? $gtag['code'] : '' }}');</script>
         <!-- End Google Tag Manager -->
         @endforeach
-    @endif    
+    @endif
 
     @if (!empty(optional($product)->favicon_image))
         <link rel="shortcut icon" href="{{ $product->favicon_image }}">
@@ -48,6 +48,7 @@
     @endif
 
     @if ($HasVueApp)
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/js/intlTelInput.min.js" defer></script>
       <script src="https://www.paypal.com/sdk/js?currency={{$PayPalCurrency}}&disable-card=visa,mastercard,amex&client-id={{ $setting['instant_payment_paypal_client_id'] }}" async></script>
 
       @if (isset($countryCode) && $countryCode === 'br')
@@ -72,7 +73,6 @@
       @endif
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/index.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/js/intlTelInput.min.js" defer></script>
     @else
       <script src="{{ mix_cdn('/assets/js/static.js') }}" async></script>
     @endif
