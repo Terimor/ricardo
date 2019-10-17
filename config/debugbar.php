@@ -1,6 +1,4 @@
 <?php
-$debug_cookie = 'bVuq2Sfe76KpSW4Bf5ZNzKZgEkkhjXKhHKygJrcCBq5';
-
 return [
 
     /*
@@ -15,7 +13,7 @@ return [
      |
      */
 
-    'enabled' => !empty($_COOKIE['ODIN_DEBUG_COOKIE']) && $_COOKIE['ODIN_DEBUG_COOKIE'] === $debug_cookie,
+    'enabled' => isset($_COOKIE['DEBUG_COOKIE_KEY']) && $_COOKIE['DEBUG_COOKIE_KEY'] === env('DEBUG_COOKIE_KEY'),
     'except' => [
         'telescope*'
     ],
