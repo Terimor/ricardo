@@ -431,6 +431,8 @@
     },
     methods: {
       submit() {
+        const cardNumber = this.form.cardNumber.replace(/\s/g, '');
+
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
@@ -460,8 +462,8 @@
           billing_postcode: this.form.zipCode,
           billing_email: this.form.email,
           billing_phone: this.dialCode + this.form.phone,
-          credit_card_bin: this.form.cardNumber.substr(0, 6),
-          credit_card_hash: window.sha256(this.form.cardNumber),
+          credit_card_bin: cardNumber.substr(0, 6),
+          credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.month).slice(-2),
           credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
           cvv_code: this.form.cvv,
@@ -512,7 +514,7 @@
                 street: this.form.streetAndNumber,
               },
               card: {
-                number: this.form.cardNumber,
+                number: cardNumber,
                 cvv: this.form.cvv,
                 month: ('0' + this.form.month).slice(-2),
                 year: '' + this.form.year,

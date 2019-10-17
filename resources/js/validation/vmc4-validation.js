@@ -41,11 +41,11 @@ const vmc4validation = function () {
 			},
 			stepThree: {
 				cardNumber: {
-					type: numeric,
 					required,
 					isValid (val) {
-						const creditCardTypeList = creditCardType(val);
+						val = val.replace(/\s/g, '');
 
+						const creditCardTypeList = creditCardType(val);
 						const commonRule = val.length > 12 && val.length <= 19;
 
 						if (creditCardTypeList.length === 1) {

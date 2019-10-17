@@ -439,11 +439,15 @@
       textBack: () => t('checkout.back'),
 		},
         watch: {
-            'form.stepThree.cardNumber'(cardNumber) {
-                const creditCardTypeList = creditCardType(cardNumber)
-                this.form.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+            'form.stepThree.cardNumber'(newVal, oldValue) {
+                const creditCardTypeList = creditCardType(newVal)
+                this.form.cardType = creditCardTypeList.length > 0 && newVal.length > 0
                   ? creditCardTypeList[0].type
                   : null
+
+                if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
+                  this.form.stepThree.cardNumber = oldValue;
+                }
             },
             'form.variant'(val) {
                 fade('out', 300, document.querySelector('#main-prod-image'), true)
@@ -495,6 +499,8 @@
         this.$emit('setWarrantyPriceText', value)
       },
 			submit() {
+        const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
+  
 				this.$v.form.$touch();
 
         if (this.$v.form.$pending || this.$v.form.$error) {
@@ -517,8 +523,8 @@
           billing_postcode: this.form.stepThree.zipCode,
           billing_email: this.form.stepTwo.email,
           billing_phone: this.dialCode + this.form.stepTwo.phone,
-          credit_card_bin: this.form.stepThree.cardNumber.substr(0, 6),
-          credit_card_hash: window.sha256(this.form.stepThree.cardNumber),
+          credit_card_bin: cardNumber.substr(0, 6),
+          credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
           credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
           cvv_code: this.form.stepThree.cvv,
@@ -574,7 +580,7 @@
                   street: 'none',
                 },
                 card: {
-                  number: this.form.stepThree.cardNumber,
+                  number: cardNumber,
                   cvv: this.form.stepThree.cvv,
                   month: ('0' + this.form.stepThree.month).slice(-2),
                   year: '' + this.form.stepThree.year,

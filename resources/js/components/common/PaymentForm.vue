@@ -474,11 +474,15 @@
       textPaymentError: () => t('checkout.payment_error'),
     },
     watch: {
-      'paymentForm.cardNumber' (cardNumber) {
-        const creditCardTypeList = creditCardType(cardNumber)
-        this.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+      'paymentForm.cardNumber' (newVal, oldValue) {
+        const creditCardTypeList = creditCardType(newVal)
+        this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
           ? creditCardTypeList[0].type
           : null
+
+        if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
+          this.paymentForm.cardNumber = oldValue;
+        }
       },
       'paymentForm.zipcode' (zipcode) {
         if (this.isBrazil && !this.$v.form.zipcode.$invalid) {
@@ -594,6 +598,7 @@
       }, 333),
       submit () {
         const { paymentForm, exp } = this;
+        const cardNumber = paymentForm.cardNumber.replace(/\s/g, '');
 
         this.$v.form.$touch();
 
@@ -630,8 +635,8 @@
         if (paymentForm.paymentType === 'credit-card') {
           fields = {
             ...fields,
-            credit_card_bin: paymentForm.cardNumber.substr(0, 6),
-            credit_card_hash: window.sha256(paymentForm.cardNumber),
+            credit_card_bin: cardNumber.substr(0, 6),
+            credit_card_hash: window.sha256(cardNumber),
             credit_card_expiration_month: ('0' + paymentForm.month).slice(-2),
             credit_card_expiration_year: ('' + paymentForm.year).substr(2, 2),
             cvv_code: paymentForm.cvv,
@@ -693,7 +698,7 @@
                   street: paymentForm.street,
                 },
                 card: {
-                  number: paymentForm.cardNumber,
+                  number: cardNumber,
                   cvv: paymentForm.cvv,
                   month: ('0' + paymentForm.month).slice(-2),
                   year: '' + paymentForm.year,

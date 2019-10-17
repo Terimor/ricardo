@@ -93,11 +93,7 @@ export function send1ClickRequest(data, upsells) {
         res.paymentError = t('upsells.step_3.payment_error');
 
         if (res.errors && Object.keys(res.errors).length > 0) {
-          res.paymentError = Object.values(res.errors).shift().shift();
-
-          for (const name of Object.keys(data)) {
-            res.paymentError = res.paymentError.replace(new RegExp(name + '.([0-9]+\.)?'), '');
-          }
+          res.paymentError = res.message || Object.values(res.errors).shift().shift();
         }
       } else {
         if (res.upsells.reduce((value, upsell) => upsell.status !== 'ok', false)) {
