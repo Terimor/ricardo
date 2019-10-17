@@ -145,7 +145,6 @@
                         <h2 class="step-title"><span>{{textStep}}</span> {{ isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
                                 :countryList="setCountryList"
-                                :cardNames="cardNames"
                                 :$v="$v"
                                 :paymentForm="form"/>
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
@@ -243,44 +242,6 @@
         hidePage: false,
         productImage: checkoutData.product.image[0],
         paypalPaymentError: '',
-        cardNames: [
-          {
-            value: 'visa',
-            text: 'VISA',
-            label: 'VISA',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
-          }, {
-            value: 'mastercard',
-            text: 'MasterCard',
-            label: 'MasterCard',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
-          }, {
-            value: 'amex',
-            text: 'American Express',
-            label: 'American Express',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/american-express.png'
-          }, {
-            value: 'discover',
-            text: 'Discover',
-            label: 'Discover',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
-          }, {
-            value: 'diners-club',
-            text: 'DinnersClub',
-            label: 'DinnersClub',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
-          }, {
-            value: 'jcb',
-            text: 'JCB',
-            label: 'JCB',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/jcb.png'
-          }, {
-            value: 'paypal',
-            text: 'PayPal',
-            label: 'PayPal',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
-          }
-        ],
         form: {
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,

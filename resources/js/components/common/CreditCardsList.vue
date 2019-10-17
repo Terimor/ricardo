@@ -21,7 +21,7 @@
 
 <script>
 
-  import creditCards from '../../mixins/creditCards';
+  import { creditCards, getCreditCardsAvailableList } from '../../utils/creditCards';
 
 
   export default {
@@ -30,11 +30,20 @@
 
     props: [
       'country',
+      'withPaypal',
     ],
 
-    mixins: [
-      creditCards,
-    ],
+    computed: {
+
+      creditCards() {
+        return creditCards;
+      },
+
+      creditCardsAvailableList() {
+        return getCreditCardsAvailableList(this.country, this.withPaypal);
+      },
+
+    },
 
   };
 

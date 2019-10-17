@@ -154,14 +154,15 @@
 </template>
 <script>
 	import {getCardUrl} from "../../utils/checkout";
+  import { creditCards, getCreditCardsAvailableList } from '../../utils/creditCards';
 	import creditCardType from 'credit-card-type'
 	import PayMethodItem from "./PayMethodItem";
-    import { t } from '../../utils/i18n';
+  import { t } from '../../utils/i18n';
 
 	export default {
 		name: "PaymentFormSMC7",
 		components: {PayMethodItem},
-		props: ['$v', 'paymentForm', 'countryList', 'cardNames'],
+		props: ['$v', 'paymentForm', 'countryList'],
 		data() {
 			return {
 				cardType: null,
@@ -171,6 +172,18 @@
 		computed: {
 			cardUrl() {
 				return getCardUrl(this.cardType)
+      },
+
+      cardNames() {
+        const country = this.paymentForm.country;
+        const withPaypal = this.paymentForm.installments === 1;
+
+        return getCreditCardsAvailableList(country, withPaypal).map(cardName => ({
+          value: cardName,
+          text: creditCards[cardName].title,
+          label: creditCards[cardName].title,
+          imgUrl: creditCards[cardName].image,
+        }));
       },
 
       textCountry : () => t('checkout.payment_form.сountry'),
