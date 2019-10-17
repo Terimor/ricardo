@@ -1,373 +1,353 @@
 <?php
 
 namespace App\Services;
-use App\Services\CurrencyService;
-use App\Models\OdinProduct;
-use App\Models\OdinCustomer;
+
 use App\Models\OdinOrder;
-use App\Models\Txn;
-use App\Services\OrderService;
-use App\Services\CustomerService;
-use App\Services\EmailService;
 use App\Models\Setting;
+use App\Models\Txn;
+use App\Services\CurrencyService;
+use App\Services\OrderService;
+use App\Services\PaymentService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Ebanx\Benjamin\Models\Address;
+use Ebanx\Benjamin\Models\Card;
+use Ebanx\Benjamin\Models\Configs\Config;
+use Ebanx\Benjamin\Models\Configs\CreditCardConfig;
+use Ebanx\Benjamin\Models\Country;
+use Ebanx\Benjamin\Models\Currency;
+use Ebanx\Benjamin\Models\Payment;
+use Ebanx\Benjamin\Models\Person;
+use Ebanx\Benjamin\Models\Notification;
+use Ebanx\Benjamin\Util\Http as EbanxUtils;
+
 /**
- * Ebanx Service class
+ * EbanxService class
  */
 class EbanxService
 {
-    /**
-     * @var CustomerService
-     */
-    protected $customerService;
+    const ENV_LIVE      = 'live';
+    const ENV_SANDBOX   = 'sandbox';
+
+    const INSTALLMENTS_MIN = 1;
+
+    const STATUS_OK      = 'SUCCESS';
+    const STATUS_ERROR   = 'ERROR';
+
+    const PAYMENT_STATUS_PENDING    = 'PE';
+    const PAYMENT_STATUS_CONFIRMED  = 'CO';
+    const PAYMENT_STATUS_CANCELLED  = 'CA';
+
+    const CUR_PER_COUNTRY = [
+        Country::ARGENTINA  => [Currency::ARS, Currency::USD],
+        Country::BRAZIL     => [Currency::BRL, Currency::USD, Currency::EUR],
+        Country::BOLIVIA    => [Currency::BOB, Currency::USD],
+        Country::CHILE      => [Currency::CLP, Currency::USD, Currency::EUR],
+        Country::COLOMBIA   => [Currency::COP, Currency::USD, Currency::EUR],
+        Country::ECUADOR    => [Currency::USD],
+        Country::MEXICO     => [Currency::MXN, Currency::USD],
+        Country::PERU       => [Currency::PEN, Currency::USD]
+    ];
 
     /**
-     * @var OrderService
+     * @var string
      */
-    protected $orderService;
+    private $integration_key;
 
     /**
-     * EbanxController constructor
-     * @param CustomerService $customerService
-     * @param OrderService $orderService
+     * @var string
      */
-    public function __construct(CustomerService $customerService, OrderService $orderService)
+    private $sandbox_integration_key;
+
+    /**
+     * @var string
+     */
+    private $environment = self::ENV_LIVE;
+
+    /**
+     * EbanxService constructor
+     */
+    public function __construct()
     {
-        $this->customerService = $customerService;
-        $this->orderService = $orderService;
-        $this->currency = CurrencyService::getCurrency();
+        $integration_key = Setting::getValue('ebanx_integration_key');
+        $sandbox_integration_key = Setting::getValue('ebanx_sandbox_integration_key', null);
+        $environment = Setting::getValue('ebanx_api_environment', self::ENV_LIVE);
 
-
-        $this->key = Setting::getValue('ebanx_integration_key');
-
-        if (!$this->key) {
-            logger()->error("ebanx_integration_key parameter not found");
+        if (!$integration_key) {
+            logger()->error("Ebanx integration_key not found");
         }
+
+        $this->integration_key = $integration_key;
+        $this->sandbox_integration_key = $sandbox_integration_key;
+        $this->environment = $environment;
     }
 
     /**
-     *
-     * @return string
+     * Returns Address Model
+     * @param  array $contact
+     * @return Address
      */
-    public function getBaseUrl()
+    public static function createAddress(array $contact): Address
     {
-        $mode = Setting::getValue('ebanx_mode');
-
-        if (!$mode) {
-            logger()->error("ebanx_mode parameter not found");
-        }
-
-        if ($mode == 'prod') {
-            $url = 'https://sandbox.ebanxpay.com/';
-        } else {
-            $url = 'https://sandbox.ebanxpay.com/';
-        }
-        return $url;
+        return new Address([
+            'address' => $contact['street'],
+            'city' => $contact['city'],
+            'country' => Country::fromIso($contact['country']),
+            'state' => $contact['state'],
+            'streetNumber' => $contact['district'],
+            'zipcode' => $contact['zip']
+        ]);
     }
 
     /**
-     * Save customer
-     * @param array $request
-     * @param type $returnModel
-     * @return array
+     * Returns Person Model
+     * @param  array $contact
+     * @return Person
      */
-    public function saveCustomer(array $request): OdinCustomer
+    public static function createPerson(array $contact): Person
     {
-        $data = [
-            'email' => $request['email'],
-            'first_name' => $request['first_name'],
-            'last_name' => $request['last_name'],
-            'ip' => request()->ip(),
-            'phone' => $request['phone'],
-            'language' => app()->getLocale(),
-            'country' => $request['country'],
-            'zip' => $request['zipcode'],
-            'state' => $request['state'],
-            'city' => $request['city'],
-            'street' => $request['address'],
-            'street2' => $request['street_number'],
-            'doc_id' => !empty($request['document']) ? $request['document'] : null
-        ];
-
-        $res = $this->customerService->addOrUpdate($data, true);
-        if ($res['success']) {
-            return $res['customer'];
-        } else {
-            abort(404);
+        $phone = $contact['phone'];
+        if (\gettype($contact['phone']) === 'array') {
+            $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
+        return new Person([
+            'type' => Person::TYPE_PERSONAL,
+            'document' => $contact['document_number'],
+            'email' => $contact['email'],
+            'name' => $contact['first_name'] . ' ' . $contact['last_name'],
+            'phoneNumber' => $phone
+        ]);
     }
 
     /**
-     * Save order
-     * @param array $request
-     * @param OdinCustomer $customer
-     * @param OdinProduct $product
+     * Returns CardSource from CreditCard
+     * @param  array      $card
+     * @param  array      $contact
+     * @return Card
      */
-    public function saveOrder(array $request, OdinCustomer $customer, $product)
+    public static function createCardSource(array $card, array $contact): Card
     {
-        $price = (float)$product->prices[$request['quantity']]['value'];
-
-        $warrantyPrice = !empty($request['is_warranty_checked']) ? (float)$product->prices[$request['quantity']]['warranty_price'] : 0;
-
-        $productForOrder = [
-            "sku_code" => $request['sku'],
-            "quantity" => (int)$request['quantity'],
-            "price" => $price,
-            "price_usd" => round($price / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate), 2),
-            "warranty_price" => $warrantyPrice,
-            "warranty_price_usd" => floor($warrantyPrice / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100)/100,
-            'price_set' => $product->prices['price_set'],
-            'is_main' => isset($request['is_main']) ? $request['is_main'] : true,
-        ];
-
-        // installments
-        if(!empty($request['installments']) && ($request['installments'] == 3 || $request['installments'] == 6)) {
-            $installments = $request['installments'];
-        } else {
-            $installments = 0;
-        }
-
-        $data = [
-            'status' => OdinOrder::STATUS_NEW,
-            'currency' => $this->currency->code,
-            'exchange_rate' => $this->currency->usd_rate, // * float
-            'total_paid' => $productForOrder['price'],
-            'total_price' => $productForOrder['price'] + $productForOrder['warranty_price'],
-            'total_price_usd' => floor($productForOrder['price'] + $productForOrder['warranty_price'] / (!empty($this->currency->price_rate) ? $this->currency->price_rate : $this->currency->usd_rate) * 100) / 100,
-            //'txns_fee_usd' => null, //float, total amount of all txns' fee in USD
-            'installments' => $installments,
-            //'payment_provider' => 'ebanx',
-            //'payment_method' => $request['payment_type_code'],
-            'customer_email' => $request['email'],
-            'customer_first_name' => $request['first_name'],
-            'customer_last_name' => $request['last_name'],
-            'customer_phone' => $request['phone'],
-            'language' => app()->getLocale(),
-            'ip' => request()->ip(),
-            'shipping_country' => $request['country'],
-            'shipping_zip' => $request['zipcode'],
-            'shipping_state' => $request['state'],
-            'shipping_city' => $request['city'],
-            'shipping_street' => $request['address'],
-            'shipping_street2' => $request['street_number'],
-            'warehouse_id' => $product->warehouse_id,
-            'products' => [$productForOrder],
-            'params' => !empty($request['params']) ? \Utils::getParamsFromUrl($request['params']) : null
-        ];
-
-        $res = $this->orderService->addOdinOrder($data, true);
-
-        if ($res['success']) {
-            return $res['order'];
-        } else {
-            abort(404);
-        }
+        return new Card([
+            'createToken'   => true,
+            'cvv'           => $card['cvv'],
+            'dueDate'       => \DateTime::createFromFormat('n-Y', $card['month'] . '-' . $card['year']),
+            'name'          => $contact['first_name'] . ' ' . $contact['last_name'],
+            'number'        => $card['number'],
+            'type'          => PaymentService::METHOD_CREDITCARD
+        ]);
     }
 
     /**
-     * Prepare data for curl
-     * @param array $data
-     * @return array
+     * Returns CardSource from token
+     * @param   string $token
+     * @return  Card
      */
-    public function prepareDataCurl(array $data, string $orderNumber): array
+    public static function createTokenSource(string $token): Card
     {
-        // installments
-        if(!empty($data['installments']) && ($data['installments'] == 3 || $data['installments'] == 6)) {
-            $installments = $data['installments'];
-        } else {
-            $installments = 1;
-        }
-
-        $dataForCurl = [
-            "integration_key" => $this->key->value,
-            "operation" => "request",
-            "mode" => "full",
-            "payment" => [
-                "amount_total" => $data['amount_total'],
-                "currency_code" => $this->currency->code,
-                "name" => $data['first_name'].' '.$data['last_name'],
-                "merchant_payment_code" => \Utils::randomString(10),
-                "email" => $data['email'],
-                "birth_date" => $data['birth_date'],
-                "document" => $data['document'],
-                "address" => $data['address'],
-                "street_number" => $data['street_number'],
-                "city" => $data['city'],
-                "state" => $data['state'],
-                "zipcode" => $data['zipcode'],
-                "country" => $data['country'],
-                "phone_number" => $data['phone'],
-                "payment_type_code" => $data['payment_type_code'],
-                "instalments" => $installments,
-                "creditcard" => [
-                    "token" => $data['token']
-                ],
-                'order_number' => $orderNumber,
-            ]
-        ];
-
-        return $dataForCurl;
+        return new Card(['token' => $token]);
     }
 
     /**
-     *
-     * @param array $response
-     * @return type
+     * Returns available currency for country
+     * @param  string $country_code
+     * @param  string|null $currency
+     * @return string|null
      */
-    public function saveTxn(array $response)
+    public static function getCurrencyByCountry(string $country_code, ?string $currency): ?string
     {
-        $data = [
-            'hash' => !empty($response['payment']['hash']) ? $response['payment']['hash'] : null,
-            'value' => !empty($response['payment']['amount_br']) ? $response['payment']['amount_br'] : null,
-            'currency' => $this->currency->code,
-            'provider_data' => $response,
-            'payment_provider' => 'ebanx',
-            'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
-        ];
-
-        $res = $this->orderService->addTxn($data, true);
-
-        if ($res['success']) {
-            return $res['txn'];
-        } else {
-            abort(404);
+        $country = Country::fromIso($country_code);
+        if (isset(self::CUR_PER_COUNTRY[$country])) {
+            if ($currency && \in_array($currency, self::CUR_PER_COUNTRY[$country])) {
+                return $currency;
+            }
+            return Currency::USD;
         }
+        return null;
     }
 
     /**
-     * Send transaction
-     * @param array $dataForCurl
-     * @return string
+     * Returns TXN status
+     * @param   string      $status     Ebanx status
+     * @param   bool|null   $is_webhook
+     * @return  string
      */
-    public function sendTransaction(array $dataForCurl) : string
+    public static function mapPaymentStatus(string $status, ?bool $is_webhook = false): string
     {
-        $url = $this->getBaseUrl().'ws/direct';
+        switch ($status):
+            case self::PAYMENT_STATUS_PENDING:
+                return Txn::STATUS_AUTHORIZED;
+            case self::PAYMENT_STATUS_CONFIRMED:
+                return $is_webhook ? Txn::STATUS_APPROVED : Txn::STATUS_CAPTURED;
+            default:
+                return Txn::STATUS_FAILED;
+        endswitch;
+    }
+
+    /**
+     * Returns payment status info by hash
+     * @param  string $hash
+     * @return array|null
+     */
+    public function requestStatusByHash(string $hash): ?array
+    {
+        $config = new Config([
+            'integrationKey'        => $this->integration_key,
+            'sandboxIntegrationKey' => $this->sandbox_integration_key,
+            'isSandbox'             => $this->environment !== self::ENV_LIVE
+        ]);
+
+        $result = null;
 
         try {
-            $client = new \GuzzleHttp\Client();
-            $request = $client->request('POST', $url, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
-                ],
-                \GuzzleHttp\RequestOptions::JSON => $dataForCurl
-            ]);
-            $response = $request->getBody()->getContents();
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $response = $e->getResponse()->getBody()->getContents();
-        }
+            $res = EBANX($config)->paymentInfo()->findByHash($hash);
 
-        return $response;
+            logger()->info('Ebanx query', ['reply' => \json_encode($res)]);
+
+            $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
+
+            if ($res['status'] === self::STATUS_OK) {
+                $result['number']   = $res['payment']['order_number'];
+                $result['currency'] = $res['payment']['currency_ext'];
+                $result['fee']      = $res['payment']['amount_iof'];
+                $result['value']    = $res['payment']['amount_ext'];
+                $result['status']   = self::mapPaymentStatus($res['payment']['status'], true);
+            } else {
+                logger()->error("Ebanx cancelled", ['reply' => \json_encode($res)]);
+            }
+        } catch (\Exception $ex) {
+            logger()->error("Ebanx query", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+
+        }
+        return $result;
     }
 
     /**
-     * Save txn and recalculate txns_fee_usd
-     * @param OdinOrder $order
-     * @param \App\Services\Txb $txn
-     * @param string $sku
+     * Provides payment by card
+     * @param  array   $card
+     * @param  array   $contact
+     * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
+     * @return array
      */
-    public function saveTxnResponseForOrder(OdinOrder $order, Txn $txn, $response)
+    public function payByCard(array $card, array $contact, array $order_details): array
     {
-        $txnsFeeUsd = 0;
-        $txns = [];
-        if ($order->txns) {
-            $txns = $order->txns ;
-        }
-        $dataTxnArray = [
-            'hash' => $txn->hash,
-            'value' => $txn->value,
-            'status' => 'new',
-            'is_charged_back' => false,
-            'payment_provider' => 'ebanx',
-            'payment_method' => !empty($response['payment']['payment_type_code']) ? $response['payment']['payment_type_code'] : null,
-        ];
-
-        // check status transaction, if CO=paid
-        if (!empty($response['payment']['status'])) {
-            if ($response['payment']['status'] == 'CO') {
-            $dataTxnArray['status'] = 'approved';
-            }
-        }
-
-        if (!empty($response['payment']['amount_iof'])) {
-            $dataTxnArray['fee'] = (float)$response['payment']['amount_iof'];
-        }
-
-        $txns[] = $dataTxnArray;
-
-        // re	calculate txns fee
-        foreach ($txns as $t) {
-            if (!empty($t['value'])) {
-            $txnsFeeUsd += round($t['value'] / $this->currency->usd_rate, 5);
-            }
-        }
-
-        $order->txns = $txns;
-        $order->txns_fee_usd = (float)$txnsFeeUsd;
-        $order->save();
+        return $this->pay(
+            self::createCardSource($card, $contact),
+            self::createAddress($contact),
+            self::createPerson($contact),
+            $order_details
+        );
     }
 
     /**
-     * Update Txn statuses
-     * @param type $hashCodes
+     * Provides payment by token
+     * @param  array   $token
+     * @param  array   $contact
+     * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
+     * @return array
      */
-    public function updateTxnStatuses($hashCodes)
+    public function payByToken(string $token, array $contact, array $order_details): array
     {
-        foreach ($hashCodes as $hash) {
-            //find order product by hash
-            $order = OdinOrder::where(['txn.hash' => $hash])->first();
-
-            $res = json_decode($this->sendQueryHash($hash), true);
-            if(!empty($res['payment']['status'])) {
-                $status = $res['payment']['status'];
-                $txns = [];
-            if (!empty($order->txns)) {
-                $txns = $order->txns ;
-            }
-            $approved = false;
-            foreach ($txns as &$t) {
-                if($t['hash'] == $hash) {
-                    if ($status == 'CO') {
-                        $t['status'] = 'approved';
-                        $approved = true;
-                    }
-
-                    $order->txnx = $txns;
-                    $order->save();
-                    break;
-                    }
-                }
-            }
-        }
+        return $this->pay(
+            self::createTokenSource($token),
+            self::createAddress($contact),
+            self::createPerson($contact),
+            $order_details
+        );
     }
 
     /**
-     *
-     * @param string $hash
-     * @return string
+     * Provides payment
+     * @param  Card    $source
+     * @param  Address $address
+     * @param  Person  $person
+     * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
+     * @return array
      */
-    public function sendQueryHash(string $hash) : string
+    private function pay(Card $source, Address $address, Person $person, array $order_details): array
     {
-        $url = $this->getBaseUrl()."ws/query";
+        $config = new Config([
+            'integrationKey'        => $this->integration_key,
+            'sandboxIntegrationKey' => $this->sandbox_integration_key,
+            'isSandbox'             => $this->environment !== self::ENV_LIVE,
+            'baseCurrency'          => $order_details['currency']
+        ]);
 
-        $dataForCurl = [
-            'hash' => $hash,
-            'integration_key' => $this->key->value
+        $payment = new Payment([
+            'address'               => $address,
+            'amountTotal'           => $order_details['amount'],
+            'card'                  => $source,
+            'installments'          => $order_details['installments'] ?? self::INSTALLMENTS_MIN,
+            'merchantPaymentCode'   => \uniqid(),
+            'orderNumber'           => $order_details['number'],
+            'person'                => $person,
+            'type'                  => PaymentService::METHOD_CREDITCARD
+        ]);
+
+        $result = [
+            'fee'               => 0,
+            'is_flagged'        => false,
+            'currency'          => $order_details['currency'],
+            'value'             => $order_details['amount'],
+            'status'            => Txn::STATUS_FAILED,
+            'payment_provider'  => PaymentService::PROVIDER_EBANX,
+            'payment_method'    => PaymentService::METHOD_CREDITCARD,
+            'hash'              => null,
+            'payer_id'          => null,
+            'provider_data'     => null,
+            'redirect_url'      => null,
+            'response_code'     => null,
+            'response_desc'     => null,
+            'token'             => null
         ];
 
         try {
-            $client = new \GuzzleHttp\Client();
-            $request = $client->request('POST', $url, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
-                ],
-                \GuzzleHttp\RequestOptions::JSON => $dataForCurl
-            ]);
-            $response = $request->getBody()->getContents();
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $response = $e->getResponse()->getBody()->getContents();
+            $res = EBANX($config, new CreditCardConfig())->create($payment);
+
+            // logger()->info('Ebanx pay', ['reply' => \json_encode($res)]);
+
+            $result['provider_data'] = $res;
+            if ($res['status'] === self::STATUS_OK) {
+                $result['hash']             = $res['payment']['hash'];
+                $result['currency']         = $res['payment']['currency_ext'];
+                $result['value']            = $res['payment']['amount_ext'];
+                $result['fee']              = $res['payment']['amount_iof'];
+                $result['response_code']    = $res['payment']['transaction_status']['code'];
+                $result['response_desc']    = $res['payment']['transaction_status']['description'];
+                $result['status']           = self::mapPaymentStatus($res['payment']['status']);
+                $result['is_flagged']       = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING ? true : false;
+                $result['token']            = $res['payment']['token'] ?? null;
+            } else {
+                $result['response_code'] = $res['status_code'];
+                $result['response_desc'] = $res['status_message'];
+            }
+        } catch (\Exception $ex) {
+            $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
+            logger()->error("Ebanx pay", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+        }
+        return $result;
+    }
+
+    /**
+     * Validates webhook
+     * @param  Request $req
+     * @return array
+     */
+    public function validateWebhook(Request $req)
+    {
+        $sign = $req->header('x-signature-content');
+        $content = $req->getContent();
+        $notification = new Notification($req->get('operation'), $req->get('notification_type'), explode(',', $req->get('hash_codes')));
+
+        $result = ['status' => false];
+
+        $cert = File::get(\config_path("cert/ebanx-notifications-public.pem"));
+
+        $is_sign_valid = \openssl_verify($content, \base64_decode($sign), $cert);
+
+        if ($is_sign_valid && EbanxUtils::isValidNotification($notification)) {
+            $result = ['status' => true, 'hashes' => $notification->getHashCodes()];
         }
 
-        return $response;
+        return $result;
     }
 }

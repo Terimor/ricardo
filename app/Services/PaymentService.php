@@ -19,7 +19,7 @@ use App\Models\OdinProduct;
 use App\Services\CurrencyService;
 use App\Services\CustomerService;
 use App\Services\CheckoutDotComService;
-use App\Services\EbanxNewService;
+use App\Services\EbanxService;
 use App\Services\OrderService;
 use Http\Client\Exception\HttpException;
 
@@ -439,7 +439,7 @@ class PaymentService
             throw new ProviderNotFoundException("Country {$contact['country']}, Card {$card['type']} not supported");
         } else if ($provider === self::PROVIDER_EBANX) {
             // check if ebanx supports country and currency, switch to default currency
-            $product->currency = EbanxNewService::getCurrencyByCountry($contact['country'], $cur);
+            $product->currency = EbanxService::getCurrencyByCountry($contact['country'], $cur);
             if (!$product->currency) {
                 // change provider
                 $provider = self::getProviderByCountryAndMethod($contact['country'], $card['type'], [self::PROVIDER_EBANX]);
@@ -490,7 +490,7 @@ class PaymentService
         // select provider and create payment
         $payment = [];
         if ($provider === self::PROVIDER_EBANX) {
-            $ebanxService = new EbanxNewService();
+            $ebanxService = new EbanxService();
             $payment = $ebanxService->payByCard($card, $contact, [
                 'amount'        => $order->total_price,
                 'currency'      => $order->currency,
@@ -594,7 +594,7 @@ class PaymentService
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
                 if ($order_main_txn['payment_provider'] === self::PROVIDER_EBANX) {
-                    $ebanxService = new EbanxNewService();
+                    $ebanxService = new EbanxService();
                     $payment = $ebanxService->payByToken($card_token, [
                         'street'            => $order->shipping_street,
                         'city'              => $order->shipping_city,
