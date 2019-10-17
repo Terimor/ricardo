@@ -487,8 +487,8 @@ class PaymentService
             'products'              => [$order_product],
             'page_checkout'         => $page_checkout,
             'params'                => \Utils::getParamsFromUrl($page_checkout),
-            'offer'                 => !empty($params['offer_id']) ? $params['offer_id'] : null,,
-            'affiliate'             => !empty($params['aff_id']) ? $params['aff_id'] : null,,
+            'offer'                 => !empty($params['offer_id']) ? $params['offer_id'] : null,
+            'affiliate'             => !empty($params['aff_id']) ? $params['aff_id'] : null,
             'ipqualityscore'        => $ipqs
         ]);
 
