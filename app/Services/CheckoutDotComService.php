@@ -159,7 +159,7 @@ class CheckoutDotComService
 
         // enable 3ds
         if ($source instanceof CardSource) {
-            $qs = http_build_query(array_merge($order->params ?? [], ['order' => $order->getIdAttribute(), 'cur' => $order->currency]));
+            $qs = http_build_query(['order' => $order->getIdAttribute()]);
             $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
             $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
             $payment->{'3ds'} = (object)['enabled' => $is3ds];
