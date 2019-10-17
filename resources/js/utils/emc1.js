@@ -125,15 +125,18 @@ export function * getNotice ({
         const arr = [1, 3, 5];
         const quantity = arr[getRandomInt(0, 2)]
 
-        yield `<div class="recently-notice">
-          <div class="recently-notice__left">
-            <img src="${checkoutData.product.image[0]}" alt="">
-          </div>
-          <div class="recently-notice__right">
-            <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>${quantity}x ${checkoutData.product.product_name}</p>
-          </div>
-        </div>
-      `
+        if(users[index] && cities[index]) {
+            yield `<div class="recently-notice">
+              <div class="recently-notice__left">
+                <img src="${checkoutData.product.image[0]}" alt="">
+              </div>
+              <div class="recently-notice__right">
+                <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>${quantity}x ${checkoutData.product.product_name}</p>
+              </div>
+            </div>
+            `
+        }
+
         index++;
 
       } else {
