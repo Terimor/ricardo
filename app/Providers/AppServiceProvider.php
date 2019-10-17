@@ -52,12 +52,7 @@ class AppServiceProvider extends ServiceProvider
             \DB::connection('mongodb')->enableQueryLog();
         }
 
-
-        $sentryDNS = Setting::getValue('sentry_dsn');
-        $this->app['config']['sentry'] = [
-            'dsn' => $sentryDNS ? $sentryDNS : env('SENTRY_LARAVEL_DSN', env('SENTRY_DSN'))
-        ];
-
+        $this->app['config']['sentry'] = ['dsn' => Setting::getValue('sentry_dsn')];
     }
 
     protected function loadHelpers() {
