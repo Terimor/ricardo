@@ -105,15 +105,18 @@ class PaymentService
                 ],
                 self::METHOD_DISCOVER   => [
                     '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['us']
+                    '-3ds' => ['*']
+                    // '-3ds' => ['us']
                 ],
                 self::METHOD_DINERSCLUB => [
                     '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['us', 'ko']
+                    '-3ds' => ['*']
+                    // '-3ds' => ['us', 'ko']
                 ],
                 self::METHOD_JCB        => [
                     '+3ds' => ['europe', 'il', 'ko', 'id', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['sg', 'jp', 'tw', 'hk', 'mo', 'th', 'vn', 'kh', 'my', 'mm']
+                    '-3ds' => ['*']
+                    // '-3ds' => ['sg', 'jp', 'tw', 'hk', 'mo', 'th', 'vn', 'kh', 'my', 'mm']
                 ],
             ]
         ],
