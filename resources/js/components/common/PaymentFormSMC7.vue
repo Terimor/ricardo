@@ -202,14 +202,18 @@
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
 		},
 		watch: {
-			'paymentForm.cardNumber'(cardNumber) {
-				const creditCardTypeList = creditCardType(cardNumber);
-				this.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+			'paymentForm.cardNumber'(newVal, oldValue) {
+				const creditCardTypeList = creditCardType(newVal);
+				this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
 					: null;
-				this.paymentForm.paymentType = this.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+				this.paymentForm.paymentType = this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
 					: null
+
+        if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
+          this.paymentForm.cardNumber = oldValue;
+        }
 			},
             'paymentForm.cvv' (newVal, oldValue) {
                 if(this.paymentForm.cvv) {
