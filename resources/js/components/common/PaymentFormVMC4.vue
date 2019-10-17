@@ -137,9 +137,6 @@
                       class="cvv-field"
                       theme="variant-1"
                       :rest="{
-                        maxlength: 4,
-                        pattern: '\\d*',
-                        type: 'tel',
                         autocomplete: 'cc-csc',
                         'data-bluesnap': 'encryptedCvv'
                       }"
@@ -441,44 +438,59 @@
       textNext: () => t('checkout.next'),
       textBack: () => t('checkout.back'),
 		},
-		watch: {
-      'form.stepThree.cardNumber' (cardNumber) {
-        const creditCardTypeList = creditCardType(cardNumber)
-        this.form.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
-          ? creditCardTypeList[0].type
-          : null
-      },
-			'form.variant'(val) {
-				fade('out', 300, document.querySelector('#main-prod-image'), true)
-					.then(() => {
-						let productImageUrl = this.variantList.find(variant => variant.value === val).imageUrl;
-						if(productImageUrl) {
-							this.$emit('productImageChanged', productImageUrl)
-            }
-						fade('in', 300, document.querySelector('#main-prod-image'), true)
-					});
-			},
-			'step'(val) {
-				fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
-					.then(() => {
-						fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
-					});
-      },
-      installments (val) {
-        if (+val !== 1 && this.countryCode === 'mx') {
-          this.form.stepThree.cardType = 'credit'
-        }
-      },
-      list(value) {
-        const qty = +this.queryParams.qty;
-        const deal = value.find(({ quantity }) => qty === quantity);
+        watch: {
+            'form.stepThree.cardNumber'(newVal, oldValue) {
+                const creditCardTypeList = creditCardType(newVal)
+                this.form.cardType = creditCardTypeList.length > 0 && newVal.length > 0
+                  ? creditCardTypeList[0].type
+                  : null
 
-        if (deal) {
-          this.setWarrantyPriceText(qty);
-          this.form.deal = qty;
-        }
-      },
-		},
+                if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
+                  this.form.stepThree.cardNumber = oldValue;
+                }
+            },
+            'form.variant'(val) {
+                fade('out', 300, document.querySelector('#main-prod-image'), true)
+                  .then(() => {
+                      let productImageUrl = this.variantList.find(variant => variant.value === val).imageUrl;
+                      if (productImageUrl) {
+                          this.$emit('productImageChanged', productImageUrl)
+                      }
+                      fade('in', 300, document.querySelector('#main-prod-image'), true)
+                  });
+            },
+            'step'(val) {
+                fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
+                  .then(() => {
+                      fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
+                  });
+            },
+            installments(val) {
+                if (+val !== 1 && this.countryCode === 'mx') {
+                    this.form.stepThree.cardType = 'credit'
+                }
+            },
+            list(value) {
+                const qty = +this.queryParams.qty;
+                const deal = value.find(({quantity}) => qty === quantity);
+
+                if (deal) {
+                    this.setWarrantyPriceText(qty);
+                    this.form.deal = qty;
+                }
+            },
+            'form.stepThree.cvv'(newVal, oldValue) {
+                if (this.form.stepThree.cvv) {
+                    if (newVal.match(/^[0-9]{0,4}$/g)) {
+                        this.form.stepThree.cvv = newVal;
+                    } else {
+                        this.form.stepThree.cvv = oldValue;
+                    }
+                }
+            }
+
+
+        },
 		methods: {
       activateForm() {
         this.isFormShown = true;
@@ -487,6 +499,8 @@
         this.$emit('setWarrantyPriceText', value)
       },
 			submit() {
+        const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
+  
 				this.$v.form.$touch();
 
         if (this.$v.form.$pending || this.$v.form.$error) {
@@ -509,8 +523,8 @@
           billing_postcode: this.form.stepThree.zipCode,
           billing_email: this.form.stepTwo.email,
           billing_phone: this.dialCode + this.form.stepTwo.phone,
-          credit_card_bin: this.form.stepThree.cardNumber.substr(0, 6),
-          credit_card_hash: window.sha256(this.form.stepThree.cardNumber),
+          credit_card_bin: cardNumber.substr(0, 6),
+          credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
           credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
           cvv_code: this.form.stepThree.cvv,
@@ -566,7 +580,7 @@
                   street: 'none',
                 },
                 card: {
-                  number: this.form.stepThree.cardNumber,
+                  number: cardNumber,
                   cvv: this.form.stepThree.cvv,
                   month: ('0' + this.form.stepThree.month).slice(-2),
                   year: '' + this.form.stepThree.year,

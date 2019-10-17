@@ -2,9 +2,15 @@
   
   <radio-button-group
     class="main__credit-card-switcher payment-type-radio-list"
-    :value="value"
     :list="list"
-    @input="input" />
+    :value="value"
+    @input="input">
+
+    <CreditCardsList
+      slot="credit-card"
+      :country="country" />
+
+  </radio-button-group>
 
 </template>
 
@@ -12,7 +18,7 @@
 <script>
 
   import { t } from '../../utils/i18n';
-  import creditCards from '../../mixins/creditCards';
+  import CreditCardsList from './CreditCardsList';
 
 
   export default {
@@ -24,22 +30,23 @@
       'country',
     ],
 
-    mixins: [
-      creditCards,
-    ],
+    components: {
+      CreditCardsList,
+    },
 
     computed: {
 
       list() {
         return [
           {
-            label: '<div class="title">' + t('checkout.credit_cards') + '</div>' + this.creditCardsAvailableHTML,
+            slot: 'credit-card',
             value: 'credit-card',
+            label: t('checkout.credit_cards'),
             class: 'green-button-animated green-button-active',
           },
           /*{
-            label: t('checkout.bank_payments'),
             value: 'bank-payment',
+            label: t('checkout.bank_payments'),
             class: 'bank-payment',
           },*/
         ];
@@ -60,26 +67,14 @@
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 
   .payment-type-radio-list {
     text-align: left;
 
-    .cards {
-      display: flex;
-      flex-wrap: wrap;
+    .credit-cards-list {
       margin: 8px -4px 0;
-
-      .card {
-        display: flex;
-        flex-direction: column;
-        margin: 4px 4px;
-
-        img {
-          max-width: 56px;
-        }
-      }
     }
   }
-  
+
 </style>

@@ -5,6 +5,7 @@ import upsellsMixin from '../mixins/upsells';
 import globals from '../mixins/globals';
 import { getOrderAmount } from '../services/order';
 import ThankYouItem from '../components/common/ThankYouItem';
+import wait from '../utils/wait';
 import { t } from '../utils/i18n';
 
 const thankYou = new Vue({
@@ -34,9 +35,10 @@ const thankYou = new Vue({
     }),
 
     beforeCreate() {
-      setTimeout(() => {
-        window.location = '#';
-      }, 500);
+      wait(
+        () => document.readyState === 'complete',
+        () => setTimeout(() => window.location = '#', 500),
+      );
     },
 
     methods: {

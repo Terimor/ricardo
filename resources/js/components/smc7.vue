@@ -145,7 +145,6 @@
                         <h2 class="step-title"><span>{{textStep}}</span> {{ isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
                                 :countryList="setCountryList"
-                                :cardNames="cardNames"
                                 :$v="$v"
                                 :paymentForm="form"/>
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
@@ -243,34 +242,6 @@
         hidePage: false,
         productImage: checkoutData.product.image[0],
         paypalPaymentError: '',
-        cardNames: [
-          {
-            value: 'visa',
-            text: 'VISA',
-            label: 'VISA',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
-          }, {
-            value: 'mastercard',
-            text: 'MasterCard',
-            label: 'MasterCard',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
-          }, {
-            value: 'diners-club',
-            text: 'DinnersClub',
-            label: 'DinnersClub',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
-          }, {
-            value: 'discover',
-            text: 'Discover',
-            label: 'Discover',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
-          }, {
-            value: 'paypal',
-            text: 'PayPal',
-            label: 'PayPal',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
-          }
-        ],
         form: {
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
@@ -431,6 +402,8 @@
     },
     methods: {
       submit() {
+        const cardNumber = this.form.cardNumber.replace(/\s/g, '');
+
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
@@ -460,8 +433,8 @@
           billing_postcode: this.form.zipCode,
           billing_email: this.form.email,
           billing_phone: this.dialCode + this.form.phone,
-          credit_card_bin: this.form.cardNumber.substr(0, 6),
-          credit_card_hash: window.sha256(this.form.cardNumber),
+          credit_card_bin: cardNumber.substr(0, 6),
+          credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.month).slice(-2),
           credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
           cvv_code: this.form.cvv,
@@ -512,7 +485,7 @@
                 street: this.form.streetAndNumber,
               },
               card: {
-                number: this.form.cardNumber,
+                number: cardNumber,
                 cvv: this.form.cvv,
                 month: ('0' + this.form.month).slice(-2),
                 year: '' + this.form.year,

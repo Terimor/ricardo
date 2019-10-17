@@ -159,7 +159,7 @@ class CheckoutDotComService
 
         // enable 3ds
         if ($source instanceof CardSource) {
-            $qs = http_build_query(array_merge($order->params ?? [], ['order' => $order->getIdAttribute(), 'cur' => $order->currency]));
+            $qs = http_build_query(['order' => $order->getIdAttribute()]);
             $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
             $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
             $payment->{'3ds'} = (object)['enabled' => $is3ds];
@@ -179,6 +179,7 @@ class CheckoutDotComService
             'redirect_url'      => null,
             'response_code'     => null,
             'response_desc'     => null,
+            'token'             => null
         ];
 
         // parse response
@@ -190,17 +191,17 @@ class CheckoutDotComService
             $result['payer_id'] = $res->customer['id'];
 
             if ($res->http_code === 201) { // authorized
-                $result['response_code'] = $res->response_code;
-                $result['response_desc'] = $res->response_summary;
-                $result['currency'] = $res->currency;
-                $result['value'] = $res->amount;
                 $response_code = (int)$res->response_code;
+                $result['response_code']    = $res->response_code;
+                $result['response_desc']    = $res->response_summary;
+                $result['currency']         = $res->currency;
+                $result['value']            = $res->amount;
                 if (in_array($response_code, [self::SUCCESS_CODE, self::SUCCESS_FLAGGED_CODE])) {
-                    $result['status'] = Txn::STATUS_CAPTURED;
-                    $result['is_flagged'] = $response_code === self::SUCCESS_FLAGGED_CODE ? true : false;
+                    $result['status']       = Txn::STATUS_CAPTURED;
+                    $result['is_flagged']   = $response_code === self::SUCCESS_FLAGGED_CODE ? true : false;
                 }
             } elseif ($res->http_code === 202 && $res->status === self::STATUS_PENDING) { // pending 3ds
-                $result['status'] = Txn::STATUS_NEW;
+                $result['status']       = Txn::STATUS_NEW;
                 $result['redirect_url'] = $res->_links['redirect']['href'];
             }
         } catch (CheckoutHttpException $ex) {

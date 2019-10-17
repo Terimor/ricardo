@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\CheckoutDotComService;
-use App\Services\EbanxNewService;
+use App\Services\EbanxService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
@@ -87,7 +87,7 @@ class PaymentsController extends Controller
         $checkoutService = new CheckoutDotComService();
         $reply = $checkoutService->validateCapturedWebhook($req);
 
-        logger()->info('checkout.com', ['reply' => json_encode($req->toArray())]);
+        logger()->info('checkout.com', ['content' => $req->getContent()]);
 
         if (!$reply['status']) {
             logger()->error('checkout.com unauthorized captured webhook', [ 'ip' => $req->ip() ]);
@@ -97,35 +97,28 @@ class PaymentsController extends Controller
         $this->paymentService->approveOrder($reply['txn']);
     }
 
+    /**
+     * Checkout.com failed webhook
+     * @param  Request $req
+     * @return void
+     */
     public function checkoutDotComFailedWebhook(Request $req)
     {
-        logger()->info('checkout.com', ['content' => json_encode($req->toArray())]);
+        logger()->info('checkout.com', ['content' => $req->getContent()]);
     }
 
-    public function testEbanx(PaymentCardCreateOrderRequest $req)
+    /**
+     * Ebanx notification
+     * @param  Request $req
+     * @return void
+     */
+    public function ebanxWebhook(Request $req)
     {
-        $reply = $this->paymentService->testCreateOrder($req);
-        return [
-            'order_currency'    => $reply['order_currency'],
-            'order_number'      => $reply['order_number'],
-            'order_id'          => $reply['order_id'],
-            'id'                => $reply['id'],
-            'status'            => $reply['status']
-        ];
-    }
-
-    public function testEbanxWebhook(Request $req)
-    {
-        $ebanxService = new EbanxNewService();
+        $ebanxService = new EbanxService();
         $reply = $ebanxService->validateWebhook($req);
 
-        logger()->info('ebanx notification', [
-            'body' => json_encode($req->getContent()),
-            'headers' => json_encode($req->header())
-        ]);
-
         if (!$reply['status']) {
-            logger()->error('Ebanx unauthorized webhook', [ 'ip' => $req->ip() ]);
+            logger()->error('Ebanx unauthorized webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new AuthException('Notification unauthorized');
         }
 
@@ -133,4 +126,5 @@ class PaymentsController extends Controller
             $this->paymentService->approveOrder($ebanxService->requestStatusByHash($hash));
         }
     }
+
 }

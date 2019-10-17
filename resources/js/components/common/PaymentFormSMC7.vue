@@ -131,9 +131,6 @@
           theme="variant-1"
           :label="textCardCVV"
           :rest="{
-            maxlength: 4,
-            pattern: '\\d*',
-            type: 'tel',
             autocomplete: 'cc-csc',
             'data-bluesnap': 'encryptedCvv'
           }"
@@ -157,14 +154,15 @@
 </template>
 <script>
 	import {getCardUrl} from "../../utils/checkout";
+  import { creditCards, getCreditCardsAvailableList } from '../../utils/creditCards';
 	import creditCardType from 'credit-card-type'
 	import PayMethodItem from "./PayMethodItem";
-    import { t } from '../../utils/i18n';
+  import { t } from '../../utils/i18n';
 
 	export default {
 		name: "PaymentFormSMC7",
 		components: {PayMethodItem},
-		props: ['$v', 'paymentForm', 'countryList', 'cardNames'],
+		props: ['$v', 'paymentForm', 'countryList'],
 		data() {
 			return {
 				cardType: null,
@@ -174,6 +172,18 @@
 		computed: {
 			cardUrl() {
 				return getCardUrl(this.cardType)
+      },
+
+      cardNames() {
+        const country = this.paymentForm.country;
+        const withPaypal = this.paymentForm.installments === 1;
+
+        return getCreditCardsAvailableList(country, withPaypal).map(cardName => ({
+          value: cardName,
+          text: creditCards[cardName].title,
+          label: creditCards[cardName].title,
+          imgUrl: creditCards[cardName].image,
+        }));
       },
 
       textCountry : () => t('checkout.payment_form.сountry'),
@@ -205,15 +215,28 @@
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
 		},
 		watch: {
-			'paymentForm.cardNumber'(cardNumber) {
-				const creditCardTypeList = creditCardType(cardNumber);
-				this.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+			'paymentForm.cardNumber'(newVal, oldValue) {
+				const creditCardTypeList = creditCardType(newVal);
+				this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
 					: null;
-				this.paymentForm.paymentType = this.cardType = creditCardTypeList.length > 0 && cardNumber.length > 0
+				this.paymentForm.paymentType = this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
 					: null
-			}
+
+        if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
+          this.paymentForm.cardNumber = oldValue;
+        }
+			},
+            'paymentForm.cvv' (newVal, oldValue) {
+                if(this.paymentForm.cvv) {
+                    if(newVal.match(/^[0-9]{0,4}$/g)) {
+                        this.paymentForm.cvv = newVal;
+                    } else {
+                        this.paymentForm.cvv = oldValue;
+                    }
+                }
+            }
 		},
 		methods: {
 			openCVVModal () {

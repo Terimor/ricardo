@@ -27,8 +27,7 @@ class ProductService
 
         // Domain resolve logic
         if (!$product) {
-            $host = request()->getHost();
-            $host = str_replace('www.', '', $host);
+            $host = str_replace('www.', '', request()->getHost());
             $domain = Domain::where('name', $host)->first();
             if ($domain && !empty($domain->product)) {
                 $product =  $domain->product;
@@ -203,7 +202,7 @@ class ProductService
             $prices[$quantity]['installments6_unit_value_text'] = $pricesOld[$quantity]['installments6_unit_value_text'];
             $prices[$quantity]['installments6_old_value_text'] = $pricesOld[$quantity]['installments6_old_value_text'];
         }
-        $prices['currency'] = $pricesOld['currency'];
+        $prices['currency'] = $pricesOld['currency'] ?? 'USD';
         $lp->prices = $prices;
 
         $skus = [];
@@ -228,7 +227,7 @@ class ProductService
         $lp->upsell_hero_text = $product->upsell_hero_text;
         $lp->upsells = $product->upsells;
         $lp->image = $product->image;
-        
+
         //FB and GA
         $lp->fb_pixel_id = $product->fb_pixel_id;
         $lp->gads_retarget_id = $product->gads_retarget_id;

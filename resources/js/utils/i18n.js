@@ -11,7 +11,7 @@ const textarea = document.createElement('textarea');
 
 
 export function t(phrase, args = {}) {
-  let translated = phrase;
+  let translated = '';
 
   const loadedPhrases = window.loadedPhrases || {};
 
