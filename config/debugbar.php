@@ -1,4 +1,6 @@
 <?php
+echo env('DEBUG_COOKIE_KEY');
+
 return [
 
     /*
