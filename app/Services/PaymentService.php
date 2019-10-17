@@ -436,6 +436,8 @@ class PaymentService
         $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 
         $order_product = $this->createOrderProduct($sku, $price, true, $is_warranty);
+        
+        $params = !empty($page_checkout) ? \Utils::getParamsFromUrl($page_checkout) : null;
 
         $order = $this->addOrder([
             'currency'              => $price['currency'],
@@ -464,8 +466,8 @@ class PaymentService
             'products'              => [$order_product],
             'page_checkout'         => $page_checkout,
             'params'                => \Utils::getParamsFromUrl($page_checkout),
-            'offer'                 => $req->get('offer_id'),
-            'affiliate'             => $req->get('aff_id'),
+            'offer'                 => !empty($params['offer_id']) ? $params['offer_id'] : null,,
+            'affiliate'             => !empty($params['aff_id']) ? $params['aff_id'] : null,,
             'ipqualityscore'        => $ipqs
         ]);
 

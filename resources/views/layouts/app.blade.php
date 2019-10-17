@@ -129,5 +129,44 @@
     @if (Request::is('checkout'))
       <noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
     @endif
+<script>
+function func(s, a, b) {
+
+	if (String(s).match(/^$/)) {
+		return -1;
+	}		
+	var i = String(s).length -1, aIndex = -1, bIndex = -1;	
+	
+	while ((aIndex == -1) && (bIndex == -1) && (i > 0)) {
+	    if (String(s).substring(i, i +1) == a) {
+	    	aIndex = i;
+    	}
+	    if (String(s).substring(i, i +1) == b) {
+	    	bIndex = i;
+    	}
+        console.log(aIndex, bIndex, i)
+	    i = i - 1;
+	}
+	
+	if (aIndex != -1) {
+	    if (bIndex == -1) {
+	        return aIndex;
+	    }
+	    else {            
+	        return Math.max(aIndex, bIndex);
+	    }
+	}
+	
+	if (bIndex != -1) {
+	    return bIndex;
+	}
+	else {
+	    return -1;
+	}
+}
+
+a = func('555555',4,'34dfdf');
+console.log(a)
+</script>    
 </body>
 </html>
