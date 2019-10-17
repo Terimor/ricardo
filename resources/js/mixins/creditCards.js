@@ -52,20 +52,6 @@ export default {
       return cards;
     },
 
-    creditCardsAvailableHTML() {
-      let output = '';
-
-      output += '<div class="cards">';
-
-      for (const name of this.creditCardsAvailableList) {
-        output += '<div class="card card-' + name + '"><img src="' + this.creditCards[name].image + '" title="' + this.creditCards[name].title + '" /></div>';
-      }
-
-      output += '</div>';
-
-      return output;
-    },
-
   },
 
 };

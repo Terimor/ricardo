@@ -9,7 +9,10 @@
     <template v-else v-for="input in list">
       <label :style="input.styles" :key="input.value" class="label-container-radio"
              :class="[input.class, {disabled: input.isOutOfStock, labeled: input.isLabeled}]">
-        <div class="label-container-radio__label" v-html="input.label"></div>
+        <div class="label-container-radio__label">
+          <div v-if="input.label" class="title" v-html="input.label" />
+          <slot v-if="input.slot" :name="input.slot" />
+        </div>
         <input type="radio" :checked="input.value == value" name="radio" :value="input.value" :disabled="input.isOutOfStock">
         <span class="checkmark"></span>
       </label>

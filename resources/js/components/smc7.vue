@@ -255,15 +255,25 @@
             label: 'MasterCard',
             imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
           }, {
-            value: 'diners-club',
-            text: 'DinnersClub',
-            label: 'DinnersClub',
-            imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
+            value: 'amex',
+            text: 'American Express',
+            label: 'American Express',
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/american-express.png'
           }, {
             value: 'discover',
             text: 'Discover',
             label: 'Discover',
             imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
+          }, {
+            value: 'diners-club',
+            text: 'DinnersClub',
+            label: 'DinnersClub',
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
+          }, {
+            value: 'jcb',
+            text: 'JCB',
+            label: 'JCB',
+            imgUrl: window.cdnUrl + '/assets/images/cc-icons/jcb.png'
           }, {
             value: 'paypal',
             text: 'PayPal',
