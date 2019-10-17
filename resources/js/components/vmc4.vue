@@ -415,7 +415,6 @@
       #warranty-field-button {
         width: 100%;
         position: relative;
-        height: 95px;
         margin-top: 22px;
         margin-bottom: 22px;
         background-color: rgba(216, 216, 216, .71);
@@ -429,17 +428,13 @@
         }
 
         label[for=warranty-field] {
-          font-weight: bold;
-          line-height: 1.8;
-          text-align: left;
-          text-transform: capitalize;
-          font-size: 16px;
+          margin: 0;
           padding: 17px 70px 30px;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
+          text-align: left;
+          font-size: 16px;
+          line-height: 1.8;
+          font-weight: bold;
+          text-transform: capitalize;
 
           .checkmark {
             top: 20px;
