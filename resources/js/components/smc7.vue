@@ -138,7 +138,7 @@
                         <div class="d-flex">
                             <div class="smc7__step-4__product">
                                 <h2>{{ checkoutData.product.long_name }}</h2>
-                                <p>GET 50% OFF TODAY + FREE SHIPPING</p>
+                                <p>{{ textGet }} {{ checkoutData.product.prices['1'].discount_percent }}% {{ textOffTodayFreeShipping }}</p>
                             </div>
                             <img id="product-image-body" :src="setProductImage" alt="Product image">
                         </div>
@@ -206,7 +206,7 @@
 </template>
 
 <script>
-  import { preparePurchaseData, goToThankYouPromos } from "../utils/checkout";
+  import { preparePurchaseData } from "../utils/checkout";
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import ProductOffer from '../components/common/ProductOffer';
@@ -278,11 +278,6 @@
       }
     },
     created() {
-      if (this.queryParams['3ds'] === 'success') {
-        this.hidePage = true;
-        return goToThankYouPromos();
-      }
-
       if (this.queryParams['3ds'] === 'failure') {
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
@@ -330,6 +325,8 @@
       textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaymentError: () => t('checkout.payment_error'),
+      textGet: () => t('checkout.get'),
+      textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
 
       setProductImage() {
           return this.productData.image[this.queryParams['image'] - 1] || this.productData.image[0];
@@ -347,18 +344,11 @@
       },
 
       setCountryList () {
-        const countries = checkoutData.countries;
-        let countriesList = [];
-
-        Object.entries(countries).map(function([key, value]) {
-          countriesList.push({
-            value: key,
-            text: value,
-            label: value
-          });
-        });
-
-        return countriesList;
+        return checkoutData.countries.map(name => ({
+          value: name,
+          text: t('country.' + name),
+          label: t('country.' + name),
+        }));
       },
 
       codeOrDefault () {

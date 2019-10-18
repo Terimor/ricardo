@@ -191,7 +191,7 @@
   import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import { fade } from '../utils/common';
-  import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
+  import { preparePurchaseData } from '../utils/checkout';
   import purchasMixin from '../mixins/purchas';
   import { preparePartByInstallments } from '../utils/installments';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
@@ -320,11 +320,6 @@
       }
     },
     created() {
-      if (this.queryParams['3ds'] === 'success') {
-        this.hidePage = true;
-        return goToThankYouPromos();
-      }
-
       if (this.queryParams['3ds'] === 'failure') {
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
@@ -361,18 +356,11 @@
         return Number(queryParams().variant) === 0
       },
       setCountryList () {
-        const countries = checkoutData.countries;
-        let countriesList = [];
-
-        Object.keys(countries).map(function(key) {
-          countriesList.push({
-            value: key,
-            text: countries[key],
-            label: countries[key]
-          });
-        });
-
-        return countriesList;
+        return checkoutData.countries.map(name => ({
+          value: name,
+          text: t('country.' + name),
+          label: t('country.' + name),
+        }));
       },
       codeOrDefault () {
         return this.queryParams.product || this.checkoutData.product.skus[0].code;

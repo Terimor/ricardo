@@ -48,9 +48,8 @@ class PaymentsController extends Controller
             'status'            => $reply['status']
         ];
 
-        if (!empty($reply['status_code'])) {
-            $result['status_code'] = $reply['status_code'];
-            $result['status_desc'] = $reply['status_desc'] ?? 'Unknown error';
+        if (!empty($reply['errors'])) {
+            $result['errors'] = $reply['errors'];
         }
         if (!empty($reply['redirect_url'])) {
             $result['redirect_url'] = stripslashes($reply['redirect_url']);
@@ -125,6 +124,11 @@ class PaymentsController extends Controller
         foreach ($reply['hashes'] as $hash) {
             $this->paymentService->approveOrder($ebanxService->requestStatusByHash($hash));
         }
+    }
+
+    public function test(Request $req)
+    {
+        return PaymentService::getPaymentMethodsByCountry('jp');
     }
 
 }

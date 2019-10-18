@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Models\Txn;
 use App\Services\OrderService;
 use App\Services\PaymentService;
+use App\Mappers\CheckoutDotComCodeMapper;
 use Checkout\CheckoutApi;
 use Checkout\Models\Tokens\Card;
 use Checkout\Models\Payments\Payment;
@@ -24,18 +25,18 @@ use GuzzleHttp\Exception\RequestException as GuzzReqException;
  */
 class CheckoutDotComService
 {
-    const ENV_LIVE = 'live';
-    const ENV_SANDBOX = 'sandbox';
+    const ENV_LIVE      = 'live';
+    const ENV_SANDBOX   = 'sandbox';
 
-    const STATUS_AUTHORIZED = 'Authorized';
-    const STATUS_PENDING = 'Pending';
-    const STATUS_CAPTURED = 'Captured';
-    const STATUS_DECLINED = 'Declined';
-    const STATUS_PAID = 'Paid';
-    const STATUS_CARD_VERIFIED = 'Card Verified';
+    const STATUS_AUTHORIZED     = 'Authorized';
+    const STATUS_PENDING        = 'Pending';
+    const STATUS_CAPTURED       = 'Captured';
+    const STATUS_DECLINED       = 'Declined';
+    const STATUS_PAID           = 'Paid';
+    const STATUS_CARD_VERIFIED  = 'Card Verified';
 
-    const SUCCESS_CODE = 10000;
-    const SUCCESS_FLAGGED_CODE = 10100;
+    const SUCCESS_CODE          = '10000';
+    const SUCCESS_FLAGGED_CODE  = '10100';
 
     const TYPE_WEBHOOK_CAPTURED = 'payment_captured';
 
@@ -177,8 +178,7 @@ class CheckoutDotComService
             'payer_id'          => null,
             'provider_data'     => null,
             'redirect_url'      => null,
-            'response_code'     => null,
-            'response_desc'     => null,
+            'errors'            => null,
             'token'             => null
         ];
 
@@ -191,14 +191,14 @@ class CheckoutDotComService
             $result['payer_id'] = $res->customer['id'];
 
             if ($res->http_code === 201) { // authorized
-                $response_code = (int)$res->response_code;
-                $result['response_code']    = $res->response_code;
-                $result['response_desc']    = $res->response_summary;
+                $response_code = (string)$res->response_code;
                 $result['currency']         = $res->currency;
                 $result['value']            = $res->amount;
                 if (in_array($response_code, [self::SUCCESS_CODE, self::SUCCESS_FLAGGED_CODE])) {
                     $result['status']       = Txn::STATUS_CAPTURED;
                     $result['is_flagged']   = $response_code === self::SUCCESS_FLAGGED_CODE ? true : false;
+                } else {
+                    $result['errors']  = [CheckoutDotComCodeMapper::toPhrase($response_code)];
                 }
             } elseif ($res->http_code === 202 && $res->status === self::STATUS_PENDING) { // pending 3ds
                 $result['status']       = Txn::STATUS_NEW;
@@ -210,10 +210,13 @@ class CheckoutDotComService
                 $result['hash'] = $body['request_id'];
             }
             $result['provider_data'] = $body;
-            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+            $result['errors'] = array_map(function($code) {
+                return CheckoutDotComCodeMapper::toPhrase($code);
+            },$ex->getErrors() ?? []);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $body]);
         } catch (CheckoutException $ex) {
-            $result['provider_data'] = ['code' => $ex->getCode(), 'errors' => $ex->getErrors()];
-            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+            $result['provider_data'] = ['code' => $ex->getCode(), 'body' => $ex->getBody()];
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         }
 
         return $result;

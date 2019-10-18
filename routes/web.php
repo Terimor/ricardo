@@ -54,7 +54,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/paypal-webhooks', 'Payments\PaypalController@webhooks');
 
     /* test routes */
-    // $router->post('/test-ebanx-upsells', 'PaymentsController@testEbanx');
+    $router->post('/test-payments', 'PaymentsController@test');
 });
 
 /*Route::get('/debug-sentry', function () {

@@ -39,7 +39,7 @@ class I18n extends Model
         'cs'     => 'Czech',
         'he'     => 'Hebrew',
         'el'     => 'Greek',
-        'br'     => 'Brazilian portuguese',
+        'br'     => 'Brazilian Portuguese',
         'th'     => 'Thai',
         'af'     => 'Afrikaans',
         'hi'     => 'Hindi',
@@ -60,7 +60,7 @@ class I18n extends Model
         'sr'     => 'Serbian',
         'is'     => 'Icelandic',
         'uk'     => 'Ukrainian',
-        'tw'     => 'Traditional Chinese Taiwan',
+        'tw'     => 'Chinese Taiwan',
     ];
 
     public static $browser_codes = [
@@ -119,7 +119,7 @@ class I18n extends Model
      */
     public static function getTranslationLanguages(bool $codes_only = false): array
     {
-        $langs = static::$languages;        
+        $langs = static::$languages;
         $langs = array_merge($langs, I18n::$browser_codes);
         if ($codes_only) {
             $langs = array_keys($langs);
