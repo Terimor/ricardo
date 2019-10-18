@@ -172,6 +172,8 @@ export function getCardUrl(cardType) {
 export function sendCheckoutRequest(data) {
   const currency = queryParams().cur || checkoutData.product.prices.currency;
 
+  localStorage.setItem('3ds_params', window.location.search.substr(1));
+
   return Promise.resolve()
     .then(() => fetch('/pay-by-card?cur=' + currency, {
       method: 'post',
