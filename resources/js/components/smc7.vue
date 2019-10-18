@@ -344,18 +344,11 @@
       },
 
       setCountryList () {
-        const countries = checkoutData.countries;
-        let countriesList = [];
-
-        Object.entries(countries).map(function([key, value]) {
-          countriesList.push({
-            value: key,
-            text: value,
-            label: value
-          });
-        });
-
-        return countriesList;
+        return checkoutData.countries.map(name => ({
+          value: name,
+          text: t('country.' + name),
+          label: t('country.' + name),
+        }));
       },
 
       codeOrDefault () {

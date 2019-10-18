@@ -266,17 +266,11 @@ const promo = new Vue({
     },
 
     countriesList() {
-      let countries = []
-
-      Object.entries(checkoutData.countries).map(([key, value]) => {
-        countries.push({
-          value: key,
-          text: value,
-          label: value,
-        });
-      });
-
-      return countries;
+      return checkoutData.countries.map(name => ({
+        value: name,
+        text: t('country.' + name),
+        label: t('country.' + name),
+      }));
     },
 
     countOfInstallments() {

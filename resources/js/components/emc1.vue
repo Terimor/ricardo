@@ -356,18 +356,11 @@
         return Number(queryParams().variant) === 0
       },
       setCountryList () {
-        const countries = checkoutData.countries;
-        let countriesList = [];
-
-        Object.keys(countries).map(function(key) {
-          countriesList.push({
-            value: key,
-            text: countries[key],
-            label: countries[key]
-          });
-        });
-
-        return countriesList;
+        return checkoutData.countries.map(name => ({
+          value: name,
+          text: t('country.' + name),
+          label: t('country.' + name),
+        }));
       },
       codeOrDefault () {
         return this.queryParams.product || this.checkoutData.product.skus[0].code;

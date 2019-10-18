@@ -201,18 +201,11 @@
         }))
       },
       countryList () {
-        const countries = checkoutData.countries;
-        let countriesList = [];
-
-        Object.keys(countries).map(function(key) {
-          countriesList.push({
-            value: key,
-            text: countries[key],
-            label: countries[key]
-          });
-        });
-
-        return countriesList;
+        return checkoutData.countries.map(name => ({
+          value: name,
+          text: t('country.' + name),
+          label: t('country.' + name),
+        }));
       },
       textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
       textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
