@@ -112,7 +112,7 @@
                 v-if="isSpecialCountrySelected"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
-                :validation="$v.form.countryState"
+                :validation="$v.form.state"
                 :validationMessage="textStateRequired"
                 theme="variant-1"
                 :label="textState"
@@ -135,7 +135,7 @@
                   name: 'ship-state'
                 }"
                 :label="textState"
-                v-model="paymentForm.state"/>
+                v-model="paymentForm.countryState"/>
             <text-field
                 :validation="$v.form.zipcode"
                 :validationMessage="textZipcodeRequired"
