@@ -486,7 +486,7 @@ class PaymentService
             'warehouse_id'          => $product->warehouse_id,
             'products'              => [$order_product],
             'page_checkout'         => $page_checkout,
-            'params'                => \Utils::getParamsFromUrl($page_checkout),
+            'params'                => $params,
             'offer'                 => !empty($params['offer_id']) ? $params['offer_id'] : null,
             'affiliate'             => !empty($params['aff_id']) ? $params['aff_id'] : null,
             'ipqualityscore'        => $ipqs
@@ -543,8 +543,7 @@ class PaymentService
             $result['status'] = self::STATUS_OK;
             $result['redirect_url'] = $payment['redirect_url'] ?? null;
         } else {
-            $result['status_code'] = $payment['response_code'];
-            $result['status_desc'] = $payment['response_desc'];
+            $result['errors'] = $payment['errors'];
         }
 
         return $result;
@@ -628,9 +627,12 @@ class PaymentService
                 if (!empty($payment['hash'])) {
 
                     $upsells = array_map(function($v) use ($payment) {
-                        $v['status'] = $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL;
-                        $v['status_code'] = $payment['response_code'];
-                        $v['status_desc'] = $payment['response_desc'];
+                        if ($payment['status'] !== Txn::STATUS_FAILED) {
+                            $v['status'] = self::STATUS_OK;
+                        } else {
+                            $v['status'] = self::STATUS_FAIL;
+                            $v['errors'] = $payment['errors'];
+                        }
                         return $v;
                     }, $upsells);
 

@@ -8,6 +8,7 @@ use App\Models\Txn;
 use App\Services\CurrencyService;
 use App\Services\OrderService;
 use App\Services\PaymentService;
+use App\Mappers\EbanxCodeMapper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Ebanx\Benjamin\Models\Address;
@@ -295,15 +296,12 @@ class EbanxService
             'payer_id'          => null,
             'provider_data'     => null,
             'redirect_url'      => null,
-            'response_code'     => null,
-            'response_desc'     => null,
+            'errors'            => null,
             'token'             => null
         ];
 
         try {
             $res = EBANX($config, new CreditCardConfig())->create($payment);
-
-            // logger()->info('Ebanx pay', ['reply' => \json_encode($res)]);
 
             $result['provider_data'] = $res;
             if ($res['status'] === self::STATUS_OK) {
@@ -311,14 +309,11 @@ class EbanxService
                 $result['currency']         = $res['payment']['currency_ext'];
                 $result['value']            = $res['payment']['amount_ext'];
                 $result['fee']              = $res['payment']['amount_iof'];
-                $result['response_code']    = $res['payment']['transaction_status']['code'];
-                $result['response_desc']    = $res['payment']['transaction_status']['description'];
                 $result['status']           = self::mapPaymentStatus($res['payment']['status']);
                 $result['is_flagged']       = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING ? true : false;
                 $result['token']            = $res['payment']['token'] ?? null;
             } else {
-                $result['response_code'] = $res['status_code'];
-                $result['response_desc'] = $res['status_message'];
+                $result['errors'] = [EbanxCodeMapper::toPhrase((string)$res['status_code'])];
             }
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
