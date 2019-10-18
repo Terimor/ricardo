@@ -83,11 +83,11 @@ class CheckoutDotComService
             logger()->error("Checkout.com public_key not found");
         }
 
-        $webhook_secret_key = Setting::getValue('checkout_dot_com_captured_webhook_secret_key');
+        $webhook_secret_key = Setting::getValue('cdc_webhook_secret');
         $this->webhook_secret_keys[self::TYPE_WEBHOOK_CAPTURED] = $webhook_secret_key;
 
         if (!$webhook_secret_key) {
-            logger()->error("checkout_dot_com_captured_webhook_secret_key not found");
+            logger()->error("cdc_webhook_secret not found");
         }
 
         $env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
