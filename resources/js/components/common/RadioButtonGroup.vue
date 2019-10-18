@@ -1,6 +1,5 @@
 <template>
   <form
-    @input="input"
     class="radio-button-group"
   >
     <template v-if="withCustomLabels">
@@ -13,7 +12,11 @@
           <div v-if="input.label" class="title" v-html="input.label" />
           <slot v-if="input.slot" :name="input.slot" />
         </div>
-        <input type="radio" :checked="input.value == value" name="radio" :value="input.value" :disabled="input.isOutOfStock">
+        <input @change="onInput" type="radio"
+               :checked="input.value == value"
+               name="radio"
+               :value="input.value"
+               :disabled="input.isOutOfStock">
         <span class="checkmark"></span>
       </label>
     </template>
@@ -31,8 +34,8 @@ export default {
     'validation'
   ],
   methods: {
-    input (e) {
-      return this.$emit('input', e.target.value)
+    onInput (e) {
+      this.$emit('input', e.target.value)
     }
   }
 }
