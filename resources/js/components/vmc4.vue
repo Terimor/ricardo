@@ -76,7 +76,7 @@
 </template>
 <script>
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
-	import { preparePurchaseData, goToThankYouPromos } from "../utils/checkout";
+	import { preparePurchaseData } from "../utils/checkout";
   import queryToComponent from '../mixins/queryToComponent';
   import { t } from '../utils/i18n';
   import {fade} from "../utils/common";
@@ -151,11 +151,6 @@
 			}
     },
     created() {
-      if (this.queryParams['3ds'] === 'success') {
-        this.hidePage = true;
-        return goToThankYouPromos();
-      }
-
       if (this.queryParams['3ds'] === 'failure') {
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 

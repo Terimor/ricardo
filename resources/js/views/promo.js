@@ -4,7 +4,7 @@ import carousel from 'vue-owl-carousel';
 import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
 import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
-import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
+import { preparePurchaseData } from '../utils/checkout';
 import { t } from '../utils/i18n';
 import { scrollTo } from '../utils/common';
 import { getCountOfInstallments } from '../utils/installments';
@@ -179,11 +179,6 @@ const promo = new Vue({
   ],
 
   created() {
-    if (this.queryParams['3ds'] === 'success') {
-      this.hidePage = true;
-      return goToThankYouPromos();
-    }
-
     if (this.queryParams['3ds'] === 'failure') {
       const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 

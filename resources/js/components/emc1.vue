@@ -191,7 +191,7 @@
   import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import { fade } from '../utils/common';
-  import { preparePurchaseData, goToThankYouPromos } from '../utils/checkout';
+  import { preparePurchaseData } from '../utils/checkout';
   import purchasMixin from '../mixins/purchas';
   import { preparePartByInstallments } from '../utils/installments';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
@@ -320,11 +320,6 @@
       }
     },
     created() {
-      if (this.queryParams['3ds'] === 'success') {
-        this.hidePage = true;
-        return goToThankYouPromos();
-      }
-
       if (this.queryParams['3ds'] === 'failure') {
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
