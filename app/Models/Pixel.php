@@ -38,7 +38,13 @@ class Pixel extends Model
      */
     public static function getPixels(string $hoAffiliateID, $product, string $countryCode, string $route, string $device)
     {
-        $pixels = Pixel::where(['ho_affiliate_id' => $hoAffiliateID, 'countries' => $countryCode, 'devices' => $device])
+        $pixels = Pixel::where(['countries' => $countryCode, 'devices' => $device])
+                // if we have empty ho_affiliate_id it's mean ALL
+                ->where(function ($query) use ($hoAffiliateID) {
+                    $query->where('ho_affiliate_id', '=', $hoAffiliateID)
+                          ->orWhere('ho_affiliate_id', '=', '')
+                          ->orWhereNull('ho_affiliate_id');
+                })                
                 // if we have empty product_ids it's mean ALL
                 ->where(function ($query) use ($product) {
                     $query->where('product_ids', '=', $product->id)
@@ -49,7 +55,7 @@ class Pixel extends Model
                     $query->where('placements', '=', $route)
                           ->orWhere('placements', '=', '');
                 })
-                ->get();                
+                ->get();
         return $pixels;
     }
 
