@@ -145,8 +145,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <green-button class="promo__add-button" :class="{'disabled': selectedPlan === item.totalQuantity,
-                            }">
+                                    <green-button :class="['promo__add-button', {'disabled': selectedPlan === item.totalQuantity}]">
                                         <span v-if="selectedPlan === item.totalQuantity">{{ t('checkout.selected') }}</span>
                                         <span v-else>{{ t('checkout.add_to_cart') }}</span>
                                     </green-button>

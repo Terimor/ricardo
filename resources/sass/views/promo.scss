@@ -366,12 +366,12 @@ header {
 
   &__choose-product-item {
     cursor: pointer;
-    width: fit-content;
+    width: auto;
     min-height: 210px;
     background-color: white;
     margin: auto;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     flex-wrap: wrap;
     border-radius: 10px;
     align-items: center;
