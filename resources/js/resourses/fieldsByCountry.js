@@ -4,6 +4,5 @@ export default function (countryCode) {
     dateOfBirth: countryCode === 'de',
     number: countryCode === 'br',
     complemento: countryCode === 'br',
-    state: countryCode === 'br' || countryCode === 'mx',
   }
 }

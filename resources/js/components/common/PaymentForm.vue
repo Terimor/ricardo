@@ -135,7 +135,7 @@
                   name: 'ship-state'
                 }"
                 :label="textState"
-                v-model="paymentForm.countryState"/>
+                v-model="paymentForm.state"/>
             <text-field
                 :validation="$v.form.zipcode"
                 :validationMessage="textZipcodeRequired"

@@ -45,7 +45,7 @@ const emc1Validation = function () {
     city: {
       required
     },
-    countryState: {
+    state: {
       required
     },
     zipcode: {

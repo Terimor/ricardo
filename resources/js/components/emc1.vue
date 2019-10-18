@@ -306,7 +306,7 @@
           number: null,
           complemento: null,
           city: null,
-          countryState: null,
+          state: null,
           zipcode: null,
           country: checkoutData.countryCode,
           cardNumber: '',
