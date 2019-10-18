@@ -1,4 +1,8 @@
 <?php
+echo config('app.env');
+echo "\n";
+echo $_COOKIE['DEBUG_COOKIE_KEY'];
+
 return [
 
     /*
