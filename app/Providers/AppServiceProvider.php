@@ -53,6 +53,8 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app['config']['sentry'] = ['dsn' => Setting::getValue('sentry_dsn')];
+
+        \Debugbar::enable();
         //$this->app['config']['debugbar']['enabled'] = true;//\Config::get('values.myvalue');
     }
 
