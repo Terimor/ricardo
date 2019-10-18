@@ -457,7 +457,7 @@ class PaymentService
         $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 
         $order_product = $this->createOrderProduct($sku, $price, true, $is_warranty);
-        
+
         $params = !empty($page_checkout) ? \Utils::getParamsFromUrl($page_checkout) : null;
 
         $order = $this->addOrder([

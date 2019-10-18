@@ -10,7 +10,7 @@
     <meta name="ga-id" content="{{ $ga_id }}">
 
     <title>@yield('title', config('app.name'))</title>
-
+    
     @if (!empty($htmlToApp['gtags']))
         @foreach($htmlToApp['gtags'] as $gtag)
         <!-- Google Tag Manager -->
@@ -21,7 +21,7 @@
         })(window,document,'script','dataLayer','{{ !empty($gtag['code']) ? $gtag['code'] : '' }}');</script>
         <!-- End Google Tag Manager -->
         @endforeach
-    @endif
+    @endif    
 
     @if (!empty(optional($product)->favicon_image))
         <link rel="shortcut icon" href="{{ $product->favicon_image }}">
@@ -128,6 +128,6 @@
 
     @if (Request::is('checkout'))
       <noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
-    @endif    
+    @endif
 </body>
 </html>

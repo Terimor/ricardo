@@ -140,7 +140,7 @@ class SiteController extends Controller
             'ebanx_api_url',
         ));
 
-        $countries =  \Utils::getCountries();
+        $countries =  \Utils::getCountries(true);
 
 		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 

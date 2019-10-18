@@ -623,10 +623,16 @@ class UtilsService
 
     /**
      * Get list of countries
+     * @param bool $code_only
+     * @return array
      */
-    public static function getCountries()
+    public static function getCountries(bool $code_only = false)
     {
-        return self::$countryCodes;
+        if ($code_only) {
+            return array_keys(self::$countryCodes);
+        } else {
+            return self::$countryCodes;
+        }
     }
 
     /**
@@ -684,9 +690,9 @@ class UtilsService
         if (\App::environment() == 'production') {
             $urlReplace = self::CDN_HOST_PRODUCTION;
             $s3Url = self::S3_URL_PRODUCTION;
-        } else {        
+        } else {
             $urlReplace = self::CDN_HOST_STAGING;
-            $s3Url = self::S3_URL_STAGING;            
+            $s3Url = self::S3_URL_STAGING;
         }
 
         $url = str_replace($s3Url, $urlReplace, $url);
@@ -746,7 +752,7 @@ class UtilsService
 
         return $paramsArray;
     }
-    
+
     /**
      * Returns Mongo time object by timestamp
      * @param type $ts
@@ -763,18 +769,18 @@ class UtilsService
     public static function getDevice(): string
     {
         $agent = new Agent();
-        
+
         $device = Pixel::DEVICE_PC;
-                
+
         if ($agent->isMobile()) {
             $device = Pixel::DEVICE_MOBILE;
         } else if($agent->isTablet()) {
             $device = Pixel::DEVICE_TABLET;
         }
-        
-        return $device;        
+
+        return $device;
     }
-    
+
     /**
      * Return current domain
      */
