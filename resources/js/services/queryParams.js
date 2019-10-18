@@ -12,6 +12,11 @@ initialUrl.searchParams.forEach((value, key) => {
 });
 
 
+// affiliate variables
+window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || '';
+window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || '';
+
+
 // populate links with GET params
 function populateLinksWithGetParams() {
   document.querySelectorAll('a[href]').forEach(link => {

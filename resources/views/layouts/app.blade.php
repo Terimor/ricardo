@@ -29,7 +29,15 @@
 
     @yield('head')
 
-    <script type="text/javascript">window.cdnUrl='{{ $cdnUrl }}';</script>
+    <script type="text/javascript">
+      window.cdnUrl = '{{ $cdnUrl }}';
+      @if (isset($product))
+        window.fbpixelidjs = '{{ $product->fb_pixel_id }}';
+        window.adwordsconvretargetjs = '{{ $product->gads_retarget_id }}';
+        window.adwordsconvidjs = '{{ $product->gads_conversion_id }}';
+        window.adwordsconvlabeljs = '{{ $product->gads_conversion_label }}';
+      @endif
+    </script>
 
     @include('layouts.3ds_redirect')
 
