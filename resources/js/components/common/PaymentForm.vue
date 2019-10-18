@@ -266,7 +266,7 @@
                 theme="variant-1"
                 :label="textDocumentNumber" />
         </template>
-        <button v-show="hasWarranty" class="warranty-field-button">
+        <span v-show="hasWarranty" class="warranty-field-button">
           <label for="warranty-field" class="label-container-checkbox">
             <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
             <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
@@ -276,7 +276,7 @@
           <span class="warranty-field-icon">
             <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
           </span>
-        </button>
+        </span>
         <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
         <button
             @click="submit"
@@ -947,10 +947,22 @@
     &-button {
       position: relative;
       display: flex;
-      padding: 10px;
+      padding: 0;
       margin: 40px 0;
+      background: linear-gradient(to bottom, #f7f7f7, #dddddd);
+      border: 1px solid #a5a5a5;
+      transition: all .3s;
+      &:hover, &:focus, &:active {
+          background: linear-gradient(to bottom, #dddddd, #f7f7f7);
+      }
       .label-container-checkbox {
+          margin: 0;
+          padding: 10px 10px 22px 75px;
           font-size: 18px;
+          .checkmark {
+              left: 40px;
+              top: 13px;
+          }
       }
     }
 
@@ -968,8 +980,8 @@
 
     &-arrow {
       position: absolute;
-      left: -30px;
-      top: 0;
+      left: 10px;
+      top: 13px;
       z-index: 2;
     }
   }

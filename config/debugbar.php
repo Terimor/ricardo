@@ -13,7 +13,7 @@ return [
      |
      */
 
-    'enabled' => isset($_COOKIE['DEBUG_COOKIE_KEY']) && $_COOKIE['DEBUG_COOKIE_KEY'] === config('app.env'),
+    'enabled' => false,
     'except' => [
         'telescope*'
     ],

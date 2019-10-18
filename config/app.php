@@ -40,6 +40,7 @@ return [
     */
 
     'debug' => env('ENVIRONMENT', 'production') !== 'production',
+    'debug_cookie_key' => env('DEBUG_COOKIE_KEY'),
 
     /*
     |--------------------------------------------------------------------------

@@ -53,6 +53,10 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app['config']['sentry'] = ['dsn' => Setting::getValue('sentry_dsn')];
+
+        if (isset($_COOKIE['DEBUG_COOKIE_KEY']) && $_COOKIE['DEBUG_COOKIE_KEY'] === \Config::get('app.debug_cookie_key')) {
+            \Debugbar::enable();
+        }
     }
 
     protected function loadHelpers() {

@@ -10,7 +10,7 @@
     <meta name="ga-id" content="{{ $ga_id }}">
 
     <title>@yield('title', config('app.name'))</title>
-
+    
     @if (!empty($htmlToApp['gtags']))
         @foreach($htmlToApp['gtags'] as $gtag)
         <!-- Google Tag Manager -->
@@ -21,7 +21,7 @@
         })(window,document,'script','dataLayer','{{ !empty($gtag['code']) ? $gtag['code'] : '' }}');</script>
         <!-- End Google Tag Manager -->
         @endforeach
-    @endif
+    @endif    
 
     @if (!empty(optional($product)->favicon_image))
         <link rel="shortcut icon" href="{{ $product->favicon_image }}">
@@ -48,6 +48,15 @@
     @endif
 
     @if ($HasVueApp)
+      @if (Request::is('checkout'))
+        <script type="text/javascript">
+          const searchParams = new URL(window.location).searchParams;
+          if (searchParams.has('3ds') && !searchParams.has('3ds_restore')) {
+            window.location.search = window.location.search + '&3ds_restore=1&' + window.localStorage.getItem('3ds_params');
+          }
+        </script>
+      @endif
+
       <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/js/intlTelInput.min.js" defer></script>
       <script src="https://www.paypal.com/sdk/js?currency={{$PayPalCurrency}}&disable-card=visa,mastercard,amex&client-id={{ $setting['instant_payment_paypal_client_id'] }}" async></script>
 
@@ -128,6 +137,6 @@
 
     @if (Request::is('checkout'))
       <noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
-    @endif    
+    @endif
 </body>
 </html>
