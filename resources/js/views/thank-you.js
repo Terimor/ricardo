@@ -109,7 +109,7 @@ const thankYou = new Vue({
             }
 
             const queryString = Object.values(data).reduce((acc, string) => {
-                return acc += string ? string : '';
+                return acc += string ? ` ${string}` : '';
             }, '')
 
             return queryString;
