@@ -138,7 +138,7 @@
                         <div class="d-flex">
                             <div class="smc7__step-4__product">
                                 <h2>{{ checkoutData.product.long_name }}</h2>
-                                <p>GET 50% OFF TODAY + FREE SHIPPING</p>
+                                <p>{{ textGet }} {{ checkoutData.product.prices['1'].discount_percent }}% {{ textOffTodayFreeShipping }}</p>
                             </div>
                             <img id="product-image-body" :src="setProductImage" alt="Product image">
                         </div>
@@ -325,6 +325,8 @@
       textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaymentError: () => t('checkout.payment_error'),
+      textGet: () => t('checkout.get'),
+      textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
 
       setProductImage() {
           return this.productData.image[this.queryParams['image'] - 1] || this.productData.image[0];
