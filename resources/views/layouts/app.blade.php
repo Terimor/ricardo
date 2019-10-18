@@ -31,6 +31,8 @@
 
     <script type="text/javascript">window.cdnUrl='{{ $cdnUrl }}';</script>
 
+    @include('layouts.3ds_redirect')
+
     @if (!empty($ga_id))
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga_id }}"></script>
@@ -48,15 +50,6 @@
     @endif
 
     @if ($HasVueApp)
-      @if (Request::is('checkout'))
-        <script type="text/javascript">
-          const searchParams = new URL(window.location).searchParams;
-          if (searchParams.has('3ds') && !searchParams.has('3ds_restore')) {
-            window.location.search = window.location.search + '&3ds_restore=1&' + window.localStorage.getItem('3ds_params');
-          }
-        </script>
-      @endif
-
       <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/js/intlTelInput.min.js" defer></script>
       <script src="https://www.paypal.com/sdk/js?currency={{$PayPalCurrency}}&disable-card=visa,mastercard,amex&client-id={{ $setting['instant_payment_paypal_client_id'] }}" async></script>
 

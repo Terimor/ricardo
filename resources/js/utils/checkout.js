@@ -219,6 +219,6 @@ export function goToThankYouPromos() {
 
   if (odin_order_id) {
     localStorage.setItem('odin_order_created_at', new Date());
-    goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency, { exclude: ['3ds'] });
+    goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency, { exclude: ['3ds', '3ds_restore'] });
   }
 }
