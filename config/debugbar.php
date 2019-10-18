@@ -1,8 +1,4 @@
 <?php
-echo config('app.env');
-echo "--\n";
-//echo $_COOKIE['DEBUG_COOKIE_KEY'];
-
 return [
 
     /*
@@ -17,7 +13,7 @@ return [
      |
      */
 
-    'enabled' => isset($_COOKIE['DEBUG_COOKIE_KEY']) && $_COOKIE['DEBUG_COOKIE_KEY'] === config('app.env'),
+    'enabled' => isset($_COOKIE['DEBUG_COOKIE_KEY']) && $_COOKIE['DEBUG_COOKIE_KEY'] === env('DEBUG_COOKIE_KEY'),
     'except' => [
         'telescope*'
     ],
