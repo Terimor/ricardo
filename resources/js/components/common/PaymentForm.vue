@@ -112,6 +112,7 @@
                 v-if="isSpecialCountrySelected"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
+                :validation="$v.form.countryState"
                 :validationMessage="textStateRequired"
                 theme="variant-1"
                 :label="textState"
@@ -126,6 +127,7 @@
                 v-else
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
+                :validation="$v.form.countryState"
                 :validationMessage="textStateRequired"
                 theme="variant-1"
                 :rest="{

@@ -31,3 +31,9 @@
 
     };
 </script>
+
+<style lang="scss">
+    .offer {
+        text-align: center;
+    }
+</style>

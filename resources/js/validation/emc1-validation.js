@@ -14,11 +14,11 @@ const emc1Validation = function () {
     },
     fname: {
       required,
-      minLength: minLength(2)
+      minLength: minLength(1)
     },
     lname: {
       required,
-      minLength: minLength(2)
+      minLength: minLength(1)
     },
     email: {
       required,
@@ -45,7 +45,7 @@ const emc1Validation = function () {
     city: {
       required
     },
-    state: {
+    countryState: {
       required
     },
     zipcode: {
