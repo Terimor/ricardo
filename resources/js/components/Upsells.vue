@@ -50,9 +50,9 @@
                 <UpsellsItem
                   :image-url="product.image[0]"
                   :name="product.long_name"
-                  :subtotal="product.prices[getOriginalOrder.quantity].value_text"
+                  :subtotal="orderCustomer.productsText[0].price_text"
                   :warranty="getOriginalOrder.isWarrantyChecked
-                    ? product.prices.warranty_price_text
+                    ? orderCustomer.productsText[0].warranty_price_text
                     : null"
                   :benefitList="[
                     `${textQuantity}: ${getOriginalOrder.quantity}`,
@@ -145,6 +145,7 @@
         accessoryList: [],
         product: upsellsData.product,
         upsellsObj: upsellsData.product.upsells,
+        orderCustomer: upsellsData.orderCustomer,
         upsellsAsProdsList: [],
         paymentError: '',
         isSubmitted: false,
@@ -155,7 +156,8 @@
     beforeCreate() {
       localStorage.removeItem('subOrder');
 
-      if (performance.navigation.type == 1 || upsellsData.product.upsells === 0) {
+      //if (performance.navigation.type == 1 || upsellsData.product.upsells === 0) {
+      if (upsellsData.product.upsells === 0) {
         return goTo('/thankyou');
       }
 
