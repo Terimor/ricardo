@@ -542,11 +542,8 @@ class UtilsService
     ];
     
     public static $unsetGet = [
-        'currency' => '{aff_currency}',
-        'currency' => '%7Baff_currency%7D',
-        'lang'  => '{lang}',
-        'lang' => '%7Blang%7D',
-        
+        'currency' => '{aff_currency}',        
+        'lang'  => '{lang}',        
     ];
 
     /**
@@ -805,7 +802,8 @@ class UtilsService
     public static function unsetGetParameters(Request $request)
     {
         foreach (static::$unsetGet as $key => $value) {
-            if ($request->get($key) === $value) {
+            $valueCoding = str_replace(['{', '}'], '','%7B'.$value.'%7D');            
+            if ($request->get($key) === $value || $request->get($key) === $valueCoding) {                
                 unset($request[$key]);
             }
         }

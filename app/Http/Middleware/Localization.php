@@ -31,7 +31,7 @@ class Localization
         } else {            
             $lang = $request->getPreferredLanguage($translated_languages);
         }
-
+        
         /*if($request->hasCookie('lang')) {
             app()->setLocale($lang);
             return $next($request);
