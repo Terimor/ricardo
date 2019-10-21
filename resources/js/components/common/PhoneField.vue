@@ -21,6 +21,8 @@
 <script>
   let idCounter = 0;
 
+  import wait from '../../utils/wait';
+
   export default {
     name: 'PhoneField',
     props: ['value', 'label', 'theme', 'validation', 'validationMessage', 'countryCode'],
@@ -47,16 +49,24 @@
     },
 
     mounted () {
-      const selector = document.querySelector(`#${this.id}`)
+      wait(
+        () => {
+          const linkTag = document.querySelector('#intlTelInputCss');
+          return !linkTag || linkTag.media !== 'none';
+        },
+        () => {
+          const selector = document.querySelector(`#${this.id}`)
 
-      window.intlTelInput(selector, {
-        initialCountry: this.countryCode,
-        separateDialCode: true
-      })
+          window.intlTelInput(selector, {
+            initialCountry: this.countryCode,
+            separateDialCode: true
+          })
 
-      selector.addEventListener('countrychange', () => {
-        this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(selector).getSelectedCountryData())
-      });
+          selector.addEventListener('countrychange', () => {
+            this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(selector).getSelectedCountryData())
+          });
+        },
+      )
     }
   }
 </script>
@@ -67,6 +77,7 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
+    position: relative;
 
       &.invalid {
         .label, .error {
