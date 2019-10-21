@@ -5,6 +5,7 @@ use App\Models\Setting;
 use App\Models\Pixel;
 use MongoDB\BSON\UTCDateTime;
 use Jenssegers\Agent\Agent;
+use Illuminate\Http\Request;
 
 /**
  * Utils Service class
@@ -539,6 +540,11 @@ class UtilsService
         'zm' => 'Zambia',
         'zw' => 'Zimbabwe'
     ];
+    
+    public static $unsetGet = [
+        'currency' => '{aff_currency}',
+        'lang'  => '{lang}'        
+    ];
 
     /**
      * Generate random string
@@ -787,6 +793,19 @@ class UtilsService
     public static function getDomain(): string
     {
         return request()->server('SERVER_NAME');
+    }
+    
+    /**
+     * Unset get parameters
+     * @param Request $request
+     */
+    public static function unsetGetParameters(Request $request)
+    {
+        foreach (static::$unsetGet as $key => $value) {
+            if ($request->get($key) == $value) {
+                unset($request[$key]);
+            }
+        }
     }
 
 }

@@ -18,6 +18,8 @@ class Localization
      */
     public function handle($request, Closure $next)
     {
+        \Utils::unsetGetParameters($request);
+        
         //$translated_languages = ['ru', 'en'];
         $translated_languages = I18n::getTranslationLanguages(true);
 
@@ -26,7 +28,7 @@ class Localization
             if (!in_array($lang, $translated_languages)) {
                 $lang = 'en';
             }
-        } else {
+        } else {            
             $lang = $request->getPreferredLanguage($translated_languages);
         }
 
