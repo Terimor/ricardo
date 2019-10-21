@@ -85,7 +85,7 @@
             </p>
             <p class="paragraph d-flex justify-content-between">
                 <span>{{ t('thankyou.payment.method') }}:</span>
-                <span>PayPal</span>
+                <span>@{{  selectedProductData.paymentType }}</span>
             </p>
 
             <hr>

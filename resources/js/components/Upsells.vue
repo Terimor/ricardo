@@ -156,7 +156,7 @@
     beforeCreate() {
       localStorage.removeItem('subOrder');
 
-      if (performance.navigation.type == 1 || upsellsData.product.upsells === 0) {
+      if (performance.navigation.type == 1 || upsellsData.product.upsells.length === 0) {
         return goTo('/thankyou');
       }
 
