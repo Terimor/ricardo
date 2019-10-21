@@ -189,6 +189,26 @@ class OdinOrder extends OdinModel
     }
 
     /**
+     * Returns OdinOrder by ID and product info
+     * @param  string   $id
+     * @param  array    $info [sku => string, qty => int, is_warranty_checked => bool]
+     * @return OdinOrder|null
+     */
+    public static function findExistedOrderForPay(string $id, array $info): ?OdinOrder
+    {
+        $query = OdinOrder::where('_id', $id)
+            ->where('status', self::STATUS_NEW)
+            ->where('products.sku_code', $info['sku'])
+            ->where('products.quantity', $info['qty']);
+
+        if (!empty($info['is_warranty_checked'])) {
+            $query->where('products.warranty_price', '>', 0);
+        }
+
+        return $query->first();
+    }
+
+    /**
      * Returns OdinOrder by number
      * @param  string    $number
      * @param  boolean   $throwable default=true
@@ -262,7 +282,7 @@ class OdinOrder extends OdinModel
     public function getFirstProductId()
     {
         $sku = null;
-        $productId = null;        
+        $productId = null;
         if ($this->products) {
             $products = $this->products;
             foreach ($products as $product) {

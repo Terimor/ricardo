@@ -386,13 +386,13 @@ class PaymentService
      * Creates OdinOrder['products'] item
      * @param  string      $sku
      * @param  array       $price
-     * @param  bool        $is_main
-     * @param  bool        $is_warranty
+     * @param  array       $details [is_main => bool, is_plus_one => bool, is_warranty => bool]
      * @return array
      * @throws InvalidParamsException
      */
-    private function createOrderProduct(string $sku, array $price, bool $is_main = true, bool $is_warranty = false): array
+    private function createOrderProduct(string $sku, array $price, array $details = []): array
     {
+        $is_main = $details['is_main'] ?? true;
         $order_product = [
             'sku_code'              => $sku,
             'quantity'              => $price['quantity'],
@@ -401,6 +401,7 @@ class PaymentService
             'price_set'             => $price['price_set'] ?? null,
             'is_main'               => $is_main,
             'is_upsells'            => !$is_main,
+            'is_plus_one'           => $details['is_plus_one'] ?? false,
             'txn_hash'              => null,
             'warranty_price'        => 0,
             'warranty_price_usd'    => 0,
@@ -408,7 +409,7 @@ class PaymentService
             'total_price_usd'       => $price['value_usd']
         ];
 
-        if ($is_warranty) {
+        if ($details['is_warranty']) {
             $order_product['warranty_price']        = $price['warranty_value'];
             $order_product['warranty_price_usd']    = $price['warranty_value_usd'];
             $order_product['total_price']           = floor(($price['value'] + $price['warranty_value']) * 100) / 100;
@@ -426,13 +427,20 @@ class PaymentService
     {
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $installments = (int)$req->input('product.installments', 0);
         $contact = array_merge($req->get('contact'), $req->get('address'));
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
         $ipqs = $req->input('ipqs', null);
         $cur = $req->get('cur');
         $card = $req->get('card');
+        $order_id = $req->get('order');
+        $installments = (int)$req->input('card.installments', 0);
         $card['type'] = self::getMethodByNumber($card['number']);
+
+        // find order for update
+        $order = null;
+        if (!empty($order_id)) {
+            $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
+        }
 
         $product = OdinProduct::getBySku($sku); // throwable
 
@@ -454,44 +462,60 @@ class PaymentService
 
         $this->addCustomer($contact); // throwable
 
-        $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
+        if (empty($order)) {
+            $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 
-        $order_product = $this->createOrderProduct($sku, $price, true, $is_warranty);
+            $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
-        $params = !empty($page_checkout) ? \Utils::getParamsFromUrl($page_checkout) : null;
+            $params = !empty($page_checkout) ? \Utils::getParamsFromUrl($page_checkout) : null;
 
-        $order = $this->addOrder([
-            'currency'              => $price['currency'],
-            'exchange_rate'         => $price['usd_rate'],
-            'total_paid'            => 0,
-            'total_price'           => $order_product['total_price'],
-            'total_price_usd'       => $order_product['total_price_usd'],
-            'txns_fee_usd'          => 0,
-            'installments'          => $installments,
-            'customer_email'        => $contact['email'],
-            'customer_first_name'   => $contact['first_name'],
-            'customer_last_name'    => $contact['last_name'],
-            'customer_phone'        => $contact['phone']['country_code'] . $contact['phone']['number'],
-            'customer_doc_id'       => $contact['document_number'] ?? null,
-            'language'              => app()->getLocale(),
-            'ip'                    => $req->ip(),
-            'txns'                  => [],
-            'shipping_country'      => $contact['country'],
-            'shipping_zip'          => $contact['zip'],
-            'shipping_state'        => $contact['state'],
-            'shipping_city'         => $contact['city'],
-            'shipping_street'       => $contact['street'],
-            'shipping_street2'      => $contact['district'] ?? null,
-            'shop_currency'         => $price['currency'],
-            'warehouse_id'          => $product->warehouse_id,
-            'products'              => [$order_product],
-            'page_checkout'         => $page_checkout,
-            'params'                => $params,
-            'offer'                 => !empty($params['offer_id']) ? $params['offer_id'] : null,
-            'affiliate'             => !empty($params['aff_id']) ? $params['aff_id'] : null,
-            'ipqualityscore'        => $ipqs
-        ]);
-
+            $order = $this->addOrder([
+                'currency'              => $price['currency'],
+                'exchange_rate'         => $price['usd_rate'],
+                'total_paid'            => 0,
+                'total_price'           => $order_product['total_price'],
+                'total_price_usd'       => $order_product['total_price_usd'],
+                'txns_fee_usd'          => 0,
+                'installments'          => $installments,
+                'customer_email'        => $contact['email'],
+                'customer_first_name'   => $contact['first_name'],
+                'customer_last_name'    => $contact['last_name'],
+                'customer_phone'        => $contact['phone']['country_code'] . $contact['phone']['number'],
+                'customer_doc_id'       => $contact['document_number'] ?? null,
+                'language'              => app()->getLocale(),
+                'ip'                    => $req->ip(),
+                'txns'                  => [],
+                'shipping_country'      => $contact['country'],
+                'shipping_zip'          => $contact['zip'],
+                'shipping_state'        => $contact['state'],
+                'shipping_city'         => $contact['city'],
+                'shipping_street'       => $contact['street'],
+                'shipping_street2'      => $contact['district'] ?? null,
+                'shop_currency'         => $price['currency'],
+                'warehouse_id'          => $product->warehouse_id,
+                'products'              => [$order_product],
+                'page_checkout'         => $page_checkout,
+                'params'                => $params,
+                'offer'                 => !empty($params['offer_id']) ? $params['offer_id'] : null,
+                'affiliate'             => !empty($params['aff_id']) ? $params['aff_id'] : null,
+                'ipqualityscore'        => $ipqs
+            ]);
+        } else {
+            $order_product = $order->getMainProduct(); // throwable
+            $order->customer_email      = $contact['email'];
+            $order->customer_first_name = $contact['first_name'];
+            $order->customer_last_name  = $contact['last_name'];
+            $order->customer_phone      = $contact['phone']['country_code'] . $contact['phone']['number'];
+            $order->customer_doc_id     = $contact['document_number'] ?? null;
+            $order->shipping_country    = $contact['country'];
+            $order->shipping_zip        = $contact['zip'];
+            $order->shipping_state      = $contact['state'];
+            $order->shipping_city       = $contact['city'];
+            $order->shipping_street     = $contact['street'];
+            $order->shipping_street2    = $contact['district'] ?? null;
+            $order->installments        = $installments;
+            $order->ipqualityscore      = $ipqs;
+        }
         // select provider and create payment
         $payment = [];
         if ($provider === self::PROVIDER_EBANX) {
@@ -585,7 +609,10 @@ class PaymentService
                             'value'     => $upsell_price['price'],
                             'value_usd' => floor($upsell_price['price'] / $upsell_price['exchange_rate'] * 100) / 100
                         ],
-                        false
+                        [
+                            'is_main' => false,
+                            'is_plus_one' => ($item['id'] === $main_product->getIdAttribute())
+                        ]
                     );
                     $checkout_price += $upsell_product['total_price'];
                     $checkout_price_usd += $upsell_product['total_price_usd'];
