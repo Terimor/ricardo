@@ -226,7 +226,12 @@ export function paypalOnApprove(data) {
     .then(function(res) {
       if (odin_order_id) {
         localStorage.setItem('odin_order_created_at', new Date());
-        goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency);
+
+        if(checkoutData.product.upsells.length > 0) {
+            goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency);
+        }else{
+            goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
+        }
       }
     });
 }
