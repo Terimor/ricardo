@@ -802,7 +802,7 @@ class UtilsService
     public static function unsetGetParameters(Request $request)
     {
         foreach (static::$unsetGet as $key => $value) {
-            if ($request->get($key) == $value) {
+            if ($request->get($key) === $value) {
                 unset($request[$key]);
             }
         }
