@@ -409,7 +409,8 @@ class PaymentService
             'total_price_usd'       => $price['value_usd']
         ];
 
-        if ($details['is_warranty']) {
+        $is_warranty = $details['is_warranty'] ?? false;
+        if ($is_warranty) {
             $order_product['warranty_price']        = $price['warranty_value'];
             $order_product['warranty_price_usd']    = $price['warranty_value_usd'];
             $order_product['total_price']           = floor(($price['value'] + $price['warranty_value']) * 100) / 100;
