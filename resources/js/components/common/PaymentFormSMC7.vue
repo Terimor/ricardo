@@ -100,7 +100,7 @@
           :prefix="`<img src='${cardUrl}' />`"
           :postfix="`<i class='fa fa-lock'></i>`"
       />
-      <div class="card-date">
+      <div class="card-date input-container" :class="{ invalid: $v.form.month.$dirty && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
         <span class="label">{{textCardValidUntil}}</span>
         <select-field
             filterable
@@ -122,6 +122,10 @@
             theme="variant-1"
             :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
             v-model="paymentForm.year"/>
+        <span
+          class="error"
+          v-if="paymentForm.month && paymentForm.year && isCardExpired"
+          v-html="textCardExpired"></span>
       </div>
       <text-field
           @click-postfix="openCVVModal"
@@ -153,6 +157,7 @@
   </div>
 </template>
 <script>
+  import * as dateFns from 'date-fns';
 	import {getCardUrl} from "../../utils/checkout";
   import { creditCards, getCreditCardsAvailableList } from '../../utils/creditCards';
 	import creditCardType from 'credit-card-type'
@@ -186,6 +191,10 @@
         }));
       },
 
+      isCardExpired() {
+        return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
+      },
+
       textCountry : () => t('checkout.payment_form.сountry'),
       textStreetAndNumber : () => t('checkout.payment_form.street_and_number'),
       textStreetAndNumberRequired : () => t('checkout.payment_form.street_and_number.required'),
@@ -208,6 +217,7 @@
       textCardValidMonthPlaceholder: () => t('checkout.payment_form.card_valid_month.placeholder'),
       textCardValidYearRequired: () => t('checkout.payment_form.card_valid_year.required'),
       textCardValidYearPlaceholder: () => t('checkout.payment_form.card_valid_year.placeholder'),
+      textCardExpired: () => t('checkout.payment_form.card_expired'),
       textCardCVV: () => t('checkout.payment_form.card_cvv'),
       textCardCVVRequired: () => t('checkout.payment_form.card_cvv.required'),
       textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),

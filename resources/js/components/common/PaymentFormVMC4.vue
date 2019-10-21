@@ -97,7 +97,7 @@
                 :postfix="`<i class='fa fa-lock'></i>`"
             />
             <div class="card-info">
-              <div class="d-flex">
+              <div class="d-flex input-container" :class="{ invalid: $v.form.stepThree.month.$dirty && $v.form.stepThree.year.$dirty && ($v.form.stepThree.month.$invalid || $v.form.stepThree.year.$invalid || isCardExpired) }">
                 <div>
                   <div class="card-info__labels">
                     <span class="label" v-html="textCardValidUntil"></span>
@@ -124,6 +124,10 @@
                       v-model="form.stepThree.year"
                     />
                   </div>
+                  <span
+                    class="error"
+                    v-if="form.stepThree.month && form.stepThree.year && isCardExpired"
+                    v-html="textCardExpired"></span>
                 </div>
                 <div>
                   <div class="card-cvv">
@@ -258,6 +262,7 @@
 
 </template>
 <script>
+  import * as dateFns from 'date-fns';
   import { t } from '../../utils/i18n';
   import creditCardType from 'credit-card-type';
   import { check as ipqsCheck } from '../../services/ipqs';
@@ -393,6 +398,9 @@
 
         return country ? country.dialCode : '1';
       },
+      isCardExpired() {
+        return !dateFns.isFuture(new Date(this.form.stepThree.year, this.form.stepThree.month));
+      },
       textChooseDeal: () => t('checkout.choose_deal'),
       textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
       textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
@@ -429,6 +437,7 @@
       textCountry: () => t('checkout.payment_form.сountry'),
       textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),
       textCountryRequired: () => t('checkout.payment_form.сountry.required'),
+      textCardExpired: () => t('checkout.payment_form.card_expired'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
       textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
@@ -795,6 +804,9 @@
         flex-direction: column;
         align-items: center;
 
+        .d-flex {
+          flex-direction: row;
+        }
 
         .card-date {
           margin-top: 6px;
