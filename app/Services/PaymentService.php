@@ -543,7 +543,7 @@ class PaymentService
         if (!empty($payment['hash'])) {
             $order_product['txn_hash'] = $payment['hash'];
             $this->addTxnToOrder($order, $payment, $card['type']);
-            $order->addProduct($order_product);
+            $order->addProduct($order_product, true);
             $order->is_flagged = $payment['is_flagged'];
             if (!$order->save()) {
                 $validator = $order->validate();

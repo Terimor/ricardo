@@ -381,14 +381,18 @@ class OdinOrder extends OdinModel
     /**
      * Adds product
      * @param array $product
+     * @param bool  $is_order_creation
      * @param void
      */
-    public function addProduct(array $product): void
+    public function addProduct(array $product, bool $is_order_creation = false): void
     {
         $this->products = collect($this->products)
             ->reject(function ($v) use ($product) {
                 if ($v['sku_code'] === $product['sku_code']) {
-                    return empty($v['txn_hash']) ? true : $v['txn_hash'] === $product['txn_hash'];
+                    if (!$is_order_creation && !empty($v['txn_hash'])) {
+                        return $v['txn_hash'] === $product['txn_hash'];
+                    }
+                    return true;
                 }
                 return false;
             })
