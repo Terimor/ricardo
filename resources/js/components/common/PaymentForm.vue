@@ -204,7 +204,9 @@
                     :prefix="`<img src='${cardUrl}' />`"
                     :postfix="`<i class='fa fa-lock'></i>`"
                 />
-                <div class="card-date" :class="{ 'with-error': $v.form.year && !$v.form.year.isValid && $v.form.year.$dirty }">
+                <label
+                  class="card-date"
+                  :class="{ 'with-error': $v.form.month.$dirty && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
                     <span class="label" v-html="textCardValidUntil"></span>
                     <select-field
                         filterable
@@ -226,8 +228,11 @@
                         theme="variant-1"
                         :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                         v-model="paymentForm.year"/>
-                    <span class="error" v-show="$v.form.year && !$v.form.year.isValid && $v.form.year.$dirty" v-html="textCardExpired"></span>
-                </div>
+                    <span
+                      class="error"
+                      v-show="paymentForm.month && paymentForm.year && isCardExpired"
+                      v-html="textCardExpired"></span>
+                </label>
                 <text-field
                     @click-postfix="openCVVModal"
                     :validation="$v.form.cvv"
@@ -306,6 +311,7 @@
 </template>
 
 <script>
+  import * as dateFns from 'date-fns';
   import apiUrlList from '../../constants/api-url'
   import { check as ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
@@ -425,6 +431,11 @@
 
         return cardMap[this.cardType] || cardMap.iconcc
       },
+
+      isCardExpired() {
+        return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
+      },
+
       textFirstName: () => t('checkout.payment_form.first_name'),
       textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
       textLastName: () => t('checkout.payment_form.last_name'),

@@ -19,40 +19,46 @@
 </template>
 
 <script>
-export default {
-  name: 'PhoneField',
-  props: ['value', 'label', 'theme', 'validation', 'validationMessage', 'countryCode'],
+  let idCounter = 0;
 
-  computed: {
-    id () {
-      return 'phone-' + this.label.replace(/[ ]/g, '-').toLowerCase()
+  export default {
+    name: 'PhoneField',
+    props: ['value', 'label', 'theme', 'validation', 'validationMessage', 'countryCode'],
+
+    data() {
+      return {
+        id: 'phone-' + idCounter++,
+      };
     },
-    invalid () {
-      return this.validation && this.validation.$dirty && this.validation.$invalid
-    }
-  },
 
-  methods: {
-    input (e) {
-      this.$emit('input', e.target.value)
-      if (this.validation) {
-        this.validation.$touch()
+    computed: {
+      invalid () {
+        return this.validation && this.validation.$dirty && this.validation.$invalid
       }
+    },
+
+    methods: {
+      input (e) {
+        this.$emit('input', e.target.value)
+        if (this.validation) {
+          this.validation.$touch()
+        }
+      }
+    },
+
+    mounted () {
+      const selector = document.querySelector(`#${this.id}`)
+
+      window.intlTelInput(selector, {
+        initialCountry: this.countryCode,
+        separateDialCode: true
+      })
+
+      selector.addEventListener('countrychange', () => {
+        this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(selector).getSelectedCountryData())
+      });
     }
-  },
-
-  mounted () {
-    const selector = document.querySelector(`#${this.id}`)
-    window.intlTelInput(selector, {
-      initialCountry: this.countryCode,
-      separateDialCode: true
-    })
-
-    selector.addEventListener('countrychange', () => {
-      this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(selector).getSelectedCountryData())
-    });
   }
-}
 </script>
 
 <style lang="scss">

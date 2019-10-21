@@ -65,7 +65,7 @@
                                         ...item,
                                         value: item.totalQuantity,
                                       }"
-                                      :key="item.value"
+                                      :key="item.totalQuantity"
                                       :showShareArrow="item.totalQuantity === 5"/>
                             </radio-button-group>
                         </div>
@@ -808,12 +808,21 @@
                 }
             }
 
+            #payment-data-form {
+              margin-bottom: 10px;
+            }
+
             .card-date {
                 display: flex;
+                flex-direction: row;
                 flex-wrap: wrap;
                 width: 70%;
                 padding-right: 30px;
                 margin-bottom: 10px;
+
+                .select {
+                  margin-bottom: 0;
+                }
             }
 
             .card-date > .label {

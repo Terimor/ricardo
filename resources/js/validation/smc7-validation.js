@@ -69,15 +69,9 @@ const smc7validation = function () {
       },
       month: {
         required,
-        isValid (val) {
-          return val > 0 && val <= 12
-        }
       },
       year: {
         required,
-        isValid (val) {
-          return dateFns.isFuture(new Date(val, this.form.month))
-        }
       },
       country: {
         required

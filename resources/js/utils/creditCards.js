@@ -56,7 +56,7 @@ export const creditCards = {
     image: window.cdnUrl + '/assets/images/cc-icons/multibango.png',
   },
   paypal: {
-    title: 'Visa',
+    title: 'PayPal',
     image: window.cdnUrl + '/assets/images/cc-icons/payPal.png',
   },
   prezelewy24: {

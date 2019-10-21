@@ -1,7 +1,8 @@
 <template>
   <form
     class="radio-button-group"
-  >
+    @input="onInput">
+
     <template v-if="withCustomLabels">
       <slot/>
     </template>
