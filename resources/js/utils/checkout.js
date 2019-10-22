@@ -170,12 +170,19 @@ export function getCardUrl(cardType) {
 
 
 export function sendCheckoutRequest(data) {
-  const currency = queryParams().cur || checkoutData.product.prices.currency;
+  const reqURL = new URL('/pay-by-card', location);
+  const searchParams = new URL(location).searchParams;
 
-  localStorage.setItem('3ds_params', window.location.search.substr(1));
+  localStorage.setItem('3ds_params', searchParams.toString());
+
+  reqURL.searchParams.set('cur', searchParams.get('cur') || checkoutData.product.prices.currency);
+
+  if (localStorage.getItem('order_failed')) {
+    reqURL.searchParams.set('order', localStorage.getItem('odin_order_id'));
+  }
 
   return Promise.resolve()
-    .then(() => fetch('/pay-by-card?cur=' + currency, {
+    .then(() => fetch(reqURL.toString(), {
       method: 'post',
       credentials: 'same-origin',
       headers: {
@@ -187,38 +194,48 @@ export function sendCheckoutRequest(data) {
     }))
     .then(res => res.json())
     .then(res => {
+      if (res.order_id) {
+        localStorage.setItem('odin_order_id', res.order_id);
+        localStorage.setItem('order_currency', res.order_currency);
+        localStorage.setItem('order_number', res.order_number);
+        localStorage.setItem('order_id', res.id);
+
+        if (res.status === 'ok') {
+          localStorage.removeItem('order_failed');
+        } else {
+          localStorage.setItem('order_failed', res.order_id);
+        }
+      }
+
       if (res.status !== 'ok') {
         res.paymentError = t('checkout.payment_error');
 
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          res.paymentError = res.message || Object.values(res.errors).shift().shift();
+        if (res.errors) {
+          if (Array.isArray(res.errors)) {
+            if (res.errors.length > 0) {
+              res.paymentError = t(res.errors[0]);
+            }
+          } else {
+            if (Object.keys(res.errors).length > 0) {
+              res.paymentError = res.message || Object.values(res.errors)[0][0];
+            }
+          }
         }
-      } else {
-        if (res.order_id) {
-          localStorage.setItem('odin_order_id', res.order_id);
-          localStorage.setItem('order_currency', res.order_currency);
-          localStorage.setItem('order_number', res.order_number);
-          localStorage.setItem('order_id', res.id);
-        }
+      }
 
+      if (res.status === 'ok') {
         if (res.redirect_url) {
           location.href = res.redirect_url;
-        } else {
-          goToThankYouPromos();
+          return;
         }
+
+        localStorage.setItem('odin_order_created_at', new Date());
+
+        goTo('/thankyou-promos?order=' + res.order_id + '&cur=' + res.order_currency, {
+          exclude: ['3ds', '3ds_restore'],
+        });
       }
 
       return res;
     });
-}
-
-
-export function goToThankYouPromos() {
-  const odin_order_id = localStorage.getItem('odin_order_id');
-  const order_currency = localStorage.getItem('order_currency');
-
-  if (odin_order_id) {
-    localStorage.setItem('odin_order_created_at', new Date());
-    goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency, { exclude: ['3ds', '3ds_restore'] });
-  }
 }
