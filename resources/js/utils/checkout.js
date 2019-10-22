@@ -226,14 +226,13 @@ export function sendCheckoutRequest(data) {
       if (res.status === 'ok') {
         if (res.redirect_url) {
           location.href = res.redirect_url;
-          return;
+        } else {
+          localStorage.setItem('odin_order_created_at', new Date());
+
+          goTo('/thankyou-promos?order=' + res.order_id + '&cur=' + res.order_currency, {
+            exclude: ['3ds', '3ds_restore'],
+          });
         }
-
-        localStorage.setItem('odin_order_created_at', new Date());
-
-        goTo('/thankyou-promos?order=' + res.order_id + '&cur=' + res.order_currency, {
-          exclude: ['3ds', '3ds_restore'],
-        });
       }
 
       return res;

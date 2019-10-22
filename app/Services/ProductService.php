@@ -49,8 +49,9 @@ class ProductService
         }
 
         $localizedProduct = $this->localizeProduct($product);
+        $localizedProduct->id = $product->id;
+
         if ($isPostback) {
-            $localizedProduct->id = $product->id;
             // price set
             $prices = $product->prices;
             $localizedProduct->price_set = !empty($prices['price_set']) ? $prices['price_set'] : null;

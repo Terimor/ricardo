@@ -60,11 +60,11 @@ const smc7validation = function () {
           const creditCardTypeList = creditCardType(val);
           const commonRule = val.length > 12 && val.length <= 19;
 
-          if (creditCardTypeList.length === 1) {
-            return creditCardTypeList[0].lengths.includes(val.length) || commonRule
+          if (creditCardTypeList.length === 0) {
+            return false;
           }
 
-          return commonRule
+          return creditCardTypeList[0].lengths.includes(val.length) || commonRule;
         }
       },
       month: {
