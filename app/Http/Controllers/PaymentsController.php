@@ -86,10 +86,8 @@ class PaymentsController extends Controller
         $checkoutService = new CheckoutDotComService();
         $reply = $checkoutService->validateCapturedWebhook($req);
 
-        logger()->info('checkout.com', ['content' => $req->getContent()]);
-
         if (!$reply['status']) {
-            logger()->error('checkout.com unauthorized captured webhook', [ 'ip' => $req->ip() ]);
+            logger()->error('checkout.com unauthorized captured webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new AuthException('checkout.com captured webhook unauthorized');
         }
 

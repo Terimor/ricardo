@@ -428,7 +428,7 @@ class PaymentService
     {
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $contact = array_merge($req->get('contact'), $req->get('address'));
+        $contact = array_merge($req->get('contact'), $req->get('address'), ['ip' => $req->ip()]);
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
         $ipqs = $req->input('ipqs', null);
         $cur = $req->get('cur');
@@ -483,8 +483,8 @@ class PaymentService
                 'customer_last_name'    => $contact['last_name'],
                 'customer_phone'        => $contact['phone']['country_code'] . $contact['phone']['number'],
                 'customer_doc_id'       => $contact['document_number'] ?? null,
+                'ip'                    => $contact['ip'],
                 'language'              => app()->getLocale(),
-                'ip'                    => $req->ip(),
                 'txns'                  => [],
                 'shipping_country'      => $contact['country'],
                 'shipping_zip'          => $contact['zip'],
@@ -638,7 +638,8 @@ class PaymentService
                         'email'             => $order->customer_email,
                         'first_name'        => $order->customer_first_name,
                         'last_name'         => $order->customer_last_name,
-                        'phone'             => $order->customer_phone
+                        'phone'             => $order->customer_phone,
+                        'ip'                => $req->ip()
                     ], [
                         'amount'        => $checkout_price,
                         'currency'      => $order->currency,

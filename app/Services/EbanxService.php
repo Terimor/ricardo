@@ -112,11 +112,12 @@ class EbanxService
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
         return new Person([
-            'type' => Person::TYPE_PERSONAL,
-            'document' => $contact['document_number'],
-            'email' => $contact['email'],
-            'name' => $contact['first_name'] . ' ' . $contact['last_name'],
-            'phoneNumber' => $phone
+            'type'          => Person::TYPE_PERSONAL,
+            'document'      => $contact['document_number'],
+            'email'         => $contact['email'],
+            'ip'            => $contact['ip'] ?? null,
+            'name'          => $contact['first_name'] . ' ' . $contact['last_name'],
+            'phoneNumber'   => $phone
         ]);
     }
 
@@ -277,7 +278,7 @@ class EbanxService
             'address'               => $address,
             'amountTotal'           => $order_details['amount'],
             'card'                  => $source,
-            'installments'          => $order_details['installments'] ?? self::INSTALLMENTS_MIN,
+            'instalments'           => $order_details['installments'] ?? self::INSTALLMENTS_MIN,
             'merchantPaymentCode'   => \uniqid(),
             'orderNumber'           => $order_details['number'],
             'person'                => $person,
