@@ -87,7 +87,7 @@ class PaymentsController extends Controller
      */
     public function getCardOrderErrors(PaymentCardOrderErrorsRequest $req)
     {
-        $order_id = $res->get('order');
+        $order_id = $req->get('order');
         $reply = PaymentService::getOrderErrors($order_id);
         return [
             'order_id'  => $order_id,
