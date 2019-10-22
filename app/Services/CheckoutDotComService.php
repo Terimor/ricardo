@@ -355,4 +355,32 @@ class CheckoutDotComService
         return $result;
     }
 
+    /**
+     * Validates failed webhooks (payment_declined, payment_canceled, payment_capture_declined)
+     * @param  Request $req
+     * @return array
+     */
+    public function validateFailedWebhook(Request $req)
+    {
+        $secret = $req->header('authorization');
+        $sign = $req->header('cko-signature');
+        $content = $req->getContent();
+        $data = $req->get('data') ?? [];
+
+        $result = ['status' => false];
+
+        $is_valid = $this->validateWebhook(['secret' => $secret, 'sign' => $sign, 'content' => $content]);
+
+        if ($is_valid && !empty($data)) {
+            $response_code = (string)$res->response_code;
+            $result = [
+                'status'        => true,
+                'order_number'  => $data['reference'],
+                'errors'        => [CheckoutDotComCodeMapper::toPhrase($response_code)]
+            ];
+        }
+
+        return $result;
+    }
+
 }

@@ -58,8 +58,10 @@ class PaymentService
     const STATUS_OK     = 'ok';
     const STATUS_FAIL   = 'fail';
 
-    const CARD_TOKEN_TTL_MIN    = 15;
-    const CARD_TOKEN_PREFIX     = 'CardToken';
+    const CACHE_TOKEN_PREFIX    = 'CardToken';
+    const CACHE_ERRORS_PREFIX   = 'PayErrors';
+    const CACHE_TOKEN_TTL_MIN   = 15;
+    const CACHE_ERRORS_TTL_MIN  = 1;
 
     /**
      * Saga PaymentUtils::$providers
@@ -515,7 +517,7 @@ class PaymentService
             $order->shipping_street     = $contact['street'];
             $order->shipping_street2    = $contact['district'] ?? null;
             $order->installments        = $installments;
-            $order->ipqualityscore      = $ipqs;
+            // $order->ipqualityscore      = $ipqs;
         }
         // select provider and create payment
         $payment = [];
@@ -747,6 +749,33 @@ class PaymentService
     }
 
     /**
+     * Caches webhook errors
+     * @param array  $data
+     * @return void
+     */
+    public static function cacheErrors(array $data = []): void
+    {
+        $order_number = $data['order_number'] ?? null;
+        $errors = $data['errors'] ?? null;
+        if ($order_number && !empty($errors)) {
+            $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_ERRORS_TTL_MIN . "M"));
+            Cache::put(self::CACHE_ERRORS_PREFIX . $order_number, \json_encode($errors), $dt);
+        }
+    }
+
+    /**
+     * Get Order errors
+     * @param string $order_id
+     * @return array
+     */
+    public static function getOrderErrors(string $order_id): array
+    {
+        $order = OdinOrder::getById($order_id);
+        $cache_reply = Cache::get(self::CACHE_ERRORS_PREFIX . $order->number);
+        return $cache_reply ? json_decode($cache_reply, true) : [];
+    }
+
+    /**
      * Returns payment methods array by country
      * Results example:
      * $result = [
@@ -839,9 +868,9 @@ class PaymentService
     public static function getCardToken(string $order_number, bool $is_remove = true): ?string
     {
         if ($is_remove) {
-            return Cache::pull(self::CARD_TOKEN_PREFIX . $order_number);
+            return Cache::pull(self::CACHE_TOKEN_PREFIX . $order_number);
         }
-        return Cache::get(self::CARD_TOKEN_PREFIX . $order_number);
+        return Cache::get(self::CACHE_TOKEN_PREFIX . $order_number);
     }
 
     /**
@@ -853,8 +882,8 @@ class PaymentService
     public static function setCardToken(string $order_number, ?string $token): void
     {
         if ($token) {
-            $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CARD_TOKEN_TTL_MIN . "M"));
-            Cache::put(self::CARD_TOKEN_PREFIX . $order_number, $token, $dt);
+            $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_TOKEN_TTL_MIN . "M"));
+            Cache::put(self::CACHE_TOKEN_PREFIX . $order_number, $token, $dt);
         }
     }
 
