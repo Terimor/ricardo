@@ -12,6 +12,7 @@ use App\Models\Pixel;
 use App\Models\GoogleTag;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 
 /**
@@ -26,15 +27,31 @@ class AffiliateService
      * @param AffiliateSetting $affiliate
      * @param array $params
      */
-    public static function checkAffiliatePostback(string $affiliateId, OdinOrder $order)
+    public static function checkAffiliatePostback(string $affiliateId, OdinOrder $order, $validTxid = null)
     {        
-        $postbacks = AffiliatePostback::where(['ho_affiliate_id' => $affiliateId])->get();
+        $postbacks = AffiliatePostback::all();
 
         if ($postbacks) {
             foreach ($postbacks as $postback) {
+                // check internal options
+                if ($postback->ho_affiliate_id == AffiliateSetting::ALL_EXCLUDE_INTERNAL_OPTION && (int)$affiliateId <= AffiliateSetting::OWN_AFFILIATE_MAX) {                    
+                    continue;
+                    // if !=0 && -1 is check affiliate
+                } else if ($postback->ho_affiliate_id != AffiliateSetting::ALL_INCLUDE_INTERNAL_OPTION && 
+                        $postback->ho_affiliate_id != AffiliateSetting::ALL_EXCLUDE_INTERNAL_OPTION && $postback->ho_affiliate_id != $affiliateId) {
+                    continue;
+                }
+                
                 $url = $postback->url;
                 // check and replace params
                 $params = $order->params;
+                // if we have txid in url check it then replace to validTxid
+                if (strpos($url, '#TXID#')) {                    
+                    if ($validTxid) {
+                        $url = str_replace('#TXID#', $validTxid, $url);
+                    }
+                }
+
                 $url = static::replaceQueryParams($url, $params);
                 
                 // replace order currency
@@ -153,7 +170,7 @@ class AffiliateService
             // get pixels
             $pixels = AffiliateService::getPixelsByData($request, $affiliate->ho_affiliate_id, $product, $countryCode, $route, $device);
             
-        }
+        }        
         return $pixels;
     }
     
@@ -166,16 +183,36 @@ class AffiliateService
      */
     public static function getPixelsByData(Request $request, string $hoAffiliateID, $product, string $countryCode, string $route, string $device) : array
     {
-        $pixels = Pixel::getPixels($hoAffiliateID, $product, $countryCode, $route, $device);
+        $pixels = Pixel::getPixels($product, $countryCode, $route, $device);
                 
         $pixelsArray = [];
         foreach ($pixels as $pixel) {
             // skip if direct only true and &direct is't true or 1            
             if ($pixel->is_direct_only && !$request->direct) {                
                 continue;
-            }            
+            }
+            
+            // check internal options
+            if ($pixel->ho_affiliate_id == AffiliateSetting::ALL_EXCLUDE_INTERNAL_OPTION && (int)$hoAffiliateID <= AffiliateSetting::OWN_AFFILIATE_MAX) {                    
+                continue;
+                // if !=0 && -1 is check affiliate
+            } else if ($pixel->ho_affiliate_id != AffiliateSetting::ALL_INCLUDE_INTERNAL_OPTION && 
+                    $pixel->ho_affiliate_id != AffiliateSetting::ALL_EXCLUDE_INTERNAL_OPTION && $pixel->ho_affiliate_id != $hoAffiliateID) {
+                continue;
+            }
+                   
+            $code = $pixel->code;
+            
+            // get order if order parameter, replace #AMOUNT# and check is_reduced and txns
+            if (!empty($request->order)) {
+                $order = OdinOrder::where('_id', $request->order)->first();
+                if ($order) {
+                    $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
+                }
+            }
             // replace query
-            $code = AffiliateService::replaceQueryParams($pixel->code, $request->query());
+            $code = AffiliateService::replaceQueryParams($code, $request->query());
+            
             // replace country                            
             $code = str_replace('#COUNTRY#', $countryCode, $code);
             
@@ -204,15 +241,7 @@ class AffiliateService
             // replace price set
             if (isset($product->price_set)) {
                 $code = str_replace('#COP_ID#', $product->price_set, $code);
-            }
-            
-            // get order if order parameter and replace #AMOUNT#
-            if (!empty($request->order)) {
-                $order = OdinOrder::where('_id', $request->order)->first();
-                if ($order) {
-                    $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
-                }
-            }
+            }            
             
             // domain
             if (empty($request->domain)) {
@@ -227,5 +256,26 @@ class AffiliateService
         }
         
         return $pixelsArray;        
+    }
+    
+    
+    /**
+     * return valid Txid
+     * @param string $txid
+     * @return type
+     */
+    public static function getValidTxid($txid) 
+    {
+        $correctTxid = null;
+        if ($txid && strlen($txid) >= AffiliateSetting::TXID_LENGTH) {
+            $correctTxid = $txid;
+        } else {
+            // get from cookies
+            $cookieTxid = Cookie::get('txid');
+            if ($cookieTxid && strlen($cookieTxid) >= AffiliateSetting::TXID_LENGTH) {
+                $correctTxid = $cookieTxid;
+            }
+        }
+        return $correctTxid;
     }    
 }

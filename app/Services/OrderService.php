@@ -191,10 +191,10 @@ class OrderService
         // get order and check is_reduced
         $ol = null;
         $order = OdinOrder::where('_id', $orderId)->first();
-        
+
         if ($order){
-            // check if order has the same affiliate
-            if ($order->affiliate == $hoAffiliateId) {
+            // check if order has the same affiliate and txn status captured, approved            
+            if ($order->affiliate == $hoAffiliateId && $order->isTxnForReduce()) {
                 // check or create affiliate
                 $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
                 // get first main product
@@ -203,17 +203,26 @@ class OrderService
                     // check in affiliate product list
                     $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
                     $order->is_reduced = $isReduced;
-                    $order->save();
-
-                    // request queue if order has parameter txid and is_reduced and aff_id > 11
-                    $txid = $order->getParam('txid');
-                    if ($txid && $order->is_reduced && (int)$hoAffiliateId > AffiliateSetting::OWN_AFFILIATE_MAX) {
-                        RequestQueue::saveTxid($txid);
-                    }
-                    
-                    // save postback
-                    AffiliateService::checkAffiliatePostback($hoAffiliateId, $order);                    
+                    $order->save();                  
                 }
+                $events = $order->events;
+                // txid and postback logic
+                if ($order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_POSTBACK_SENT, $events))) {
+                    // request queue if order has parameter txid and is_reduced and aff_id > 10
+                    $txid = $order->getParam('txid');
+                    $validTxid = AffiliateService::getValidTxid($txid);
+                    
+                    if ($validTxid && $order->is_reduced && (int)$hoAffiliateId > AffiliateSetting::OWN_AFFILIATE_MAX) {
+                        RequestQueue::saveTxid($validTxid);
+                    }
+
+                    // save postback
+                    AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);
+                    $events[] = OdinOrder::EVENT_AFF_POSTBACK_SENT;
+                    $order->events = $events;
+                    $order->save();
+                }
+                
                 $ol = new Localize();
                 $ol->is_reduced = $order->is_reduced;
                 $ol->is_first_reduced = isset($isReduced) ? true : false;

@@ -44,7 +44,10 @@ class AffiliateSetting extends Model
     
     public static $salesQtyInTable = 20;
     
-    const OWN_AFFILIATE_MAX = 11;
+    const OWN_AFFILIATE_MAX = 10;
+    const TXID_LENGTH = 20;
+    const ALL_INCLUDE_INTERNAL_OPTION = '0';
+    const ALL_EXCLUDE_INTERNAL_OPTION = '-1';
     
     /**
      * [Percent] = [sales count]

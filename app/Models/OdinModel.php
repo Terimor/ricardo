@@ -38,14 +38,18 @@ class OdinModel extends Model
                                 $jsonFieldsOld = []; $jsonFieldsNew = [];
                                 $oldFields = []; $newFields = [];
                                 // old array
-                                foreach ($original[$fieldName] as $keyOld => $oField) {
-                                    ksort($oField);
-                                    $jsonFieldsOld[$keyOld] = json_encode($oField);
+                                if (isset($original[$fieldName])) {
+                                    foreach ($original[$fieldName] as $keyOld => $oField) {
+                                        ksort($oField);
+                                        $jsonFieldsOld[$keyOld] = json_encode($oField);
+                                    }
                                 }
 
                                 // new array
                                 foreach ($changedField as $keyNew => $nField) {
-                                    ksort($nField);
+                                    if (is_array($nField)) {
+                                        ksort($nField);
+                                    }
                                     $jsonFieldsNew[$keyNew] = json_encode($nField);
                                 }
 

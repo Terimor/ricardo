@@ -226,7 +226,7 @@ class SiteController extends Controller
         if ($request->get('aff_id')) {
             $order_aff = OrderService::getReducedData($request->get('order'), $request->get('aff_id'));
             $order_aff = $order_aff ? $order_aff->toArray() : null;
-        }
+        }                
 
         return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }

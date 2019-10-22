@@ -15,6 +15,11 @@ class OdinOrder extends OdinModel
     protected $collection = 'odin_order';
 
     protected $dates = ['created_at', 'updated_at'];
+    
+    const EVENT_AFF_POSTBACK_SENT = 'aff_postback_sent';
+    const EVENT_AFF_PIXEL_SHOWN = 'aff_pixel_shown';
+    
+    public static $acceptedTxnStatuses = ['captured', 'approved'];
 
     /**
      * Attributes with default values
@@ -98,6 +103,7 @@ class OdinOrder extends OdinModel
         'is_refunded' => false, // bool, order was fully or partially refunded
         'is_qc_passed' => false, // bool, additional control of order's correctness
         'params' => null, // object, //stores all GET parameters with content as object, for example {tpl: "emc1", cur: "BYN"}
+        'events' => null, // enum array, //happened events on order ['aff_postback_sent','aff_pixel_shown']
     ];
 
     const STATUS_NEW = 'new';
@@ -425,4 +431,22 @@ class OdinOrder extends OdinModel
         }
         return $priceSet;
     }
+    
+    /**
+     * Check if txn has status captured or approved
+     * @return boolean
+     */
+    public function isTxnForReduce()
+    {
+        $txns = $this->txns;
+        $isReduce = false;
+        foreach ($txns as $txn) {            
+            if (in_array($txn['status'], static::$acceptedTxnStatuses)) {
+                $isReduce = true;
+                break;
+            }
+        }
+        return $isReduce;
+    }
+    
 }
