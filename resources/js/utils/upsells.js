@@ -89,48 +89,47 @@ export function send1ClickRequest(data, upsells) {
     }))
     .then(res => res.json())
     .then(res => {
+      if (res.order_id) {
+        localStorage.setItem('odin_order_id', res.order_id);
+        localStorage.setItem('order_currency', res.order_currency);
+        localStorage.setItem('order_number', res.order_number);
+        localStorage.setItem('order_id', res.id);
+      }
+/*
       if (res.status !== 'ok') {
         res.paymentError = t('upsells.step_3.payment_error');
 
-        if (res.errors && Object.keys(res.errors).length > 0) {
-          res.paymentError = res.message || Object.values(res.errors).shift().shift();
-        }
-      } else {
-        if (res.upsells.reduce((value, upsell) => upsell.status !== 'ok', false)) {
-          res.paymentError = '';
-
-          if (res.upsells) {
-            for (const upsell of res.upsells) {
-              if (upsells.status !== 'ok') {
-                res.paymentError += '<div>' + t('upsells.step_3.payment_error_one', {
-                  product: upsells.filter(ups => ups.id === upsell.id).shift().name,
-                }) + '</div>';
-              }
+        if (res.errors) {
+          if (Array.isArray(res.errors)) {
+            if (res.errors.length > 0) {
+              res.paymentError = t(res.errors[0]);
+            }
+          } else {
+            if (Object.keys(res.errors).length > 0) {
+              res.paymentError = res.message || Object.values(res.errors)[0][0];
             }
           }
-        } else {
-          if (res.order_id) {
-            localStorage.setItem('odin_order_id', res.order_id);
-            localStorage.setItem('order_currency', res.order_currency);
-            localStorage.setItem('order_number', res.order_number);
-            localStorage.setItem('order_id', res.id);
-          }
-
-          goToThankYou();
         }
       }
 
+      if (res.status === 'ok' && res.upsells.reduce((value, upsell) => upsell.status !== 'ok', false)) {
+        res.paymentError = '';
+
+        for (let upsell of res.upsells) {
+          if (upsells.status !== 'ok') {
+            res.paymentError += '<div>' + t('upsells.step_3.payment_error_one', {
+              product: upsells.filter(ups => ups.id === upsell.id).shift().name,
+            }) + '</div>';
+          }
+        }
+      }
+*/
+      const odin_order_id = res.order_id || localStorage.getItem('odin_order_id');
+      const order_currency = res.order_currency || localStorage.getItem('order_currency');
+
+      localStorage.setItem('odin_order_created_at', new Date());
+      goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
+
       return res;
     });
-}
-
-
-export function goToThankYou() {
-  const odin_order_id = localStorage.getItem('odin_order_id');
-  const order_currency = localStorage.getItem('order_currency');
-
-  if (odin_order_id) {
-    localStorage.setItem('odin_order_created_at', new Date());
-    goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
-  }
 }

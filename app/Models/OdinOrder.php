@@ -131,9 +131,10 @@ class OdinOrder extends OdinModel
      */
     protected $fillable = [
         'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'shop_currency',
-        'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip', 'shipping_country',
-        'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id', 'trackings', 'products',
-        'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed', 'txns', 'params', 'is_invoice_sent'
+        'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip',
+        'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id',
+        'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed',
+        'installments', 'txns', 'params', 'is_invoice_sent'
 
     ];
 
@@ -192,6 +193,26 @@ class OdinOrder extends OdinModel
             throw new OrderNotFoundException("Order [{$id}] not found");
         }
         return $order;
+    }
+
+    /**
+     * Returns OdinOrder by ID and product info
+     * @param  string   $id
+     * @param  array    $info [sku => string, qty => int, is_warranty_checked => bool]
+     * @return OdinOrder|null
+     */
+    public static function findExistedOrderForPay(string $id, array $info): ?OdinOrder
+    {
+        $query = OdinOrder::where('_id', $id)
+            ->where('status', self::STATUS_NEW)
+            ->where('products.sku_code', $info['sku'])
+            ->where('products.quantity', $info['qty']);
+
+        if (!empty($info['is_warranty_checked'])) {
+            $query->where('products.warranty_price', '>', 0);
+        }
+
+        return $query->first();
     }
 
     /**
@@ -268,7 +289,7 @@ class OdinOrder extends OdinModel
     public function getFirstProductId()
     {
         $sku = null;
-        $productId = null;        
+        $productId = null;
         if ($this->products) {
             $products = $this->products;
             foreach ($products as $product) {
@@ -367,14 +388,18 @@ class OdinOrder extends OdinModel
     /**
      * Adds product
      * @param array $product
+     * @param bool  $is_order_creation
      * @param void
      */
-    public function addProduct(array $product): void
+    public function addProduct(array $product, bool $is_order_creation = false): void
     {
         $this->products = collect($this->products)
-            ->reject(function ($v) use ($product) {
+            ->reject(function ($v) use ($product, $is_order_creation) {
                 if ($v['sku_code'] === $product['sku_code']) {
-                    return empty($v['txn_hash']) ? true : $v['txn_hash'] === $product['txn_hash'];
+                    if (!$is_order_creation && !empty($v['txn_hash'])) {
+                        return $v['txn_hash'] === $product['txn_hash'];
+                    }
+                    return true;
                 }
                 return false;
             })

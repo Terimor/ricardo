@@ -63,7 +63,7 @@
                             class="thank-you__order__name"
                             v-if="selectedProductData.isWarrantyChecked"
                         >
-                            {{ t('thankyou.order.warranty') }}: @{{ selectedProductData.prices.warranty_price_text }}
+                            {{ t('thankyou.order.warranty') }}: @{{ orderCustomer.productsText[0].warranty_price_text }}
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
             </p>
             <p class="paragraph d-flex justify-content-between">
                 <span>{{ t('thankyou.payment.method') }}:</span>
-                <span>PayPal</span>
+                <span>@{{  selectedProductData.paymentType }}</span>
             </p>
 
             <hr>

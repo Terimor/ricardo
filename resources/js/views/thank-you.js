@@ -26,6 +26,7 @@ const thankYou = new Vue({
         selectedProductData: JSON.parse(localStorage.getItem('selectedProductData')),
         productData: upsells.product,
         socialType: 'facebook',
+        orderCustomer: upsells.orderCustomer,
         total: 0,
         sharingLinkList: {
             facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,

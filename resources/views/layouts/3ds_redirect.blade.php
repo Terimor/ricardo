@@ -25,8 +25,6 @@
 
         window.location.href = url.href;
       }
-
-      window.stop();
     })();
   </script>
 @endif

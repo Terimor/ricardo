@@ -98,7 +98,7 @@
 
     @if ($HasVueApp)
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css" media="none" onload="if(media!='all')media='all'">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css" media="none" onload="if(media!='all')media='all'">
+      <link id="intlTelInputCss" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css" media="none" onload="if(media!='all')media='all'">
     @endif
 
     <link href="{{ mix_cdn('assets/css/app.css') }}" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
