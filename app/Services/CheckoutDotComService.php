@@ -372,7 +372,7 @@ class CheckoutDotComService
         $is_valid = $this->validateWebhook(['secret' => $secret, 'sign' => $sign, 'content' => $content]);
 
         if ($is_valid && !empty($data)) {
-            $response_code = (string)$res->response_code;
+            $response_code = (string)$data['response_code'];
             $result = [
                 'status'        => true,
                 'order_number'  => $data['reference'],
