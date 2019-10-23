@@ -32,13 +32,15 @@ import emc1 from './components/emc1'
 import smc7 from './components/smc7'
 import vmc4 from './components/vmc4'
 import queryToComponent from './mixins/queryToComponent'
+
 const searchParams = new URL(location).searchParams;
+const preload = searchParams.get('preload');
 
 export default {
   name: 'app',
   data () {
     return {
-      showPreloader: true,
+      showPreloader: preload === '{preload}' || +preload === 3,
       title: checkoutData.product.page_title,
       additionalTitle: ' ' + t('checkout.page_title'),
       waitTitle: t('checkout.page_title.wait'),
@@ -71,12 +73,6 @@ export default {
     },
   },
   mounted () {
-    const preload = searchParams.get('preload');
-
-    if (preload !== '{preload}' && +preload !== 3) {
-      this.showPreloader = false;
-    }
-
     localStorage.removeItem('order_currency')
     this.initial();
   },

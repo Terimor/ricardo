@@ -1,5 +1,5 @@
 <template>
-    <div v-if="$v && !hidePage">
+    <div v-if="$v && !showPreloader">
         <div class="container smc7">
             <div class="row">
                 <div class="container paper smc7__product">
@@ -239,7 +239,6 @@
     props: ['showPreloader', 'skusList'],
     data() {
       return {
-        hidePage: false,
         productImage: checkoutData.product.image[0],
         paypalPaymentError: '',
         form: {

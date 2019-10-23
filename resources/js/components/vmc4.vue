@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!hidePage" class="columns-content container vmc4">
+  <div v-if="!showPreloader" class="columns-content container vmc4">
     <div class="main-content">
       <div class="container-fluid">
         <div class="row">
@@ -90,10 +90,9 @@
     mixins: [
       queryToComponent,
     ],
-		props: ['data'],
+		props: ['data', 'showPreloader'],
 		data() {
 			return {
-        hidePage: false,
         ImplValue: null,
         radioIdx: null,
         warrantyPriceText: null,

@@ -29,7 +29,7 @@
 
 @section('content')
 
-    <div class="promo" id="promo" v-if="!hidePage">
+    <div class="promo" id="promo">
         <preloader-3
             v-if="showPreloader"
             :country-code="checkoutData.countryCode"

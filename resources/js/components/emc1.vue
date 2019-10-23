@@ -1,5 +1,5 @@
 <template>
-    <div v-if="$v && !hidePage">
+    <div v-if="$v && !showPreloader">
         <div class="container">
             <ProductOffer :product="checkoutData.product" />
         </div>
@@ -213,7 +213,6 @@
     props: ['showPreloader', 'skusList'],
     data () {
       return {
-        hidePage: false,
         isFormShown: false,
         paypalPaymentError: '',
         selectedProductData: {

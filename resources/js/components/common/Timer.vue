@@ -37,7 +37,10 @@ import { t } from '../../utils/i18n';
 import isMobile from '../../mixins/isMobile'
 import queryToComponent from '../../mixins/queryToComponent';
 
-let interval
+let interval = null;
+let startMinutes = 13;
+let startSeconds = Math.floor(Math.random() * 59) + 1;
+
 
 export default {
   name: 'Timer',
@@ -46,11 +49,11 @@ export default {
     queryToComponent
   ],
 
-  finishTime: new Date(new Date().getTime() + 15 * 60 * 1000 + 4 * 1000),
+  finishTime: new Date(new Date().getTime() + startMinutes * 60 * 1000 + startSeconds * 1000),
 
   data () {
     return {
-      time: '15:03',
+      time: ('0' + startMinutes).slice(-2) + ':' + ('0' + startSeconds).slice(-2),
       displayGreenTimer: false,
     }
   },

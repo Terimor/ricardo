@@ -16,7 +16,7 @@ import globals from '../mixins/globals';
 import wait from '../utils/wait';
 
 const searchParams = new URL(location).searchParams;
-
+const preload = searchParams.get('preload');
 
 const promo = new Vue({
   el: "#promo",
@@ -28,135 +28,137 @@ const promo = new Vue({
     purchasMixin,
   ],
 
-  data: () => ({
-    hidePage: false,
-    showPreloader: true,
-    isFormShown: false,
-    implValue: 1,
-    installments: 1,
-    isShownForm: false,
-    selectedPlan: null,
-    warrantyPriceText: null,
-    warrantyOldPrice: null,
-    discount: null,
-    variant: null,
-    purchase: [],
-    variantList: [],
-    paymentMethod: null,
-    paypalPaymentError: '',
-    stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
-      value: it,
-      text: it,
-      label: it,
-    })),
-    form: {
-      isWarrantyChecked: false,
-      countryCodePhoneField: checkoutData.countryCode,
-      deal: null,
-      variant: '',
+  data() {
+    return {
+      showPreloader: preload === '{preload}' || +preload === 3,
+      isFormShown: false,
+      implValue: 1,
       installments: 1,
-      paymentType: '',
-      fname: null,
-      lname: null,
-      dateOfBirth: '',
-      email: null,
-      phone: null,
-      cardType: 'credit',
-      street: null,
-      number: null,
-      complemento: null,
-      city: null,
-      state: null,
-      zipcode: null,
-      country: checkoutData.countryCode,
-      cardNumber: '',
-      month: null,
-      year: null,
-      cvv: null,
-      documentNumber: ''
-    },
-    cardNames: [
-      {
-        value: 'visa',
-        text: 'VISA',
-        label: 'VISA',
-        imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
-      }, {
-        value: 'mastercard',
-        text: 'MasterCard',
-        label: 'MasterCard',
-        imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
-      }, {
-        value: 'diners-club',
-        text: 'DinnersClub',
-        label: 'DinnersClub',
-        imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
-      }, {
-        value: 'discover',
-        text: 'Discover',
-        label: 'Discover',
-        imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
-      }, {
-        value: 'paypal',
-        text: 'PayPal',
-        label: 'PayPal',
-        imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
-      }
-    ],
-    mockData: {
-      creditCardRadioList: [
+      isShownForm: false,
+      selectedPlan: null,
+      warrantyPriceText: null,
+      warrantyOldPrice: null,
+      discount: null,
+      variant: null,
+      purchase: [],
+      variantList: [],
+      paymentMethod: null,
+      paypalPaymentError: '',
+      stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
+        value: it,
+        text: it,
+        label: it,
+      })),
+      form: {
+        isWarrantyChecked: false,
+        countryCodePhoneField: checkoutData.countryCode,
+        deal: null,
+        variant: '',
+        installments: 1,
+        paymentType: '',
+        fname: null,
+        lname: null,
+        dateOfBirth: '',
+        email: null,
+        phone: null,
+        cardType: 'credit',
+        street: null,
+        number: null,
+        complemento: null,
+        city: null,
+        state: null,
+        zipcode: null,
+        country: checkoutData.countryCode,
+        cardNumber: '',
+        month: null,
+        year: null,
+        cvv: null,
+        documentNumber: ''
+      },
+      cardNames: [
         {
-          label: t('checkout.credit_cards'),
-          value: 'credit-card',
-          class: 'green-button-animated'
+          value: 'visa',
+          text: 'VISA',
+          label: 'VISA',
+          imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
         }, {
-          label: t('checkout.bank_payments'),
-          value: 'bank-payment',
-          class: 'bank-payment'
+          value: 'mastercard',
+          text: 'MasterCard',
+          label: 'MasterCard',
+          imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
+        }, {
+          value: 'diners-club',
+          text: 'DinnersClub',
+          label: 'DinnersClub',
+          imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
+        }, {
+          value: 'discover',
+          text: 'Discover',
+          label: 'Discover',
+          imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
+        }, {
+          value: 'paypal',
+          text: 'PayPal',
+          label: 'PayPal',
+          imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
         }
       ],
-      reviews: [
+      mockData: {
+        creditCardRadioList: [
           {
-            user: {
-              userName: 'Harriet S.',
-              userImg: 'https://static-backend.saratrkr.com/image_assets/third_1.jpg'
-            },
-            title: 'My best companions!',
-            text: 'The color wasn\'t what I expected but other than that, perfect! Seems to last quite a\n' +
-              'while and I enjoy not having to untangle cords anymore.',
-            rate: 5
-          },
-          {
-              user: {
-                  userName: 'Adrian P.',
-                  userImg: 'https://static-backend.saratrkr.com/image_assets/first_1.jpg'
-              },
-              title: 'Better than expected',
-              text: 'Love the color, love the style, and comfortable too! The battery lasts for ages and\n' +
-                'I like that it charges in the case. Well worth the money.',
-              rate: 4
-          },
-          {
-              user: {
-                  userName: 'Jack P.',
-                  userImg: 'https://static-backend.saratrkr.com/image_assets/second_1.jpg'
-              },
-              title: 'Thoroughly worth the money',
-              text: 'I looked at other wireless earphones and these were the cheapest.\n' +
-                'I didn\'t think they would be any good but I tried my friends and these are far\n' +
-                'better! The sound quality is good and so is the carry case. I love them.',
-              rate: 5
+            label: t('checkout.credit_cards'),
+            value: 'credit-card',
+            class: 'green-button-animated'
+          }, {
+            label: t('checkout.bank_payments'),
+            value: 'bank-payment',
+            class: 'bank-payment'
           }
-      ],
-    },
+        ],
+        reviews: [
+            {
+              user: {
+                userName: 'Harriet S.',
+                userImg: 'https://static-backend.saratrkr.com/image_assets/third_1.jpg'
+              },
+              title: 'My best companions!',
+              text: 'The color wasn\'t what I expected but other than that, perfect! Seems to last quite a\n' +
+                'while and I enjoy not having to untangle cords anymore.',
+              rate: 5
+            },
+            {
+                user: {
+                    userName: 'Adrian P.',
+                    userImg: 'https://static-backend.saratrkr.com/image_assets/first_1.jpg'
+                },
+                title: 'Better than expected',
+                text: 'Love the color, love the style, and comfortable too! The battery lasts for ages and\n' +
+                  'I like that it charges in the case. Well worth the money.',
+                rate: 4
+            },
+            {
+                user: {
+                    userName: 'Jack P.',
+                    userImg: 'https://static-backend.saratrkr.com/image_assets/second_1.jpg'
+                },
+                title: 'Thoroughly worth the money',
+                text: 'I looked at other wireless earphones and these were the cheapest.\n' +
+                  'I didn\'t think they would be any good but I tried my friends and these are far\n' +
+                  'better! The sound quality is good and so is the carry case. I love them.',
+                rate: 5
+            }
+        ],
+      },
 
-    slideForm: null,
-    carouselFormHeight: 'auto',
-    slideFormStep: 0,
-    slideFormSteps: 0,
-    isShownFooter: true,
-    isShownJumbotron: true,
-  }),
+      slideForm: null,
+      carouselFormHeight: 'auto',
+      slideFormStep: 0,
+      slideFormSteps: 0,
+      isShownFooter: true,
+      isShownJumbotron: true,
+    };
+  },
+
   validations: emc1Validation,
 
   components: {
@@ -242,12 +244,6 @@ const promo = new Vue({
       setTimeout(() => {
         this.scrollTo('.j-variant-section');
       }, 500);
-    }
-
-    const preload = searchParams.get('preload');
-
-    if (preload !== '{preload}' && +preload !== 3) {
-      this.showPreloader = false;
     }
 
     wait(
