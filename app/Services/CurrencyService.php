@@ -256,7 +256,9 @@ class CurrencyService
         }
         
         // if still no currency, then can't find USD try again ...
-        $currency = Currency::where(['code' => 'USD'])->first();
+        if (!$currency) {
+            $currency = Currency::where(['code' => 'USD'])->first();
+        }
         if (!$currency) {
             logger()->error("Urgent: Can't find currency", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);            
         }
