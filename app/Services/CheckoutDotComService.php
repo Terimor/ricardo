@@ -8,6 +8,7 @@ use App\Models\Txn;
 use App\Services\OrderService;
 use App\Services\PaymentService;
 use App\Mappers\CheckoutDotComCodeMapper;
+use App\Mappers\CheckoutDotComAmountMapper;
 use Checkout\CheckoutApi;
 use Checkout\Models\Tokens\Card;
 use Checkout\Models\Payments\Payment;
@@ -139,7 +140,7 @@ class CheckoutDotComService
 
         $payment = new Payment($source, $order->currency);
         $payment->reference = $order->number;
-        $payment->amount = $amount;
+        $payment->amount = CheckoutDotComAmountMapper::normalize($amount, $order->currency);
         $payment->description = 'Product Description';
         if (!empty($contact['payer_id'])) {
             $payment->customer = (object)['id' => $contact['payer_id']];

@@ -153,7 +153,7 @@ class PaymentsController extends Controller
 
     public function test(Request $req)
     {
-        return PaymentService::getPaymentMethodsByCountry('jp');
+        return \App\Mappers\CheckoutDotComAmountMapper::normalize(49, 'BHD');
     }
 
 }
