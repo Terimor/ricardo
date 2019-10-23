@@ -252,8 +252,6 @@ class CheckoutDotComService
      */
     private function pay(Source $source, array $contact, array $order_details): array
     {
-        logger()->info('Checkout', ['details' => json_encode($order_details)]);
-
         $payment = new Payment($source, $order_details['currency']);
         $payment->reference = $order_details['number'];
         $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
@@ -299,6 +297,8 @@ class CheckoutDotComService
             'errors'            => null,
             'token'             => null
         ];
+
+        logger()->info('Checkout.com', ['payload' => json_encode($payment->getValues())]);
 
         // parse response
         try {
