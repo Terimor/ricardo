@@ -126,13 +126,90 @@ class CheckoutDotComService
     }
 
     /**
+     * Returns fee by payment_id
+     * @param  string $payment_id
+     * @return float
+     */
+    public function requestFee(string $payment_id): float
+    {
+        // Reconciliation api isn't available in sandbox
+        if ($this->env !== self::ENV_LIVE) {
+            return 0.0;
+        }
+
+        $client = new GuzzHttpCli(['base_uri' => self::REPORTING_API_URL]);
+
+        $res = null;
+        $result = 0.0;
+        try {
+            $res = $client->request('GET', "payments/{$payment_id}", [
+                'headers' => [
+                    'Authorization' => $this->secret_key,
+                    'Content-Type'  => 'application/json'
+                ]
+            ]);
+
+            logger()->info('Checkout.com Reporting API status -> ' . $res->getStatusCode());
+        } catch (GuzzReqException $e) {
+            logger()->error("Checkout.com Reporting API [{$payment_id}]", [
+                'request'   => Psr7\str($e->getRequest()),
+                'response'  => $e->hasResponse() ? Psr7\str($e->getResponse()) : null,
+            ]);
+        }
+
+        if (isset($res) && (int)$res->getStatusCode() === 200) {
+            logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
+
+            $body = \json_decode($res->getBody(), true);
+
+            if (!empty($body['data']) && !empty($body['data']['actions'])) {
+                foreach ($body['data']['actions'] as $action) {
+                    $bds = $action['breakdown'] ?? [];
+                    // sum negative items
+                    foreach ($bds as $item) {
+                        $fee = (float)($item['processing_currency_amount'] ?? 0.0);
+                        if ($fee < 0) {
+                            $result += ($fee * -1);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Tokenizes customer card
+     * @param array $card
+     * @param array $contact
+     * @return string|null
+     */
+    public function requestToken(array $card, array $contact): ?string
+    {
+        $source = new Card($card['number'], $card['month'], $card['year']);
+        $source->cvv = $card['cvv'];
+        $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
+        $source->phone = (object)[$contact['phone']];
+
+        $result = null;
+        try {
+            $card_token = $this->checkout->tokens()->request($source);
+            $result = $card_token->token;
+        } catch (CheckoutException $ex) {
+            logger()->error("Checkout.com token", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+        }
+        return $result;
+    }
+
+    /**
      * Creates a new payment by card
      * @param  array $card
      * @param  array $contact
      * @param  array $order_details=[
      *                  'amount'=>float,
      *                  'currency'=>string,
-     *                  'billing_description'=>['name'=>string,'city'=>string]
+     *                  'billing_descriptor'=>['name'=>string,'city'=>string]
      *                  'description'=>string,
      *                  'ip'=>string,
      *                  'id'=>string,
@@ -154,7 +231,7 @@ class CheckoutDotComService
      * @param  array $order_details=[
      *                  'amount'=>float,
      *                  'currency'=>string,
-     *                  'billing_description'=>['name'=>string,'city'=>string]
+     *                  'billing_descriptor'=>['name'=>string,'city'=>string]
      *                  'description'=>string,
      *                  'ip'=>string,
      *                  'id'=>string,
@@ -178,7 +255,8 @@ class CheckoutDotComService
         $payment = new Payment($source, $order_details['currency']);
         $payment->reference = $order_details['number'];
         $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
-        $payment->description = 'Product Description';
+        $payment->description = $order_details['description'];
+        $payment->billing_descriptor = $order_details['billing_descriptor'];
         if (!empty($contact['payer_id'])) {
             $payment->customer = (object)['id' => $contact['payer_id']];
         } else {
@@ -258,83 +336,6 @@ class CheckoutDotComService
             logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody(), 'req' => json_encode($payment->getValues())]);
         }
 
-        return $result;
-    }
-
-    /**
-     * Returns fee by payment_id
-     * @param  string $payment_id
-     * @return float
-     */
-    public function requestFee(string $payment_id): float
-    {
-        // Reconciliation api isn't available in sandbox
-        if ($this->env !== self::ENV_LIVE) {
-            return 0.0;
-        }
-
-        $client = new GuzzHttpCli(['base_uri' => self::REPORTING_API_URL]);
-
-        $res = null;
-        $result = 0.0;
-        try {
-            $res = $client->request('GET', "payments/{$payment_id}", [
-                'headers' => [
-                    'Authorization' => $this->secret_key,
-                    'Content-Type'  => 'application/json'
-                ]
-            ]);
-
-            logger()->info('Checkout.com Reporting API status -> ' . $res->getStatusCode());
-        } catch (GuzzReqException $e) {
-            logger()->error("Checkout.com Reporting API [{$payment_id}]", [
-                'request'   => Psr7\str($e->getRequest()),
-                'response'  => $e->hasResponse() ? Psr7\str($e->getResponse()) : null,
-            ]);
-        }
-
-        if (isset($res) && (int)$res->getStatusCode() === 200) {
-            logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
-
-            $body = \json_decode($res->getBody(), true);
-
-            if (!empty($body['data']) && !empty($body['data']['actions'])) {
-                foreach ($body['data']['actions'] as $action) {
-                    $bds = $action['breakdown'] ?? [];
-                    // sum negative items
-                    foreach ($bds as $item) {
-                        $fee = (float)($item['processing_currency_amount'] ?? 0.0);
-                        if ($fee < 0) {
-                            $result += ($fee * -1);
-                        }
-                    }
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Tokenizes customer card
-     * @param array $card
-     * @param array $contact
-     * @return string|null
-     */
-    public function requestToken(array $card, array $contact): ?string
-    {
-        $source = new Card($card['number'], $card['month'], $card['year']);
-        $source->cvv = $card['cvv'];
-        $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
-        $source->phone = (object)[$contact['phone']];
-
-        $result = null;
-        try {
-            $card_token = $this->checkout->tokens()->request($source);
-            $result = $card_token->token;
-        } catch (CheckoutException $ex) {
-            logger()->error("Checkout.com token", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
-        }
         return $result;
     }
 
