@@ -2,21 +2,6 @@ const initialUrl = new URL(window.location);
 const fetch = window.fetch;
 
 
-// add js variables from GET params
-initialUrl.searchParams.forEach((value, key) => {
-  const propName = key + 'js';
-
-  if (window[propName] === undefined) {
-    window[propName] = value;
-  }
-});
-
-
-// affiliate variables
-window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || '';
-window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || '';
-
-
 // populate links with GET params
 function populateLinksWithGetParams() {
   document.querySelectorAll('a[href]').forEach(link => {
