@@ -29,12 +29,8 @@
                     v-if="upsellsObj.length"
                     v-bind:is="view"
                     @addAccessory="addAccessory"
-                    :discount="upsellsObj
-                      && upsellsObj[getEntity]
-                      && upsellsObj[getEntity].discount_percent"
-                    :id="upsellsObj
-                      && upsellsObj[getEntity]
-                      && upsellsObj[getEntity].product_id"
+                    :discount="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].discount_percent || 0"
+                    :id="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].product_id || ''"
                   />
                 </transition>
                 <p class="no">

@@ -7,7 +7,7 @@ use App\Services\EbanxService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
-use App\Http\Requests\CheckoutDotComCapturedWebhookRequest;
+use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use Illuminate\Http\Request;
 
@@ -50,6 +50,10 @@ class PaymentsController extends Controller
 
         if (!empty($reply['errors'])) {
             $result['errors'] = $reply['errors'];
+            PaymentService::cacheErrors([
+                'order_number'  => $reply['order_number'],
+                'errors'        => $reply['errors']
+            ]);
         }
         if (!empty($reply['redirect_url'])) {
             $result['redirect_url'] = stripslashes($reply['redirect_url']);
@@ -73,6 +77,21 @@ class PaymentsController extends Controller
             'id'                => $reply['id'],
             'status'            => $reply['status'],
             'upsells'           => $reply['upsells']
+        ];
+    }
+
+    /**
+     * Returns order errors
+     * @param  PaymentCardOrderErrorsRequest $req
+     * @return array
+     */
+    public function getCardOrderErrors(PaymentCardOrderErrorsRequest $req)
+    {
+        $order_id = $req->get('order');
+        $reply = PaymentService::getOrderErrors($order_id);
+        return [
+            'order_id'  => $order_id,
+            'errors'    => $reply ?? []
         ];
     }
 
@@ -101,7 +120,15 @@ class PaymentsController extends Controller
      */
     public function checkoutDotComFailedWebhook(Request $req)
     {
-        logger()->info('checkout.com', ['content' => $req->getContent()]);
+        $checkoutService = new CheckoutDotComService();
+        $reply = $checkoutService->validateFailedWebhook($req);
+
+        if (!$reply['status']) {
+            logger()->error('checkout.com unauthorized failed webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            throw new AuthException('checkout.com captured webhook unauthorized');
+        }
+
+        PaymentService::cacheErrors($reply);
     }
 
     /**
