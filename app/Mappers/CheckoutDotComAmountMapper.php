@@ -41,13 +41,13 @@ class CheckoutDotComAmountMapper
      * @param  string   $currency
      * @return int
      */
-    public static function toProvider(float $amount, string $currency): string
+    public static function toProvider(float $amount, string $currency): float
     {
         $currency = strtoupper($currency);
         if (isset(static::$map[$currency])) {
-            return (int)($amount * static::$map[$currency]['mltpl']);
+            return $amount * static::$map[$currency]['mltpl'];
         }
-        return (int)($amount * static::$map[self::CURRENCY_REST]['mltpl']);
+        return $amount * static::$map[self::CURRENCY_REST]['mltpl'];
     }
 
     /**
@@ -56,7 +56,7 @@ class CheckoutDotComAmountMapper
      * @param  string   $currency
      * @return float
      */
-    public static function fromProvider(int $amount, string $currency): string
+    public static function fromProvider(int $amount, string $currency): float
     {
         $currency = strtoupper($currency);
         if (isset(static::$map[$currency])) {

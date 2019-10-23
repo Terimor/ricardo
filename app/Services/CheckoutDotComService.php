@@ -138,9 +138,6 @@ class CheckoutDotComService
     {
         $amount = isset($amount) ? $amount : $order->total_price;
 
-        logger()->info('Amount-> ' . $amount);
-        logger()->info('Amount normalized-> ' . CheckoutDotComAmountMapper::toProvider($amount, $order->currency));
-
         $payment = new Payment($source, $order->currency);
         $payment->reference = $order->number;
         $payment->amount = CheckoutDotComAmountMapper::toProvider($amount, $order->currency);
