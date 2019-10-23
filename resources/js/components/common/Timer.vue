@@ -49,7 +49,7 @@ export default {
     queryToComponent
   ],
 
-  finishTime: new Date(new Date().getTime() + startMinutes * 60 * 1000 + startSeconds * 1000),
+  finishTime: new Date(new Date().getTime() + startMinutes * 60 * 1000 + (startSeconds + 1) * 1000),
 
   data () {
     return {
