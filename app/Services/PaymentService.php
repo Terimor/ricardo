@@ -628,6 +628,8 @@ class PaymentService
                 }
             }
 
+            logger()->info('Upsell price full-> ' . $checkout_price);
+
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
                 if ($order_main_txn['payment_provider'] === self::PROVIDER_EBANX) {
