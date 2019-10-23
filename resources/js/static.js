@@ -1,4 +1,9 @@
+import * as cookies from './utils/cookies';
 import wait from './utils/wait';
+
+
+const initialUrl = new URL(location);
+const searchParams = initialUrl.searchParams;
 
 
 // init Sentry.io service
@@ -11,9 +16,11 @@ wait(
 
 
 // add js variables from GET params
-new URL(location).searchParams.forEach((value, key) => {
-  if (window[key + 'js'] === undefined) {
-    window[key + 'js'] = value;
+searchParams.forEach((value, key) => {
+  const propName = key + 'js';
+
+  if (window[propName] === undefined) {
+    window[propName] = value;
   }
 });
 
@@ -21,6 +28,23 @@ new URL(location).searchParams.forEach((value, key) => {
 // affiliate variables
 window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || '';
 window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || '';
+
+
+// js and cookie variables for txid
+if (location.pathname === '/splash') {
+  const txidFromGet = searchParams.get('txid') || '';
+  const txidFromCookie = cookies.getCookie('txid') || '';
+
+  if (txidFromGet.length >= 20) {
+    document.cookie = 'txid=' + encodeURIComponent(txidFromGet);
+  }
+
+  window.txid = window.txidjs = txidFromGet.length >= 20
+    ? txidFromGet
+    : txidFromCookie.length >= 20
+      ? txidFromCookie
+      : undefined;
+}
 
 
 // populate links with GET params
@@ -31,7 +55,7 @@ function populateLinksWithGetParams() {
     if (!href.match(/^https?:\/\//) && !link.href.match(/^mailto:/) && !link.href.match(/^tel:/)) {
       const url = new URL(link.href);
 
-      new URL(location).searchParams.forEach((value, key) => {
+      initialUrl.searchParams.forEach((value, key) => {
         if (!url.searchParams.has(key)) {
           url.searchParams.set(key, value);
         }

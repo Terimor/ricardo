@@ -28,7 +28,7 @@ export default {
   ],
 
   mounted() {
-    if (+this.queryParams.preload === 3) {
+    if (this.showPreloader) {
       const interval = setInterval(() => {
         if (!this.showPreloader) {
           this.showNotice();

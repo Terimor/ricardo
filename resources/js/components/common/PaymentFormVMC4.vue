@@ -647,7 +647,10 @@
 			},
       paypalCreateOrder() {
         const searchParams = new URL(document.location.href).searchParams;
-        const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
+
+        const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+          ? checkoutData.product.prices.currency
+          : searchParams.get('cur');
 
         this.setDataToLocalStorage({
           deal: this.form.deal,

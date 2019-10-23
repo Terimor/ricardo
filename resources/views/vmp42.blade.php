@@ -31,12 +31,12 @@
 
     <div class="promo" id="promo" v-if="!hidePage">
         <preloader-3
-            v-if="+queryParams.preload === 3"
+            v-if="showPreloader"
             :country-code="checkoutData.countryCode"
             :show-preloader.sync="showPreloader">
         </preloader-3>
 
-        <template v-if="+queryParams.preload !== 3 || !showPreloader">
+        <template v-if="!showPreloader">
             <notice></notice>
 
 

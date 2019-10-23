@@ -16,7 +16,7 @@
       :skusList="skusList"
       v-else />
     <preloader-3
-      v-if="+queryParams.preload === 3"
+      v-if="showPreloader"
       :countryCode="checkoutData.countryCode"
       :show-preloader.sync="showPreloader"/>
     <leave-modal
@@ -32,6 +32,7 @@ import emc1 from './components/emc1'
 import smc7 from './components/smc7'
 import vmc4 from './components/vmc4'
 import queryToComponent from './mixins/queryToComponent'
+const searchParams = new URL(location).searchParams;
 
 export default {
   name: 'app',
@@ -70,9 +71,11 @@ export default {
     },
   },
   mounted () {
-    if (this.queryParams['preload'] === undefined || Number(this.queryParams['preload']) !== 3) {
-        this.showPreloader = false
-    };
+    const preload = searchParams.get('preload');
+
+    if (preload !== '{preload}' && +preload !== 3) {
+      this.showPreloader = false;
+    }
 
     localStorage.removeItem('order_currency')
     this.initial();

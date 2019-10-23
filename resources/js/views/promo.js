@@ -15,6 +15,9 @@ import { queryParams } from  '../utils//queryParams';
 import globals from '../mixins/globals';
 import wait from '../utils/wait';
 
+const searchParams = new URL(location).searchParams;
+
+
 const promo = new Vue({
   el: "#promo",
 
@@ -241,13 +244,15 @@ const promo = new Vue({
       }, 500);
     }
 
-    if(this.queryParams['preload'] === undefined || Number(this.queryParams['preload']) !== 3) {
+    const preload = searchParams.get('preload');
+
+    if (preload !== '{preload}' && +preload !== 3) {
       this.showPreloader = false;
     }
 
     wait(
       () => !this.showPreloader,
-      () => {this.slideFormSteps = [...document.querySelectorAll('.promo__step')]},
+      () => this.slideFormSteps = [...document.querySelectorAll('.promo__step')],
     );
   },
 
@@ -311,7 +316,10 @@ const promo = new Vue({
 
     paypalCreateOrder () {
       const searchParams = new URL(document.location.href).searchParams;
-      const currency = searchParams.get('cur') || checkoutData.product.prices.currency;
+
+      const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+        ? checkoutData.product.prices.currency
+        : searchParams.get('cur');
 
       this.setDataToLocalStorage({
         deal: this.form.deal,

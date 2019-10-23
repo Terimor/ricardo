@@ -46,6 +46,23 @@ window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || '';
 window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || '';
 
 
+if (searchParams.get('cur') === '{aff_currency}') {
+  delete window.curjs;
+}
+
+if (searchParams.get('lang') === '{lang}') {
+  delete window.langjs;
+}
+
+if (searchParams.get('preload') === '{preload}') {
+  window.preloadjs = 3;
+}
+
+if (searchParams.get('show_timer') === '{show_timer}') {
+  window.show_timerjs = 1;
+}
+
+
 // js and cookie variables for txid
 const txidFromGet = searchParams.get('txid') || '';
 const txidFromCookie = cookies.getCookie('txid') || '';
@@ -54,7 +71,7 @@ if (txidFromGet.length >= 20) {
   document.cookie = 'txid=' + encodeURIComponent(txidFromGet);
 }
 
-window.txidjs = txidFromGet.length >= 20
+window.txid = window.txidjs = txidFromGet.length >= 20
   ? txidFromGet
   : txidFromCookie.length >= 20
     ? txidFromCookie
