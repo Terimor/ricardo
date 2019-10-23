@@ -531,8 +531,17 @@ class PaymentService
             ]);
         } else {
             $checkoutService = new CheckoutDotComService();
-            $source = CheckoutDotComService::createCardSource($card, $contact);
-            $payment = $checkoutService->pay($source, $contact, $order, self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs));
+            $payment = $checkoutService->payByCard($card, $contact, [
+                'amount'    => $order->total_price,
+                'currency'  => $order->currency,
+                'ip'        => $order->ip,
+                'id'        => $order->getIdAttribute(),
+                'number'    => $order->number,
+                '3ds'       => self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs),
+                'description'   => $product->product_name,
+                // TODO: remove city hardcode
+                'billing_description'   => ['name' => $product->billing_descriptor, 'city' => 'MDE']
+            ]);
             if ($payment['status'] !== Txn::STATUS_FAILED) {
                 $payment['token'] = $checkoutService->requestToken($card, $contact);
             }
@@ -599,6 +608,7 @@ class PaymentService
 
         if ($this->orderService->checkIfUpsellsPossible($order) && !empty($card_token)) {
             $upsell_products = [];
+            $checkout_names = [];
             $checkout_price = 0;
             $checkout_price_usd = 0;
             foreach ($upsells as $key => $item) {
@@ -619,6 +629,7 @@ class PaymentService
                     );
                     $checkout_price += $upsell_product['total_price'];
                     $checkout_price_usd += $upsell_product['total_price_usd'];
+                    $checkout_names[] = $product->product_name;
                     $upsell_products[] = $upsell_product;
                 } catch (HttpException $e) {
                     $upsells[$key]['status'] = self::STATUS_FAIL;
@@ -650,8 +661,20 @@ class PaymentService
                     ]);
                 } else {
                     $checkoutService = new CheckoutDotComService();
-                    $source = CheckoutDotComService::createTokenSource($card_token);
-                    $payment = $checkoutService->pay($source, ['payer_id' => $order_main_txn['payer_id']], $order, null, $checkout_price);
+                    $payment = $checkoutService->payByToken(
+                        $card_token,
+                        ['payer_id' => $order_main_txn['payer_id']],
+                        [
+                            'amount'    => $checkout_price,
+                            'currency'  => $order->currency,
+                            'ip'        => $order->ip,
+                            'id'        => $order->getIdAttribute(),
+                            'number'    => $order->number,
+                            'description'   => implode(', ', $checkout_names),
+                            // TODO: remove city hardcode
+                            'billing_description'   => ['name' => $main_product->billing_descriptor, 'city' => 'MDE']
+                        ]
+                    );
                 }
 
                 // update order if transaction is passed

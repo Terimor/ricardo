@@ -126,21 +126,58 @@ class CheckoutDotComService
     }
 
     /**
+     * Creates a new payment by card
+     * @param  array $card
+     * @param  array $contact
+     * @param  array $order_details=[
+     *                  'amount'=>float,
+     *                  'currency'=>string,
+     *                  'billing_description'=>['name'=>string,'city'=>string]
+     *                  'description'=>string,
+     *                  'ip'=>string,
+     *                  'id'=>string,
+     *                  'number'=>string,
+     *                  '3ds'=>?bool
+     *              ]
+     * @return array
+     */
+    public function payByCard(array $card, array $contact, array $order_details): array
+    {
+        return $this->pay(self::createCardSource($card, $contact), $contact, $order_details);
+    }
+
+    /**
+     * Creates a new payment by token
+     * @param  string $token
+     * @param  array  $contact
+     * @param  array  $order_details
+     * @param  array $order_details=[
+     *                  'amount'=>float,
+     *                  'currency'=>string,
+     *                  'billing_description'=>['name'=>string,'city'=>string]
+     *                  'description'=>string,
+     *                  'ip'=>string,
+     *                  'id'=>string,
+     *                  'number'=>string
+     *              ]
+     */
+    public function payByToken(string $token, array $contact, array $order_details): array
+    {
+        return $this->pay(self::createTokenSource($token), $contact, $order_details);
+    }
+
+    /**
      * Creates a new payment
      * @param Source $source
      * @param array $contact
-     * @param OdinOrder $order
-     * @param bool|null $is3ds
-     * @param float $amount default: $order->total_price
+     * @param array $order_details
      * @return array
      */
-    public function pay(Source $source, array $contact, OdinOrder $order, ?bool $is3ds, float $amount = null)
+    private function pay(Source $source, array $contact, array $order_details): array
     {
-        $amount = isset($amount) ? $amount : $order->total_price;
-
-        $payment = new Payment($source, $order->currency);
-        $payment->reference = $order->number;
-        $payment->amount = CheckoutDotComAmountMapper::toProvider($amount, $order->currency);
+        $payment = new Payment($source, $order_details['currency']);
+        $payment->reference = $order_details['number'];
+        $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
         $payment->description = 'Product Description';
         if (!empty($contact['payer_id'])) {
             $payment->customer = (object)['id' => $contact['payer_id']];
@@ -157,21 +194,21 @@ class CheckoutDotComService
                 'phone' => (object)[$contact['phone']]
             ];
         }
-        $payment->payment_ip = $order->ip;
+        $payment->payment_ip = $order_details['ip'];
 
         // enable 3ds
         if ($source instanceof CardSource) {
-            $qs = http_build_query(['order' => $order->getIdAttribute()]);
+            $qs = http_build_query(['order' => $order_details['id']]);
             $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
             $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
-            $payment->{'3ds'} = (object)['enabled' => $is3ds];
+            $payment->{'3ds'} = (object)['enabled' => $order_details['3ds'] ?? false];
         }
 
         $result = [
             'fee'               => 0,
             'is_flagged'        => false,
-            'currency'          => $order->currency,
-            'value'             => $amount,
+            'currency'          => $order_details['currency'],
+            'value'             => $order_details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentService::PROVIDER_CHECKOUTCOM,
             'payment_method'    => PaymentService::METHOD_CREDITCARD,
