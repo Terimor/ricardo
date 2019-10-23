@@ -620,6 +620,9 @@ class PaymentService
                     $checkout_price += $upsell_product['total_price'];
                     $checkout_price_usd += $upsell_product['total_price_usd'];
                     $upsell_products[] = $upsell_product;
+
+                    logger()->info('Upsell price -> ' . $upsell_product['total_price']);
+
                 } catch (HttpException $e) {
                     $upsells[$key]['status'] = self::STATUS_FAIL;
                 }
