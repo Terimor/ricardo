@@ -175,7 +175,9 @@ export function sendCheckoutRequest(data) {
 
   localStorage.setItem('3ds_params', searchParams.toString());
 
-  reqURL.searchParams.set('cur', searchParams.get('cur') || checkoutData.product.prices.currency);
+  reqURL.searchParams.set('cur', !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+    ? checkoutData.product.prices.currency
+    : searchParams.get('cur'));
 
   if (localStorage.getItem('order_failed')) {
     reqURL.searchParams.set('order', localStorage.getItem('odin_order_id'));

@@ -94,13 +94,15 @@ class OrderService
 			'customer_phone',
 			'customer_doc_id',
             'number',
-            'currency'
+            'currency',
+            'products',
+            'txns'
 		]);
 
         // select products array
-        if ($calculateProducts) {
-            $order->addSelect('products', 'currency');
-        }
+        // if ($calculateProducts) {
+        //     $order->addSelect('products', 'currency');
+        // }
 
         $order = $order->first();
 
@@ -193,24 +195,24 @@ class OrderService
         $order = OdinOrder::where('_id', $orderId)->first();
 
         if ($order){
-            // check if order has the same affiliate and txn status captured, approved            
+            // check if order has the same affiliate and txn status captured, approved
             if ($order->affiliate == $hoAffiliateId && $order->isTxnForReduce()) {
                 // check or create affiliate
                 $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
                 // get first main product
-                $productId = $order->getFirstProductId();                
+                $productId = $order->getFirstProductId();
                 if ($order->is_reduced === null && $productId) {
                     // check in affiliate product list
                     $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
                     $order->is_reduced = $isReduced;
-                    $order->save();                  
+                    $order->save();
                 }
                 $events = $order->events ?? [];
                 // txid and postback logic
                 if ($order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_POSTBACK_SENT, $events))) {
                     // request queue if order has parameter txid and is_reduced and aff_id > 10
                     $txid = $order->getParam('txid');
-                    $validTxid = AffiliateService::getValidTxid($txid);                    
+                    $validTxid = AffiliateService::getValidTxid($txid);
 
                     // save postback
                     AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);
@@ -218,7 +220,7 @@ class OrderService
                     $order->events = $events;
                     $order->save();
                 }
-                
+
                 $ol = new Localize();
                 $ol->is_reduced = $order->is_reduced;
                 $ol->is_first_reduced = isset($isReduced) ? true : false;

@@ -213,10 +213,10 @@ class CheckoutDotComService
             $result['errors'] = array_map(function($code) {
                 return CheckoutDotComCodeMapper::toPhrase($code);
             },$ex->getErrors() ?? []);
-            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $body]);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $body, 'req' => json_encode($payment->getValues())]);
         } catch (CheckoutException $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'body' => $ex->getBody()];
-            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody(), 'req' => json_encode($payment->getValues())]);
         }
 
         return $result;
