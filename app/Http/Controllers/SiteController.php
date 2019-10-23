@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OdinCustomer;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
+use App\Services\PaymentService;
 use App\Models\Setting;
 use App\Services\I18nService;
 use App\Services\OrderService;
@@ -217,6 +218,18 @@ class SiteController extends Controller
             $params = \Utils::getGlobalGetParameters($request);
             return redirect('/checkout'.$params);
         }
+
+        // get payment method from main txn
+        $payment_method = [];
+        $main_product = $orderCustomer->getMainProduct(false);
+        if (!empty($main_product)) {
+            $main_txn = $orderCustomer->getTxnByHash($main_product['txn_hash'], false) ?? [];
+            if (!empty($main_txn['payment_method']) && PaymentService::$methods[$main_txn['payment_method']]) {
+                $payment_method['name'] = PaymentService::$methods[$main_txn['payment_method']]['name'];
+                $payment_method['logo'] = PaymentService::$methods[$main_txn['payment_method']]['logo'];
+            }
+        }
+
         $countryCode = \Utils::getLocationCountryCode();
 
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
@@ -226,9 +239,9 @@ class SiteController extends Controller
         if ($request->get('aff_id')) {
             $order_aff = OrderService::getReducedData($request->get('order'), $request->get('aff_id'));
             $order_aff = $order_aff ? $order_aff->toArray() : null;
-        }                
+        }
 
-        return view('thankyou', compact('countryCode', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
+        return view('thankyou', compact('countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
     }
 
     /**
@@ -272,7 +285,7 @@ class SiteController extends Controller
 
         return view('prober', compact('result', 'redis'));
     }
-    
+
     /**
      * Log postback to file
      * @param Request $request

@@ -29,25 +29,25 @@ use Http\Client\Exception\HttpException;
 class PaymentService
 {
 
-    const PROVIDER_PAYPAL      = 'paypal';
-    const PROVIDER_EBANX       = 'ebanx';
-    const PROVIDER_CHECKOUTCOM = 'checkoutcom';
-    const PROVIDER_BLUESNAP    = 'bluesnap';
-    const PROVIDER_NOVALNET    = 'novalnet';
-    const METHOD_INSTANT_TRANSFER = 'instant_transfer';
-    const METHOD_CREDITCARD       = 'creditcard';
-    const METHOD_MASTERCARD       = 'mastercard';
-    const METHOD_VISA             = 'visa';
-    const METHOD_AMEX             = 'amex';
-    const METHOD_DISCOVER         = 'discover';
-    const METHOD_DINERSCLUB       = 'dinersclub';
-    const METHOD_JCB              = 'jcb';
-    const METHOD_HIPERCARD        = 'hipercard';
-    const METHOD_AURA             = 'aura';
-    const METHOD_ELO              = 'elo';
-    const METHOD_PREZELEWY24      = 'prezelewy24';
-    const METHOD_IDEAL            = 'ideal';
-    const METHOD_EPS              = 'eps';
+    const PROVIDER_PAYPAL           = 'paypal';
+    const PROVIDER_EBANX            = 'ebanx';
+    const PROVIDER_CHECKOUTCOM      = 'checkoutcom';
+    const PROVIDER_BLUESNAP         = 'bluesnap';
+    const PROVIDER_NOVALNET         = 'novalnet';
+    const METHOD_INSTANT_TRANSFER   = 'instant_transfer';
+    const METHOD_CREDITCARD         = 'creditcard';
+    const METHOD_MASTERCARD         = 'mastercard';
+    const METHOD_VISA               = 'visa';
+    const METHOD_AMEX               = 'amex';
+    const METHOD_DISCOVER           = 'discover';
+    const METHOD_DINERSCLUB         = 'dinersclub';
+    const METHOD_JCB                = 'jcb';
+    const METHOD_HIPERCARD          = 'hipercard';
+    const METHOD_AURA               = 'aura';
+    const METHOD_ELO                = 'elo';
+    const METHOD_PREZELEWY24        = 'prezelewy24';
+    const METHOD_IDEAL              = 'ideal';
+    const METHOD_EPS                = 'eps';
 
     const FRAUD_CHANCE_LIMIT = 90;
     const FRAUD_CHANCE_MAX = 100;

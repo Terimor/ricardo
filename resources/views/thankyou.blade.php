@@ -18,6 +18,7 @@
     var upsells = {
         countryCode: '{{ $countryCode }}',
         setting: @json($setting),
+        payment_method: @json($payment_method),
         product: @json($product),
         orderCustomer: @json($orderCustomer),
     }
