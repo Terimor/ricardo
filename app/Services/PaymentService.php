@@ -415,8 +415,8 @@ class PaymentService
         if ($is_warranty) {
             $order_product['warranty_price']        = $price['warranty_value'];
             $order_product['warranty_price_usd']    = $price['warranty_value_usd'];
-            $order_product['total_price']           = floor(($price['value'] + $price['warranty_value']) * 100) / 100;
-            $order_product['total_price_usd']       = floor(($price['value_usd'] + $price['warranty_value_usd']) * 100) / 100;
+            $order_product['total_price']           = floor($price['value'] * 100 + $price['warranty_value'] * 100) / 100;
+            $order_product['total_price_usd']       = floor($price['value_usd'] * 100 + $price['warranty_value_usd'] * 100) / 100;
         }
         return $order_product;
     }
@@ -731,11 +731,11 @@ class PaymentService
 
             $currency = CurrencyService::getCurrency($order->currency);
 
-            $order->total_paid      = floor(($order->total_paid + $data['value']) * 100) / 100;
-            $order->total_paid_usd  = floor(($order->total_paid_usd + $data['value'] / $currency->usd_rate) * 100) / 100;
-            $order->txns_fee_usd    = floor(($order->txns_fee_usd + $data['fee'] / $currency->usd_rate) * 100) / 100;
+            $order->total_paid      = floor($order->total_paid * 100 + $data['value'] * 100) / 100;
+            $order->total_paid_usd  = floor($order->total_paid_usd * 100 + $data['value'] / $currency->usd_rate * 100) / 100;
+            $order->txns_fee_usd    = floor($order->txns_fee_usd * 100 + $data['fee'] / $currency->usd_rate * 100) / 100;
 
-            $price_paid_diff    = floor(($order->total_paid - $order->total_price) * 100) / 100;
+            $price_paid_diff    = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
             $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
         }
 
