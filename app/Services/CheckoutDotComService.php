@@ -347,7 +347,7 @@ class CheckoutDotComService
                     'fee'       => $this->requestFee($data['id']),
                     'hash'      => $data['id'],
                     'number'    => $data['reference'],
-                    'value'     => $data['amount'],
+                    'value'     => CheckoutDotComAmountMapper::fromProvider((int)$data['amount'], $data['currency']),
                     'currency'  => $data['currency']
                 ]
             ];
