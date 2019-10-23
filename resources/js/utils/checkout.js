@@ -231,7 +231,11 @@ export function sendCheckoutRequest(data) {
         } else {
           localStorage.setItem('odin_order_created_at', new Date());
 
-          goTo('/thankyou-promos?order=' + res.order_id + '&cur=' + res.order_currency, {
+          const pathname = checkoutData.product.upsells.length > 0
+            ? '/thankyou-promos'
+            : '/thankyou';
+
+          goTo(pathname + '?order=' + res.order_id + '&cur=' + res.order_currency, {
             exclude: ['3ds', '3ds_restore'],
           });
         }
