@@ -15,10 +15,10 @@ class OdinOrder extends OdinModel
     protected $collection = 'odin_order';
 
     protected $dates = ['created_at', 'updated_at'];
-    
+
     const EVENT_AFF_POSTBACK_SENT = 'aff_postback_sent';
     const EVENT_AFF_PIXEL_SHOWN = 'aff_pixel_shown';
-    
+
     public static $acceptedTxnStatuses = ['captured', 'approved'];
 
     /**
@@ -225,7 +225,10 @@ class OdinOrder extends OdinModel
     {
         $order = OdinOrder::where(['number' => $number])->first();
         if (!$order && $throwable) {
-            throw new OrderNotFoundException("Order [{$number}] not found");
+            if (\App::environment() === 'production') {
+                //log error for production only
+                throw new OrderNotFoundException("Order [{$number}] not found");
+            }
         }
         return $order;
     }
@@ -456,7 +459,7 @@ class OdinOrder extends OdinModel
         }
         return $priceSet;
     }
-    
+
     /**
      * Check if txn has status captured or approved
      * @return boolean
@@ -465,7 +468,7 @@ class OdinOrder extends OdinModel
     {
         $txns = $this->txns;
         $isReduce = false;
-        foreach ($txns as $txn) {            
+        foreach ($txns as $txn) {
             if (in_array($txn['status'], static::$acceptedTxnStatuses)) {
                 $isReduce = true;
                 break;
@@ -473,5 +476,5 @@ class OdinOrder extends OdinModel
         }
         return $isReduce;
     }
-    
+
 }

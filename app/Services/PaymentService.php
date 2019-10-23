@@ -711,7 +711,7 @@ class PaymentService
         $order = OdinOrder::getByNumber($data['number']); // throwable
 
         // check webhook reply
-        if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
+        if (!$order || !in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
             return;
         }
 
