@@ -138,6 +138,7 @@ class CheckoutDotComService
     {
         $amount = isset($amount) ? $amount : $order->total_price;
 
+        logger()->info('Checkout amount sended -> ' . CheckoutDotComAmountMapper::toProvider($amount, $order->currency));
         $payment = new Payment($source, $order->currency);
         $payment->reference = $order->number;
         $payment->amount = CheckoutDotComAmountMapper::toProvider($amount, $order->currency);
@@ -195,6 +196,10 @@ class CheckoutDotComService
                 $response_code = (string)$res->response_code;
                 $result['currency']         = $res->currency;
                 $result['value']            = CheckoutDotComAmountMapper::fromProvider((int)$res->amount, $res->currency);
+
+                logger()->info('Checkout amount retrieved -> ' . $res->amount);
+                logger()->info('Checkout amount converted -> ' . CheckoutDotComAmountMapper::fromProvider((int)$res->amount, $res->currency));
+
                 if (in_array($response_code, [self::SUCCESS_CODE, self::SUCCESS_FLAGGED_CODE])) {
                     $result['status']       = Txn::STATUS_CAPTURED;
                     $result['is_flagged']   = $response_code === self::SUCCESS_FLAGGED_CODE ? true : false;
