@@ -137,7 +137,7 @@
     
     @if (!empty($htmlToApp['pixels']))
         @foreach($htmlToApp['pixels'] as $pixel)
-        {{ !empty($pixel['code']) ? $pixel['code'] : '' }}
+        {!! !empty($pixel['code']) ? $pixel['code'] : '' !!}
         @endforeach
     @endif
 </body>
