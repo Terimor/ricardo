@@ -279,7 +279,7 @@ class SiteController extends Controller
      * @return type
      */
     public function logPostback(Request $request) {
-        file_put_contents(storage_path("log_postbacks.txt"), json_encode($request->all()."\n"), FILE_APPEND);
+        file_put_contents(storage_path("log_postbacks.txt"), json_encode($request->all())."\n", FILE_APPEND);
         return response('Ok', 200);
     }
 
