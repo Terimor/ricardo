@@ -56,6 +56,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     /* test routes */
     $router->post('/test-payments', 'PaymentsController@test');
+    $router->get('/test-postbacks', 'SiteController@logPostback');
 });
 
 /*Route::get('/debug-sentry', function () {

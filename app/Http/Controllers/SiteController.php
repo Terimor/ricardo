@@ -272,5 +272,15 @@ class SiteController extends Controller
 
         return view('prober', compact('result', 'redis'));
     }
+    
+    /**
+     * Log postback to file
+     * @param Request $request
+     * @return type
+     */
+    public function logPostback(Request $request) {
+        file_put_contents(storage_path("log_postbacks.txt"), json_encode($request->all()), FILE_APPEND);
+        return response('Ok', 200);
+    }
 
 }
