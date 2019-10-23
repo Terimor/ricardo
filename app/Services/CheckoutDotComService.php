@@ -140,7 +140,7 @@ class CheckoutDotComService
 
         $payment = new Payment($source, $order->currency);
         $payment->reference = $order->number;
-        $payment->amount = CheckoutDotComAmountMapper::normalize($amount, $order->currency);
+        $payment->amount = CheckoutDotComAmountMapper::toProvider($amount, $order->currency);
         $payment->description = 'Product Description';
         if (!empty($contact['payer_id'])) {
             $payment->customer = (object)['id' => $contact['payer_id']];
@@ -194,7 +194,7 @@ class CheckoutDotComService
             if ($res->http_code === 201) { // authorized
                 $response_code = (string)$res->response_code;
                 $result['currency']         = $res->currency;
-                $result['value']            = $res->amount;
+                $result['value']            = CheckoutDotComAmountMapper::fromProvider((int)$res->amount, $res->currency);
                 if (in_array($response_code, [self::SUCCESS_CODE, self::SUCCESS_FLAGGED_CODE])) {
                     $result['status']       = Txn::STATUS_CAPTURED;
                     $result['is_flagged']   = $response_code === self::SUCCESS_FLAGGED_CODE ? true : false;

@@ -153,7 +153,7 @@ class PaymentsController extends Controller
 
     public function test(Request $req)
     {
-        return \App\Mappers\CheckoutDotComAmountMapper::normalize(49, 'BHD');
+        return \App\Mappers\CheckoutDotComAmountMapper::fromProvider(4999, 'USD');
     }
 
 }
