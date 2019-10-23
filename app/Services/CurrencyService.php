@@ -255,6 +255,13 @@ class CurrencyService
             $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
         }
         
+        // if still no currency, then can't find USD try again ...
+        $currency = Currency::where(['code' => 'USD'])->first();
+        if (!$currency) {
+            logger()->error("Urgent: Can't find currency", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
+        } else {
+            abort(404);
+        }
         $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
         
         if (empty($localeString)) {

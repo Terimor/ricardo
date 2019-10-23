@@ -105,7 +105,7 @@ class OrderService
         $order = $order->first();
 
         // calculate text for products
-        if ($calculateProducts) {
+        if ($calculateProducts && $order) {
             $data = self::getOrderProductsText($order);
             $order->productsText = $data['products'];
             $order->totalText = $data['total_text'];
