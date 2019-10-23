@@ -256,7 +256,7 @@ class CheckoutDotComService
         $payment->reference = $order_details['number'];
         $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
         $payment->description = $order_details['description'];
-        $payment->billing_descriptor = $order_details['billing_descriptor'];
+        $payment->billing_descriptor = (object)$order_details['billing_descriptor'];
         if (!empty($contact['payer_id'])) {
             $payment->customer = (object)['id' => $contact['payer_id']];
         } else {
