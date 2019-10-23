@@ -212,6 +212,17 @@ class AffiliateService
                 
                 if ($order) {
                     $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
+                    
+                    $txid = $order->getParam('txid');
+                    $validTxid = AffiliateService::getValidTxid($txid);                    
+
+                    // if we have txid in code check it then replace to validTxid
+                    if (strpos($code, '#TXID#')) {                    
+                        if ($validTxid) {
+                            $code = str_replace('#TXID#', $validTxid, $code);
+                        }
+                    }                    
+                    
                 }
             }
 
