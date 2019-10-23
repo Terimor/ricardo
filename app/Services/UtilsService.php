@@ -542,7 +542,7 @@ class UtilsService
     ];
     
     public static $unsetGet = [
-        'currency' => '{aff_currency}',        
+        'cur' => '{aff_currency}',        
         'lang'  => '{lang}',        
     ];
 
