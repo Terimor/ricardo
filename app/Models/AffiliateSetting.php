@@ -114,8 +114,8 @@ class AffiliateSetting extends Model
      * @return type
      */
     public static function getByHasOfferId(string $hasOfferId)
-    {
-        return AffiliateSetting::where(['ho_affiliate_id' => $hasOfferId])->first();
+    {        
+        return AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hasOfferId]);
     }
     
     /**
