@@ -76,3 +76,11 @@ window.txid = window.txidjs = txidFromGet.length >= 20
   : txidFromCookie.length >= 20
     ? txidFromCookie
     : undefined;
+
+
+// add tpl body class for checkout
+if (location.pathname === '/checkout') {
+  document.body.classList.add('tpl-' + (searchParams.has('tpl') && searchParams.get('tpl') !== '{tpl}'
+    ? searchParams.get('tpl')
+    : 'emc1'));
+}
