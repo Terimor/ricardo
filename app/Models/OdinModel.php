@@ -40,7 +40,9 @@ class OdinModel extends Model
                                 // old array
                                 if (isset($original[$fieldName])) {
                                     foreach ($original[$fieldName] as $keyOld => $oField) {
-                                        ksort($oField);
+                                        if (is_array($oField)) {
+                                            ksort($oField);
+                                        }
                                         $jsonFieldsOld[$keyOld] = json_encode($oField);
                                     }
                                 }

@@ -205,16 +205,12 @@ class OrderService
                     $order->is_reduced = $isReduced;
                     $order->save();                  
                 }
-                $events = $order->events;
+                $events = $order->events ?? [];
                 // txid and postback logic
                 if ($order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_POSTBACK_SENT, $events))) {
                     // request queue if order has parameter txid and is_reduced and aff_id > 10
                     $txid = $order->getParam('txid');
-                    $validTxid = AffiliateService::getValidTxid($txid);
-                    
-                    if ($validTxid && $order->is_reduced && (int)$hoAffiliateId > AffiliateSetting::OWN_AFFILIATE_MAX) {
-                        RequestQueue::saveTxid($validTxid);
-                    }
+                    $validTxid = AffiliateService::getValidTxid($txid);                    
 
                     // save postback
                     AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);

@@ -102,13 +102,7 @@
     @endif
 
     <link href="{{ mix_cdn('assets/css/app.css') }}" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
-    @yield('styles')
-
-    @if (!empty($htmlToApp['pixels']))
-        @foreach($htmlToApp['pixels'] as $pixel)
-        {{ !empty($pixel['code']) ? $pixel['code'] : '' }}
-        @endforeach
-    @endif
+    @yield('styles')   
 
     {{--Do not remove this empty style tag--}}
     <style></style>
@@ -123,6 +117,7 @@
         <!-- End Google Tag Manager (noscript) -->
         @endforeach
     @endif
+    
     <div id="app">
         @if (Request::is('splash'))
             @include('layouts.header_splash', ['product' => $product])
@@ -138,6 +133,12 @@
 
     @if (Request::is('checkout'))
       <noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
+    @endif
+    
+    @if (!empty($htmlToApp['pixels']))
+        @foreach($htmlToApp['pixels'] as $pixel)
+        {{ !empty($pixel['code']) ? $pixel['code'] : '' }}
+        @endforeach
     @endif
 </body>
 </html>

@@ -185,7 +185,7 @@ class AffiliateService
     {
         $pixels = Pixel::getPixels($product, $countryCode, $route, $device);
                 
-        $pixelsArray = [];
+        $pixelsArray = []; $isShown = false;
         foreach ($pixels as $pixel) {
             // skip if direct only true and &direct is't true or 1            
             if ($pixel->is_direct_only && !$request->direct) {                
@@ -203,13 +203,28 @@ class AffiliateService
                    
             $code = $pixel->code;
             
+            // if not reduced skip it
+            
+            $order = null;
             // get order if order parameter, replace #AMOUNT# and check is_reduced and txns
             if (!empty($request->order)) {
                 $order = OdinOrder::where('_id', $request->order)->first();
+                
                 if ($order) {
                     $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
                 }
             }
+
+            // check sale logic
+            if ($pixel->type == Pixel::TYPE_SALE) {
+                $events = $order->events ?? [];
+                if (isset($order->is_reduced) && $order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_PIXEL_SHOWN, $events))) {
+                    $isShown = true;
+                } else {
+                    continue;
+                }
+            }
+            
             // replace query
             $code = AffiliateService::replaceQueryParams($code, $request->query());
             
@@ -250,9 +265,16 @@ class AffiliateService
             }
             
             $pixelsArray[] = [
-                'type' => $pixel->type,
+                'type' => $pixel->type ?? null,
                 'code' => $code
             ];                        
+        }
+        
+        // if we show one sale pixel save events
+        if ($isShown) {
+            $events[] = OdinOrder::EVENT_AFF_PIXEL_SHOWN;
+            $order->events = $events;
+            $order->save();
         }
         
         return $pixelsArray;        

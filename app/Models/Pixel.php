@@ -28,6 +28,9 @@ class Pixel extends Model
     const DEVICE_MOBILE = 'mobile';
     const DEVICE_TV = 'tv';
     
+    const TYPE_SALE  = 'sale';
+    const TYPE_VIEW  = 'view';    
+    
     /**
      * Return pixels by params
      * @param string $hoAffiliateID
@@ -38,9 +41,9 @@ class Pixel extends Model
      */
     public static function getPixels($product, string $countryCode, string $route, string $device)
     {
-        $pixels = Pixel::where(['countries' => $countryCode, 'devices' => $device])               
+        $pixels = Pixel::
                 // if we have empty product_ids it's mean ALL
-                ->where(function ($query) use ($product) {
+                where(function ($query) use ($product) {
                     $query->where('product_ids', '=', $product->id)
                           ->orWhere('product_ids', '=', '');
                 })
@@ -49,6 +52,16 @@ class Pixel extends Model
                     $query->where('placements', '=', $route)
                           ->orWhere('placements', '=', '');
                 })
+                // if we have empty device it's mean on ALL devices
+                ->where(function ($query) use ($device) {
+                    $query->where('devices', '=', $device)
+                          ->orWhere('devices', '=', '');
+                })
+                // if we have empty countries it's mean on ALL countries
+                ->where(function ($query) use ($countryCode) {
+                    $query->where('countries', '=', $countryCode)
+                          ->orWhere('countries', '=', '');
+                })                
                 ->get();
         return $pixels;
     }
