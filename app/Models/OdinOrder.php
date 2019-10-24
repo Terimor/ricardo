@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Exceptions\OrderNotFoundException;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
+use App\Models\Txn;
 
 class OdinOrder extends OdinModel
 {
@@ -19,7 +20,7 @@ class OdinOrder extends OdinModel
     const EVENT_AFF_POSTBACK_SENT = 'aff_postback_sent';
     const EVENT_AFF_PIXEL_SHOWN = 'aff_pixel_shown';
 
-    public static $acceptedTxnStatuses = ['captured', 'approved', 'authorized'];
+    public static $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];
 
     /**
      * Attributes with default values
