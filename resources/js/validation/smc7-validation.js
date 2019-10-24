@@ -15,11 +15,11 @@ const smc7validation = function () {
       },
       fname: {
         required,
-        minLength: minLength(2)
+        minLength: minLength(1)
       },
       lname: {
         required,
-        minLength: minLength(2)
+        minLength: minLength(1)
       },
       email: {
         required,
