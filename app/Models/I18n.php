@@ -79,12 +79,12 @@ class I18n extends Model
         '#CUSTOMER#',
         '#PRODUCT#',
         '#EMAIL#',
-        '#FIRST_NAME#',
         '#COMPANY#',
         '#AFFILIATE_ID#',
         '#TRACKING_NUMBER#',
         '#COUNTRY#',
         '#CITY#',
+        '#CURRENCY#',
         '#ORDER#',
         '#TRACKING_LINK#',
         '#CODE#',
@@ -109,9 +109,9 @@ class I18n extends Model
         '#CANCEL_LINK#',
         '#CUSTOMER_NUMBER#',
         '#PRODUCTS#',
-        '#SURVEY_LINK',
-        '#DATE#,'
-    ];
+        '#SURVEY_LINK#',
+        '#DATE#',
+      ];
 
     /**
      * Returns translation languages array
