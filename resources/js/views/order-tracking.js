@@ -17,6 +17,9 @@ const orderTracking = new Vue({
     showModal: false,
   },
   validations: mainValidation,
+  mounted() {
+    document.body.classList.remove('js-hidden');
+  },
   computed: {
     isValid() {
       return !this.$v.formData.name.$invalid && !this.$v.formData.email.$invalid;

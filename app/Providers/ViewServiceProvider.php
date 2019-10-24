@@ -43,6 +43,7 @@ class ViewServiceProvider extends ServiceProvider
                 $affiliate = AffiliateSetting::getByHasOfferId(Request::get('aff_id'));
             }
             $view->with('htmlToApp', AffiliateService::getHtmlToApp(Request(), $affiliate));
+            $view->with('direction', in_array(substr(app()->getLocale(), 0, 2), ['he', 'ar']) ? 'rtl' : 'ltr');
         });
 
         View::composer('layouts.footer', function($view) {

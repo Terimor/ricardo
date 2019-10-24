@@ -47,6 +47,13 @@ if (location.pathname === '/splash') {
 }
 
 
+// document ready
+function documentReady() {
+  document.body.classList.remove('js-hidden');
+  populateLinksWithGetParams();
+}
+
+
 // populate links with GET params
 function populateLinksWithGetParams() {
   document.querySelectorAll('a[href]').forEach(link => {
@@ -67,7 +74,7 @@ function populateLinksWithGetParams() {
 }
 
 if (document.readyState !== 'interactive' && document.readyState !== 'complete') {
-  document.addEventListener('DOMContentLoaded', populateLinksWithGetParams);
+  document.addEventListener('DOMContentLoaded', documentReady);
 } else {
-  populateLinksWithGetParams();
+  documentReady();
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="ltr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -37,6 +37,10 @@
         window.adwordsconvidjs = '{{ $product->gads_conversion_id }}';
         window.adwordsconvlabeljs = '{{ $product->gads_conversion_label }}';
       @endif
+      function styleOnLoad(className) {
+        if (this.media != 'all') this.media = 'all';
+        if (className) document.body.classList.remove(className);
+      }
     </script>
 
     @include('layouts.3ds_redirect')
@@ -90,25 +94,25 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" media="none" onload="if(media!='all')media='all'">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" media="none" onload="styleOnLoad.call(this)">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" media="none" onload="styleOnLoad.call(this)">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap-grid.min.css" media="none" onload="if(media!='all')media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap-grid.min.css" media="none" onload="styleOnLoad.call(this)">
 
     @if ($HasVueApp)
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css" media="none" onload="if(media!='all')media='all'">
-      <link id="intlTelInputCss" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css" media="none" onload="if(media!='all')media='all'">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css" media="none" onload="styleOnLoad.call(this)">
+      <link id="intlTelInputCss" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.2/css/intlTelInput.css" media="none" onload="styleOnLoad.call(this)">
     @endif
 
-    <link href="{{ mix_cdn('assets/css/app.css') }}" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
+    <link href="{{ mix_cdn('assets/css/app.css') }}" rel="stylesheet" media="none" onload="styleOnLoad.call(this, 'css-hidden')">
     @yield('styles')   
 
     {{--Do not remove this empty style tag--}}
-    <style></style>
+    <style>body.css-hidden{display:none}body.css2-hidden{display:none}body.js-hidden{display:none}</style>
 
 </head>
-<body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
+<body class="css-hidden css2-hidden js-hidden {{ Route::has('promo') ? 'white-bg' : '' }}">
     @if (!empty($htmlToApp['gtags']))
         @foreach($htmlToApp['gtags'] as $gtag)
         <!-- Google Tag Manager (noscript) -->
@@ -118,7 +122,7 @@
         @endforeach
     @endif
     
-    <div id="app">
+    <div id="app" class="hidden">
         @if (Request::is('splash'))
             @include('layouts.header_splash', ['product' => $product])
         @elseif (Request::is('orderTracking'))

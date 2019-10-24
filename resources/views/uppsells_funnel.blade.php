@@ -9,9 +9,9 @@
 @endsection
 
 @section('styles')
-  <link rel="stylesheet" href="{{ mix_cdn('assets/css/uppsells.css') }}" media="none" onload="if(media!='all')media='all'">
-  <link rel="stylesheet" href="{{ mix_cdn('assets/css/thank-you.css') }}" media="none" onload="if(media!='all')media='all'">
-  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}" media="none" onload="if(media!='all')media='all'">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/uppsells.css') }}" media="none" onload="styleOnLoad.call(this)">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/thank-you.css') }}" media="none" onload="styleOnLoad.call(this)">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
 @endsection
 
 @section('script')

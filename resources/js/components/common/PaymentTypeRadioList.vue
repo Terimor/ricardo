@@ -70,8 +70,6 @@
 <style lang="scss" scoped>
 
   .payment-type-radio-list {
-    text-align: left;
-
     .credit-cards-list {
       margin: 8px -4px 0;
     }

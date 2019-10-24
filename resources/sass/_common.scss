@@ -47,10 +47,6 @@ html {
 header {
   display: flex;
 
-  &.hidden {
-    display: none;
-  }
-
   & > .container {
     display: flex;
     height: 100%;

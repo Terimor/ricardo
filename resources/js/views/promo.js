@@ -222,6 +222,8 @@ const promo = new Vue({
   },
 
   mounted() {
+    document.body.classList.remove('js-hidden');
+
     this.installments =
       this.checkoutData.countryCode === 'br' ? 3 :
         this.checkoutData.countryCode === 'mx' ? 1 :

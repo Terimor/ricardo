@@ -2,11 +2,11 @@
 
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
-<link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
+<link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" media="none" onload="styleOnLoad.call(this)">
 
 @section('styles')
-  <link rel="stylesheet" href="{{ mix_cdn('assets/css/promo.css') }}" media="none" onload="if(media!='all')media='all'">
-  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/promo.vue.css') }}" media="none" onload="if(media!='all')media='all'">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/css/promo.css') }}" media="none" onload="styleOnLoad.call(this)">
+  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/promo.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
 @endsection
 
 @section('script')

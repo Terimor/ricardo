@@ -3,7 +3,7 @@
 @section('title', $product->page_title . ' - ' . $loadedPhrases['privacy_title'])
 
 @section('styles')
-    <link rel="stylesheet" href="{{ mix_cdn('assets/css/static.css') }}" media="none" onload="if(media!='all')media='all'">
+    <link rel="stylesheet" href="{{ mix_cdn('assets/css/static.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
 @endsection
 
 

@@ -1,5 +1,4 @@
-<footer {{ Request::is('/') ? '' : 'v-cloak' }}
-        class="footer {{ isset($isWhite) && $isWhite == true ? 'footer--white' : '' }}">
+<footer class="footer {{ isset($isWhite) && $isWhite == true ? 'footer--white' : '' }}">
     <ul class="footer__row">
         @php
         $links = [

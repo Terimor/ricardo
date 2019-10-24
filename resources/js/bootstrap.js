@@ -5,7 +5,6 @@ import './services/ebanx';
 import './services/ipqs';
 import './UIsettings';
 
-document.getElementById('header').classList.remove('hidden');
 
 Vue.config.productionTip = false
 
