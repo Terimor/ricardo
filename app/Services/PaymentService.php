@@ -540,7 +540,7 @@ class PaymentService
                 '3ds'       => self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs),
                 'description'   => $product->product_name,
                 // TODO: remove city hardcode
-                'billing_descriptor'   => ['name' => $product->billing_descriptor, 'city' => 'MDE']
+                'billing_descriptor'   => ['name' => $product->billing_descriptor, 'city' => 'Msida']
             ]);
             if ($payment['status'] !== Txn::STATUS_FAILED) {
                 $payment['token'] = $checkoutService->requestToken($card, $contact);
@@ -672,7 +672,7 @@ class PaymentService
                             'number'    => $order->number,
                             'description'   => implode(', ', $checkout_names),
                             // TODO: remove city hardcode
-                            'billing_descriptor'   => ['name' => $main_product->billing_descriptor, 'city' => 'MDE']
+                            'billing_descriptor'   => ['name' => $main_product->billing_descriptor, 'city' => 'Msida']
                         ]
                     );
                 }
