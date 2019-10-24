@@ -108,7 +108,6 @@
                 }"
                 v-model="paymentForm.city"/>
             <select-field
-                filterable
                 v-if="isSpecialCountrySelected"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
@@ -148,7 +147,6 @@
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
             <select-field
-                filterable
                 :validation="$v.form.country"
                 :validationMessage="textCountryRequired"
                 theme="variant-1"
@@ -209,7 +207,6 @@
                   :class="{ 'with-error': $v.form.month.$dirty && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
                     <span class="label" v-html="textCardValidUntil"></span>
                     <select-field
-                        filterable
                         :validation="$v.form.month"
                         :validationMessage="textCardValidMonthRequired"
                         :rest="{
@@ -219,7 +216,6 @@
                         :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
                         v-model="paymentForm.month"/>
                     <select-field
-                        filterable
                         :validation="$v.form.year"
                         :validationMessage="textCardValidYearRequired"
                         :rest="{
