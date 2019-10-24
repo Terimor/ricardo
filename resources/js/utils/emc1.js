@@ -86,7 +86,7 @@ export function * getNotice ({
           <i class="fa fa-user"></i>
         </div>
         <div class="recently-notice__right">
-          <p>Currently <text class="red">${usersActive}</text> people are looking at this product</p>
+          <p>${t('checkout.notification.users_active', { count: usersActive })}</p>
         </div>
       </div>
     `,
@@ -131,7 +131,7 @@ export function * getNotice ({
                 <img src="${checkoutData.product.image[0]}" alt="">
               </div>
               <div class="recently-notice__right">
-                <p>${users[index]} in ${cities[index] || cities[0]} just bought<br>${quantity}x ${checkoutData.product.product_name}</p>
+                <p>${t('checkout.notification.just_bought', { first_name: users[index], city: cities[index] || cities[0], count: quantity, product: checkoutData.product.product_name })}</p>
               </div>
             </div>
             `

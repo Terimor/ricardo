@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { t } from '../../utils/i18n';
 import notification from '../../mixins/notification';
 import queryToComponent from '../../mixins/queryToComponent';
 import { getNotice } from '../../utils/emc1';
@@ -20,7 +21,7 @@ export default {
     users: recentlyBoughtNames,
     cities: recentlyBoughtCities,
     usersActive: getRandomInt(33, 44),
-    bestsellerText: 'In high demand - This product is our bestseller right now...',
+    bestsellerText: t('checkout.notification.bestseller'),
   }),
 
   props: [

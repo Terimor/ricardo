@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import { t } from '../../../utils/i18n';
 import CheckmarkSvg from '../CheckmarkSvg'
 import CountryImage from '../CountryImage'
 
@@ -23,20 +24,20 @@ export default {
       default () {
         return [
           {
-            title: 'Checking 3 warehouses for available stock...',
+            title: t('checkout.preloader.step1'),
             children: CountryImage,
             data: {
               percent: 33,
               countryCode: this.countryCode
             }
           }, {
-            title: 'Limited stock available in Warehouse 2. Reserving your units...',
+            title: t('checkout.preloader.step2'),
             children: CheckmarkSvg,
             data: {
               percent: 67
             }
           }, {
-            title: 'Special 50% Discount still available - Applying 50% Discount!',
+            title: t('checkout.preloader.step3'),
             children: CheckmarkSvg,
             data: {
               percent: 100

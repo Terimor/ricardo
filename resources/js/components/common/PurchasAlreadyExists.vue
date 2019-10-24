@@ -1,17 +1,19 @@
 <template>
-  <div class="alert">
-    You already made your purchase&nbsp;&mdash; your confirmation&nbsp;#&nbsp;is&nbsp;{{ orderNumber }} -
-    If&nbsp;you have any questions, you can reach&nbsp;us under help@support-deals.com
-  </div>
+  <div class="alert" v-html="textAlert"></div>
 </template>
 
 <script>
+import { t } from '../../utils/i18n';
+
 export default {
   name: 'PurchasAlreadyExists',
 
-  data: () => ({
-    orderNumber: localStorage.getItem('order_number'),
-  }),
+  computed: {
+    textAlert: () => t('checkout.purchase_exists', {
+      order: localStorage.getItem('order_number'),
+      email: 'help@support-deals.com',
+    }),
+  },
 }
 </script>
 
