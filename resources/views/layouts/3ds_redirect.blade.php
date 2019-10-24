@@ -10,21 +10,25 @@
         }
       });
 
-      if (url.searchParams.get('3ds') === 'failure') {
-        url.searchParams.set('3ds_restore', 1);
-        location.href = url.href;
-      }
+      url.searchParams.set('3ds_restore', 1);
+      location.href = url.href;
+    })();
+  </script>
+@endif
 
-      if (url.searchParams.get('3ds') === 'success') {
-        url.pathname = @if (count($product->upsells) > 0) '/thankyou-promos' @else '/thankyou' @endif ;
-        url.searchParams.set('order', localStorage.getItem('odin_order_id'));
-        url.searchParams.set('cur', localStorage.getItem('order_currency'));
-        url.searchParams.delete('3ds_restore');
-        url.searchParams.delete('3ds');
+@if (Request::is('checkout') && Request::get('3ds') === 'success' && Request::get('3ds_restore'))
+  <script type="text/javascript">
+    (() => {
+      const url = new URL(location);
 
-        localStorage.setItem('odin_order_created_at', new Date());
-        location.href = url.href;
-      }
+      localStorage.setItem('odin_order_created_at', new Date());
+      url.pathname = @if (count($product->upsells) > 0) '/thankyou-promos' @else '/thankyou' @endif ;
+      url.searchParams.set('order', localStorage.getItem('odin_order_id'));
+      url.searchParams.set('cur', localStorage.getItem('order_currency'));
+      url.searchParams.delete('3ds_restore');
+      url.searchParams.delete('3ds');
+
+      location.href = url.href;
     })();
   </script>
 @endif
