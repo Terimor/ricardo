@@ -540,7 +540,7 @@ class PaymentService
                 '3ds'       => self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs),
                 'description'   => $product->product_name,
                 // TODO: remove city hardcode
-                'billing_descriptor'   => ['name' => $product->billing_descriptor, 'city' => 'MDE']
+                'billing_descriptor'   => ['name' => $product->billing_descriptor, 'city' => 'Msida']
             ]);
             if ($payment['status'] !== Txn::STATUS_FAILED) {
                 $payment['token'] = $checkoutService->requestToken($card, $contact);
@@ -672,7 +672,7 @@ class PaymentService
                             'number'    => $order->number,
                             'description'   => implode(', ', $checkout_names),
                             // TODO: remove city hardcode
-                            'billing_descriptor'   => ['name' => $main_product->billing_descriptor, 'city' => 'MDE']
+                            'billing_descriptor'   => ['name' => $main_product->billing_descriptor, 'city' => 'Msida']
                         ]
                     );
                 }
@@ -769,6 +769,29 @@ class PaymentService
             }
         }
 
+    }
+
+    /**
+     * Reject txn
+     * @param array $data
+     * @return void
+     */
+    public function rejectTxn(array $data): void
+    {
+        $order = OdinOrder::getByNumber($data['order_number']); // throwable
+
+        $txn = $order->getTxnByHash($data['txn_hash'], false);
+        if ($txn) {
+            $txn['status'] = $data['txn_status'];
+            $order->addTxn($txn);
+        }
+
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
+            }
+        }
     }
 
     /**

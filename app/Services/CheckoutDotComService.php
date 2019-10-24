@@ -298,10 +298,11 @@ class CheckoutDotComService
             'token'             => null
         ];
 
-        logger()->info('Checkout.com', ['payload' => json_encode($payment->getValues())]);
-
         // parse response
         try {
+            ini_set('serialize_precision', 15);
+            logger()->info('Checkout.com', ['payload' => json_encode($payment->getValues())]);
+
             $res = $this->checkout->payments()->request($payment);
 
             $result['provider_data'] = $res;
@@ -320,7 +321,7 @@ class CheckoutDotComService
                     $result['errors']  = [CheckoutDotComCodeMapper::toPhrase($response_code)];
                 }
             } elseif ($res->http_code === 202 && $res->status === self::STATUS_PENDING) { // pending 3ds
-                $result['status']       = Txn::STATUS_NEW;
+                $result['status']       = Txn::STATUS_AUTHORIZED;
                 $result['redirect_url'] = $res->_links['redirect']['href'];
             }
         } catch (CheckoutHttpException $ex) {
@@ -416,9 +417,11 @@ class CheckoutDotComService
         if ($is_valid && !empty($data)) {
             $response_code = (string)$data['response_code'];
             $result = [
-                'status'        => true,
-                'order_number'  => $data['reference'],
-                'errors'        => [CheckoutDotComCodeMapper::toPhrase($response_code)]
+                'status'    => true,
+                'errors'    => [CheckoutDotComCodeMapper::toPhrase($response_code)],
+                'txn_status'    => Txn::STATUS_FAILED,
+                'txn_hash'      => $data['id'],
+                'order_number'  => $data['reference']
             ];
         }
 
