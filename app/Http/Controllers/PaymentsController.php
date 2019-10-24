@@ -118,7 +118,7 @@ class PaymentsController extends Controller
      * @param  Request $req
      * @return void
      */
-    public function checkoutDotComFailedWebhook(Request $req)
+    public function checkoutDotComFailedWebhook(Request $req): void
     {
         $checkoutService = new CheckoutDotComService();
         $reply = $checkoutService->validateFailedWebhook($req);
@@ -127,6 +127,8 @@ class PaymentsController extends Controller
             logger()->error('checkout.com unauthorized failed webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new AuthException('checkout.com captured webhook unauthorized');
         }
+
+        $this->paymentService->rejectTxn($reply);
 
         PaymentService::cacheErrors($reply);
     }

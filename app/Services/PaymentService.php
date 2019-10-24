@@ -772,6 +772,29 @@ class PaymentService
     }
 
     /**
+     * Reject txn
+     * @param array $data
+     * @return void
+     */
+    public function rejectTxn(array $data): void
+    {
+        $order = OdinOrder::getByNumber($data['order_number']); // throwable
+
+        $txn = $order->getTxnByHash($data['txn_hash'], false);
+        if ($txn) {
+            $txn['status'] = $data['txn_status'];
+            $order->addTxn($txn);
+        }
+
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
+            }
+        }
+    }
+
+    /**
      * Caches webhook errors
      * @param array  $data
      * @return void
