@@ -19,7 +19,7 @@ class OdinOrder extends OdinModel
     const EVENT_AFF_POSTBACK_SENT = 'aff_postback_sent';
     const EVENT_AFF_PIXEL_SHOWN = 'aff_pixel_shown';
 
-    public static $acceptedTxnStatuses = ['captured', 'approved'];
+    public static $acceptedTxnStatuses = ['captured', 'approved', 'authorized'];
 
     /**
      * Attributes with default values
