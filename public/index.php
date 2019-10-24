@@ -9,6 +9,15 @@
 
 define('LARAVEL_START', microtime(true));
 
+/**
+ * Don't allow to open website by IP
+ */
+$ODIN_HTTP_HOST = explode(':', $_SERVER['HTTP_HOST'])[0];
+if (!in_array($ODIN_HTTP_HOST, ['127.0.0.1', '192.168.1.101', '192.168.1.3']) && filter_var($ODIN_HTTP_HOST, FILTER_VALIDATE_IP)) {
+    echo "Hi";
+    exit;
+}
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
