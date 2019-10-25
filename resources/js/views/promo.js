@@ -416,23 +416,24 @@ const promo = new Vue({
 
     changeWarrantyValue () {
       const prices = checkoutData.product.prices;
+      const quantity = this.form && +this.form.deal || 1;
       this.implValue = this.implValue || 3;
 
       switch(this.implValue) {
         case 1:
-          this.warrantyPriceText = prices[1].value_text;
-          this.warrantyOldPrice = prices[1].old_value_text;
-          this.discount = prices[1].discount_percent;
+          this.warrantyPriceText = prices[quantity].value_text;
+          this.warrantyOldPrice = prices[quantity].old_value_text;
+          this.discount = prices[quantity].discount_percent;
           break;
         case 3:
-          this.warrantyPriceText = prices[1].installments3_value_text;
-          this.warrantyOldPrice = prices[1].installments3_old_value_text;
-          this.discount = prices[1].discount_percent;
+          this.warrantyPriceText = prices[quantity].installments3_value_text;
+          this.warrantyOldPrice = prices[quantity].installments3_old_value_text;
+          this.discount = prices[quantity].discount_percent;
           break;
         case 6:
-          this.warrantyPriceText = prices[1].installments6_value_text;
-          this.warrantyOldPrice = prices[1].installments6_old_value_text;
-          this.discount = prices[1].discount_percent;
+          this.warrantyPriceText = prices[quantity].installments6_value_text;
+          this.warrantyOldPrice = prices[quantity].installments6_old_value_text;
+          this.discount = prices[quantity].discount_percent;
           break;
         default:
           break;
@@ -482,5 +483,11 @@ const promo = new Vue({
     getFormHeight() {
         this.carouselFormHeight = `${this.slideFormSteps[this.slideFormStep].offsetHeight}px`;
     },
-  }
+  },
+
+  watch: {
+    'form.deal'(val) {
+      this.changeWarrantyValue();
+    },
+  },
 })
