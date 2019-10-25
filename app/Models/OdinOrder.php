@@ -146,7 +146,6 @@ class OdinOrder extends OdinModel
      */
     public static function boot()
     {
-        ini_set('serialize_precision', 15);
         parent::boot();
 
         self::creating(function($model) {

@@ -553,6 +553,8 @@ class PaymentService
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
+            ini_set('serialize_precision', 15);
+
             $order_product['txn_hash'] = $payment['hash'];
             $this->addTxnToOrder($order, $payment, $card['type']);
             $order->addProduct($order_product, true);
