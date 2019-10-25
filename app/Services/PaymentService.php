@@ -370,7 +370,7 @@ class PaymentService
 
         $currency = CurrencyService::getCurrency($localized_product->prices['currency']);
 
-        $price_usd = floor($localized_product->prices[$qty]['value'] / $currency->usd_rate * 100) / 100;
+        $price_usd = $localized_product->prices[$qty]['value'] / $currency->usd_rate;
 
         return [
             'currency'          => $currency->code,
@@ -380,7 +380,7 @@ class PaymentService
             'value'             => $localized_product->prices[$qty]['value'],
             'value_usd'         => $price_usd,
             'warranty_value'    => $localized_product->prices[$qty]['warranty_price'],
-            'warranty_value_usd'    => CurrencyService::calculateWarrantyPrice($product->warranty_percent, $price_usd)
+            'warranty_value_usd'    => $product->warranty_percent * $price_usd / 100
         ];
     }
 
@@ -399,7 +399,7 @@ class PaymentService
             'sku_code'              => $sku,
             'quantity'              => $price['quantity'],
             'price'                 => $price['value'],
-            'price_usd'             => $price['value_usd'],
+            'price_usd'             => floor($price['value_usd'] * 100) / 100,
             'price_set'             => $price['price_set'] ?? null,
             'is_main'               => $is_main,
             'is_upsells'            => !$is_main,
@@ -408,15 +408,15 @@ class PaymentService
             'warranty_price'        => 0,
             'warranty_price_usd'    => 0,
             'total_price'           => $price['value'],
-            'total_price_usd'       => $price['value_usd']
+            'total_price_usd'       => floor($price['value_usd'] * 100) / 100
         ];
 
         $is_warranty = $details['is_warranty'] ?? false;
         if ($is_warranty) {
             $order_product['warranty_price']        = $price['warranty_value'];
-            $order_product['warranty_price_usd']    = $price['warranty_value_usd'];
+            $order_product['warranty_price_usd']    = floor($price['warranty_value_usd'] * 100) / 100;
             $order_product['total_price']           = $price['value'] + $price['warranty_value'];
-            $order_product['total_price_usd']       = $price['value_usd'] + $price['warranty_value_usd'];
+            $order_product['total_price_usd']       = floor($price['value_usd'] * 100 + $price['warranty_value_usd'] * 100) / 100;
         }
         return $order_product;
     }
@@ -620,7 +620,7 @@ class PaymentService
                         [
                             'quantity'  => (int)$item['qty'],
                             'value'     => $upsell_price['price'],
-                            'value_usd' => floor($upsell_price['price'] / $upsell_price['exchange_rate'] * 100) / 100
+                            'value_usd' => $upsell_price['price'] / $upsell_price['exchange_rate']
                         ],
                         [
                             'is_main' => false,
