@@ -611,7 +611,6 @@ class PaymentService
             $upsell_products = [];
             $checkout_names = [];
             $checkout_price = 0;
-            $rate_usd = 1;
             foreach ($upsells as $key => $item) {
                 try {
                     $product = $this->productService->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
@@ -629,7 +628,6 @@ class PaymentService
                         ]
                     );
                     $checkout_price += $upsell_price['price'];
-                    $rate_usd = $upsell_price['exchange_rate'];
                     $checkout_names[] = $product->product_name;
                     $upsell_products[] = $upsell_product;
                 } catch (HttpException $e) {
@@ -705,7 +703,7 @@ class PaymentService
 
                     $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
                     $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
-                    $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($checkout_price / $rate_usd, Currency::DEF_CUR);
+                    $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($checkout_price / $order->exchange_rate, Currency::DEF_CUR);
                     $order->is_invoice_sent = false;
 
                     if (!$order->save()) {
