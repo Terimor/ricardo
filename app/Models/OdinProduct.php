@@ -139,7 +139,7 @@ class OdinProduct extends Model
     public function getPricesAttribute($value)
     {
         $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
-        $returnedKey = 0;
+        $returnedKey = 0; $priceSetFound = false;
 
       //iteration by price sets array
         foreach ($value as $key => $priceSet) {
@@ -204,11 +204,12 @@ class OdinProduct extends Model
 
                 if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
                   $returnedKey = $key;
+                  $priceSetFound = true;
                   break;
                 }
         }
 
-        if (request()->has('cop_id')) {
+        if (request()->has('cop_id') && !$priceSetFound) {
             logger()->error("Invalid cop_id ".request()->get('cop_id')." for {$this->product_name}");
         }
 
