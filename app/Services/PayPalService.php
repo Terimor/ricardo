@@ -514,7 +514,7 @@ class PayPalService
                     'value' => $txn_response['txn']->value,
                     'status' => Txn::STATUS_APPROVED,
                     'is_charged_back' => false,
-                    'fee' => $fee,
+                    'fee' => (float)$fee,
                     'payment_provider' => $txn_response['txn']->payment_provider,
                     'payment_method' => $txn_response['txn']->payment_method,
                     'payer_id' => $txn_response['txn']->payer_id,
