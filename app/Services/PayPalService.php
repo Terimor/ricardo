@@ -466,7 +466,7 @@ class PayPalService
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
             })->first();
-            $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'];
+            $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'] ?? 0;
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
 
             // Should prevent duplicated calls
