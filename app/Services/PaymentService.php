@@ -416,7 +416,7 @@ class PaymentService
         if ($is_warranty) {
             $order_product['warranty_price']        = $price['warranty_value'];
             $order_product['warranty_price_usd']    = CurrencyService::roundValueByCurrencyRules($price['warranty_value_usd'], Currency::DEF_CUR);
-            $order_product['total_price']           = $price['value'] + $price['warranty_value'];
+            $order_product['total_price']           = CurrencyService::roundValueByCurrencyRules($price['value'] + $price['warranty_value'], $price['currency']);
             $order_product['total_price_usd']       = CurrencyService::roundValueByCurrencyRules($price['value_usd'] + $price['warranty_value_usd'], Currency::DEF_CUR);
         }
         return $order_product;
@@ -553,8 +553,6 @@ class PaymentService
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
-            ini_set('serialize_precision', 15);
-
             $order_product['txn_hash'] = $payment['hash'];
             $this->addTxnToOrder($order, $payment, $card['type']);
             $order->addProduct($order_product, true);
