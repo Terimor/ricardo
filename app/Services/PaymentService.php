@@ -611,7 +611,7 @@ class PaymentService
             $upsell_products = [];
             $checkout_names = [];
             $checkout_price = 0;
-            $checkout_price_usd = 0;
+            $rate_usd = 1;
             foreach ($upsells as $key => $item) {
                 try {
                     $product = $this->productService->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
@@ -628,8 +628,8 @@ class PaymentService
                             'is_plus_one' => ($item['id'] === $main_product->getIdAttribute())
                         ]
                     );
-                    $checkout_price += $upsell_product['total_price'];
-                    $checkout_price_usd += $upsell_product['total_price_usd'];
+                    $checkout_price += $upsell_price['price'];
+                    $rate_usd = $upsell_price['exchange_rate'];
                     $checkout_names[] = $product->product_name;
                     $upsell_products[] = $upsell_product;
                 } catch (HttpException $e) {
@@ -702,8 +702,10 @@ class PaymentService
                     if ($order->status === OdinOrder::STATUS_PAID) {
                         $order->status = OdinOrder::STATUS_HALFPAID;
                     }
-                    $order->total_price += $checkout_price;
-                    $order->total_price_usd += $checkout_price_usd;
+
+                    $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
+                    $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
+                    $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($checkout_price / $rate_usd, Currency::DEF_CUR);
                     $order->is_invoice_sent = false;
 
                     if (!$order->save()) {
