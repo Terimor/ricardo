@@ -756,7 +756,7 @@ class PaymentService
 
             $currency = CurrencyService::getCurrency($order->currency);
 
-            $total = collect($this->txns)->reduce(function ($carry, $item) {
+            $total = collect($order->txns)->reduce(function ($carry, $item) {
                 if ($item['status'] === Txn::STATUS_APPROVED) {
                     $carry['value'] += $item['value'];
                     $carry['fee']   += $item['fee'];
