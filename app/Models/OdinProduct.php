@@ -21,6 +21,7 @@ class OdinProduct extends Model
     protected $images;
     protected $upsellPrices;
     public $currency;
+    public $hide_cop_id_log = false;
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout',
@@ -209,7 +210,7 @@ class OdinProduct extends Model
                 }
         }
 
-        if (request()->has('cop_id') && !$priceSetFound) {
+        if (request()->has('cop_id') && !$priceSetFound && !$this->hide_cop_id_log) {
             logger()->error("Invalid cop_id ".request()->get('cop_id')." for {$this->product_name}");
         }
 
@@ -329,6 +330,7 @@ class OdinProduct extends Model
      */
     public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
     {
+        $this->hide_cop_id_log = true;
         $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
 
         // if null set quantity 1
@@ -342,6 +344,7 @@ class OdinProduct extends Model
         }
 
         if (!$fixedPrice && !$discountPercent) {
+          logger()->error("Fixed price and discount percent empty {$this->_id}", ['fixedPrice' => $fixedPrice, 'discountPercent' => $discountPercent]);
           return false;
         }
 
