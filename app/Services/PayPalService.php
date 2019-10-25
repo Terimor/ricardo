@@ -131,9 +131,9 @@ class PayPalService
             'description' => $product->long_name,
             'amount' => [
                 'currency_code' => $upsell_order->currency,
-                'value' => $total_upsell_price,
-                'items' => $pp_items,
-            ]
+                'value' => $total_upsell_price,                
+            ],
+            'items' => $pp_items,            
         ];
 
         $pp_request = new OrdersCreateRequest();
