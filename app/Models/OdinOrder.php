@@ -417,7 +417,7 @@ class OdinOrder extends OdinModel
      */
     public function addTxn(array $txn): void
     {
-        $this->txns =collect($this->txns)
+        $this->txns = collect($this->txns)
             ->reject(function ($v) use ($txn) {
                 return $v['hash'] === $txn['hash'];
             })

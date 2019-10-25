@@ -14,6 +14,7 @@ use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
 use App\Exceptions\ProviderNotFoundException;
 use App\Models\Txn;
+use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Services\CurrencyService;
@@ -399,7 +400,7 @@ class PaymentService
             'sku_code'              => $sku,
             'quantity'              => $price['quantity'],
             'price'                 => $price['value'],
-            'price_usd'             => floor($price['value_usd'] * 100) / 100,
+            'price_usd'             => CurrencyService::roundValueByCurrencyRules($price['value_usd'], Currency::DEF_CUR),
             'price_set'             => $price['price_set'] ?? null,
             'is_main'               => $is_main,
             'is_upsells'            => !$is_main,
@@ -408,15 +409,15 @@ class PaymentService
             'warranty_price'        => 0,
             'warranty_price_usd'    => 0,
             'total_price'           => $price['value'],
-            'total_price_usd'       => floor($price['value_usd'] * 100) / 100
+            'total_price_usd'       => CurrencyService::roundValueByCurrencyRules($price['value_usd'], Currency::DEF_CUR)
         ];
 
         $is_warranty = $details['is_warranty'] ?? false;
         if ($is_warranty) {
             $order_product['warranty_price']        = $price['warranty_value'];
-            $order_product['warranty_price_usd']    = floor($price['warranty_value_usd'] * 100) / 100;
+            $order_product['warranty_price_usd']    = CurrencyService::roundValueByCurrencyRules($price['warranty_value_usd'], Currency::DEF_CUR);
             $order_product['total_price']           = $price['value'] + $price['warranty_value'];
-            $order_product['total_price_usd']       = floor($price['value_usd'] * 100 + $price['warranty_value_usd'] * 100) / 100;
+            $order_product['total_price_usd']       = CurrencyService::roundValueByCurrencyRules($price['value_usd'] + $price['warranty_value_usd'], Currency::DEF_CUR);
         }
         return $order_product;
     }
@@ -740,8 +741,9 @@ class PaymentService
 
         $txn = $order->getTxnByHash($data['hash'], false);
         if ($txn) {
-            $txn['fee'] = $data['fee'];
-            $txn['status'] = $data['status'];
+            $txn['fee']     = $data['fee'];
+            $txn['status']  = $data['status'];
+            $txn['value']   = $data['value'];
             $order->addTxn($txn);
         }
 
@@ -754,9 +756,17 @@ class PaymentService
 
             $currency = CurrencyService::getCurrency($order->currency);
 
-            $order->total_paid      = floor($order->total_paid * 100 + $data['value'] * 100) / 100;
-            $order->total_paid_usd  = floor($order->total_paid_usd * 100 + $data['value'] / $currency->usd_rate * 100) / 100;
-            $order->txns_fee_usd    = floor($order->txns_fee_usd * 100 + $data['fee'] / $currency->usd_rate * 100) / 100;
+            $total = collect($this->txns)->reduce(function ($carry, $item) {
+                if ($item['status'] === Txn::STATUS_APPROVED) {
+                    $carry['value'] += $item['value'];
+                    $carry['fee']   += $item['fee'];
+                }
+                return $carry;
+            }, ['value' => 0, 'fee' => 0]);
+
+            $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total['value'], $currency->code);
+            $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total['value'] / $currency->usd_rate, Currency::DEF_CUR);
+            $order->txns_fee_usd    = CurrencyService::roundValueByCurrencyRules($total['fee'] / $currency->usd_rate, Currency::DEF_CUR);
 
             $price_paid_diff    = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
             $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
