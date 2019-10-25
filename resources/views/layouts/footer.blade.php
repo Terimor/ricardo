@@ -18,7 +18,7 @@
         @endphp
         @if (isset($hasHome) && $hasHome == true)
             <li class="footer__row-item">
-                <a href="/" class="footer__link">Home</a>
+                <a href="/" class="footer__link">{{ t('footer.home') }}</a>
             </li>
         @endif
         @foreach ($links as $item)
