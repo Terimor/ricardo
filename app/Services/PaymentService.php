@@ -88,22 +88,22 @@ class PaymentService
                 self::METHOD_CREDITCARD => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    'excl' => ['br', 'mx', 'co']
+                    // 'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_VISA       => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    'excl' => ['br', 'mx', 'co']
+                    // 'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_MASTERCARD => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    'excl' => ['br', 'mx', 'co']
+                    // 'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_AMEX       => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    'excl' => ['br', 'mx', 'co']
+                    // 'excl' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_DISCOVER   => [
                     '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
@@ -124,7 +124,7 @@ class PaymentService
         ],
         self::PROVIDER_EBANX       => [
             'name'      => 'EBANX',
-            'is_active' => true,
+            'is_active' => false,
             'methods'   => [
                 self::METHOD_CREDITCARD => [
                     '-3ds' => ['br', 'mx', 'co']
