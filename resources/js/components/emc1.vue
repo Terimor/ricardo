@@ -71,7 +71,7 @@
                     </div>
                 </div>
                 <div class="paper col-md-5 main__payment">
-                    <img id="product-image" :src="setProductImage" alt="">
+                    <img id="product-image" :src="productImage" alt="">
                     <template v-if="!isPurchasAlreadyExists">
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
                         <h3 v-html="textPaySecurely"></h3>
@@ -196,6 +196,7 @@
   import { preparePartByInstallments } from '../utils/installments';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { queryParams } from  '../utils/queryParams';
+  const searchParams = new URL(location).searchParams;
 
   export default {
     name: 'emc1',
@@ -288,11 +289,7 @@
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
           deal: null,
-          variant: (function() {
-            try {
-              return checkoutData.product.skus[0].code
-            } catch(_) {}
-          }()),
+          variant: checkoutData.product.skus[0].code,
           installments: 1,
           paymentType: null,
           fname: null,
@@ -316,41 +313,46 @@
         },
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
+        productImage: this.getProductImage(),
+        disableAnimation: true,
       }
     },
     created() {
       if (this.queryParams['3ds'] === 'failure') {
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
-        if (selectedProductData) {
-          this.form.deal = selectedProductData.deal || this.form.deal;
-          this.form.variant = selectedProductData.variant || this.form.variant;
-          this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
-          this.form.installments = selectedProductData.installments || this.form.installments;
-          this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
-          this.form.cardType = selectedProductData.cardType || this.form.cardType;
-          this.form.fname = selectedProductData.fname || this.form.fname;
-          this.form.lname = selectedProductData.lname || this.form.lname;
-          this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
-          this.form.email = selectedProductData.email || this.form.email;
-          this.form.phone = selectedProductData.phone || this.form.phone;
-          this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
-          this.form.street = selectedProductData.street || this.form.street;
-          this.form.number = selectedProductData.streetNumber || this.form.number;
-          this.form.complemento = selectedProductData.complemento || this.form.complemento;
-          this.form.city = selectedProductData.city || this.form.city;
-          this.form.state = selectedProductData.state || this.form.state;
-          this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
-          this.form.country = selectedProductData.country || this.form.country;
-          this.setWarrantyPriceText(this.form.deal);
-          this.isFormShown = true;
+        if (!selectedProductData) {
+          return;
         }
+
+        this.form.deal = selectedProductData.deal || this.form.deal;
+        this.form.variant = selectedProductData.variant || this.form.variant;
+        this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
+        this.form.installments = selectedProductData.installments || this.form.installments;
+        this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+        this.form.cardType = selectedProductData.cardType || this.form.cardType;
+        this.form.fname = selectedProductData.fname || this.form.fname;
+        this.form.lname = selectedProductData.lname || this.form.lname;
+        this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
+        this.form.email = selectedProductData.email || this.form.email;
+        this.form.phone = selectedProductData.phone || this.form.phone;
+        this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
+        this.form.street = selectedProductData.street || this.form.street;
+        this.form.number = selectedProductData.streetNumber || this.form.number;
+        this.form.complemento = selectedProductData.complemento || this.form.complemento;
+        this.form.city = selectedProductData.city || this.form.city;
+        this.form.state = selectedProductData.state || this.form.state;
+        this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
+        this.form.country = selectedProductData.country || this.form.country;
+        this.setWarrantyPriceText(this.form.deal);
+        this.isFormShown = true;
       }
+
+      setTimeout(() => {
+        this.disableAnimation = false;
+      }, 1000);
     },
     computed: {
-      setProductImage() {
-        return this.productData.image[this.queryParams['image'] - 1] || this.productData.image[0];
-      },
       isShowVariant() {
         return Number(queryParams().variant) === 0
       },
@@ -400,6 +402,11 @@
           })
         }))
       },
+      productImagesList() {
+        const variant = this.form.variant || checkoutData.product.skus[0].code;
+        const product = checkoutData.product.skus.find(sku => variant === sku.code);
+        return Object.values(product.quantity_image);
+      },
       checkoutData () {
         return checkoutData
       },
@@ -440,18 +447,16 @@
           installments: val,
         })
       },
+      'form.deal'(val) {
+        this.animateProductImage();
+      },
       'form.variant' (val) {
-        fade('out', 300, document.querySelector('#product-image'), true)
-          .then(() => {
-            this.productImage = this.variantList.find(variant => variant.value === val).imageUrl
-
-            setTimeout(() => fade('in', 300, document.querySelector('#product-image'), true), 200)
-          })
+        this.animateProductImage();
 
         this.setPurchase({
           variant: val,
           installments: this.form.installments,
-        })
+        });
       },
     },
     validations: emc1Validation,
@@ -503,8 +508,6 @@
         }
       },
       paypalCreateOrder () {
-        const searchParams = new URL(document.location.href).searchParams;
-
         const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
           ? checkoutData.product.prices.currency
           : searchParams.get('cur');
@@ -592,7 +595,42 @@
       },
       getStepOrder(number) {
         return this.variantList.length == 1 || this.isShowVariant ? number - 1 : number
-      }
+      },
+      getProductImage() {
+        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+        const quantity = this.form && +this.form.deal || 1;
+
+        // use the main image initially
+        //const initialImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+
+        // use the SKU image initially if &image= is not present
+        const initialImage = searchParams.has('image')
+          ? checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0]
+          : skuVariant.quantity_image[1] || checkoutData.product.image[0];
+
+        return this.productImage
+          ? skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]
+          : initialImage;
+      },
+      animateProductImage() {
+        const newProductImage = this.getProductImage();
+
+        if (newProductImage !== this.productImage) {
+          if (!this.disableAnimation) {
+            const imgPreload = new Image();
+            imgPreload.src = newProductImage;
+
+            fade('out', 300, document.querySelector('#product-image'), true)
+              .then(() => {
+                this.productImage = newProductImage;
+                setTimeout(() => fade('in', 30, document.querySelector('#product-image'), true), 200);
+              });
+          } else {
+            this.productImage = newProductImage;
+          }
+        }
+      },
     },
     mounted () {
       window.setTestData = () => {
@@ -612,10 +650,6 @@
           documentNumber: '111.111.111-11',
         }
       }
-
-      try {
-        this.productImage = this.productData.image[0];
-      } catch (_) {}
 
       this.setCart(this.mockData.productList.reduce((acc, { key }) => {
         acc[key] = 0

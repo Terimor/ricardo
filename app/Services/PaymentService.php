@@ -416,8 +416,8 @@ class PaymentService
         if ($is_warranty) {
             $order_product['warranty_price']        = $price['warranty_value'];
             $order_product['warranty_price_usd']    = CurrencyService::roundValueByCurrencyRules($price['warranty_value_usd'], Currency::DEF_CUR);
-            $order_product['total_price']           = $price['value'] + $price['warranty_value'];
-            $order_product['total_price_usd']       = CurrencyService::roundValueByCurrencyRules($price['value_usd'] + $price['warranty_value_usd'], Currency::DEF_CUR);
+            $order_product['total_price']           = CurrencyService::roundValueByCurrencyRules($price['value'] + $price['warranty_value'], $price['currency']);
+            $order_product['total_price_usd']       = CurrencyService::roundValueByCurrencyRules($order_product['total_price'] / $price['usd_rate'], Currency::DEF_CUR);
         }
         return $order_product;
     }
@@ -611,7 +611,6 @@ class PaymentService
             $upsell_products = [];
             $checkout_names = [];
             $checkout_price = 0;
-            $checkout_price_usd = 0;
             foreach ($upsells as $key => $item) {
                 try {
                     $product = $this->productService->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
@@ -628,8 +627,7 @@ class PaymentService
                             'is_plus_one' => ($item['id'] === $main_product->getIdAttribute())
                         ]
                     );
-                    $checkout_price += $upsell_product['total_price'];
-                    $checkout_price_usd += $upsell_product['total_price_usd'];
+                    $checkout_price += $upsell_price['price'];
                     $checkout_names[] = $product->product_name;
                     $upsell_products[] = $upsell_product;
                 } catch (HttpException $e) {
@@ -702,8 +700,10 @@ class PaymentService
                     if ($order->status === OdinOrder::STATUS_PAID) {
                         $order->status = OdinOrder::STATUS_HALFPAID;
                     }
-                    $order->total_price += $checkout_price;
-                    $order->total_price_usd += $checkout_price_usd;
+
+                    $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
+                    $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
+                    $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($order->total_price / $order->exchange_rate, Currency::DEF_CUR);
                     $order->is_invoice_sent = false;
 
                     if (!$order->save()) {

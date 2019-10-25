@@ -32,3 +32,11 @@
     })();
   </script>
 @endif
+
+@if (Request::is('checkout') && Request::get('3ds') === 'failure' && Request::get('3ds_restore'))
+  <script type="text/javascript">
+    (() => {
+      localStorage.setItem('order_failed', localStorage.getItem('odin_order_id'));
+    })();
+  </script>
+@endif
