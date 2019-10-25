@@ -88,29 +88,31 @@ class I18nService
         if (!empty($loadedPhrases[$translation])) {
             $translation = $loadedPhrases[$translation];
         } else {
-            // return empty string instead of code if no EN translation for this phrase in Odin 
-            $translation = '';
+            // return empty string instead of code if no EN translation for this phrase in Odin
             logger()->error("URGENT: `{$translation}` not found in translations. Args: " . json_encode($args));
+            $translation = '';
         }
 
-        if ($args) {
-            foreach ($args as $key => $value) {
-                $placeholderKey = "#" . strtoupper($key) . "#";
-                $translation = str_replace($placeholderKey, $value, $translation);
-                if (!in_array($placeholderKey, I18n::$placeholders)) {
-                    logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
-                }
-                if ($value === null) {
-                    logger()->error("Translation is null for {$placeholderKey}");
+        if ($translation) {
+            if ($args) {
+                foreach ($args as $key => $value) {
+                    $placeholderKey = "#" . strtoupper($key) . "#";
+                    $translation = str_replace($placeholderKey, $value, $translation);
+                    if (!in_array($placeholderKey, I18n::$placeholders)) {
+                        logger()->error("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
+                    }
+                    if ($value === null) {
+                        logger()->error("Translation is null for {$placeholderKey}");
+                    }
                 }
             }
-        }
 
-        $translation = str_replace("&#39;", "’", $translation);
-        if (substr_count($translation, '#') > 1) {
-            $other_hashes_cnt = substr_count($translation, '/#/');
-            if (substr_count($translation, '#') != $other_hashes_cnt) {
-                logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: " . json_encode($args));
+            $translation = str_replace("&#39;", "’", $translation);
+            if (substr_count($translation, '#') > 1) {
+                $other_hashes_cnt = substr_count($translation, '/#/');
+                if (substr_count($translation, '#') != $other_hashes_cnt) {
+                    logger()->error("Non-translated placeholders for `{$phrase}`: {$translation}. Arguments: " . json_encode($args));
+                }
             }
         }
 
