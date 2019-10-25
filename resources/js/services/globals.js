@@ -58,7 +58,7 @@ if (searchParams.get('preload') === '{preload}') {
   window.preloadjs = 3;
 }
 
-if (searchParams.get('show_timer') === '{show_timer}') {
+if (searchParams.get('show_timer') === '{timer}') {
   window.show_timerjs = 1;
 }
 
