@@ -103,7 +103,7 @@ class PayPalService
                 'description' => $temp_upsell_product->long_name,
                 'unit_amount' => [
                     'currency_code' => $upsell_order->currency,
-                    'value' => $temp_upsell_item_price,
+                    'value' => $temp_upsell_item_price / $upsell_product_quantity,
                 ],
                 'quantity' => $upsell_product_quantity
             ];
@@ -131,9 +131,15 @@ class PayPalService
             'description' => $product->long_name,
             'amount' => [
                 'currency_code' => $upsell_order->currency,
-                'value' => $total_upsell_price,
-                'items' => $pp_items,
-            ]
+                'value' => $total_upsell_price,                
+                'breakdown' => [
+                    'item_total' => [
+                        'currency_code' => $upsell_order->currency,
+                        'value' => $total_upsell_price,
+                    ],
+                ]
+            ],
+            'items' => $pp_items,
         ];
 
         $pp_request = new OrdersCreateRequest();
