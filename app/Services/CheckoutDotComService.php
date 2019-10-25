@@ -161,9 +161,10 @@ class CheckoutDotComService
             logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
 
             $body = \json_decode($res->getBody(), true);
+            $data = !empty($body['data']) ? array_pop($body['data']) : [];
 
-            if (!empty($body['data']) && !empty($body['data']['actions'])) {
-                foreach ($body['data']['actions'] as $action) {
+            if (!empty($data['actions'])) {
+                foreach ($data['actions'] as $action) {
                     $bds = $action['breakdown'] ?? [];
                     // sum negative items
                     foreach ($bds as $item) {
