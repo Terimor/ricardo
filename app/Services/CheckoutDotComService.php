@@ -301,7 +301,7 @@ class CheckoutDotComService
         // parse response
         try {
             ini_set('serialize_precision', 15);
-            logger()->info('Checkout.com', ['payload' => json_encode($payment->getValues())]);
+            // logger()->info('Checkout.com', ['payload' => json_encode($payment->getValues())]);
 
             $res = $this->checkout->payments()->request($payment);
 
