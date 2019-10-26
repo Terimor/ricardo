@@ -448,7 +448,7 @@
         })
       },
       'form.deal'(val) {
-        this.animateProductImage();
+        //this.animateProductImage();
       },
       'form.variant' (val) {
         this.animateProductImage();
@@ -599,18 +599,18 @@
       getProductImage() {
         const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
         const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
-        const quantity = this.form && +this.form.deal || 1;
+        const quantity = /*this.form && +this.form.deal || */1;
 
         // use the main image initially
-        //const initialImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const initialImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
 
         // use the SKU image initially if &image= is not present
-        const initialImage = searchParams.has('image')
-          ? checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0]
-          : skuVariant.quantity_image[1] || checkoutData.product.image[0];
+        //const initialImage = searchParams.has('image')
+        //  ? checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0]
+        //  : skuVariant.quantity_image[1] || checkoutData.product.image[0];
 
         return this.productImage
-          ? skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]
+          ? skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || initialImage
           : initialImage;
       },
       animateProductImage() {
