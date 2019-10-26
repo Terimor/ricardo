@@ -239,13 +239,12 @@ class CurrencyService
                 $countryCode = $currency->countries[0];
             }
         } else {
-            $oldCurrency = $currencyCode;
             //try to find in currency countries
             if ($countryCode) {
                 $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
 
                 if(!$currency) {
-                    logger()->error("Can't find currency country", ['currencyCode' => $oldCurrency, 'countryCode' => $countryCode]);
+                    logger()->error("Can't find currency country", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
                     $currencyCode = 'USD';
                 }
             } else {
