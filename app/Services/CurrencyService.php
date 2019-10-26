@@ -245,14 +245,13 @@ class CurrencyService
                 $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
 
                 if(!$currency) {
+                    logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $oldCurrency, 'countryCode' => $countryCode]);
                     $currencyCode = 'USD';
                 }
             } else {
                 $currencyCode = 'USD';
             }
-            if (!$currency) {
-                logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $oldCurrency, 'countryCode' => $countryCode]);
-            }
+
             // default USD currency
             $currency = Currency::whereCode($currencyCode)->first();
             $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
