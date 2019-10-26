@@ -239,7 +239,7 @@ class CurrencyService
                 $countryCode = $currency->countries[0];
             }
         } else {
-            logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
+            $oldCurrency = $currencyCode;
             //try to find in currency countries
             if ($countryCode) {
                 $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
@@ -249,6 +249,9 @@ class CurrencyService
                 }
             } else {
                 $currencyCode = 'USD';
+            }
+            if (!$currency) {
+                logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $oldCurrency, 'countryCode' => $countryCode]);
             }
             // default USD currency
             $currency = Currency::whereCode($currencyCode)->first();
