@@ -983,10 +983,12 @@ class PaymentService
         $setting = PaymentService::$providers[PaymentService::PROVIDER_CHECKOUTCOM]['methods'][$card_type] ?? [];
         $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : PaymentService::FRAUD_CHANCE_MAX;
 
-        if (in_array($country, $setting['+3ds'] ?? []) || $fraud_chance > PaymentService::FRAUD_CHANCE_LIMIT) {
-            $result = true;
-        } else if (in_array($country, $setting['-3ds'] ?? []) && $fraud_chance < PaymentService::FRAUD_CHANCE_LIMIT) {
-            $result = false;
+        if ($fraud_chance < PaymentService::FRAUD_CHANCE_LIMIT) {
+            if (in_array($country, $setting['+3ds'] ?? []) ) {
+                $result = true;
+            } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
+                $result = false;
+            }
         }
 
         return $result;
