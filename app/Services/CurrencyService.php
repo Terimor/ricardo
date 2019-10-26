@@ -245,7 +245,7 @@ class CurrencyService
                 $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
 
                 if(!$currency) {
-                    logger()->error("Can't find currency country", ['currency' => $currency ? $currency->toArray() : '', 'currencyCode' => $oldCurrency, 'countryCode' => $countryCode]);
+                    logger()->error("Can't find currency country", ['currencyCode' => $oldCurrency, 'countryCode' => $countryCode]);
                     $currencyCode = 'USD';
                 }
             } else {
