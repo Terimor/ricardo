@@ -148,8 +148,6 @@ class CheckoutDotComService
                     'Content-Type'  => 'application/json'
                 ]
             ]);
-
-            logger()->info('Checkout.com Reporting API status -> ' . $res->getStatusCode());
         } catch (GuzzReqException $e) {
             logger()->error("Checkout.com Reporting API [{$payment_id}]", [
                 'request'   => Psr7\str($e->getRequest()),
@@ -158,8 +156,6 @@ class CheckoutDotComService
         }
 
         if (isset($res) && (int)$res->getStatusCode() === 200) {
-            logger()->info('Checkout.com Reporting API body -> ' . $res->getBody());
-
             $body = \json_decode($res->getBody(), true);
             $data = !empty($body['data']) ? array_pop($body['data']) : [];
 
@@ -334,10 +330,10 @@ class CheckoutDotComService
             $result['errors'] = array_map(function($code) {
                 return CheckoutDotComCodeMapper::toPhrase($code);
             },$ex->getErrors() ?? []);
-            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $body, 'req' => json_encode($payment->getValues())]);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $body]);
         } catch (CheckoutException $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'body' => $ex->getBody()];
-            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody(), 'req' => json_encode($payment->getValues())]);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         }
 
         return $result;
