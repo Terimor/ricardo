@@ -9,7 +9,9 @@ export default {
           return item.classList.contains('invalid');
         });
 
-        targetInput.scrollIntoView()
+        if (targetInput && targetInput.scrollIntoView) {
+          targetInput.scrollIntoView();
+        }
       });
     }
   }
