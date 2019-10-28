@@ -118,17 +118,12 @@ const emc1Validation = function () {
       cvv: this.form.paymentType === 'credit-card',
   }
 
-  const res = {
-    form: Object.entries(allRules)
-      .reduce((acc, [key, value]) => {
-        if (dynamicConfig[key] || dynamicConfig[key] == null) {
-          acc[key] = value
-        }
-
-        return acc
-      }, {})
+  for (let key of Object.keys(allRules)) {
+    if (dynamicConfig[key] === false) {
+      delete allRules[key];
+    }
   }
 
-  return res
+  return { form: allRules };
 }
 export default emc1Validation
