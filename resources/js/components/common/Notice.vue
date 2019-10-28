@@ -65,7 +65,7 @@ export default {
 
           if(targetNotice) {
               targetNotice.addEventListener('click', function () {
-                  if(targetButton) {
+                  if(targetButton && targetButton.scrollIntoView) {
                       targetButton.scrollIntoView();
                   }
               });
