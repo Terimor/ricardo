@@ -27,17 +27,19 @@ export default {
         }
       });
 
-      const notification = this.$notify({
-        position,
-        message: content,
-        dangerouslyUseHTMLString: true,
-        customClass: 'recently-bought',
-        onClose(self) {
-          delete notifications[self.id];
-        },
-      });
+      if (this.$notify) {
+        const notification = this.$notify({
+          position,
+          message: content,
+          dangerouslyUseHTMLString: true,
+          customClass: 'recently-bought',
+          onClose(self) {
+            delete notifications[self.id];
+          },
+        });
 
-      notifications[notification.id] = notification;
+        notifications[notification.id] = notification;
+      }
     },
   }
 }
