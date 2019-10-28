@@ -416,7 +416,7 @@
         return currentDeal && Math.round((currentDeal.newPrice || currentDeal.price) * 10) / 100
       },
       textDynamicSaleBadge: () => t('checkout.dynamic_sale_badge'),
-      textMainDealText: () => t('checkout.main_deal.message'),
+      textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + checkoutData.countryCode) }),
       textStep: () => t('checkout.step'),
       textChooseDeal: () => t('checkout.choose_deal'),
       textInstallmentsTitle: () => t('checkout.installments.title'),
