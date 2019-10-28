@@ -1,5 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
-import postcode from 'postcode-validator'
+import { isValidZipcode } from './validators';
 import creditCardType from 'credit-card-type'
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import * as dateFns from 'date-fns';
@@ -50,9 +50,9 @@ const emc1Validation = function () {
     },
     zipcode: {
       required,
-      isValidZipcode (val) {
-        return postcode.validate(val, this.form.country || checkoutData.countryCode)
-      }
+      isValidZipcode(value) {
+        return isValidZipcode(value, this.form.country || checkoutData.countryCode);
+      },
     },
     country: {
       required
