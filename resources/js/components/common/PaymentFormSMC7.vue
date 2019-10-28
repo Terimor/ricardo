@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-wrap payment-form-smc7">
+  <div v-if="$v" class="flex-wrap payment-form-smc7">
     <select-field
         :validation="$v.form.country"
         :validationMessage="textCountryRequired"
@@ -100,7 +100,7 @@
           :prefix="`<img src='${cardUrl}' />`"
           :postfix="`<i class='fa fa-lock'></i>`"
       />
-      <div class="card-date input-container" :class="{ invalid: $v.form.month.$dirty && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
+      <div class="card-date input-container" :class="{ invalid: $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
         <span class="label">{{textCardValidUntil}}</span>
         <select-field
             :validation="$v.form.month"

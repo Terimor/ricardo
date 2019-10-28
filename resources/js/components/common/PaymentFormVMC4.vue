@@ -97,7 +97,7 @@
                 :postfix="`<i class='fa fa-lock'></i>`"
             />
             <div class="card-info">
-              <div class="d-flex input-container" :class="{ invalid: $v.form.stepThree.month.$dirty && $v.form.stepThree.year.$dirty && ($v.form.stepThree.month.$invalid || $v.form.stepThree.year.$invalid || isCardExpired) }">
+              <div class="d-flex input-container" :class="{ invalid: $v.form && $v.form.stepThree && $v.form.stepThree.month && $v.form.stepThree.month.$dirty && $v.form.stepThree.year && $v.form.stepThree.year.$dirty && ($v.form.stepThree.month.$invalid || $v.form.stepThree.year.$invalid || isCardExpired) }">
                 <div>
                   <div class="card-info__labels">
                     <span class="label" v-html="textCardValidUntil"></span>

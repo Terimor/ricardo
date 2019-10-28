@@ -1,5 +1,5 @@
 <template>
-    <form class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
+    <form v-if="$v" class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
         <h2>
           {{ firstTitle }}
         </h2>
@@ -204,7 +204,7 @@
                 />
                 <label
                   class="card-date"
-                  :class="{ 'with-error': $v.form.month.$dirty && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
+                  :class="{ 'with-error': $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
                     <span class="label" v-html="textCardValidUntil"></span>
                     <select-field
                         :validation="$v.form.month"
