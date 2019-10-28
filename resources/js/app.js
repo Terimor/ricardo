@@ -1,3 +1,4 @@
+import './resourses/polyfills';
 import './services/globals';
 import globals from './mixins/globals';
 

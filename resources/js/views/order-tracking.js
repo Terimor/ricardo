@@ -1,3 +1,5 @@
+import '../resourses/polyfills';
+
 require('../bootstrap');
 
 import { t } from '../utils/i18n';

@@ -1,3 +1,5 @@
+import '../resourses/polyfills';
+
 require('../bootstrap')
 
 import carousel from 'vue-owl-carousel';
