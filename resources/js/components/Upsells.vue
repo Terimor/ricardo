@@ -170,12 +170,13 @@
             .then(() => {
               if (this.accessoryList.length !== 0) {
                 getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
-                .then((total) => {
-                  this.total = total;
-                })
-                  .finally(() => {
+                  .then((total) => {
+                    this.total = total;
                     this.activeTab = 'third';
                   })
+                  .catch(() => {
+                    this.activeTab = 'third';
+                  });
               } else {
                 this.redirect();
               }

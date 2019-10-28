@@ -73,9 +73,9 @@ const vmc4validation = function () {
 				},
 				zipCode: {
 					required,
-					isValidZipcode(value) {
+					/*isValidZipcode(value) {
 						return isValidZipcode(value, this.form.stepThree.country || checkoutData.countryCode);
-					},
+					},*/
 				},
 				country: {
 					required

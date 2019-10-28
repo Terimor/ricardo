@@ -48,9 +48,9 @@ const smc7validation = function () {
       },
       zipCode: {
         required,
-        isValidZipcode(value) {
+        /*isValidZipcode(value) {
           return isValidZipcode(value, this.form.country || checkoutData.countryCode);
-        },
+        },*/
       },
       cardNumber: {
         required,

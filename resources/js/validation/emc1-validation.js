@@ -50,9 +50,9 @@ const emc1Validation = function () {
     },
     zipcode: {
       required,
-      isValidZipcode(value) {
+      /*isValidZipcode(value) {
         return isValidZipcode(value, this.form.country || checkoutData.countryCode);
-      },
+      },*/
     },
     country: {
       required
