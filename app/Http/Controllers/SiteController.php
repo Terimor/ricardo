@@ -151,7 +151,8 @@ class SiteController extends Controller
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
 
-        $images = \Utils::getLocalizedImages();        
+        $imagesNames = ['safe_payment'];
+        $images = \Utils::getLocalizedImages($imagesNames);        
         
         return view(
             $viewTemplate,

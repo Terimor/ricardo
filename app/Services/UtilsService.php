@@ -20,8 +20,6 @@ class UtilsService
     const S3_URL_PRODUCTION = 'mediaodin.s3.amazonaws.com';
     const CDN_HOST_PRODUCTION = 'cdn.backenddomainsecure.com';
     const CDN_HOST_STAGING = 'cdn.odin.saga-be.host';
-
-    public static $localize_images = ['safe_payment'];
         
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
     /**
@@ -816,12 +814,8 @@ class UtilsService
      * Returns array of localized images
      * @return type
      */
-    public static function getLocalizedImages(array $localizeImages = null): array
+    public static function getLocalizedImages(array $localizeImages): array
     {
-        if (!$localizeImages) {
-            $localizeImages = static::$localize_images;
-        }
-        
         $imagesObj = AwsImage::whereIn('name', $localizeImages)->get();
         $images = [];
         
