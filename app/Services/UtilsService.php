@@ -829,7 +829,7 @@ class UtilsService
             if (!empty($image->name)) {
                 $images[$image->name] = [
                     'url' => !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : ''),
-                    'title' => $image['title'] ?? ''
+                    'title' => $image->title ?? ''
                 ];
             }
         }
