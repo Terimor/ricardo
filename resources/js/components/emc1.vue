@@ -65,6 +65,7 @@
                                     <span class="checkmark"></span>
                                 </label>
                                 <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
+                                <i class="fa fa-arrow-left slide-left"></i>
                                 <i class="fa fa-arrow-right slide-right"></i>
                             </button>
                         </transition>
@@ -751,6 +752,10 @@
         box-shadow: 0 0 0 5px $color_flush_mahogany_approx;
         width: 85px;
         height: 85px;
+
+        [dir="rtl"] & {
+          animation-direction: reverse;
+        }
     }
 
     .dynamic-sale-badge__container {
@@ -764,6 +769,10 @@
         position: absolute;
         width: 85px;
         height: 85px;
+
+        [dir="rtl"] & {
+          transform: rotate(371deg);
+        }
     }
 
     .main {
@@ -786,6 +795,11 @@
             strong {
                 font-size: 20px;
                 font-weight: bold;
+            }
+
+            [dir="rtl"] & {
+              padding-left: 0;
+              padding-right: 20px;
             }
         }
 
@@ -870,10 +884,21 @@
                 top: -17px;
                 left: -30px;
 
+                [dir="rtl"] & {
+                  left: auto;
+                  right: -30px;
+                  transform: rotate(145deg);
+                }
+
                 @media screen and ($s-down) {
                     width: 24px;
                     top: 0;
                     left: -9px;
+
+                    [dir="rtl"] & {
+                      left: auto;
+                      right: -9px;
+                    }
                 }
             }
 
@@ -916,9 +941,19 @@
                     text-transform: capitalize;
                     font-size: 16px;
 
+                    [dir="rtl"] & {
+                      margin: 18px 100px 18px 70px;
+                      text-align: right;
+                    }
+
                     .checkmark {
                         top: 3px;
                         left: -30px;
+
+                      [dir="rtl"] & {
+                        left: auto;
+                        right: -30px;
+                      }
                     }
                 }
 
@@ -934,6 +969,26 @@
                     height: auto;
                     top: -7px;
                     right: -7px;
+
+                    [dir="rtl"] & {
+                      left: -7px;
+                      right: auto;
+                      transform: rotate(-24deg);
+                    }
+                }
+
+                & > .fa-arrow-left {
+                    display: none;
+                    position: absolute;
+                    font-size: 18px;
+                    color: #dc003a;
+                    top: 20px;
+                    right: 10px;
+                    
+
+                    [dir="rtl"] & {
+                      display: block;
+                    }
                 }
 
                 & > .fa-arrow-right {
@@ -942,14 +997,17 @@
                     color: #dc003a;
                     top: 20px;
                     left: 10px;
-                    animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+
+                    [dir="rtl"] & {
+                      display: none;
+                    }
                 }
             }
         }
 
         &__payment {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
 
             h2, h3 {
                 margin: 10px 0;
@@ -1069,6 +1127,11 @@
                     top: 2px;
                     font-size: 18px;
                     color: #409EFF;
+
+                    [dir="rtl"] & {
+                      margin-left: 4px;
+                      margin-right: 0;
+                    }
                 }
             }
         }
@@ -1139,7 +1202,7 @@
             }
 
             .last-name {
-                margin-right: 10px;
+                margin-right: 0;
             }
 
             .card-date {

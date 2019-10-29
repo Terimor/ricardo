@@ -119,8 +119,8 @@
                                     <div class="promo__product-info">
                                         <div class="promo__heading"
                                              :class="{
-                                                'most-popular': item.discountName === 'BESTSELLER',
-                                                'most-profitable': item.discountName === 'BEST DEAL',
+                                                'most-popular': item.isBestseller,
+                                                'most-profitable': item.isPopular,
                                                 'starter': item.discountName === '',
                                              }"
                                              style="max-width: 204px;">
@@ -288,7 +288,7 @@
                             {{ t('checkout.happy_users', ['product' => $product->skus[0]['name']]) }}
                         </h2>
                         <div class="promo__review" v-for="review in mockData.reviews">
-                            <div class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="col-md-3 col-sm-3 col-xs-12 review-head">
                                 <div class="promo__review-feedback">
                                     <img class="lazy"
                                          :src="review.user.userImg">

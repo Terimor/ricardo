@@ -108,6 +108,7 @@
                 }"
                 v-model="paymentForm.city"/>
             <select-field
+                :standart="true"
                 v-if="isSpecialCountrySelected"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
@@ -147,6 +148,7 @@
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
             <select-field
+                :standart="true"
                 :validation="$v.form.country"
                 :validationMessage="textCountryRequired"
                 theme="variant-1"
@@ -164,6 +166,7 @@
               {{ thirdTitle }}
             </h2>
             <select-field
+                :standart="true"
                 v-if="paymentForm.country === 'mx'"
                 :validation="$v.form.cardType"
                 :validationMessage="textCardTypeRequired"
@@ -207,6 +210,7 @@
                   :class="{ 'with-error': $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
                     <span class="label" v-html="textCardValidUntil"></span>
                     <select-field
+                        :standart="true"
                         :validation="$v.form.month"
                         :validationMessage="textCardValidMonthRequired"
                         :rest="{
@@ -216,6 +220,7 @@
                         :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
                         v-model="paymentForm.month"/>
                     <select-field
+                        :standart="true"
                         :validation="$v.form.year"
                         :validationMessage="textCardValidYearRequired"
                         :rest="{
@@ -271,6 +276,7 @@
         </template>
         <span v-show="hasWarranty" class="warranty-field-button">
           <label for="warranty-field" class="label-container-checkbox">
+            <i class="fa fa-arrow-left slide-left warranty-field-arrow"></i>
             <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
             <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
             <input id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
@@ -823,6 +829,11 @@
         .first-name {
             width: 40%;
             margin-right: 10px;
+
+            [dir="rtl"] & {
+              margin-left: 10px;
+              margin-right: 0;
+            }
         }
 
         .last-name {
@@ -856,6 +867,11 @@
             padding-right: 30px;
             margin-bottom: 10px;
 
+            [dir="rtl"] & {
+              padding-left: 30px;
+              padding-right: 0;
+            }
+
             &.with-error {
                 & > .label {
                     color: #e74c3c;
@@ -869,10 +885,15 @@
 
             & > div {
                 width: calc(40% - 5px);
-
                 margin-right: 10px;
 
+                [dir="rtl"] & {
+                  margin-left: 10px;
+                  margin-right: 0;
+                }
+
                 &:last-child {
+                    margin-left: 0;
                     margin-right: 0;
                     width: calc(60% - 5px);
                 }
@@ -954,6 +975,7 @@
 
   .warranty-field {
     &-button {
+      width: 100%;
       position: relative;
       display: flex;
       padding: 0;
@@ -966,12 +988,46 @@
       }
       .label-container-checkbox {
           margin: 0;
-          padding: 10px 10px 22px 75px;
+          padding: 13px 10px 22px 75px;
           font-size: 18px;
+
+          [dir="rtl"] & {
+            padding: 13px 75px 22px 10px;
+          }
+
           .checkmark {
               left: 40px;
               top: 13px;
+
+              [dir="rtl"] & {
+                left: auto;
+                right: 40px;
+              }
           }
+      }
+
+      .fa-arrow-left {
+        display: none;
+        position: absolute;
+        right: 10px;
+        top: 13px;
+        z-index: 2;
+        
+
+        [dir="rtl"] & {
+          display: block;
+        }
+      }
+
+      .fa-arrow-right {
+        position: absolute;
+        left: 10px;
+        top: 13px;
+        z-index: 2;
+
+        [dir="rtl"] & {
+          display: none;
+        }
       }
     }
 
@@ -982,16 +1038,15 @@
       width: 30px;
       height: 30px;
 
+      [dir="rtl"] & {
+        left: -15px;
+        right: auto;
+        transform: rotate(-24deg);
+      }
+
       img {
         max-width: 100%;
       }
-    }
-
-    &-arrow {
-      position: absolute;
-      left: 10px;
-      top: 13px;
-      z-index: 2;
     }
   }
 

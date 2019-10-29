@@ -86,6 +86,7 @@
 </script>
 
 <style lang="scss">
+.upsells-component {
     .upsells-item {
         display: flex;
 
@@ -145,4 +146,5 @@
             }
         }
     }
+}
 </style>

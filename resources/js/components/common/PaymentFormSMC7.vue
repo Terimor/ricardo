@@ -1,6 +1,7 @@
 <template>
   <div v-if="$v" class="flex-wrap payment-form-smc7">
     <select-field
+        :standart="true"
         :validation="$v.form.country"
         :validationMessage="textCountryRequired"
         theme="variant-1"
@@ -103,6 +104,7 @@
       <div class="card-date input-container" :class="{ invalid: $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
         <span class="label">{{textCardValidUntil}}</span>
         <select-field
+            :standart="true"
             :validation="$v.form.month"
             :validationMessage="textCardValidMonthRequired"
             :rest="{
@@ -112,6 +114,7 @@
             :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
             v-model="paymentForm.month"/>
         <select-field
+            :standart="true"
             :validation="$v.form.year"
             :validationMessage="textCardValidYearRequired"
             :rest="{

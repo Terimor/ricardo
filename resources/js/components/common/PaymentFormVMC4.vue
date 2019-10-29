@@ -98,12 +98,13 @@
             />
             <div class="card-info">
               <div class="d-flex input-container" :class="{ invalid: $v.form && $v.form.stepThree && $v.form.stepThree.month && $v.form.stepThree.month.$dirty && $v.form.stepThree.year && $v.form.stepThree.year.$dirty && ($v.form.stepThree.month.$invalid || $v.form.stepThree.year.$invalid || isCardExpired) }">
-                <div>
+                <div style="flex-grow:1">
                   <div class="card-info__labels">
                     <span class="label" v-html="textCardValidUntil"></span>
                   </div>
                   <div class="card-date d-flex">
                     <select-field
+                      :standart="true"
                       :validation="$v.form.stepThree.month"
                       :validationMessage="textCardValidMonthRequired"
                       :rest="{
@@ -114,6 +115,7 @@
                       v-model="form.stepThree.month"
                     />
                     <select-field
+                      :standart="true"
                       :validation="$v.form.stepThree.year"
                       :validationMessage="textCardValidYearRequired"
                       :rest="{
@@ -183,6 +185,7 @@
                 id="zip-code-field"
                 v-model="form.stepThree.zipCode"/>
               <select-field
+                :standart="true"
                 :validation="$v.form.stepThree.country"
                 :validationMessage="textCountryRequired"
                 theme="variant-1"
@@ -776,6 +779,11 @@
         .first-name {
           width: 40%;
           margin-right: 10px;
+
+          [dir="rtl"] & {
+            margin-left: 10px;
+            margin-right: 0;
+          }
         }
 
         .last-name {
@@ -789,7 +797,6 @@
         color: #0a0f0a;
         margin-bottom: 10px;
         padding: 0;
-        text-align: left;
       }
 
       .pay-method-item img {
@@ -817,11 +824,21 @@
           .select.variant-1:nth-child(1) {
             margin-right: 5px;
             width: 50%;
+
+            [dir="rtl"] & {
+              margin-left: 5px;
+              margin-right: 0;
+            }
           }
 
           .select.variant-1:nth-child(2) {
             margin-right: 20px;
             width: 50%;
+
+            [dir="rtl"] & {
+              margin-left: 20px;
+              margin-right: 0;
+            }
           }
 
           .card-cvv {

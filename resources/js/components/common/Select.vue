@@ -2,6 +2,7 @@
   <div class="select scroll-when-error" :class="theme">
     <span v-if="label" class="label">{{label}}</span>
     <el-select
+      v-if="!standart"
       no-data-text="No match data"
       no-match-text="No match text"
       v-bind="rest"
@@ -26,6 +27,26 @@
         </el-option>
       </template>
     </el-select>
+    <select
+      v-else
+      ref="select"
+      :value="value"
+      @input="onChange"
+      class="el-input__inner select-standart"
+      :style="{
+        ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
+      }">
+      <option 
+        v-if="rest && rest.placeholder"
+        v-html="rest.placeholder"
+        style="display:none"
+        :value="null"></option>
+      <option
+        v-for="item in list"
+        :key="item.value"
+        :value="item.value"
+        v-html="item.text || item.value"></option>
+    </select>
     <span class="error" v-show="invalid">{{validationMessage}}</span>
   </div>
 </template>
@@ -34,6 +55,7 @@
 export default {
   name: 'Select',
   props: [
+    'standart',
     'list',
     'value',
     'popperClass',
@@ -60,7 +82,11 @@ export default {
       this.opened = opened;
     },
     onChange (e) {
-      this.$emit('input', e, this.value)
+      if (!this.standart) {
+        this.$emit('input', e, this.value)
+      } else {
+        this.$emit('input', this.$refs.select.value, this.value);
+      }
       if (this.validation) {
         this.validation.$touch()
       }
@@ -84,7 +110,7 @@ export default {
     }
 
     &.variant-1 {
-      input {
+      input, select {
         border: 1px solid #ddd;
         border-radius: 3px;
         background-color: rgba(255,253,228,.6);
@@ -94,6 +120,15 @@ export default {
         &:focus {
           box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
           border-color: #409EFF;
+        }
+      }
+      select {
+        cursor: pointer;
+        font-size: 14px;
+
+        &.select-standart {
+          -webkit-appearance: menulist;
+          padding: 0 12px;
         }
       }
     }

@@ -122,6 +122,7 @@
 </script>
 
 <style lang="scss">
+.upsells-component {
   .step-1 {
     .congrats {
       color: #d4513a;
@@ -133,5 +134,5 @@
       text-align: center;
     }
   }
-
+}
 </style>

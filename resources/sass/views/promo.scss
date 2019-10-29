@@ -246,13 +246,21 @@ header {
         flex-direction: column;
       }
 
-      & .review-text {
+      & .review-head, & .review-text {
         text-align: right;
+
+        [dir="rtl"] & {
+          text-align: left;
+        }
       }
     }
 
-    & .review-text {
+    & .review-head, & .review-text {
       text-align: left;
+
+      [dir="rtl"] & {
+        text-align: right;
+      }
     }
 
     @media screen and ($m-down) {
@@ -297,6 +305,7 @@ header {
 
   &__people-rate {
     padding-bottom: 30px;
+    text-align: center;
   }
 
 
@@ -533,7 +542,7 @@ header {
       padding: 0;
     }
     &__back-btn {
-      display: inline-block;
+      display: block;
       background-color: transparent;
       border: none;
       margin: 30px auto 20px;
@@ -562,5 +571,11 @@ header {
   }
   .fade-enter, .fade-leave-to  {
     opacity: 0;
+  }
+}
+
+.tpl-vmp41 .owl-carousel .owl-item {
+  [dir="rtl"] & {
+    float: right;
   }
 }

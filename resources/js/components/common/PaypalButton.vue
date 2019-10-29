@@ -146,6 +146,13 @@
         border-radius: 0 50% 50% 0;
         background-color: rgba(255,255,255,.3);
         transition: all .2s linear 0s;
+
+        [dir="rtl"] & {
+          content: '\f053';
+          border-radius: 50% 0 0 50%;
+          left: auto;
+          right: 0;
+        }
       }
 
       .title {
@@ -159,6 +166,11 @@
         margin-left: 10px;
         margin-top: -2px;
         max-width: 90px;
+
+        [dir="rtl"] & {
+          margin-left: 0;
+          margin-right: 10px;
+        }
       }
 
       .disabled {

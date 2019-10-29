@@ -30,6 +30,7 @@
     data() {
       return {
         id: 'phone-' + idCounter++,
+        selector: null,
       };
     },
 
@@ -40,6 +41,11 @@
     },
 
     methods: {
+      checkPadding() {
+        if (document.querySelector('html[dir="rtl"]') && this.selector.style.paddingLeft) {
+          this.selector.style.paddingRight = this.selector.style.paddingLeft;
+        }
+      },
       input (e) {
         this.$emit('input', e.target.value)
         if (this.validation) {
@@ -52,19 +58,22 @@
       wait(
         () => {
           const linkTag = document.querySelector('#intlTelInputCss');
-          return !linkTag || linkTag.media !== 'none';
+          return this.$root._isMounted && (!linkTag || linkTag.media !== 'none');
         },
         () => {
-          const selector = document.querySelector(`#${this.id}`)
+          this.selector = document.querySelector(`#${this.id}`)
 
-          window.intlTelInput(selector, {
+          window.intlTelInput(this.selector, {
             initialCountry: this.countryCode,
             separateDialCode: true
           })
 
-          selector.addEventListener('countrychange', () => {
-            this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(selector).getSelectedCountryData())
+          this.selector.addEventListener('countrychange', () => {
+            this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(this.selector).getSelectedCountryData())
+            this.checkPadding();
           });
+
+          this.checkPadding();
         },
       )
     }
@@ -105,12 +114,35 @@
         border-radius: 3px;
         background-color: rgba(255, 253, 228, .6);
         height: 40px;
-        padding: 0 15px 0 46px;
+        padding-right: 15px;
 
         &:focus {
           box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
           border-color: #409EFF;
         }
+
+        [dir="rtl"] & {
+          padding-left: 15px!important;
+        }
+      }
+    }
+
+    .iti__country {
+      display: flex;
+      align-items: center;
+    }
+
+    .iti__selected-dial-code, .iti__arrow {
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: 6px;
+      }
+    }
+
+    .iti__flag-box, .iti__country-name {
+      [dir="rtl"] & {
+        margin-left: 6px;
+        margin-right: 0;
       }
     }
   }

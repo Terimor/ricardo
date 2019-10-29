@@ -119,8 +119,8 @@
                         <div
                             class="promo__heading"
                             :class="{
-                                'most-popular': item.discountName === 'BESTSELLER',
-                                'most-profitable': item.discountName === 'BEST DEAL',
+                                'most-popular': item.isBestseller,
+                                'most-profitable': item.isPopular,
                                 'starter': item.discountName === '',
                             }"
                             style="max-width: 204px;"
@@ -187,7 +187,7 @@
                         {{ t('checkout.happy_users', ['product' => $product->skus[0]['name']]) }}
                     </h2>
                     <div class="promo__review">
-                        <div class="col-md-3 col-sm-3 col-xs-12">
+                        <div class="col-md-3 col-sm-3 col-xs-12 review-head">
                             <div class="promo__review-feedback">
                                 <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/third_1.jpg">
                             </div>
@@ -208,7 +208,7 @@
                         </div>
                     </div>
                     <div class="promo__review reverse">
-                        <div class="col-md-3 col-sm-3 col-xs-12">
+                        <div class="col-md-3 col-sm-3 col-xs-12 review-head">
                             <div class="promo__review-feedback">
                                 <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/first_1.jpg">
                             </div>
@@ -229,7 +229,7 @@
                         </div>
                     </div>
                     <div class="promo__review">
-                        <div class="col-md-3 col-sm-3 col-xs-12">
+                        <div class="col-md-3 col-sm-3 col-xs-12 review-head">
                             <div class="promo__review-feedback">
                                 <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/second_1.jpg">
                             </div>

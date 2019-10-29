@@ -616,6 +616,10 @@
                     padding: 15px 15px 15px 38px;
                     font-weight: 700;
 
+                    [dir="rtl"] & {
+                      padding: 15px 38px 15px 15px;
+                    }
+
                     &:before {
                         position: absolute;
                         top: 18px;
@@ -625,6 +629,12 @@
                         font-size: inherit;
                         content: "\f00c";
                         color: green;
+
+                        [dir="rtl"] & {
+                          left: auto;
+                          right: 15px;
+                          transform: scaleX(-1);
+                        }
                     }
                 }
             }
@@ -683,6 +693,10 @@
                 h3:last-child {
                     width: 40%;
                     text-align: right;
+
+                    [dir="rtl"] & {
+                      text-align: left;
+                    }
                 }
             }
 
@@ -731,10 +745,21 @@
                 top: -17px;
                 left: -30px;
 
+                [dir="rtl"] & {
+                  left: auto;
+                  right: -30px;
+                  transform: rotate(145deg);
+                }
+
                 @media screen and ($s-down) {
                     width: 24px;
                     top: 0;
                     left: -9px;
+
+                    [dir="rtl"] & {
+                      left: auto;
+                      right: -9px;
+                    }
                 }
             }
         }
@@ -765,6 +790,11 @@
                 .first-name {
                     width: 40%;
                     margin-right: 10px;
+
+                    [dir="rtl"] & {
+                      margin-left: 10px;
+                      margin-right: 0;
+                    }
                 }
 
                 .last-name {
@@ -822,6 +852,11 @@
                 padding-right: 30px;
                 margin-bottom: 10px;
 
+                [dir="rtl"] & {
+                  padding-left: 30px;
+                  padding-right: 0;
+                }
+
                 .select {
                   margin-bottom: 0;
                 }
@@ -833,8 +868,14 @@
             }
 
             .card-date > div {
+                flex-grow: 1;
                 width: calc(40% - 5px);
                 margin-right: 10px;
+
+                [dir="rtl"] & {
+                  margin-left: 10px;
+                  margin-right: 0;
+                }
             }
 
             .cvv-field {
@@ -846,7 +887,8 @@
                 font-weight: 700;
             }
 
-            .input-container.variant-1 input {
+            .input-container.variant-1 input,
+            .select.variant-1 select {
                 background-color: #ffffff;
                 border-radius: unset;
                 border: 1px solid #000000;
@@ -939,6 +981,11 @@
                     top: 2px;
                     font-size: 18px;
                     color: #409EFF;
+
+                    [dir="rtl"] & {
+                      margin-left: 4px;
+                      margin-right: 0;
+                    }
                 }
             }
         }
@@ -960,6 +1007,11 @@
                     height: 80px;
                     width: auto;
                     margin-right: 25px;
+
+                    [dir="rtl"] & {
+                      margin-left: 25px;
+                      margin-right: 0;
+                    }
                 }
 
                 span {

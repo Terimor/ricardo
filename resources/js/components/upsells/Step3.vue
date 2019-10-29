@@ -129,6 +129,7 @@ export default {
 </script>
 
 <style lang="scss">
+.upsells-component {
   .step-3 {
     h3 {
       color: #d4513a;
@@ -213,5 +214,5 @@ export default {
       }
     }
   }
-
+}
 </style>

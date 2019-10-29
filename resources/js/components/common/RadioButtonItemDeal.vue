@@ -89,6 +89,11 @@
 
       .price {
         margin-left: auto;
+
+        [dir="rtl"] & {
+          margin-left: 0;
+          margin-right: auto;
+        }
       }
     }
   }

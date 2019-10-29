@@ -13,8 +13,8 @@
         @input="input"
         v-bind="rest"
         :style="{
-          ...prefix && { 'padding-left': '45px' },
-          ...postfix && { 'padding-right': '45px' },
+          ...prefix && { ['padding-' + (isRTL ? 'right' : 'left')]: '45px' },
+          ...postfix && { ['padding-' + (isRTL ? 'left' : 'right')]: '45px' },
           ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
         }"
         :value="value">
@@ -37,6 +37,9 @@ export default {
     'rest'
   ],
   computed: {
+    isRTL() {
+      return !!document.querySelector('html[dir="rtl"]');
+    },
     invalid () {
       return this.validation && this.validation.$dirty && this.validation.$invalid
     }
@@ -90,6 +93,11 @@ export default {
     align-items: center;
     justify-content: center;
     padding: 3px;
+
+    [dir="rtl"] & {
+      left: auto;
+      right: 3px;
+    }
   }
 
   .postfix {
@@ -102,6 +110,11 @@ export default {
     align-items: center;
     justify-content: center;
     padding: 3px;
+
+    [dir="rtl"] & {
+      left: 3px;
+      right: auto;
+    }
   }
 
   &.variant-1 {
