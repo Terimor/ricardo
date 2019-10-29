@@ -3,6 +3,7 @@
 namespace App\Services;
 use App\Models\Setting;
 use App\Models\Pixel;
+use App\Models\AwsImage;
 use MongoDB\BSON\UTCDateTime;
 use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ class UtilsService
     const CDN_HOST_PRODUCTION = 'cdn.backenddomainsecure.com';
     const CDN_HOST_STAGING = 'cdn.odin.saga-be.host';
 
+    public static $localize_images = ['safe_payment'];
+        
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
     /**
      * Array using global parameters on site
@@ -807,5 +810,30 @@ class UtilsService
                 unset($request[$key]);
             }
         }
+    }
+    
+    /**
+     * Returns array of localized images
+     * @return type
+     */
+    public static function getLocalizedImages(array $localizeImages = null): array
+    {
+        if (!$localizeImages) {
+            $localizeImages = static::$localize_images;
+        }
+        
+        $imagesObj = AwsImage::whereIn('name', $localizeImages)->get();
+        $images = [];
+        
+        foreach ($imagesObj as $image) {
+            if (!empty($image->name)) {
+                $images[$image->name] = [
+                    'url' => !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : ''),
+                    'title' => $image['title'] ?? ''
+                ];
+            }
+        }
+        
+        return $images;
     }
 }
