@@ -12,6 +12,7 @@
 @section('script')
     <script>
         var checkoutData = {
+            langCode: '{{ $langCode }}',
             countryCode: '{{ $countryCode }}',
             product: @json($product),
             countries: @json($countries),
