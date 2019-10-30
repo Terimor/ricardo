@@ -242,5 +242,10 @@ export function sendCheckoutRequest(data) {
       }
 
       return res;
+    })
+    .catch(err => {
+      return {
+        paymentError: t('checkout.payment_error'),
+      };
     });
 }

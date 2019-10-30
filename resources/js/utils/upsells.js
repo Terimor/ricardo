@@ -131,5 +131,10 @@ export function send1ClickRequest(data, upsells) {
       goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
 
       return res;
+    })
+    .catch(err => {
+      return {
+        paymentError: t('checkout.payment_error'),
+      };
     });
 }

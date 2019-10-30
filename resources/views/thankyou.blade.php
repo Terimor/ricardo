@@ -56,7 +56,7 @@
                 <div class="d-flex">
                     <div class="thank-you__order__image">
                         <img src="{{ $product->image[0] }}" alt="">
-                        <div class="quantity">@{{ selectedProductData.quantity }}</div>
+                        <div class="quantity">@{{ selectedProductData.quantity || 0 }}</div>
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="thank-you__order__name">{{ $product->long_name }}</div>
