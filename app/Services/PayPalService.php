@@ -198,8 +198,8 @@ class PayPalService
 
             // Update main order
             $upsell_order->total_price += $total_upsell_price;
-            $upsell_order->total_price_usd += CurrencyService::roundValueByCurrencyRules(
-                $total_upsell_price / $upsell_order_exchange_rate,
+            $upsell_order->total_price_usd = CurrencyService::roundValueByCurrencyRules(
+                $upsell_order->total_price / $upsell_order_exchange_rate,
                 self::DEFAULT_CURRENCY);
             $upsell_order->status = $this->getOrderStatus($upsell_order);
             $upsell_order->txns = array_merge($txns, [$order_txn_data]);
