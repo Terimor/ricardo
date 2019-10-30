@@ -438,6 +438,18 @@
         return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
       },
 
+      textState() {
+        return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
+      },
+
+      textStatePlaceholder() {
+        return t('checkout.payment_form.state.placeholder', {}, { country: this.paymentForm.country });
+      },
+
+      textZipcode() {
+        return t('checkout.payment_form.zipcode', {}, { country: this.paymentForm.country });
+      },
+
       textFirstName: () => t('checkout.payment_form.first_name'),
       textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
       textLastName: () => t('checkout.payment_form.last_name'),
@@ -456,10 +468,7 @@
       textComplemento: () => t('checkout.payment_form.complemento'),
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
-      textState: () => t('checkout.payment_form.state'),
-      textStatePlaceholder: () => t('checkout.payment_form.state.placeholder'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
-      textZipcode: () => t('checkout.payment_form.zipcode'),
       textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
       textCountry: () => t('checkout.payment_form.сountry'),
       textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),

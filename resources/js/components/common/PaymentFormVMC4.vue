@@ -404,6 +404,18 @@
       isCardExpired() {
         return !dateFns.isFuture(new Date(this.form.stepThree.year, this.form.stepThree.month));
       },
+      textState() {
+        return t('checkout.payment_form.state', {}, { country: this.form.stepThree.country });
+      },
+      textStatePlaceholder() {
+        return t('checkout.payment_form.state.placeholder', {}, { country: this.form.stepThree.country });
+      },
+      textZipcode() {
+        return t('checkout.payment_form.zipcode', {}, { country: this.form.stepThree.country });
+      },
+      textZipcodePlaceholder() {
+        return t('checkout.payment_form.zipcode.placeholder', {}, { country: this.form.stepThree.country });
+      },
       textChooseDeal: () => t('checkout.choose_deal'),
       textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
       textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
@@ -431,11 +443,7 @@
       textCity: () => t('checkout.payment_form.city'),
       textCityPlaceholder: () => t('checkout.payment_form.city.placeholder'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
-      textState: () => t('checkout.payment_form.state'),
-      textStatePlaceholder: () => t('checkout.payment_form.state.placeholder'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
-      textZipcode: () => t('checkout.payment_form.zipcode'),
-      textZipcodePlaceholder: () => t('checkout.payment_form.zipcode.placeholder'),
       textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
       textCountry: () => t('checkout.payment_form.сountry'),
       textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),

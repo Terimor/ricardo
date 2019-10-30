@@ -47,7 +47,7 @@
         v-model="paymentForm.state"/>
     <text-field
         :validation="$v.form.zipCode"
-        :validationMessage="textZipcodeRequired"
+        :validationMessage="textZipCodeRequired"
         theme="variant-1"
         :label="textZipCode"
         :rest="{
@@ -196,17 +196,22 @@
         return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
       },
 
-      textCountry : () => t('checkout.payment_form.сountry'),
+      textState() {
+        return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
+      },
+
+      textZipCode() {
+        return t('checkout.payment_form.zipcode', {}, { country: this.paymentForm.country });
+      },
+
       textStreetAndNumber : () => t('checkout.payment_form.street_and_number'),
       textStreetAndNumberRequired : () => t('checkout.payment_form.street_and_number.required'),
       paySecurelyWith : () => t('checkout.pay_securely_with'),
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
-      textState: () => t('checkout.payment_form.state'),
-      textZipCode: () => t('checkout.payment_form.zipcode'),
       textZipCodeRequired: () => t('checkout.payment_form.zipcode.required'),
+      textCountry : () => t('checkout.payment_form.сountry'),
       textCountryRequired: () => t('checkout.payment_form.сountry.required'),
-      textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
       textCardType: () => t('checkout.payment_form.card_type'),

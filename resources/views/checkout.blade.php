@@ -16,6 +16,7 @@
     var recentlyBoughtCities = @json($recentlyBoughtCities);
 
     var checkoutData = {
+      langCode: '{{ $langCode }}',
       countryCode: '{{ $countryCode }}',
       countries: @json($countries),
       product: @json($product),
