@@ -230,7 +230,7 @@ class PayPalService
 
         $product = $this->findProductBySku($request->sku_code);
         $priceData = $this->getPrice($request, $product);
-        $price_usd = round($priceData['price'] / $priceData['exchange_rate'], 2);
+        $price_usd = CurrencyService::roundValueByCurrencyRules($priceData['price'] / $priceData['exchange_rate'], self::DEFAULT_CURRENCY);
 
         // Currency of the prices show on the shop page
         $shop_currency = CurrencyService::getCurrency();
@@ -258,11 +258,14 @@ class PayPalService
         ]];
         if ($request->input('is_warranty_checked') && $product->warranty_percent) {
             $local_warranty_price = CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']);
-            $local_warranty_usd = CurrencyService::roundValueByCurrencyRules(
-                CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $total_price_usd),
+            $total_price_usd = CurrencyService::roundValueByCurrencyRules(
+                ($priceData['price'] + $priceData['warranty']) / $priceData['exchange_rate'],
                 self::DEFAULT_CURRENCY
             );
-            $total_price_usd += $local_warranty_usd;
+            $local_warranty_usd = CurrencyService::roundValueByCurrencyRules(
+                CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $price_usd),
+                self::DEFAULT_CURRENCY
+            );
             $total_local_price += $local_warranty_price;
             $items[] = [
                 'name' => 'Warranty',
