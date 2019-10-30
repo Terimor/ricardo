@@ -45,7 +45,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('htmlToApp', AffiliateService::getHtmlToApp(Request(), $affiliate));
 
             $lang = substr(app()->getLocale(), 0, 2);
-            $view->with('direction', request()->is('checkout') && in_array($lang, ['he', 'ar']) ? 'rtl' : 'ltr');
+            $view->with('direction', in_array($lang, ['he', 'ar']) ? 'rtl' : 'ltr');
         });
 
         View::composer('layouts.footer', function($view) {

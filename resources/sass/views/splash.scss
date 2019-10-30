@@ -160,6 +160,11 @@ ul, ol {
     flex: 0 0 70px;
     max-width: 70px;
     margin-right: 10px;
+
+    [dir="rtl"] & {
+      margin-left: 10px;
+      margin-right: 0;
+    }
   }
   .testimonial-avatar {
     width: 100%;
@@ -183,6 +188,13 @@ ul, ol {
     line-height: 1.5;
     color: #1fba34;
     font-weight: bold;
+
+    [dir="rtl"] & {
+      padding-left: 5px;
+      padding-right: 0;
+      border-left: 1px solid #000000;
+      border-right: 0;
+    }
   }
   .testimonial-date {
     display: inline-block;
@@ -191,6 +203,11 @@ ul, ol {
   }
   .testimonial-rate {
     margin-left: auto;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: auto;
+    }
   }
   .testimonial-body {
     padding: 5px 0;

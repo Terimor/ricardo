@@ -48,6 +48,13 @@ html {
   scroll-behavior: smooth;
 }
 
+.el-input__inner.select-standart {
+  -webkit-appearance: menulist;
+  padding: 0 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
 *[dir=rtl] {
   .el-input__suffix {
     right: unset;

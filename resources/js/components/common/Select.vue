@@ -122,14 +122,8 @@ export default {
           border-color: #409EFF;
         }
       }
-      select {
-        cursor: pointer;
-        font-size: 14px;
-
-        &.select-standart {
-          -webkit-appearance: menulist;
-          padding: 0 12px;
-        }
+      select.select-standart {
+        padding: 0 10px;
       }
     }
   }

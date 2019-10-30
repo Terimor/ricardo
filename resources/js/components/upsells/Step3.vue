@@ -27,6 +27,7 @@
       <div class="upsells-component__bot">
         <select-field
           v-if="upsellPrices"
+          :standart="true"
           :label="`${pleaseChooseText}:`"
           v-model="quantity"
           :list="selectList"
