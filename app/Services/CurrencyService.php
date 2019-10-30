@@ -35,6 +35,84 @@ class CurrencyService
     public static $useDBSymbol = ['HRK'];
 
     /**
+     * Remove decimals
+     * @var type 
+     */
+    public static $noDecimals = ['HRK'];
+    
+    /**
+     * 0 at the and of price
+     * @var type 
+     */
+    public static $zeroAtTheEnd = [
+        'IDR',
+        'HKD',
+        'TWD',
+        'HUF',
+        'SEK',
+        'DKK',
+        'NOK',        
+        'CNY',
+        'INR',        
+        'PHP',
+        'ZAR',
+        'THB',
+        'ISK',
+        'CZK',
+        'ARS',
+        'CLP',
+        'COP',
+        'CRC',
+        'DOP',
+        'HNL',
+        'MXP',
+        'NIO',
+        'PYG',
+        'SVC',
+        'TTD',
+        'UYU',
+        'VEF',
+        'BDT',
+        'LKR',
+        'MVR',
+        'PKR',
+        'IQD',
+        'CZK',
+        'DKK',
+        'EEK',        
+        'HUF',
+        'ISK',
+        'MDL',
+        'MKD',
+        'NOK',
+        'RSD',
+        'RUB',
+        'SEK',
+        'SKK',
+        'TRY',
+        'UAH',
+        'KZT',
+        'LBP',
+        'UZS',
+        'YER',
+        'BWP', 
+        'DZD',
+        'EGP',
+        'KES',
+        'MAD',
+        'MUR',
+        'NAD',
+        'NGN',
+        'SCR',
+        'SLL',
+        'TZS',
+        'UGX',
+        'XOF',
+        'ZAR',
+        'ZMK',       
+    ];
+    
+    /**
      * Get local price from USD
      * @param float $price
      * @param string $currency
@@ -61,7 +139,7 @@ class CurrencyService
             $price = OdinProduct::MIN_PRICE;
         }
         $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
-
+        
         if (in_array($currencyCode, static::$upToNext500)) {
             $exchangedPrice = ceil($exchangedPrice);
             $exchangedPrice = $exchangedPrice/100;
@@ -106,7 +184,7 @@ class CurrencyService
                 'exchange_rate' => $currency->usd_rate,
             ];
         }
-
+        
         // when fraction digits = 0, cut decimals
         if ($fractionDigits == 0) {
             $exchangedPrice = (int)$exchangedPrice;
@@ -155,6 +233,24 @@ class CurrencyService
             if (in_array($currencyCode, static::$roundTo0_95)) {
                 $exchangedPrice -= 0.04;
 
+            }
+        }
+        
+        if (in_array($currencyCode, static::$noDecimals)) {
+            $exchangedPrice = (int)$exchangedPrice;
+            $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
+        }        
+        
+        
+        if (in_array($currencyCode, static::$zeroAtTheEnd)) {
+            $exchangedPrice = (int)$exchangedPrice;
+            $fractionDigits = 0;
+            $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
+            $exchangedPrice = (string)$exchangedPrice;
+            $digits = strlen($exchangedPrice);
+            if ($digits > 2) {
+                $exchangedPrice{$digits-2} = '9';
+                $exchangedPrice{$digits-1} = '0';
             }
         }
 
@@ -365,6 +461,11 @@ class CurrencyService
      */
     public static function formatCurrency($numberFormatter, $price, $currency)
     {
+        if (in_array($currency->code, static::$zeroAtTheEnd)) {            
+            $fractionDigits = 0;
+            $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
+        }
+        
         $priceText = $numberFormatter->formatCurrency($price, $currency->code);
 
         // check use symbol from db for formatting        
