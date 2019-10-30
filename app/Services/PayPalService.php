@@ -490,11 +490,10 @@ class PayPalService
 
             if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
                 $paypal_order = $response->result;
-                $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
                 $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
                 $txn_response = $this->orderService->addTxn([
                     'hash' => $paypal_order->id,
-                    'value' => $paypal_order_value,
+                    'value' => $this->getPayPalOrderValue($paypal_order),
                     'currency' => $paypal_order_currency,
                     'provider_data' => $paypal_order,
                     'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
@@ -523,11 +522,9 @@ class PayPalService
                 $order->txns = array_merge($txns, [$order_txn_data]);
 
                 // Set is_paid for order products of captured transaction
-                $temp_txn_products_prices = 0;
                 $order->products = collect($order->products)
-                    ->map(function($item, $key) use (&$temp_txn_products_prices, $txn) {
+                    ->map(function($item, $key) use ($txn) {
                         if ($item['txn_hash'] == $txn['hash']) {
-                            $temp_txn_products_prices+= $item['price'];
                             $item['is_paid'] = true;
                         }
 
