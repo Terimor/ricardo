@@ -189,9 +189,9 @@ class CurrencyService
         if ($fractionDigits == 0) {
             $exchangedPrice = (int)$exchangedPrice;
         }
-
+$exchangedPrice = 99999;
         $digits = strlen((int)$exchangedPrice);
-        
+
         $exchangedPrice = static::mainRounding($digits, $exchangedPrice);
 
         if ($fractionDigits > 0) {
@@ -236,6 +236,7 @@ class CurrencyService
     private static function zeroAtTheEndRounding(int $digits, $exchangedPrice, $numberFormatter): int
     {
         $exchangedPrice = (int)$exchangedPrice;
+        $oldPrice = $exchangedPrice;
         $fractionDigits = 0;
         $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
         
@@ -243,15 +244,35 @@ class CurrencyService
         if ($digits == 3) {
             $exchangedPrice = $exchangedPrice / 10;
             $exchangedPrice = (int)$exchangedPrice * 10 + 9;
-        } else if ($digits == 4 || $digits == 5){
+            
+            if ($exchangedPrice <= $oldPrice) {
+                $exchangedPrice += 10;
+            }
+            
+        } else if ($digits == 4 || $digits == 5) {
             $exchangedPrice = $exchangedPrice / 100;
             $exchangedPrice = (int)$exchangedPrice * 100 + 90;
+            
+            if ($exchangedPrice <= $oldPrice) {
+                if ($digits == 4) {
+                    $exchangedPrice += 100;
+                } else {
+                    $exchangedPrice += 1000;
+                }
+            }            
         } else if ($digits == 6) {
             $exchangedPrice = $exchangedPrice / 1000;
-            $exchangedPrice = (int)$exchangedPrice * 1000 + 990;            
+            $exchangedPrice = (int)$exchangedPrice * 1000 + 990;
+            if ($exchangedPrice <= $oldPrice) {
+                $exchangedPrice += 1000;
+            } 
         } else if ($digits > 6) {
             $exchangedPrice = $exchangedPrice / 10000;
-            $exchangedPrice = (int)$exchangedPrice * 10000 + 9900;             
+            $exchangedPrice = (int)$exchangedPrice * 10000 + 9900;  
+            
+            if ($exchangedPrice <= $oldPrice) {
+                $exchangedPrice += 10000;
+            
         }
         
         return (int)$exchangedPrice;
