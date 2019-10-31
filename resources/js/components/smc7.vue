@@ -494,7 +494,7 @@
         this.purchase = preparePurchaseData({
           purchaseList: this.productData.prices,
           quantityToShow: [1, 2, 3, 4, 5],
-          long_name: this.productData.product_name,
+          product_name: this.productData.product_name,
           variant,
           installments,
           customOrder: true

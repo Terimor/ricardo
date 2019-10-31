@@ -129,11 +129,11 @@
                                         </div>
                                         <div class="promo__product-content">
                                             <img :src="item.image"
-                                                 :alt="item.text"
+                                                 :alt="item.textComposite"
                                                  class="promo__discount-image"
                                             >
                                             <div class="promo__product-info-wrapper">
-                                                <strong class="promo__discount-text">@{{ item.text }}</strong>
+                                                <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
                                                 <div class="products-price">
                                                     <p class="promo__discount">
                                                         <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>

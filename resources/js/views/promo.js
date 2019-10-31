@@ -445,7 +445,7 @@ const promo = new Vue({
 
       this.purchase = preparePurchaseData({
         purchaseList: this.productData.prices,
-        long_name: this.productData.long_name,
+        product_name: this.productData.product_name,
         variant: currentVariant && currentVariant.name,
         installments: this.implValue,
         image: this.productData.image[0],

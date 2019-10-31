@@ -273,7 +273,7 @@
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
-	import { getCardUrl, preparePurchaseData, sendCheckoutRequest } from "../../utils/checkout";
+	import { getCardUrl, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
   import purchasMixin from '../../mixins/purchas';

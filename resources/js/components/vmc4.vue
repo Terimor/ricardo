@@ -196,7 +196,6 @@
           label: getRadioHtml({
             ...it,
             installments: this.form.installments,
-            text: it.text,
             idx
           })
         }))
@@ -251,7 +250,7 @@
 				this.purchase = preparePurchaseData({
 					purchaseList: this.productData.prices,
 					quantityToShow: [1, 3, 5],
-					long_name: this.productData.skus[0].name,
+					product_name: this.productData.product_name,
 					variant,
 					installments,
           onlyDiscount: true
