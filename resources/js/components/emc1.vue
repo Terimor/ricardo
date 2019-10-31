@@ -26,7 +26,10 @@
                                 @input="setImplValue"
                         />
 
-                        <h3 v-html="textArtcile"></h3>
+                        <div class="step1-titles">
+                          <h3 v-html="textArtcile"></h3>
+                          <h3 v-html="textPrice"></h3>
+                        </div>
 
                         <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid" v-html="textMainDealError"></span>
 
@@ -37,7 +40,7 @@
                                 :validation="$v.form.deal"
                         />
 
-                        <div v-show="variantList.length > 1 && !isShowVariant">
+                        <div v-if="isShowVariant">
                             <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
                             <!-- TODO: check if this is useless, remove it:
                             warrantyPriceText="setWarrantyPriceText()"  -->
@@ -357,7 +360,7 @@
     },
     computed: {
       isShowVariant() {
-        return Number(queryParams().variant) === 0
+        return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
       setCountryList () {
         return checkoutData.countries.map(name => ({
@@ -400,7 +403,6 @@
           label: getRadioHtml({
             ...it,
             installments: this.form.installments,
-            text: it.text,
             idx,
           })
         }))
@@ -424,6 +426,7 @@
       textChooseDeal: () => t('checkout.choose_deal'),
       textInstallmentsTitle: () => t('checkout.installments.title'),
       textArtcile: () => t('checkout.article'),
+      textPrice: () => t('checkout.header_banner.price'),
       textMainDealError: () => t('checkout.main_deal.error'),
       textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
       textMainDealErrorPopupMessage: () => t('checkout.main_deal.error_popup.message'),
@@ -589,13 +592,13 @@
 
         this.purchase = preparePurchaseData({
           purchaseList: this.productData.prices,
-          long_name: this.productData.long_name,
+          product_name: this.productData.product_name,
           variant: currentVariant && currentVariant.name,
           installments,
         })
       },
       getStepOrder(number) {
-        return this.variantList.length == 1 || this.isShowVariant ? number - 1 : number
+        return !this.isShowVariant ? number - 1 : number;
       },
       getProductImage() {
         const isInitial = !this.productImage;
@@ -690,8 +693,23 @@
     $color_niagara_approx: #16a085;
 
     .tpl-emc1 {
+
       .offer {
         text-align: center;
+      }
+
+      .step1-titles {
+        display: flex;
+        margin: 17px 8px 17px 12px;
+
+        h3 {
+          margin: 0;
+          padding: 0;
+
+          &:first-child {
+            flex-grow: 1;
+          }
+        }
       }
     }
 

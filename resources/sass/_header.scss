@@ -7,9 +7,20 @@
   display: flex;
   align-items: center;
 
+  @media screen and ($s-down) {
+    height: auto;
+  }
+
+  &__logo_link {
+    display: flex;
+    margin: 10px 0;
+  }
+
   &__logo {
+    height: 47px;
+
     @media screen and ($s-down) {
-      margin-top: 10px;
+      height: 25px;
     }
   }
 
@@ -38,9 +49,5 @@
     &--selected {
       color: #ef6129;
     }
-  }
-
-  img {
-    height: 47px;
   }
 }

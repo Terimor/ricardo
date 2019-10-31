@@ -34,7 +34,6 @@ header {
     max-width: 1100px;
     padding: 15px;
     margin: 0 auto;
-    margin-top: 60px;
     margin-bottom: 40px;
     text-align: center;
   }
@@ -515,10 +514,39 @@ header {
   }
 }
 
+.tpl-vmp41, .tpl-vmp42 {
+
+  main.pt-4 {
+    padding-top: 0!important;
+  }
+
+  #header {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+}
+
 .tpl-vmp42 {
+
+  footer {
+    visibility: hidden;
+  }
+
+  .sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+
+    footer {
+      visibility: visible;
+    }
+  }
+
   .promo {
     $self: &;
-    margin-top: -1.5rem;
     &__wrapper {
       display: flex;
       align-items: flex-start;
@@ -555,7 +583,7 @@ header {
   }
   .fade-wrapper {
     max-height: 1000px;
-    padding: 40px 0 60px;
+    padding: 0 0 25px;
     transition: all .5s;
     &_empty {
       max-height: 0;

@@ -17,7 +17,7 @@
             @input="setWarrantyPriceText"
             :list="list"
             />
-            <template v-if="!isShowVariant">
+            <template v-if="isShowVariant">
               <h2 v-html="textSelectVariant"></h2>
               <select-field
                 popperClass="smc7-popover-variant"
@@ -273,7 +273,7 @@
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
-	import { getCardUrl, preparePurchaseData, sendCheckoutRequest } from "../../utils/checkout";
+	import { getCardUrl, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
   import purchasMixin from '../../mixins/purchas';
@@ -389,7 +389,7 @@
     },
 		computed: {
       isShowVariant() {
-        return Number(queryParams().variant) === 0;
+        return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
 			cardUrl() {
 				return getCardUrl(this.form.cardType)

@@ -134,11 +134,11 @@
                         <div class="promo__product-content">
                             <img
                                 :src="item.image"
-                                :alt="item.text"
+                                :alt="item.textComposite"
                                 class="promo__discount-image"
                             >
                             <div class="promo__product-info-wrapper">
-                                <strong class="promo__discount-text">@{{ item.text }}</strong>
+                                <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
                                 <div class="products-price">
                                     <p class="promo__discount">
                                         <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
@@ -255,7 +255,7 @@
             </template>
         </div>
         <div
-            v-if="!isShowVariant"
+            v-if="isShowVariant"
             class="j-variant-section"
             :class="{
                 'promo__select-variant-wrapper': hasTimer !== null
@@ -267,7 +267,7 @@
                 {{ t('checkout.select_variant') }}
             </div>
         </div>
-        <template v-if="selectedPlan && !isShowVariant">
+        <template v-if="selectedPlan && isShowVariant">
             <div class="promo__choose-product">
                 <div class="promo__choose-product-item">
                     <div

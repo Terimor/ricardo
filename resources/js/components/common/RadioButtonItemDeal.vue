@@ -17,7 +17,7 @@
            {{textSoldOut}}
         </span>
         <div>
-          {{item.text}}
+          {{item.textComposite}}
         </div>
         <div class="label-container-radio__discount" v-html="item.discountText">
         </div>

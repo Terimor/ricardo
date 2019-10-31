@@ -8,7 +8,7 @@ import { getRandomInt } from '../utils/common';
 export const getRadioHtml = ({
    discountName,
    newPrice,
-   text,
+   textComposite,
    totalQuantity,
    price,
    discountText,
@@ -46,7 +46,7 @@ export const getRadioHtml = ({
     
         <p class="label-container-radio__name-price">
                   
-          <span class="label-container-radio__name-price__name">${text}</span>
+          <span class="label-container-radio__name-price__name">${textComposite}</span>
           
           ${(!discountName && isSoldOut) ? `<span class='label-container-radio__name-price__soldout red'>${t('checkout.sold_out')}</span>` : ''}
 

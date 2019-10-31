@@ -11,7 +11,7 @@
                     {{ product.prices['1']['value_text'] }}
                 </span></b>
             </span>&nbsp;
-            ( {{ product.prices['1'].discount_percent }}% {{ discount }} )
+            ({{ product.prices['1'].discount_percent }}% {{ discount }})
         </p>
     </div>
 

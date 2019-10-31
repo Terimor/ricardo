@@ -129,11 +129,11 @@
                                         </div>
                                         <div class="promo__product-content">
                                             <img :src="item.image"
-                                                 :alt="item.text"
+                                                 :alt="item.textComposite"
                                                  class="promo__discount-image"
                                             >
                                             <div class="promo__product-info-wrapper">
-                                                <strong class="promo__discount-text">@{{ item.text }}</strong>
+                                                <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
                                                 <div class="products-price">
                                                     <p class="promo__discount">
                                                         <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
@@ -156,7 +156,7 @@
                     </div>
                 </div>
 
-                <div v-if="!isShowVariant" class="promo__step promo__choose-product">
+                <div v-if="isShowVariant" class="promo__step promo__choose-product">
 
                     <div class="j-variant-section"
                          :class="{
@@ -336,6 +336,10 @@
         <leave-modal
             v-if="+queryParams.exit === 1"
             :show-preloader="showPreloader"/>
+    </div>
+
+    <div class="sticky-footer">
+        @include('layouts.footer')
     </div>
 
     @include('layouts.footer')

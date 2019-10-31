@@ -60,7 +60,7 @@ const getOnlyDiscount = ({key, discountPercent}) => {
 export function preparePurchaseData({
   purchaseList,
   quantityToShow = [1, 3, 5],
-  long_name,
+  product_name,
   variant,
   installments,
   customOrder=false,
@@ -118,8 +118,8 @@ export function preparePurchaseData({
           it.is_bestseller ? t('checkout.bestseller') :
             it.is_popular ? t('checkout.best_deal') :
               '',
-        text: `${mainQuantity + freeQuantity}x ${long_name}`,
-        textComposite: `${mainQuantity} ${long_name} ${isTextComposite(freeQuantity)}`,
+        text: `${mainQuantity + freeQuantity}x ${product_name}`,
+        textComposite: `${mainQuantity}x ${product_name}${isTextComposite(freeQuantity)}`,
         newPrice: getNewPrice({
           key,
           valueTexts,

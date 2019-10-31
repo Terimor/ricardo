@@ -5,7 +5,7 @@
         <div class="row">
           <div class="col-sm-5 col-md-5">
             <div class="column-with-head">
-              <div class="col-content">
+              <div class="col-content" id="col-prod-image">
                 <div class="product_img">
                   <img
                     id="main-prod-image"
@@ -196,7 +196,6 @@
           label: getRadioHtml({
             ...it,
             installments: this.form.installments,
-            text: it.text,
             idx
           })
         }))
@@ -251,7 +250,7 @@
 				this.purchase = preparePurchaseData({
 					purchaseList: this.productData.prices,
 					quantityToShow: [1, 3, 5],
-					long_name: this.productData.skus[0].name,
+					product_name: this.productData.product_name,
 					variant,
 					installments,
           onlyDiscount: true
@@ -291,7 +290,6 @@
     border-radius: 6px;
     box-shadow: 0 16px 24px 2px rgba(0, 0, 0, .14), 0 6px 30px 5px rgba(0, 0, 0, .12), 0 8px 10px -5px rgba(0, 0, 0, .2);
     background: #fff;
-    margin-top: 30px;
     padding: 0;
 
     .main-content {
@@ -303,6 +301,16 @@
         color: rgba(0, 0, 0, .87);
         background: #fff;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
+
+        @media screen and (max-width: 575px) {
+          &#col-prod-image {
+            margin-bottom: 8px;
+          }
+
+          &#form-steps {
+            margin-top: 8px;
+          }
+        }
 
         .product_img {
           padding: 10px;
@@ -486,6 +494,15 @@
   }
 
   .tpl-vmc4 {
+
+    main.pt-4 {
+      padding-top: 0!important;
+    }
+
+    #header {
+      background-color: transparent;
+      box-shadow: none;
+    }
 
     .footer {
       background-color: transparent;
