@@ -21,6 +21,7 @@
             <div class="column-with-head">
               <div class="col-content" id="form-steps">
                 <payment-form-vmc4
+                    :productImage="productImage"
                     :installments="form.installments"
                     :isWarrantyChecked="form.isWarrantyChecked"
                     :checkoutData="checkoutData"
@@ -280,10 +281,6 @@
           this.checkoutData.countryCode === 'mx' ? 1 :
           1
       }
-
-			try {
-				this.productImage = checkoutData.product.skus[0].quantity_image[1];
-			} catch (_) {}
 		},
 	}
 </script>

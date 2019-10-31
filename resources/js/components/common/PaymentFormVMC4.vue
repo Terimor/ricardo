@@ -25,7 +25,8 @@
                 :rest="{
                   placeholder: 'Variant'
                 }"
-                :list="variantList"/>
+                :list="variantList"
+                @input="onVariantChange" />
             </template>
         </div>
         <div class="step step-2" v-if="step === 2">
@@ -280,6 +281,8 @@
 	import {fade} from "../../utils/common";
   import { queryParams } from  '../../utils/queryParams';
 
+  const searchParams = new URL(location).searchParams;
+
 	export default {
 		name: "PaymentFormVMC4",
     mixins: [
@@ -293,6 +296,7 @@
     },
 		validations: vmc4validation,
 		props: [
+      'productImage',
 			'countryList',
 			'cardNames',
 			'list',
@@ -377,6 +381,8 @@
       }
     },
     mounted() {
+      this.$emit('productImageChanged', this.getProductImage());
+
       if (this.paymentError && !this.isPurchasAlreadyExists) {
         setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
@@ -469,16 +475,6 @@
                   this.form.stepThree.cardNumber = oldValue;
                 }
             },
-            'form.variant'(val) {
-                fade('out', 300, document.querySelector('#main-prod-image'), true)
-                  .then(() => {
-                      let productImageUrl = this.variantList.find(variant => variant.value === val).imageUrl;
-                      if (productImageUrl) {
-                          this.$emit('productImageChanged', productImageUrl)
-                      }
-                      fade('in', 300, document.querySelector('#main-prod-image'), true)
-                  });
-            },
             'step'(val) {
                 fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
                   .then(() => {
@@ -512,6 +508,9 @@
 
         },
 		methods: {
+      onVariantChange() {
+        this.animateProductImage();
+      },
       activateForm() {
         this.isFormShown = true;
       },
@@ -657,8 +656,6 @@
         }
 			},
       paypalCreateOrder() {
-        const searchParams = new URL(document.location.href).searchParams;
-
         const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
           ? checkoutData.product.prices.currency
           : searchParams.get('cur');
@@ -689,6 +686,31 @@
           });
       },
       paypalOnApprove: paypalOnApprove,
+      getProductImage() {
+        const isInitial = !this.productImage;
+        const quantity = /*this.form && +this.form.deal || */1;
+        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+
+        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
+
+        return isInitial ? productImage : skuImage;
+      },
+      animateProductImage() {
+        const newProductImage = this.getProductImage();
+
+        if (newProductImage !== this.productImage) {
+          const imgPreload = new Image();
+          imgPreload.src = newProductImage;
+
+          fade('out', 300, document.querySelector('#main-prod-image'), true)
+            .then(() => {
+              this.$emit('productImageChanged', newProductImage);
+              setTimeout(() => fade('in', 300, document.querySelector('#main-prod-image'), true), 200);
+            });
+        }
+      },
 		},
 	}
 </script>

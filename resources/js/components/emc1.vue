@@ -54,6 +54,7 @@
                 }"
                                     :list="variantList"
                                     warrantyPriceText="setWarrantyPriceText()"
+                                    @input="onVariantChange"
                             />
                         </div>
 
@@ -197,6 +198,7 @@
   import { preparePartByInstallments } from '../utils/installments';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { queryParams } from  '../utils/queryParams';
+
   const searchParams = new URL(location).searchParams;
 
   export default {
@@ -448,12 +450,7 @@
           installments: val,
         })
       },
-      'form.deal'(val) {
-        //this.animateProductImage();
-      },
       'form.variant' (val) {
-        this.animateProductImage();
-
         this.setPurchase({
           variant: val,
           installments: this.form.installments,
@@ -462,6 +459,9 @@
     },
     validations: emc1Validation,
     methods: {
+      onVariantChange() {
+        this.animateProductImage();
+      },
       activateForm() {
         this.isFormShown = true;
         this.$nextTick(() => {
@@ -598,21 +598,15 @@
         return this.variantList.length == 1 || this.isShowVariant ? number - 1 : number
       },
       getProductImage() {
+        const isInitial = !this.productImage;
+        const quantity = /*this.form && +this.form.deal || */1;
         const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
         const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
-        const quantity = /*this.form && +this.form.deal || */1;
 
-        // use the main image initially
-        const initialImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
 
-        // use the SKU image initially if &image= is not present
-        //const initialImage = searchParams.has('image')
-        //  ? checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0]
-        //  : skuVariant.quantity_image[1] || checkoutData.product.image[0];
-
-        return this.productImage
-          ? skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || initialImage
-          : initialImage;
+        return isInitial ? productImage : skuImage;
       },
       animateProductImage() {
         const newProductImage = this.getProductImage();
@@ -625,7 +619,7 @@
             fade('out', 300, document.querySelector('#product-image'), true)
               .then(() => {
                 this.productImage = newProductImage;
-                setTimeout(() => fade('in', 30, document.querySelector('#product-image'), true), 200);
+                setTimeout(() => fade('in', 300, document.querySelector('#product-image'), true), 200);
               });
           } else {
             this.productImage = newProductImage;
