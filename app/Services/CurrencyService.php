@@ -189,7 +189,7 @@ class CurrencyService
         if ($fractionDigits == 0) {
             $exchangedPrice = (int)$exchangedPrice;
         }
-$exchangedPrice = 99999;
+
         $digits = strlen((int)$exchangedPrice);
 
         $exchangedPrice = static::mainRounding($digits, $exchangedPrice);
