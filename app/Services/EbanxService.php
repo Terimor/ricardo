@@ -19,6 +19,7 @@ use Ebanx\Benjamin\Models\Country;
 use Ebanx\Benjamin\Models\Currency;
 use Ebanx\Benjamin\Models\Payment;
 use Ebanx\Benjamin\Models\Person;
+use Ebanx\Benjamin\Models\Item;
 use Ebanx\Benjamin\Models\Notification;
 use Ebanx\Benjamin\Util\Http as EbanxUtils;
 
@@ -150,21 +151,48 @@ class EbanxService
     }
 
     /**
+     * Returns Item
+     * @param   array $data
+     * @return  array Item
+     */
+    public static function createItem(array $data): Item
+    {
+        return new Item([
+            'sku'       => $data['sku'],
+            'name'      => $data['name'],
+            'unitPrice' => $data['amount'],
+            'quantity'  => $data['qty'],
+            'type'      => $data['is_main'] ? 'main' : 'upsells',
+            'description' => $data['desc']
+        ]);
+    }
+
+    /**
      * Returns available currency for country
      * @param  string $country_code
      * @param  string|null $currency
-     * @return string|null
+     * @return string
      */
     public static function getCurrencyByCountry(string $country_code, ?string $currency): ?string
     {
         $country = Country::fromIso($country_code);
-        if (isset(self::CUR_PER_COUNTRY[$country])) {
+        if ($country && isset(self::CUR_PER_COUNTRY[$country])) {
             if ($currency && \in_array($currency, self::CUR_PER_COUNTRY[$country])) {
                 return $currency;
             }
             return Currency::USD;
         }
-        return null;
+        return Currency::USD;
+    }
+
+    /**
+     * Checks if the country is supported
+     * @param  string $country_code
+     * @return bool
+     */
+    public static function isCountrySupported(string $country_code): bool
+    {
+        return Country::fromIso($country_code) ? true : false;
     }
 
     /**
@@ -227,15 +255,17 @@ class EbanxService
      * Provides payment by card
      * @param  array   $card
      * @param  array   $contact
+     * @param  array   $items
      * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $order_details): array
+    public function payByCard(array $card, array $contact, array $items, array $order_details): array
     {
         return $this->pay(
             self::createCardSource($card, $contact),
             self::createAddress($contact),
             self::createPerson($contact),
+            array_map(function($item) { return self::createItem($item); }, $items),
             $order_details
         );
     }
@@ -244,15 +274,17 @@ class EbanxService
      * Provides payment by token
      * @param  array   $token
      * @param  array   $contact
+     * @param  array   $items
      * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
      * @return array
      */
-    public function payByToken(string $token, array $contact, array $order_details): array
+    public function payByToken(string $token, array $contact, array $items, array $order_details): array
     {
         return $this->pay(
             self::createTokenSource($token),
             self::createAddress($contact),
             self::createPerson($contact),
+            array_map(function($item) { return self::createItem($item); }, $items),
             $order_details
         );
     }
@@ -262,10 +294,11 @@ class EbanxService
      * @param  Card    $source
      * @param  Address $address
      * @param  Person  $person
+     * @param  array   $items Item[]
      * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
      * @return array
      */
-    private function pay(Card $source, Address $address, Person $person, array $order_details): array
+    private function pay(Card $source, Address $address, Person $person, array $items, array $order_details): array
     {
         $config = new Config([
             'integrationKey'        => $this->integration_key,
@@ -282,6 +315,7 @@ class EbanxService
             'merchantPaymentCode'   => \uniqid(),
             'orderNumber'           => $order_details['number'],
             'person'                => $person,
+            'items'                 => $items,
             'type'                  => PaymentService::METHOD_CREDITCARD
         ]);
 

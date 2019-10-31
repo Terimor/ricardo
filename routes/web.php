@@ -30,6 +30,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/product', 'ProductController@view')->name('product');
     $router->get('/product/local-price', 'ProductController@getLocalPrice');
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
+    $router->get('/payment-methods-by-country', 'PaymentsController@getPaymentMethodsByCountry');
     $router->post('/pay-by-card', 'PaymentsController@createCardOrder');
     $router->get('/pay-by-card-errors', 'PaymentsController@getCardOrderErrors');
     $router->post('/pay-by-card-upsells', 'PaymentsController@createCardUpsellsOrder');

@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
+use Illuminate\Http\Request;
 use App\Exceptions\CustomerUpdateException;
 use App\Exceptions\InvalidParamsException;
 use App\Exceptions\OrderNotFoundException;
@@ -76,6 +77,7 @@ class PaymentService
         self::PROVIDER_PAYPAL      => [
             'name'      => 'PayPal',
             'is_active' => true,
+            'on_prod'   => true,
             'methods'   => [
                 self::METHOD_INSTANT_TRANSFER => [
                     '-3ds' => ['*']
@@ -85,47 +87,69 @@ class PaymentService
         self::PROVIDER_CHECKOUTCOM => [
             'name'      => 'Checkout.com',
             'is_active' => true,
+            'on_prod'   => true,
             'methods'   => [
                 self::METHOD_CREDITCARD => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    // 'excl' => ['br', 'mx', 'co']
+                    'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 self::METHOD_VISA       => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    // 'excl' => ['br', 'mx', 'co']
+                    'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 self::METHOD_MASTERCARD => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    // 'excl' => ['br', 'mx', 'co']
+                    'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 self::METHOD_AMEX       => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
-                    // 'excl' => ['br', 'mx', 'co']
+                    'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 self::METHOD_DISCOVER   => [
                     '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*']
+                    '-3ds' => ['*'],
+                    'excl' => ['ar', 'br', 'co', 'mx']
                     // '-3ds' => ['us']
                 ],
                 self::METHOD_DINERSCLUB => [
                     '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*']
+                    '-3ds' => ['*'],
+                    'excl' => ['ar', 'br', 'co', 'mx']
                     // '-3ds' => ['us', 'ko']
                 ],
                 self::METHOD_JCB        => [
                     '+3ds' => ['europe', 'il', 'ko', 'id', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*']
+                    '-3ds' => ['*'],
+                    'excl' => ['ar', 'br', 'co', 'mx']
                     // '-3ds' => ['sg', 'jp', 'tw', 'hk', 'mo', 'th', 'vn', 'kh', 'my', 'mm']
                 ],
             ]
         ],
         self::PROVIDER_EBANX       => [
             'name'      => 'EBANX',
-            'is_active' => false,
+            'is_active' => true,
+            'on_prod'   => false,
+            'extra_fields'  => [
+                'ar' => [
+                    'document_number'   => ['pattern' => '^\d{7,8}$|^\d{2}-\d{8}-\d{2}$'],
+                    'installments'      => ['pattern' => '1|3|6', 'default' => 1]
+                ],
+                'br' => [
+                    'document_number'   => ['pattern' => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$'],
+                    'installments'      => ['pattern' => '1|3|6', 'default' => 3]
+                ],
+                'co' => [
+                    'document_number'   => ['pattern' => '^\d{1,10}$'],
+                    'installments'      => ['pattern' => '1|3|6', 'default' => 1]
+                ],
+                'mx' => [
+                    'installments'      => ['pattern' => '1|3|6', 'default' => 1]
+                ]
+            ],
             'methods'   => [
                 self::METHOD_CREDITCARD => [
                     '-3ds' => ['br', 'mx', 'co']
@@ -139,18 +163,18 @@ class PaymentService
                 self::METHOD_AMEX       => [
                     '-3ds' => ['br', 'mx', 'co']
                 ],
-                self::METHOD_DISCOVER   => [
-                    '-3ds' => ['br']
-                ],
+                // self::METHOD_DISCOVER   => [
+                //     '-3ds' => ['br']
+                // ],
                 self::METHOD_DINERSCLUB => [
                     '-3ds' => ['br', 'co']
                 ],
                 self::METHOD_HIPERCARD  => [
                     '-3ds' => ['br']
                 ],
-                self::METHOD_AURA       => [
-                    '-3ds' => ['br']
-                ],
+                // self::METHOD_AURA       => [
+                //     '-3ds' => ['br']
+                // ],
                 self::METHOD_ELO        => [
                     '-3ds' => ['br']
                 ]
@@ -159,6 +183,7 @@ class PaymentService
         self::PROVIDER_NOVALNET    => [
             'name'      => 'Novalnet',
             'is_active' => false,
+            'on_prod'   => false,
             'methods'   => [
                 self::METHOD_PREZELEWY24 => [
                     '-3ds' => ['pl']
@@ -192,7 +217,7 @@ class PaymentService
         self::METHOD_CREDITCARD       => [
             'name'      => 'Credit card',
             'logo'      => 'https://static-backend.saratrkr.com/image_assets/othercard.png',
-            'is_active' => true,
+            'is_active' => false,
         ],
         self::METHOD_VISA             => [
             'name'      => 'VISA',
@@ -249,13 +274,6 @@ class PaymentService
             'logo'      => 'https://static-backend.saratrkr.com/image_assets/diners-curved.png',
             'is_active' => true,
         ],
-    ];
-
-
-    public static $installments = [
-        'mx' => [
-
-        ]
     ];
 
     /**
@@ -453,15 +471,8 @@ class PaymentService
         if (!$provider) {
             throw new ProviderNotFoundException("Country {$contact['country']}, Card {$card['type']} not supported");
         } else if ($provider === self::PROVIDER_EBANX) {
-            // check if ebanx supports country and currency, switch to default currency
+            // check if ebanx supports currency, otherwise switch to default currency
             $product->currency = EbanxService::getCurrencyByCountry($contact['country'], $cur);
-            if (!$product->currency) {
-                // change provider
-                $provider = self::getProviderByCountryAndMethod($contact['country'], $card['type'], [self::PROVIDER_EBANX]);
-                if (!$provider) {
-                    throw new ProviderNotFoundException("Country {$contact['country']}, Card {$card['type']} not supported");
-                }
-            }
         }
 
         $this->addCustomer($contact); // throwable
@@ -518,18 +529,31 @@ class PaymentService
             $order->shipping_street     = $contact['street'];
             $order->shipping_street2    = $contact['district'] ?? null;
             $order->installments        = $installments;
-            // $order->ipqualityscore      = $ipqs;
         }
         // select provider and create payment
         $payment = [];
         if ($provider === self::PROVIDER_EBANX) {
             $ebanxService = new EbanxService();
-            $payment = $ebanxService->payByCard($card, $contact, [
-                'amount'        => $order->total_price,
-                'currency'      => $order->currency,
-                'number'        => $order->number,
-                'installments'  => $installments
-            ]);
+            $payment = $ebanxService->payByCard(
+                $card,
+                $contact,
+                [
+                    [
+                        'sku'   => $sku,
+                        'qty'   => $qty,
+                        'name'  => $product->product_name,
+                        'desc'  => $product->description,
+                        'amount'    => $order->total_price,
+                        'is_main'   => true
+                    ]
+                ],
+                [
+                    'amount'        => $order->total_price,
+                    'currency'      => $order->currency,
+                    'number'        => $order->number,
+                    'installments'  => $installments
+                ]
+            );
         } else {
             $checkoutService = new CheckoutDotComService();
             $payment = $checkoutService->payByCard($card, $contact, [
@@ -608,8 +632,8 @@ class PaymentService
         }, $upsells);
 
         if ($this->orderService->checkIfUpsellsPossible($order) && !empty($card_token)) {
+            $products = [];
             $upsell_products = [];
-            $checkout_names = [];
             $checkout_price = 0;
             foreach ($upsells as $key => $item) {
                 try {
@@ -628,7 +652,7 @@ class PaymentService
                         ]
                     );
                     $checkout_price += $upsell_price['price'];
-                    $checkout_names[] = $product->product_name;
+                    $products[$product->upsell_sku] = $product;
                     $upsell_products[] = $upsell_product;
                 } catch (HttpException $e) {
                     $upsells[$key]['status'] = self::STATUS_FAIL;
@@ -639,25 +663,39 @@ class PaymentService
                 // select provider by main txn
                 if ($order_main_txn['payment_provider'] === self::PROVIDER_EBANX) {
                     $ebanxService = new EbanxService();
-                    $payment = $ebanxService->payByToken($card_token, [
-                        'street'            => $order->shipping_street,
-                        'city'              => $order->shipping_city,
-                        'country'           => $order->shipping_country,
-                        'state'             => $order->shipping_state,
-                        'district'          => $order->shipping_street2,
-                        'zip'               => $order->shipping_zip,
-                        'document_number'   => $order->customer_doc_id,
-                        'email'             => $order->customer_email,
-                        'first_name'        => $order->customer_first_name,
-                        'last_name'         => $order->customer_last_name,
-                        'phone'             => $order->customer_phone,
-                        'ip'                => $req->ip()
-                    ], [
-                        'amount'        => $checkout_price,
-                        'currency'      => $order->currency,
-                        'number'        => $order->number,
-                        'installments'  => $order->installments
-                    ]);
+                    $payment = $ebanxService->payByToken(
+                        $card_token,
+                        [
+                            'street'            => $order->shipping_street,
+                            'city'              => $order->shipping_city,
+                            'country'           => $order->shipping_country,
+                            'state'             => $order->shipping_state,
+                            'district'          => $order->shipping_street2,
+                            'zip'               => $order->shipping_zip,
+                            'document_number'   => $order->customer_doc_id,
+                            'email'             => $order->customer_email,
+                            'first_name'        => $order->customer_first_name,
+                            'last_name'         => $order->customer_last_name,
+                            'phone'             => $order->customer_phone,
+                            'ip'                => $req->ip()
+                        ],
+                        array_map(function($item) use($products) {
+                            return [
+                                'sku'   => $item['sku_code'],
+                                'qty'   => $item['quantity'],
+                                'name'  => $products[$item['sku_code']]->product_name,
+                                'desc'  => $products[$item['sku_code']]->description,
+                                'amount'    => $item['price'],
+                                'is_main'   => false
+                            ];
+                        }, $upsell_products),
+                        [
+                            'amount'        => $checkout_price,
+                            'currency'      => $order->currency,
+                            'number'        => $order->number,
+                            'installments'  => $order->installments
+                        ]
+                    );
                 } else {
                     $checkoutService = new CheckoutDotComService();
                     $payment = $checkoutService->payByToken(
@@ -669,7 +707,7 @@ class PaymentService
                             'ip'        => $order->ip,
                             'id'        => $order->getIdAttribute(),
                             'number'    => $order->number,
-                            'description'   => implode(', ', $checkout_names),
+                            'description'   => implode(', ', array_column($products, 'product_name')),
                             // TODO: remove city hardcode
                             'billing_descriptor'   => ['name' => $main_product->billing_descriptor, 'city' => 'Msida']
                         ]
@@ -835,23 +873,25 @@ class PaymentService
      * Returns payment methods array by country
      * Results example:
      * $result = [
-      self::PROVIDER_CHECKOUTCOM => [
-      self::METHOD_VISA => [
-      'name' => 'VISA',
-      'logo' => 'https://static-backend.saratrkr.com/image_assets/visa-curved-128px.png',
-      '3ds' => true
-      ]
-      ]
-      ];
+     *   self::PROVIDER_CHECKOUTCOM => [
+     *     self::METHOD_VISA => [
+     *       'name' => 'VISA',
+     *       'logo' => 'https://static-backend.saratrkr.com/image_assets/visa-curved-128px.png',
+     *       '3ds' => true
+     *     ]
+     *   ]
+     * ];
      * @param string $country
      * @return boolean
      */
     public static function getPaymentMethodsByCountry(string $country)
     {
+        $country = strtolower($country);
         $result = [];
         foreach (static::$providers as $providerId => $provider)
         {
-            if ($provider['is_active'])
+            $is_pass_method = \App::environment() === 'production' ? $provider['on_prod'] : true;
+            if ($provider['is_active'] && $is_pass_method)
             {
                 $result[$providerId] = [];
 
@@ -883,6 +923,9 @@ class PaymentService
                         $method             = static::$methods[$methodId];
                         $methodData['name'] = $method['name'];
                         $methodData['logo'] = $method['logo'];
+                        if (isset($provider['extra_fields']) && isset($provider['extra_fields'][$country])) {
+                            $methodData['extra_fields'] = $provider['extra_fields'][$country];
+                        }
                     }
                 } else
                 {
@@ -898,21 +941,25 @@ class PaymentService
      * Returns available provider for country and payment method
      * @param   string $country
      * @param   string $method
-     * @param   array  $excl
+     * @param   string $pref default=checkoutcom
+     * @param   array  $excl default=[]
      * @return  string|null
      */
-    public static function getProviderByCountryAndMethod(string $country, string $method, array $excl = []): ?string
+    public static function getProviderByCountryAndMethod(string $country, string $method, string $pref = self::PROVIDER_CHECKOUTCOM, array $excl = []): ?string
     {
         $providers = self::getPaymentMethodsByCountry($country);
 
-        $result = null;
+        if (!EbanxService::isCountrySupported($country)) {
+            $excl[] = self::PROVIDER_EBANX;
+        }
+
+        $available_providers = [];
         foreach ($providers as $prv => $methods) {
             if (isset($methods[$method]) && !in_array($prv, $excl)) {
-                $result = $prv;
-                break;
+                $available_providers[] = $prv;
             }
         }
-        return $result;
+        return in_array($pref, $available_providers) ? $pref : array_pop($available_providers);
     }
 
     /**
@@ -1055,10 +1102,5 @@ class PaymentService
         }
 
         return $result;
-    }
-
-    public function testEbanxUpsells(PaymentCardCreateUpsellsOrderRequest $req)
-    {
-        return ['msg' => '@todo upsells'];
     }
 }

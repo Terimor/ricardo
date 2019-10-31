@@ -9,6 +9,7 @@ use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
+use App\Http\Requests\GetPaymentMethodsByCountryRequest;
 use Illuminate\Http\Request;
 
 /*use com\checkout;
@@ -96,6 +97,16 @@ class PaymentsController extends Controller
     }
 
     /**
+     * Returns payment methods by country
+     * @param  GetPaymentMethodsByCountryRequest $req [description]
+     * @return array
+     */
+    public function getPaymentMethodsByCountry(GetPaymentMethodsByCountryRequest $req)
+    {
+        return collect(PaymentService::getPaymentMethodsByCountry($req->get('country')))->collapse()->all();
+    }
+
+    /**
      * Accepts checkout.com charges.captured webhook
      * @param  Request $req
      * @return void
@@ -155,7 +166,7 @@ class PaymentsController extends Controller
 
     public function test(Request $req)
     {
-        return \App\Mappers\CheckoutDotComAmountMapper::fromProvider(4999, 'USD');
+        return PaymentService::getPaymentMethodsByCountry('co');
     }
 
 }

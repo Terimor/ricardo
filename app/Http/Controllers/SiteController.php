@@ -136,9 +136,7 @@ class SiteController extends Controller
 
         $setting = Setting::getValue(array(
             'instant_payment_paypal_client_id',
-            'ipqualityscore_api_hash',
-            'ebanx_integration_key',
-            'ebanx_api_url',
+            'ipqualityscore_api_hash'
         ));
 
         $countries =  \Utils::getCountries(true);
@@ -148,13 +146,15 @@ class SiteController extends Controller
         $langCode = substr(app()->getLocale(), 0, 2);
         $countryCode = \Utils::getLocationCountryCode();
 
+        $setting['payment_methods'] = collect(PaymentService::getPaymentMethodsByCountry($countryCode))->collapse()->all();
+
         $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
 
         $imagesNames = ['safe_payment'];
-        $images = \Utils::getLocalizedImages($imagesNames);        
-        
+        $images = \Utils::getLocalizedImages($imagesNames);
+
         return view(
             $viewTemplate,
             compact(
