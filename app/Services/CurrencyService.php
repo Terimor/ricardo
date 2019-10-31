@@ -272,6 +272,7 @@ class CurrencyService
             
             if ($exchangedPrice <= $oldPrice) {
                 $exchangedPrice += 10000;
+            }
             
         }
         
