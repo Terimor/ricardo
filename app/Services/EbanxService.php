@@ -92,12 +92,12 @@ class EbanxService
     public static function createAddress(array $contact): Address
     {
         return new Address([
-            'address' => $contact['street'],
-            'city' => $contact['city'],
-            'country' => Country::fromIso($contact['country']),
-            'state' => $contact['state'],
-            'streetNumber' => $contact['district'],
-            'zipcode' => $contact['zip']
+            'address'   => $contact['street'],
+            'city'      => $contact['city'],
+            'country'   => Country::fromIso($contact['country']),
+            'state'     => $contact['state'],
+            'zipcode'   => $contact['zip'],
+            'streetNumber' => $contact['district'] ?? '' // maybe undefined
         ]);
     }
 
@@ -114,7 +114,7 @@ class EbanxService
         }
         return new Person([
             'type'          => Person::TYPE_PERSONAL,
-            'document'      => $contact['document_number'],
+            'document'      => $contact['document_number'] ?? '', // maybe undefined
             'email'         => $contact['email'],
             'ip'            => $contact['ip'] ?? null,
             'name'          => $contact['first_name'] . ' ' . $contact['last_name'],

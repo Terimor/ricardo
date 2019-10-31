@@ -135,19 +135,23 @@ class PaymentService
             'on_prod'   => false,
             'extra_fields'  => [
                 'ar' => [
+                    'district'          => ['pattern' => '^.{1,30}$'],
                     'document_number'   => ['pattern' => '^\d{7,8}$|^\d{2}-\d{8}-\d{2}$'],
-                    'installments'      => ['pattern' => '1|3|6', 'default' => 1]
+                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1]
                 ],
                 'br' => [
+                    'district'          => ['pattern' => '^.{1,30}$'],
                     'document_number'   => ['pattern' => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$'],
-                    'installments'      => ['pattern' => '1|3|6', 'default' => 3]
+                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 3]
                 ],
                 'co' => [
+                    'district'          => ['pattern' => '^.{1,30}$'],
                     'document_number'   => ['pattern' => '^\d{1,10}$'],
-                    'installments'      => ['pattern' => '1|3|6', 'default' => 1]
+                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1]
                 ],
                 'mx' => [
-                    'installments'      => ['pattern' => '1|3|6', 'default' => 1]
+                    'district'          => ['pattern' => '^.{1,30}$'],
+                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1]
                 ]
             ],
             'methods'   => [

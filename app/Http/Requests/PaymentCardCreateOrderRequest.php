@@ -24,11 +24,11 @@ class PaymentCardCreateOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'address.city'                  => ['required','string'],
+            'address.city'                  => ['required', 'string'],
             'address.country'               => ['required', 'regex:/^[a-z]{2}$/'],
             'address.state'                 => ['required', 'string'],
             'address.street'                => ['required', 'string'],
-            'address.district'              => ['string'],
+            'address.district'              => ['string', 'between:1,30'],
             'address.zip'                   => ['required', 'string'],
             'contact.email'                 => ['required', 'email:rfc'],
             'contact.first_name'            => ['required', 'string'],
@@ -41,7 +41,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
             'card.month'                    => ['required', 'regex:/^(0?[1-9]|1[012])$/'],
             'card.year'                     => ['required', 'regex:/^20\d{2}$/'],
             'card.cvv'                      => ['required', 'regex:/^\d{3,4}$/'],
-            'card.installments'             => ['integer'],
+            'card.installments'             => ['integer', 'integer', 'between:1,6'],
             'product.sku'                   => ['required', 'string'],
             'product.qty'                   => ['required', 'integer', 'between:1,5'],
             'product.is_warranty_checked'   => ['boolean'],
