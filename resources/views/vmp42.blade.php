@@ -156,7 +156,7 @@
                     </div>
                 </div>
 
-                <div v-if="!isShowVariant" class="promo__step promo__choose-product">
+                <div v-if="isShowVariant" class="promo__step promo__choose-product">
 
                     <div class="j-variant-section"
                          :class="{
@@ -336,6 +336,10 @@
         <leave-modal
             v-if="+queryParams.exit === 1"
             :show-preloader="showPreloader"/>
+    </div>
+
+    <div class="sticky-footer">
+        @include('layouts.footer')
     </div>
 
     @include('layouts.footer')

@@ -40,7 +40,7 @@
                                 :validation="$v.form.deal"
                         />
 
-                        <div v-show="variantList.length > 1 && !isShowVariant">
+                        <div v-if="isShowVariant">
                             <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
                             <!-- TODO: check if this is useless, remove it:
                             warrantyPriceText="setWarrantyPriceText()"  -->
@@ -360,7 +360,7 @@
     },
     computed: {
       isShowVariant() {
-        return Number(queryParams().variant) === 0
+        return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
       setCountryList () {
         return checkoutData.countries.map(name => ({
@@ -598,7 +598,7 @@
         })
       },
       getStepOrder(number) {
-        return this.variantList.length == 1 || this.isShowVariant ? number - 1 : number
+        return !this.isShowVariant ? number - 1 : number;
       },
       getProductImage() {
         const isInitial = !this.productImage;

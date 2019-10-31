@@ -252,13 +252,22 @@ const promo = new Vue({
 
     wait(
       () => !this.showPreloader,
-      () => this.slideFormSteps = [...document.querySelectorAll('.promo__step')],
+      () => {
+        this.$nextTick(() => {
+          this.slideFormSteps = [...document.querySelectorAll('.promo__step')];
+        });
+      },
     );
   },
 
   computed: {
+
+    isRTL() {
+      return !!document.querySelector('html[dir="rtl"]');
+    },
+
     isShowVariant() {
-        return Number(queryParams().variant) === 0;
+      return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
     },
     checkoutData() {
       return checkoutData;
@@ -350,26 +359,23 @@ const promo = new Vue({
     },
 
     setSelectedPlan(deal) {
-      if(this.isShowVariant){
-          this.form.variant = this.skusList[0].code;
-          this.isShownForm = true;
-          this.isShownFooter = false;
-          if(this.slideForm) {
-              this.nextStep();
-              this.$nextTick(() => {this.isShownJumbotron = false;})
-          }else{
-              this.scrollTo('.j-complete-order');
-          }
-      }else{
-          this.selectedPlan = deal;
-          this.form.deal = deal;
-          this.isShownFooter = false;
-          if(this.slideForm) {
-              this.nextStep();
-              this.$nextTick(() => {this.isShownJumbotron = false;})
-          }else{
-              this.scrollTo('.j-variant-section');
-          }
+      this.isShownFooter = false;
+      this.selectedPlan = deal;
+      this.form.deal = deal;
+
+      if (!this.isShowVariant) {
+        this.form.variant = this.skusList[0].code;
+        this.isShownForm = true;
+      }
+
+      if (this.slideForm) {
+        this.nextStep();
+
+        this.$nextTick(() => {
+          this.isShownJumbotron = false;
+        });
+      } else {
+        this.scrollTo('.j-complete-order');
       }
     },
 
@@ -473,10 +479,6 @@ const promo = new Vue({
 
         if(this.slideFormStep < 1) {this.slideFormStep = 0};
         this.$nextTick(()=>{this.getFormHeight()});
-    },
-
-    isRTL() {
-      return !!document.querySelector('html[dir="rtl"]');
     },
 
     stepAnimation () {

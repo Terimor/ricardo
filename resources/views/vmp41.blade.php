@@ -255,7 +255,7 @@
             </template>
         </div>
         <div
-            v-if="!isShowVariant"
+            v-if="isShowVariant"
             class="j-variant-section"
             :class="{
                 'promo__select-variant-wrapper': hasTimer !== null
@@ -267,7 +267,7 @@
                 {{ t('checkout.select_variant') }}
             </div>
         </div>
-        <template v-if="selectedPlan && !isShowVariant">
+        <template v-if="selectedPlan && isShowVariant">
             <div class="promo__choose-product">
                 <div class="promo__choose-product-item">
                     <div

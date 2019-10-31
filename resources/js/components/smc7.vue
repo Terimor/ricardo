@@ -71,7 +71,7 @@
                         </div>
 
                         <div class="smc7__step-2"
-                          v-if="!isShowVariant"
+                          v-if="isShowVariant"
                         >
                             <h2><span>{{textStep}}</span> 2: <span>{{textSelectVariant}}</span></h2>
                             <select-field
@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="smc7__step-3">
-                            <h2><span>{{textStep}}</span> {{ isShowVariant ? 2 : 3  }}: <span>{{textContactInformation}}</span></h2>
+                            <h2><span>{{textStep}}</span> {{ !isShowVariant ? 2 : 3  }}: <span>{{textContactInformation}}</span></h2>
                             <div class="full-name">
                                 <text-field
                                   :validation="$v.form.fname"
@@ -143,7 +143,7 @@
                             </div>
                             <img id="product-image-body" :src="productImage" alt="Product image">
                         </div>
-                        <h2 class="step-title"><span>{{textStep}}</span> {{ isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
+                        <h2 class="step-title"><span>{{textStep}}</span> {{ !isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
                                 :countryList="setCountryList"
                                 :$v="$v"
@@ -336,7 +336,7 @@
       textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
 
       isShowVariant() {
-        return Number(queryParams().variant) === 0;
+        return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
 
       checkoutData() {
