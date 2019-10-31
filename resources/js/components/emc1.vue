@@ -692,7 +692,7 @@
     $red: #e74c3c;
     $color_niagara_approx: #16a085;
 
-    .tpl-emc1 {
+    .tpl-emc1, .tpl-emc1b {
 
       .offer {
         text-align: center;
@@ -835,10 +835,20 @@
                 }
             }
 
+            .label-container-radio__best-seller__price {
+              color: $red;
+            }
+
             .label-container-radio__discount {
-                color: $color_niagara_approx;
-                &.red {
+                display: flex;
+                justify-content: space-between;
+
+                .discount-text {
+                  color: $color_niagara_approx;
+
+                  &.red {
                     color: $red;
+                  }
                 }
             }
 

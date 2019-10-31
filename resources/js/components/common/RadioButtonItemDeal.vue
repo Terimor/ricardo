@@ -78,8 +78,10 @@
     color:#e74c3c;
   }
 
-  .label-container-radio__discount {
-    color: #16a085;
+  .tpl-smc7 {
+    .label-container-radio__discount {
+      color: #16a085;
+    }
   }
 
   .radio-button-deal {

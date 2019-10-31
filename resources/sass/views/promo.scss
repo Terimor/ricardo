@@ -529,19 +529,34 @@ header {
 
 .tpl-vmp42 {
 
-  footer {
-    visibility: hidden;
+  &.slide-grey-back {
+    background-color: #f8fafc;
+
+    #header {
+      background-color: #fff;
+    }
   }
 
   .sticky-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
+    display: none;
+  }
 
+  &.with-sticky-footer {
     footer {
-      visibility: visible;
+      visibility: hidden;
+    }
+
+    .sticky-footer {
+      display: block;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
+
+      footer {
+        visibility: visible;
+      }
     }
   }
 

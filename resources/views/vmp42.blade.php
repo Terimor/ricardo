@@ -286,7 +286,7 @@
                 <section class="promo__reviews">
                     <div class="container">
                         <h2 class="promo__title">
-                            {{ t('checkout.happy_users', ['product' => $product->skus[0]['name']]) }}
+                            {{ t('checkout.happy_users', ['product' => $product->product_name]) }}
                         </h2>
                         <div class="promo__review" v-for="review in mockData.reviews">
                             <div class="col-md-3 col-sm-3 col-xs-12 review-head">

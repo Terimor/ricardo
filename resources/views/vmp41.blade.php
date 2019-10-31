@@ -185,7 +185,7 @@
                 </section>
                 <section class="promo__reviews">
                     <h2 class="promo__title">
-                        {{ t('checkout.happy_users', ['product' => $product->skus[0]['name']]) }}
+                        {{ t('checkout.happy_users', ['product' => $product->product_name]) }}
                     </h2>
                     <div class="promo__review">
                         <div class="col-md-3 col-sm-3 col-xs-12 review-head">
