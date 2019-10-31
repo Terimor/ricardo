@@ -233,7 +233,7 @@ class CurrencyService
      * @param type $exchangedPrice
      * @return type
      */
-    private static function zeroAtTheEndRounding(int $digits, $exchangedPrice, $numberFormatter)
+    private static function zeroAtTheEndRounding(int $digits, $exchangedPrice, $numberFormatter): int
     {
         $exchangedPrice = (int)$exchangedPrice;
         $fractionDigits = 0;
@@ -254,7 +254,7 @@ class CurrencyService
             $exchangedPrice = (int)$exchangedPrice * 10000 + 9900;             
         }
         
-        return $exchangedPrice;
+        return (int)$exchangedPrice;
     }
     
     /**
