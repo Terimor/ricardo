@@ -26,7 +26,10 @@
                                 @input="setImplValue"
                         />
 
-                        <h3 v-html="textArtcile"></h3>
+                        <div class="step1-titles">
+                          <h3 v-html="textArtcile"></h3>
+                          <h3 v-html="textPrice"></h3>
+                        </div>
 
                         <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid" v-html="textMainDealError"></span>
 
@@ -423,6 +426,7 @@
       textChooseDeal: () => t('checkout.choose_deal'),
       textInstallmentsTitle: () => t('checkout.installments.title'),
       textArtcile: () => t('checkout.article'),
+      textPrice: () => t('checkout.header_banner.price'),
       textMainDealError: () => t('checkout.main_deal.error'),
       textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
       textMainDealErrorPopupMessage: () => t('checkout.main_deal.error_popup.message'),
@@ -689,8 +693,23 @@
     $color_niagara_approx: #16a085;
 
     .tpl-emc1 {
+
       .offer {
         text-align: center;
+      }
+
+      .step1-titles {
+        display: flex;
+        margin: 17px 8px 17px 12px;
+
+        h3 {
+          margin: 0;
+          padding: 0;
+
+          &:first-child {
+            flex-grow: 1;
+          }
+        }
       }
     }
 
