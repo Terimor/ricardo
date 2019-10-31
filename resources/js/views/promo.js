@@ -475,9 +475,13 @@ const promo = new Vue({
         this.$nextTick(()=>{this.getFormHeight()});
     },
 
+    isRTL() {
+      return !!document.querySelector('html[dir="rtl"]');
+    },
+
     stepAnimation () {
         this.slideFormSteps.forEach((item) => {
-          const stepPosition = `-${this.slideFormStep * 100}%`;
+          const stepPosition = (!this.isRTL ? '-' : '') + `${this.slideFormStep * 100}%`;
           item.style.transform = `translate(${stepPosition})`
         })
     },

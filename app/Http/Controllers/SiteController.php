@@ -145,6 +145,7 @@ class SiteController extends Controller
 
 		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 
+        $langCode = substr(app()->getLocale(), 0, 2);
         $countryCode = \Utils::getLocationCountryCode();
 
         $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
@@ -157,7 +158,7 @@ class SiteController extends Controller
         return view(
             $viewTemplate,
             compact(
-                'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
+                'langCode', 'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
                 'recentlyBoughtNames', 'recentlyBoughtCities', 'images'
             )
         );

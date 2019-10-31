@@ -47,5 +47,6 @@ mix
   .copy('resources/scripts/bioep.min.js', 'public/assets/scripts');
 
 if (mix.inProduction()) {
+  mix.sourceMaps();
   mix.version();
 }

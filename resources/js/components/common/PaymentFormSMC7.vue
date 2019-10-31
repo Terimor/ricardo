@@ -1,6 +1,7 @@
 <template>
   <div v-if="$v" class="flex-wrap payment-form-smc7">
     <select-field
+        :standart="true"
         :validation="$v.form.country"
         :validationMessage="textCountryRequired"
         theme="variant-1"
@@ -46,7 +47,7 @@
         v-model="paymentForm.state"/>
     <text-field
         :validation="$v.form.zipCode"
-        :validationMessage="textZipcodeRequired"
+        :validationMessage="textZipCodeRequired"
         theme="variant-1"
         :label="textZipCode"
         :rest="{
@@ -103,6 +104,7 @@
       <div class="card-date input-container" :class="{ invalid: $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
         <span class="label">{{textCardValidUntil}}</span>
         <select-field
+            :standart="true"
             :validation="$v.form.month"
             :validationMessage="textCardValidMonthRequired"
             :rest="{
@@ -112,6 +114,7 @@
             :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
             v-model="paymentForm.month"/>
         <select-field
+            :standart="true"
             :validation="$v.form.year"
             :validationMessage="textCardValidYearRequired"
             :rest="{
@@ -193,17 +196,22 @@
         return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
       },
 
-      textCountry : () => t('checkout.payment_form.сountry'),
+      textState() {
+        return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
+      },
+
+      textZipCode() {
+        return t('checkout.payment_form.zipcode', {}, { country: this.paymentForm.country });
+      },
+
       textStreetAndNumber : () => t('checkout.payment_form.street_and_number'),
       textStreetAndNumberRequired : () => t('checkout.payment_form.street_and_number.required'),
       paySecurelyWith : () => t('checkout.pay_securely_with'),
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
-      textState: () => t('checkout.payment_form.state'),
-      textZipCode: () => t('checkout.payment_form.zipcode'),
       textZipCodeRequired: () => t('checkout.payment_form.zipcode.required'),
+      textCountry : () => t('checkout.payment_form.сountry'),
       textCountryRequired: () => t('checkout.payment_form.сountry.required'),
-      textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
       textCardType: () => t('checkout.payment_form.card_type'),

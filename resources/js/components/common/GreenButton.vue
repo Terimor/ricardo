@@ -84,6 +84,13 @@
             border-radius: 0 50% 50% 0;
             background-color: rgba(255,255,255,.3);
             transition: all .2s linear 0s;
+
+            [dir="rtl"] & {
+                content: '\f053';
+                border-radius: 50% 0 0 50%;
+                left: auto;
+                right: 0;
+            }
         }
 
         &.green-button-active:hover {

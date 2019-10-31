@@ -54,6 +54,7 @@
                 }"
                                     :list="variantList"
                                     warrantyPriceText="setWarrantyPriceText()"
+                                    @input="onVariantChange"
                             />
                         </div>
 
@@ -65,6 +66,7 @@
                                     <span class="checkmark"></span>
                                 </label>
                                 <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
+                                <i class="fa fa-arrow-left slide-left"></i>
                                 <i class="fa fa-arrow-right slide-right"></i>
                             </button>
                         </transition>
@@ -196,6 +198,7 @@
   import { preparePartByInstallments } from '../utils/installments';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { queryParams } from  '../utils/queryParams';
+
   const searchParams = new URL(location).searchParams;
 
   export default {
@@ -447,12 +450,7 @@
           installments: val,
         })
       },
-      'form.deal'(val) {
-        //this.animateProductImage();
-      },
       'form.variant' (val) {
-        this.animateProductImage();
-
         this.setPurchase({
           variant: val,
           installments: this.form.installments,
@@ -461,6 +459,9 @@
     },
     validations: emc1Validation,
     methods: {
+      onVariantChange() {
+        this.animateProductImage();
+      },
       activateForm() {
         this.isFormShown = true;
         this.$nextTick(() => {
@@ -597,21 +598,15 @@
         return this.variantList.length == 1 || this.isShowVariant ? number - 1 : number
       },
       getProductImage() {
+        const isInitial = !this.productImage;
+        const quantity = /*this.form && +this.form.deal || */1;
         const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
         const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
-        const quantity = /*this.form && +this.form.deal || */1;
 
-        // use the main image initially
-        const initialImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
 
-        // use the SKU image initially if &image= is not present
-        //const initialImage = searchParams.has('image')
-        //  ? checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0]
-        //  : skuVariant.quantity_image[1] || checkoutData.product.image[0];
-
-        return this.productImage
-          ? skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || initialImage
-          : initialImage;
+        return isInitial ? productImage : skuImage;
       },
       animateProductImage() {
         const newProductImage = this.getProductImage();
@@ -624,7 +619,7 @@
             fade('out', 300, document.querySelector('#product-image'), true)
               .then(() => {
                 this.productImage = newProductImage;
-                setTimeout(() => fade('in', 30, document.querySelector('#product-image'), true), 200);
+                setTimeout(() => fade('in', 300, document.querySelector('#product-image'), true), 200);
               });
           } else {
             this.productImage = newProductImage;
@@ -751,6 +746,10 @@
         box-shadow: 0 0 0 5px $color_flush_mahogany_approx;
         width: 85px;
         height: 85px;
+
+        [dir="rtl"] & {
+          animation-direction: reverse;
+        }
     }
 
     .dynamic-sale-badge__container {
@@ -764,6 +763,10 @@
         position: absolute;
         width: 85px;
         height: 85px;
+
+        [dir="rtl"] & {
+          transform: rotate(371deg);
+        }
     }
 
     .main {
@@ -786,6 +789,11 @@
             strong {
                 font-size: 20px;
                 font-weight: bold;
+            }
+
+            [dir="rtl"] & {
+              padding-left: 0;
+              padding-right: 20px;
             }
         }
 
@@ -870,10 +878,21 @@
                 top: -17px;
                 left: -30px;
 
+                [dir="rtl"] & {
+                  left: auto;
+                  right: -30px;
+                  transform: rotate(145deg);
+                }
+
                 @media screen and ($s-down) {
                     width: 24px;
                     top: 0;
                     left: -9px;
+
+                    [dir="rtl"] & {
+                      left: auto;
+                      right: -9px;
+                    }
                 }
             }
 
@@ -916,9 +935,19 @@
                     text-transform: capitalize;
                     font-size: 16px;
 
+                    [dir="rtl"] & {
+                      margin: 18px 100px 18px 70px;
+                      text-align: right;
+                    }
+
                     .checkmark {
                         top: 3px;
                         left: -30px;
+
+                      [dir="rtl"] & {
+                        left: auto;
+                        right: -30px;
+                      }
                     }
                 }
 
@@ -934,6 +963,26 @@
                     height: auto;
                     top: -7px;
                     right: -7px;
+
+                    [dir="rtl"] & {
+                      left: -7px;
+                      right: auto;
+                      transform: rotate(-24deg);
+                    }
+                }
+
+                & > .fa-arrow-left {
+                    display: none;
+                    position: absolute;
+                    font-size: 18px;
+                    color: #dc003a;
+                    top: 20px;
+                    right: 10px;
+                    
+
+                    [dir="rtl"] & {
+                      display: block;
+                    }
                 }
 
                 & > .fa-arrow-right {
@@ -942,14 +991,17 @@
                     color: #dc003a;
                     top: 20px;
                     left: 10px;
-                    animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+
+                    [dir="rtl"] & {
+                      display: none;
+                    }
                 }
             }
         }
 
         &__payment {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
 
             h2, h3 {
                 margin: 10px 0;
@@ -1069,6 +1121,11 @@
                     top: 2px;
                     font-size: 18px;
                     color: #409EFF;
+
+                    [dir="rtl"] & {
+                      margin-left: 4px;
+                      margin-right: 0;
+                    }
                 }
             }
         }
@@ -1139,7 +1196,7 @@
             }
 
             .last-name {
-                margin-right: 10px;
+                margin-right: 0;
             }
 
             .card-date {

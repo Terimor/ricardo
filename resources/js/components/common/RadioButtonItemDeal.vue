@@ -5,7 +5,7 @@
     <input type="radio"
            :checked="item.value === value"
            name="radio"
-           @input="input"
+           @change="input"
            :value="item.value"
            :disabled="item.isOutOfStock">
     <div class="label-container-radio__label">
@@ -56,7 +56,9 @@
 				return this.item.discountName.toLowerCase() === 'bestseller'
             },
 			input(e) {
-				return this.$emit('checkDeal', e.target.value)
+        if (/Edge/.test(navigator.userAgent) && this.$parent.onInput) {
+          this.$parent.onInput(e);
+        }
 			}
 		},
         computed: {
@@ -89,6 +91,11 @@
 
       .price {
         margin-left: auto;
+
+        [dir="rtl"] & {
+          margin-left: 0;
+          margin-right: auto;
+        }
       }
     }
   }

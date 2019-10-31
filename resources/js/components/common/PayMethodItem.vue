@@ -14,19 +14,26 @@
       name="radio"
       :checked="checked"
       :value="input.value"
+      @change="onInput"
     >
   </label>
 </template>
 <script>
 	export default {
-
 		name: 'PayMethodItem',
 		props: ['value', 'input'],
     computed: {
 			checked () {
 				return this.input.value === this.value
       }
-    }
+    },
+    methods: {
+      onInput(e) {
+        if (/Edge/.test(navigator.userAgent) && this.$parent.onInput) {
+          this.$parent.onInput(e);
+        }
+      },
+    },
 	}
 </script>
 <style lang="scss">

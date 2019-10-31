@@ -27,6 +27,7 @@
       <div class="upsells-component__bot">
         <select-field
           v-if="upsellPrices"
+          :standart="true"
           :label="`${pleaseChooseText}:`"
           v-model="quantity"
           :list="selectList"
@@ -78,7 +79,7 @@ export default {
     pleaseChooseText: () => t('upsells.choose'),
 
     selectList() {
-      const data = Array(Number(this.selectedProductData.quantity)).fill('').map((item, index) => {
+      const data = Array(Number(this.selectedProductData.quantity || 0)).fill('').map((item, index) => {
         const value = index + 1
 
         return item = {
@@ -96,13 +97,13 @@ export default {
     },
 
     selectedProductData() {
-      return JSON.parse(localStorage.getItem('selectedProductData'));
+      return JSON.parse(localStorage.getItem('selectedProductData')) || {};
     }
   },
 
   mounted() {
     this.isLoading = true;
-    getUppSells(this.id, this.selectedProductData.quantity).then(({ data }) => {
+    getUppSells(this.id, this.selectedProductData.quantity || 0).then(({ data }) => {
         this.name = data.upsell.long_name;
         this.description = data.upsell.description;
         this.upsellPrices = data.upsell.upsellPrices;
@@ -129,6 +130,7 @@ export default {
 </script>
 
 <style lang="scss">
+.upsells-component {
   .step-3 {
     h3 {
       color: #d4513a;
@@ -213,5 +215,5 @@ export default {
       }
     }
   }
-
+}
 </style>

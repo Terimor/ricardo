@@ -25,7 +25,8 @@
                 :rest="{
                   placeholder: 'Variant'
                 }"
-                :list="variantList"/>
+                :list="variantList"
+                @input="onVariantChange" />
             </template>
         </div>
         <div class="step step-2" v-if="step === 2">
@@ -98,12 +99,13 @@
             />
             <div class="card-info">
               <div class="d-flex input-container" :class="{ invalid: $v.form && $v.form.stepThree && $v.form.stepThree.month && $v.form.stepThree.month.$dirty && $v.form.stepThree.year && $v.form.stepThree.year.$dirty && ($v.form.stepThree.month.$invalid || $v.form.stepThree.year.$invalid || isCardExpired) }">
-                <div>
+                <div style="flex-grow:1">
                   <div class="card-info__labels">
                     <span class="label" v-html="textCardValidUntil"></span>
                   </div>
                   <div class="card-date d-flex">
                     <select-field
+                      :standart="true"
                       :validation="$v.form.stepThree.month"
                       :validationMessage="textCardValidMonthRequired"
                       :rest="{
@@ -114,6 +116,7 @@
                       v-model="form.stepThree.month"
                     />
                     <select-field
+                      :standart="true"
                       :validation="$v.form.stepThree.year"
                       :validationMessage="textCardValidYearRequired"
                       :rest="{
@@ -183,6 +186,7 @@
                 id="zip-code-field"
                 v-model="form.stepThree.zipCode"/>
               <select-field
+                :standart="true"
                 :validation="$v.form.stepThree.country"
                 :validationMessage="textCountryRequired"
                 theme="variant-1"
@@ -277,6 +281,8 @@
 	import {fade} from "../../utils/common";
   import { queryParams } from  '../../utils/queryParams';
 
+  const searchParams = new URL(location).searchParams;
+
 	export default {
 		name: "PaymentFormVMC4",
     mixins: [
@@ -290,6 +296,7 @@
     },
 		validations: vmc4validation,
 		props: [
+      'productImage',
 			'countryList',
 			'cardNames',
 			'list',
@@ -374,6 +381,8 @@
       }
     },
     mounted() {
+      this.$emit('productImageChanged', this.getProductImage());
+
       if (this.paymentError && !this.isPurchasAlreadyExists) {
         setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
       }
@@ -400,6 +409,18 @@
       },
       isCardExpired() {
         return !dateFns.isFuture(new Date(this.form.stepThree.year, this.form.stepThree.month));
+      },
+      textState() {
+        return t('checkout.payment_form.state', {}, { country: this.form.stepThree.country });
+      },
+      textStatePlaceholder() {
+        return t('checkout.payment_form.state.placeholder', {}, { country: this.form.stepThree.country });
+      },
+      textZipcode() {
+        return t('checkout.payment_form.zipcode', {}, { country: this.form.stepThree.country });
+      },
+      textZipcodePlaceholder() {
+        return t('checkout.payment_form.zipcode.placeholder', {}, { country: this.form.stepThree.country });
       },
       textChooseDeal: () => t('checkout.choose_deal'),
       textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
@@ -428,11 +449,7 @@
       textCity: () => t('checkout.payment_form.city'),
       textCityPlaceholder: () => t('checkout.payment_form.city.placeholder'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
-      textState: () => t('checkout.payment_form.state'),
-      textStatePlaceholder: () => t('checkout.payment_form.state.placeholder'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
-      textZipcode: () => t('checkout.payment_form.zipcode'),
-      textZipcodePlaceholder: () => t('checkout.payment_form.zipcode.placeholder'),
       textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
       textCountry: () => t('checkout.payment_form.сountry'),
       textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),
@@ -457,16 +474,6 @@
                 if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
                   this.form.stepThree.cardNumber = oldValue;
                 }
-            },
-            'form.variant'(val) {
-                fade('out', 300, document.querySelector('#main-prod-image'), true)
-                  .then(() => {
-                      let productImageUrl = this.variantList.find(variant => variant.value === val).imageUrl;
-                      if (productImageUrl) {
-                          this.$emit('productImageChanged', productImageUrl)
-                      }
-                      fade('in', 300, document.querySelector('#main-prod-image'), true)
-                  });
             },
             'step'(val) {
                 fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
@@ -501,6 +508,9 @@
 
         },
 		methods: {
+      onVariantChange() {
+        this.animateProductImage();
+      },
       activateForm() {
         this.isFormShown = true;
       },
@@ -646,8 +656,6 @@
         }
 			},
       paypalCreateOrder() {
-        const searchParams = new URL(document.location.href).searchParams;
-
         const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
           ? checkoutData.product.prices.currency
           : searchParams.get('cur');
@@ -678,6 +686,31 @@
           });
       },
       paypalOnApprove: paypalOnApprove,
+      getProductImage() {
+        const isInitial = !this.productImage;
+        const quantity = /*this.form && +this.form.deal || */1;
+        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+
+        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
+
+        return isInitial ? productImage : skuImage;
+      },
+      animateProductImage() {
+        const newProductImage = this.getProductImage();
+
+        if (newProductImage !== this.productImage) {
+          const imgPreload = new Image();
+          imgPreload.src = newProductImage;
+
+          fade('out', 300, document.querySelector('#main-prod-image'), true)
+            .then(() => {
+              this.$emit('productImageChanged', newProductImage);
+              setTimeout(() => fade('in', 300, document.querySelector('#main-prod-image'), true), 200);
+            });
+        }
+      },
 		},
 	}
 </script>
@@ -776,6 +809,11 @@
         .first-name {
           width: 40%;
           margin-right: 10px;
+
+          [dir="rtl"] & {
+            margin-left: 10px;
+            margin-right: 0;
+          }
         }
 
         .last-name {
@@ -789,7 +827,6 @@
         color: #0a0f0a;
         margin-bottom: 10px;
         padding: 0;
-        text-align: left;
       }
 
       .pay-method-item img {
@@ -817,11 +854,21 @@
           .select.variant-1:nth-child(1) {
             margin-right: 5px;
             width: 50%;
+
+            [dir="rtl"] & {
+              margin-left: 5px;
+              margin-right: 0;
+            }
           }
 
           .select.variant-1:nth-child(2) {
             margin-right: 20px;
             width: 50%;
+
+            [dir="rtl"] & {
+              margin-left: 20px;
+              margin-right: 0;
+            }
           }
 
           .card-cvv {

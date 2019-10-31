@@ -6,7 +6,7 @@
                     <div class="col-md-7 image-wrapper">
                         <img
                                 id="product-image-head"
-                                :src="setProductImage"
+                                :src="productImage"
                                 alt=""
                         >
                     </div>
@@ -80,7 +80,8 @@
                               :rest="{
                                 placeholder: 'Variant'
                               }"
-                              :list="variantList"/>
+                              :list="variantList"
+                              @input="onVariantChange" />
                         </div>
 
                         <div class="smc7__step-3">
@@ -140,7 +141,7 @@
                                 <h2>{{ checkoutData.product.long_name }}</h2>
                                 <p>{{ textGet }} {{ checkoutData.product.prices['1'].discount_percent }}% {{ textOffTodayFreeShipping }}</p>
                             </div>
-                            <img id="product-image-body" :src="setProductImage" alt="Product image">
+                            <img id="product-image-body" :src="productImage" alt="Product image">
                         </div>
                         <h2 class="step-title"><span>{{textStep}}</span> {{ isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
@@ -163,7 +164,7 @@
                               <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
-                                    v-if="form.paymentType === 'paypal'"
+                                    v-show="form.paymentType === 'paypal'"
                                     :createOrder="paypalCreateOrder"
                                     :onApprove="paypalOnApprove"
                                     :$v="$v.form.deal"
@@ -222,6 +223,8 @@
   import Spinner from './common/preloaders/Spinner';
   import { queryParams } from  '../utils/queryParams';
 
+  const searchParams = new URL(location).searchParams;
+
   export default {
     name: 'smc7',
     components: {
@@ -239,7 +242,8 @@
     props: ['showPreloader', 'skusList'],
     data() {
       return {
-        productImage: checkoutData.product.image[0],
+        productImage: this.getProductImage(),
+        disableAnimation: true,
         paypalPaymentError: '',
         form: {
           isWarrantyChecked: false,
@@ -299,6 +303,10 @@
           this.form.country = selectedProductData.country || this.form.country;
         }
       }
+
+      setTimeout(() => {
+        this.disableAnimation = false;
+      }, 1000);
     },
     computed: {
       discount: () => t('checkout.header_banner.discount'),
@@ -326,10 +334,6 @@
       textPaymentError: () => t('checkout.payment_error'),
       textGet: () => t('checkout.get'),
       textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
-
-      setProductImage() {
-          return this.productData.image[this.queryParams['image'] - 1] || this.productData.image[0];
-      },
 
       isShowVariant() {
         return Number(queryParams().variant) === 0;
@@ -369,20 +373,6 @@
     },
     watch: {
       'form.variant'(val) {
-        fade('out', 300, document.querySelector('#product-image-head'), true)
-          .then(() => {
-            this.productImage = this.variantList.find(variant => variant.value === val).imageUrl;
-
-            fade('in', 300, document.querySelector('#product-image-head'), true)
-          });
-
-        fade('out', 300, document.querySelector('#product-image-body'), true)
-          .then(() => {
-            this.productImage = this.variantList.find(variant => variant.value === val).imageUrl;
-
-            fade('in', 300, document.querySelector('#product-image-body'), true)
-          });
-
         this.setPurchase({
           variant: val,
           installments: this.form.installments,
@@ -390,6 +380,9 @@
       },
     },
     methods: {
+      onVariantChange() {
+        this.animateProductImage();
+      },
       submit() {
         const cardNumber = this.form.cardNumber.replace(/\s/g, '');
 
@@ -511,8 +504,6 @@
         this.isOpenPromotionModal = val
       },
       paypalCreateOrder () {
-        const searchParams = new URL(document.location.href).searchParams;
-        
         const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
           ? checkoutData.product.prices.currency
           : searchParams.get('cur');
@@ -552,6 +543,42 @@
         if (this.$v.form.deal.$invalid) {
           document.querySelector('.smc7__deal').scrollIntoView();
           this.isOpenPromotionModal = true;
+        }
+      },
+
+      getProductImage() {
+        const isInitial = !this.productImage;
+        const quantity = /*this.form && +this.form.deal || */1;
+        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+
+        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
+
+        return isInitial ? productImage : skuImage;
+      },
+
+      animateProductImage() {
+        const newProductImage = this.getProductImage();
+
+        if (newProductImage !== this.productImage) {
+          if (!this.disableAnimation) {
+            const imgPreload = new Image();
+            imgPreload.src = newProductImage;
+
+            fade('out', 300, document.querySelector('#product-image-head'), true)
+              .then(() => {
+                this.productImage = newProductImage;
+                setTimeout(() => fade('in', 300, document.querySelector('#product-image-head'), true), 200);
+              });
+
+            fade('out', 300, document.querySelector('#product-image-body'), true)
+              .then(() => {
+                setTimeout(() => fade('in', 300, document.querySelector('#product-image-body'), true), 200);
+              });
+          } else {
+            this.productImage = newProductImage;
+          }
         }
       },
     },
@@ -616,6 +643,10 @@
                     padding: 15px 15px 15px 38px;
                     font-weight: 700;
 
+                    [dir="rtl"] & {
+                      padding: 15px 38px 15px 15px;
+                    }
+
                     &:before {
                         position: absolute;
                         top: 18px;
@@ -625,6 +656,12 @@
                         font-size: inherit;
                         content: "\f00c";
                         color: green;
+
+                        [dir="rtl"] & {
+                          left: auto;
+                          right: 15px;
+                          transform: scaleX(-1);
+                        }
                     }
                 }
             }
@@ -683,6 +720,10 @@
                 h3:last-child {
                     width: 40%;
                     text-align: right;
+
+                    [dir="rtl"] & {
+                      text-align: left;
+                    }
                 }
             }
 
@@ -731,10 +772,21 @@
                 top: -17px;
                 left: -30px;
 
+                [dir="rtl"] & {
+                  left: auto;
+                  right: -30px;
+                  transform: rotate(145deg);
+                }
+
                 @media screen and ($s-down) {
                     width: 24px;
                     top: 0;
                     left: -9px;
+
+                    [dir="rtl"] & {
+                      left: auto;
+                      right: -9px;
+                    }
                 }
             }
         }
@@ -765,6 +817,11 @@
                 .first-name {
                     width: 40%;
                     margin-right: 10px;
+
+                    [dir="rtl"] & {
+                      margin-left: 10px;
+                      margin-right: 0;
+                    }
                 }
 
                 .last-name {
@@ -822,6 +879,11 @@
                 padding-right: 30px;
                 margin-bottom: 10px;
 
+                [dir="rtl"] & {
+                  padding-left: 30px;
+                  padding-right: 0;
+                }
+
                 .select {
                   margin-bottom: 0;
                 }
@@ -833,8 +895,14 @@
             }
 
             .card-date > div {
+                flex-grow: 1;
                 width: calc(40% - 5px);
                 margin-right: 10px;
+
+                [dir="rtl"] & {
+                  margin-left: 10px;
+                  margin-right: 0;
+                }
             }
 
             .cvv-field {
@@ -846,7 +914,8 @@
                 font-weight: 700;
             }
 
-            .input-container.variant-1 input {
+            .input-container.variant-1 input,
+            .select.variant-1 select {
                 background-color: #ffffff;
                 border-radius: unset;
                 border: 1px solid #000000;
@@ -939,6 +1008,11 @@
                     top: 2px;
                     font-size: 18px;
                     color: #409EFF;
+
+                    [dir="rtl"] & {
+                      margin-left: 4px;
+                      margin-right: 0;
+                    }
                 }
             }
         }
@@ -960,6 +1034,11 @@
                     height: 80px;
                     width: auto;
                     margin-right: 25px;
+
+                    [dir="rtl"] & {
+                      margin-left: 25px;
+                      margin-right: 0;
+                    }
                 }
 
                 span {

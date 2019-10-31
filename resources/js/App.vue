@@ -54,12 +54,7 @@ export default {
   },
   methods: {
     initial () {
-      for (let key in this.queryParams) {
-        window[key] = this.queryParams[key]
-      }
-
       document.title = this.title + this.additionalTitle;
-
       window.onfocus = () => document.title = this.title + this.additionalTitle;
       window.onblur = () => document.title = this.waitTitle;
     },

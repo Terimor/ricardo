@@ -21,6 +21,7 @@
             <div class="column-with-head">
               <div class="col-content" id="form-steps">
                 <payment-form-vmc4
+                    :productImage="productImage"
                     :installments="form.installments"
                     :isWarrantyChecked="form.isWarrantyChecked"
                     :checkoutData="checkoutData"
@@ -50,6 +51,7 @@
                             <span class="checkmark"></span>
                           </label>
                           <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
+                          <i class="fa fa-arrow-left slide-left"></i>
                           <i class="fa fa-arrow-right slide-right"></i>
                         </button>
                       </transition>
@@ -279,10 +281,6 @@
           this.checkoutData.countryCode === 'mx' ? 1 :
           1
       }
-
-			try {
-				this.productImage = checkoutData.product.skus[0].quantity_image[1];
-			} catch (_) {}
 		},
 	}
 </script>
@@ -423,9 +421,18 @@
           font-weight: bold;
           text-transform: capitalize;
 
+          [dir="rtl"] & {
+            text-align: right;
+          }
+
           .checkmark {
             top: 20px;
             left: 40px;
+
+            [dir="rtl"] & {
+              left: auto;
+              right: 40px;
+            }
           }
         }
 
@@ -441,6 +448,25 @@
           height: auto;
           top: -7px;
           right: -7px;
+
+          [dir="rtl"] & {
+            left: -7px;
+            right: auto;
+            transform: rotate(-24deg);
+          }
+        }
+
+        & > .fa-arrow-left {
+          display: none;
+          position: absolute;
+          font-size: 18px;
+          color: #dc003a;
+          top: 20px;
+          right: 10px;
+
+          [dir="rtl"] & {
+            display: block;
+          }
         }
 
         & > .fa-arrow-right {
@@ -449,7 +475,10 @@
           color: #dc003a;
           top: 20px;
           left: 10px;
-          animation: slide-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+
+          [dir="rtl"] & {
+            display: none;
+          }
         }
       }
     }
