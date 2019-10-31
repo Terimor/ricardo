@@ -197,7 +197,7 @@
     }
   }
 
-  .tpl-emc1 {
+  .tpl-emc1, .tpl-emc1b {
     @media screen and (min-width: 768px) and (max-width: 991px), (max-width: 420px) {
       .paypal-shim {
         flex-direction: column;

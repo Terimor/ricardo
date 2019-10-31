@@ -51,13 +51,16 @@ export const getRadioHtml = ({
           ${(!discountName && isSoldOut) ? `<span class='label-container-radio__name-price__soldout red'>${t('checkout.sold_out')}</span>` : ''}
 
           ${!isEmc1b
-            ? `<span ${idx !== 0 && discountName ? 'class="strike"' : ''}>
+            ? `<span ${idx !== 0 && discountName ? 'class="strike"' : 'class="red"'}>
                     ${getCountOfInstallments(installments) + (!discountName ? newPrice : price).toLocaleString()}
                </span>`
             : `${discountName ? '' : currentPrice}`}
         </p>
 
-        <p class="label-container-radio__discount ${idx === 1 ? 'red' : ''}">${discountText}</p>
+        <p class="label-container-radio__discount">
+          <span class="discount-text${idx === 1 ? ' red' : ''}">${discountText}</span>
+          <span class="strike">${ !isEmc1b && idx === 0 ? price : '' }</span>
+        </p>
       `)
 };
 

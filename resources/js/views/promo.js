@@ -213,13 +213,15 @@ const promo = new Vue({
       }
     }
 
-    if (this.queryParams['tpl'] === 'vmp41') {
-        document.body.classList.add('tpl-vmp41');
-        this.slideForm = false;
+    if (searchParams.get('tpl') === 'vmp41') {
+      document.body.classList.add('tpl-vmp41');
+      this.slideForm = false;
     }
-    if (this.queryParams['tpl'] === 'vmp42') {
-        document.body.classList.add('tpl-vmp42');
-        this.slideForm = true;
+
+    if (searchParams.get('tpl') === 'vmp42') {
+      document.body.classList.add('tpl-vmp42');
+      this.setStickyFooter();
+      this.slideForm = true;
     }
   },
 
@@ -469,12 +471,10 @@ const promo = new Vue({
     prevStep() {
         this.slideFormStep--;
         this.stepAnimation();
-        this.isShownJumbotron = true;
 
         if(this.slideFormStep === 0) {
           this.selectedPlan = null;
-        }else if(this.slideFormStep === 1) {
-          this.form.variant = '';
+          this.isShownJumbotron = true;
         }
 
         if(this.slideFormStep < 1) {this.slideFormStep = 0};
@@ -491,9 +491,38 @@ const promo = new Vue({
     getFormHeight() {
         this.carouselFormHeight = `${this.slideFormSteps[this.slideFormStep].offsetHeight}px`;
     },
+
+    setStickyFooter() {
+      let showStickyFooter = false;
+
+      if (this.isShowVariant && this.slideFormStep === 1) {
+        document.body.classList.add('slide-grey-back');
+        showStickyFooter = true;
+      } else {
+        document.body.classList.remove('slide-grey-back');
+      }
+
+      if ((this.isShowVariant && this.slideFormStep === 2) || (!this.isShowVariant && this.slideFormStep === 1)) {
+        if (!this.isFormShown) {
+          showStickyFooter = true;
+        }
+      }
+
+      if (showStickyFooter) {
+        document.body.classList.add('with-sticky-footer');
+      } else {
+        document.body.classList.remove('with-sticky-footer');
+      }
+    },
   },
 
   watch: {
+    slideFormStep() {
+      this.setStickyFooter();
+    },
+    isFormShown() {
+      this.setStickyFooter();
+    },
     'form.deal'(val) {
       this.changeWarrantyValue();
     },
