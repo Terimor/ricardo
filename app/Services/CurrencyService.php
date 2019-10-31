@@ -139,7 +139,7 @@ class CurrencyService
             $price = OdinProduct::MIN_PRICE;
         }
         $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
-        
+
         if (in_array($currencyCode, static::$upToNext500)) {
             $exchangedPrice = ceil($exchangedPrice);
             $exchangedPrice = $exchangedPrice/100;
@@ -184,47 +184,15 @@ class CurrencyService
                 'exchange_rate' => $currency->usd_rate,
             ];
         }
-        
+
         // when fraction digits = 0, cut decimals
         if ($fractionDigits == 0) {
             $exchangedPrice = (int)$exchangedPrice;
         }
 
         $digits = strlen((int)$exchangedPrice);
-        $exchangedPrice = (string) $exchangedPrice;
-
-        if ($digits >= 4) {
-            $roundedPriceString = '';
-            for ($i = 0; $i < $digits; $i++) {
-                //first numeral always the same
-                if ($i == 0) {
-                    $roundedPriceString .= $exchangedPrice[$i];
-                } elseif ($i == 1) {
-                    //second numeral stand 9 if >= 5 else 4
-                    if ($exchangedPrice[$i] >= 5) {
-                        $roundedPriceString .= '9';
-                    } else {
-                        $roundedPriceString .= '4';
-                    }
-                } else {
-                    // next numerals always 9
-                    $roundedPriceString .= '9';
-                }
-            }
-            $exchangedPrice = $roundedPriceString;
-        } else if ($digits == 3) {
-            //if 3 digits always set 9 to the last numeral
-            $exchangedPrice[2] = '9';
-        } else if ($digits == 2) {
-            //if 2 digits and last numeral >= 5 always set 9 than 4
-            if ($exchangedPrice[1] >= 5) {
-                $exchangedPrice[1] = '9';
-            } else {
-                $exchangedPrice[1] = '4';
-            }
-        }
-
-        $exchangedPrice = (int) $exchangedPrice;
+        
+        $exchangedPrice = static::mainRounding($digits, $exchangedPrice);
 
         if ($fractionDigits > 0) {
             $exchangedPrice += 1;
@@ -243,15 +211,12 @@ class CurrencyService
         
         
         if (in_array($currencyCode, static::$zeroAtTheEnd)) {
-            $exchangedPrice = (int)$exchangedPrice;
-            $fractionDigits = 0;
-            $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
-            $exchangedPrice = (string)$exchangedPrice;
-            $digits = strlen($exchangedPrice);
-            if ($digits > 2) {
-                $exchangedPrice{$digits-2} = '9';
-                $exchangedPrice{$digits-1} = '0';
-            }
+            $exchangedPrice = static::zeroAtTheEndRounding($digits, $exchangedPrice, $numberFormatter);
+        }
+        
+        // check decimals for logging
+        if (!in_array($currencyCode, static::$noDecimals) && $digits >=5) {
+            logger()->error("Price {$exchangedPrice} has {$digits} digits for currency {$currencyCode}");
         }
 
         return [
@@ -260,6 +225,76 @@ class CurrencyService
             'code' => $currencyCode,
             'exchange_rate' => $currency->usd_rate,
         ];
+    }
+    
+    /**
+     * Rounding to 90 by rules
+     * @param type $digits
+     * @param type $exchangedPrice
+     * @return type
+     */
+    private static function zeroAtTheEndRounding(int $digits, $exchangedPrice, $numberFormatter)
+    {
+        $exchangedPrice = (int)$exchangedPrice;
+        $fractionDigits = 0;
+        $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
+        
+        // rules by digits
+        if ($digits == 3) {
+            $exchangedPrice = $exchangedPrice / 10;
+            $exchangedPrice = (int)$exchangedPrice * 10 + 9;
+        } else if ($digits == 4 || $digits == 5){
+            $exchangedPrice = $exchangedPrice / 100;
+            $exchangedPrice = (int)$exchangedPrice * 100 + 90;
+        } else if ($digits == 6) {
+            $exchangedPrice = $exchangedPrice / 1000;
+            $exchangedPrice = (int)$exchangedPrice * 1000 + 990;            
+        } else if ($digits > 6) {
+            $exchangedPrice = $exchangedPrice / 10000;
+            $exchangedPrice = (int)$exchangedPrice * 10000 + 9900;             
+        }
+        
+        return $exchangedPrice;
+    }
+    
+    /**
+     * Function for main rounding by rules
+     * @param int $digits
+     * @param type $exchangedPrice
+     */
+    private static function mainRounding(int $digits, $exchangedPrice):int
+    {
+        $exchangedPrice = (string) $exchangedPrice;
+
+        if ($digits > 3) {
+            $roundedPriceString = '';
+            for ($i = 0; $i < $digits; $i++) {
+                // check 2 last digits
+                if ($i == ($digits-2)) {
+                    // digit set 9 if >= 5 -> else set 4
+                    if ($exchangedPrice[$i] >= 5) {
+                        $roundedPriceString .= '9';
+                    } else {
+                        $roundedPriceString .= '4';
+                    }
+                } else if ($i == ($digits-1)) {
+                    // last digit always 9
+                    $roundedPriceString .= '9';
+                } else {
+                    $roundedPriceString .= $exchangedPrice[$i];
+                }
+            }
+            $exchangedPrice = $roundedPriceString;
+        } else if ($digits == 2 || $digits == 3) {
+            //if 2 digits and last numeral >= 5 always set 9 than 4
+            if ($exchangedPrice[$digits-1] >= 5) {
+                $exchangedPrice[$digits-1] = '9';
+            } else {
+                $exchangedPrice[$digits-1] = '4';
+            }
+        }
+        
+        return (int)$exchangedPrice;
     }
 
     /**
