@@ -17,6 +17,7 @@
             product: @json($product),
             countries: @json($countries),
             productImage: '{{$product->logo_image}}',
+            paymentMethods: @json($setting['payment_methods']),
         };
 
         var recentlyBoughtNames = @json($recentlyBoughtNames);

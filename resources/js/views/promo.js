@@ -77,34 +77,6 @@ const promo = new Vue({
         cvv: null,
         documentNumber: ''
       },
-      cardNames: [
-        {
-          value: 'visa',
-          text: 'VISA',
-          label: 'VISA',
-          imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
-        }, {
-          value: 'mastercard',
-          text: 'MasterCard',
-          label: 'MasterCard',
-          imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
-        }, {
-          value: 'diners-club',
-          text: 'DinnersClub',
-          label: 'DinnersClub',
-          imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
-        }, {
-          value: 'discover',
-          text: 'Discover',
-          label: 'Discover',
-          imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
-        }, {
-          value: 'paypal',
-          text: 'PayPal',
-          label: 'PayPal',
-          imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
-        }
-      ],
       mockData: {
         creditCardRadioList: [
           {
@@ -322,7 +294,7 @@ const promo = new Vue({
     paypalOnApprove: paypalOnApprove,
 
     paypalSubmit() {
-      this.form.paymentType = 'paypal';
+      this.form.paymentType = 'instant_transfer';
     },
 
     paypalCreateOrder () {

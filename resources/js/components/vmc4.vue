@@ -28,7 +28,6 @@
                     :countryList="countryList"
                     @productImageChanged="setProductImage"
                     @setWarrantyPriceText="setWarrantyPriceText"
-                    :cardNames="cardNames"
                     :list="dealList"
                     :variantList="variantList"
                     @onSubmit="submit">
@@ -100,34 +99,6 @@
         warrantyPriceText: null,
 				billing_descriptor: checkoutData.product.billing_descriptor,
 				productImage: null,
-				cardNames: [
-					{
-						value: 'visa',
-						text: 'VISA',
-						label: 'VISA',
-						imgUrl: window.cdnUrl + '/assets/images/cc-icons/visa.png'
-					}, {
-						value: 'mastercard',
-						text: 'MasterCard',
-						label: 'MasterCard',
-						imgUrl: window.cdnUrl + '/assets/images/cc-icons/mastercard.png'
-					}, {
-						value: 'diners-club',
-						text: 'DinnersClub',
-						label: 'DinnersClub',
-						imgUrl: window.cdnUrl + '/assets/images/cc-icons/diners-club.png'
-					}, {
-						value: 'discover',
-						text: 'Discover',
-						label: 'Discover',
-						imgUrl: window.cdnUrl + '/assets/images/cc-icons/discover.png'
-					}, {
-						value: 'paypal',
-						text: 'PayPal',
-						label: 'PayPal',
-						imgUrl: window.cdnUrl + '/assets/images/cc-icons/payPal.png'
-					}
-				],
 				form: {
           isWarrantyChecked: false,
           installments: 1,

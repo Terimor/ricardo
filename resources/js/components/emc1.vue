@@ -472,7 +472,7 @@
         })
       },
       paypalSubmit() {
-        this.form.paymentType = 'paypal';
+        this.form.paymentType = 'instant_transfer';
 
         if (this.$v.form.deal.$invalid) {
           document.querySelector('.main__deal').scrollIntoView();

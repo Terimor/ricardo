@@ -91,7 +91,7 @@
                       {{ textBuyAccessories }}
                     </green-button>
                   <paypal-button
-                    v-if="paymentType === 'paypal'"
+                    v-if="paymentType === 'instant_transfer'"
                     class="submit-button"
                     :createOrder="paypalCreateOrder"
                     :onApprove="paypalOnApprove"

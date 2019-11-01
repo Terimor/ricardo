@@ -19,9 +19,9 @@
       langCode: '{{ $langCode }}',
       countryCode: '{{ $countryCode }}',
       countries: @json($countries),
-      payment_methods: @json($setting['payment_methods']),
       product: @json($product),
       productImage: '{{$product->logo_image}}',
+      paymentMethods: @json($setting['payment_methods']),
     }
 
     var loadedPhrases = @json($loadedPhrases);

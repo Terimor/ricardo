@@ -9,8 +9,8 @@
       class="credit-card-item">
 
       <img
-        :src="creditCards[cardName].image"
-        :title="creditCards[cardName].title" />
+        :src="paymentMethods[cardName].logo"
+        :title="paymentMethods[cardName].name" />
 
     </div>
 
@@ -20,9 +20,6 @@
 
 
 <script>
-
-  import { creditCards, getCreditCardsAvailableList } from '../../utils/creditCards';
-
 
   export default {
 
@@ -35,12 +32,12 @@
 
     computed: {
 
-      creditCards() {
-        return creditCards;
+      paymentMethods() {
+        return checkoutData.paymentMethods;
       },
 
       creditCardsAvailableList() {
-        return getCreditCardsAvailableList(this.country, this.withPaypal);
+        return this.country && Object.keys(checkoutData.paymentMethods).filter(name => name !== 'instant_transfer');
       },
 
     },

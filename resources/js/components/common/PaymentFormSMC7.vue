@@ -82,7 +82,7 @@
         }"
         :list="cardNames"
         v-model="paymentForm.paymentType"/>
-    <form id="payment-data-form" v-if="paymentForm.paymentType !== 'paypal'">
+    <form id="payment-data-form" v-if="paymentForm.paymentType !== 'instant_transfer'">
       <text-field
           :validation="$v.form.cardNumber"
           :rest="{
@@ -160,7 +160,6 @@
 <script>
   import * as dateFns from 'date-fns';
 	import {getCardUrl} from "../../utils/checkout";
-  import { creditCards, getCreditCardsAvailableList } from '../../utils/creditCards';
 	import creditCardType from 'credit-card-type'
 	import PayMethodItem from "./PayMethodItem";
   import { t } from '../../utils/i18n';
@@ -181,14 +180,17 @@
       },
 
       cardNames() {
-        const country = this.paymentForm.country;
-        const withPaypal = this.paymentForm.installments === 1;
+        const cardNames = this.paymentForm.country && Object.keys(checkoutData.paymentMethods).filter(name => name !== 'instant_transfer');
 
-        return getCreditCardsAvailableList(country, withPaypal).map(cardName => ({
+        if (this.paymentForm.installments === 1) {
+          cardNames.push('instant_transfer');
+        }
+
+        return cardNames.map(cardName => ({
           value: cardName,
-          text: creditCards[cardName].title,
-          label: creditCards[cardName].title,
-          imgUrl: creditCards[cardName].image,
+          text: checkoutData.paymentMethods[cardName].name,
+          label: checkoutData.paymentMethods[cardName].name,
+          imgUrl: checkoutData.paymentMethods[cardName].logo,
         }));
       },
 

@@ -212,7 +212,6 @@
             </el-dialog>
             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
             <button
-              v-if="form.paymentType !== 'paypal' && step === 3"
               @click="submit"
               :disabled="isSubmitted"
               :class="{ 'btn-active': !isSubmitted }"
@@ -226,17 +225,6 @@
           </form>
         </div>
         <div class="buttons">
-          <!--
-          <button
-            v-if="form.paymentType === 'paypal' && step === 3"
-            @click="submit"
-            class="submit-btn paypal-btn"
-            type="button"
-          >
-            <span class="purchase-button-text">Buy Now Risk-Free with</span>
-            <img :src="$root.cdnUrl + '/assets/images/cc-icons/paypal-highq.png'" alt="Paypal">
-          </button>
-          -->
           <div class="form-navigation">
             <button @click="isAllowNext(step)" v-if="step !== 3" v-html="textNext" class="next-btn btn-active"></button>
             <button v-if="step > 1" class="back-btn" @click="step--">&lt;&lt; <span v-html="textBack"></span></button>
@@ -298,7 +286,6 @@
 		props: [
       'productImage',
 			'countryList',
-			'cardNames',
 			'list',
 			'variantList',
       'countryCode',
@@ -619,7 +606,7 @@
           });
 			},
       paypalSubmit() {
-        this.form.paymentType = 'paypal';
+        this.form.paymentType = 'instant_transfer';
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
@@ -640,7 +627,7 @@
 				const isStepOneInvalid = this.$v.form.deal.$invalid;
 				const isStepTwoInvalid = this.$v.form.stepTwo.$invalid;
 				const isStepThreeInvalid =
-					this.form.paymentType !== 'paypal' &&
+					this.form.paymentType !== 'instant_transfer' &&
           this.$v.form.stepThree.$invalid;
 
         if (currentStep === 1 && isStepOneInvalid) {

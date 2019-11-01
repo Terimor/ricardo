@@ -153,7 +153,7 @@
                             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
-                              v-if="form.paymentType !== 'paypal'"
+                              v-if="form.paymentType !== 'instant_transfer'"
                               @click="submit"
                               id="purchase-button"
                               type="button"
@@ -164,7 +164,7 @@
                               <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
-                                    v-show="form.paymentType === 'paypal'"
+                                    v-show="form.paymentType === 'instant_transfer'"
                                     :createOrder="paypalCreateOrder"
                                     :onApprove="paypalOnApprove"
                                     :$v="$v.form.deal"
@@ -538,7 +538,7 @@
       paypalOnApprove: paypalOnApprove,
 
       paypalSubmit() {
-        this.form.paymentType = 'paypal';
+        this.form.paymentType = 'instant_transfer';
 
         if (this.$v.form.deal.$invalid) {
           document.querySelector('.smc7__deal').scrollIntoView();
