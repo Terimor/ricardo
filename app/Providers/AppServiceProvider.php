@@ -56,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
 
         if (isset($_COOKIE['DEBUG_COOKIE_KEY']) && $_COOKIE['DEBUG_COOKIE_KEY'] === \Config::get('app.debug_cookie_key')) {
             \Debugbar::enable();
+            \DB::connection('mongodb')->enableQueryLog();
         }
     }
 
