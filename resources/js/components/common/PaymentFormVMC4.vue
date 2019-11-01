@@ -68,7 +68,6 @@
           <h3 v-html="textPaySecurely"></h3>
           <payment-type-radio-list
             v-model="form.paymentType"
-            :country="form.stepThree.country"
             @input="activateForm" />
           <paypal-button
             :createOrder="paypalCreateOrder"
@@ -261,7 +260,7 @@
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
-	import { getCardUrl, sendCheckoutRequest } from "../../utils/checkout";
+	import { getCardUrl, getPaymentMethods, sendCheckoutRequest } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
   import purchasMixin from '../../mixins/purchas';
@@ -452,6 +451,9 @@
       textBack: () => t('checkout.back'),
 		},
         watch: {
+            'form.stepThree.country'(value) {
+              getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
+            },
             'form.stepThree.cardNumber'(newVal, oldValue) {
                 const creditCardTypeList = creditCardType(newVal)
                 this.form.cardType = creditCardTypeList.length > 0 && newVal.length > 0

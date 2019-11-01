@@ -8,6 +8,11 @@ require('./bootstrap')
 const app = new Vue({
   el: '#app',
   mixins: [globals],
+  data() {
+    return {
+      paymentMethods: { ...checkoutData.paymentMethods },
+    };
+  },
   mounted() {
     document.body.classList.remove('js-hidden');
   },

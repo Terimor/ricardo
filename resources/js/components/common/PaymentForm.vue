@@ -320,7 +320,7 @@
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
   import scrollToError from '../../mixins/formScrollToError';
-  import { sendCheckoutRequest } from '../../utils/checkout';
+  import { getPaymentMethods, sendCheckoutRequest } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
@@ -498,6 +498,9 @@
       textPaymentError: () => t('checkout.payment_error'),
     },
     watch: {
+      'paymentForm.country'(value) {
+        getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
+      },
       'paymentForm.cardNumber' (newVal, oldValue) {
         const creditCardTypeList = creditCardType(newVal)
         this.cardType = creditCardTypeList.length > 0 && newVal.length > 0

@@ -7,8 +7,7 @@
     @input="input">
 
     <CreditCardsList
-      slot="credit-card"
-      :country="country" />
+      slot="credit-card" />
 
   </radio-button-group>
 
@@ -27,7 +26,6 @@
 
     props: [
       'value',
-      'country',
     ],
 
     components: {

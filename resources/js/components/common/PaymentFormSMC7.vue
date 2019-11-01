@@ -159,7 +159,7 @@
 </template>
 <script>
   import * as dateFns from 'date-fns';
-	import {getCardUrl} from "../../utils/checkout";
+	import { getCardUrl, getPaymentMethods } from "../../utils/checkout";
 	import creditCardType from 'credit-card-type'
 	import PayMethodItem from "./PayMethodItem";
   import { t } from '../../utils/i18n';
@@ -180,7 +180,7 @@
       },
 
       cardNames() {
-        const cardNames = this.paymentForm.country && Object.keys(checkoutData.paymentMethods).filter(name => name !== 'instant_transfer');
+        const cardNames = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer');
 
         if (this.paymentForm.installments === 1) {
           cardNames.push('instant_transfer');
@@ -188,9 +188,9 @@
 
         return cardNames.map(cardName => ({
           value: cardName,
-          text: checkoutData.paymentMethods[cardName].name,
-          label: checkoutData.paymentMethods[cardName].name,
-          imgUrl: checkoutData.paymentMethods[cardName].logo,
+          text: this.$root.paymentMethods[cardName].name,
+          label: this.$root.paymentMethods[cardName].name,
+          imgUrl: this.$root.paymentMethods[cardName].logo,
         }));
       },
 
@@ -233,6 +233,9 @@
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
 		},
 		watch: {
+      'paymentForm.country'(value) {
+        getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
+      },
 			'paymentForm.cardNumber'(newVal, oldValue) {
 				const creditCardTypeList = creditCardType(newVal);
 				this.cardType = creditCardTypeList.length > 0 && newVal.length > 0

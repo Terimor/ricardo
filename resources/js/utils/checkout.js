@@ -169,6 +169,17 @@ export function getCardUrl(cardType) {
 }
 
 
+export function getPaymentMethods(country) {
+  country = country || checkoutData.countryCode;
+
+  return fetch('/payment-methods-by-country?country=' + country)
+    .then(res => res.json())
+    .catch(err => {
+      return checkoutData.paymentMethods;
+    });
+}
+
+
 export function sendCheckoutRequest(data) {
   const reqURL = new URL('/pay-by-card', location);
   const searchParams = new URL(location).searchParams;

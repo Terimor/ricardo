@@ -26,18 +26,23 @@
     name: 'CreditCardsList',
 
     props: [
-      'country',
       'withPaypal',
     ],
 
     computed: {
 
       paymentMethods() {
-        return checkoutData.paymentMethods;
+        return this.$root.paymentMethods;
       },
 
       creditCardsAvailableList() {
-        return this.country && Object.keys(checkoutData.paymentMethods).filter(name => name !== 'instant_transfer');
+        const cardNames = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer');
+
+        if (this.withPaypal) {
+          cardNames.push('instant_transfer');
+        }
+
+        return cardNames;
       },
 
     },

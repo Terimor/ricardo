@@ -32,6 +32,7 @@ const promo = new Vue({
 
   data() {
     return {
+      paymentMethods: { ...checkoutData.paymentMethods },
       showPreloader: preload === '{preload}' || +preload === 3,
       isFormShown: false,
       implValue: 1,
