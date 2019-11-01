@@ -30,12 +30,15 @@ use Http\Client\Exception\HttpException;
  */
 class PaymentService
 {
+    const CARD_CREDIT = 'credit';
+    const CARD_DEBIT  = 'debit';
 
     const PROVIDER_PAYPAL           = 'paypal';
     const PROVIDER_EBANX            = 'ebanx';
     const PROVIDER_CHECKOUTCOM      = 'checkoutcom';
     const PROVIDER_BLUESNAP         = 'bluesnap';
     const PROVIDER_NOVALNET         = 'novalnet';
+
     const METHOD_INSTANT_TRANSFER   = 'instant_transfer';
     const METHOD_CREDITCARD         = 'creditcard';
     const METHOD_MASTERCARD         = 'mastercard';
@@ -137,7 +140,7 @@ class PaymentService
                 'ar' => [
                     'district'          => ['pattern' => '^.{1,30}$'],
                     'document_number'   => ['pattern' => '^\d{7,8}$|^\d{2}-\d{8}-\d{2}$'],
-                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1]
+                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1, 'hide_for_debit' => true]
                 ],
                 'br' => [
                     'district'          => ['pattern' => '^.{1,30}$'],
@@ -151,7 +154,7 @@ class PaymentService
                 ],
                 'mx' => [
                     'district'          => ['pattern' => '^.{1,30}$'],
-                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1]
+                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1, 'hide_for_debit' => true]
                 ]
             ],
             'methods'   => [
@@ -348,12 +351,13 @@ class PaymentService
 
     /**
      * Adds txn data to Order
-     * @param  OdinOrder &$order
-     * @param  array     $data
-     * @param  string    $payment_method
+     * @param  OdinOrder    &$order
+     * @param  array        $data
+     * @param  string       $payment_method
+     * @param  string|null  $card_type
      * @return void
      */
-    private function addTxnToOrder(OdinOrder &$order, array $data, string $payment_method): void
+    private function addTxnToOrder(OdinOrder &$order, array $data, string $payment_method, ?string $card_type): void
     {
         // log txn
         (new OrderService())->addTxn([
@@ -371,6 +375,7 @@ class PaymentService
             'value'             => $data['value'],
             'status'            => $data['status'],
             'fee'               => $data['fee'],
+            'card_Type'         => $card_type,
             'payment_method'    => $payment_method,
             'payment_provider'  => $data['payment_provider'],
             'payer_id'          => $data['payer_id']
@@ -460,7 +465,7 @@ class PaymentService
         $card = $req->get('card');
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
-        $card['type'] = self::getMethodByNumber($card['number']);
+        $method = self::getMethodByNumber($card['number']);
 
         // find order for update
         $order = null;
@@ -471,9 +476,9 @@ class PaymentService
         $product = OdinProduct::getBySku($sku); // throwable
 
         // select provider by country
-        $provider = self::getProviderByCountryAndMethod($contact['country'], $card['type']);
+        $provider = self::getProviderByCountryAndMethod($contact['country'], $method);
         if (!$provider) {
-            throw new ProviderNotFoundException("Country {$contact['country']}, Card {$card['type']} not supported");
+            throw new ProviderNotFoundException("Country {$contact['country']}, Card {$method} not supported");
         } else if ($provider === self::PROVIDER_EBANX) {
             // check if ebanx supports currency, otherwise switch to default currency
             $product->currency = EbanxService::getCurrencyByCountry($contact['country'], $cur);
@@ -566,7 +571,7 @@ class PaymentService
                 'ip'        => $order->ip,
                 'id'        => $order->getIdAttribute(),
                 'number'    => $order->number,
-                '3ds'       => self::checkIs3dsNeeded($card['type'], $contact['country'], $ipqs),
+                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $ipqs),
                 'description'   => $product->product_name,
                 // TODO: remove city hardcode
                 'billing_descriptor'   => ['name' => $product->billing_descriptor, 'city' => 'Msida']
@@ -582,7 +587,7 @@ class PaymentService
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
             $order_product['txn_hash'] = $payment['hash'];
-            $this->addTxnToOrder($order, $payment, $card['type']);
+            $this->addTxnToOrder($order, $payment, $method, $card['type']);
             $order->addProduct($order_product, true);
             $order->is_flagged = $payment['is_flagged'];
             if (!$order->save()) {
@@ -737,7 +742,7 @@ class PaymentService
                         $order->addProduct($item);
                     }
 
-                    $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method']);
+                    $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method'], $order_main_txn['card_type']);
 
                     if ($order->status === OdinOrder::STATUS_PAID) {
                         $order->status = OdinOrder::STATUS_HALFPAID;

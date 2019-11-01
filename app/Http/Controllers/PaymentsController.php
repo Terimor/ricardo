@@ -164,9 +164,9 @@ class PaymentsController extends Controller
         }
     }
 
-    public function test(Request $req)
+    public function test(PaymentCardCreateOrderRequest $req)
     {
-        return PaymentService::getPaymentMethodsByCountry('co');
+        return $req->get('card');
     }
 
 }

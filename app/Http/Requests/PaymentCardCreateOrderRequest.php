@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Services\PaymentService;
 
 class PaymentCardCreateOrderRequest extends FormRequest
 {
@@ -37,7 +38,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
             'contact.phone.country_code'    => ['required', 'regex:/^\d{1,7}$/'],
             'contact.document_number'       => ['string'],
             'card.number'                   => ['required', 'regex:/^\d+$/'],
-            'card.type'                     => ['required', 'string'],
+            'card.type'                     => ['string', 'in:' . PaymentService::CARD_CREDIT . ',' . PaymentService::CARD_DEBIT],
             'card.month'                    => ['required', 'regex:/^(0?[1-9]|1[012])$/'],
             'card.year'                     => ['required', 'regex:/^20\d{2}$/'],
             'card.cvv'                      => ['required', 'regex:/^\d{3,4}$/'],
