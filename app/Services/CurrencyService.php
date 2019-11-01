@@ -189,7 +189,7 @@ class CurrencyService
         if ($fractionDigits == 0) {
             $exchangedPrice = (int)$exchangedPrice;
         }
-
+        
         $digits = strlen((int)$exchangedPrice);
 
         $exchangedPrice = static::mainRounding($digits, $exchangedPrice);
@@ -215,7 +215,7 @@ class CurrencyService
         }
         
         // check decimals for logging
-        if (!in_array($currencyCode, static::$noDecimals) && $digits >=5) {
+        if (!in_array($currencyCode, static::$zeroAtTheEnd) && $digits >=5) {
             logger()->error("Price {$exchangedPrice} has {$digits} digits for currency {$currencyCode}");
         }
 
@@ -234,7 +234,7 @@ class CurrencyService
      * @return type
      */
     private static function zeroAtTheEndRounding(int $digits, $exchangedPrice, $numberFormatter): int
-    {
+    {        
         $exchangedPrice = (int)$exchangedPrice;
         $oldPrice = $exchangedPrice;
         $fractionDigits = 0;
