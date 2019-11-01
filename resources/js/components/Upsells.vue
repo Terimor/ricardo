@@ -84,14 +84,14 @@
                     class="error-container"
                     v-html="paymentError"></p>
                   <green-button
-                    v-if="paymentType === 'credit-card'"
+                    v-if="paymentProvider === 'credit-card'"
                     class="submit-button"
                     :isLoading="isSubmitted"
                     @click="submit">
                       {{ textBuyAccessories }}
                     </green-button>
                   <paypal-button
-                    v-if="paymentType === 'instant_transfer'"
+                    v-if="paymentProvider === 'instant_transfer'"
                     class="submit-button"
                     :createOrder="paypalCreateOrder"
                     :onApprove="paypalOnApprove"
@@ -245,8 +245,8 @@
           .reduce((acc, item) => acc + item, 0);
       },
 
-      paymentType() {
-        return this.getOriginalOrder.paymentType;
+      paymentProvider() {
+        return this.getOriginalOrder.paymentProvider;
       },
     },
 

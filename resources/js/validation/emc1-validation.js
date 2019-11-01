@@ -4,6 +4,7 @@ import creditCardType from 'credit-card-type'
 import fieldsByCountry from '../resourses/fieldsByCountry';
 import * as dateFns from 'date-fns';
 
+
 const emc1Validation = function () {
   const allRules = {
     deal: {
@@ -39,9 +40,6 @@ const emc1Validation = function () {
     street: {
       required
     },
-    number: {
-      required
-    },
     city: {
       required
     },
@@ -65,11 +63,9 @@ const emc1Validation = function () {
         const creditCardTypeList = creditCardType(val);
         const commonRule = val.length > 12 && val.length <= 19;
 
-        if (creditCardTypeList.length === 0) {
-          return false;
-        }
-
-        return creditCardTypeList[0].lengths.includes(val.length) || commonRule;
+        return creditCardTypeList.length > 0
+          ? creditCardTypeList[0].lengths.includes(val.length) || commonRule
+          : false;
       }
     },
     month: {
@@ -82,7 +78,10 @@ const emc1Validation = function () {
       required,
       minLength: minLength(3)
     },
-    dateOfBirth: {
+  }
+
+  if (this.extraFields.date_of_birth) {
+    allRules.dateOfBirth = {
       isValidDate (val) {
         const [day, month, year] = val.split('/')
         const date = new Date(year, month - 1, day)
@@ -99,29 +98,24 @@ const emc1Validation = function () {
                   day < 32 &&
                   month < 13
       }
-    },
-    documentNumber: {
-      isValidNumber (val) {
-        return checkoutData.countryCode === 'co' ? val.length === 10 :
-          checkoutData.countryCode === 'br' ? val.length === 14 :
-            true
+    };
+  }
+
+  if (this.extraFields.document_number) {
+    allRules.documentNumber = {
+      isValidNumber(value) {
+        return new RegExp(this.extraFields.document_number.pattern).test(value);
       }
-    }
+    };
   }
 
-  const dynamicConfig = {
-      ...fieldsByCountry(checkoutData.countryCode),
-      documentNumber: this.form.paymentType === 'credit-card',
-      cardNumber: this.form.paymentType === 'credit-card',
-      month: this.form.paymentType === 'credit-card',
-      year: this.form.paymentType === 'credit-card',
-      cvv: this.form.paymentType === 'credit-card',
-  }
-
-  for (let key of Object.keys(allRules)) {
-    if (dynamicConfig[key] === false) {
-      delete allRules[key];
-    }
+  if (this.extraFields.district) {
+    allRules.district = {
+      required,
+      isValid(value) {
+        return new RegExp(this.extraFields.district.pattern).test(value);
+      },
+    };
   }
 
   return { form: allRules };

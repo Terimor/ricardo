@@ -1,7 +1,24 @@
+import creditCardType from 'credit-card-type';
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
 import { goTo } from './goTo';
+
+
+const ebanxMap = {
+  'visa': 'visa',
+  'mastercard': 'mastercard',
+  'american-express': 'amex',
+  'diners-club': 'dinersclub',
+  'discover': 'discover',
+  'jcb': 'jcb',
+  'unionpay': null,
+  'maestro': null,
+  'mir': null,
+  'elo': 'elo',
+  'hiper': null,
+  'hipercard': 'hipercard',
+};
 
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
@@ -177,6 +194,19 @@ export function getPaymentMethods(country) {
     .catch(err => {
       return checkoutData.paymentMethods;
     });
+}
+
+
+export function getPaymentMethodByCardNumber(cardNumber) {
+  const paymentMethodsList = creditCardType(cardNumber);
+
+  let paymentMethod = cardNumber.length > 0 && paymentMethodsList.length > 0
+    ? paymentMethodsList[0].type
+    : null;
+
+  return paymentMethod && ebanxMap[paymentMethod]
+    ? ebanxMap[paymentMethod]
+    : null;
 }
 
 

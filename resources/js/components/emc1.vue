@@ -81,7 +81,7 @@
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
                         <h3 v-html="textPaySecurely"></h3>
                         <payment-type-radio-list
-                                v-model="form.paymentType"
+                                v-model="form.paymentProvider"
                                 @input="activateForm" />
                         <paypal-button
                                 :createOrder="paypalCreateOrder"
@@ -96,14 +96,15 @@
                                     :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"
                                     :secondTitle="`${textStep} ${getStepOrder(5)}: ${textDeliveryAddress}`"
                                     :thirdTitle="`${textStep} ${getStepOrder(6)}: ${textPaymentDetails}`"
-                                    v-if="form.paymentType && isFormShown"
+                                    v-if="form.paymentProvider && isFormShown"
                                     @showCart="isOpenSpecialOfferModal = true"
                                     :$v="$v"
                                     :installments="form.installments"
                                     :paymentForm="form"
-                                    :countryCode="checkoutData.countryCode"
+                                    :countryCode="form.country || checkoutData.countryCode"
                                     :isBrazil="checkoutData.countryCode === 'br'"
                                     :countryList="setCountryList"
+                                    :extraFields="extraFields"
                                     @setPromotionalModal="setPromotionalModal"
                                     @setAddress="setAddress"/>
                         </transition>
@@ -296,16 +297,16 @@
           deal: null,
           variant: checkoutData.product.skus[0].code,
           installments: 1,
-          paymentType: null,
+          paymentProvider: null,
+          paymentMethod: null,
+          cardType: 'credit',
           fname: null,
           lname: null,
           dateOfBirth: '',
           email: null,
           phone: null,
-          cardType: 'credit',
           street: null,
-          number: null,
-          complemento: null,
+          district: null,
           city: null,
           state: null,
           zipcode: null,
@@ -314,7 +315,7 @@
           month: null,
           year: null,
           cvv: null,
-          documentNumber: ''
+          documentNumber: '',
         },
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
@@ -334,7 +335,7 @@
         this.form.variant = selectedProductData.variant || this.form.variant;
         this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
         this.form.installments = selectedProductData.installments || this.form.installments;
-        this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+        this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
         this.form.cardType = selectedProductData.cardType || this.form.cardType;
         this.form.fname = selectedProductData.fname || this.form.fname;
         this.form.lname = selectedProductData.lname || this.form.lname;
@@ -343,8 +344,7 @@
         this.form.phone = selectedProductData.phone || this.form.phone;
         this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
         this.form.street = selectedProductData.street || this.form.street;
-        this.form.number = selectedProductData.streetNumber || this.form.number;
-        this.form.complemento = selectedProductData.complemento || this.form.complemento;
+        this.form.district = selectedProductData.district || this.form.district;
         this.form.city = selectedProductData.city || this.form.city;
         this.form.state = selectedProductData.state || this.form.state;
         this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
@@ -388,6 +388,12 @@
       quantityOfInstallments () {
         const { installments } = this.form
         return installments && installments !== 1 ? installments + '× ' : ''
+      },
+      extraFields() {
+        const firstMethod = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer').shift();
+        const paymentMethod = this.form.paymentMethod || firstMethod;
+
+        return this.$root.paymentMethods[paymentMethod].extra_fields || {};
       },
       dealList () {
         const isSellOutArray = queryParams().sellout
@@ -471,7 +477,7 @@
         })
       },
       paypalSubmit() {
-        this.form.paymentType = 'instant_transfer';
+        this.form.paymentProvider = 'instant_transfer';
 
         if (this.$v.form.deal.$invalid) {
           document.querySelector('.main__deal').scrollIntoView();
@@ -519,7 +525,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
-          paymentType: this.form.paymentType,
+          paymentProvider: this.form.paymentProvider,
         });
 
         this.paypalPaymentError = '';
@@ -639,7 +645,7 @@
           phone: '44444444',
           zipcode: '13010-111',
           number: '111',
-          complemento: 'Complemento',
+          district: 'district',
           cardNumber: '378282246310005',
           cvv: '123',
           year: 2021,

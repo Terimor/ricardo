@@ -76,25 +76,12 @@
                 }"
                 v-model="paymentForm.street"/>
             <text-field
-                :validation="$v.form.number"
-                :validationMessage="textStreetNumberRequired"
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
-                v-if="isBrazil"
-                theme="variant-1 number"
-                :label="textStreetNumber"
-                v-model="paymentForm.number"/>
-            <el-alert
-                style="order: 1;"
-                v-if="maxStreetAndNumberLength"
-                title="Please use the field below for additional address instructions"
-                type="error">
-            </el-alert>
-            <text-field
-                v-if="isSpecialCountrySelected"
+                v-if="extraFields.district"
+                :validation="$v.form.district"
+                :validationMessage="textDistrictRequired"
                 theme="variant-1"
-                :label="textComplemento"
-                v-model="paymentForm.complemento"/>
+                :label="textDistrict"
+                v-model="paymentForm.district"/>
             <text-field
                 :validation="$v.form.city"
                 :validationMessage="textCityRequired"
@@ -161,7 +148,7 @@
                 :list="countryList"
                 v-model="paymentForm.country"/>
         </div>
-        <template v-if="paymentForm.paymentType !== 'bank-payment'">
+        <template v-if="paymentForm.paymentProvider !== 'bank-payment'">
             <h2>
               {{ thirdTitle }}
             </h2>
@@ -253,7 +240,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'br' || paymentForm.country === 'br'"
+                v-if="extraFields.document_number && paymentForm.country === 'br'"
                 placeholder="___.___.___-__"
                 :rest="{
                   'format': '___.___.___-__',
@@ -266,7 +253,7 @@
                 :validation="$v.form.documentNumber"
                 :validationMessage="textDocumentNumberRequired"
                 v-model="paymentForm.documentNumber"
-                v-if="countryCode === 'co' || paymentForm.country === 'co'"
+                v-if="extraFields.document_number && paymentForm.country === 'co'"
                 placeholder="1234567890"
                 :rest="{
                   'format': '1234567890',
@@ -320,9 +307,8 @@
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
   import scrollToError from '../../mixins/formScrollToError';
-  import { getPaymentMethods, sendCheckoutRequest } from '../../utils/checkout';
+  import { getPaymentMethods, getPaymentMethodByCardNumber, sendCheckoutRequest } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
-  import creditCardType from 'credit-card-type'
   import { stateList } from '../../resourses/state';
   import Spinner from './preloaders/Spinner';
 
@@ -342,6 +328,7 @@
       'hasWarranty',
       'quantityOfInstallments',
       'warrantyPriceText',
+      'extraFields',
     ],
     mixins: [
       queryToComponent,
@@ -356,10 +343,9 @@
         isLoading: {
           address: false
         },
-        cardType: null,
         isOpenCVVModal: false,
         isSubmitted: false,
-        paymentError: ''
+        paymentError: '',
       }
     },
 
@@ -376,16 +362,6 @@
     },
 
     computed: {
-      maxStreetAndNumberLength() {
-        const numberLength = this.paymentForm.number && this.paymentForm.number.length
-        const streetLength = this.paymentForm.street && this.paymentForm.street.length
-
-        if (this.countryCode === 'br' || this.countryCode === 'mx' || this.countryCode === 'co') {
-          return numberLength + streetLength >= 35;
-        } else {
-          return false;
-        }
-      },
       stateList() {
         return (stateList[this.paymentForm.country] || []).map((it) => ({
           value: it,
@@ -417,21 +393,9 @@
         }
       },
       cardUrl () {
-        const cardMap = {
-          'american-express': window.cdnUrl + '/assets/images/cc-icons/american-express.png',
-          'aura': window.cdnUrl + '/assets/images/cc-icons/aura.png',
-          'diners-club': window.cdnUrl + '/assets/images/cc-icons/diners-club.png',
-          'discover': window.cdnUrl + '/assets/images/cc-icons/discover.png',
-          'elo': window.cdnUrl + '/assets/images/cc-icons/elo.png',
-          'hipercard': window.cdnUrl + '/assets/images/cc-icons/hipercard.png',
-          'iconcc': window.cdnUrl + '/assets/images/cc-icons/iconcc.png',
-          'jcb': window.cdnUrl + '/assets/images/cc-icons/jcb.png',
-          'maestro': window.cdnUrl + '/assets/images/cc-icons/maestro.png',
-          'mastercard': window.cdnUrl + '/assets/images/cc-icons/mastercard.png',
-          'visa': window.cdnUrl + '/assets/images/cc-icons/visa.png'
-        }
-
-        return cardMap[this.cardType] || cardMap.iconcc
+        return this.paymentForm.paymentMethod
+          ? this.$root.paymentMethods[this.paymentForm.paymentMethod].logo
+          : window.cdnUrl + '/assets/images/cc-icons/iconcc.png';
       },
 
       isCardExpired() {
@@ -465,7 +429,8 @@
       textStreetRequired: () => t('checkout.payment_form.street.required'),
       textStreetNumber: () => t('checkout.payment_form.street_number'),
       textStreetNumberRequired: () => t('checkout.payment_form.street_number.required'),
-      textComplemento: () => t('checkout.payment_form.complemento'),
+      textDistrict: () => t('checkout.payment_form.complemento'),
+      textDistrictRequired: () => t('checkout.payment_form.complemento.required'),
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
@@ -502,10 +467,11 @@
         getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
       },
       'paymentForm.cardNumber' (newVal, oldValue) {
-        const creditCardTypeList = creditCardType(newVal)
-        this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
-          ? creditCardTypeList[0].type
-          : null
+        const paymentMethod = getPaymentMethodByCardNumber(newVal);
+
+        this.paymentForm.paymentMethod = this.$root.paymentMethods[paymentMethod]
+          ? paymentMethod
+          : null;
 
         if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
           this.paymentForm.cardNumber = oldValue;
@@ -565,7 +531,7 @@
       },
       installments (val) {
         if (+val !== 1 && this.countryCode === 'mx') {
-          this.paymentForm.cardType = 'credit'
+          this.paymentForm.cardType = 'credit';
         }
       },
       'paymentForm.cvv' (newVal, oldValue) {
@@ -659,7 +625,7 @@
           billing_phone: this.dialCode + paymentForm.phone,
         };
 
-        if (paymentForm.paymentType === 'credit-card') {
+        if (paymentForm.paymentProvider === 'credit-card') {
           fields = {
             ...fields,
             credit_card_bin: cardNumber.substr(0, 6),
@@ -675,7 +641,8 @@
           variant: paymentForm.variant,
           isWarrantyChecked: paymentForm.isWarrantyChecked,
           installments: paymentForm.installments,
-          paymentType: paymentForm.paymentType,
+          paymentProvider: paymentForm.paymentProvider,
+          paymentMethod: paymentForm.paymentMethod,
           cardType: paymentForm.cardType,
           fname: paymentForm.fname,
           lname: paymentForm.lname,
@@ -684,8 +651,7 @@
           phone: paymentForm.phone,
           countryCodePhoneField: paymentForm.countryCodePhoneField,
           street: paymentForm.street,
-          streetNumber: paymentForm.number,
-          complemento: paymentForm.complemento,
+          district: paymentForm.district,
           city: paymentForm.city,
           state: paymentForm.state,
           zipcode: paymentForm.zipcode,
@@ -695,13 +661,13 @@
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
-            if (paymentForm.paymentType === 'bank-payment') {
+            if (paymentForm.paymentProvider === 'bank-payment') {
               this.isSubmitted = false;
               this.$emit('showCart');
               return;
             }
 
-            if (paymentForm.paymentType === 'credit-card') {
+            if (paymentForm.paymentProvider === 'credit-card') {
               const data = {
                 product: {
                   sku: paymentForm.variant,
@@ -729,10 +695,18 @@
                   cvv: paymentForm.cvv,
                   month: ('0' + paymentForm.month).slice(-2),
                   year: '' + paymentForm.year,
-                  type: this.cardType,
+                  type: paymentForm.cardType,
                 },
                 ipqs: ipqsResult,
               };
+
+              if (this.extraFields.document_number) {
+                data.card.document_number = paymentForm.documentNumber;
+              }
+
+              if (this.extraFields.district) {
+                data.card.district = paymentForm.district;
+              }
 
               sendCheckoutRequest(data)
                 .then(res => {
@@ -825,15 +799,6 @@
             .payment-form__delivery-address {
                 #zip-code-field {
                     order: 0;
-                }
-
-                .street {
-                    width: 60%;
-                    margin-right: 10px;
-                }
-
-                .number {
-                    width: calc(40% - 10px);
                 }
             }
         }

@@ -31,8 +31,7 @@ const promo = new Vue({
   ],
 
   data() {
-    return {
-      paymentMethods: { ...checkoutData.paymentMethods },
+    let result = {
       showPreloader: preload === '{preload}' || +preload === 3,
       isFormShown: false,
       implValue: 1,
@@ -132,6 +131,12 @@ const promo = new Vue({
       isShownFooter: true,
       isShownJumbotron: true,
     };
+
+    if (window.checkoutData && checkoutData.paymentMethods) {
+      result.paymentMethods = JSON.parse(JSON.stringify(checkoutData.paymentMethods));
+    }
+
+    return result;
   },
 
   validations: emc1Validation,

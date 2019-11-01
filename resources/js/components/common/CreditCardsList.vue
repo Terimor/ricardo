@@ -4,13 +4,13 @@
     class="credit-cards-list">
 
     <div
-      v-for="cardName of creditCardsAvailableList"
-      :class="{ ['credit-card-' + cardName]: true }"
+      v-for="paymentMethodName of paymentMethodsAvailableList"
+      :class="{ ['credit-card-' + paymentMethodName]: true }"
       class="credit-card-item">
 
       <img
-        :src="paymentMethods[cardName].logo"
-        :title="paymentMethods[cardName].name" />
+        :src="paymentMethods[paymentMethodName].logo"
+        :title="paymentMethods[paymentMethodName].name" />
 
     </div>
 
@@ -35,14 +35,14 @@
         return this.$root.paymentMethods;
       },
 
-      creditCardsAvailableList() {
-        const cardNames = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer');
+      paymentMethodsAvailableList() {
+        let paymentMethodNames = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer');
 
         if (this.withPaypal) {
-          cardNames.push('instant_transfer');
+          paymentMethodNames.push('instant_transfer');
         }
 
-        return cardNames;
+        return paymentMethodNames;
       },
 
     },

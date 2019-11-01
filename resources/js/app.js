@@ -9,9 +9,13 @@ const app = new Vue({
   el: '#app',
   mixins: [globals],
   data() {
-    return {
-      paymentMethods: { ...checkoutData.paymentMethods },
-    };
+    let result = {};
+
+    if (window.checkoutData && checkoutData.paymentMethods) {
+      result.paymentMethods = JSON.parse(JSON.stringify(checkoutData.paymentMethods));
+    }
+
+    return result;
   },
   mounted() {
     document.body.classList.remove('js-hidden');
