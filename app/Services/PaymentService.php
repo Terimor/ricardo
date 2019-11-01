@@ -375,7 +375,7 @@ class PaymentService
             'value'             => $data['value'],
             'status'            => $data['status'],
             'fee'               => $data['fee'],
-            'card_Type'         => $card_type,
+            'card_type'         => $card_type,
             'payment_method'    => $payment_method,
             'payment_provider'  => $data['payment_provider'],
             'payer_id'          => $data['payer_id']
