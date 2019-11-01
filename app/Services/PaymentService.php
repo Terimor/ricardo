@@ -23,6 +23,7 @@ use App\Services\CustomerService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
 use App\Services\OrderService;
+use App\Mappers\PaymentMethodMapper;
 use Http\Client\Exception\HttpException;
 
 /**
@@ -53,9 +54,13 @@ class PaymentService
     const METHOD_PREZELEWY24        = 'prezelewy24';
     const METHOD_IDEAL              = 'ideal';
     const METHOD_EPS                = 'eps';
+    const METHOD_CARNET             = 'carnet';
+    const METHOD_NARANJA            = 'naranja';
+    const METHOD_CABAL              = 'cabal';
+    const METHOD_CREDIMAS           = 'credimas';
 
-    const FRAUD_CHANCE_LIMIT = 90;
-    const FRAUD_CHANCE_MAX = 100;
+    const FRAUD_CHANCE_LIMIT    = 90;
+    const FRAUD_CHANCE_MAX      = 100;
 
     const SUCCESS_PATH  =   '/checkout';
     const FAILURE_PATH  =   '/checkout';
@@ -162,28 +167,34 @@ class PaymentService
                     '-3ds' => ['br', 'mx', 'co']
                 ],
                 self::METHOD_MASTERCARD => [
-                    '-3ds' => ['br', 'mx', 'co']
+                    '-3ds' => ['ar', 'br', 'mx', 'co']
                 ],
                 self::METHOD_VISA       => [
-                    '-3ds' => ['br', 'mx', 'co']
+                    '-3ds' => ['ar', 'br', 'mx', 'co']
                 ],
                 self::METHOD_AMEX       => [
-                    '-3ds' => ['br', 'mx', 'co']
+                    '-3ds' => ['ar', 'br', 'mx', 'co']
                 ],
-                // self::METHOD_DISCOVER   => [
-                //     '-3ds' => ['br']
-                // ],
                 self::METHOD_DINERSCLUB => [
-                    '-3ds' => ['br', 'co']
+                    '-3ds' => ['ar', 'br', 'co']
                 ],
                 self::METHOD_HIPERCARD  => [
                     '-3ds' => ['br']
                 ],
-                // self::METHOD_AURA       => [
-                //     '-3ds' => ['br']
-                // ],
                 self::METHOD_ELO        => [
                     '-3ds' => ['br']
+                ],
+                self::METHOD_NARANJA   => [
+                    '-3ds' => ['ar']
+                ],
+                self::METHOD_CARNET     => [
+                    '-3ds' => ['mx']
+                ],
+                self::METHOD_CABAL      => [
+                    '-3ds' => ['ar']
+                ],
+                self::METHOD_CREDIMAS   => [
+                    '-3ds' => ['ar']
                 ]
             ]
         ],
@@ -281,6 +292,26 @@ class PaymentService
             'logo'      => 'https://static-backend.saratrkr.com/image_assets/diners-curved.png',
             'is_active' => true,
         ],
+        self::METHOD_NARANJA          => [
+            'name'      => 'Naranja',
+            'logo'      => 'https://static-backend.saratrkr.com/image_assets/naranja-curved.png',
+            'is_active' => true,
+        ],
+        self::METHOD_CARNET           => [
+            'name'      => 'Carnet',
+            'logo'      => 'https://static-backend.saratrkr.com/image_assets/carnet-curved.png',
+            'is_active' => true,
+        ],
+        self::METHOD_CABAL            => [
+            'name'      => 'Cabal',
+            'logo'      => 'https://static-backend.saratrkr.com/image_assets/cabal-curved.png',
+            'is_active' => true,
+        ],
+        self::METHOD_CREDIMAS         => [
+            'name'      => 'Credimas',
+            'logo'      => 'https://static-backend.saratrkr.com/image_assets/credimas-curved.png',
+            'is_active' => true,
+        ]
     ];
 
     /**
@@ -465,7 +496,7 @@ class PaymentService
         $card = $req->get('card');
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
-        $method = self::getMethodByNumber($card['number']);
+        $method = PaymentMethodMapper::toMethod($card['number']);
 
         // find order for update
         $order = null;
@@ -1044,69 +1075,6 @@ class PaymentService
                 $result = true;
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
                 $result = false;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns Credit Card type
-     * @param  string $number
-     * @return string
-     */
-    public static function getMethodByNumber(string $number): string
-    {
-        $card_masks = [
-            [
-                'mask' => '/^4[0-9]{0,15}$/i',
-                'type' => self::METHOD_VISA
-            ],
-            [
-                'mask' => '/^5[1-5][0-9]{5,}|^222[1-9][0-9]{3,}|^22[3-9][0-9]{4,}|^2[3-6][0-9]{5,}|^27[01][0-9]{4,}|^2720[0-9]{3,}$/i',
-                'type' => self::METHOD_MASTERCARD
-            ],
-            [
-                'mask' => '/^3$|^3[47][0-9]{0,13}$/i',
-                'type' => self::METHOD_AMEX
-            ],
-            [
-                'mask' => '/^6$|^6[05]$|^601[1]?$|^65[0-9][0-9]?$|^6(?:011|5[0-9]{2})[0-9]{0,12}$/i',
-                'type' => self::METHOD_DISCOVER
-            ],
-            [
-                'mask' => '/^(?:2131|1800|35[0-9]{3})[0-9]{3,}$/i',
-                'type' => self::METHOD_JCB
-            ],
-            [
-                'mask' => '/^3(?:0[0-5]|[68][0-9])[0-9]{4,}$/i',
-                'type' => self::METHOD_DINERSCLUB
-            ],
-            [
-                'mask' => '/^((606282)|(637095)|(637568)|(637599)|(637609)|(637612))/i',
-                'type' => self::METHOD_HIPERCARD
-            ],
-            [
-                'mask' => '/^((509091)|(636368)|(636297)|(504175)|(438935)|(40117[8-9])|(45763[1-2])|(457393)|(431274)|(50990[0-2])|'
-                        . '(5099[7-9][0-9])|(50996[4-9])|(509[1-8][0-9][0-9])|(5090(0[0-2]|0[4-9]|1[2-9]|[24589][0-9]|3[1-9]|6[0-46-9]|7[0-24-9]))|'
-                        . '(5067(0[0-24-8]|1[0-24-9]|2[014-9]|3[0-379]|4[0-9]|5[0-3]|6[0-5]|7[0-8]))|(6504(0[5-9]|1[0-9]|2[0-9]|3[0-9]))|'
-                        . '(6504(8[5-9]|9[0-9])|6505(0[0-9]|1[0-9]|2[0-9]|3[0-8]))|(6505(4[1-9]|5[0-9]|6[0-9]|7[0-9]|8[0-9]|9[0-8]))|'
-                        . '(6507(0[0-9]|1[0-8]))|(65072[0-7])|(6509(0[1-9]|1[0-9]|20))|(6516(5[2-9]|6[0-9]|7[0-9]))|(6550(0[0-9]|1[0-9]))|'
-                        . '(6550(2[1-9]|3[0-9]|4[0-9]|5[0-8])))/i',
-                'type' => self::METHOD_ELO
-            ],
-            [
-                'mask' => '/^(5078\d{2})(\d{2})(\d{11})$/i',
-                'type' => self::METHOD_AURA
-            ]
-        ];
-
-        $result = self::METHOD_CREDITCARD;
-
-        foreach ($card_masks as $item) {
-            if (preg_match($item['mask'], $number)) {
-                $result = $item['type'];
-                break;
             }
         }
 
