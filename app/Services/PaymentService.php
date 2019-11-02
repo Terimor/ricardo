@@ -618,7 +618,7 @@ class PaymentService
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
             $order_product['txn_hash'] = $payment['hash'];
-            $this->addTxnToOrder($order, $payment, $method, $card['type']);
+            $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
             $order->addProduct($order_product, true);
             $order->is_flagged = $payment['is_flagged'];
             if (!$order->save()) {
