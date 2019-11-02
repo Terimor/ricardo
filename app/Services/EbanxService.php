@@ -307,11 +307,12 @@ class EbanxService
             'baseCurrency'          => $order_details['currency']
         ]);
 
+        $installments = !empty($order_details['installments']) ? $order_details['installments'] : self::INSTALLMENTS_MIN;
         $payment = new Payment([
             'address'               => $address,
             'amountTotal'           => $order_details['amount'],
             'card'                  => $source,
-            'instalments'           => $order_details['installments'] ?? self::INSTALLMENTS_MIN,
+            'instalments'           => $installments,
             'merchantPaymentCode'   => \uniqid(),
             'orderNumber'           => $order_details['number'],
             'person'                => $person,
