@@ -5,10 +5,9 @@ namespace App\Services;
 use App\Models\OdinOrder;
 use App\Models\Setting;
 use App\Models\Txn;
-use App\Services\CurrencyService;
-use App\Services\OrderService;
-use App\Services\PaymentService;
 use App\Mappers\EbanxCodeMapper;
+use App\Constants\PaymentMethods;
+use App\Constants\PaymentProviders;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Ebanx\Benjamin\Models\Address;
@@ -136,7 +135,7 @@ class EbanxService
             'dueDate'       => \DateTime::createFromFormat('n-Y', $card['month'] . '-' . $card['year']),
             'name'          => $contact['first_name'] . ' ' . $contact['last_name'],
             'number'        => $card['number'],
-            'type'          => PaymentService::METHOD_CREDITCARD
+            'type'          => PaymentMethods::CREDITCARD
         ]);
     }
 
@@ -317,7 +316,7 @@ class EbanxService
             'orderNumber'           => $order_details['number'],
             'person'                => $person,
             'items'                 => $items,
-            'type'                  => PaymentService::METHOD_CREDITCARD
+            'type'                  => PaymentMethods::CREDITCARD
         ]);
 
         $result = [
@@ -326,8 +325,8 @@ class EbanxService
             'currency'          => $order_details['currency'],
             'value'             => $order_details['amount'],
             'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentService::PROVIDER_EBANX,
-            'payment_method'    => PaymentService::METHOD_CREDITCARD,
+            'payment_provider'  => PaymentProviders::EBANX,
+            'payment_method'    => PaymentMethods::CREDITCARD,
             'hash'              => null,
             'payer_id'          => null,
             'provider_data'     => null,

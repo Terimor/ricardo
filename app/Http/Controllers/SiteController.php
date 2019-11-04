@@ -9,6 +9,7 @@ use App\Services\PaymentService;
 use App\Models\Setting;
 use App\Services\I18nService;
 use App\Services\OrderService;
+use App\Constants\PaymentMethods;
 use Cache;
 
 class SiteController extends Controller
@@ -228,9 +229,9 @@ class SiteController extends Controller
         $main_product = $orderCustomer->getMainProduct(false);
         if (!empty($main_product)) {
             $main_txn = $orderCustomer->getTxnByHash($main_product['txn_hash'], false) ?? [];
-            if (!empty($main_txn['payment_method']) && PaymentService::$methods[$main_txn['payment_method']]) {
-                $payment_method['name'] = PaymentService::$methods[$main_txn['payment_method']]['name'];
-                $payment_method['logo'] = PaymentService::$methods[$main_txn['payment_method']]['logo'];
+            if (!empty($main_txn['payment_method']) && PaymentMethods::$list[$main_txn['payment_method']]) {
+                $payment_method['name'] = PaymentMethods::$list[$main_txn['payment_method']]['name'];
+                $payment_method['logo'] = PaymentMethods::$list[$main_txn['payment_method']]['logo'];
             }
         }
 

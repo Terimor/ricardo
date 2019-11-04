@@ -24,6 +24,8 @@ use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
 use App\Services\OrderService;
 use App\Mappers\PaymentMethodMapper;
+use App\Constants\PaymentProviders;
+use App\Constants\PaymentMethods;
 use Http\Client\Exception\HttpException;
 
 /**
@@ -33,31 +35,6 @@ class PaymentService
 {
     const CARD_CREDIT = 'credit';
     const CARD_DEBIT  = 'debit';
-
-    const PROVIDER_PAYPAL           = 'paypal';
-    const PROVIDER_EBANX            = 'ebanx';
-    const PROVIDER_CHECKOUTCOM      = 'checkoutcom';
-    const PROVIDER_BLUESNAP         = 'bluesnap';
-    const PROVIDER_NOVALNET         = 'novalnet';
-
-    const METHOD_INSTANT_TRANSFER   = 'instant_transfer';
-    const METHOD_CREDITCARD         = 'creditcard';
-    const METHOD_MASTERCARD         = 'mastercard';
-    const METHOD_VISA               = 'visa';
-    const METHOD_AMEX               = 'amex';
-    const METHOD_DISCOVER           = 'discover';
-    const METHOD_DINERSCLUB         = 'dinersclub';
-    const METHOD_JCB                = 'jcb';
-    const METHOD_HIPERCARD          = 'hipercard';
-    const METHOD_AURA               = 'aura';
-    const METHOD_ELO                = 'elo';
-    const METHOD_PREZELEWY24        = 'prezelewy24';
-    const METHOD_IDEAL              = 'ideal';
-    const METHOD_EPS                = 'eps';
-    const METHOD_CARNET             = 'carnet';
-    const METHOD_NARANJA            = 'naranja';
-    const METHOD_CABAL              = 'cabal';
-    const METHOD_CREDIMAS           = 'credimas';
 
     const FRAUD_CHANCE_LIMIT    = 90;
     const FRAUD_CHANCE_MAX      = 100;
@@ -72,247 +49,6 @@ class PaymentService
     const CACHE_ERRORS_PREFIX   = 'PayErrors';
     const CACHE_TOKEN_TTL_MIN   = 15;
     const CACHE_ERRORS_TTL_MIN  = 1;
-
-    /**
-     * Saga PaymentUtils::$providers
-     * Payment providers
-     * +3ds — 3DS is required
-     * -3ds — 3DS is optional
-     * excl — excluded countries
-     * @var type
-     */
-    public static $providers = [
-        self::PROVIDER_PAYPAL      => [
-            'name'      => 'PayPal',
-            'is_active' => true,
-            'on_prod'   => true,
-            'methods'   => [
-                self::METHOD_INSTANT_TRANSFER => [
-                    '-3ds' => ['*']
-                ]
-            ]
-        ],
-        self::PROVIDER_CHECKOUTCOM => [
-            'name'      => 'Checkout.com',
-            'is_active' => true,
-            'on_prod'   => true,
-            'methods'   => [
-                self::METHOD_CREDITCARD => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*'],
-                    'excl' => ['ar', 'br', 'mx', 'co']
-                ],
-                self::METHOD_VISA       => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*'],
-                    'excl' => ['ar', 'br', 'mx', 'co']
-                ],
-                self::METHOD_MASTERCARD => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*'],
-                    'excl' => ['ar', 'br', 'mx', 'co']
-                ],
-                self::METHOD_AMEX       => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*'],
-                    'excl' => ['ar', 'br', 'mx', 'co']
-                ],
-                self::METHOD_DISCOVER   => [
-                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*'],
-                    'excl' => ['ar', 'br', 'co', 'mx']
-                    // '-3ds' => ['us']
-                ],
-                self::METHOD_DINERSCLUB => [
-                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*'],
-                    'excl' => ['ar', 'br', 'co', 'mx']
-                    // '-3ds' => ['us', 'ko']
-                ],
-                self::METHOD_JCB        => [
-                    '+3ds' => ['europe', 'il', 'ko', 'id', 'id', 'kr', 'gb', 'se'],
-                    '-3ds' => ['*'],
-                    'excl' => ['ar', 'br', 'co', 'mx']
-                    // '-3ds' => ['sg', 'jp', 'tw', 'hk', 'mo', 'th', 'vn', 'kh', 'my', 'mm']
-                ],
-            ]
-        ],
-        self::PROVIDER_EBANX       => [
-            'name'      => 'EBANX',
-            'is_active' => true,
-            'on_prod'   => false,
-            'extra_fields'  => [
-                'ar' => [
-                    'district'          => ['pattern' => '^.{1,30}$'],
-                    'document_number'   => ['pattern' => '^\d{7,8}$|^\d{2}-\d{8}-\d{2}$'],
-                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1, 'hide_for_debit' => true]
-                ],
-                'br' => [
-                    'district'          => ['pattern' => '^.{1,30}$'],
-                    'document_number'   => ['pattern' => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$'],
-                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 3]
-                ],
-                'co' => [
-                    'district'          => ['pattern' => '^.{1,30}$'],
-                    'document_number'   => ['pattern' => '^\d{1,10}$'],
-                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1]
-                ],
-                'mx' => [
-                    'district'          => ['pattern' => '^.{1,30}$'],
-                    'installments'      => ['pattern' => '^[1,3,6]$', 'default' => 1, 'hide_for_debit' => true]
-                ]
-            ],
-            'methods'   => [
-                self::METHOD_CREDITCARD => [
-                    '-3ds' => ['br', 'mx', 'co']
-                ],
-                self::METHOD_MASTERCARD => [
-                    '-3ds' => ['ar', 'br', 'mx', 'co']
-                ],
-                self::METHOD_VISA       => [
-                    '-3ds' => ['ar', 'br', 'mx', 'co']
-                ],
-                self::METHOD_AMEX       => [
-                    '-3ds' => ['ar', 'br', 'mx', 'co']
-                ],
-                self::METHOD_DINERSCLUB => [
-                    '-3ds' => ['ar', 'br', 'co']
-                ],
-                self::METHOD_HIPERCARD  => [
-                    '-3ds' => ['br']
-                ],
-                self::METHOD_ELO        => [
-                    '-3ds' => ['br']
-                ],
-                self::METHOD_NARANJA   => [
-                    '-3ds' => ['ar']
-                ],
-                self::METHOD_CARNET     => [
-                    '-3ds' => ['mx']
-                ],
-                self::METHOD_CABAL      => [
-                    '-3ds' => ['ar']
-                ],
-                self::METHOD_CREDIMAS   => [
-                    '-3ds' => ['ar']
-                ]
-            ]
-        ],
-        self::PROVIDER_NOVALNET    => [
-            'name'      => 'Novalnet',
-            'is_active' => false,
-            'on_prod'   => false,
-            'methods'   => [
-                self::METHOD_PREZELEWY24 => [
-                    '-3ds' => ['pl']
-                ],
-                self::METHOD_IDEAL       => [
-                    '-3ds' => ['nl']
-                ],
-                self::METHOD_EPS         => [
-                    '-3ds' => ['at']
-                ],
-            ]
-        ]
-    ];
-
-    /**
-     * Saga PaymentUtils::$methods
-     * Payment methods
-     * @var type
-     */
-    public static $methods = [
-        self::METHOD_INSTANT_TRANSFER => [
-            'name'      => 'PayPal',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/paypal-curved-128px.png',
-            'is_active' => true
-        ],
-        self::METHOD_MASTERCARD       => [
-            'name'      => 'MasterCard',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/mastercard-curved-128px.png',
-            'is_active' => true,
-        ],
-        self::METHOD_CREDITCARD       => [
-            'name'      => 'Credit card',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/othercard.png',
-            'is_active' => false,
-        ],
-        self::METHOD_VISA             => [
-            'name'      => 'VISA',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/visa-curved-128px.png',
-            'is_active' => true,
-        ],
-        self::METHOD_AMEX             => [
-            'name'      => 'AmEx',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/american-express-curved-128px.png',
-            'is_active' => true,
-        ],
-        self::METHOD_IDEAL            => [
-            'name'      => 'iDeal',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/ideal-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_EPS              => [
-            'name'      => 'EPS',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/eps-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_PREZELEWY24      => [
-            'name'      => 'Prezelewy 24',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/prezelewy24-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_JCB              => [
-            'name'      => 'JCB',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/jcb-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_AURA             => [
-            'name'      => 'Aura',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/aura-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_ELO              => [
-            'name'      => 'Elo',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/elo-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_HIPERCARD        => [
-            'name'      => 'Hipercard',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/hipercard-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_DISCOVER         => [
-            'name'      => 'Discover',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/discover-curved-128px.png',
-            'is_active' => true,
-        ],
-        self::METHOD_DINERSCLUB       => [
-            'name'      => 'Diners Club',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/diners-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_NARANJA          => [
-            'name'      => 'Naranja',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/naranja-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_CARNET           => [
-            'name'      => 'Carnet',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/carnet-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_CABAL            => [
-            'name'      => 'Cabal',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/cabal-curved.png',
-            'is_active' => true,
-        ],
-        self::METHOD_CREDIMAS         => [
-            'name'      => 'Credimas',
-            'logo'      => 'https://static-backend.saratrkr.com/image_assets/credimas-curved.png',
-            'is_active' => true,
-        ]
-    ];
 
     /**
      * @var CustomerService $customerService
@@ -510,7 +246,7 @@ class PaymentService
         $provider = self::getProviderByCountryAndMethod($contact['country'], $method);
         if (!$provider) {
             throw new ProviderNotFoundException("Country {$contact['country']}, Card {$method} not supported");
-        } else if ($provider === self::PROVIDER_EBANX) {
+        } else if ($provider === PaymentProviders::EBANX) {
             // check if ebanx supports currency, otherwise switch to default currency
             $product->currency = EbanxService::getCurrencyByCountry($contact['country'], $cur);
         }
@@ -572,7 +308,7 @@ class PaymentService
         }
         // select provider and create payment
         $payment = [];
-        if ($provider === self::PROVIDER_EBANX) {
+        if ($provider === PaymentProviders::EBANX) {
             $ebanxService = new EbanxService();
             $payment = $ebanxService->payByCard(
                 $card,
@@ -701,7 +437,7 @@ class PaymentService
 
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
-                if ($order_main_txn['payment_provider'] === self::PROVIDER_EBANX) {
+                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX) {
                     $ebanxService = new EbanxService();
                     $payment = $ebanxService->payByToken(
                         $card_token,
@@ -913,8 +649,8 @@ class PaymentService
      * Returns payment methods array by country
      * Results example:
      * $result = [
-     *   self::PROVIDER_CHECKOUTCOM => [
-     *     self::METHOD_VISA => [
+     *   PaymentProviders::CHECKOUTCOM => [
+     *     PaymentMethods::VISA => [
      *       'name' => 'VISA',
      *       'logo' => 'https://static-backend.saratrkr.com/image_assets/visa-curved-128px.png',
      *       '3ds' => true
@@ -928,7 +664,7 @@ class PaymentService
     {
         $country = strtolower($country);
         $result = [];
-        foreach (static::$providers as $providerId => $provider)
+        foreach (PaymentProviders::$list as $providerId => $provider)
         {
             $is_pass_method = \App::environment() === 'production' ? $provider['on_prod'] : true;
             if ($provider['is_active'] && $is_pass_method)
@@ -938,7 +674,7 @@ class PaymentService
                 //check every method of provider
                 foreach ($provider['methods'] as $methodId => $method)
                 {
-                    if (static::$methods[$methodId]['is_active'])
+                    if (PaymentMethods::$list[$methodId]['is_active'])
                     {
                         //check 3DS settings
                         if (!empty($method['+3ds']) && static::checkIfMethodInCountries($country, $method['+3ds']))
@@ -960,7 +696,7 @@ class PaymentService
                 {
                     foreach ($result[$providerId] as $methodId => &$methodData)
                     {
-                        $method             = static::$methods[$methodId];
+                        $method             = PaymentMethods::$list[$methodId];
                         $methodData['name'] = $method['name'];
                         $methodData['logo'] = $method['logo'];
                         if (isset($provider['extra_fields']) && isset($provider['extra_fields'][$country])) {
@@ -985,12 +721,12 @@ class PaymentService
      * @param   array  $excl default=[]
      * @return  string|null
      */
-    public static function getProviderByCountryAndMethod(string $country, string $method, string $pref = self::PROVIDER_CHECKOUTCOM, array $excl = []): ?string
+    public static function getProviderByCountryAndMethod(string $country, string $method, string $pref = PaymentProviders::CHECKOUTCOM, array $excl = []): ?string
     {
         $providers = self::getPaymentMethodsByCountry($country);
 
         if (!EbanxService::isCountrySupported($country)) {
-            $excl[] = self::PROVIDER_EBANX;
+            $excl[] = PaymentProviders::EBANX;
         }
 
         $available_providers = [];
@@ -1067,7 +803,7 @@ class PaymentService
     private static function checkIs3dsNeeded(string $card_type, string $country, ?array $ipqs): bool
     {
         $result = true;
-        $setting = PaymentService::$providers[PaymentService::PROVIDER_CHECKOUTCOM]['methods'][$card_type] ?? [];
+        $setting = PaymentProviders::$list[PaymentProviders::CHECKOUTCOM]['methods'][$card_type] ?? [];
         $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : PaymentService::FRAUD_CHANCE_MAX;
 
         if ($fraud_chance < PaymentService::FRAUD_CHANCE_LIMIT) {

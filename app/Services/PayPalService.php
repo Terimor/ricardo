@@ -9,6 +9,8 @@ use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Models\Txn;
+use App\Constants\PaymentMethods;
+use App\Constants\PaymentProviders;
 use BraintreeHttp\HttpException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -165,8 +167,8 @@ class PayPalService
                 'value' => (float)$paypal_order->purchase_units[0]->amount->value,
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
-                'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
-                'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                'payment_method' => PaymentMethods::INSTANT_TRANSFER,
+                'payment_provider' => PaymentProviders::PAYPAL,
                 'payer_id' => '',
             ], true);
 
@@ -307,8 +309,8 @@ class PayPalService
                 'value' => (float)$paypal_order->purchase_units[0]->amount->value,
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
-                'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
-                'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                'payment_method' => PaymentMethods::INSTANT_TRANSFER,
+                'payment_provider' => PaymentProviders::PAYPAL,
                 'payer_id' => '',
             ], true);
             abort_if(!$txn_response['success'], 404);
@@ -396,8 +398,8 @@ class PayPalService
                 'value' => $paypal_order_value,
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
-                'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
-                'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                'payment_method' => PaymentMethods::INSTANT_TRANSFER,
+                'payment_provider' => PaymentProviders::PAYPAL,
                 'payer_id' => optional($paypal_order->payer)->payer_id,
             ], true);
 
@@ -499,8 +501,8 @@ class PayPalService
                     'value' => $this->getPayPalOrderValue($paypal_order),
                     'currency' => $paypal_order_currency,
                     'provider_data' => $paypal_order,
-                    'payment_method' => PaymentService::METHOD_INSTANT_TRANSFER,
-                    'payment_provider' => PaymentService::PROVIDER_PAYPAL,
+                    'payment_method' => PaymentMethods::INSTANT_TRANSFER,
+                    'payment_provider' => PaymentProviders::PAYPAL,
                     'payer_id' => optional($paypal_order->payer)->payer_id,
                 ], true);
 

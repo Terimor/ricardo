@@ -5,10 +5,11 @@ namespace App\Services;
 use App\Models\OdinOrder;
 use App\Models\Setting;
 use App\Models\Txn;
-use App\Services\OrderService;
 use App\Services\PaymentService;
 use App\Mappers\CheckoutDotComCodeMapper;
 use App\Mappers\CheckoutDotComAmountMapper;
+use App\Constants\PaymentMethods;
+use App\Constants\PaymentProviders;
 use Checkout\CheckoutApi;
 use Checkout\Models\Tokens\Card;
 use Checkout\Models\Payments\Payment;
@@ -285,8 +286,8 @@ class CheckoutDotComService
             'currency'          => $order_details['currency'],
             'value'             => $order_details['amount'],
             'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentService::PROVIDER_CHECKOUTCOM,
-            'payment_method'    => PaymentService::METHOD_CREDITCARD,
+            'payment_provider'  => PaymentProviders::CHECKOUTCOM,
+            'payment_method'    => PaymentMethods::CREDITCARD,
             'hash'              => null,
             'payer_id'          => null,
             'provider_data'     => null,
