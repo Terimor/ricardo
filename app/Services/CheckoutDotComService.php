@@ -323,17 +323,18 @@ class CheckoutDotComService
                 $result['redirect_url'] = $res->_links['redirect']['href'];
             }
         } catch (CheckoutHttpException $ex) {
-            $body = json_decode($ex->getBody(), true);
-            if (!empty($body['request_id'])) {
-                $result['hash'] = $body['request_id'];
-            }
-            $result['provider_data'] = $body;
+            // $body = json_decode($ex->getBody(), true);
+            // if (!empty($body['request_id'])) {
+            //     $result['hash'] = $body['request_id'];
+            // }
+            $result['provider_data'] = $ex->getBody();
             $result['errors'] = array_map(function($code) {
                 return CheckoutDotComCodeMapper::toPhrase($code);
             },$ex->getErrors() ?? []);
-            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $body]);
+            logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         } catch (CheckoutException $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'body' => $ex->getBody()];
+            $result['errors'] = [CheckoutDotComCodeMapper::toPhrase()];
             logger()->error("Checkout.com pay", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         }
 

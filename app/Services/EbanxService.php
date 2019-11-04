@@ -352,6 +352,7 @@ class EbanxService
             }
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
+            $result['errors'] = [EbanxCodeMapper::toPhrase()];
             logger()->error("Ebanx pay", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
         }
         return $result;

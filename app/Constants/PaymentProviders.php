@@ -161,7 +161,7 @@ class PaymentProviders {
                     'document_number'   => [
                         'type'      => 'text',
                         'pattern'   => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$',
-                        'placeholder' => 'xxx-xxx-xxx-xx'
+                        'placeholder' => 'xxx.xxx.xxx-xx'
                     ],
                     'installments'  => [
                         'type'  => 'dropdown',

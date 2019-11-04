@@ -169,13 +169,13 @@ class PaymentService
 
         return [
             'currency'          => $currency->code,
-            'price_set'         => $product->prices['price_set'],
+            'price_set'         => $product->prices['price_set'] ?? '',
             'quantity'          => $qty,
             'usd_rate'          => $currency->usd_rate,
             'value'             => $localized_product->prices[$qty]['value'],
             'value_usd'         => $price_usd,
             'warranty_value'    => $localized_product->prices[$qty]['warranty_price'],
-            'warranty_value_usd'    => $product->warranty_percent * $price_usd / 100
+            'warranty_value_usd'    => ($product->warranty_percent ?? 0) * $price_usd / 100
         ];
     }
 
@@ -363,20 +363,19 @@ class PaymentService
                     throw new OrderUpdateException(json_encode($validator->errors()->all()));
                 }
             }
-        } else {
-            throw new PaymentException(json_encode($payment['provider_data']));
         }
 
         // response
         $result = [
+            'id'                => null,
             'order_currency'    => $order->currency,
             'order_number'      => $order->number,
             'order_id'          => $order->getIdAttribute(),
-            'id'                => !empty($payment['hash']) ? $payment['hash'] : '',
             'status'            => self::STATUS_FAIL
         ];
 
         if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $result['id'] = $payment['hash'];
             $result['status'] = self::STATUS_OK;
             $result['redirect_url'] = $payment['redirect_url'] ?? null;
         } else {
