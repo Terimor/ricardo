@@ -152,7 +152,7 @@ class AffiliateSetting extends Model
             // calculate value for $percentArray
             if ($qtyForCalculation > static::$salesQtyInTable) {
                 $tempRateCount = floor($qtyForCalculation / static::$salesQtyInTable);
-                $qtyForCalculation = (int) ($qtyForCalculation - ($tempRateCount * static::$salesQtyInTable));
+                $qtyForCalculation = (int) (($qtyForCalculation+1) - ($tempRateCount * static::$salesQtyInTable));
             }
 
             // if we have mainQtyRules percentage
