@@ -18,7 +18,7 @@
                         </div>
                         <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
                         <select-field
-                                v-if="form.country === 'mx' && form.cardType === 'credit'"
+                                v-if="extraFields.installments && installmentsVisible"
                                 :label="textInstallmentsTitle"
                                 popperClass="emc1-popover-variant"
                                 :list="installmentsList"
@@ -86,7 +86,7 @@
                         <paypal-button
                                 :createOrder="paypalCreateOrder"
                                 :onApprove="paypalOnApprove"
-                                v-show="fullAmount"
+                                v-show="form.installments === 1"
                                 :$v="$v.form.deal"
                                 @click="paypalSubmit"
                         >{{ paypalRiskFree }}</paypal-button>
@@ -101,8 +101,7 @@
                                     :$v="$v"
                                     :installments="form.installments"
                                     :paymentForm="form"
-                                    :countryCode="form.country || checkoutData.countryCode"
-                                    :isBrazil="checkoutData.countryCode === 'br'"
+                                    :countryCode="form.country"
                                     :countryList="setCountryList"
                                     :extraFields="extraFields"
                                     @setPromotionalModal="setPromotionalModal"
@@ -190,15 +189,14 @@
   import queryToComponent from '../mixins/queryToComponent'
   import { t } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
-  import { getCountOfInstallments } from '../utils/installments';
+  import { getCountOfInstallments, preparePartByInstallments } from '../utils/installments';
   import ProductItem from './common/ProductItem';
   import Cart from './common/Cart';
   import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import { fade } from '../utils/common';
-  import { preparePurchaseData } from '../utils/checkout';
+  import { getPaymentMethods, preparePurchaseData } from '../utils/checkout';
   import purchasMixin from '../mixins/purchas';
-  import { preparePartByInstallments } from '../utils/installments';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { queryParams } from  '../utils/queryParams';
 
@@ -276,21 +274,6 @@
         cart: {},
         purchase: [],
         variantList: [],
-        installmentsList: [
-          {
-            label: t('checkout.installments.full_amount'),
-            text: t('checkout.installments.full_amount'),
-            value: 1,
-          }, {
-            label: t('checkout.installments.pay_3'),
-            text: t('checkout.installments.pay_3'),
-            value: 3,
-          }, {
-            label: t('checkout.installments.pay_6'),
-            text: t('checkout.installments.pay_6'),
-            value: 6,
-          }
-        ],
         form: {
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
@@ -299,10 +282,9 @@
           installments: 1,
           paymentProvider: null,
           paymentMethod: null,
-          cardType: 'credit',
           fname: null,
           lname: null,
-          dateOfBirth: '',
+          dateOfBirth: null,
           email: null,
           phone: null,
           street: null,
@@ -311,11 +293,13 @@
           state: null,
           zipcode: null,
           country: checkoutData.countryCode,
-          cardNumber: '',
+          cardType: null,
+          cardNumber: null,
           month: null,
           year: null,
           cvv: null,
-          documentNumber: '',
+          documentType: null,
+          documentNumber: null,
         },
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
@@ -324,6 +308,8 @@
       }
     },
     created() {
+      this.applyDefaultValues();
+
       if (this.queryParams['3ds'] === 'failure') {
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
@@ -336,6 +322,7 @@
         this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
         this.form.installments = selectedProductData.installments || this.form.installments;
         this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
+        this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
         this.form.cardType = selectedProductData.cardType || this.form.cardType;
         this.form.fname = selectedProductData.fname || this.form.fname;
         this.form.lname = selectedProductData.lname || this.form.lname;
@@ -349,6 +336,8 @@
         this.form.state = selectedProductData.state || this.form.state;
         this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
         this.form.country = selectedProductData.country || this.form.country;
+        this.form.documentType = selectedProductData.documentType || this.form.documentType;
+        this.form.documentNumber = selectedProductData.documentNumber || this.form.documentNumber;
         this.setWarrantyPriceText(this.form.deal);
         this.isFormShown = true;
       }
@@ -371,9 +360,6 @@
       codeOrDefault () {
         return this.queryParams.product || this.checkoutData.product.skus[0].code;
       },
-      fullAmount () {
-        return this.form.installments == 1;
-      },
       productData () {
         return checkoutData.product
       },
@@ -381,9 +367,7 @@
         return Object.values(this.cart).every(it => it === 0)
       },
       withInstallments () {
-        return this.form.country === 'br'
-          || this.form.country === 'mx'
-          || this.form.country === 'co'
+        return !!this.extraFields.installments;
       },
       quantityOfInstallments () {
         const { installments } = this.form
@@ -394,6 +378,23 @@
         const paymentMethod = this.form.paymentMethod || firstMethod;
 
         return this.$root.paymentMethods[paymentMethod].extra_fields || {};
+      },
+      installmentsList() {
+        return this.extraFields.installments.items.map(item => ({
+          value: item.value,
+          label: t(item.phrase),
+          text: t(item.phrase),
+        }));
+      },
+      installmentsVisible() {
+        const valuesMap = {
+          card_type: this.form.cardType, 
+        };
+
+        return Object.keys(this.extraFields.installments.visibility || {}).reduce((visible, name) => {
+          const allowedValues = this.extraFields.installments.visibility[name];
+          return allowedValues.indexOf(valuesMap[name]) !== -1;
+        }, true);
       },
       dealList () {
         const isSellOutArray = queryParams().sellout
@@ -429,7 +430,7 @@
       textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + checkoutData.countryCode) }),
       textStep: () => t('checkout.step'),
       textChooseDeal: () => t('checkout.choose_deal'),
-      textInstallmentsTitle: () => t('checkout.installments.title'),
+      textInstallmentsTitle: () => t('checkout.payment_form.installments.title'),
       textArtcile: () => t('checkout.article'),
       textPrice: () => t('checkout.header_banner.price'),
       textMainDealError: () => t('checkout.main_deal.error'),
@@ -452,6 +453,12 @@
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
     },
     watch: {
+      'form.country'(value) {
+        getPaymentMethods(value).then(res => {
+          this.$root.paymentMethods = res;
+          this.applyDefaultValues();
+        });
+      },
       'form.installments' (val) {
         this.setPurchase({
           variant: this.form.variant,
@@ -463,6 +470,11 @@
           variant: val,
           installments: this.form.installments,
         });
+      },
+      'form.cardType'(value) {
+        if (!this.installmentsVisible) {
+          this.form.installments = 1;
+        }
       },
     },
     validations: emc1Validation,
@@ -484,7 +496,23 @@
           this.isOpenPromotionModal = true;
         }
       },
+      applyDefaultValues() {
+        if (this.extraFields.installments) {
+          this.form.installments = this.extraFields.installments.default;
+        }
 
+        if (this.extraFields.state) {
+          this.form.state = this.extraFields.state.default;
+        }
+
+        if (this.extraFields.card_type) {
+          this.form.cardType = this.extraFields.card_type.default;
+        }
+
+        if (this.extraFields.document_type) {
+          this.form.documentType = this.extraFields.document_type.default;
+        }
+      },
       setImplValue(value) {
         this.implValue = value;
         if (this.radioIdx) this.changeWarrantyValue();
@@ -671,13 +699,6 @@
         variant: this.form.variant,
         installments: this.form.installments,
       })
-
-      if (this.withInstallments) {
-        this.form.installments =
-          this.checkoutData.countryCode === 'br' ? 3 :
-            this.checkoutData.countryCode === 'mx' ? 1 :
-              1
-      }
 
       const qty = +this.queryParams.qty;
       const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);

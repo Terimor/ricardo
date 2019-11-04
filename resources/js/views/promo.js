@@ -148,18 +148,18 @@ const promo = new Vue({
   installmentsList: [
     {
       value: 1,
-      label: t('checkout.installments.full_amount'),
-      text: t('checkout.installments.full_amount'),
+      label: t('checkout.payment_form.installments.full_amount'),
+      text: t('checkout.payment_form.installments.full_amount'),
     },
     {
       value: 3,
-      label: t('checkout.installments.pay_3'),
-      text: t('checkout.installments.pay_3'),
+      label: t('checkout.payment_form.installments.pay_3'),
+      text: t('checkout.payment_form.installments.pay_3'),
     },
     {
       value: 6,
-      label: t('checkout.installments.pay_6'),
-      text: t('checkout.installments.pay_6'),
+      label: t('checkout.payment_form.installments.pay_6'),
+      text: t('checkout.payment_form.installments.pay_6'),
     }
   ],
 

@@ -1,5 +1,5 @@
 <template>
-    <form v-if="$v" class="flex-wrap payment-form" :class="{ 'is-brazil': isBrazil }">
+    <form v-if="$v" class="flex-wrap payment-form" :class="{ 'is-brazil': countryCode === 'br' }">
         <h2>
           {{ firstTitle }}
         </h2>
@@ -80,8 +80,8 @@
                 :validation="$v.form.district"
                 :validationMessage="textDistrictRequired"
                 theme="variant-1"
-                :label="textDistrict"
-                v-model="paymentForm.district"/>
+                :label="textDistrictTitle"
+                v-model="paymentForm.district" />
             <text-field
                 :validation="$v.form.city"
                 :validationMessage="textCityRequired"
@@ -96,20 +96,20 @@
                 v-model="paymentForm.city"/>
             <select-field
                 :standart="true"
-                v-if="isSpecialCountrySelected"
+                v-if="extraFields.state"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 :validation="$v.form.state"
                 :validationMessage="textStateRequired"
                 theme="variant-1"
-                :label="textState"
+                :label="textStateTitle"
                 :rest="{
                   placeholder: textStatePlaceholder,
                   autocomplete: 'shipping region',
                   name: 'ship-state'
                 }"
-                :list="stateList"
-                v-model="paymentForm.state"/>
+                :list="extraFields.state.items"
+                v-model="paymentForm.state" />
             <text-field
                 v-else
                 v-loading="isLoading.address"
@@ -121,8 +121,8 @@
                   autocomplete: 'shipping region',
                   name: 'ship-state'
                 }"
-                :label="textState"
-                v-model="paymentForm.state"/>
+                :label="textStateTitle"
+                v-model="paymentForm.state" />
             <text-field
                 :validation="$v.form.zipcode"
                 :validationMessage="textZipcodeRequired"
@@ -154,27 +154,16 @@
             </h2>
             <select-field
                 :standart="true"
-                v-if="paymentForm.country === 'mx'"
+                v-if="extraFields.card_type"
                 :validation="$v.form.cardType"
                 :validationMessage="textCardTypeRequired"
-                :disabled="+installments !== 1"
                 theme="variant-1"
                 v-model="paymentForm.cardType"
-                :label="textCardType"
+                :label="textCardTypeTitle"
                 :rest="{
                   placeholder: textCardTypePlaceholder
                 }"
-                :list="[
-                    {
-                        value: 'debit',
-                        label: textCardTypeDebit,
-                        text: textCardTypeDebit,
-                    }, {
-                        value: 'credit',
-                        label: textCardTypeCredit,
-                        text: textCardTypeCredit,
-                    }
-                ]"/>
+                :list="cardTypeList" />
             <div id="payment-data-form">
                 <text-field
                     :validation="$v.form.cardNumber"
@@ -236,31 +225,28 @@
                     postfix="<i class='fa fa-question-circle'></i>"
                 />
             </div>
+            <select-field
+              :standart="true"
+              v-if="extraFields.document_type"
+              :validation="$v.form.documentType"
+              :validationMessage="textDocumentTypeRequired"
+              :label="textDocumentTypeTitle"
+              theme="variant-1"
+              :list="extraFields.document_type.items"
+              v-model="paymentForm.documentType" />
             <text-field-with-placeholder
-                :validation="$v.form.documentNumber"
-                :validationMessage="textDocumentNumberRequired"
-                v-model="paymentForm.documentNumber"
-                v-if="extraFields.document_number && paymentForm.country === 'br'"
-                placeholder="___.___.___-__"
-                :rest="{
-                  'format': '___.___.___-__',
-                  'pattern': '\\d*',
-                  type: 'tel'
-                }"
-                theme="variant-1"
-                :label="textDocumentNumber" />
-            <text-field-with-placeholder
-                :validation="$v.form.documentNumber"
-                :validationMessage="textDocumentNumberRequired"
-                v-model="paymentForm.documentNumber"
-                v-if="extraFields.document_number && paymentForm.country === 'co'"
-                placeholder="1234567890"
-                :rest="{
-                  'format': '1234567890',
-                }"
-                theme="variant-1"
-                :label="textDocumentNumber" />
+              v-if="extraFields.document_number"
+              :validation="$v.form.documentNumber"
+              :validationMessage="textDocumentNumberRequired"
+              :placeholder="documentNumberPlaceholder"
+              :rest="{
+                'format': documentNumberPlaceholder,
+              }"
+              theme="variant-1"
+              :label="textDocumentNumberTitle"
+              v-model="paymentForm.documentNumber" />
         </template>
+        <!-- vmp41/42 block -->
         <span v-show="hasWarranty" class="warranty-field-button">
           <label for="warranty-field" class="label-container-checkbox">
             <i class="fa fa-arrow-left slide-left warranty-field-arrow"></i>
@@ -307,9 +293,8 @@
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
   import scrollToError from '../../mixins/formScrollToError';
-  import { getPaymentMethods, getPaymentMethodByCardNumber, sendCheckoutRequest } from '../../utils/checkout';
+  import { getPaymentMethodByCardNumber, sendCheckoutRequest } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
-  import { stateList } from '../../resourses/state';
   import Spinner from './preloaders/Spinner';
 
   export default {
@@ -317,7 +302,6 @@
     props: [
       'input',
       'countryList',
-      'isBrazil',
       'countryCode',
       'installments',
       'paymentForm',
@@ -362,19 +346,6 @@
     },
 
     computed: {
-      stateList() {
-        return (stateList[this.paymentForm.country] || []).map((it) => ({
-          value: it,
-          text: it,
-          label: it,
-        }));
-      },
-
-      isSpecialCountrySelected() {
-        const specialCountries = ['br', 'mx', 'co'];
-        return specialCountries.includes(this.countryCode) || specialCountries.includes(this.paymentForm.country);
-      },
-
       dialCode() {
         const allCountries = window.intlTelInputGlobals.getCountryData();
         const phoneCountryCode = this.paymentForm.countryCodePhoneField;
@@ -402,7 +373,21 @@
         return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
       },
 
-      textState() {
+      cardTypeList() {
+        return this.extraFields.card_type.items.map(item => ({
+          value: item.value,
+          label: t(item.phrase),
+          text: t(item.phrase),
+        }));
+      },
+
+      documentNumberPlaceholder() {
+        return typeof this.extraFields.document_number.placeholder === 'object'
+          ? this.extraFields.document_number.placeholder[this.paymentForm.documentType] || ''
+          : this.extraFields.document_number.placeholder;
+      },
+
+      textStateTitle() {
         return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
       },
 
@@ -429,7 +414,7 @@
       textStreetRequired: () => t('checkout.payment_form.street.required'),
       textStreetNumber: () => t('checkout.payment_form.street_number'),
       textStreetNumberRequired: () => t('checkout.payment_form.street_number.required'),
-      textDistrict: () => t('checkout.payment_form.complemento'),
+      textDistrictTitle: () => t('checkout.payment_form.complemento'),
       textDistrictRequired: () => t('checkout.payment_form.complemento.required'),
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
@@ -438,7 +423,7 @@
       textCountry: () => t('checkout.payment_form.сountry'),
       textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),
       textCountryRequired: () => t('checkout.payment_form.сountry.required'),
-      textCardType: () => t('checkout.payment_form.card_type'),
+      textCardTypeTitle: () => t('checkout.payment_form.card_type.title'),
       textCardTypeRequired: () => t('checkout.payment_form.card_type.required'),
       textCardTypePlaceholder: () => t('checkout.payment_form.card_type.placeholder'),
       textCardTypeDebit: () => t('checkout.payment_form.card_type.debit'),
@@ -453,7 +438,9 @@
       textCardExpired: () => t('checkout.payment_form.card_expired'),
       textCardCVV: () => t('checkout.payment_form.card_cvv'),
       textCardCVVRequired: () => t('checkout.payment_form.card_cvv.required'),
-      textDocumentNumber: () => t('checkout.payment_form.document_number'),
+      textDocumentTypeTitle: () => t('checkout.payment_form.document_type.title'),
+      textDocumentTypeRequired: () => t('checkout.payment_form.document_type.required'),
+      textDocumentNumberTitle: () => t('checkout.payment_form.document_number.title'),
       textDocumentNumberRequired: () => t('checkout.payment_form.document_number.required'),
       textWarranty: () => t('checkout.warranty'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
@@ -463,9 +450,6 @@
       textPaymentError: () => t('checkout.payment_error'),
     },
     watch: {
-      'paymentForm.country'(value) {
-        getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
-      },
       'paymentForm.cardNumber' (newVal, oldValue) {
         const paymentMethod = getPaymentMethodByCardNumber(newVal);
 
@@ -478,7 +462,7 @@
         }
       },
       'paymentForm.zipcode' (zipcode) {
-        if (this.isBrazil && !this.$v.form.zipcode.$invalid) {
+        if (this.countryCode === 'br' && !this.$v.form.zipcode.$invalid) {
           this.getLocationByZipcode(zipcode)
         }
       },
@@ -496,43 +480,6 @@
         }
 
         this.paymentForm.dateOfBirth = result
-      },
-      'paymentForm.documentNumber' (val) {
-        const isNumber = (val) => !isNaN(val) && val !== ' '
-
-        if (this.countryCode === 'br') {
-          let result = ''
-          const configForDot = [3, 7]
-          const configForDash = [11]
-          for (let i = 0; i < val.length; i++) {
-            if (configForDot.includes(i)) {
-              result += '.'
-            }
-
-            if (configForDash.includes(i)) {
-              result += '-'
-            }
-
-            if (isNumber(val[i])) {
-              result += val[i]
-            }
-          }
-
-          this.paymentForm.documentNumber = result
-        } else if (this.countryCode === 'co') {
-          let result = ''
-          for (let i = 0; i < val.length; i++) {
-            if (isNumber(val[i])) {
-              result += val[i]
-            }
-          }
-          this.paymentForm.documentNumber = result
-        }
-      },
-      installments (val) {
-        if (+val !== 1 && this.countryCode === 'mx') {
-          this.paymentForm.cardType = 'credit';
-        }
       },
       'paymentForm.cvv' (newVal, oldValue) {
         if(this.paymentForm.cvv) {
@@ -591,7 +538,10 @@
       }, 333),
       submit () {
         const { paymentForm, exp } = this;
-        const cardNumber = paymentForm.cardNumber.replace(/\s/g, '');
+
+        const cardNumber = paymentForm.cardNumber
+          ? paymentForm.cardNumber.replace(/\s/g, '')
+          : '';
 
         this.$v.form.$touch();
 
@@ -656,6 +606,8 @@
           state: paymentForm.state,
           zipcode: paymentForm.zipcode,
           country: paymentForm.country,
+          documentType: paymentForm.documentType,
+          documentNumber: paymentForm.documentNumber,
         });
 
         Promise.resolve()
@@ -695,17 +647,28 @@
                   cvv: paymentForm.cvv,
                   month: ('0' + paymentForm.month).slice(-2),
                   year: '' + paymentForm.year,
-                  type: paymentForm.cardType,
                 },
                 ipqs: ipqsResult,
               };
 
-              if (this.extraFields.document_number) {
-                data.card.document_number = paymentForm.documentNumber;
+              if (this.extraFields.installments) {
+                data.card.installments = paymentForm.installments;
               }
 
               if (this.extraFields.district) {
-                data.card.district = paymentForm.district;
+                data.address.district = paymentForm.district;
+              }
+
+              if (this.extraFields.card_type) {
+                data.card.type = paymentForm.cardType;
+              }
+
+              if (this.extraFields.document_type) {
+                data.contact.document_type = paymentForm.documentType;
+              }
+
+              if (this.extraFields.document_number) {
+                data.contact.document_number = paymentForm.documentNumber;
               }
 
               sendCheckoutRequest(data)

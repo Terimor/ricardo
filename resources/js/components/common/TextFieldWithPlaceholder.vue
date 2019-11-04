@@ -24,7 +24,7 @@
     props: ['label', 'value', 'format', 'rest', 'placeholder', 'validationMessage', 'validation'],
     computed: {
       preparedPlaceholder () {
-        const { length } = this.value
+        const length = this.value && this.value.length || 0;
         return '&nbsp;'.repeat(length) + this.placeholder.slice(length)
       },
       invalid () {

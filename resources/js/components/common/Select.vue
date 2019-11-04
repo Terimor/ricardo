@@ -23,7 +23,7 @@
           <div
             v-if="opened"
             class="select__label"
-            v-html="item.text || item.value"></div>
+            v-html="item.text || item.label || item.value"></div>
         </el-option>
       </template>
     </el-select>
@@ -45,7 +45,7 @@
         v-for="item in list"
         :key="item.value"
         :value="item.value"
-        v-html="item.text || item.value"></option>
+        v-html="item.text || item.label || item.value"></option>
     </select>
     <span class="error" v-show="invalid">{{validationMessage}}</span>
   </div>
