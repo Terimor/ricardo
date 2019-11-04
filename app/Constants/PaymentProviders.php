@@ -82,23 +82,23 @@ class PaymentProviders {
                             ['value' => 'credit', 'phrase'   => 'checkout.payment_form.card_type.credit']
                         ],
                         'default'   => 'credit',
-                        'phrase'     => 'checkout.payment_form.card_type.label'
+                        'phrase'     => 'checkout.payment_form.card_type.title'
                     ],
                     'district' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$',
-                        'phrase'     => 'checkout.payment_form.district.label'
+                        'phrase'     => 'checkout.payment_form.district.title'
                     ],
                     'document_type' => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 'CUIT', 'phrase' => 'checkout.payment_form.document_type.cuit'],
-                            ['value' => 'CUIL', 'phrase' => 'checkout.payment_form.document_type.cuil'],
-                            ['value' => 'CDI', 'phrase'  => 'checkout.payment_form.document_type.cdi'],
-                            ['value' => 'DNI', 'phrase'  => 'checkout.payment_form.document_type.dni']
+                            ['value' => 'CUIT', 'label' => 'Clave Única de Identificación Tributaria'],
+                            ['value' => 'CUIL', 'label' => 'Código único de Identificación Laboral'],
+                            ['value' => 'CDI', 'label'  => 'Clave de Identificación'],
+                            ['value' => 'DNI', 'label'  => 'Documento Nacional de Identidad']
                         ],
                         'default'   => 'CUIT',
-                        'phrase'     => 'checkout.payment_form.document_type.label'
+                        'phrase'     => 'checkout.payment_form.document_type.title'
                     ],
                     'document_number'   => [
                         'type'  => 'text',
@@ -114,7 +114,7 @@ class PaymentProviders {
                             'CUIT'  => 'xx-xxxxxxxx-x',
                             'CUIL'  => 'xx-xxxxxxxx-x'
                         ],
-                        'phrase' => 'checkout.payment_form.document_number.label'
+                        'phrase' => 'checkout.payment_form.document_number.title'
                     ],
                     'installments'  => [
                         'type'  => 'dropdown',
@@ -125,7 +125,7 @@ class PaymentProviders {
                         ],
                         'default'   => 1,
                         'visibility' => ['card_type' => ['credit']],
-                        'phrase'   => 'checkout.payment_form.installments.label'
+                        'phrase'   => 'checkout.payment_form.installments.title'
                     ],
                     'state' => [
                         'type'  => 'dropdown',
@@ -156,20 +156,20 @@ class PaymentProviders {
                             ['value' => 'Tierra del Fuego', 'label' => 'Tierra del Fuego']
                         ],
                         'default' => 'Buenos Aires',
-                        'phrase'   => 'checkout.payment_form.state.label'
+                        'phrase'   => 'checkout.payment_form.state.title'
                     ]
                 ],
                 'br' => [
                     'district' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$',
-                        'phrase'     => 'checkout.payment_form.district.label'
+                        'phrase'     => 'checkout.payment_form.district.title'
                     ],
                     'document_number'   => [
                         'type'      => 'text',
                         'pattern'   => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$',
                         'placeholder' => 'xxx-xxx-xxx-xx',
-                        'phrase' => 'checkout.payment_form.document_number.label'
+                        'phrase' => 'checkout.payment_form.document_number.title'
                     ],
                     'installments'  => [
                         'type'  => 'dropdown',
@@ -179,7 +179,7 @@ class PaymentProviders {
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
                         'default'   => 3,
-                        'phrase'   => 'checkout.payment_form.installments.label'
+                        'phrase'   => 'checkout.payment_form.installments.title'
                     ],
                     'state' => [
                         'type'  => 'dropdown',
@@ -213,24 +213,24 @@ class PaymentProviders {
                             ['value' => 'TO', 'label' => 'Tocantins']
                         ],
                         'default' => 'DF',
-                        'phrase'   => 'checkout.payment_form.state.label'
+                        'phrase'   => 'checkout.payment_form.state.title'
                     ]
                 ],
                 'co' => [
                     'district' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$',
-                        'phrase'    => 'checkout.payment_form.district.label'
+                        'phrase'    => 'checkout.payment_form.district.title'
                     ],
                     'document_type' => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 'NIT', 'phrase' => 'checkout.payment_form.document_type.nit'],
-                            ['value' => 'CC', 'phrase'  => 'checkout.payment_form.document_type.cc'],
-                            ['value' => 'CE', 'phrase'  => 'checkout.payment_form.document_type.ce']
+                            ['value' => 'NIT', 'label' => 'Número de Identificación Tributaria'],
+                            ['value' => 'CC', 'label'  => 'Cédula de Ciudadanía'],
+                            ['value' => 'CE', 'label'  => 'Cédula de Extranjería']
                         ],
                         'default'   => 'NIT',
-                        'phrase'    => 'checkout.payment_form.document_type.label'
+                        'phrase'    => 'checkout.payment_form.document_type.title'
                     ],
                     'document_number'   => [
                         'type'  => 'text',
@@ -244,7 +244,7 @@ class PaymentProviders {
                             'CC'  => 'xx(xxxxxxxx)',
                             'CE'  => 'x(xxxxx)'
                         ],
-                        'phrase' => 'checkout.payment_form.document_number.label'
+                        'phrase' => 'checkout.payment_form.document_number.title'
                     ],
                     'installments'  => [
                         'type'  => 'dropdown',
@@ -254,7 +254,7 @@ class PaymentProviders {
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
                         'default'   => 1,
-                        'phrase'   => 'checkout.payment_form.installments.label'
+                        'phrase'   => 'checkout.payment_form.installments.title'
                     ],
                     'state' => [
                         'type'  => 'dropdown',
@@ -290,10 +290,10 @@ class PaymentProviders {
                             ['value' => 'Sucre', 'label' => 'Sucre'],
                             ['value' => 'Tolima', 'label' => 'Tolima'],
                             ['value' => 'Valle del Cauca', 'label' => 'Valle del Cauca'],
-                            ['value' => 'Vaupés', 'lable' => 'Vaupés']
+                            ['value' => 'Vaupés', 'label' => 'Vaupés']
                         ],
                         'default' => 'Capital District',
-                        'phrase'   => 'checkout.payment_form.state.label'
+                        'phrase'   => 'checkout.payment_form.state.title'
                     ]
                 ],
                 'mx' => [
@@ -304,12 +304,12 @@ class PaymentProviders {
                             ['value' => 'credit', 'phrase'   => 'checkout.payment_form.card_type.credit']
                         ],
                         'default'   => 'credit',
-                        'phrase'     => 'checkout.payment_form.card_type.label'
+                        'phrase'     => 'checkout.payment_form.card_type.title'
                     ],
                     'district' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$',
-                        'phrase'    => 'checkout.payment_form.district.label'
+                        'phrase'    => 'checkout.payment_form.district.title'
                     ],
                     'state' => [
                         'type'  => 'dropdown',
@@ -348,7 +348,7 @@ class PaymentProviders {
                             ['value' => 'Zacatecas', 'label' =>  'Zacatecas']
                         ],
                         'default' => 'Distrito Federal',
-                        'phrase'  => 'checkout.payment_form.state.label'
+                        'phrase'  => 'checkout.payment_form.state.title'
                     ],
                     'installments'  => [
                         'type'  => 'dropdown',
@@ -358,7 +358,7 @@ class PaymentProviders {
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
                         'default'    => 1,
-                        'phrase'     => 'checkout.payment_form.installments.label',
+                        'phrase'     => 'checkout.payment_form.installments.title',
                         'visibility' => ['card_type' => ['credit']],
                     ]
                 ]
