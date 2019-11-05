@@ -508,8 +508,6 @@
         this.$emit('setWarrantyPriceText', value)
       },
 			submit() {
-        const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
-  
 				this.$v.form.$touch();
 
         if (this.$v.form.$pending || this.$v.form.$error) {
@@ -523,6 +521,9 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
+        const phoneNumber = this.form.stepTwo.phone.replace(/[^0-9]/g, '');
+        const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
+
         let fields = {
           billing_first_name: this.form.stepTwo.fname,
           billing_last_name: this.form.stepTwo.lname,
@@ -531,7 +532,7 @@
           billing_region: this.form.stepThree.state,
           billing_postcode: this.form.stepThree.zipCode,
           billing_email: this.form.stepTwo.email,
-          billing_phone: this.dialCode + this.form.stepTwo.phone,
+          billing_phone: this.dialCode + phoneNumber,
           credit_card_bin: cardNumber.substr(0, 6),
           credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
@@ -576,7 +577,7 @@
                 contact: {
                   phone: {
                     country_code: this.dialCode,
-                    number: this.form.stepTwo.phone,
+                    number: phoneNumber,
                   },
                   first_name: this.form.stepTwo.fname,
                   last_name: this.form.stepTwo.lname,

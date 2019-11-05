@@ -392,8 +392,6 @@
         this.animateProductImage();
       },
       submit() {
-        const cardNumber = this.form.cardNumber.replace(/\s/g, '');
-
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
@@ -413,6 +411,9 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
+        const phoneNumber = this.form.phone.replace(/[^0-9]/g, '');
+        const cardNumber = this.form.cardNumber.replace(/\s/g, '');
+
         let fields = {
           billing_first_name: this.form.fname,
           billing_last_name: this.form.lname,
@@ -422,7 +423,7 @@
           billing_region: this.form.state,
           billing_postcode: this.form.zipCode,
           billing_email: this.form.email,
-          billing_phone: this.dialCode + this.form.phone,
+          billing_phone: this.dialCode + phoneNumber,
           credit_card_bin: cardNumber.substr(0, 6),
           credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.month).slice(-2),
@@ -462,7 +463,7 @@
               contact: {
                 phone: {
                   country_code: this.dialCode,
-                  number: this.form.phone,
+                  number: phoneNumber,
                 },
                 first_name: this.form.fname,
                 last_name: this.form.lname,

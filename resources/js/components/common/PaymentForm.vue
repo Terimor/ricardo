@@ -537,10 +537,6 @@
       submit () {
         const { paymentForm, exp } = this;
 
-        const cardNumber = paymentForm.cardNumber
-          ? paymentForm.cardNumber.replace(/\s/g, '')
-          : '';
-
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
@@ -561,6 +557,9 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
+        const phoneNumber = paymentForm.phone.replace(/[^0-9]/g, '');
+        const cardNumber = paymentForm.cardNumber.replace(/\s/g, '');
+
         let fields = {
           billing_first_name: paymentForm.fname,
           billing_last_name: paymentForm.lname,
@@ -570,7 +569,7 @@
           billing_region: paymentForm.state,
           billing_postcode: paymentForm.zipcode,
           billing_email: paymentForm.email,
-          billing_phone: this.dialCode + paymentForm.phone,
+          billing_phone: this.dialCode + phoneNumber,
         };
 
         if (paymentForm.paymentProvider === 'credit-card') {
@@ -627,7 +626,7 @@
                 contact: {
                   phone: {
                     country_code: this.dialCode,
-                    number: paymentForm.phone,
+                    number: phoneNumber,
                   },
                   first_name: paymentForm.fname,
                   last_name: paymentForm.lname,

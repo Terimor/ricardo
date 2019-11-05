@@ -786,7 +786,6 @@
     }
 
     .dynamic-sale-badge__background {
-        animation: spin 20s linear infinite;
         position: absolute;
         background: $color_flush_mahogany_approx;
         border-radius: 50%;
@@ -809,6 +808,7 @@
         font-size: 12px;
         text-align: center;
         transform: rotate(349deg);
+        padding: 0 16px;
         position: absolute;
         width: 85px;
         height: 85px;
