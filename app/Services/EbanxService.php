@@ -349,6 +349,7 @@ class EbanxService
                 $result['token']            = $res['payment']['token'] ?? null;
             } else {
                 $result['errors'] = [EbanxCodeMapper::toPhrase((string)$res['status_code'])];
+                logger()->warning("Ebanx pay", ['res' => $res]);
             }
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];

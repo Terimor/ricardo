@@ -29,6 +29,7 @@ class EbanxCodeMapper
         'BP-DR-13'  => 'card.error.name_lost',
         'BP-DR-15'  => 'card.error.email_lost',
         'BP-DR-17'  => 'card.error.email_incorrect',
+        'BP-DR-98'  => 'card.error.email_incorrect',
         'BP-DR-19'  => 'card.error.birthdate_lost',
         'BP-DR-20'  => 'card.error.birthdate_incorrect',
         'BP-DR-24'  => 'card.error.postcode_lost',
