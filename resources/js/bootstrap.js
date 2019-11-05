@@ -1,4 +1,5 @@
 import VueMq from 'vue-mq'
+import { t, timage } from './utils/i18n';
 import './services/queryParams';
 import './services/sentry';
 import './services/ebanx';
@@ -7,6 +8,9 @@ import './UIsettings';
 
 
 Vue.config.productionTip = false
+
+Vue.prototype.$t = t;
+Vue.prototype.$timage = timage;
 
 Vue.use(VueMq, {
   breakpoints: {

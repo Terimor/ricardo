@@ -9,10 +9,7 @@
                     <div class="paper main__deal">
                         <div class="d-flex">
                             <div class="main__sale">
-                                <div class="sale-badge dynamic-sale-badge ">
-                                    <div class="dynamic-sale-badge__background"></div>
-                                    <div class="dynamic-sale-badge__container" v-html="textDynamicSaleBadge"></div>
-                                </div>
+                                <SaleBadge />
                             </div>
                             <p class="main__deal__text" v-html="textMainDealText"></p>
                         </div>
@@ -195,6 +192,7 @@
   import { getCountOfInstallments, preparePartByInstallments } from '../utils/installments';
   import ProductItem from './common/ProductItem';
   import Cart from './common/Cart';
+  import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import { fade } from '../utils/common';
@@ -213,6 +211,7 @@
       purchasMixin,
     ],
     components: {
+      SaleBadge,
       ProductItem,
       Cart,
       ProductOffer,
@@ -769,52 +768,6 @@
                 cursor: pointer;
                 text-decoration: underline;
             }
-        }
-    }
-
-    .sale-badge {
-        width: 85px;
-        height: 85px;
-        margin-left: 5px;
-        margin-top: 5px;
-        justify-content: center;
-        align-items: center;
-        color: $white;
-        font-weight: 700;
-        font-size: 2.5rem;
-        position: relative;
-    }
-
-    .dynamic-sale-badge__background {
-        position: absolute;
-        background: $color_flush_mahogany_approx;
-        border-radius: 50%;
-        padding: 5px;
-        border: 2px dashed $white;
-        box-shadow: 0 0 0 5px $color_flush_mahogany_approx;
-        width: 85px;
-        height: 85px;
-
-        [dir="rtl"] & {
-          animation-direction: reverse;
-        }
-    }
-
-    .dynamic-sale-badge__container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        font-size: 12px;
-        text-align: center;
-        transform: rotate(349deg);
-        padding: 0 16px;
-        position: absolute;
-        width: 85px;
-        height: 85px;
-
-        [dir="rtl"] & {
-          transform: rotate(371deg);
         }
     }
 

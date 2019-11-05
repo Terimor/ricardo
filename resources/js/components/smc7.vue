@@ -29,13 +29,7 @@
                     <div class="paper smc7__deal">
                         <div class="d-flex">
                             <div class="smc7__sale">
-                                <div class="sale-badge dynamic-sale-badge ">
-                                    <div class="dynamic-sale-badge__background"></div>
-                                    <div class="dynamic-sale-badge__container">
-                                        <span class="badge-discount-percentage">50%</span>
-                                        <span>Off</span>
-                                    </div>
-                                </div>
+                                <SaleBadge />
                             </div>
                             <div class="d-flex flex-column smc7__deal__text">
                                 <p v-html="freeShippingToday" />
@@ -213,6 +207,7 @@
   import { preparePurchaseData } from "../utils/checkout";
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
+  import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import smc7validation from "../validation/smc7-validation";
   import queryToComponent from '../mixins/queryToComponent';
@@ -231,6 +226,7 @@
   export default {
     name: 'smc7',
     components: {
+      SaleBadge,
       RadioButtonItemDeal,
       ProductOffer,
       PurchasAlreadyExists,
@@ -698,9 +694,6 @@
                     background-color: #c0392b;
                     box-shadow: 0 0 0 5px #c0392b;
                 }
-            }
-            .badge-discount-percentage {
-                font-size: 18px;
             }
         }
 
