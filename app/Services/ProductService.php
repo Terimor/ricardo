@@ -21,6 +21,11 @@ class ProductService
     public function resolveProduct(Request $request, $needImages = false, $currency = null, $isPostback = false)
     {
         $product = null;
+        
+        if ($request->has('cop_id') && !$request->has('product')) {
+            $product = OdinProduct::where('prices.price_set', $request->input('cop_id'))->first();
+        }
+        
         if ($request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();
         }
