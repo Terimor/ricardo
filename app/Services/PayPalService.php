@@ -797,7 +797,7 @@ class PayPalService
      */
     private function findProductByCopId(string $copId)
     {
-       return OdinProduct::where('prices.price_set', $copId)->firstOrFail(); 
+       return OdinProduct::where('prices.price_set', $copId)->first(); 
     }
 
     /**
