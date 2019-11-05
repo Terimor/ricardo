@@ -17,7 +17,7 @@ class PaymentProviders {
         self::PAYPAL => [
             'name'      => 'PayPal',
             'is_active' => true,
-            'on_prod'   => true,
+            'in_prod'   => true,
             'methods'   => [
                 PaymentMethods::INSTANT_TRANSFER => [
                     '-3ds' => ['*']
@@ -27,7 +27,7 @@ class PaymentProviders {
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
             'is_active' => true,
-            'on_prod'   => true,
+            'in_prod'   => true,
             'methods'   => [
                 PaymentMethods::CREDITCARD => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
@@ -72,7 +72,7 @@ class PaymentProviders {
         self::EBANX       => [
             'name'      => 'EBANX',
             'is_active' => true,
-            'on_prod'   => false,
+            'in_prod'   => false,
             'extra_fields'  => [
                 'ar' => [
                     'card_type' => [
@@ -383,7 +383,7 @@ class PaymentProviders {
         self::NOVALNET    => [
             'name'      => 'Novalnet',
             'is_active' => false,
-            'on_prod'   => false,
+            'in_prod'   => false,
             'methods'   => [
                 PaymentMethods::PREZELEWY24 => [
                     '-3ds' => ['pl']

@@ -681,7 +681,7 @@ class PaymentService
         $result = [];
         foreach (PaymentProviders::$list as $providerId => $provider)
         {
-            $is_pass_method = \App::environment() === 'production' ? $provider['on_prod'] : true;
+            $is_pass_method = \App::environment() === 'production' ? $provider['in_prod'] : true;
             if ($provider['is_active'] && $is_pass_method)
             {
                 $result[$providerId] = [];
