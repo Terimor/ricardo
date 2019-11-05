@@ -239,8 +239,14 @@ class PaymentService
         if (!empty($order_id)) {
             $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
         }
-
-        $product = OdinProduct::getBySku($sku); // throwable
+        
+        $product = null;        
+        if ($req->get('cop_id')) {
+            $product = OdinProduct::getByCopId($req->get('cop_id'));
+        }
+        if (!$product) {
+            $product = OdinProduct::getBySku($sku); // throwable
+        }
 
         // select provider by country
         $provider = self::getProviderByCountryAndMethod($contact['country'], $method);

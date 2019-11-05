@@ -439,6 +439,14 @@ class OdinProduct extends Model
         }
         return $product;
     }
+    
+    /**
+     * Get by cop_id
+     */
+    public static function getByCopId($copId)
+    {
+        return OdinProduct::where('prices.price_set', $copId)->first(); 
+    }
 
     /**
      * Retuen array skus -> product
