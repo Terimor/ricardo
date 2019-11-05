@@ -80,7 +80,13 @@ class PayPalService
         }
 
         $this->checkIforderAllowedForAddingProducts($upsell_order);
-        $product = $this->findProductBySku($request->get('sku_code'));
+        $product = null;
+        if ($request->get('cop_id')) {
+            $product = $this->findProductByCopId($request->get('cop_id'));
+        }
+        if (!$product) {
+            $product = $this->findProductBySku($request->get('sku_code'));
+        }
 
         $total_upsell_price = 0;
         $upsell_order_exchange_rate = null;
@@ -230,7 +236,13 @@ class PayPalService
             return $this->createUpsellOrder($request);
         }
 
-        $product = $this->findProductBySku($request->sku_code);
+        $product = null;
+        if ($request->get('cop_id')) {
+            $product = $this->findProductByCopId($request->get('cop_id'));
+        }
+        if (!$product) {
+            $product = $this->findProductBySku($request->get('sku_code'));
+        }
         $priceData = $this->getPrice($request, $product);
         $price_usd = CurrencyService::roundValueByCurrencyRules($priceData['price'] / $priceData['exchange_rate'], self::DEFAULT_CURRENCY);
 
@@ -776,6 +788,16 @@ class PayPalService
     private function findProductBySku(string $sku)
     {
         return OdinProduct::where('skus.code', $sku)->firstOrFail();
+    }
+    
+    /**
+     * Find product by cop id
+     * @param string $copId
+     * @return type
+     */
+    private function findProductByCopId(string $copId)
+    {
+       return OdinProduct::where('prices.price_set', $copId)->first(); 
     }
 
     /**
