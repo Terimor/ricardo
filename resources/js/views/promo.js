@@ -246,6 +246,10 @@ const promo = new Vue({
       return !!document.querySelector('html[dir="rtl"]');
     },
 
+    extraFields() {
+      return {};
+    },
+
     isShowVariant() {
       return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
     },

@@ -343,6 +343,7 @@
                         :country-list="countriesList"
                         :quantity-of-installments="countOfInstallments"
                         :warranty-price-text="warrantyPriceText"
+                        :extra-fields="extraFields"
                     />
                 </div>
             </div>
