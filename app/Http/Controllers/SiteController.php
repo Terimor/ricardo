@@ -120,9 +120,13 @@ class SiteController extends Controller
      * @param ProductService $productService
      * @return type
      */
-    public function checkout(Request $request, ProductService $productService)
-    {
+    public function checkout(Request $request, ProductService $productService, $price_set = '')
+    {        
 		$viewTemplate = 'checkout';
+        
+        if (!empty($price_set)) {
+            $request->merge(['cop_id' => $price_set]);
+        }
 
 		if (request()->get('tpl') == 'vmp41') {
 			$viewTemplate = 'vmp41';
@@ -160,7 +164,7 @@ class SiteController extends Controller
             $viewTemplate,
             compact(
                 'langCode', 'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
-                'recentlyBoughtNames', 'recentlyBoughtCities', 'images'
+                'recentlyBoughtNames', 'recentlyBoughtCities', 'images', 'price_set'
             )
         );
     }

@@ -33,7 +33,7 @@ class ViewServiceProvider extends ServiceProvider
     {       
         View::composer('layouts.app', function($view) {
             $view->with('cdnUrl', UtilsService::getCdnUrl());
-            $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking'));
+            $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking') || Route::is('checkout_price_set'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
             $view->with('ga_id', optional(Domain::getByName())->ga_id);
