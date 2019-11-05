@@ -24,7 +24,7 @@ if (location.pathname === '/checkout') {
 
   if (offer_id > 0 && aff_id > 10 && direct === 1 && txid.length < 20) {
     const iframe = document.createElement('iframe');
-    iframe.src = `https://lai.go2cloud.org/aff_c?offer_id=${offer_id}&aff_id=${aff_id}`;
+    iframe.src = `https://track.8xgb.com/aff_c?offer_id=${offer_id}&aff_id=${aff_id}`;
     iframe.style.display = 'none';
     document.body.append(iframe);
   }
