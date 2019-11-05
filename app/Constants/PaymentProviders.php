@@ -115,11 +115,11 @@ class PaymentProviders {
                     'installments'  => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 0, 'phrase' => 'checkout.payment_form.installments.full_amount'],
+                            ['value' => 1, 'phrase' => 'checkout.payment_form.installments.full_amount'],
                             ['value' => 3, 'phrase' => 'checkout.payment_form.installments.pay_3'],
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
-                        'default'   => 0,
+                        'default'   => 1,
                         'visibility' => ['card_type' => ['credit']]
                     ],
                     'state' => [
@@ -166,11 +166,11 @@ class PaymentProviders {
                     'installments'  => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 0, 'phrase' => 'checkout.payment_form.installments.full_amount'],
+                            ['value' => 1, 'phrase' => 'checkout.payment_form.installments.full_amount'],
                             ['value' => 3, 'phrase' => 'checkout.payment_form.installments.pay_3'],
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
-                        'default' => 0
+                        'default' => 1
                     ],
                     'state' => [
                         'type'  => 'dropdown',
@@ -236,11 +236,11 @@ class PaymentProviders {
                     'installments'  => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 0, 'phrase' => 'checkout.payment_form.installments.full_amount'],
+                            ['value' => 1, 'phrase' => 'checkout.payment_form.installments.full_amount'],
                             ['value' => 3, 'phrase' => 'checkout.payment_form.installments.pay_3'],
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
-                        'default' => 0
+                        'default' => 1
                     ],
                     'state' => [
                         'type'  => 'dropdown',
@@ -335,11 +335,11 @@ class PaymentProviders {
                     'installments'  => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 0, 'phrase' => 'checkout.payment_form.installments.full_amount'],
+                            ['value' => 1, 'phrase' => 'checkout.payment_form.installments.full_amount'],
                             ['value' => 3, 'phrase' => 'checkout.payment_form.installments.pay_3'],
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
-                        'default'    => 0,
+                        'default'    => 1,
                         'visibility' => ['card_type' => ['credit']],
                     ]
                 ]

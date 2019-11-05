@@ -143,6 +143,7 @@ class PaymentService
             'status'            => $data['status'],
             'fee'               => $data['fee'],
             'card_type'         => $card_type,
+            'is_charged_back'   => false,
             'payment_method'    => $payment_method,
             'payment_provider'  => $data['payment_provider'],
             'payer_id'          => $data['payer_id']
@@ -198,6 +199,8 @@ class PaymentService
             'price_set'             => $price['price_set'] ?? null,
             'is_main'               => $is_main,
             'is_upsells'            => !$is_main,
+            'is_paid'               => false,
+            'is_exported'           => false,
             'is_plus_one'           => $details['is_plus_one'] ?? false,
             'txn_hash'              => null,
             'warranty_price'        => 0,
@@ -239,8 +242,8 @@ class PaymentService
         if (!empty($order_id)) {
             $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
         }
-        
-        $product = null;        
+
+        $product = null;
         if ($req->get('cop_id')) {
             $product = OdinProduct::getByCopId($req->get('cop_id'));
         }
@@ -274,6 +277,13 @@ class PaymentService
                 'total_price_usd'       => $order_product['total_price_usd'],
                 'txns_fee_usd'          => 0,
                 'installments'          => $installments,
+                'is_reduced'            => false,
+                'is_invoice_sent'       => false,
+                'is_survey_sent'        => false,
+                'is_flagged'            => false,
+                'is_refunding'          => false,
+                'is_refunded'           => false,
+                'is_qc_passed'          => false,
                 'customer_email'        => $contact['email'],
                 'customer_first_name'   => $contact['first_name'],
                 'customer_last_name'    => $contact['last_name'],
