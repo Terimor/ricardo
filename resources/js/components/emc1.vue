@@ -80,7 +80,7 @@
                     <template v-if="!isPurchasAlreadyExists">
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
                         <h3 v-html="textPaySecurely"></h3>
-                        <payment-type-radio-list
+                        <payment-provider-radio-list
                                 v-model="form.paymentProvider"
                                 @input="activateForm" />
                         <paypal-button

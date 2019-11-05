@@ -153,7 +153,7 @@
                             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
-                              v-if="form.paymentType !== 'instant_transfer'"
+                              v-if="form.paymentProvider !== 'instant_transfer'"
                               @click="submit"
                               id="purchase-button"
                               type="button"
@@ -164,7 +164,7 @@
                               <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
-                                    v-show="form.paymentType === 'instant_transfer'"
+                                    v-show="form.paymentProvider === 'instant_transfer'"
                                     :createOrder="paypalCreateOrder"
                                     :onApprove="paypalOnApprove"
                                     :$v="$v.form.deal"
@@ -268,8 +268,9 @@
           state: null,
           zipCode: null,
           installments: 1,
-          paymentType: null,
-          cardNumber: '',
+          paymentProvider: null,
+          paymentMethod: null,
+          cardNumber: null,
           month: null,
           year: null,
           cvv: null,
@@ -289,6 +290,8 @@
 
         if (selectedProductData) {
           this.paymentError = this.textPaymentError;
+          this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
+          this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
           this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
@@ -432,7 +435,8 @@
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
           installments: this.form.installments,
-          paymentType: 'credit-card',
+          paymentProvider: this.form.paymentProvider,
+          paymentMethod: this.form.paymentMethod,
           cardType: this.form.cardType,
           fname: this.form.fname,
           lname: this.form.lname,
@@ -476,7 +480,7 @@
                 cvv: this.form.cvv,
                 month: ('0' + this.form.month).slice(-2),
                 year: '' + this.form.year,
-                type: this.form.paymentType,
+                type: this.form.cardType,
               },
               ipqs: ipqsResult,
             };
@@ -517,7 +521,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
-          paymentType: this.form.paymentType,
+          paymentProvider: this.form.paymentProvider,
         });
 
         this.paypalPaymentError = '';

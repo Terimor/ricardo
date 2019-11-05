@@ -58,7 +58,7 @@
     <h2><span>{{paySecurelyWith}}</span></h2>
     <radio-button-group
         :withCustomLabels="true"
-        v-model="paymentForm.paymentType">
+        v-model="paymentForm.paymentProvider">
       <div class="card-types">
         <pay-method-item
           v-for="item in cardNames"
@@ -67,22 +67,22 @@
             value: item.value,
             imgUrl: item.imgUrl,
           }"
-          :value="paymentForm.paymentType"
+          :value="paymentForm.paymentProvider"
         />
       </div>
 
     </radio-button-group>
 
     <select-field
-        :validation="$v.form.paymentType"
+        :validation="$v.form.paymentProvider"
         :validationMessage="textCardTypeRequired"
         theme="variant-1"
         :rest="{
           placeholder: textCardType
         }"
         :list="cardNames"
-        v-model="paymentForm.paymentType"/>
-    <form id="payment-data-form" v-if="paymentForm.paymentType !== 'instant_transfer'">
+        v-model="paymentForm.paymentProvider"/>
+    <form id="payment-data-form" v-if="paymentForm.paymentProvider !== 'instant_transfer'">
       <text-field
           :validation="$v.form.cardNumber"
           :rest="{
@@ -241,7 +241,7 @@
 				this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
 					: null;
-				this.paymentForm.paymentType = this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
+				this.paymentForm.paymentProvider = this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
 					: null
 

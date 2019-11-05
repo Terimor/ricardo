@@ -57,7 +57,7 @@ const promo = new Vue({
         deal: null,
         variant: '',
         installments: 1,
-        paymentType: '',
+        paymentProvider: null,
         fname: null,
         lname: null,
         dateOfBirth: '',
@@ -172,7 +172,7 @@ const promo = new Vue({
         this.form.variant = selectedProductData.variant || this.form.variant;
         this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
         this.form.installments = selectedProductData.installments || this.form.installments;
-        this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+        this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
         this.form.cardType = selectedProductData.cardType || this.form.cardType;
         this.form.fname = selectedProductData.fname || this.form.fname;
         this.form.lname = selectedProductData.lname || this.form.lname;
@@ -304,7 +304,7 @@ const promo = new Vue({
     paypalOnApprove: paypalOnApprove,
 
     paypalSubmit() {
-      this.form.paymentType = 'instant_transfer';
+      this.form.paymentProvider = 'instant_transfer';
     },
 
     paypalCreateOrder () {
@@ -318,7 +318,7 @@ const promo = new Vue({
         deal: this.form.deal,
         variant: this.form.variant,
         isWarrantyChecked: this.form.isWarrantyChecked,
-        paymentType: this.form.paymentType,
+        paymentProvider: this.form.paymentProvider,
       });
 
       this.paypalPaymentError = '';
