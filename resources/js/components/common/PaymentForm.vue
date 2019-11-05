@@ -426,8 +426,6 @@
       textCardTypeTitle: () => t('checkout.payment_form.card_type.title'),
       textCardTypeRequired: () => t('checkout.payment_form.card_type.required'),
       textCardTypePlaceholder: () => t('checkout.payment_form.card_type.placeholder'),
-      textCardTypeDebit: () => t('checkout.payment_form.card_type.debit'),
-      textCardTypeCredit: () => t('checkout.payment_form.card_type.credit'),
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),

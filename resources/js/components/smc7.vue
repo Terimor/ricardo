@@ -173,7 +173,10 @@
                             <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         </template>
                         <div class="smc7__bottom">
-                            <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
+                            <img
+                              :src="imageSafePayment.url"
+                              :alt="imageSafePayment.title"
+                              :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
                                 <p><i class="fa fa-lock"></i>{{ textSafeSSLEncryption }}</p>
                                 <p>{{ textCreditCardInvoiced }} "{{ productData.billing_descriptor }}"</p>
@@ -215,7 +218,7 @@
   import queryToComponent from '../mixins/queryToComponent';
   import scrollToError from '../mixins/formScrollToError';
   import {fade} from "../utils/common";
-  import { t } from '../utils/i18n';
+  import { t, timage } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { check as ipqsCheck } from '../services/ipqs';
@@ -334,6 +337,8 @@
       textPaymentError: () => t('checkout.payment_error'),
       textGet: () => t('checkout.get'),
       textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
+
+      imageSafePayment: () => timage('safe_payment'),
 
       isShowVariant() {
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);

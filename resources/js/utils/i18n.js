@@ -57,6 +57,24 @@ export function t(phrase, args = {}, options = {}) {
 }
 
 
+export function timage(name) {
+  let translated = {
+    title: '',
+    url: '',
+  };
+
+  const loadedImages = window.loadedImages || {};
+
+  if (loadedImages[name] && loadedImages[name].url) {
+    translated = loadedImages[name];
+  } else {
+    console.error('URGENT: `' + name + '` is in use, but no such key or empty url');
+  }
+
+  return translated;
+}
+
+
 function hookState(lang, country, translated) {
   switch (lang) {
     case 'en':

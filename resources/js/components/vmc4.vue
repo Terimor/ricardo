@@ -59,7 +59,10 @@
               </div>
               <div class="secure-pay-content">
                 <div class="logos-content">
-                  <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
+                  <img
+                    :src="imageSafePayment.url"
+                    :alt="imageSafePayment.title"
+                    :title="imageSafePayment.title">
                 </div>
                 <div class="text-content">
                   <p>
@@ -79,7 +82,7 @@
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
 	import { preparePurchaseData } from "../utils/checkout";
   import queryToComponent from '../mixins/queryToComponent';
-  import { t } from '../utils/i18n';
+  import { t, timage } from '../utils/i18n';
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
 
@@ -181,6 +184,8 @@
       textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
       textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
       textWarranty: () => t('checkout.warranty'),
+
+      imageSafePayment: () => timage('safe_payment'),
 		},
 		methods: {
 			submit(form, ipqsResult) {

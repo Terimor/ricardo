@@ -108,7 +108,10 @@
                                     @setAddress="setAddress"/>
                         </transition>
                         <div class="main__bottom">
-                            <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
+                            <img
+                              :src="imageSafePayment.url"
+                              :alt="imageSafePayment.title"
+                              :title="imageSafePayment.title">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
                             <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
                         </div>
@@ -187,7 +190,7 @@
   import emc1Validation from '../validation/emc1-validation'
   import notification from '../mixins/notification'
   import queryToComponent from '../mixins/queryToComponent'
-  import { t } from '../utils/i18n';
+  import { t, timage } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
   import { getCountOfInstallments, preparePartByInstallments } from '../utils/installments';
   import ProductItem from './common/ProductItem';
@@ -451,6 +454,8 @@
       textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
       textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
+
+      imageSafePayment: () => timage('safe_payment'),
     },
     watch: {
       'form.country'(value) {

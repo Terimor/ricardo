@@ -216,7 +216,7 @@
       textCountryRequired: () => t('checkout.payment_form.сountry.required'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
-      textCardType: () => t('checkout.payment_form.card_type'),
+      textCardType: () => t('checkout.payment_form.card_type.title'),
       textCardTypeRequired: () => t('checkout.payment_form.card_type.required'),
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
