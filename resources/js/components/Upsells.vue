@@ -300,14 +300,15 @@
       deleteAccessory(indexForDeleting) {
         this.accessoryList.splice(indexForDeleting, 1);
 
+        if (this.accessoryList.length === 0) {
+          this.redirect();
+          return;
+        }
+
         getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
           .then((total) => {
             this.total = total;
         })
-
-        if (this.accessoryList.length === 0) {
-          this.redirect();
-        }
       },
 
       redirect() {
