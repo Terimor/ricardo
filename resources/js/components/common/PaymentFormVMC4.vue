@@ -66,8 +66,8 @@
         </div>
         <div class="step step-3" v-if="step === 3">
           <h3 v-html="textPaySecurely"></h3>
-          <payment-type-radio-list
-            v-model="form.paymentType"
+          <payment-provider-radio-list
+            v-model="form.paymentProvider"
             @input="activateForm" />
           <paypal-button
             :createOrder="paypalCreateOrder"
@@ -78,7 +78,7 @@
           >{{ paypalRiskFree }}</paypal-button>
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
           <slot name="warranty" />
-          <form v-if="form.paymentType && isFormShown">
+          <form v-if="form.paymentProvider && isFormShown">
             <text-field
                 :validation="$v.form.stepThree.cardNumber"
                 :rest="{
@@ -310,7 +310,7 @@
 						phone: null,
 					},
 					stepThree: {
-						cardNumber: '',
+						cardNumber: null,
 						month: null,
 						year: null,
 						cvv: null,
@@ -318,14 +318,14 @@
 						city: null,
 						state: null,
 						zipCode: null,
-						cardType: null
+            cardType: 'credit',
 					},
 					countryCodePhoneField: checkoutData.countryCode,
 					deal: null,
 					variant: checkoutData.product.skus[0].code || "",
 					//installments: 1,
-					paymentType: null,
-          cardType: null,
+					paymentProvider: null,
+          paymentMethod: null,
 				},
         mockData: {
           creditCardRadioList: [
@@ -352,7 +352,8 @@
           this.paymentError = this.textPaymentError;
           this.form.deal = selectedProductData.deal || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
-          this.form.paymentType = selectedProductData.paymentType || this.form.paymentType;
+          this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
+          this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
           this.form.stepThree.cardType = selectedProductData.cardType || this.form.stepThree.cardType;
           this.form.stepTwo.fname = selectedProductData.fname || this.form.stepTwo.fname;
           this.form.stepTwo.lname = selectedProductData.lname || this.form.stepTwo.lname;
@@ -378,7 +379,7 @@
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
 			cardUrl() {
-				return getCardUrl(this.form.cardType)
+				return getCardUrl(this.form.paymentMethod);
 			},
       fullAmount () {
         return this.installments == 1;
@@ -456,7 +457,7 @@
             },
             'form.stepThree.cardNumber'(newVal, oldValue) {
                 const creditCardTypeList = creditCardType(newVal)
-                this.form.cardType = creditCardTypeList.length > 0 && newVal.length > 0
+                this.form.paymentMethod = creditCardTypeList.length > 0 && newVal.length > 0
                   ? creditCardTypeList[0].type
                   : null
 
@@ -507,8 +508,6 @@
         this.$emit('setWarrantyPriceText', value)
       },
 			submit() {
-        const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
-  
 				this.$v.form.$touch();
 
         if (this.$v.form.$pending || this.$v.form.$error) {
@@ -522,6 +521,9 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
+        const phoneNumber = this.form.stepTwo.phone.replace(/[^0-9]/g, '');
+        const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
+
         let fields = {
           billing_first_name: this.form.stepTwo.fname,
           billing_last_name: this.form.stepTwo.lname,
@@ -530,7 +532,7 @@
           billing_region: this.form.stepThree.state,
           billing_postcode: this.form.stepThree.zipCode,
           billing_email: this.form.stepTwo.email,
-          billing_phone: this.dialCode + this.form.stepTwo.phone,
+          billing_phone: this.dialCode + phoneNumber,
           credit_card_bin: cardNumber.substr(0, 6),
           credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
@@ -543,7 +545,8 @@
           variant: this.form.variant,
           isWarrantyChecked: this.isWarrantyChecked,
           installments: this.installments,
-          paymentType: this.form.paymentType,
+          paymentProvider: this.form.paymentProvider,
+          paymentMethod: this.form.paymentMethod,
           cardType: this.form.stepThree.cardType,
           fname: this.form.stepTwo.fname,
           lname: this.form.stepTwo.lname,
@@ -559,12 +562,12 @@
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
-            if (this.form.paymentType === 'bank-payment') {
+            if (this.form.paymentProvider === 'bank-payment') {
               this.isSubmitted = false;
               return;
             }
 
-            if (this.form.paymentType === 'credit-card') {
+            if (this.form.paymentProvider === 'credit-card') {
               const data = {
                 product: {
                   sku: this.form.variant,
@@ -574,7 +577,7 @@
                 contact: {
                   phone: {
                     country_code: this.dialCode,
-                    number: this.form.stepTwo.phone,
+                    number: phoneNumber,
                   },
                   first_name: this.form.stepTwo.fname,
                   last_name: this.form.stepTwo.lname,
@@ -592,7 +595,7 @@
                   cvv: this.form.stepThree.cvv,
                   month: ('0' + this.form.stepThree.month).slice(-2),
                   year: '' + this.form.stepThree.year,
-                  type: this.form.cardType,
+                  type: this.form.stepThree.cardType,
                 },
                 ipqs: ipqsResult,
               };
@@ -608,7 +611,7 @@
           });
 			},
       paypalSubmit() {
-        this.form.paymentType = 'instant_transfer';
+        this.form.paymentProvider = 'instant_transfer';
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
@@ -629,7 +632,7 @@
 				const isStepOneInvalid = this.$v.form.deal.$invalid;
 				const isStepTwoInvalid = this.$v.form.stepTwo.$invalid;
 				const isStepThreeInvalid =
-					this.form.paymentType !== 'instant_transfer' &&
+					this.form.paymentProvider !== 'instant_transfer' &&
           this.$v.form.stepThree.$invalid;
 
         if (currentStep === 1 && isStepOneInvalid) {
@@ -653,7 +656,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.isWarrantyChecked,
-          paymentType: this.form.paymentType,
+          paymentProvider: this.form.paymentProvider,
         });
 
         return paypalCreateOrder({

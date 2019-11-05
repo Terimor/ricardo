@@ -255,11 +255,6 @@ export function sendCheckoutRequest(data) {
       if (res.status !== 'ok') {
         res.paymentError = t('checkout.payment_error');
 
-        if (res.error && res.error.message) {
-          const message = JSON.parse(res.error.message);
-          res.paymentError = message.status_message;
-        }
-
         if (res.errors) {
           if (Array.isArray(res.errors)) {
             if (res.errors.length > 0) {

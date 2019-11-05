@@ -1,7 +1,7 @@
 <template>
   
   <radio-button-group
-    class="main__credit-card-switcher payment-type-radio-list"
+    class="main__credit-card-switcher payment-provider-radio-list"
     :list="list"
     :value="value"
     @input="input">
@@ -22,7 +22,7 @@
 
   export default {
 
-    name: 'PaymentTypeRadioList',
+    name: 'PaymentProviderRadioList',
 
     props: [
       'value',
@@ -67,7 +67,7 @@
 
 <style lang="scss" scoped>
 
-  .payment-type-radio-list {
+  .payment-provider-radio-list {
     .credit-cards-list {
       margin: 8px -4px 0;
     }

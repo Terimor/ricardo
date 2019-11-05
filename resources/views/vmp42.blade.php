@@ -218,9 +218,9 @@
                             {{ t('checkout.pay_securely_also') }}
                         </div>
                         <div class="promo__row-payments">
-                            <payment-type-radio-list
+                            <payment-provider-radio-list
                                 class="promo__credit-card-switcher"
-                                v-model="form.paymentType"
+                                v-model="form.paymentProvider"
                                 @input="activateForm"
                             />
                         </div>
@@ -229,7 +229,7 @@
 
                         <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                             <payment-form
-                                v-if="form && form.paymentType && isFormShown"
+                                v-if="form && form.paymentProvider && isFormShown"
                                 first-title="{{ t('checkout.step') }} 2: {{ t('checkout.contact_information') }}"
                                 second-title="{{ t('checkout.step') }} 3: {{ t('checkout.delivery_address') }}"
                                 third-title="{{ t('checkout.step') }} 4: {{ t('checkout.payment_details') }}"
@@ -243,6 +243,7 @@
                                 :country-list="countriesList"
                                 :quantity-of-installments="countOfInstallments"
                                 :warranty-price-text="warrantyPriceText"
+                                :extra-fields="extraFields"
                             />
                         </div>
                     </div>

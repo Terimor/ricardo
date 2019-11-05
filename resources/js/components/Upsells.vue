@@ -246,7 +246,7 @@
       },
 
       paymentProvider() {
-        return this.getOriginalOrder.paymentProvider || this.getOriginalOrder.paymentType;
+        return this.getOriginalOrder.paymentProvider;
       },
     },
 

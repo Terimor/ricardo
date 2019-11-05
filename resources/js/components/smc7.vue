@@ -29,13 +29,7 @@
                     <div class="paper smc7__deal">
                         <div class="d-flex">
                             <div class="smc7__sale">
-                                <div class="sale-badge dynamic-sale-badge ">
-                                    <div class="dynamic-sale-badge__background"></div>
-                                    <div class="dynamic-sale-badge__container">
-                                        <span class="badge-discount-percentage">50%</span>
-                                        <span>Off</span>
-                                    </div>
-                                </div>
+                                <SaleBadge />
                             </div>
                             <div class="d-flex flex-column smc7__deal__text">
                                 <p v-html="freeShippingToday" />
@@ -153,7 +147,7 @@
                             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
-                              v-if="form.paymentType !== 'instant_transfer'"
+                              v-if="form.paymentProvider !== 'instant_transfer'"
                               @click="submit"
                               id="purchase-button"
                               type="button"
@@ -164,7 +158,7 @@
                               <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
-                                    v-show="form.paymentType === 'instant_transfer'"
+                                    v-show="form.paymentProvider === 'instant_transfer'"
                                     :createOrder="paypalCreateOrder"
                                     :onApprove="paypalOnApprove"
                                     :$v="$v.form.deal"
@@ -173,7 +167,10 @@
                             <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         </template>
                         <div class="smc7__bottom">
-                            <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
+                            <img
+                              :src="imageSafePayment.url"
+                              :alt="imageSafePayment.title"
+                              :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
                                 <p><i class="fa fa-lock"></i>{{ textSafeSSLEncryption }}</p>
                                 <p>{{ textCreditCardInvoiced }} "{{ productData.billing_descriptor }}"</p>
@@ -210,12 +207,13 @@
   import { preparePurchaseData } from "../utils/checkout";
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
+  import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import smc7validation from "../validation/smc7-validation";
   import queryToComponent from '../mixins/queryToComponent';
   import scrollToError from '../mixins/formScrollToError';
   import {fade} from "../utils/common";
-  import { t } from '../utils/i18n';
+  import { t, timage } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { check as ipqsCheck } from '../services/ipqs';
@@ -228,6 +226,7 @@
   export default {
     name: 'smc7',
     components: {
+      SaleBadge,
       RadioButtonItemDeal,
       ProductOffer,
       PurchasAlreadyExists,
@@ -265,8 +264,9 @@
           state: null,
           zipCode: null,
           installments: 1,
-          paymentType: null,
-          cardNumber: '',
+          paymentProvider: null,
+          paymentMethod: null,
+          cardNumber: null,
           month: null,
           year: null,
           cvv: null,
@@ -286,6 +286,8 @@
 
         if (selectedProductData) {
           this.paymentError = this.textPaymentError;
+          this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
+          this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
           this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
@@ -334,6 +336,8 @@
       textPaymentError: () => t('checkout.payment_error'),
       textGet: () => t('checkout.get'),
       textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
+
+      imageSafePayment: () => timage('safe_payment'),
 
       isShowVariant() {
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
@@ -384,8 +388,6 @@
         this.animateProductImage();
       },
       submit() {
-        const cardNumber = this.form.cardNumber.replace(/\s/g, '');
-
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
@@ -405,6 +407,9 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
+        const phoneNumber = this.form.phone.replace(/[^0-9]/g, '');
+        const cardNumber = this.form.cardNumber.replace(/\s/g, '');
+
         let fields = {
           billing_first_name: this.form.fname,
           billing_last_name: this.form.lname,
@@ -414,7 +419,7 @@
           billing_region: this.form.state,
           billing_postcode: this.form.zipCode,
           billing_email: this.form.email,
-          billing_phone: this.dialCode + this.form.phone,
+          billing_phone: this.dialCode + phoneNumber,
           credit_card_bin: cardNumber.substr(0, 6),
           credit_card_hash: window.sha256(cardNumber),
           credit_card_expiration_month: ('0' + this.form.month).slice(-2),
@@ -427,7 +432,8 @@
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
           installments: this.form.installments,
-          paymentType: 'credit-card',
+          paymentProvider: this.form.paymentProvider,
+          paymentMethod: this.form.paymentMethod,
           cardType: this.form.cardType,
           fname: this.form.fname,
           lname: this.form.lname,
@@ -453,7 +459,7 @@
               contact: {
                 phone: {
                   country_code: this.dialCode,
-                  number: this.form.phone,
+                  number: phoneNumber,
                 },
                 first_name: this.form.fname,
                 last_name: this.form.lname,
@@ -471,7 +477,7 @@
                 cvv: this.form.cvv,
                 month: ('0' + this.form.month).slice(-2),
                 year: '' + this.form.year,
-                type: this.form.paymentType,
+                type: this.form.cardType,
               },
               ipqs: ipqsResult,
             };
@@ -512,7 +518,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
-          paymentType: this.form.paymentType,
+          paymentProvider: this.form.paymentProvider,
         });
 
         this.paypalPaymentError = '';
@@ -688,9 +694,6 @@
                     background-color: #c0392b;
                     box-shadow: 0 0 0 5px #c0392b;
                 }
-            }
-            .badge-discount-percentage {
-                font-size: 18px;
             }
         }
 

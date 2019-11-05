@@ -25,6 +25,7 @@
     }
 
     var loadedPhrases = @json($loadedPhrases);
+    var loadedImages = @json($loadedImages);
 </script>
 
 <script src="{{ mix_cdn('assets/js/app.js') }}" defer></script>

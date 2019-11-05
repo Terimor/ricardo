@@ -9,10 +9,7 @@
                     <div class="paper main__deal">
                         <div class="d-flex">
                             <div class="main__sale">
-                                <div class="sale-badge dynamic-sale-badge ">
-                                    <div class="dynamic-sale-badge__background"></div>
-                                    <div class="dynamic-sale-badge__container" v-html="textDynamicSaleBadge"></div>
-                                </div>
+                                <SaleBadge />
                             </div>
                             <p class="main__deal__text" v-html="textMainDealText"></p>
                         </div>
@@ -80,7 +77,7 @@
                     <template v-if="!isPurchasAlreadyExists">
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
                         <h3 v-html="textPaySecurely"></h3>
-                        <payment-type-radio-list
+                        <payment-provider-radio-list
                                 v-model="form.paymentProvider"
                                 @input="activateForm" />
                         <paypal-button
@@ -108,7 +105,10 @@
                                     @setAddress="setAddress"/>
                         </transition>
                         <div class="main__bottom">
-                            <img :src="$root.cdnUrl + '/assets/images/safe_payment_en.png'" alt="safe payment">
+                            <img
+                              :src="imageSafePayment.url"
+                              :alt="imageSafePayment.title"
+                              :title="imageSafePayment.title">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
                             <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
                         </div>
@@ -187,11 +187,12 @@
   import emc1Validation from '../validation/emc1-validation'
   import notification from '../mixins/notification'
   import queryToComponent from '../mixins/queryToComponent'
-  import { t } from '../utils/i18n';
+  import { t, timage } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
   import { getCountOfInstallments, preparePartByInstallments } from '../utils/installments';
   import ProductItem from './common/ProductItem';
   import Cart from './common/Cart';
+  import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import { fade } from '../utils/common';
@@ -210,6 +211,7 @@
       purchasMixin,
     ],
     components: {
+      SaleBadge,
       ProductItem,
       Cart,
       ProductOffer,
@@ -451,6 +453,8 @@
       textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
       textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
+
+      imageSafePayment: () => timage('safe_payment'),
     },
     watch: {
       'form.country'(value) {
@@ -764,52 +768,6 @@
                 cursor: pointer;
                 text-decoration: underline;
             }
-        }
-    }
-
-    .sale-badge {
-        width: 85px;
-        height: 85px;
-        margin-left: 5px;
-        margin-top: 5px;
-        justify-content: center;
-        align-items: center;
-        color: $white;
-        font-weight: 700;
-        font-size: 2.5rem;
-        position: relative;
-    }
-
-    .dynamic-sale-badge__background {
-        animation: spin 20s linear infinite;
-        position: absolute;
-        background: $color_flush_mahogany_approx;
-        border-radius: 50%;
-        padding: 5px;
-        border: 2px dashed $white;
-        box-shadow: 0 0 0 5px $color_flush_mahogany_approx;
-        width: 85px;
-        height: 85px;
-
-        [dir="rtl"] & {
-          animation-direction: reverse;
-        }
-    }
-
-    .dynamic-sale-badge__container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        font-size: 12px;
-        text-align: center;
-        transform: rotate(349deg);
-        position: absolute;
-        width: 85px;
-        height: 85px;
-
-        [dir="rtl"] & {
-          transform: rotate(371deg);
         }
     }
 

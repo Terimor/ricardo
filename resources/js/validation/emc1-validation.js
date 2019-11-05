@@ -80,10 +80,10 @@ const emc1Validation = function () {
     },
   }
 
-  if (this.extraFields.date_of_birth) {
+  if (this.form.country === 'de') {
     allRules.dateOfBirth = {
       isValidDate (val) {
-        const [day, month, year] = val.split('/')
+        const [day, month, year] = (val || '').split('/')
         const date = new Date(year, month - 1, day)
 
         const diff = dateFns.differenceInYears(
