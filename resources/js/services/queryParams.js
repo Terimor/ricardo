@@ -48,23 +48,21 @@ window.fetch = function(url, options = {}) {
         url = myUrl.pathname + myUrl.search;
         break;
       case 'post':
-        if (options.headers && options.headers['content-type'] === 'application/json') {
-          options.body = options.body || '{}';
+        options.body = options.body || '{}';
 
-          try {
-            options.body = JSON.parse(options.body);
+        try {
+          options.body = JSON.parse(options.body);
 
-            initialUrl.searchParams.forEach((value, key) => {
-              if (options.body[key] === undefined) {
-                options.body[key] = value;
-              }
-            });
+          initialUrl.searchParams.forEach((value, key) => {
+            if (options.body[key] === undefined) {
+              options.body[key] = value;
+            }
+          });
 
-            options.body = JSON.stringify(options.body);
-          }
-          catch (err) {
+          options.body = JSON.stringify(options.body);
+        }
+        catch (err) {
 
-          }
         }
 
         break;

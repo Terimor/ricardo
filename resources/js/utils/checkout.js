@@ -213,21 +213,21 @@ export function getPaymentMethodByCardNumber(cardNumber) {
 
 
 export function sendCheckoutRequest(data) {
-  const reqURL = new URL('/pay-by-card', location);
+  let reqURLSearchParams = new URLSearchParams();
   const searchParams = new URL(location).searchParams;
 
   localStorage.setItem('3ds_params', searchParams.toString());
 
-  reqURL.searchParams.set('cur', !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+  reqURLSearchParams.set('cur', !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
     ? checkoutData.product.prices.currency
     : searchParams.get('cur'));
 
   if (localStorage.getItem('order_failed')) {
-    reqURL.searchParams.set('order', localStorage.getItem('odin_order_id'));
+    reqURLSearchParams.set('order', localStorage.getItem('odin_order_id'));
   }
 
   return Promise.resolve()
-    .then(() => fetch(reqURL.toString(), {
+    .then(() => fetch('/pay-by-card?' + reqURLSearchParams.toString(), {
       method: 'post',
       credentials: 'same-origin',
       headers: {
