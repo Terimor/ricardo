@@ -59,7 +59,12 @@ export const getRadioHtml = ({
 
         <p class="label-container-radio__discount">
           <span class="discount-text${idx === 1 ? ' red' : ''}">${discountText}</span>
-          <span class="strike">${ !isEmc1b && idx === 0 ? price : '' }</span>
+          <span class="strike">
+            ${!isEmc1b && !discountName
+                ? getCountOfInstallments(installments) + price.toLocaleString()
+                : ''
+            }
+          </span>
         </p>
       `)
 };
