@@ -187,6 +187,7 @@ const promo = new Vue({
         this.form.state = selectedProductData.state || this.form.state;
         this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
         this.form.country = selectedProductData.country || this.form.country;
+        this.setSelectedPlan(+this.form.deal);
         this.isFormShown = true;
       }
     }

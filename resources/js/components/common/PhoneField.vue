@@ -61,19 +61,21 @@
           return this.$root._isMounted && (!linkTag || linkTag.media !== 'none');
         },
         () => {
-          this.selector = document.querySelector(`#${this.id}`)
+          setTimeout(() => {
+            this.selector = document.querySelector(`#${this.id}`)
 
-          window.intlTelInput(this.selector, {
-            initialCountry: this.countryCode,
-            separateDialCode: true
-          })
+            window.intlTelInput(this.selector, {
+              initialCountry: this.countryCode,
+              separateDialCode: true
+            })
 
-          this.selector.addEventListener('countrychange', () => {
-            this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(this.selector).getSelectedCountryData())
+            this.selector.addEventListener('countrychange', () => {
+              this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(this.selector).getSelectedCountryData())
+              this.checkPadding();
+            });
+
             this.checkPadding();
-          });
-
-          this.checkPadding();
+          }, 100);
         },
       )
     }

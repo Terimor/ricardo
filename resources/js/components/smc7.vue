@@ -217,7 +217,7 @@
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { check as ipqsCheck } from '../services/ipqs';
-  import { sendCheckoutRequest } from '../utils/checkout';
+  import { sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
   import { queryParams } from  '../utils/queryParams';
 
@@ -285,7 +285,6 @@
         const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
         if (selectedProductData) {
-          this.paymentError = this.textPaymentError;
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
           this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
           this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
@@ -304,6 +303,11 @@
           this.form.zipCode = selectedProductData.zipcode || this.form.zipCode;
           this.form.country = selectedProductData.country || this.form.country;
         }
+
+        get3dsErrors().then(paymentError => {
+          this.paymentError = paymentError;
+          setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 100);
+        });
       }
 
       setTimeout(() => {
@@ -600,10 +604,6 @@
         variant: this.form.variant,
         installments: 1,
       })
-
-      if (this.paymentError && !this.isPurchasAlreadyExists) {
-        setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
-      }
     }
   }
 </script>

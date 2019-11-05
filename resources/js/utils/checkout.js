@@ -292,3 +292,29 @@ export function sendCheckoutRequest(data) {
       };
     });
 }
+
+
+export function get3dsErrors() {
+  const order_id = localStorage.getItem('odin_order_id');
+
+  return Promise.resolve()
+    .then(() => fetch('/pay-by-card-errors?order=' + order_id, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    }))
+    .then(res => res.json())
+    .then(res => {
+      let paymentError = t('checkout.payment_error');
+
+      if (res.errors && res.errors.length > 0) {
+        paymentError = t(res.errors[0]);
+      }
+
+      return paymentError;
+    })
+    .catch(err => {
+      return t('checkout.payment_error');
+    });
+}

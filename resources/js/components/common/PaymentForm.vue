@@ -293,7 +293,7 @@
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
   import scrollToError from '../../mixins/formScrollToError';
-  import { getPaymentMethodByCardNumber, sendCheckoutRequest } from '../../utils/checkout';
+  import { getPaymentMethodByCardNumber, sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
 
@@ -335,13 +335,10 @@
 
     created() {
       if (this.queryParams['3ds'] === 'failure') {
-        this.paymentError = this.textPaymentError;
-      }
-    },
-
-    mounted() {
-      if (this.paymentError && !this.isPurchasAlreadyExists) {
-        setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
+        get3dsErrors().then(paymentError => {
+          this.paymentError = paymentError;
+          setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 100);
+        });
       }
     },
 

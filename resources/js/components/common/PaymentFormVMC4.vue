@@ -260,7 +260,7 @@
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
-	import { getCardUrl, getPaymentMethods, sendCheckoutRequest } from "../../utils/checkout";
+	import { getCardUrl, getPaymentMethods, sendCheckoutRequest, get3dsErrors } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
   import purchasMixin from '../../mixins/purchas';
@@ -349,7 +349,6 @@
         if (selectedProductData) {
           this.step = 3;
           this.isFormShown = true;
-          this.paymentError = this.textPaymentError;
           this.form.deal = selectedProductData.deal || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
@@ -365,14 +364,15 @@
           this.form.stepThree.zipCode = selectedProductData.zipcode || this.form.stepThree.zipCode;
           this.form.stepThree.country = selectedProductData.country || this.form.stepThree.country;
         }
+
+        get3dsErrors().then(paymentError => {
+          this.paymentError = paymentError;
+          setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 100);
+        });
       }
     },
     mounted() {
       this.$emit('productImageChanged', this.getProductImage());
-
-      if (this.paymentError && !this.isPurchasAlreadyExists) {
-        setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 1000);
-      }
     },
 		computed: {
       isShowVariant() {
