@@ -72,7 +72,7 @@ class PaymentProviders {
         self::EBANX       => [
             'name'      => 'EBANX',
             'is_active' => true,
-            'in_prod'   => false,
+            'in_prod'   => true,
             'extra_fields'  => [
                 'ar' => [
                     'card_type' => [
