@@ -230,8 +230,6 @@ class EbanxService
         try {
             $res = EBANX($config)->paymentInfo()->findByHash($hash);
 
-            logger()->info('Ebanx query', ['reply' => \json_encode($res)]);
-
             $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
 
             if ($res['status'] === self::STATUS_OK) {
@@ -241,11 +239,10 @@ class EbanxService
                 $result['value']    = $res['payment']['amount_ext'];
                 $result['status']   = self::mapPaymentStatus($res['payment']['status'], true);
             } else {
-                logger()->error("Ebanx cancelled", ['reply' => \json_encode($res)]);
+                logger()->warning("Ebanx cancelled", ['reply' => \json_encode($res)]);
             }
         } catch (\Exception $ex) {
-            logger()->error("Ebanx query", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
-
+            logger()->error("Ebanx info", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
         }
         return $result;
     }
