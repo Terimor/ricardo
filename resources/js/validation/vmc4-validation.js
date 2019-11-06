@@ -29,10 +29,12 @@ const vmc4validation = function () {
 				phone: {
 					required,
 					isValidPhone (val) {
-						const phoneNumber = libphonenumber.parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField.toUpperCase())
+						if (window.libphonenumber) {
+							const phoneNumber = libphonenumber.parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField.toUpperCase())
 
-						if (phoneNumber) {
-							return phoneNumber.isValid()
+							if (phoneNumber) {
+								return phoneNumber.isValid()
+							}
 						}
 
 						return true

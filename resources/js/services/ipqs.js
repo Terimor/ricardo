@@ -36,7 +36,7 @@ export function check(fields = {}) {
       Startup.FieldStore(key, fields[key]);
     }
 
-    if (document.location.pathname.split('/').pop() === 'checkout') {
+    if (location.pathname.startsWith('/checkout')) {
       if (!params.tpl) {
         Startup.Store('tpl', 'emc1');
       }

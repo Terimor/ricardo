@@ -69,7 +69,7 @@
         <script src="https://js.ebanx.com/ebanx-1.6.0.min.js" async></script>
       @endif
 
-      @if (Request::is('checkout'))
+      @if (Route::is('checkout') || Route::is('checkout_price_set'))
         <script type="text/javascript">window.IPQ={Callback:()=>{}};</script>
         <script src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/learn.js" async></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/libphonenumber-js/1.7.25/libphonenumber-js.min.js" async></script>
@@ -135,7 +135,7 @@
         </main>
     </div>
 
-    @if (Request::is('checkout'))
+    @if (Route::is('checkout') || Route::is('checkout_price_set'))
       <noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
     @endif
     

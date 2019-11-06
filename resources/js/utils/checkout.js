@@ -216,6 +216,10 @@ export function sendCheckoutRequest(data) {
   let reqURLSearchParams = new URLSearchParams();
   const searchParams = new URL(location).searchParams;
 
+  if (/^\/checkout\/.+/.test(location.pathname)) {
+    searchParams.set('cop_id', location.pathname.split('/')[2]);
+  }
+
   localStorage.setItem('3ds_params', searchParams.toString());
 
   reqURLSearchParams.set('cur', !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'

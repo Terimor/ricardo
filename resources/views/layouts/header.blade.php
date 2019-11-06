@@ -30,7 +30,7 @@
             </ul>
         @endif
 
-        @if(Request::is('checkout') && (Request::get('show_timer') === '{timer}' || Request::get('show_timer') === '1'))
+        @if((Route::is('checkout') || Route::is('checkout_price_set')) && (Request::get('show_timer') === '{timer}' || Request::get('show_timer') === '1'))
           <timer-component />
         @endif
     </div>

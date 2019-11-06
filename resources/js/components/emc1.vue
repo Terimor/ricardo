@@ -313,35 +313,38 @@
       this.applyDefaultValues();
 
       if (this.queryParams['3ds'] === 'failure') {
-        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+        let selectedProductData = localStorage.getItem('selectedProductData');
 
-        if (!selectedProductData) {
-          return;
+        try {
+          selectedProductData = JSON.parse(selectedProductData);
+
+          this.form.deal = selectedProductData.deal || this.form.deal;
+          this.form.variant = selectedProductData.variant || this.form.variant;
+          this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
+          this.form.installments = selectedProductData.installments || this.form.installments;
+          this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
+          this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
+          this.form.cardType = selectedProductData.cardType || this.form.cardType;
+          this.form.fname = selectedProductData.fname || this.form.fname;
+          this.form.lname = selectedProductData.lname || this.form.lname;
+          this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
+          this.form.email = selectedProductData.email || this.form.email;
+          this.form.phone = selectedProductData.phone || this.form.phone;
+          this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
+          this.form.street = selectedProductData.street || this.form.street;
+          this.form.district = selectedProductData.district || this.form.district;
+          this.form.city = selectedProductData.city || this.form.city;
+          this.form.state = selectedProductData.state || this.form.state;
+          this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
+          this.form.country = selectedProductData.country || this.form.country;
+          this.form.documentType = selectedProductData.documentType || this.form.documentType;
+          this.form.documentNumber = selectedProductData.documentNumber || this.form.documentNumber;
+          this.setWarrantyPriceText(this.form.deal);
+          this.isFormShown = true;
         }
-
-        this.form.deal = selectedProductData.deal || this.form.deal;
-        this.form.variant = selectedProductData.variant || this.form.variant;
-        this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
-        this.form.installments = selectedProductData.installments || this.form.installments;
-        this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
-        this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
-        this.form.cardType = selectedProductData.cardType || this.form.cardType;
-        this.form.fname = selectedProductData.fname || this.form.fname;
-        this.form.lname = selectedProductData.lname || this.form.lname;
-        this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
-        this.form.email = selectedProductData.email || this.form.email;
-        this.form.phone = selectedProductData.phone || this.form.phone;
-        this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
-        this.form.street = selectedProductData.street || this.form.street;
-        this.form.district = selectedProductData.district || this.form.district;
-        this.form.city = selectedProductData.city || this.form.city;
-        this.form.state = selectedProductData.state || this.form.state;
-        this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
-        this.form.country = selectedProductData.country || this.form.country;
-        this.form.documentType = selectedProductData.documentType || this.form.documentType;
-        this.form.documentNumber = selectedProductData.documentNumber || this.form.documentNumber;
-        this.setWarrantyPriceText(this.form.deal);
-        this.isFormShown = true;
+        catch (err) {
+          
+        }
       }
 
       setTimeout(() => {
