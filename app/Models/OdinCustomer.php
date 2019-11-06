@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use App\Constants\CountryCustomers;
 
 class OdinCustomer extends Model
 {
@@ -140,30 +141,70 @@ class OdinCustomer extends Model
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
         // Get customers from a current users country and get their cities.
-        $customersCollection = self::getCustomersByCountryCode($country_code, $limit);
-
-        // If there are not enough customers from a current users country - add customers from USA.
-        if (count($customersCollection) < $limit && $country_code !== 'us') {
-            $temp_limit = $limit - count($recentlyBoughtNames);
-            // Merge Customers from a current users country with a customers from a 'us' (USA).
-            $customersCollection = $customersCollection->merge(self::getCustomersByCountryCode('us', $temp_limit));
-        }
-
-        // Iterate over all customers and get their full names and cities.
-        $customersCollection->each(function($item, $key) use (&$recentlyBoughtNames, &$recentlyBoughtCities) {
-            $temp_first_name = $item['first_name'];
-            if (!in_array($temp_first_name, $recentlyBoughtNames)) {
-                $recentlyBoughtNames[] = $temp_first_name;
+        $customersCollection = self::getCustomersByCountryCode($country_code, $limit);        
+        
+        foreach ($customersCollection as $customer) {
+            $name = $customer->getPublicCustomerName();            
+            if (!in_array($name, $recentlyBoughtNames)) {
+                $recentlyBoughtNames[] = $name;
             }
+            
+            $city = $customer->getPublicCityName();
+            if ($city && !in_array($city, $recentlyBoughtCities)) {
+                $recentlyBoughtCities[] = $city;
+            }
+        }
+        
+        $tempNamesCount = count($recentlyBoughtNames);
+        $tempCityCount = count($recentlyBoughtCities);
+        
+        // get from constants and merge
+        if (count($recentlyBoughtNames) < $limit) {
+            $customerLists = CountryCustomers::$list;
+            if (isset(CountryCustomers::$list[$country_code]['names'])) {
+                shuffle(CountryCustomers::$list[$country_code]['names']);
+                
+                foreach(CountryCustomers::$list[$country_code]['names'] as $value) {
+                    if (!in_array($value, $recentlyBoughtNames)) {
+                        $recentlyBoughtNames[] = $value;
+                        $tempNamesCount++;
+                        if ($tempNamesCount >= $limit) {
+                            break;
+                        }
+                    }                                                            
+                }                                
+            }
+            
+            if (isset(CountryCustomers::$list[$country_code]['cities'])) {
+                shuffle(CountryCustomers::$list[$country_code]['cities']);
+                
+                foreach(CountryCustomers::$list[$country_code]['cities'] as $value) {
+                    if (!in_array($value, $recentlyBoughtCities)) {
+                        $recentlyBoughtCities[] = $value;
+                        $tempCityCount++;
+                        if ($tempCityCount >= $limit) {
+                            break;
+                        }
+                    }                    
+                }                                
+            }
+        }
+        
+        // if we still have < than limit get it from us
+        if ($tempNamesCount < $limit) {
+            $customersCollection = self::getCustomersByCountryCode('us', $limit - $tempNamesCount);
+            foreach ($customersCollection as $customer) {
+                $name = $customer->getPublicCustomerName();            
+                if (!in_array($name, $recentlyBoughtNames)) {
+                    $recentlyBoughtNames[] = $name;
+                }
 
-            // Fill in unique cities.
-            if (!empty($item['addresses']['0']['city'])) {
-                $city = $item['addresses']['0']['city'];
-                if (!in_array($city, $recentlyBoughtCities)) {
+                $city = $customer->getPublicCityName();
+                if ($city && !in_array($city, $recentlyBoughtCities) && $tempCityCount < $limit) {
                     $recentlyBoughtCities[] = $city;
                 }
             }
-        });
+        }
 
         $recently_bought_data = [
             'recentlyBoughtNames' => $recentlyBoughtNames,
@@ -186,5 +227,25 @@ class OdinCustomer extends Model
             ->orderBy('_id', 'desc')
             ->limit($limit)
             ->get();
+    }
+    
+    /**
+     * Get public customer name for display
+     * @return type
+     */
+    public function getPublicCustomerName()
+    {
+        return mb_convert_case(mb_strtolower($this->first_name), MB_CASE_TITLE) . ' ' . mb_strtoupper(mb_substr($this->last_name, 0, 1)).'.';
+    }
+    
+    /**
+     * Get public city name for display
+     * @return type
+     */
+    public function getPublicCityName()
+    {
+        $adresses = $this->addresses;
+        $city = $adresses[0]['city'] ?? null;
+        return $city ? mb_convert_case(mb_strtolower($city), MB_CASE_TITLE) : null;
     }
 }

@@ -125,7 +125,11 @@ class CurrencyService
         'GYD',
         'MMK',
         'MGA',
-        'MWK'
+        'MWK',
+        'NPR',
+        'DJF',
+        'BIF',
+        'CDF'        
     ];
     
     /**
