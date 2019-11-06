@@ -162,7 +162,7 @@ class OdinCustomer extends Model
         // get from constants and merge
         if (count($recentlyBoughtNames) < $limit) {
             $customerLists = CountryCustomers::$list;
-            if (isset(CountryCustomers::$list[$country_code]['names'])) {
+            if (isset(CountryCustomers::$list[$country_code]['names']) && is_array(CountryCustomers::$list[$country_code]['names'])) {
                 shuffle(CountryCustomers::$list[$country_code]['names']);
                 
                 foreach(CountryCustomers::$list[$country_code]['names'] as $value) {
@@ -176,7 +176,7 @@ class OdinCustomer extends Model
                 }                                
             }
             
-            if (isset(CountryCustomers::$list[$country_code]['cities'])) {
+            if (isset(CountryCustomers::$list[$country_code]['cities']) && is_array(CountryCustomers::$list[$country_code]['cities'])) {
                 shuffle(CountryCustomers::$list[$country_code]['cities']);
                 
                 foreach(CountryCustomers::$list[$country_code]['cities'] as $value) {
