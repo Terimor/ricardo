@@ -142,16 +142,17 @@ class OdinCustomer extends Model
 
         // Get customers from a current users country and get their cities.
         $customersCollection = self::getCustomersByCountryCode($country_code, $limit);        
-        
-        foreach ($customersCollection as $customer) {
-            $name = $customer->getPublicCustomerName();            
-            if (!in_array($name, $recentlyBoughtNames)) {
-                $recentlyBoughtNames[] = $name;
-            }
-            
-            $city = $customer->getPublicCityName();
-            if ($city && !in_array($city, $recentlyBoughtCities)) {
-                $recentlyBoughtCities[] = $city;
+        if ($customersCollection) {
+            foreach ($customersCollection as $customer) {
+                $name = $customer->getPublicCustomerName();            
+                if (!in_array($name, $recentlyBoughtNames)) {
+                    $recentlyBoughtNames[] = $name;
+                }
+
+                $city = $customer->getPublicCityName();
+                if ($city && !in_array($city, $recentlyBoughtCities)) {
+                    $recentlyBoughtCities[] = $city;
+                }
             }
         }
         
@@ -193,15 +194,17 @@ class OdinCustomer extends Model
         // if we still have < than limit get it from us
         if ($tempNamesCount < $limit) {
             $customersCollection = self::getCustomersByCountryCode('us', $limit - $tempNamesCount);
-            foreach ($customersCollection as $customer) {
-                $name = $customer->getPublicCustomerName();            
-                if (!in_array($name, $recentlyBoughtNames)) {
-                    $recentlyBoughtNames[] = $name;
-                }
+            if ($customersCollection) {
+                foreach ($customersCollection as $customer) {
+                    $name = $customer->getPublicCustomerName();            
+                    if (!in_array($name, $recentlyBoughtNames)) {
+                        $recentlyBoughtNames[] = $name;
+                    }
 
-                $city = $customer->getPublicCityName();
-                if ($city && !in_array($city, $recentlyBoughtCities) && $tempCityCount < $limit) {
-                    $recentlyBoughtCities[] = $city;
+                    $city = $customer->getPublicCityName();
+                    if ($city && !in_array($city, $recentlyBoughtCities) && $tempCityCount < $limit) {
+                        $recentlyBoughtCities[] = $city;
+                    }
                 }
             }
         }
