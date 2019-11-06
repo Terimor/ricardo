@@ -154,23 +154,22 @@ class AffiliateSetting extends Model
                 $tempRateCount = floor($qtyForCalculation / static::$salesQtyInTable);
                 $qtyForCalculation = (int) (($qtyForCalculation+1) - ($tempRateCount * static::$salesQtyInTable));
             }
-
+            
             // if we have mainQtyRules percentage
             if (!isset($reducePercent)) {
                 $reducePercent = !empty($affiliate->postback_percent) ? $affiliate->postback_percent : static::$defaultPercent;
             }
 
-            if (isset(static::$percentArray[$reducePercent][$qtyForCalculation])) {
+            if (isset(static::$percentArray[$reducePercent][$qtyForCalculation])) {                
                 $isReduce = static::$percentArray[$reducePercent][$qtyForCalculation];
                 // save affiliate products
                 $products[$productId] = $qty;
                 $affiliate->product_sales = $products;
                 $affiliate->save();
             } else {
-                logger()->error("Wrong affiliate percent", ['productId' => $productId, 'qty' => $qty, 'affiliateId' => $affiliate->id, 'reducePercent' => $reducePercent]);
+                logger()->error("Wrong affiliate percent", ['productId' => $productId, 'qty' => $qty, 'qtyCalculation' => $qtyForCalculation, 'affiliateId' => $affiliate->ho_affiliate_id, 'reducePercent' => $reducePercent]);
             }           
-        }
-        
+        }        
         return $isReduce;
     }
     

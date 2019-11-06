@@ -109,7 +109,23 @@ class CurrencyService
         'UGX',
         'XOF',
         'ZAR',
-        'ZMK',       
+        'ZMK',
+        'AOA',
+        'GNF',
+        'VND',
+        'SYP',
+        'XAF',
+        'JMD',
+        'KGS',
+        'XPF',
+        'KHR',
+        'SOS',
+        'MZN',
+        'LAK',
+        'GYD',
+        'MMK',
+        'MGA',
+        'MWK'
     ];
     
     /**
