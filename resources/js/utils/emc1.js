@@ -4,6 +4,7 @@ import { goTo } from './goTo';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
 import { getRandomInt } from '../utils/common';
+import { goToThankYou } from './checkout';
 
 export const getRadioHtml = ({
    discountName,
@@ -231,24 +232,7 @@ export function paypalOnApprove(data) {
       throw new Error(res.statusText);
     }
   })
-    .then(function(res) {
-      if (odin_order_id) {
-        localStorage.setItem('odin_order_created_at', new Date());
-
-        let searchParams = new URLSearchParams();
-
-        searchParams.set('order', odin_order_id);
-        searchParams.set('cur', order_currency);
-
-        if (/^\/checkout\/.+/.test(location.pathname)) {
-          searchParams.set('cop_id', location.pathname.split('/')[2]);
-        }
-
-        if (checkoutData.product.upsells.length > 0) {
-          goTo('/thankyou-promos?' + searchParams.toString());
-        }else{
-          goTo('/thankyou?' + searchParams.toString());
-        }
-      }
-    });
+  .then(function(res) {
+    goToThankYou(odin_order_id, order_currency);
+  });
 }
