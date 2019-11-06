@@ -1,5 +1,11 @@
-const initialUrl = new URL(window.location);
+const initialUrl = new URL(location);
 const fetch = window.fetch;
+
+
+// add cop_id param if price set exists
+if (/^\/checkout\/.+/.test(location.pathname)) {
+  initialUrl.searchParams.set('cop_id', location.pathname.split('/')[2]);
+}
 
 
 // populate links with GET params
@@ -10,7 +16,7 @@ function populateLinksWithGetParams() {
     if (!href.match(/^https?:\/\//) && !link.href.match(/^mailto:/) && !link.href.match(/^tel:/)) {
       const url = new URL(link.href);
 
-      new URL(location).searchParams.forEach((value, key) => {
+      initialUrl.searchParams.forEach((value, key) => {
         if (!url.searchParams.has(key)) {
           url.searchParams.set(key, value);
         }
@@ -37,7 +43,7 @@ window.fetch = function(url, options = {}) {
   if (!url.match(/^https?:\/\//)) {
     switch (method) {
       case 'get':
-        const myUrl = new URL(url, window.location);
+        const myUrl = new URL(url, location);
 
         initialUrl.searchParams.forEach((value, key) => {
           if (!myUrl.searchParams.has(key)) {

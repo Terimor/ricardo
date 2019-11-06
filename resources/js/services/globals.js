@@ -4,7 +4,7 @@ const searchParams = new URL(location).searchParams;
 
 
 // clear cookies if product changed
-if (location.pathname === '/checkout') {
+if (location.pathname.startsWith('/checkout')) {
   const product_id = cookies.getCookie('product_id');
 
   if (product_id !== checkoutData.product.id) {
@@ -16,7 +16,7 @@ if (location.pathname === '/checkout') {
 
 
 // direct linking logic
-if (location.pathname === '/checkout') {
+if (location.pathname.startsWith('/checkout')) {
   const txid = searchParams.get('txid') || '';
   const offer_id = +searchParams.get('offer_id');
   const aff_id = +searchParams.get('aff_id');
@@ -79,7 +79,7 @@ window.txid = window.txidjs = txidFromGet.length >= 20
 
 
 // add tpl body class for checkout
-if (location.pathname === '/checkout') {
+if (location.pathname.startsWith('/checkout')) {
   document.body.classList.add('tpl-' + (searchParams.has('tpl') && searchParams.get('tpl') !== '{tpl}'
     ? searchParams.get('tpl')
     : 'emc1'));

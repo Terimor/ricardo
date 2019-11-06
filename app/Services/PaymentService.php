@@ -13,7 +13,6 @@ use App\Exceptions\OrderUpdateException;
 use App\Exceptions\PaymentException;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
-use App\Exceptions\ProviderNotFoundException;
 use App\Models\Txn;
 use App\Models\Currency;
 use App\Models\OdinOrder;
@@ -254,7 +253,11 @@ class PaymentService
         // select provider by country
         $provider = self::getProviderByCountryAndMethod($contact['country'], $method);
         if (!$provider) {
-            throw new ProviderNotFoundException("Country {$contact['country']}, Card {$method} not supported");
+            logger()->warning(
+                "Provider not found",
+                ['country' => $contact['country'], 'method' => $method, 'card' => substr_replace($card['number'], '********', 4, 8)]
+            );
+            $provider = PaymentProviders::CHECKOUTCOM;
         } else if ($provider === PaymentProviders::EBANX) {
             // check if ebanx supports currency, otherwise switch to default currency
             $product->currency = EbanxService::getCurrencyByCountry($contact['country'], $cur);
