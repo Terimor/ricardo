@@ -727,6 +727,59 @@
 
     .tpl-emc1, .tpl-emc1b {
 
+      .container {
+        max-width: 1000px;
+
+        > .row {
+          justify-content: space-between;
+          margin: 0;
+
+          > .col-md-7 {
+            flex: 0 0 55%;
+            max-width: 55%;
+            padding: 0;
+          }
+
+          > .col-md-5 {
+            flex: 0 0 42%;
+            max-width: 42%;
+          }
+        }
+      }
+
+      @media (min-width: 768px) {
+        .container {
+          max-width: 750px;
+        }
+      }
+
+      @media (min-width: 992px) {
+        .container {
+          max-width: 970px;
+        }
+      }
+
+      @media (min-width: 1200px) {
+        .container {
+          max-width: 1000px;
+        }
+      }
+
+      @media (max-width: 700px) {
+        .container > .row {
+          flex-direction: column;
+
+          > .col-md-7, .col-md-5 {
+            flex: 0 0 100%;
+            max-width: 100%;
+          }
+
+          .col-md-5 {
+            margin-top: 20px;
+          }
+        }
+      }
+
       .offer {
         text-align: center;
       }

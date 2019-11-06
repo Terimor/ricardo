@@ -235,10 +235,19 @@ export function paypalOnApprove(data) {
       if (odin_order_id) {
         localStorage.setItem('odin_order_created_at', new Date());
 
-        if(checkoutData.product.upsells.length > 0) {
-            goTo('/thankyou-promos?order=' + odin_order_id + '&cur=' + order_currency);
+        let searchParams = new URLSearchParams();
+
+        searchParams.set('order', odin_order_id);
+        searchParams.set('cur', order_currency);
+
+        if (/^\/checkout\/.+/.test(location.pathname)) {
+          searchParams.set('cop_id', location.pathname.split('/')[2]);
+        }
+
+        if (checkoutData.product.upsells.length > 0) {
+          goTo('/thankyou-promos?' + searchParams.toString());
         }else{
-            goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
+          goTo('/thankyou?' + searchParams.toString());
         }
       }
     });
