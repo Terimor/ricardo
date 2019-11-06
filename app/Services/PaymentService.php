@@ -234,9 +234,6 @@ class PaymentService
         $card = $req->get('card');
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
-
-        $card['number'] = '1235424242424242';
-
         $method = PaymentMethodMapper::toMethod($card['number']);
 
         // find order for update
