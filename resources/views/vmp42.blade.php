@@ -323,7 +323,7 @@
                         </h1>
                         <h2 class="bold promo__people-rate">
                             {{ t('checkout.vmp41.footer_subtitle.first') }}
-                            {{ $product->skus[0]['name'] }}
+                            {{ isset($product->skus[0]) ? $product->skus[0]['name'] : '' }}
                             {{ t('checkout.vmp41.footer_subtitle.second') }}
                         </h2>
                         <green-button @click="scrollTo('.j-header-products')">

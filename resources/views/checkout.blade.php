@@ -33,7 +33,7 @@
 
 @section('content')
 
-@section('title', $product->skus[0]['name'] . ' ' . t('checkout.page_title'))
+@section('title', isset($product->skus[0]) ? $product->skus[0]['name'] . ' ' . t('checkout.page_title') : '')
 
 <app-component></app-component>
 
