@@ -18,11 +18,11 @@
                 >
                     {{ benefit }}
                 </li>
-                <li>Subtotal:
+                <li>{{ textSubtotal }}:
                     {{ finalPrice || subtotal }}
                 </li>
                 <li v-if="warranty">
-                    Warranty:
+                    {{ textWarranty }}:
                     {{ warranty }}
                 </li>
             </ul>
@@ -35,7 +35,7 @@
                 type="danger"
                 @click="deleteAccessory"
             >
-                Remove
+                {{ textRemove }}
             </el-button>
         </div>
     </div>
@@ -69,6 +69,18 @@
         computed: {
             id () {
                 return 'upsells-item-' + this.idx
+            },
+
+            textSubtotal() {
+                return this.$t('upsells.subtotal');
+            },
+
+            textWarranty() {
+                return this.$t('upsells.warranty');
+            },
+
+            textRemove() {
+                return this.$t('upsells.remove');
             },
         },
 
