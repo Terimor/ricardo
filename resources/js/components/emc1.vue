@@ -286,7 +286,7 @@
           paymentMethod: null,
           fname: null,
           lname: null,
-          dateOfBirth: null,
+          //dateOfBirth: null,
           email: null,
           phone: null,
           street: null,
@@ -313,10 +313,8 @@
       this.applyDefaultValues();
 
       if (this.queryParams['3ds'] === 'failure') {
-        let selectedProductData = localStorage.getItem('selectedProductData');
-
         try {
-          selectedProductData = JSON.parse(selectedProductData);
+          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
           this.form.deal = selectedProductData.deal || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
@@ -327,7 +325,7 @@
           this.form.cardType = selectedProductData.cardType || this.form.cardType;
           this.form.fname = selectedProductData.fname || this.form.fname;
           this.form.lname = selectedProductData.lname || this.form.lname;
-          this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
+          //this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
           this.form.email = selectedProductData.email || this.form.email;
           this.form.phone = selectedProductData.phone || this.form.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;

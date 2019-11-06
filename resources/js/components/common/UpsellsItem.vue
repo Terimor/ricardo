@@ -86,10 +86,17 @@
 
         methods: {
             deleteAccessory () {
-                const subOrder = JSON.parse(localStorage.getItem('subOrder'));
-                const deleteIndex = subOrder.findIndex((item) => item.id == this.itemData.id);
+                let subOrder = [];
 
-                subOrder.splice(deleteIndex, 1);
+                try {
+                    subOrder = JSON.parse(localStorage.getItem('subOrder'));
+                    const deleteIndex = subOrder.findIndex((item) => item.id == this.itemData.id);
+                    subOrder.splice(deleteIndex, 1);
+                }
+                catch (err) {
+
+                }
+
                 localStorage.setItem('subOrder', JSON.stringify(subOrder));
                 this.$emit('deleteAccessory', this.idx);
             },

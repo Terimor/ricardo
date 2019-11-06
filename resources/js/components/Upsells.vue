@@ -228,7 +228,16 @@
       },
 
       getOriginalOrder() {
-        return JSON.parse(localStorage.getItem('selectedProductData'));
+        let originalOrder = {};
+
+        try {
+          originalOrder = JSON.parse(localStorage.getItem('selectedProductData'));
+        }
+        catch (err) {
+
+        }
+
+        return originalOrder;
       },
 
       getOriginalOrderPrice() {

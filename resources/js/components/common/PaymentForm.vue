@@ -25,6 +25,7 @@
               name: 'family-name'
             }"
             v-model="paymentForm.lname"/>
+<!--
         <text-field-with-placeholder
             :validation="$v.form.dateOfBirth"
             :validationMessage="textBirthdayRequired"
@@ -37,6 +38,7 @@
             theme="variant-1"
             :label="textBirthday"
         />
+-->
         <text-field
             :validation="$v.form.email"
             :validationMessage="textEmailRequired"
@@ -461,6 +463,7 @@
           this.getLocationByZipcode(zipcode)
         }
       },
+/*
       'paymentForm.dateOfBirth' (val) {
         let result = ''
         const configForSlash = [2, 5]
@@ -476,6 +479,7 @@
 
         this.paymentForm.dateOfBirth = result
       },
+*/
       'paymentForm.cvv' (newVal, oldValue) {
         if(this.paymentForm.cvv) {
             if(newVal.match(/^[0-9]{0,4}$/g)) {
@@ -590,7 +594,7 @@
           cardType: paymentForm.cardType,
           fname: paymentForm.fname,
           lname: paymentForm.lname,
-          dateOfBirth: paymentForm.dateOfBirth,
+          //dateOfBirth: paymentForm.dateOfBirth,
           email: paymentForm.email,
           phone: paymentForm.phone,
           countryCodePhoneField: paymentForm.countryCodePhoneField,

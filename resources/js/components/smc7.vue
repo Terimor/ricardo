@@ -282,9 +282,9 @@
     },
     created() {
       if (this.queryParams['3ds'] === 'failure') {
-        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+        try {
+          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
-        if (selectedProductData) {
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
           this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
           this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
@@ -302,6 +302,9 @@
           this.form.state = selectedProductData.state || this.form.state;
           this.form.zipCode = selectedProductData.zipcode || this.form.zipCode;
           this.form.country = selectedProductData.country || this.form.country;
+        }
+        catch (err) {
+          
         }
 
         get3dsErrors().then(paymentError => {

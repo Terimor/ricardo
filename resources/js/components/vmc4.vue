@@ -127,11 +127,14 @@
     },
     created() {
       if (this.queryParams['3ds'] === 'failure') {
-        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+        try {
+          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
 
-        if (selectedProductData) {
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
           this.form.installments = selectedProductData.installments || this.form.installments;
+        }
+        catch (err) {
+          
         }
       }
     },

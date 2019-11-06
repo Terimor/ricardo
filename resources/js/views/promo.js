@@ -60,7 +60,7 @@ const promo = new Vue({
         paymentProvider: null,
         fname: null,
         lname: null,
-        dateOfBirth: '',
+        //dateOfBirth: '',
         email: null,
         phone: null,
         cardType: 'credit',
@@ -176,7 +176,7 @@ const promo = new Vue({
         this.form.cardType = selectedProductData.cardType || this.form.cardType;
         this.form.fname = selectedProductData.fname || this.form.fname;
         this.form.lname = selectedProductData.lname || this.form.lname;
-        this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
+        //this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
         this.form.email = selectedProductData.email || this.form.email;
         this.form.phone = selectedProductData.phone || this.form.phone;
         this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
