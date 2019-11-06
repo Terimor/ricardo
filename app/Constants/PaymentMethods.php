@@ -79,7 +79,7 @@ class PaymentMethods
         ],
         self::ELO => [
             'name'      => 'Elo',
-            'logo'      => 'https://cdn.backenddomainsecure.com/static/images/eps-curved.png',
+            'logo'      => 'https://cdn.backenddomainsecure.com/static/images/elo-curved.png',
             'is_active' => true,
         ],
         self::HIPERCARD => [
