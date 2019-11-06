@@ -226,10 +226,7 @@ class OdinOrder extends OdinModel
     {
         $order = OdinOrder::where(['number' => $number])->first();
         if (!$order && $throwable) {
-            if (\App::environment() === 'production') {
-                //log error for production only
-                throw new OrderNotFoundException("Order [{$number}] not found");
-            }
+            throw new OrderNotFoundException("Order [{$number}] not found");
         }
         return $order;
     }
