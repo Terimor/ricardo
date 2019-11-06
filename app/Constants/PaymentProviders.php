@@ -34,7 +34,7 @@ class PaymentProviders {
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
                 ],
-                PaymentMethods::VISA       => [
+                PaymentMethods::VISA => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
@@ -44,12 +44,12 @@ class PaymentProviders {
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
                 ],
-                PaymentMethods::AMEX       => [
+                PaymentMethods::AMEX => [
                     '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
                 ],
-                PaymentMethods::DISCOVER   => [
+                PaymentMethods::DISCOVER => [
                     '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'co', 'mx']
@@ -61,7 +61,7 @@ class PaymentProviders {
                     'excl' => ['ar', 'br', 'co', 'mx']
                     // '-3ds' => ['us', 'ko']
                 ],
-                PaymentMethods::JCB        => [
+                PaymentMethods::JCB => [
                     '+3ds' => ['europe', 'il', 'ko', 'id', 'id', 'kr', 'gb', 'se'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'co', 'mx']
@@ -345,37 +345,34 @@ class PaymentProviders {
                 ]
             ],
             'methods'   => [
-                PaymentMethods::CREDITCARD => [
-                    '-3ds' => ['br', 'mx', 'co']
-                ],
                 PaymentMethods::MASTERCARD => [
                     '-3ds' => ['ar', 'br', 'mx', 'co']
                 ],
-                PaymentMethods::VISA       => [
+                PaymentMethods::VISA => [
                     '-3ds' => ['ar', 'br', 'mx', 'co']
                 ],
-                PaymentMethods::AMEX       => [
+                PaymentMethods::AMEX => [
                     '-3ds' => ['ar', 'br', 'mx', 'co']
                 ],
                 PaymentMethods::DINERSCLUB => [
                     '-3ds' => ['ar', 'br', 'co']
                 ],
-                PaymentMethods::HIPERCARD  => [
+                PaymentMethods::HIPERCARD => [
                     '-3ds' => ['br']
                 ],
-                PaymentMethods::ELO        => [
+                PaymentMethods::ELO => [
                     '-3ds' => ['br']
                 ],
-                PaymentMethods::NARANJA   => [
+                PaymentMethods::NARANJA => [
                     '-3ds' => ['ar']
                 ],
-                PaymentMethods::CARNET     => [
+                PaymentMethods::CARNET => [
                     '-3ds' => ['mx']
                 ],
-                PaymentMethods::CABAL      => [
+                PaymentMethods::CABAL => [
                     '-3ds' => ['ar']
                 ],
-                PaymentMethods::CREDIMAS   => [
+                PaymentMethods::CREDIMAS => [
                     '-3ds' => ['ar']
                 ]
             ]
@@ -388,10 +385,10 @@ class PaymentProviders {
                 PaymentMethods::PREZELEWY24 => [
                     '-3ds' => ['pl']
                 ],
-                PaymentMethods::IDEAL       => [
+                PaymentMethods::IDEAL => [
                     '-3ds' => ['nl']
                 ],
-                PaymentMethods::EPS         => [
+                PaymentMethods::EPS => [
                     '-3ds' => ['at']
                 ],
             ]
