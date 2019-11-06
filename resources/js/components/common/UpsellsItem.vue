@@ -89,7 +89,7 @@
                 let subOrder = [];
 
                 try {
-                    subOrder = JSON.parse(localStorage.getItem('subOrder'));
+                    subOrder = JSON.parse(localStorage.getItem('subOrder')) || [];
                     const deleteIndex = subOrder.findIndex((item) => item.id == this.itemData.id);
                     subOrder.splice(deleteIndex, 1);
                 }

@@ -128,7 +128,7 @@
     created() {
       if (this.queryParams['3ds'] === 'failure') {
         try {
-          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
           this.form.installments = selectedProductData.installments || this.form.installments;

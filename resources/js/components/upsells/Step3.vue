@@ -100,7 +100,7 @@ export default {
       let selectedProductData = {};
 
       try {
-        selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+        selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
       }
       catch (err) {
 

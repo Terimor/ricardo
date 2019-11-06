@@ -283,7 +283,7 @@
     created() {
       if (this.queryParams['3ds'] === 'failure') {
         try {
-          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
           this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;

@@ -314,7 +314,7 @@
 
       if (this.queryParams['3ds'] === 'failure') {
         try {
-          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
           this.form.deal = selectedProductData.deal || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;

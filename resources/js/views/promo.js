@@ -165,9 +165,9 @@ const promo = new Vue({
 
   created() {
     if (this.queryParams['3ds'] === 'failure') {
-      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+      try {
+        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
-      if (selectedProductData) {
         this.form.deal = selectedProductData.deal || this.form.deal;
         this.form.variant = selectedProductData.variant || this.form.variant;
         this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
@@ -189,6 +189,9 @@ const promo = new Vue({
         this.form.country = selectedProductData.country || this.form.country;
         this.setSelectedPlan(+this.form.deal);
         this.isFormShown = true;
+      }
+      catch (err) {
+
       }
     }
 

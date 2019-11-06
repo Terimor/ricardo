@@ -345,7 +345,7 @@
     created() {
       if (this.queryParams['3ds'] === 'failure') {
         try {
-          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+          const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
           this.step = 3;
           this.isFormShown = true;

@@ -15,10 +15,17 @@ export default {
   },
   computed: {
     isPurchasAlreadyExists() {
-      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+      let selectedProductData = {};
       const odin_order_created_at = localStorage.getItem('odin_order_created_at');
 
-      if (!odin_order_created_at || !selectedProductData) {
+      try {
+        selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
+      }
+      catch (err) {
+
+      }
+
+      if (!odin_order_created_at || !selectedProductData.product_name) {
         return false
       }
 
