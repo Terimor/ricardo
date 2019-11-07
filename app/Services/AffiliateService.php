@@ -158,7 +158,7 @@ class AffiliateService
      */
     public static function getPixels(Request $request, AffiliateSetting $affiliate = null)
     {
-        $pixels = [];
+        $pixels = [];        
         if ($affiliate) {
             $productService = new ProductService();
             $product = $productService->resolveProduct($request, false, null, true);
@@ -310,5 +310,26 @@ class AffiliateService
             }
         }
         return $correctTxid;
-    }    
+    }
+
+    /**
+     * returns affiliate id from request
+     * @param Request $request
+     * @return type
+     */
+    public static function getAffIdFromRequest(Request $request)
+    {        
+        return $request->get('aff_id') ? $request->get('aff_id') : ($request->get('affid') && $request->get('affid') > AffiliateSetting::OWN_AFFILIATE_MAX ? $request->get('affid') : null);
+    }
+    
+    /**
+     * Get attribute by priority
+     * @param type $param1
+     * @param type $param2
+     * @return type
+     */
+    public static function getAttributeByPriority($param1, $param2)
+    {
+        return $param1 ? $param1 : ($param2 && $param2 > AffiliateSetting::OWN_AFFILIATE_MAX ? $param2 : null);
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\OdinCustomer;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
 use App\Services\PaymentService;
+use App\Services\AffiliateService;
 use App\Models\Setting;
 use App\Services\I18nService;
 use App\Services\OrderService;
@@ -198,8 +199,9 @@ class SiteController extends Controller
 
         // check aff_id
         $order_aff = null;
-        if ($request->get('aff_id')) {
-            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('aff_id'));
+        $affId = AffiliateService::getAffIdFromRequest($request);
+        if ($affId) {
+            $order_aff = OrderService::getReducedData($request->get('order'), $affId);
             $order_aff = $order_aff ? $order_aff->toArray() : null;
         }
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff'));
@@ -245,8 +247,9 @@ class SiteController extends Controller
 
         // check aff_id
         $order_aff = null;
-        if ($request->get('aff_id')) {
-            $order_aff = OrderService::getReducedData($request->get('order'), $request->get('aff_id'));
+        $affId = AffiliateService::getAffIdFromRequest($request);
+        if ($affId) {
+            $order_aff = OrderService::getReducedData($request->get('order'), $affId);
             $order_aff = $order_aff ? $order_aff->toArray() : null;
         }
 

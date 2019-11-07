@@ -271,6 +271,8 @@ class PaymentService
             $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
             $params = !empty($page_checkout) ? \Utils::getParamsFromUrl($page_checkout) : null;
+            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
 
             $order = $this->addOrder([
                 'currency'              => $price['currency'],
@@ -306,8 +308,8 @@ class PaymentService
                 'products'              => [$order_product],
                 'page_checkout'         => $page_checkout,
                 'params'                => $params,
-                'offer'                 => !empty($params['offer_id']) ? $params['offer_id'] : null,
-                'affiliate'             => !empty($params['aff_id']) ? $params['aff_id'] : null,
+                'offer'                 => $offerId,
+                'affiliate'             => $affId,
                 'ipqualityscore'        => $ipqs
             ]);
         } else {

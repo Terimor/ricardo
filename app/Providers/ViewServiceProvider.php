@@ -39,8 +39,9 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('ga_id', optional(Domain::getByName())->ga_id);
             
             $affiliate = null;
-            if (Request::get('aff_id')) {
-                $affiliate = AffiliateSetting::getByHasOfferId(Request::get('aff_id'));
+            $affId = AffiliateService::getAffIdFromRequest(Request());            
+            if ($affId) {                
+                $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
             $view->with('htmlToApp', AffiliateService::getHtmlToApp(Request(), $affiliate));
 
@@ -50,8 +51,9 @@ class ViewServiceProvider extends ServiceProvider
 
         View::composer('layouts.footer', function($view) {
             $affiliate = null;
-            if (Request::get('aff_id')) {
-                $affiliate = AffiliateSetting::getByHasOfferId(Request::get('aff_id'));
+            $affId = AffiliateService::getAffIdFromRequest(Request());            
+            if ($affId) {                
+                $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
             $view->with('aff', AffiliateSetting::getLocaleAffiliate($affiliate));
         });
