@@ -68,7 +68,7 @@ const txidFromGet = searchParams.get('txid') || '';
 const txidFromCookie = cookies.getCookie('txid') || '';
 
 if (txidFromGet.length >= 20) {
-  document.cookie = 'txid=' + encodeURIComponent(txidFromGet);
+  cookies.setCookie('txid', txidFromGet);
 }
 
 window.txid = window.txidjs = txidFromGet.length >= 20
