@@ -18,8 +18,8 @@ if (location.pathname.startsWith('/checkout')) {
 // direct linking logic
 if (location.pathname.startsWith('/checkout')) {
   const txid = searchParams.get('txid') || '';
-  const offer_id = +searchParams.get('offer_id');
-  const aff_id = +searchParams.get('aff_id');
+  const offer_id = +searchParams.get('offer_id') || +searchParams.get('offerid');
+  const aff_id = +searchParams.get('aff_id') || +searchParams.get('affid');
   const direct = +searchParams.get('direct');
 
   if (offer_id > 0 && aff_id > 10 && direct === 1 && txid.length < 20) {
@@ -42,8 +42,8 @@ searchParams.forEach((value, key) => {
 
 
 // js variables for affiliate
-window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || '';
-window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || '';
+window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || 0;
+window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || 0;
 
 
 if (searchParams.get('cur') === '{aff_currency}') {
