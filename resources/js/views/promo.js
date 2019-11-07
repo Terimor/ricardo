@@ -208,7 +208,7 @@ const promo = new Vue({
   },
 
   mounted() {
-    document.body.classList.remove('js-hidden');
+    document.documentElement.classList.remove('js-hidden');
 
     this.installments =
       this.checkoutData.countryCode === 'br' ? 3 :
@@ -288,7 +288,7 @@ const promo = new Vue({
     },
 
     codeOrDefault () {
-      return this.queryParams.product || this.checkoutData.product.skus[0].code;
+      return this.queryParams.product || (this.checkoutData.product.skus[0] && this.checkoutData.product.skus[0].code) || null;
     },
 
     hasTimer() {

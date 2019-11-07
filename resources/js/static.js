@@ -49,7 +49,7 @@ if (location.pathname === '/splash') {
 
 // document ready
 function documentReady() {
-  document.body.classList.remove('js-hidden');
+  document.documentElement.classList.remove('js-hidden');
   populateLinksWithGetParams();
 }
 

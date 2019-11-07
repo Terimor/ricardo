@@ -252,12 +252,7 @@
           lname: null,
           email: null,
           phone: null,
-          variant: (function () {
-            try {
-              return checkoutData.product.skus[0].code
-            } catch (_) {
-            }
-          }()),
+          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
           country: checkoutData.countryCode,
           streetAndNumber: null,
           city: null,
@@ -366,7 +361,7 @@
       },
 
       codeOrDefault () {
-        return this.queryParams.product || checkoutData.product.skus[0].code;
+        return this.queryParams.product || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
       },
 
       radioIdx() {
@@ -562,11 +557,11 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
-        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code) || null;
 
         const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
-        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
+        const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;
       },

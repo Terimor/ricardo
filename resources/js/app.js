@@ -18,7 +18,7 @@ const app = new Vue({
     return result;
   },
   mounted() {
-    document.body.classList.remove('js-hidden');
+    document.documentElement.classList.remove('js-hidden');
   },
 });
 

@@ -133,7 +133,7 @@ const thankYou = new Vue({
     },
 
     mounted() {
-        document.body.classList.remove('js-hidden');
+        document.documentElement.classList.remove('js-hidden');
 
         this.getTotal();
         this.saveOrderNumber();

@@ -280,7 +280,7 @@
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
           deal: null,
-          variant: checkoutData.product.skus[0].code,
+          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
           installments: 1,
           paymentProvider: null,
           paymentMethod: null,
@@ -361,7 +361,7 @@
         }));
       },
       codeOrDefault () {
-        return this.queryParams.product || this.checkoutData.product.skus[0].code;
+        return this.queryParams.product || (this.checkoutData.product.skus[0] && this.checkoutData.product.skus[0].code) || null;
       },
       productData () {
         return checkoutData.product
@@ -417,7 +417,7 @@
         }))
       },
       productImagesList() {
-        const variant = this.form.variant || checkoutData.product.skus[0].code;
+        const variant = this.form.variant || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
         const product = checkoutData.product.skus.find(sku => variant === sku.code);
         return Object.values(product.quantity_image);
       },
@@ -641,11 +641,11 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
-        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code) || null;
 
         const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
-        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
+        const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;
       },
