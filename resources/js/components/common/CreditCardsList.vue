@@ -32,11 +32,11 @@
     computed: {
 
       paymentMethods() {
-        return this.$root.paymentMethods;
+        return this.$root.paymentMethods || [];
       },
 
       paymentMethodsAvailableList() {
-        let paymentMethodNames = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer');
+        let paymentMethodNames = Object.keys(this.$root.paymentMethods || []).filter(name => name !== 'instant_transfer');
 
         if (this.withPaypal) {
           paymentMethodNames.push('instant_transfer');

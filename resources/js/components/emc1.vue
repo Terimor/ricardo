@@ -377,10 +377,10 @@
         return installments && installments !== 1 ? installments + '× ' : ''
       },
       extraFields() {
-        const firstMethod = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer').shift();
+        const firstMethod = Object.keys(this.$root.paymentMethods || []).filter(name => name !== 'instant_transfer').shift();
         const paymentMethod = this.form.paymentMethod || firstMethod;
 
-        return this.$root.paymentMethods[paymentMethod].extra_fields || {};
+        return this.$root.paymentMethods && this.$root.paymentMethods[paymentMethod] && this.$root.paymentMethods[paymentMethod].extra_fields || {};
       },
       installmentsList() {
         return this.extraFields.installments.items.map(item => ({
@@ -460,7 +460,7 @@
     watch: {
       'form.country'(value) {
         getPaymentMethods(value).then(res => {
-          this.$root.paymentMethods = res;
+          this.$root.paymentMethods = res || [];
           this.applyDefaultValues();
         });
       },

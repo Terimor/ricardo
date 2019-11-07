@@ -363,7 +363,7 @@
         }
       },
       cardUrl () {
-        return this.paymentForm.paymentMethod
+        return this.$root.paymentMethods && this.paymentForm.paymentMethod && this.$root.paymentMethods[this.paymentForm.paymentMethod]
           ? this.$root.paymentMethods[this.paymentForm.paymentMethod].logo
           : window.cdnUrl + '/assets/images/cc-icons/iconcc.png';
       },
@@ -450,7 +450,7 @@
       'paymentForm.cardNumber' (newVal, oldValue) {
         const paymentMethod = getPaymentMethodByCardNumber(newVal);
 
-        this.paymentForm.paymentMethod = this.$root.paymentMethods[paymentMethod]
+        this.paymentForm.paymentMethod = this.$root.paymentMethods && this.$root.paymentMethods[paymentMethod]
           ? paymentMethod
           : null;
 

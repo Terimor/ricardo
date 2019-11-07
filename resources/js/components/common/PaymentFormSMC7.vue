@@ -180,7 +180,7 @@
       },
 
       cardNames() {
-        const cardNames = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer');
+        const cardNames = Object.keys(this.$root.paymentMethods || []).filter(name => name !== 'instant_transfer');
 
         if (this.paymentForm.installments === 1) {
           cardNames.push('instant_transfer');
@@ -188,9 +188,9 @@
 
         return cardNames.map(cardName => ({
           value: cardName,
-          text: this.$root.paymentMethods[cardName].name,
-          label: this.$root.paymentMethods[cardName].name,
-          imgUrl: this.$root.paymentMethods[cardName].logo,
+          text: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].name || '',
+          label: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].name || '',
+          imgUrl: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].logo || '',
         }));
       },
 
@@ -234,7 +234,7 @@
 		},
 		watch: {
       'paymentForm.country'(value) {
-        getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
+        getPaymentMethods(value).then(res => this.$root.paymentMethods = res || []);
       },
 			'paymentForm.cardNumber'(newVal, oldValue) {
 				const creditCardTypeList = creditCardType(newVal);

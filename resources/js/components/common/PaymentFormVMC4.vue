@@ -456,7 +456,7 @@
 		},
         watch: {
             'form.stepThree.country'(value) {
-              getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
+              getPaymentMethods(value).then(res => this.$root.paymentMethods = res || []);
             },
             'form.stepThree.cardNumber'(newVal, oldValue) {
                 const creditCardTypeList = creditCardType(newVal)

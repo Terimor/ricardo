@@ -132,9 +132,9 @@ const promo = new Vue({
       isShownJumbotron: true,
     };
 
-    if (window.checkoutData && checkoutData.paymentMethods) {
-      result.paymentMethods = JSON.parse(JSON.stringify(checkoutData.paymentMethods));
-    }
+    result.paymentMethods = window.checkoutData && checkoutData.paymentMethods
+      ? JSON.parse(JSON.stringify(checkoutData.paymentMethods))
+      : [];
 
     return result;
   },
