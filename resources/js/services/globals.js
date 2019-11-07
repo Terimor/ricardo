@@ -4,6 +4,7 @@ const searchParams = new URL(location).searchParams;
 
 
 // clear cookies if product changed
+/*
 if (location.pathname.startsWith('/checkout')) {
   const product_id = cookies.getCookie('product_id');
 
@@ -16,7 +17,7 @@ if (location.pathname.startsWith('/checkout')) {
     cookies.setCookie('product_id', checkoutData.product.id);
   }
 }
-
+*/
 
 // direct linking logic
 if (location.pathname.startsWith('/checkout')) {
