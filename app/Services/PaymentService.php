@@ -22,6 +22,7 @@ use App\Services\CustomerService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
 use App\Services\OrderService;
+use App\Services\AffiliateService;
 use App\Mappers\PaymentMethodMapper;
 use App\Constants\PaymentProviders;
 use App\Constants\PaymentMethods;
