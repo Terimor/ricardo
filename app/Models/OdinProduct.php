@@ -210,7 +210,7 @@ class OdinProduct extends Model
                 }
         }
 
-        if (request()->has('cop_id') && !$priceSetFound && !$this->hide_cop_id_log) {
+        if (request()->has('cop_id') && !$priceSetFound && !$this->hide_cop_id_log && request()->get('cop_id') != '{cop_id}') {
             logger()->error("Invalid cop_id ".request()->get('cop_id')." for {$this->product_name}");
         }
 

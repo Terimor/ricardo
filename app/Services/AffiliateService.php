@@ -45,10 +45,17 @@ class AffiliateService
                 $url = $postback->url;
                 // check and replace params
                 $params = $order->params;
-                // if we have txid in url check it then replace to validTxid
+                // if we have #TXID# in code check it then replace to txid
                 if (strpos($url, '#TXID#')) {                    
-                    if ($validTxid) {
-                        $url = str_replace('#TXID#', $validTxid, $url);
+                    if (!empty($order->txid)) {
+                        $url = str_replace('#TXID#', $order->txid, $url);
+                    }
+                }
+
+                // if we have #OFFER_ID# in code check it then replace to offer
+                if (strpos($url, '#OFFER_ID#')) {                    
+                    if (!empty($order->offer)) {
+                        $url = str_replace('#OFFER_ID#', $order->offer, $url);
                     }
                 }
 
@@ -158,7 +165,7 @@ class AffiliateService
      */
     public static function getPixels(Request $request, AffiliateSetting $affiliate = null)
     {
-        $pixels = [];
+        $pixels = [];        
         if ($affiliate) {
             $productService = new ProductService();
             $product = $productService->resolveProduct($request, false, null, true);
@@ -202,7 +209,6 @@ class AffiliateService
             }
                    
             $code = $pixel->code;
-            
             // if not reduced skip it
             
             $order = null;
@@ -213,13 +219,17 @@ class AffiliateService
                 if ($order) {
                     $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
                     
-                    $txid = $order->getParam('txid');
-                    $validTxid = AffiliateService::getValidTxid($txid);                    
-
-                    // if we have txid in code check it then replace to validTxid
+                    // if we have #TXID# in code check it then replace to txid
                     if (strpos($code, '#TXID#')) {                    
-                        if ($validTxid) {
-                            $code = str_replace('#TXID#', $validTxid, $code);
+                        if (!empty($order->txid)) {
+                            $code = str_replace('#TXID#', $order->txid, $code);
+                        }
+                    }
+
+                    // if we have #OFFER_ID# in code check it then replace to offer
+                    if (strpos($code, '#OFFER_ID#')) {                    
+                        if (!empty($order->offer)) {
+                            $code = str_replace('#OFFER_ID#', $order->offer, $code);
                         }
                     }                    
                     
@@ -310,5 +320,26 @@ class AffiliateService
             }
         }
         return $correctTxid;
-    }    
+    }
+
+    /**
+     * returns affiliate id from request
+     * @param Request $request
+     * @return type
+     */
+    public static function getAffIdFromRequest(Request $request)
+    {        
+        return $request->get('aff_id') ? $request->get('aff_id') : ($request->get('affid') && $request->get('affid') > AffiliateSetting::OWN_AFFILIATE_MAX ? $request->get('affid') : null);
+    }
+    
+    /**
+     * Get attribute by priority
+     * @param type $param1
+     * @param type $param2
+     * @return type
+     */
+    public static function getAttributeByPriority($param1, $param2)
+    {
+        return $param1 ? $param1 : ($param2 && $param2 > AffiliateSetting::OWN_AFFILIATE_MAX ? $param2 : null);
+    }
 }

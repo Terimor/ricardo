@@ -18,6 +18,7 @@ use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
+use App\Services\AffiliateService;
 
 /**
  * Class PayPalService
@@ -356,6 +357,9 @@ class PayPalService
                 'payer_id' => $txn_response['txn']->payer_id,
             ];
             $params = !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null;
+            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
+            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
             $order_reponse = $this->orderService->addOdinOrder([
                 'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
@@ -371,8 +375,9 @@ class PayPalService
                 'products' => [$odin_order_product],
                 'txns' => [$order_txn_data],
                 'page_checkout' => $request->page_checkout,
-                'offer' => !empty($params['offer_id']) ? $params['offer_id'] : null,
-                'affiliate' => !empty($params['aff_id']) ? $params['aff_id'] : null,
+                'offer' => $offerId,
+                'affiliate' => $affId,
+                'txid' => $validTxid,
                 'shop_currency' => $shop_currency_code,
                 'params' => $params,
                 'ipqualityscore' => $request->get('ipqs')
