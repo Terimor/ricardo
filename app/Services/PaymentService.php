@@ -274,6 +274,7 @@ class PaymentService
             $params = !empty($page_checkout) ? \Utils::getParamsFromUrl($page_checkout) : null;
             $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
             $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
+            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
             $order = $this->addOrder([
                 'currency'              => $price['currency'],
@@ -311,6 +312,7 @@ class PaymentService
                 'params'                => $params,
                 'offer'                 => $offerId,
                 'affiliate'             => $affId,
+                'txid'                  => $validTxid,
                 'ipqualityscore'        => $ipqs
             ]);
         } else {

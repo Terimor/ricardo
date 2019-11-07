@@ -202,7 +202,6 @@ class AffiliateService
             }
                    
             $code = $pixel->code;
-            
             // if not reduced skip it
             
             $order = null;

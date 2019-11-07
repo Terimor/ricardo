@@ -97,6 +97,7 @@ class OdinOrder extends OdinModel
         'is_flagged' => false, // bool, default false
         'offer' => null, // string
         'affiliate' => null, // string
+        'txid' => null, // string
         'is_reduced' => null,
         'is_invoice_sent' => false, // bool, default false
         'is_survey_sent' => false, // bool defaut false
@@ -134,7 +135,7 @@ class OdinOrder extends OdinModel
         'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'shop_currency',
         'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip',
         'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id',
-        'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'is_refunding', 'is_refunded', 'qc_passed',
+        'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txid', 'is_refunding', 'is_refunded', 'qc_passed',
         'installments', 'txns', 'params', 'is_invoice_sent'
 
     ];
