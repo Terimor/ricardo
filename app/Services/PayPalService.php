@@ -737,16 +737,17 @@ class PayPalService
     private function saveCustomer($order, $paypal_order)
     {
         $this->customerService->addOrUpdate([
-            'email' => $order->customer_email,
-            'first_name' => $order->customer_first_name,
-            'last_name' => $order->customer_last_name,
-            'country' => $order->shipping_country,
-            'zip' => $order->shipping_zip,
-            'state' => $order->shipping_state,
-            'city' => $order->shipping_city,
-            'street' => $order->shipping_street,
-            'street2' => $order->shipping_street2,
-            'language' => $order->language,
+            'email'         => $order->customer_email,
+            'first_name'    => $order->customer_first_name,
+            'last_name'     => $order->customer_last_name,
+            'country'       => $order->shipping_country,
+            'zip'           => $order->shipping_zip,
+            'state'         => $order->shipping_state,
+            'city'          => $order->shipping_city,
+            'street'        => $order->shipping_street,
+            'street2'       => $order->shipping_street2,
+            'language'      => $order->language,
+            'phone'         => $order->customer_phone,
             'paypal_payer_id' => optional($paypal_order->payer)->payer_id
         ]);
     }
@@ -794,7 +795,7 @@ class PayPalService
     {
         return OdinProduct::where('skus.code', $sku)->firstOrFail();
     }
-    
+
     /**
      * Find product by cop id
      * @param string $copId
@@ -802,7 +803,7 @@ class PayPalService
      */
     private function findProductByCopId(string $copId)
     {
-       return OdinProduct::where('prices.price_set', $copId)->first(); 
+       return OdinProduct::where('prices.price_set', $copId)->first();
     }
 
     /**

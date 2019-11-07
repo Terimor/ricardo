@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\OdinOrder;
 use App\Models\Setting;
 use App\Models\Txn;
 use App\Mappers\EbanxCodeMapper;
