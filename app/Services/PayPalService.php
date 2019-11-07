@@ -483,7 +483,7 @@ class PayPalService
             $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'] ?? 0;
 
             if (!$fee) {
-                logger()->error("Wrong PayPal fee: " . json_encode($request->resource));
+                //logger()->error("Wrong PayPal fee: " . json_encode($request->resource));
             }
 
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
