@@ -97,7 +97,16 @@ export default {
     },
 
     selectedProductData() {
-      return JSON.parse(localStorage.getItem('selectedProductData')) || {};
+      let selectedProductData = {};
+
+      try {
+        selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
+      }
+      catch (err) {
+
+      }
+
+      return selectedProductData;
     }
   },
 

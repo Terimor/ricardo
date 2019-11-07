@@ -276,15 +276,7 @@ export function sendCheckoutRequest(data) {
         if (res.redirect_url) {
           location.href = res.redirect_url;
         } else {
-          localStorage.setItem('odin_order_created_at', new Date());
-
-          const pathname = checkoutData.product.upsells.length > 0
-            ? '/thankyou-promos'
-            : '/thankyou';
-
-          goTo(pathname + '?order=' + res.order_id + '&cur=' + res.order_currency, {
-            exclude: ['3ds', '3ds_restore'],
-          });
+          goToThankYou(res.order_id, res.order_currency);
         }
       }
 
@@ -295,6 +287,26 @@ export function sendCheckoutRequest(data) {
         paymentError: t('checkout.payment_error'),
       };
     });
+}
+
+
+export function goToThankYou(order, cur) {
+  const pathname = checkoutData.product.upsells.length > 0
+    ? '/thankyou-promos'
+    : '/thankyou';
+
+  const searchParams = new URLSearchParams();
+
+  searchParams.set('order', order);
+  searchParams.set('cur', cur);
+
+  if (/^\/checkout\/.+/.test(location.pathname)) {
+    searchParams.set('cop_id', location.pathname.split('/')[2]);
+  }
+
+  localStorage.setItem('odin_order_created_at', new Date());
+
+  goTo(pathname + '?' + searchParams.toString(), { exclude: ['3ds', '3ds_restore'] });
 }
 
 

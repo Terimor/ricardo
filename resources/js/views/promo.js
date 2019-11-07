@@ -60,7 +60,7 @@ const promo = new Vue({
         paymentProvider: null,
         fname: null,
         lname: null,
-        dateOfBirth: '',
+        //dateOfBirth: '',
         email: null,
         phone: null,
         cardType: 'credit',
@@ -165,9 +165,9 @@ const promo = new Vue({
 
   created() {
     if (this.queryParams['3ds'] === 'failure') {
-      const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData'));
+      try {
+        const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
-      if (selectedProductData) {
         this.form.deal = selectedProductData.deal || this.form.deal;
         this.form.variant = selectedProductData.variant || this.form.variant;
         this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
@@ -176,7 +176,7 @@ const promo = new Vue({
         this.form.cardType = selectedProductData.cardType || this.form.cardType;
         this.form.fname = selectedProductData.fname || this.form.fname;
         this.form.lname = selectedProductData.lname || this.form.lname;
-        this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
+        //this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
         this.form.email = selectedProductData.email || this.form.email;
         this.form.phone = selectedProductData.phone || this.form.phone;
         this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
@@ -189,6 +189,9 @@ const promo = new Vue({
         this.form.country = selectedProductData.country || this.form.country;
         this.setSelectedPlan(+this.form.deal);
         this.isFormShown = true;
+      }
+      catch (err) {
+
       }
     }
 

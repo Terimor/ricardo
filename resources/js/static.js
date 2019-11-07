@@ -26,8 +26,8 @@ searchParams.forEach((value, key) => {
 
 
 // affiliate variables
-window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || '';
-window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || '';
+window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || 0;
+window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || 0;
 
 
 // js and cookie variables for txid

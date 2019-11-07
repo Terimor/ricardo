@@ -24,16 +24,20 @@ export default {
         id,
       }
 
-      const oldSubOrders = JSON.parse(localStorage.getItem('subOrder'));
+      let subOrder = [];
 
-      if (oldSubOrders && id) {
-        oldSubOrders.push(cartData);
-        localStorage.setItem('subOrder', JSON.stringify(oldSubOrders));
+      try {
+        subOrder = JSON.parse(localStorage.getItem('subOrder')) || [];
+      }
+      catch (err) {
+
       }
 
-      if (!oldSubOrders) {
-        localStorage.setItem('subOrder', JSON.stringify([cartData]));
+      if (id) {
+        subOrder.push(cartData);
       }
+
+      localStorage.setItem('subOrder', JSON.stringify(subOrder));
 
       this.$emit('addAccessory', cartData)
     },

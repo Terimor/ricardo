@@ -23,19 +23,32 @@ const thankYou = new Vue({
         upsellsMixin,
     ],
 
-    data: () => ({
-        subOrder: JSON.parse(localStorage.getItem('subOrder')),
-        selectedProductData: JSON.parse(localStorage.getItem('selectedProductData')) || {},
-        productData: upsells.product,
-        socialType: 'facebook',
-        orderCustomer: upsells.orderCustomer,
-        total: 0,
-        sharingLinkList: {
-            facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,
-            twitter: `https://twitter.com/share?&url=${window.location.href}text=`
+    data() {
+        let subOrder = [];
+        let selectedProductData = {};
+
+        try {
+            subOrder = JSON.parse(localStorage.getItem('subOrder')) || [];
+            selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
+        }
+        catch (err) {
 
         }
-    }),
+
+        return {
+            subOrder,
+            selectedProductData,
+            productData: upsells.product,
+            socialType: 'facebook',
+            orderCustomer: upsells.orderCustomer,
+            total: 0,
+            sharingLinkList: {
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,
+                twitter: `https://twitter.com/share?&url=${window.location.href}text=`
+
+            }
+        };
+    },
 
     beforeCreate() {
       wait(

@@ -1,7 +1,6 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import { isValidZipcode } from './validators';
 import creditCardType from 'credit-card-type'
-import fieldsByCountry from '../resourses/fieldsByCountry';
 import * as dateFns from 'date-fns';
 
 
@@ -81,7 +80,7 @@ const emc1Validation = function () {
       minLength: minLength(3)
     },
   }
-
+/*
   if (this.form.country === 'de') {
     allRules.dateOfBirth = {
       isValidDate (val) {
@@ -102,7 +101,7 @@ const emc1Validation = function () {
       }
     };
   }
-
+*/
   if (this.extraFields.district) {
     allRules.district = {
       required,
