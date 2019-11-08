@@ -27,8 +27,29 @@ if (location.pathname.startsWith('/checkout')) {
   const direct = +searchParams.get('direct');
 
   if (offer_id > 0 && aff_id > 10 && direct === 1 && txid.length < 20) {
+    const iframeURL = new URL('https://track.8xgb.com/aff_c');
+
+    iframeURL.searchParams.set('offer_id', offer_id);
+    iframeURL.searchParams.set('aff_id', aff_id);
+
+    const params = [
+      'aff_sub1',
+      'aff_sub2',
+      'aff_sub3',
+      'aff_sub4',
+      'aff_sub5',
+      'aff_click_id',
+      'url_id',
+    ];
+
+    for (let param of params) {
+      if (searchParams.has(param)) {
+        iframeURL.searchParams.set(param, searchParams.get(param));
+      }
+    }
+
     const iframe = document.createElement('iframe');
-    iframe.src = `https://track.8xgb.com/aff_c?offer_id=${offer_id}&aff_id=${aff_id}`;
+    iframe.src = iframeURL.toString();
     iframe.style.display = 'none';
     document.body.append(iframe);
   }
