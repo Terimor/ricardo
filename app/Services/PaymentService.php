@@ -228,7 +228,6 @@ class PaymentService
         $contact = array_merge($req->get('contact'), $req->get('address'), ['ip' => $req->ip()]);
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
         $ipqs = $req->input('ipqs', null);
-        $cur = $req->get('cur');
         $card = $req->get('card');
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
@@ -256,15 +255,21 @@ class PaymentService
                 ['country' => $contact['country'], 'method' => $method, 'card' => substr_replace($card['number'], '********', 4, 8)]
             );
             throw new ProviderNotFoundException('Provider not found');
-        } else if ($provider === PaymentProviders::EBANX) {
-            // check if ebanx supports currency, otherwise switch to default currency
-            $product->currency = EbanxService::getCurrencyByCountry($contact['country'], $cur);
         }
 
         $this->addCustomer($contact); // throwable
 
         if (empty($order)) {
             $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
+
+            // check if ebanx supports currency, otherwise switch to default currency
+            if ($provider === PaymentProviders::EBANX) {
+                $new_cur = EbanxService::getCurrencyByCountry($contact['country'], $price['currency']);
+                if ($new_cur !== $price['currency']) {
+                    $product->currency = $new_cur;
+                    $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
+                }
+            }
 
             $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
