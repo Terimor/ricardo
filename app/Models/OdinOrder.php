@@ -106,6 +106,8 @@ class OdinOrder extends OdinModel
         'is_qc_passed' => false, // bool, additional control of order's correctness
         'params' => null, // object, //stores all GET parameters with content as object, for example {tpl: "emc1", cur: "BYN"}
         'events' => null, // enum array, //happened events on order ['aff_postback_sent','aff_pixel_shown']
+        'pixels' => [], //array of shown pixels with compiled values
+        'posktbacks' => [], //array of sent postbacks with compiled values
     ];
 
     const STATUS_NEW = 'new';
@@ -136,7 +138,7 @@ class OdinOrder extends OdinModel
         'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip',
         'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id',
         'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txid', 'is_refunding', 'is_refunded', 'qc_passed',
-        'installments', 'txns', 'params', 'is_invoice_sent'
+        'installments', 'txns', 'params', 'is_invoice_sent', 'events', 'pixels', 'postbacks'
 
     ];
 

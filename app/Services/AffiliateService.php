@@ -31,7 +31,9 @@ class AffiliateService
     {        
         $postbacks = AffiliatePostback::all();
 
-        if ($postbacks) {
+        if ($postbacks) {            
+            $postbacksArray = $order->postbacks ?? null;
+            $isSavePostbacks = false;
             foreach ($postbacks as $postback) {
                 // check internal options
                 if ($postback->ho_affiliate_id == AffiliateSetting::ALL_EXCLUDE_INTERNAL_OPTION && (int)$affiliateId <= AffiliateSetting::OWN_AFFILIATE_MAX) {                    
@@ -104,6 +106,12 @@ class AffiliateService
                 
                 // send request query
                 RequestQueue::saveNewRequestQuery($url, $postback->delay);
+                $postbacksArray[] = $url;
+                $isSavePostbacks = true;
+            }
+            if ($isSavePostbacks) {
+                $order->postbacks = $postbacksArray;
+                $order->save();
             }
         }        
     }
@@ -193,7 +201,14 @@ class AffiliateService
         $pixels = Pixel::getPixels($product, $countryCode, $route, $device);
                 
         $pixelsArray = []; $isShown = false;
+        $order = null;
+        if (!empty($request->order)) {
+            $order = OdinOrder::where('_id', $request->order)->first();
+            $pixelsOrderArray = $order->pixels ?? [];
+            $events = $order->events ?? [];            
+        }
         foreach ($pixels as $pixel) {
+            $isSavePixelCode = false;
             // skip if direct only true and &direct is't true or 1            
             if ($pixel->is_direct_only && !$request->direct) {                
                 continue;
@@ -209,37 +224,31 @@ class AffiliateService
             }
                    
             $code = $pixel->code;
-            // if not reduced skip it
-            
-            $order = null;
-            // get order if order parameter, replace #AMOUNT# and check is_reduced and txns
-            if (!empty($request->order)) {
-                $order = OdinOrder::where('_id', $request->order)->first();
-                
-                if ($order) {
-                    $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
-                    
-                    // if we have #TXID# in code check it then replace to txid
-                    if (strpos($code, '#TXID#')) {                    
-                        if (!empty($order->txid)) {
-                            $code = str_replace('#TXID#', $order->txid, $code);
-                        }
-                    }
+                        
+            //if order, replace #AMOUNT#, #TXID#, #OFFER_ID# and check is_reduced and txns
+            if ($order) {                    
+                $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
 
-                    // if we have #OFFER_ID# in code check it then replace to offer
-                    if (strpos($code, '#OFFER_ID#')) {                    
-                        if (!empty($order->offer)) {
-                            $code = str_replace('#OFFER_ID#', $order->offer, $code);
-                        }
-                    }                    
-                    
+                // if we have #TXID# in code check it then replace to txid
+                if (strpos($code, '#TXID#')) {                    
+                    if (!empty($order->txid)) {
+                        $code = str_replace('#TXID#', $order->txid, $code);
+                    }
                 }
+
+                // if we have #OFFER_ID# in code check it then replace to offer
+                if (strpos($code, '#OFFER_ID#')) {                    
+                    if (!empty($order->offer)) {
+                        $code = str_replace('#OFFER_ID#', $order->offer, $code);
+                    }
+                }                    
+
             }
 
             // check sale logic
-            if ($pixel->type == Pixel::TYPE_SALE) {
-                $events = $order->events ?? [];
+            if ($pixel->type == Pixel::TYPE_SALE && $order) {                
                 if (isset($order->is_reduced) && $order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_PIXEL_SHOWN, $events))) {
+                    $isSavePixelCode = true; 
                     $isShown = true;
                 } else {
                     continue;
@@ -285,6 +294,10 @@ class AffiliateService
                 $code = str_replace('#DOMAIN#', $domain, $code);
             }
             
+            if ($isSavePixelCode) {
+                $pixelsOrderArray[] = $code;
+            }
+            
             $pixelsArray[] = [
                 'type' => $pixel->type ?? null,
                 'code' => $code
@@ -295,6 +308,7 @@ class AffiliateService
         if ($isShown) {
             $events[] = OdinOrder::EVENT_AFF_PIXEL_SHOWN;
             $order->events = $events;
+            $order->pixels = $pixelsOrderArray;
             $order->save();
         }
         
