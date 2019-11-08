@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ $direction }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ $direction }}" class="css-hidden css2-hidden js-hidden">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -39,7 +39,7 @@
       @endif
       function styleOnLoad(className) {
         if (this.media != 'all') this.media = 'all';
-        if (className) document.body.classList.remove(className);
+        if (className) document.documentElement.classList.remove(className);
       }
     </script>
 
@@ -109,10 +109,14 @@
     @yield('styles')   
 
     {{--Do not remove this empty style tag--}}
-    <style>body.css-hidden{display:none}body.css2-hidden{display:none}body.js-hidden{display:none}</style>
+    <style>
+      html.css-hidden { display: none; }
+      html.css2-hidden { display: none; }
+      html.js-hidden { display: none; }
+    </style>
 
 </head>
-<body class="css-hidden css2-hidden js-hidden {{ Route::has('promo') ? 'white-bg' : '' }}">
+<body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
     @if (!empty($htmlToApp['gtags']))
         @foreach($htmlToApp['gtags'] as $gtag)
         <!-- Google Tag Manager (noscript) -->

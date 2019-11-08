@@ -7,12 +7,9 @@ use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use Illuminate\Http\Request;
 use App\Exceptions\CustomerUpdateException;
+use App\Exceptions\ProviderNotFoundException;
 use App\Exceptions\InvalidParamsException;
-use App\Exceptions\OrderNotFoundException;
 use App\Exceptions\OrderUpdateException;
-use App\Exceptions\PaymentException;
-use App\Exceptions\ProductNotFoundException;
-use App\Exceptions\TxnNotFoundException;
 use App\Models\Txn;
 use App\Models\Currency;
 use App\Models\OdinOrder;
@@ -258,7 +255,7 @@ class PaymentService
                 "Provider not found",
                 ['country' => $contact['country'], 'method' => $method, 'card' => substr_replace($card['number'], '********', 4, 8)]
             );
-            $provider = PaymentProviders::CHECKOUTCOM;
+            throw new ProviderNotFoundException('Provider not found');
         } else if ($provider === PaymentProviders::EBANX) {
             // check if ebanx supports currency, otherwise switch to default currency
             $product->currency = EbanxService::getCurrencyByCountry($contact['country'], $cur);

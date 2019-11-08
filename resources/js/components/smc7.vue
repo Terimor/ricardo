@@ -252,12 +252,7 @@
           lname: null,
           email: null,
           phone: null,
-          variant: (function () {
-            try {
-              return checkoutData.product.skus[0].code
-            } catch (_) {
-            }
-          }()),
+          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
           country: checkoutData.countryCode,
           streetAndNumber: null,
           city: null,
@@ -309,7 +304,14 @@
 
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
-          setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 100);
+
+          setTimeout(() => {
+            const element = document.querySelector('#payment-error');
+
+            if (element && element.scrollIntoView) {
+              element.scrollIntoView();
+            }
+          }, 100);
         });
       }
 
@@ -366,7 +368,7 @@
       },
 
       codeOrDefault () {
-        return this.queryParams.product || checkoutData.product.skus[0].code;
+        return this.queryParams.product || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
       },
 
       radioIdx() {
@@ -398,7 +400,12 @@
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
-          document.querySelector('.smc7__deal').scrollIntoView();
+          const element = document.querySelector('.smc7__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
           this.setPromotionalModal(true);
           return;
         }
@@ -554,7 +561,12 @@
         this.form.paymentType = 'instant_transfer';
 
         if (this.$v.form.deal.$invalid) {
-          document.querySelector('.smc7__deal').scrollIntoView();
+          const element = document.querySelector('.smc7__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
           this.isOpenPromotionModal = true;
         }
       },
@@ -562,11 +574,11 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
-        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code) || null;
 
         const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
-        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
+        const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;
       },

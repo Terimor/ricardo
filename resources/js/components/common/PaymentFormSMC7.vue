@@ -180,7 +180,7 @@
       },
 
       cardNames() {
-        const cardNames = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer');
+        const cardNames = Object.keys(this.$root.paymentMethods || []).filter(name => name !== 'instant_transfer');
 
         if (this.paymentForm.installments === 1) {
           cardNames.push('instant_transfer');
@@ -188,9 +188,9 @@
 
         return cardNames.map(cardName => ({
           value: cardName,
-          text: this.$root.paymentMethods[cardName].name,
-          label: this.$root.paymentMethods[cardName].name,
-          imgUrl: this.$root.paymentMethods[cardName].logo,
+          text: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].name || '',
+          label: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].name || '',
+          imgUrl: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].logo || '',
         }));
       },
 
@@ -234,9 +234,10 @@
 		},
 		watch: {
       'paymentForm.country'(value) {
-        getPaymentMethods(value).then(res => this.$root.paymentMethods = res);
+        getPaymentMethods(value).then(res => this.$root.paymentMethods = res || []);
       },
 			'paymentForm.cardNumber'(newVal, oldValue) {
+        newVal = newVal || '';
 				const creditCardTypeList = creditCardType(newVal);
 				this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
@@ -249,15 +250,15 @@
           this.paymentForm.cardNumber = oldValue;
         }
 			},
-            'paymentForm.cvv' (newVal, oldValue) {
-                if(this.paymentForm.cvv) {
-                    if(newVal.match(/^[0-9]{0,4}$/g)) {
-                        this.paymentForm.cvv = newVal;
-                    } else {
-                        this.paymentForm.cvv = oldValue;
-                    }
-                }
-            }
+      'paymentForm.cvv' (newVal, oldValue) {
+          if(this.paymentForm.cvv) {
+              if(newVal.match(/^[0-9]{0,4}$/g)) {
+                  this.paymentForm.cvv = newVal;
+              } else {
+                  this.paymentForm.cvv = oldValue;
+              }
+          }
+      }
 		},
 		methods: {
 			openCVVModal () {

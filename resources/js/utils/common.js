@@ -50,6 +50,17 @@ export function fade(type, ms, el, withoutDeleting) {
 
 export function scrollTo(selector) {
   this.$nextTick(() => {
-    document.querySelector(selector).scrollIntoView()
+    let element = null;
+
+    try {
+      element = document.querySelector(selector);
+    }
+    catch (err) {
+
+    }
+
+    if (element && element.scrollIntoView) {
+      element.scrollIntoView();
+    }
   })
 }

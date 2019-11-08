@@ -9,16 +9,14 @@ const app = new Vue({
   el: '#app',
   mixins: [globals],
   data() {
-    let result = {};
-
-    if (window.checkoutData && checkoutData.paymentMethods) {
-      result.paymentMethods = JSON.parse(JSON.stringify(checkoutData.paymentMethods));
-    }
-
-    return result;
+    return {
+      paymentMethods: window.checkoutData && checkoutData.paymentMethods
+        ? JSON.parse(JSON.stringify(checkoutData.paymentMethods))
+        : [],
+    };
   },
   mounted() {
-    document.body.classList.remove('js-hidden');
+    document.documentElement.classList.remove('js-hidden');
   },
 });
 

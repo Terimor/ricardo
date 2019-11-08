@@ -160,7 +160,12 @@ class PaymentsController extends Controller
         }
 
         foreach ($reply['hashes'] as $hash) {
-            $this->paymentService->approveOrder($ebanxService->requestStatusByHash($hash));
+            $payment = $ebanxService->requestStatusByHash($hash);
+            if (!empty($payment['number'])) {
+                $this->paymentService->approveOrder($payment);
+            } else {
+                logger()->warning('Ebanx payment not found', ['hash' => $hash]);
+            }
         }
     }
 

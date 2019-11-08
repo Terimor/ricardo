@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\OdinOrder;
 use App\Models\Setting;
 use App\Models\Txn;
 use App\Mappers\EbanxCodeMapper;
@@ -348,9 +347,6 @@ class EbanxService
                 $result['errors'] = [EbanxCodeMapper::toPhrase((string)$res['status_code'])];
                 logger()->warning("Ebanx pay", ['res' => $res]);
             }
-
-            logger()->warning("Ebanx payment debug", ['payment' => json_encode($payment)]);
-
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
             $result['errors'] = [EbanxCodeMapper::toPhrase()];

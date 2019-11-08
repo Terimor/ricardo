@@ -4,16 +4,20 @@ const searchParams = new URL(location).searchParams;
 
 
 // clear cookies if product changed
+/*
 if (location.pathname.startsWith('/checkout')) {
   const product_id = cookies.getCookie('product_id');
 
   if (product_id !== checkoutData.product.id) {
-    localStorage.clear();
-    cookies.clearCookies({ except: ['XSRF-TOKEN'] });
+    if (product_id) {
+      localStorage.clear();
+      cookies.clearCookies({ except: ['XSRF-TOKEN'] });
+    }
+
     cookies.setCookie('product_id', checkoutData.product.id);
   }
 }
-
+*/
 
 // direct linking logic
 if (location.pathname.startsWith('/checkout')) {
@@ -68,7 +72,7 @@ const txidFromGet = searchParams.get('txid') || '';
 const txidFromCookie = cookies.getCookie('txid') || '';
 
 if (txidFromGet.length >= 20) {
-  document.cookie = 'txid=' + encodeURIComponent(txidFromGet);
+  cookies.setCookie('txid', txidFromGet);
 }
 
 window.txid = window.txidjs = txidFromGet.length >= 20

@@ -20,7 +20,7 @@ const orderTracking = new Vue({
   },
   validations: mainValidation,
   mounted() {
-    document.body.classList.remove('js-hidden');
+    document.documentElement.classList.remove('js-hidden');
   },
   computed: {
     isValid() {

@@ -29,7 +29,7 @@
     },
     methods: {
       onInput(e) {
-        if (/Edge/.test(navigator.userAgent) && this.$parent.onInput) {
+        if (window.navigator && navigator.userAgent && /Edge/.test(navigator.userAgent) && this.$parent.onInput) {
           this.$parent.onInput(e);
         }
       },

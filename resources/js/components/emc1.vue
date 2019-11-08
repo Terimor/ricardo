@@ -280,7 +280,7 @@
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
           deal: null,
-          variant: checkoutData.product.skus[0].code,
+          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
           installments: 1,
           paymentProvider: null,
           paymentMethod: null,
@@ -361,7 +361,7 @@
         }));
       },
       codeOrDefault () {
-        return this.queryParams.product || this.checkoutData.product.skus[0].code;
+        return this.queryParams.product || (this.checkoutData.product.skus[0] && this.checkoutData.product.skus[0].code) || null;
       },
       productData () {
         return checkoutData.product
@@ -377,10 +377,10 @@
         return installments && installments !== 1 ? installments + '× ' : ''
       },
       extraFields() {
-        const firstMethod = Object.keys(this.$root.paymentMethods).filter(name => name !== 'instant_transfer').shift();
+        const firstMethod = Object.keys(this.$root.paymentMethods || []).filter(name => name !== 'instant_transfer').shift();
         const paymentMethod = this.form.paymentMethod || firstMethod;
 
-        return this.$root.paymentMethods[paymentMethod].extra_fields || {};
+        return this.$root.paymentMethods && this.$root.paymentMethods[paymentMethod] && this.$root.paymentMethods[paymentMethod].extra_fields || {};
       },
       installmentsList() {
         return this.extraFields.installments.items.map(item => ({
@@ -417,7 +417,7 @@
         }))
       },
       productImagesList() {
-        const variant = this.form.variant || checkoutData.product.skus[0].code;
+        const variant = this.form.variant || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
         const product = checkoutData.product.skus.find(sku => variant === sku.code);
         return Object.values(product.quantity_image);
       },
@@ -460,7 +460,7 @@
     watch: {
       'form.country'(value) {
         getPaymentMethods(value).then(res => {
-          this.$root.paymentMethods = res;
+          this.$root.paymentMethods = res || [];
           this.applyDefaultValues();
         });
       },
@@ -489,15 +489,25 @@
       },
       activateForm() {
         this.isFormShown = true;
+
         this.$nextTick(() => {
-          document.querySelector('.payment-form').scrollIntoView();
+          const element = document.querySelector('.payment-form');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
         })
       },
       paypalSubmit() {
         this.form.paymentProvider = 'instant_transfer';
 
         if (this.$v.form.deal.$invalid) {
-          document.querySelector('.main__deal').scrollIntoView();
+          const element = document.querySelector('.main__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
           this.isOpenPromotionModal = true;
         }
       },
@@ -641,11 +651,11 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = this.form && this.form.variant || checkoutData.product.skus[0].code;
-        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code);
+        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code) || null;
 
         const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
-        const skuImage = skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1] || productImage;
+        const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;
       },

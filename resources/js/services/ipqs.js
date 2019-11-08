@@ -42,17 +42,11 @@ export function check(fields = {}) {
       }
 
       if (!params.product) {
-        Startup.Store('product', checkoutData.product.skus[0].code);
+        Startup.Store('product', checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null);
       }
     }
 
     Startup.success = result => {
-      if (result.fraud_chance > 90) {
-        // force 2 Factor authentication (3DSecure on BlueSnap + Checkout.com)
-        resolve(result);
-        return;
-      }
-
       resolve(result);
     };
 

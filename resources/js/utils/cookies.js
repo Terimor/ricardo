@@ -20,7 +20,8 @@ export function getCookie(name) {
 
 
 export function setCookie(name, value, options = {}) {
-  options = { path: '/', ...options };
+  const domain = '.' + location.hostname.split('.').slice(-2).join('.');
+  options = { domain, path: '/', ...options };
 
   if (options.expires && options.expires.toUTCString) {
     options.expires = options.expires.toUTCString();

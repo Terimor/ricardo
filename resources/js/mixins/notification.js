@@ -11,7 +11,7 @@ export default {
       }
 
       // hide visible notifications on input focus
-      document.querySelectorAll('input, textarea, select').forEach(input => {
+      [...document.querySelectorAll('input, textarea, select')].forEach(input => {
         if (inputs.indexOf(input) === -1) {
           inputs.push(input);
 
