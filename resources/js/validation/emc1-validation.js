@@ -1,5 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
-import { isValidZipcode } from './validators';
+//import { isValidZipcode } from './validators';
 import creditCardType from 'credit-card-type'
 import * as dateFns from 'date-fns';
 
