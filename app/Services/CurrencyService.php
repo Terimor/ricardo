@@ -27,22 +27,22 @@ class CurrencyService
      * @var type
      */
     public static $upToNext10 = ['JPY'];
-    
+
     /**
      * Use currency symbol from database
-     * @var type 
+     * @var type
      */
     public static $useDBSymbol = ['HRK'];
 
     /**
      * Remove decimals
-     * @var type 
+     * @var type
      */
     public static $noDecimals = ['HRK'];
-    
+
     /**
      * 0 at the and of price
-     * @var type 
+     * @var type
      */
     public static $zeroAtTheEnd = [
         'IDR',
@@ -51,9 +51,9 @@ class CurrencyService
         'HUF',
         'SEK',
         'DKK',
-        'NOK',        
+        'NOK',
         'CNY',
-        'INR',        
+        'INR',
         'PHP',
         'ZAR',
         'THB',
@@ -79,7 +79,7 @@ class CurrencyService
         'IQD',
         'CZK',
         'DKK',
-        'EEK',        
+        'EEK',
         'HUF',
         'ISK',
         'MDL',
@@ -95,7 +95,7 @@ class CurrencyService
         'LBP',
         'UZS',
         'YER',
-        'BWP', 
+        'BWP',
         'DZD',
         'EGP',
         'KES',
@@ -129,9 +129,9 @@ class CurrencyService
         'NPR',
         'DJF',
         'BIF',
-        'CDF'        
+        'CDF'
     ];
-    
+
     /**
      * Get local price from USD
      * @param float $price
@@ -150,7 +150,7 @@ class CurrencyService
 
         //get fraction digits and locale string
         $localeString = \Utils::getCultureCode(null, $countryCode);
-        
+
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
         // if price < min set minimum price = min
@@ -209,7 +209,7 @@ class CurrencyService
         if ($fractionDigits == 0) {
             $exchangedPrice = (int)$exchangedPrice;
         }
-        
+
         $digits = strlen((int)$exchangedPrice);
 
         $exchangedPrice = static::mainRounding($digits, $exchangedPrice);
@@ -223,17 +223,17 @@ class CurrencyService
 
             }
         }
-        
+
         if (in_array($currencyCode, static::$noDecimals)) {
             $exchangedPrice = (int)$exchangedPrice;
             $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
-        }        
-        
-        
+        }
+
+
         if (in_array($currencyCode, static::$zeroAtTheEnd)) {
             $exchangedPrice = static::zeroAtTheEndRounding($digits, $exchangedPrice, $numberFormatter);
         }
-        
+
         // check decimals for logging
         if (!in_array($currencyCode, static::$zeroAtTheEnd) && $digits >=5) {
             logger()->error("Price {$exchangedPrice} has {$digits} digits for currency {$currencyCode}");
@@ -246,7 +246,7 @@ class CurrencyService
             'exchange_rate' => $currency->usd_rate,
         ];
     }
-    
+
     /**
      * Rounding to 90 by rules
      * @param type $digits
@@ -254,51 +254,51 @@ class CurrencyService
      * @return type
      */
     private static function zeroAtTheEndRounding(int $digits, $exchangedPrice, $numberFormatter): int
-    {        
+    {
         $exchangedPrice = (int)$exchangedPrice;
         $oldPrice = $exchangedPrice;
         $fractionDigits = 0;
         $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
-        
+
         // rules by digits
         if ($digits == 3) {
             $exchangedPrice = $exchangedPrice / 10;
             $exchangedPrice = (int)$exchangedPrice * 10 + 9;
-            
+
             if ($exchangedPrice <= $oldPrice) {
                 $exchangedPrice += 10;
             }
-            
+
         } else if ($digits == 4 || $digits == 5) {
             $exchangedPrice = $exchangedPrice / 100;
             $exchangedPrice = (int)$exchangedPrice * 100 + 90;
-            
+
             if ($exchangedPrice <= $oldPrice) {
                 if ($digits == 4) {
                     $exchangedPrice += 100;
                 } else {
                     $exchangedPrice += 1000;
                 }
-            }            
+            }
         } else if ($digits == 6) {
             $exchangedPrice = $exchangedPrice / 1000;
             $exchangedPrice = (int)$exchangedPrice * 1000 + 990;
             if ($exchangedPrice <= $oldPrice) {
                 $exchangedPrice += 1000;
-            } 
+            }
         } else if ($digits > 6) {
             $exchangedPrice = $exchangedPrice / 10000;
-            $exchangedPrice = (int)$exchangedPrice * 10000 + 9900;  
-            
+            $exchangedPrice = (int)$exchangedPrice * 10000 + 9900;
+
             if ($exchangedPrice <= $oldPrice) {
                 $exchangedPrice += 10000;
             }
-            
+
         }
-        
+
         return (int)$exchangedPrice;
     }
-    
+
     /**
      * Function for main rounding by rules
      * @param int $digits
@@ -335,7 +335,7 @@ class CurrencyService
                 $exchangedPrice[$digits-1] = '4';
             }
         }
-        
+
         return (int)$exchangedPrice;
     }
 
@@ -385,8 +385,8 @@ class CurrencyService
         if ($currencyCode) {
             $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
         } else {
-            if (request()->input('cur')) {
-                $currencyCode = request()->input('cur');
+            if (request()->get('cur')) {
+                $currencyCode = request()->get('cur');
             }
         }
 
@@ -428,17 +428,17 @@ class CurrencyService
             $currency = Currency::whereCode($currencyCode)->first();
             $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
         }
-        
+
         // if still no currency, then can't find USD try again ...
         if (!$currency) {
             $currency = Currency::where(['code' => 'USD'])->first();
         }
         if (!$currency) {
-            logger()->error("Urgent: Can't find currency", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);            
+            logger()->error("Urgent: Can't find currency", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
         }
-        
+
         $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
-        
+
         if (empty($localeString)) {
             $localeString = \Utils::getCultureCode(null, $currency->countryCode);
         }
@@ -466,9 +466,9 @@ class CurrencyService
 	public static function getLocalTextValue(float $price, Currency $currency = null) : string
 	{
 		if (!$currency) {
-			$currency = self::getCurrency();			
+			$currency = self::getCurrency();
 		}
-        
+
         $countryCode = !empty($currency->countryCode) ? $currency->countryCode : (!empty($currency->countries[0]) ? $currency->countries[0] : 'us');
 
         //get fraction digits and locale string
@@ -491,7 +491,7 @@ class CurrencyService
 
         $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
         // parse value
-        $roundedValue = $numberFormatter->parseCurrency($numberFormatter->formatCurrency($value, $currencyCode), $currencyCode);       
+        $roundedValue = $numberFormatter->parseCurrency($numberFormatter->formatCurrency($value, $currencyCode), $currencyCode);
 
         return $roundedValue;
     }
@@ -505,11 +505,11 @@ class CurrencyService
         // cache culture code
         $currencyCultureCodes = Cache::get('CurrencyCultureCode');
         if (empty($currencyCultureCodes[$currencyCode])) {
-            $currencyCultureCodes = static::cacheCurrencyCultureCode();            
+            $currencyCultureCodes = static::cacheCurrencyCultureCode();
         }
         return !empty($currencyCultureCodes[$currencyCode]) ? $currencyCultureCodes[$currencyCode] : 'en-US';
     }
-    
+
     /**
      * Cache and return currency culture code array, for example US => en-US
      * @return string
@@ -521,35 +521,35 @@ class CurrencyService
         // check countries
         foreach ($currencies as $currency) {
             if (!empty($currency->countries[0])) {
-                $currencyCultureCodes[$currency->code] = \Utils::getCultureCode(null, $currency->countries[0]);                
+                $currencyCultureCodes[$currency->code] = \Utils::getCultureCode(null, $currency->countries[0]);
             } else {
-                $currencyCultureCodes[$currency->code] = 'en-US';        
+                $currencyCultureCodes[$currency->code] = 'en-US';
             }
         }
-        
+
         Cache::put('CurrencyCultureCode', $currencyCultureCodes, 3600);
-        
+
         return $currencyCultureCodes;
     }
-    
+
     /**
      * Format currency
      * @return type
      */
     public static function formatCurrency($numberFormatter, $price, $currency)
     {
-        if (in_array($currency->code, static::$zeroAtTheEnd)) {            
+        if (in_array($currency->code, static::$zeroAtTheEnd)) {
             $fractionDigits = 0;
             $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
         }
-        
+
         $priceText = $numberFormatter->formatCurrency($price, $currency->code);
 
-        // check use symbol from db for formatting        
+        // check use symbol from db for formatting
         if (in_array($currency->code, static::$useDBSymbol)) {
             $priceText = str_replace($currency->code, $currency->symbol, $priceText);
         }
-        
+
         return $priceText;
     }
 
