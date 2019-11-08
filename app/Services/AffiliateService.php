@@ -311,8 +311,7 @@ class AffiliateService
             $order->events = $events;
             $order->pixels = $pixelsOrderArray;
             $order->save();
-        }
-        echo '<pre>'; var_dump($pixelsArray); echo '</pre>'; exit;
+        }        
         return $pixelsArray;        
     }
     
