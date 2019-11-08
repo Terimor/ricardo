@@ -207,6 +207,7 @@ class AffiliateService
             $pixelsOrderArray = $order->pixels ?? [];
             $events = $order->events ?? [];            
         }
+        
         foreach ($pixels as $pixel) {
             $isSavePixelCode = false;
             // skip if direct only true and &direct is't true or 1            
@@ -246,7 +247,7 @@ class AffiliateService
             }
 
             // check sale logic
-            if ($pixel->type == Pixel::TYPE_SALE && $order) {                
+            if ($pixel->type == Pixel::TYPE_SALE) {
                 if (isset($order->is_reduced) && $order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_PIXEL_SHOWN, $events))) {
                     $isSavePixelCode = true; 
                     $isShown = true;
@@ -310,8 +311,7 @@ class AffiliateService
             $order->events = $events;
             $order->pixels = $pixelsOrderArray;
             $order->save();
-        }
-        
+        }        
         return $pixelsArray;        
     }
     
