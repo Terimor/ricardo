@@ -10,7 +10,7 @@ if (/^\/checkout\/.+/.test(location.pathname)) {
 
 // populate links with GET params
 function populateLinksWithGetParams() {
-  document.querySelectorAll('a[href]').forEach(link => {
+  [...document.querySelectorAll('a[href]')].forEach(link => {
     const href = link.getAttribute('href');
 
     if (!href.match(/^https?:\/\//) && !link.href.match(/^mailto:/) && !link.href.match(/^tel:/)) {

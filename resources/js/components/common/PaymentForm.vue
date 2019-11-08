@@ -339,7 +339,13 @@
       if (this.queryParams['3ds'] === 'failure') {
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
-          setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 100);
+          setTimeout(() => {
+            const element = document.querySelector('#payment-error');
+
+            if (element && element.scrollIntoView) {
+              element.scrollIntoView();
+            }
+          }, 100);
         });
       }
     },
@@ -448,6 +454,8 @@
     },
     watch: {
       'paymentForm.cardNumber' (newVal, oldValue) {
+        newVal = newVal || '';
+        
         const paymentMethod = getPaymentMethodByCardNumber(newVal);
 
         this.paymentForm.paymentMethod = this.$root.paymentMethods && this.$root.paymentMethods[paymentMethod]
@@ -541,7 +549,12 @@
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
-          document.querySelector('.main__deal').scrollIntoView();
+          const element = document.querySelector('.main__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
           this.$emit('setPromotionalModal', true);
           return;
         }

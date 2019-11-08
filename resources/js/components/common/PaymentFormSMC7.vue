@@ -237,6 +237,7 @@
         getPaymentMethods(value).then(res => this.$root.paymentMethods = res || []);
       },
 			'paymentForm.cardNumber'(newVal, oldValue) {
+        newVal = newVal || '';
 				const creditCardTypeList = creditCardType(newVal);
 				this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
 					? creditCardTypeList[0].type
@@ -249,15 +250,15 @@
           this.paymentForm.cardNumber = oldValue;
         }
 			},
-            'paymentForm.cvv' (newVal, oldValue) {
-                if(this.paymentForm.cvv) {
-                    if(newVal.match(/^[0-9]{0,4}$/g)) {
-                        this.paymentForm.cvv = newVal;
-                    } else {
-                        this.paymentForm.cvv = oldValue;
-                    }
-                }
-            }
+      'paymentForm.cvv' (newVal, oldValue) {
+          if(this.paymentForm.cvv) {
+              if(newVal.match(/^[0-9]{0,4}$/g)) {
+                  this.paymentForm.cvv = newVal;
+              } else {
+                  this.paymentForm.cvv = oldValue;
+              }
+          }
+      }
 		},
 		methods: {
 			openCVVModal () {

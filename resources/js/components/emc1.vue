@@ -489,15 +489,25 @@
       },
       activateForm() {
         this.isFormShown = true;
+
         this.$nextTick(() => {
-          document.querySelector('.payment-form').scrollIntoView();
+          const element = document.querySelector('.payment-form');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
         })
       },
       paypalSubmit() {
         this.form.paymentProvider = 'instant_transfer';
 
         if (this.$v.form.deal.$invalid) {
-          document.querySelector('.main__deal').scrollIntoView();
+          const element = document.querySelector('.main__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
           this.isOpenPromotionModal = true;
         }
       },

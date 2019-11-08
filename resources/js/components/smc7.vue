@@ -304,7 +304,14 @@
 
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
-          setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 100);
+
+          setTimeout(() => {
+            const element = document.querySelector('#payment-error');
+
+            if (element && element.scrollIntoView) {
+              element.scrollIntoView();
+            }
+          }, 100);
         });
       }
 
@@ -393,7 +400,12 @@
         this.$v.form.$touch();
 
         if (this.$v.form.deal.$invalid) {
-          document.querySelector('.smc7__deal').scrollIntoView();
+          const element = document.querySelector('.smc7__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
           this.setPromotionalModal(true);
           return;
         }
@@ -549,7 +561,12 @@
         this.form.paymentType = 'instant_transfer';
 
         if (this.$v.form.deal.$invalid) {
-          document.querySelector('.smc7__deal').scrollIntoView();
+          const element = document.querySelector('.smc7__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
           this.isOpenPromotionModal = true;
         }
       },

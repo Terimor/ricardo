@@ -15,7 +15,12 @@
             window.closeLeaveModal = () => document.querySelector('#bio_ep_close').dispatchEvent(new CustomEvent('click'))
             window.agreeLeaveModal = () => {
                 window.closeLeaveModal()
-                document.querySelector('.main__deal').scrollIntoView()
+
+                const element = document.querySelector('.main__deal');
+
+                if (element && element.scrollIntoView) {
+                    element.scrollIntoView();
+                }
             };
 
             wait(

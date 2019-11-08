@@ -370,7 +370,14 @@
 
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
-          setTimeout(() => document.querySelector('#payment-error').scrollIntoView(), 100);
+
+          setTimeout(() => {
+            const element = document.querySelector('#payment-error');
+
+            if (element && element.scrollIntoView) {
+              element.scrollIntoView();
+            }
+          }, 100);
         });
       }
     },
@@ -459,6 +466,7 @@
               getPaymentMethods(value).then(res => this.$root.paymentMethods = res || []);
             },
             'form.stepThree.cardNumber'(newVal, oldValue) {
+                newVal = newVal || '';
                 const creditCardTypeList = creditCardType(newVal)
                 this.form.paymentMethod = creditCardTypeList.length > 0 && newVal.length > 0
                   ? creditCardTypeList[0].type
