@@ -585,6 +585,9 @@ class PaymentService
             $products = $order->getProductsByTxnHash($data['hash']);
             foreach ($products as $product) {
                 $product['is_paid'] = true;
+                if ($product['is_main']) {
+                    $order->is_flagged = false;
+                }
                 $order->addProduct($product);
             }
 
