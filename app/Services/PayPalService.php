@@ -28,7 +28,9 @@ class PayPalService
 {
     const DEFAULT_CURRENCY = 'USD';
 
-    const PAYPAL_ORDER_COMPLETED_STATUS = 'COMPLETED';
+    const STATUS_COMPLETED  = 'COMPLETED';
+    const STATUS_PENDING    = 'PENDING';
+    const STATUS_DECLINED   = 'DECLINED';
 
     /**
      * @var PayPalHttpClient
@@ -444,13 +446,12 @@ class PayPalService
             $this->setShipping($order, $paypal_order);
             $this->saveCustomer($order, $paypal_order);
 
-            $product_key = collect($order->products)->search(function ($product) use ($txn) {
-                return $product['txn_hash'] === $txn['hash'];
-            });
+            // check is flagged
+            $main_product = $order->getMainProduct(false);
+            if (!empty($main_product) && $main_product['txn_hash'] === $txn['hash']) {
+                $order->is_flagged = $this->isPayPalOrderFlagged($paypal_order);
+            }
 
-            $products = $order->products;
-
-            $order->products = $products;
             $order->status = $this->getOrderStatus($order);
 
             $order->save();
@@ -510,7 +511,7 @@ class PayPalService
                 )
             );
 
-            if ($response->statusCode === 200 && $response->result->status === self::PAYPAL_ORDER_COMPLETED_STATUS) {
+            if ($response->statusCode === 200 && $response->result->status === self::STATUS_COMPLETED) {
                 $paypal_order = $response->result;
                 $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
                 $txn_response = $this->orderService->addTxn([
@@ -549,10 +550,15 @@ class PayPalService
                         if ($item['txn_hash'] == $txn['hash']) {
                             $item['is_paid'] = true;
                         }
-
                         return $item;
                     })
                     ->toArray();
+
+                // check is flagged
+                $main_product = $order->getMainProduct(false);
+                if (!empty($main_product) && $main_product['txn_hash'] === $txn['hash']) {
+                    $order->is_flagged = $this->isPayPalOrderFlagged($paypal_order);
+                }
 
                 $total = collect($order->txns)->reduce(function ($carry, $item) {
                     if ($item['status'] === Txn::STATUS_APPROVED) {
@@ -630,23 +636,22 @@ class PayPalService
     }
 
     /**
+     * Checks is order flagged
+     * @param $paypal_order
+     * @return bool
+     */
+    private function isPayPalOrderFlagged($paypal_order): bool
+    {
+        return $paypal_order->purchase_units[0]->payments->captures[0]->status === self::STATUS_PENDING;
+    }
+
+    /**
      * @param $paypal_order
      * @return mixed
      */
     private function getPayPalOrderCurrency($paypal_order)
     {
         return $paypal_order->purchase_units[0]->payments->captures[0]->amount->currency_code;
-    }
-
-    /**
-     * Returns PayPal status string from a PayPal order object
-     *
-     * @param $paypal_order
-     * @return string
-     */
-    private function getPayPalOrderStatus($paypal_order)
-    {
-        return strtolower($paypal_order->status);
     }
 
     /**
