@@ -199,26 +199,30 @@ class OrderService
             if ($order->affiliate == $hoAffiliateId && $order->isTxnForReduce()) {
                 // check or create affiliate
                 $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
-                // get first main product
-                $productId = $order->getFirstProductId();
-                if ($order->is_reduced === null && $productId) {
-                    // check in affiliate product list
-                    $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
-                    $order->is_reduced = $isReduced;
-                    $order->save();
-                }
-                $events = $order->events ?? [];
-                // txid and postback logic
-                if ($order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_POSTBACK_SENT, $events))) {
-                    // request queue if order has parameter txid and is_reduced and aff_id > 10
-                    $txid = $order->getParam('txid');
-                    $validTxid = AffiliateService::getValidTxid($txid);
+                
+                 // if not flagged check fired logic
+                if (empty($order->is_flagged)) {       
+                    // get first main product
+                    $productId = $order->getFirstProductId();
+                    if ($order->is_reduced === null && $productId) {
+                        // check in affiliate product list
+                        $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
+                        $order->is_reduced = $isReduced;
+                        $order->save();
+                    }
+                    $events = $order->events ?? [];
+                    // txid and postback logic
+                    if ($order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_POSTBACK_SENT, $events))) {
+                        // request queue if order has parameter txid and is_reduced and aff_id > 10
+                        $txid = $order->getParam('txid');
+                        $validTxid = AffiliateService::getValidTxid($txid);
 
-                    // save postback
-                    AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);
-                    $events[] = OdinOrder::EVENT_AFF_POSTBACK_SENT;
-                    $order->events = $events;
-                    $order->save();
+                        // save postback
+                        AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);
+                        $events[] = OdinOrder::EVENT_AFF_POSTBACK_SENT;
+                        $order->events = $events;
+                        $order->save();
+                    }
                 }
 
                 $ol = new Localize();

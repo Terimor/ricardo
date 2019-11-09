@@ -249,6 +249,11 @@ class AffiliateService
             // check sale logic
             if ($pixel->type == Pixel::TYPE_SALE) {
                 if (isset($order->is_reduced) && $order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_PIXEL_SHOWN, $events))) {
+                    // skip if flagged and authorized
+                    if (isset($order->is_flagged) && $order->is_flagged === true && !$order->isTxnForFlagged()) {
+                        continue;
+                    }
+                    
                     $isSavePixelCode = true; 
                     $isShown = true;
                 } else {

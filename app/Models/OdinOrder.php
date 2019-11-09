@@ -8,6 +8,7 @@ use App\Exceptions\OrderNotFoundException;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
 use App\Models\Txn;
+use App\Services\OrderService;
 
 class OdinOrder extends OdinModel
 {
@@ -21,6 +22,7 @@ class OdinOrder extends OdinModel
     const EVENT_AFF_PIXEL_SHOWN = 'aff_pixel_shown';
 
     public static $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];
+    public static $acceptedTxnFlaggedStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED];
 
     /**
      * Attributes with default values
@@ -107,7 +109,7 @@ class OdinOrder extends OdinModel
         'params' => null, // object, //stores all GET parameters with content as object, for example {tpl: "emc1", cur: "BYN"}
         'events' => null, // enum array, //happened events on order ['aff_postback_sent','aff_pixel_shown']
         'pixels' => [], //array of shown pixels with compiled values
-        'posktbacks' => [], //array of sent postbacks with compiled values
+        'postbacks' => [], //array of sent postbacks with compiled values
     ];
 
     const STATUS_NEW = 'new';
@@ -158,6 +160,17 @@ class OdinOrder extends OdinModel
             }
             if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $model->currency;
+            }
+        });
+        
+        self::updated(function($model) {            
+            $changes = $model->getChanges();
+            if ($changes && isset($changes['is_flagged']) && $changes['is_flagged'] === false) {
+                $original = $model->getOriginal();
+                if ($original['is_flagged'] === true) {
+                    echo '<pre>'; var_dump($original['_id']); echo '</pre>'; exit;
+                    OrderService::getReducedData((string)$original['_id']);
+                }
             }
         });
     }
@@ -462,7 +475,7 @@ class OdinOrder extends OdinModel
     }
 
     /**
-     * Check if txn has status captured or approved
+     * Check if txn has status for reduce
      * @return boolean
      */
     public function isTxnForReduce()
@@ -478,4 +491,20 @@ class OdinOrder extends OdinModel
         return $isReduce;
     }
 
+    /**
+     * Check if txn has status for flagged
+     * @return boolean
+     */
+    public function isTxnForFlagged()
+    {
+        $txns = $this->txns;
+        $isNotFlagged = false;
+        foreach ($txns as $txn) {
+            if (in_array($txn['status'], static::$acceptedTxnFlaggedStatuses)) {
+                $isNotFlagged = true;
+                break;
+            }
+        }
+        return $isNotFlagged;
+    }
 }
