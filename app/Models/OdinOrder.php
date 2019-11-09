@@ -167,9 +167,8 @@ class OdinOrder extends OdinModel
             $changes = $model->getChanges();
             if ($changes && isset($changes['is_flagged']) && $changes['is_flagged'] === false) {
                 $original = $model->getOriginal();
-                if ($original['is_flagged'] === true) {
-                    echo '<pre>'; var_dump($original['_id']); echo '</pre>'; exit;
-                    OrderService::getReducedData((string)$original['_id']);
+                if ($original['is_flagged'] === true && !empty($original['affiliate'])) {
+                    OrderService::getReducedData((string)$original['_id'], $original['affiliate']);
                 }
             }
         });
