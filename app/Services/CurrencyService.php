@@ -129,7 +129,16 @@ class CurrencyService
         'NPR',
         'DJF',
         'BIF',
-        'CDF'
+        'CDF',
+        'GMD',
+        'MNT',
+        'RWF',
+        'ALL',
+        'BTN',
+        'KMF',
+        'CVE',
+        'AMD',
+        'LRD'
     ];
 
     /**
