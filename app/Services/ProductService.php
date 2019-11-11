@@ -282,23 +282,25 @@ class ProductService
     public function returnPricesByData($copId, $countryCode)
     {
         $product = OdinProduct::getByCopId($copId);
-        $currency = Currency::getByCountry(strtolower($countryCode));
-        
-        if (!$product || !$currency) {
+        if (!$product) {
             abort(404);
         }
+        $currency = Currency::getByCountry(strtolower($countryCode));
+        
         $product->currency = $currency->code;
         $prices = [];
         $pricesOld = $product->prices;
-        $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
-        $symbol = $numberFormatter->getAttribute(NumberFormatter::CURRENCY);
-        echo '<pre>'; var_dump($symbol); echo '</pre>'; exit;
+        
+        $localeString = \Utils::getCultureCode(null, $countryCode);        
+        $numberFormatter = new NumberFormatter($localeString, NumberFormatter::CURRENCY);
+        $symbol = $numberFormatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
         
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
             $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
             $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
             $prices[$quantity]['amount'] = $quantity;
             $prices[$quantity]['currency'] = $currency->code;
+            $prices[$quantity]['symbol'] = $symbol;
         }
         
         // for 10
@@ -307,9 +309,9 @@ class ProductService
         $price = CurrencyService::getLocalPriceFromUsd($prices[static::AMOUNT]['value'], $currency);
         $prices[static::AMOUNT]['value_text'] = $price['price_text'];
         $prices[static::AMOUNT]['currency'] = $currency->code;
+        $prices[static::AMOUNT]['symbol'] = $symbol;
         
-        
-        echo '<pre>'; var_dump($prices); echo '</pre>'; exit;
+        return $prices;
     }
 
 }

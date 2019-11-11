@@ -80,6 +80,13 @@ class ProductController extends Controller
 		
 	}
     
+    /**
+     * Get product price
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
+     * @throws AuthorizationException
+     */
     public function getProductPrice(GetPricesRequest $request, ProductService $productService)
     {        
         /**

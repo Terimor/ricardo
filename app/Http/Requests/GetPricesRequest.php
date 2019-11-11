@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\JsonResponse;
 
 class GetPricesRequest extends FormRequest
 {
@@ -30,4 +31,13 @@ class GetPricesRequest extends FormRequest
             'cop_id' => ['required', 'string'],
         ];
     }
+    
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        $response = new JsonResponse([                    
+                    'errors' => $validator->errors()
+                ], 422);
+
+        throw new \Illuminate\Validation\ValidationException($validator, $response);
+    }    
 }
