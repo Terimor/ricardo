@@ -19,6 +19,7 @@ class EbanxCodeMapper
         'BP-DR-94'  => 'card.error.expired',
         'BP-DR-21'  => 'card.error.age_restriction',
         'BP-DR-23'  => 'card.error.doc_number_incorrect',
+        'BP-DOC-01' => 'card.error.doc_number_incorrect',
         'BP-DR-39'  => 'card.error.doc_name_incorrect',
         'BP-DR-49'  => 'card.error.number_lost',
         'BP-DR-51'  => 'card.error.cardholder_lost',
