@@ -32,6 +32,11 @@ class GetPricesRequest extends FormRequest
         ];
     }
     
+    /**
+     * 
+     * @param Validator $validator
+     * @throws ValidationException
+     */
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
         $response = new JsonResponse([                    
