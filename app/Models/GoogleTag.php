@@ -53,7 +53,7 @@ class GoogleTag extends Model
                     $route = $request->route()->getName() ? $request->route()->getName() : 'index';                    
                     if (!empty($request->order) && in_array($route, self::REDUCED_PAGES)) {                        
                         $order = OdinOrder::where('_id', $request->order)->first();
-                        if (isset($order->is_reduced) && $order->is_reduced == true && empty($order->is_flagged)) {
+                        if (!empty($order->is_reduced) && empty($order->is_flagged)) {
                            $tags[$key]['code'] = $googleTags->code;
                         }
                     }
