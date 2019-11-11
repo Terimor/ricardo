@@ -63,11 +63,13 @@ function populateLinksWithGetParams() {
     if (!href.match(/^https?:\/\//) && !link.href.match(/^mailto:/) && !link.href.match(/^tel:/)) {
       const url = new URL(link.href);
 
-      searchParams.forEach((value, key) => {
-        if (!url.searchParams.has(key)) {
-          url.searchParams.set(key, value);
-        }
-      });
+      if (searchParams && searchParams.forEach) {
+        searchParams.forEach((value, key) => {
+          if (!url.searchParams.has(key)) {
+            url.searchParams.set(key, value);
+          }
+        });
+      }
 
       link.setAttribute('href', url.pathname + url.search + url.hash);
     }
