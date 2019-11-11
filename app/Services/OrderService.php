@@ -201,7 +201,7 @@ class OrderService
                 $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
                 
                  // if not flagged check fired logic
-                if (empty($order->is_flagged)) {       
+                if (empty($order->is_flagged)) {
                     // get first main product
                     $productId = $order->getFirstProductId();
                     if ($order->is_reduced === null && $productId) {

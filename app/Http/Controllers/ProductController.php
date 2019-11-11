@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\OdinProduct;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Requests\GetPricesRequest;
 
 /**
  * Class ProductController
@@ -77,5 +79,18 @@ class ProductController extends Controller
 		}
 		
 	}
+    
+    public function getProductPrice(GetPricesRequest $request, ProductService $productService)
+    {        
+        /**
+        * hack hardcode secret
+        */
+       $secret = $request->headers->get('X-Api-Key');
+       if ($secret !== 'd55ywgzu99bq8j2ovw48kknxudjucay48ibp3h3b') {
+         throw new AuthorizationException('Unauthorized');
+       }
+
+       return $productService->returnPricesByData($request->get('cop_id'), $request->get('country'));
+    }
 	
 }

@@ -52,7 +52,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 	$router->post('/calculate-upsells-total', 'ProductController@calculateUpsellsTotal');
     $router->get('/order-amount-total/{orderId}', 'OrderController@orderAmountTotal');
 
-    $router->get('/test-order-flagged', 'SiteController@testOrderFlagged');
+    $router->get('/product-price', 'ProductController@getProductPrice');
     
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
@@ -60,7 +60,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     /* test routes */
     $router->post('/test-payments', 'PaymentsController@test');
-    $router->get('/test-postbacks', 'SiteController@logPostback');
+    $router->get('/test-postbacks', 'SiteController@logPostback');  
 });
 
 /*Route::get('/debug-sentry', function () {

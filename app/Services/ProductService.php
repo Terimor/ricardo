@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Models\OdinProduct;
 use App\Models\Domain;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
+use NumberFormatter;
 
 /**
  * Class ProductService
@@ -14,6 +16,8 @@ use App\Exceptions\ProductNotFoundException;
  */
 class ProductService
 {
+    const AMOUNT = 10;
+    
     /**
      * @param Request $request
      * @return OdinProduct
@@ -268,6 +272,44 @@ class ProductService
         $lp->upsellPrices = $product->upsellPrices ?? null;
 
         return $lp;
+    }
+    
+    /**
+     * 
+     * @param type $copId
+     * @param type $country
+     */
+    public function returnPricesByData($copId, $countryCode)
+    {
+        $product = OdinProduct::getByCopId($copId);
+        $currency = Currency::getByCountry(strtolower($countryCode));
+        
+        if (!$product || !$currency) {
+            abort(404);
+        }
+        $product->currency = $currency->code;
+        $prices = [];
+        $pricesOld = $product->prices;
+        $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
+        $symbol = $numberFormatter->getAttribute(NumberFormatter::CURRENCY);
+        echo '<pre>'; var_dump($symbol); echo '</pre>'; exit;
+        
+        for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
+            $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
+            $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
+            $prices[$quantity]['amount'] = $quantity;
+            $prices[$quantity]['currency'] = $currency->code;
+        }
+        
+        // for 10
+        $prices[static::AMOUNT]['amount'] = static::AMOUNT;
+        $prices[static::AMOUNT]['value'] = $pricesOld[1]['value'] * static::AMOUNT;
+        $price = CurrencyService::getLocalPriceFromUsd($prices[static::AMOUNT]['value'], $currency);
+        $prices[static::AMOUNT]['value_text'] = $price['price_text'];
+        $prices[static::AMOUNT]['currency'] = $currency->code;
+        
+        
+        echo '<pre>'; var_dump($prices); echo '</pre>'; exit;
     }
 
 }

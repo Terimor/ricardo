@@ -24,6 +24,15 @@ class Currency extends Model
     protected $fillable = [
         'name', 'status', 'code', 'symbol', 'usd_rate', 'price_rate', 'countries', 'created_at', 'updated_at'
     ];
-
+    
+    /**
+     * Get currency by country code
+     * @param type $countryCode
+     * @return type
+     */
+    public static function getByCountry($countryCode)
+    {
+        return Currency::where('countries', $countryCode)->first();
+    }
 
 }
