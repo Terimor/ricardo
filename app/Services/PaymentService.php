@@ -832,9 +832,14 @@ class PaymentService
     {
         $result = true;
         $setting = PaymentProviders::$list[PaymentProviders::CHECKOUTCOM]['methods'][$card_type] ?? [];
-        $fraud_chance = !empty($ipqs) ? (int)$ipqs['fraud_chance'] : PaymentService::FRAUD_CHANCE_MAX;
+        $fraud_chance = PaymentService::FRAUD_CHANCE_MAX;
+        $recent_abuse = false;
+        if (!empty($ipqs)) {
+            $fraud_chance = (int)$ipqs['fraud_chance'];
+            $recent_abuse = (bool)$ipqs['recent_abuse'];
+        }
 
-        if ($fraud_chance < PaymentService::FRAUD_CHANCE_LIMIT) {
+        if ($fraud_chance < PaymentService::FRAUD_CHANCE_LIMIT || $recent_abuse) {
             if (in_array($country, $setting['+3ds'] ?? []) ) {
                 $result = true;
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {

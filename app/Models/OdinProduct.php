@@ -300,8 +300,8 @@ class OdinProduct extends Model
      */
     public function getBillingDescriptorAttribute($value)
     {
-        $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
-        return "*{$billingDescriptorPrefix}*{$value}";
+        $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');        
+        return $billingDescriptorPrefix ? "*{$billingDescriptorPrefix}*{$value}" : $value;
     }
 
     /**
