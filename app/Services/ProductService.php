@@ -305,9 +305,8 @@ class ProductService
         
         // for 10
         $prices[static::AMOUNT]['amount'] = static::AMOUNT;
-        $prices[static::AMOUNT]['value'] = $pricesOld[1]['value'] * static::AMOUNT;
-        $price = CurrencyService::getLocalPriceFromUsd($prices[static::AMOUNT]['value'], $currency);
-        $prices[static::AMOUNT]['value_text'] = $price['price_text'];
+        $prices[static::AMOUNT]['value'] = $pricesOld[1]['value'] * static::AMOUNT;       
+        $prices[static::AMOUNT]['value_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[static::AMOUNT]['value'], $currency);
         $prices[static::AMOUNT]['currency'] = $currency->code;
         $prices[static::AMOUNT]['symbol'] = $symbol;
         
