@@ -308,19 +308,4 @@ class SiteController extends Controller
         file_put_contents(storage_path("log_postbacks.txt"), json_encode($request->all())."\n", FILE_APPEND);
         return response('Ok', 200);
     }
-    
-    public function testOrderFlagged(Request $request) {
-        $orderId = $request->get('order');
-        
-        $order = OdinOrder::where('_id', $orderId)->first();
-        $order->is_flagged = true;
-        $order->save();
-        
-        $order->is_flagged = false;
-        $order->save();
-        
-        $order = OdinOrder::where('_id', $orderId)->first();
-        echo '<pre>'; var_dump($order->toArray()); echo '</pre>';
-    }
-
 }
