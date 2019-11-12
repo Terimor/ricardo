@@ -123,7 +123,7 @@ class OrderService
      */
     public function calculateOrderAmountTotal($orderId)
     {
-        $order = OdinOrder::where('_id', $orderId)->first();
+        $order = OdinOrder::getById($orderId);
 
         return $this->getOrderProductsText($order);
     }
@@ -192,7 +192,7 @@ class OrderService
     {
         // get order and check is_reduced
         $ol = null;
-        $order = OdinOrder::where('_id', $orderId)->first();
+        $order = OdinOrder::getById($orderId);
 
         if ($order){
             // check if order has the same affiliate and txn status captured, approved

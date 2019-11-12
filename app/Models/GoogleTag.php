@@ -43,7 +43,7 @@ class GoogleTag extends Model
         
         $order = null;
         if (!empty($request->order)) {
-            $order = OdinOrder::where('_id', $request->order)->first();
+            $order = OdinOrder::getById($request->order);
             $events = $order->events ?? [];
         }
         
