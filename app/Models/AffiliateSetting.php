@@ -40,7 +40,7 @@ class AffiliateSetting extends Model
      * Default percent after mainQtyRules
      * @var type 
      */
-    public static $defaultPercent = 65;
+    public static $defaultPercent = 70;
     
     public static $salesQtyInTable = 20;
     
