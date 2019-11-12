@@ -232,7 +232,7 @@ class PaymentService
 
         $result = false;
         if ($txn['status'] === Txn::STATUS_AUTHORIZED) {
-            if ($txn->payment_provider === PaymentProviders::CHECKOUTCOM) {
+            if ($txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
                 $checkoutService = new CheckoutDotComService();
                 $result = $checkoutService->capture($txn_hash);
 
@@ -264,7 +264,7 @@ class PaymentService
 
         $result = false;
         if ($order_txn['status'] === Txn::STATUS_AUTHORIZED) {
-            if ($txn->payment_provider === PaymentProviders::CHECKOUTCOM) {
+            if ($txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
                 $checkoutService = new CheckoutDotComService();
                 $result = $checkoutService->void($txn_hash);
 
