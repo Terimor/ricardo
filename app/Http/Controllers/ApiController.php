@@ -43,7 +43,7 @@ class ApiController extends Controller
     public function voidPayment(CaptureOrVoidPaymentApiRequest $req, string $order_id, string $txn_hash)
     {
         return [
-            'status' => $this->paymentService->voids($order_id, $txn_hash)
+            'status' => $this->paymentService->void($order_id, $txn_hash)
         ];
     }
 
