@@ -33,7 +33,7 @@ class PaymentService
     const CARD_CREDIT = 'credit';
     const CARD_DEBIT  = 'debit';
 
-    const FRAUD_CHANCE_LIMIT    = 90;
+    const FRAUD_CHANCE_LIMIT    = 85;
     const FRAUD_CHANCE_MAX      = 100;
 
     const SUCCESS_PATH  =   '/checkout';
