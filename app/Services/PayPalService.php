@@ -234,7 +234,7 @@ class PayPalService
      */
     public function createOrder(PayPalCrateOrderRequest $request): array
     {
-        $ipqs = $req->input('ipqs', null);
+        $ipqs = $request->input('ipqs', null);
 
         // throw is ip abused
         PaymentService::checkIsIpAbused($ipqs);
