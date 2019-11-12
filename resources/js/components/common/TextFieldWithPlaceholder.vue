@@ -67,6 +67,7 @@
 
             & > .placeholder {
                 user-select: none;
+                pointer-events: none;
                 color: #ddd;
                 z-index: 1;
             }
