@@ -20,6 +20,7 @@ class OdinOrder extends OdinModel
 
     const EVENT_AFF_POSTBACK_SENT = 'aff_postback_sent';
     const EVENT_AFF_PIXEL_SHOWN = 'aff_pixel_shown';
+    const EVENT_GTM_SHOWN = 'aff_gtm_shown';
 
     public static $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];
     public static $acceptedTxnFlaggedStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED];

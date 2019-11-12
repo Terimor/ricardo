@@ -203,7 +203,7 @@ class AffiliateService
         $pixelsArray = []; $isShown = false;
         $order = null;
         if (!empty($request->order)) {
-            $order = OdinOrder::where('_id', $request->order)->first();
+            $order = OdinOrder::getById($request->order, false);
             $pixelsOrderArray = $order->pixels ?? [];
             $events = $order->events ?? [];            
         }
