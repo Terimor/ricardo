@@ -138,7 +138,11 @@ class CurrencyService
         'KMF',
         'CVE',
         'AMD',
-        'LRD'
+        'LRD',
+        'MXN',
+        'HTG',
+        'IRR',
+        'VUV'
     ];
 
     /**
