@@ -220,40 +220,50 @@ const promo = new Vue({
       });
     },
 
+    priceText() {
+      const prices = checkoutData.product.prices;
+
+      switch (this.form.installments) {
+        case 1:
+          return prices[1].value_text;
+        case 3:
+          return prices[1].installments3_value_text;
+        case 6:
+          return prices[1].installments6_value_text;
+      }
+
+      return 0;
+    },
+
+    oldPrice() {
+      const prices = checkoutData.product.prices;
+
+      switch (this.form.installments) {
+        case 1:
+          return prices[1].old_value_text;
+        case 3:
+          return prices[1].installments3_old_value_text;
+        case 6:
+          return prices[1].installments6_old_value_text;
+      }
+
+      return 0;
+    },
+
     warrantyPriceText() {
       const prices = checkoutData.product.prices;
       const quantity = this.form.deal || 1;
 
       switch (this.form.installments) {
         case 1:
-          return prices[quantity].value_text;
+          return prices[quantity].warranty_price_text;
         case 3:
-          return prices[quantity].installments3_value_text;
+          return prices[quantity].installments3_warranty_price_text;
         case 6:
-          return prices[quantity].installments6_value_text;
+          return prices[quantity].installments6_warranty_price_text;
       }
 
       return 0;
-    },
-
-    warrantyOldPrice() {
-      const prices = checkoutData.product.prices;
-      const quantity = this.form.deal || 1;
-
-      switch (this.form.installments) {
-        case 1:
-          return prices[quantity].old_value_text;
-        case 3:
-          return prices[quantity].installments3_old_value_text;
-        case 6:
-          return prices[quantity].installments6_old_value_text;
-      }
-
-      return 0;
-    },
-
-    discount() {
-      return checkoutData.product.prices[this.form.deal || 1].discount_percent;
     },
 
     countOfInstallments() {
@@ -277,7 +287,8 @@ const promo = new Vue({
     },
 
     textPromoDiscount() {
-      return t('checkout.promo.buy_now', { amount: this.discount || 0 });
+      const discount = checkoutData.product.prices[1].discount_percent;
+      return t('checkout.promo.buy_now', { amount: discount });
     },
 
     textDiscountStarter: () => t('checkout.discount_starter'),

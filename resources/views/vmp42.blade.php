@@ -58,11 +58,11 @@
                                     <div>
                                         <span class="bold">{{ t('checkout.header_banner.price') }}:</span>
                                         <span class="promo__price--double bold">
-                                            @{{countOfInstallments}} @{{ warrantyOldPrice }}
+                                            @{{countOfInstallments}} @{{ oldPrice }}
                                         </span>
                                     </div>
                                     <span class="promo__price promo__text-red bold">
-                                        @{{countOfInstallments}} @{{ warrantyPriceText }}
+                                        @{{countOfInstallments}} @{{ priceText }}
                                     </span>
                                 </div>
                             </div>
