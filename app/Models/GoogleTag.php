@@ -41,7 +41,13 @@ class GoogleTag extends Model
     {
         $googleTags = GoogleTag::getCacheGoogleTags();
         
-        $tags = [];
+        $order = null;
+        if (!empty($request->order)) {
+            $order = OdinOrder::where('_id', $request->order)->first();
+            $events = $order->events ?? [];
+        }
+        
+        $tags = []; $saveOrder = false;
         // prepare tags
         foreach ($googleTags as $key => $googleTags) {
             if ($googleTags->type == self::TYPE_ALWAYS) {
@@ -51,14 +57,20 @@ class GoogleTag extends Model
                 if ($affiliate && (int)$affiliate->ho_affiliate_id > AffiliateSetting::OWN_AFFILIATE_MAX) {                    
                     // check order for is reduced
                     $route = $request->route()->getName() ? $request->route()->getName() : 'index';                    
-                    if (!empty($request->order) && in_array($route, self::REDUCED_PAGES)) {                        
-                        $order = OdinOrder::where('_id', $request->order)->first();
-                        if (!empty($order->is_reduced) && empty($order->is_flagged)) {
+                    if ($order && in_array($route, self::REDUCED_PAGES)) {                        
+                        if (!empty($order->is_reduced) && empty($order->is_flagged) && !in_array(OdinOrder::EVENT_GTM_SHOWN, $events)) {
                            $tags[$key]['code'] = $googleTags->code;
+                           $saveOrder = true;
                         }
                     }
                 }
             }
+        }
+        
+        if ($saveOrder) {
+            $events[] = OdinOrder::EVENT_GTM_SHOWN;
+            $order->events = $events;
+            $order->save();
         }
         
         return $tags;
