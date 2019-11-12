@@ -260,10 +260,10 @@ class PaymentService
     public function void(string $order_id, string $txn_hash): bool
     {
         $order = OdinOrder::getById($order_id); //throwable
-        $order_txn = $order->getTxnByHash($txn_hash); //throwable
+        $txn = $order->getTxnByHash($txn_hash); //throwable
 
         $result = false;
-        if ($order_txn['status'] === Txn::STATUS_AUTHORIZED) {
+        if ($txn['status'] === Txn::STATUS_AUTHORIZED) {
             if ($txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
                 $checkoutService = new CheckoutDotComService();
                 $result = $checkoutService->void($txn_hash);
