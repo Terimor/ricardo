@@ -32,10 +32,16 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
     {       
         View::composer('layouts.app', function($view) {
+            $settings = Setting::getValue(array(
+                'sentry_dsn',
+                'freshchat_token'
+            ));
+
             $view->with('cdnUrl', UtilsService::getCdnUrl());
             $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking') || Route::is('checkout_price_set'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
-            $view->with('SentryDsn', Setting::getValue('sentry_dsn'));
+            $view->with('SentryDsn', $settings['sentry_dsn']);
+            $view->with('FreshchatToken', $settings['freshchat_token']);
             $view->with('ga_id', optional(Domain::getByName())->ga_id);
             
             $affiliate = null;
