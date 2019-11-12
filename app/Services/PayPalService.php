@@ -234,6 +234,11 @@ class PayPalService
      */
     public function createOrder(PayPalCrateOrderRequest $request): array
     {
+        $ipqs = $req->input('ipqs', null);
+
+        // throw is ip abused
+        PaymentService::checkIsIpAbused($ipqs);
+
         $order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
         if ($order) {
             return $this->createUpsellOrder($request);
@@ -382,7 +387,7 @@ class PayPalService
                 'txid' => $validTxid,
                 'shop_currency' => $shop_currency_code,
                 'params' => $params,
-                'ipqualityscore' => $request->get('ipqs')
+                'ipqualityscore' => $ipqs
             ], true);
 
             $order = $order_reponse['order'];

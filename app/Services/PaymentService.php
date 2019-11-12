@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Exceptions\CustomerUpdateException;
 use App\Exceptions\ProviderNotFoundException;
 use App\Exceptions\InvalidParamsException;
+use App\Exceptions\PaymentException;
 use App\Exceptions\OrderUpdateException;
 use App\Models\Txn;
 use App\Models\Currency;
@@ -35,6 +36,8 @@ class PaymentService
 
     const FRAUD_CHANCE_LIMIT    = 85;
     const FRAUD_CHANCE_MAX      = 100;
+
+    const THROW_IS_IP_ABUSED    = true;
 
     const SUCCESS_PATH  =   '/checkout';
     const FAILURE_PATH  =   '/checkout';
@@ -296,6 +299,9 @@ class PaymentService
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
         $method = PaymentMethodMapper::toMethod($card['number']);
+
+        // throw is ip abused
+        self::checkIsIpAbused($ipqs); // throwable
 
         // find order for update
         $order = null;
@@ -911,6 +917,26 @@ class PaymentService
             }
         }
 
+        return $result;
+    }
+
+    /**
+     * Checks is ip abused
+     * @param  ?array   $ipqs
+     * @param  bool     $thowable
+     * @return bool
+     * @throws PaymentException
+     */
+    private static function checkIsIpAbused(?array $ipqs, bool $throwable = true): bool
+    {
+        $result = false;
+        if (!empty($ipqs) && $ipqs['recent_abuse']) {
+            $result = true;
+            if (self::THROW_IS_IP_ABUSED && $throwable) {
+                logger()->warning('Payment refused', ['ipqs' => $ipqs]);
+                throw new PaymentException('Payment is refused');
+            }
+        }
         return $result;
     }
 }
