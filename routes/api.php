@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,10 @@ use Illuminate\Http\Request;
 |
 */
 
-/*Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});*/
+// Route::middleware('auth:api-key')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::group(['middleware' => ['auth.x-api-key']], function (Router $router) {
+    $router->post('order/{orderId}/payment/{hash}/capture', 'ApiController@capturePayment');
+});

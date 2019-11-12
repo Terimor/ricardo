@@ -217,6 +217,70 @@ class PaymentService
     }
 
     /**
+     * Captures payment
+     * @param  string $order_id
+     * @param  string $txn_hash
+     * @return bool
+     */
+    public function capture(string $order_id, string $txn_hash): bool
+    {
+        $order = OdinOrder::getById($order_id); //throwable
+        $txn = $order->getTxnByHash($txn_hash); //throwable
+
+        $result = false;
+        if ($txn['status'] === Txn::STATUS_AUTHORIZED) {
+            if ($txn->payment_provider === PaymentProviders::CHECKOUTCOM) {
+                $checkoutService = new CheckoutDotComService();
+                $result = $checkoutService->capture($txn_hash);
+
+                if ($result) {
+                    $txn['status'] = Txn::STATUS_CAPTURED;
+                    $order->addTxn($txn);
+                    if (!$order->save()) {
+                        $validator = $order->validate();
+                        if ($validator->fails()) {
+                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Voids payment
+     * @param  string $order_id
+     * @param  string $txn_hash
+     * @return bool
+     */
+    public function void(string $order_id, string $txn_hash): bool
+    {
+        $order = OdinOrder::getById($order_id); //throwable
+        $order_txn = $order->getTxnByHash($txn_hash); //throwable
+
+        $result = false;
+        if ($order_txn['status'] === Txn::STATUS_AUTHORIZED) {
+            if ($txn->payment_provider === PaymentProviders::CHECKOUTCOM) {
+                $checkoutService = new CheckoutDotComService();
+                $result = $checkoutService->void($txn_hash);
+
+                if ($result) {
+                    $txn['status'] = Txn::STATUS_FAILED;
+                    $order->addTxn($txn);
+                    if (!$order->save()) {
+                        $validator = $order->validate();
+                        if ($validator->fails()) {
+                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Creates a new order
      * @param PaymentCardCreateOrderRequest $req
      * @return array

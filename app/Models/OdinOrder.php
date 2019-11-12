@@ -163,8 +163,8 @@ class OdinOrder extends OdinModel
                 $model->shop_currency = $model->currency;
             }
         });
-        
-        self::updated(function($model) {            
+
+        self::updated(function($model) {
             $changes = $model->getChanges();
             if ($changes && isset($changes['is_flagged']) && $changes['is_flagged'] === false) {
                 $original = $model->getOriginal();
@@ -208,6 +208,21 @@ class OdinOrder extends OdinModel
         $order = OdinOrder::find($id);
         if (!$order && $throwable) {
             throw new OrderNotFoundException("Order [{$id}] not found");
+        }
+        return $order;
+    }
+
+    /**
+     * Returns OdinOrder by Txn ID
+     * @param  string    $txn_id
+     * @param  boolean   $throwable default=true
+     * @return OdinOrder|null
+     */
+    public static function getByTxnHash(string $txn_hash, bool $throwable = true): ?OdinOrder
+    {
+        $order = OdinOrder::where('txns.hash', $txn_hash)->first();
+        if (!$order && $throwable) {
+            throw new OrderNotFoundException("Order by Txn [{$txn_hash}] not found");
         }
         return $order;
     }
