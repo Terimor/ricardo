@@ -21,26 +21,11 @@
             <div class="column-with-head">
               <div class="col-content" id="form-steps">
                 <payment-form-vmc4
-                    :productImage="productImage"
-                    :installments="form.installments"
-                    :isWarrantyChecked="form.isWarrantyChecked"
-                    :checkoutData="checkoutData"
+                    :vmc4Form="form"
                     :countryList="countryList"
-                    @productImageChanged="setProductImage"
-                    @setWarrantyPriceText="setWarrantyPriceText"
-                    :list="dealList"
+                    :dealList="dealList"
                     :variantList="variantList"
-                    @onSubmit="submit">
-                    <template slot="installment">
-                      <select-field
-                        v-if="withInstallments"
-                        label="Please Select Amount Of Installments"
-                        popperClass="emc1-popover-variant"
-                        :list="installmentsList"
-                        v-model="form.installments"
-                        @input="getImplValue"
-                      />
-                    </template>
+                    :extraFields="extraFields">
                     <template slot="warranty">
                       <transition name="el-zoom-in-top">
                         <button v-show="warrantyPriceText" id="warranty-field-button">
@@ -80,11 +65,14 @@
 </template>
 <script>
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
+  import * as extraFields from '../mixins/extraFields';
 	import { preparePurchaseData } from "../utils/checkout";
   import queryToComponent from '../mixins/queryToComponent';
   import { t, timage } from '../utils/i18n';
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
+
+  const searchParams = new URL(location).searchParams;
 
 	export default {
 		name: 'vmc4',
@@ -93,81 +81,52 @@
     },
     mixins: [
       queryToComponent,
+      extraFields.tplMixin,
     ],
-		props: ['data', 'showPreloader'],
+		props: ['showPreloader', 'skusList'],
 		data() {
 			return {
-        ImplValue: null,
-        radioIdx: null,
-        warrantyPriceText: null,
-				billing_descriptor: checkoutData.product.billing_descriptor,
-				productImage: null,
+				productImage: this.getProductImage(),
 				form: {
+          deal: null,
           isWarrantyChecked: false,
-          installments: 1,
+          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
         },
-				purchase: [],
-        variantList: [],
-        installmentsList: [
-          {
-            label: 'Pay full amount now',
-            text: 'Pay full amount now',
-            value: 1,
-          }, {
-            label: 'Pay in 3 installments',
-            text: 'Pay in 3 installments',
-            value: 3,
-          }, {
-            label: 'Pay in 6 installments',
-            text: 'Pay in 6 installments',
-            value: 6,
-          }
-        ]
-			}
+			};
     },
     created() {
       if (this.queryParams['3ds'] === 'failure') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
-
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
-          this.form.installments = selectedProductData.installments || this.form.installments;
         }
         catch (err) {
           
         }
       }
     },
-    watch: {
-      'form.installments' (val) {
-          this.setPurchase({
-            variant: this.form.variant,
-            installments: val,
-          })
-      },
-    },
 		computed: {
-      fullAmount () {
-        return this.form.installments == 1;
-      },
-			checkoutData() {
-				return checkoutData
-			},
 			productData() {
-				return checkoutData.product
+				return checkoutData.product;
 			},
-      withInstallments () {
-        return this.checkoutData.countryCode === 'br'
-          || this.checkoutData.countryCode === 'mx'
-          || this.checkoutData.countryCode === 'co'
+      billing_descriptor() {
+        return checkoutData.product.billing_descriptor;
       },
-      quantityOfInstallments () {
-        const { installments } = this.form
-        return installments && installments !== 1 ? installments + '× ' : ''
+      purchase() {
+        const currentVariant = this.skusList.find(it => it.code === this.form.variant);
+
+        return preparePurchaseData({
+          purchaseList: this.productData.prices,
+          product_name: this.productData.product_name,
+          variant: currentVariant && currentVariant.name || null,
+          installments: this.form.installments,
+          quantityToShow: [1, 3, 5],
+          onlyDiscount: true,
+        });
       },
       dealList () {
         return this.purchase.map((it, idx) => ({
-          class: `${this.radioIdx === it.totalQuantity ? 'isChecked' : ''} ${it.discountName.toLowerCase() === 'bestseller' ? 'bestseller':''}`,
+          class: `${this.form.deal === it.totalQuantity ? 'isChecked' : ''} ${it.discountName.toLowerCase() === 'bestseller' ? 'bestseller':''}`,
           value: it.totalQuantity,
           quantity: it.totalQuantity,
           label: getRadioHtml({
@@ -184,6 +143,35 @@
           label: t('country.' + name),
         }));
       },
+
+      variantList() {
+        return this.skusList.map((it) => ({
+          label: it.name,
+          text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
+          value: it.code,
+          imageUrl: it.quantity_image[1]
+        }));
+      },
+
+      warrantyPriceText() {
+        const prices = checkoutData.product.prices;
+
+        if (!this.form.deal) {
+          return 0;
+        }
+
+        switch (this.form.installments) {
+          case 1:
+            return prices[this.form.deal].warranty_price_text;
+          case 3:
+            return prices[this.form.deal].installments3_warranty_price_text;
+          case 6:
+            return prices[this.form.deal].installments6_warranty_price_text;
+        }
+
+        return 0;
+      },
+
       textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
       textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
       textWarranty: () => t('checkout.warranty'),
@@ -191,75 +179,37 @@
       imageSafePayment: () => timage('safe_payment'),
 		},
 		methods: {
-			submit(form, ipqsResult) {
+      getProductImage() {
+        const isInitial = !this.productImage;
+        const quantity = /*this.form && +this.form.deal || */1;
+        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code) || null;
 
-      },
-      getImplValue(value) {
-        this.implValue = value;
-        if (this.radioIdx) this.changeWarrantyValue();
-      },
-      setWarrantyPriceText(radioIdx) {
-        this.radioIdx = Number(radioIdx);
-        this.changeWarrantyValue();
-      },
-      changeWarrantyValue () {
-        const prices = this.checkoutData.product.prices;
-        this.implValue = this.implValue || 3;
+        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
-        switch(this.implValue) {
-          case 1:
-            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
-            break;
-          case 3:
-            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
-            break;
-          case 6:
-            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
-            break;
-          default:
-            break;
+        return isInitial ? productImage : skuImage;
+      },
+      animateProductImage() {
+        const newProductImage = this.getProductImage();
+
+        if (newProductImage !== this.productImage) {
+          const imgPreload = new Image();
+          imgPreload.src = newProductImage;
+
+          fade('out', 300, document.querySelector('#main-prod-image'), true)
+            .then(() => {
+              this.productImage = newProductImage;
+              setTimeout(() => fade('in', 300, document.querySelector('#main-prod-image'), true), 200);
+            });
         }
       },
-			setCountryCodeByPhoneField(val) {
-				if (val.iso2) {
-					this.form.countryCodePhoneField = val.iso2;
-				}
-			},
-			setPurchase({variant, installments}) {
-				this.purchase = preparePurchaseData({
-					purchaseList: this.productData.prices,
-					quantityToShow: [1, 3, 5],
-					product_name: this.productData.product_name,
-					variant,
-					installments,
-          onlyDiscount: true
-				})
-			},
-			setProductImage(val) {
-				this.productImage = val
-      }
 		},
-		mounted() {
-			this.variantList = this.productData.skus.map((it) => ({
-				label: it.name,
-				text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
-				value: it.code,
-				imageUrl: it.quantity_image[1]
-			}));
-
-			this.setPurchase({
-				variant: this.form.variant,
-				installments: 1,
-      });
-
-      if (this.withInstallments) {
-        // set default installments
-        this.form.installments =
-          this.checkoutData.countryCode === 'br' ? 3 :
-          this.checkoutData.countryCode === 'mx' ? 1 :
-          1
-      }
-		},
+    watch: {
+      'form.variant'() {
+        this.animateProductImage();
+      },
+    },
 	}
 </script>
 <style lang="scss">

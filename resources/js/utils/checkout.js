@@ -1,24 +1,7 @@
-import creditCardType from 'credit-card-type';
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
 import { goTo } from './goTo';
-
-
-const ebanxMap = {
-  'visa': 'visa',
-  'mastercard': 'mastercard',
-  'american-express': 'amex',
-  'diners-club': 'dinersclub',
-  'discover': 'discover',
-  'jcb': 'jcb',
-  'unionpay': null,
-  'maestro': null,
-  'mir': null,
-  'elo': 'elo',
-  'hiper': null,
-  'hipercard': 'hipercard',
-};
 
 
 const getDiscount = ({key, discountPercent, valueTexts, installments}) => {
@@ -183,32 +166,6 @@ export function getCardUrl(cardType) {
     'visa': window.cdnUrl + '/assets/images/cc-icons/visa.png'
   }
   return cardMap[cardType] || cardMap.iconcc
-}
-
-
-export function getPaymentMethods(country) {
-  country = country || checkoutData.countryCode;
-
-  return fetch('/payment-methods-by-country?country=' + country)
-    .then(res => res.json())
-    .catch(err => {
-      return checkoutData.paymentMethods;
-    });
-}
-
-
-export function getPaymentMethodByCardNumber(cardNumber) {
-  cardNumber = cardNumber ? cardNumber.replace(/\s/g, '') : '';
-
-  const paymentMethodsList = creditCardType(cardNumber);
-
-  let paymentMethod = cardNumber.length > 0 && paymentMethodsList.length > 0
-    ? paymentMethodsList[0].type
-    : null;
-
-  return paymentMethod && ebanxMap[paymentMethod]
-    ? ebanxMap[paymentMethod]
-    : null;
 }
 
 

@@ -77,13 +77,10 @@
                   name: 'ship-address'
                 }"
                 v-model="paymentForm.street"/>
-            <text-field
-                v-if="extraFields.district"
-                :validation="$v.form.district"
-                :validationMessage="textDistrictRequired"
-                theme="variant-1"
-                :label="textDistrictTitle"
-                v-model="paymentForm.district" />
+            <District
+              :extraFields="extraFields"
+              :form="paymentForm"
+              :$v="$v" />
             <text-field
                 :validation="$v.form.city"
                 :validationMessage="textCityRequired"
@@ -96,22 +93,13 @@
                     name: 'city'
                 }"
                 v-model="paymentForm.city"/>
-            <select-field
-                :standart="true"
-                v-if="extraFields.state"
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
-                :validation="$v.form.state"
-                :validationMessage="textStateRequired"
-                theme="variant-1"
-                :label="textStateTitle"
-                :rest="{
-                  placeholder: textStatePlaceholder,
-                  autocomplete: 'shipping region',
-                  name: 'ship-state'
-                }"
-                :list="extraFields.state.items"
-                v-model="paymentForm.state" />
+            <State
+              v-if="extraFields.state"
+              :country="paymentForm.country"
+              :extraFields="extraFields"
+              :isLoading="isLoading"
+              :form="paymentForm"
+              :$v="$v" />
             <text-field
                 v-else
                 v-loading="isLoading.address"
@@ -154,18 +142,10 @@
             <h2>
               {{ thirdTitle }}
             </h2>
-            <select-field
-                :standart="true"
-                v-if="extraFields.card_type"
-                :validation="$v.form.cardType"
-                :validationMessage="textCardTypeRequired"
-                theme="variant-1"
-                v-model="paymentForm.cardType"
-                :label="textCardTypeTitle"
-                :rest="{
-                  placeholder: textCardTypePlaceholder
-                }"
-                :list="cardTypeList" />
+            <CardType
+              :extraFields="extraFields"
+              :form="paymentForm"
+              :$v="$v" />
             <div id="payment-data-form">
                 <text-field
                     :validation="$v.form.cardNumber"
@@ -180,7 +160,7 @@
                     theme="variant-1"
                     :label="textCardNumber"
                     v-model="paymentForm.cardNumber"
-                    :prefix="`<img src='${cardUrl}' />`"
+                    :prefix="`<img src='${$parent.paymentMethodURL}' />`"
                     :postfix="`<i class='fa fa-lock'></i>`"
                 />
                 <label
@@ -227,26 +207,14 @@
                     postfix="<i class='fa fa-question-circle'></i>"
                 />
             </div>
-            <select-field
-              :standart="true"
-              v-if="extraFields.document_type"
-              :validation="$v.form.documentType"
-              :validationMessage="textDocumentTypeRequired"
-              :label="textDocumentTypeTitle"
-              theme="variant-1"
-              :list="extraFields.document_type.items"
-              v-model="paymentForm.documentType" />
-            <text-field-with-placeholder
-              v-if="extraFields.document_number"
-              :validation="$v.form.documentNumber"
-              :validationMessage="textDocumentNumberRequired"
-              :placeholder="documentNumberPlaceholder"
-              :rest="{
-                'format': documentNumberPlaceholder,
-              }"
-              theme="variant-1"
-              :label="textDocumentNumberTitle"
-              v-model="paymentForm.documentNumber" />
+            <DocumentType
+              :extraFields="extraFields"
+              :form="paymentForm"
+              :$v="$v" />
+            <DocumentNumber
+              :extraFields="extraFields"
+              :form="paymentForm"
+              :$v="$v" />
         </template>
         <!-- vmp41/42 block -->
         <span v-show="hasWarranty" class="warranty-field-button">
@@ -295,9 +263,14 @@
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
   import scrollToError from '../../mixins/formScrollToError';
-  import { getPaymentMethodByCardNumber, sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
+  import { sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
+  import State from './extra-fields/State';
+  import District from './extra-fields/District';
+  import CardType from './extra-fields/CardType';
+  import DocumentType from './extra-fields/DocumentType';
+  import DocumentNumber from './extra-fields/DocumentNumber';
 
   export default {
     name: 'PaymentForm',
@@ -305,7 +278,6 @@
       'input',
       'countryList',
       'countryCode',
-      'installments',
       'paymentForm',
       '$v',
       'firstTitle',
@@ -323,6 +295,11 @@
     ],
     components: {
       Spinner,
+      State,
+      District,
+      CardType,
+      DocumentType,
+      DocumentNumber,
     },
     data () {
       return {
@@ -368,28 +345,9 @@
           return null
         }
       },
-      cardUrl () {
-        return this.$root.paymentMethods && this.paymentForm.paymentMethod && this.$root.paymentMethods[this.paymentForm.paymentMethod]
-          ? this.$root.paymentMethods[this.paymentForm.paymentMethod].logo
-          : window.cdnUrl + '/assets/images/cc-icons/iconcc.png';
-      },
 
       isCardExpired() {
         return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
-      },
-
-      cardTypeList() {
-        return this.extraFields.card_type.items.map(item => ({
-          value: item.value,
-          label: t(item.phrase),
-          text: t(item.phrase),
-        }));
-      },
-
-      documentNumberPlaceholder() {
-        return typeof this.extraFields.document_number.placeholder === 'object'
-          ? this.extraFields.document_number.placeholder[this.paymentForm.documentType] || ''
-          : this.extraFields.document_number.placeholder;
       },
 
       textStateTitle() {
@@ -419,8 +377,6 @@
       textStreetRequired: () => t('checkout.payment_form.street.required'),
       textStreetNumber: () => t('checkout.payment_form.street_number'),
       textStreetNumberRequired: () => t('checkout.payment_form.street_number.required'),
-      textDistrictTitle: () => t('checkout.payment_form.complemento'),
-      textDistrictRequired: () => t('checkout.payment_form.complemento.required'),
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
@@ -428,9 +384,6 @@
       textCountry: () => t('checkout.payment_form.сountry'),
       textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),
       textCountryRequired: () => t('checkout.payment_form.сountry.required'),
-      textCardTypeTitle: () => t('checkout.payment_form.card_type.title'),
-      textCardTypeRequired: () => t('checkout.payment_form.card_type.required'),
-      textCardTypePlaceholder: () => t('checkout.payment_form.card_type.placeholder'),
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),
@@ -441,10 +394,6 @@
       textCardExpired: () => t('checkout.payment_form.card_expired'),
       textCardCVV: () => t('checkout.payment_form.card_cvv'),
       textCardCVVRequired: () => t('checkout.payment_form.card_cvv.required'),
-      textDocumentTypeTitle: () => t('checkout.payment_form.document_type.title'),
-      textDocumentTypeRequired: () => t('checkout.payment_form.document_type.required'),
-      textDocumentNumberTitle: () => t('checkout.payment_form.document_number.title'),
-      textDocumentNumberRequired: () => t('checkout.payment_form.document_number.required'),
       textWarranty: () => t('checkout.warranty'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
@@ -456,15 +405,11 @@
       'paymentForm.cardNumber' (newVal, oldValue) {
         newVal = newVal || '';
         
-        const paymentMethod = getPaymentMethodByCardNumber(newVal);
-
-        this.paymentForm.paymentMethod = this.$root.paymentMethods && this.$root.paymentMethods[paymentMethod]
-          ? paymentMethod
-          : null;
-
         if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
           this.paymentForm.cardNumber = oldValue;
         }
+
+        this.$parent.setPaymentMethodByCardNumber(newVal);
       },
       'paymentForm.zipcode' (zipcode) {
         if (this.countryCode === 'br' && !this.$v.form.zipcode.$invalid) {
@@ -574,6 +519,27 @@
         const phoneNumber = paymentForm.phone.replace(/[^0-9]/g, '');
         const cardNumber = paymentForm.cardNumber.replace(/\s/g, '');
 
+        let data = {
+          deal: paymentForm.deal,
+          variant: paymentForm.variant,
+          isWarrantyChecked: paymentForm.isWarrantyChecked,
+          paymentProvider: paymentForm.paymentProvider,
+          fname: paymentForm.fname,
+          lname: paymentForm.lname,
+          //dateOfBirth: paymentForm.dateOfBirth,
+          email: paymentForm.email,
+          phone: paymentForm.phone,
+          countryCodePhoneField: paymentForm.countryCodePhoneField,
+          street: paymentForm.street,
+          city: paymentForm.city,
+          state: paymentForm.state,
+          zipcode: paymentForm.zipcode,
+          country: paymentForm.country,
+        };
+
+        this.$parent.setExtraFieldsForLocalStorage(data);
+        this.setDataToLocalStorage(data);
+
         let fields = {
           billing_first_name: paymentForm.fname,
           billing_last_name: paymentForm.lname,
@@ -597,30 +563,6 @@
           }
         }
 
-        this.setDataToLocalStorage({
-          deal: paymentForm.deal,
-          variant: paymentForm.variant,
-          isWarrantyChecked: paymentForm.isWarrantyChecked,
-          installments: paymentForm.installments,
-          paymentProvider: paymentForm.paymentProvider,
-          paymentMethod: paymentForm.paymentMethod,
-          cardType: paymentForm.cardType,
-          fname: paymentForm.fname,
-          lname: paymentForm.lname,
-          //dateOfBirth: paymentForm.dateOfBirth,
-          email: paymentForm.email,
-          phone: paymentForm.phone,
-          countryCodePhoneField: paymentForm.countryCodePhoneField,
-          street: paymentForm.street,
-          district: paymentForm.district,
-          city: paymentForm.city,
-          state: paymentForm.state,
-          zipcode: paymentForm.zipcode,
-          country: paymentForm.country,
-          documentType: paymentForm.documentType,
-          documentNumber: paymentForm.documentNumber,
-        });
-
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
@@ -631,7 +573,7 @@
             }
 
             if (paymentForm.paymentProvider === 'credit-card') {
-              const data = {
+              let data = {
                 product: {
                   sku: paymentForm.variant,
                   qty: parseInt(paymentForm.deal, 10),
@@ -662,25 +604,7 @@
                 ipqs: ipqsResult,
               };
 
-              if (this.extraFields.installments) {
-                data.card.installments = paymentForm.installments;
-              }
-
-              if (this.extraFields.district) {
-                data.address.district = paymentForm.district;
-              }
-
-              if (this.extraFields.card_type) {
-                data.card.type = paymentForm.cardType;
-              }
-
-              if (this.extraFields.document_type) {
-                data.contact.document_type = paymentForm.documentType;
-              }
-
-              if (this.extraFields.document_number) {
-                data.contact.document_number = paymentForm.documentNumber;
-              }
+              this.$parent.setExtraFieldsForCardPayment(data);
 
               sendCheckoutRequest(data)
                 .then(res => {
@@ -765,6 +689,7 @@
                 .el-loading-spinner {
                     margin-top: 0;
                     transform: translateY(-50%);
+                    top: 20px;
                 }
             }
         }

@@ -10,23 +10,24 @@
           <span v-if="step === 3" v-html="textPaymentMethod"></span>
         </h4>
         <div class="step step-1" v-if="step === 1">
-          <slot name="installment" />
+          <Installments
+            popperClass="emc1-popover-variant"
+            :extraFields="extraFields"
+            :form="vmc4Form" />
           <radio-button-group
             :withCustomLabels="false"
-            v-model="form.deal"
-            @input="setWarrantyPriceText"
-            :list="list"
+            v-model="vmc4Form.deal"
+            :list="dealList"
             />
             <template v-if="isShowVariant">
               <h2 v-html="textSelectVariant"></h2>
               <select-field
                 popperClass="smc7-popover-variant"
-                v-model="form.variant"
+                v-model="vmc4Form.variant"
                 :rest="{
                   placeholder: 'Variant'
                 }"
-                :list="variantList"
-                @input="onVariantChange" />
+                :list="variantList" />
             </template>
         </div>
         <div class="step step-2" v-if="step === 2">
@@ -70,15 +71,20 @@
             v-model="form.paymentProvider"
             @input="activateForm" />
           <paypal-button
+            v-show="vmc4Form.installments === 1"
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
-            v-show="fullAmount"
-            :$v="$v.form.deal"
+            :$v="$v.vmc4Form.deal"
             @click="paypalSubmit"
           >{{ paypalRiskFree }}</paypal-button>
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
           <slot name="warranty" />
           <form v-if="form.paymentProvider && isFormShown">
+            <CardType
+              class="input-container"
+              :extraFields="extraFields"
+              :form="vmc4Form"
+              :$v="$v" />
             <text-field
                 :validation="$v.form.stepThree.cardNumber"
                 :rest="{
@@ -93,7 +99,7 @@
                 theme="variant-1"
                 :label="textCardNumber"
                 v-model="form.stepThree.cardNumber"
-                :prefix="`<img src='${cardUrl}' alt='Card Number' />`"
+                :prefix="`<img src='${$parent.paymentMethodURL}' alt='Card Number' />`"
                 :postfix="`<i class='fa fa-lock'></i>`"
             />
             <div class="card-info">
@@ -152,6 +158,20 @@
                   </div>
                 </div>
               </div>
+              <DocumentType
+                class="input-container"
+                :extraFields="extraFields"
+                :form="vmc4Form"
+                :$v="$v" />
+              <DocumentNumber
+                :extraFields="extraFields"
+                :form="vmc4Form"
+                :$v="$v" />
+              <District
+                :extraFields="extraFields"
+                :withPlaceholder="true"
+                :form="vmc4Form"
+                :$v="$v" />
               <text-field
                 :validation="$v.form.stepThree.city"
                 :validationMessage="textCityRequired"
@@ -163,7 +183,15 @@
                   autocomplete: 'shipping locality'
                 }"
                 v-model="form.stepThree.city"/>
+              <State
+                v-if="extraFields.state"
+                class="input-container"
+                :country="form.stepThree.country"
+                :extraFields="extraFields"
+                :form="vmc4Form"
+                :$v="$v" />
               <text-field
+                v-else
                 :validation="$v.form.stepThree.state"
                 :validationMessage="textStateRequired"
                 element-loading-spinner="el-icon-loading"
@@ -255,18 +283,23 @@
 <script>
   import * as dateFns from 'date-fns';
   import { t } from '../../utils/i18n';
-  import creditCardType from 'credit-card-type';
   import { check as ipqsCheck } from '../../services/ipqs';
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
-	import { getCardUrl, getPaymentMethods, sendCheckoutRequest, get3dsErrors } from "../../utils/checkout";
+	import { sendCheckoutRequest, get3dsErrors } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
 	import {fade} from "../../utils/common";
   import { queryParams } from  '../../utils/queryParams';
+  import Installments from './extra-fields/Installments';
+  import State from './extra-fields/State';
+  import District from './extra-fields/District';
+  import CardType from './extra-fields/CardType';
+  import DocumentType from './extra-fields/DocumentType';
+  import DocumentNumber from './extra-fields/DocumentNumber';
 
   const searchParams = new URL(location).searchParams;
 
@@ -280,17 +313,22 @@
       PayMethodItem,
       RadioButtonItemDeal,
       Spinner,
+      Installments,
+      State,
+      District,
+      CardType,
+      DocumentType,
+      DocumentNumber,
     },
 		validations: vmc4validation,
 		props: [
       'productImage',
 			'countryList',
-			'list',
+			'dealList',
 			'variantList',
       'countryCode',
-      'installments',
-      'isWarrantyChecked',
-			'checkoutData'
+      'extraFields',
+      'vmc4Form',
 		],
 		data() {
 			return {
@@ -318,28 +356,10 @@
 						city: null,
 						state: null,
 						zipCode: null,
-            cardType: 'credit',
 					},
 					countryCodePhoneField: checkoutData.countryCode,
-					deal: null,
-					variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
-					//installments: 1,
 					paymentProvider: null,
-          paymentMethod: null,
 				},
-        mockData: {
-          creditCardRadioList: [
-            {
-              label: t('checkout.credit_cards'),
-              value: 'credit-card',
-              class: 'green-button-animated'
-            }, {
-              label: t('checkout.bank_payments'),
-              value: 'bank-payment',
-              class: 'bank-payment'
-            }
-          ],
-        },
 			}
     },
     created() {
@@ -349,11 +369,9 @@
 
           this.step = 3;
           this.isFormShown = true;
-          this.form.deal = selectedProductData.deal || this.form.deal;
-          this.form.variant = selectedProductData.variant || this.form.variant;
+          this.vmc4Form.deal = selectedProductData.deal || this.vmc4Form.deal;
+          this.vmc4Form.variant = selectedProductData.variant || this.vmc4Form.variant;
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
-          this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
-          this.form.stepThree.cardType = selectedProductData.cardType || this.form.stepThree.cardType;
           this.form.stepTwo.fname = selectedProductData.fname || this.form.stepTwo.fname;
           this.form.stepTwo.lname = selectedProductData.lname || this.form.stepTwo.lname;
           this.form.stepTwo.email = selectedProductData.email || this.form.stepTwo.email;
@@ -381,21 +399,12 @@
         });
       }
     },
-    mounted() {
-      this.$emit('productImageChanged', this.getProductImage());
-    },
 		computed: {
       isShowVariant() {
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
-			cardUrl() {
-				return getCardUrl(this.form.paymentMethod);
-			},
-      fullAmount () {
-        return this.installments == 1;
-      },
       codeOrDefault () {
-        return this.queryParams.product || (this.checkoutData.product.skus[0] && this.checkoutData.product.skus[0].code) || null;
+        return this.queryParams.product || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
       },
       dialCode() {
         const allCountries = window.intlTelInputGlobals.getCountryData();
@@ -424,6 +433,7 @@
       textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
       textSelectVariant: () => t('checkout.select_variant'),
       textContactInformation: () => t('checkout.contact_information'),
+      textPaymentMethod: () => t('checkout.payment_method'),
       textFirstName: () => t('checkout.payment_form.first_name'),
       textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
       textLastName: () => t('checkout.payment_form.last_name'),
@@ -432,7 +442,6 @@
       textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhone: () => t('checkout.payment_form.phone'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
-      textPaymentMethod: () => t('checkout.payment_method'),
       textPaySecurely: () => t('checkout.pay_securely'),
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
@@ -462,39 +471,23 @@
       textBack: () => t('checkout.back'),
 		},
         watch: {
-            'form.stepThree.country'(value) {
-              getPaymentMethods(value).then(res => this.$root.paymentMethods = res || []);
+            'form.stepThree.country'(country) {
+              this.$parent.reloadPaymentMethods(country);
             },
             'form.stepThree.cardNumber'(newVal, oldValue) {
                 newVal = newVal || '';
-                const creditCardTypeList = creditCardType(newVal)
-                this.form.paymentMethod = creditCardTypeList.length > 0 && newVal.length > 0
-                  ? creditCardTypeList[0].type
-                  : null
 
                 if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
                   this.form.stepThree.cardNumber = oldValue;
                 }
+
+                this.$parent.setPaymentMethodByCardNumber(newVal);
             },
             'step'(val) {
                 fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
                   .then(() => {
                       fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
                   });
-            },
-            installments(val) {
-                if (+val !== 1 && this.countryCode === 'mx') {
-                    this.form.stepThree.cardType = 'credit'
-                }
-            },
-            list(value) {
-                const qty = +this.queryParams.qty;
-                const deal = value.find(({quantity}) => qty === quantity);
-
-                if (deal) {
-                    this.setWarrantyPriceText(qty);
-                    this.form.deal = qty;
-                }
             },
             'form.stepThree.cvv'(newVal, oldValue) {
                 if (this.form.stepThree.cvv) {
@@ -509,19 +502,14 @@
 
         },
 		methods: {
-      onVariantChange() {
-        this.animateProductImage();
-      },
       activateForm() {
         this.isFormShown = true;
       },
-      setWarrantyPriceText(value) {
-        this.$emit('setWarrantyPriceText', value)
-      },
 			submit() {
 				this.$v.form.$touch();
+        this.$v.vmc4Form.$touch();
 
-        if (this.$v.form.$pending || this.$v.form.$error) {
+        if (this.$v.form.$vmc4Form || this.$v.form.$invalid) {
           return;
         }
 
@@ -534,6 +522,26 @@
 
         const phoneNumber = this.form.stepTwo.phone.replace(/[^0-9]/g, '');
         const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
+
+        let data = {
+          deal: this.vmc4Form.deal,
+          variant: this.vmc4Form.variant,
+          isWarrantyChecked: this.vmc4Form.isWarrantyChecked,
+          installments: this.vmc4Form.installments,
+          paymentProvider: this.form.paymentProvider,
+          fname: this.form.stepTwo.fname,
+          lname: this.form.stepTwo.lname,
+          email: this.form.stepTwo.email,
+          phone: this.form.stepTwo.phone,
+          countryCodePhoneField: this.form.countryCodePhoneField,
+          city: this.form.stepThree.city,
+          state: this.form.stepThree.state,
+          zipcode: this.form.stepThree.zipCode,
+          country: this.form.stepThree.country,
+        };
+
+        this.$parent.setExtraFieldsForLocalStorage(data);
+        this.setDataToLocalStorage(data);
 
         let fields = {
           billing_first_name: this.form.stepTwo.fname,
@@ -551,25 +559,6 @@
           cvv_code: this.form.stepThree.cvv,
         };
 
-        this.setDataToLocalStorage({
-          deal: this.form.deal,
-          variant: this.form.variant,
-          isWarrantyChecked: this.isWarrantyChecked,
-          installments: this.installments,
-          paymentProvider: this.form.paymentProvider,
-          paymentMethod: this.form.paymentMethod,
-          cardType: this.form.stepThree.cardType,
-          fname: this.form.stepTwo.fname,
-          lname: this.form.stepTwo.lname,
-          email: this.form.stepTwo.email,
-          phone: this.form.stepTwo.phone,
-          countryCodePhoneField: this.form.countryCodePhoneField,
-          city: this.form.stepThree.city,
-          state: this.form.stepThree.state,
-          zipcode: this.form.stepThree.zipCode,
-          country: this.form.stepThree.country,
-        });
-
         Promise.resolve()
           .then(() => ipqsCheck(fields))
           .then(ipqsResult => {
@@ -579,11 +568,11 @@
             }
 
             if (this.form.paymentProvider === 'credit-card') {
-              const data = {
+              let data = {
                 product: {
-                  sku: this.form.variant,
-                  qty: parseInt(this.form.deal, 10),
-                  is_warranty_checked: this.isWarrantyChecked,
+                  sku: this.vmc4Form.variant,
+                  qty: parseInt(this.vmc4Form.deal, 10),
+                  is_warranty_checked: this.vmc4Form.isWarrantyChecked,
                 },
                 contact: {
                   phone: {
@@ -606,10 +595,15 @@
                   cvv: this.form.stepThree.cvv,
                   month: ('0' + this.form.stepThree.month).slice(-2),
                   year: '' + this.form.stepThree.year,
-                  type: this.form.stepThree.cardType,
                 },
                 ipqs: ipqsResult,
               };
+
+              this.$parent.setExtraFieldsForCardPayment(data);
+
+              if (this.extraFields.district) {
+                data.address.state = this.vmc4Form.state;
+              }
 
               sendCheckoutRequest(data)
                 .then(res => {
@@ -622,7 +616,7 @@
           });
 			},
       paypalSubmit() {
-        this.form.paymentProvider = 'instant_transfer';
+        this.form.paymentProvider = 'paypal';
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
@@ -640,14 +634,14 @@
 				this.isOpenCVVModal = true
 			},
 			isAllowNext(currentStep) {
-				const isStepOneInvalid = this.$v.form.deal.$invalid;
+				const isStepOneInvalid = this.$v.vmc4Form.deal.$invalid;
 				const isStepTwoInvalid = this.$v.form.stepTwo.$invalid;
 				const isStepThreeInvalid =
-					this.form.paymentProvider !== 'instant_transfer' &&
+					this.form.paymentProvider !== 'paypal' &&
           this.$v.form.stepThree.$invalid;
 
         if (currentStep === 1 && isStepOneInvalid) {
-          this.$v.form.deal.$touch();
+          this.$v.vmc4Form.deal.$touch();
           this.isOpenPromotionModal = true;
         }
         else if (currentStep === 2 && isStepTwoInvalid) {
@@ -664,17 +658,17 @@
           : searchParams.get('cur');
 
         this.setDataToLocalStorage({
-          deal: this.form.deal,
-          variant: this.form.variant,
-          isWarrantyChecked: this.isWarrantyChecked,
+          deal: this.vmc4Form.deal,
+          variant: this.vmc4Form.variant,
+          isWarrantyChecked: this.vmc4Form.isWarrantyChecked,
           paymentProvider: this.form.paymentProvider,
         });
 
         return paypalCreateOrder({
             xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
             sku_code: this.codeOrDefault,
-            sku_quantity: this.form.deal,
-            is_warranty_checked: this.isWarrantyChecked,
+            sku_quantity: this.vmc4Form.deal,
+            is_warranty_checked: this.vmc4Form.isWarrantyChecked,
             page_checkout: document.location.href,
             cur: currency,
             offer: searchParams.get('offer'),
@@ -689,31 +683,6 @@
           });
       },
       paypalOnApprove: paypalOnApprove,
-      getProductImage() {
-        const isInitial = !this.productImage;
-        const quantity = /*this.form && +this.form.deal || */1;
-        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
-        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code) || null;
-
-        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
-        const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
-
-        return isInitial ? productImage : skuImage;
-      },
-      animateProductImage() {
-        const newProductImage = this.getProductImage();
-
-        if (newProductImage !== this.productImage) {
-          const imgPreload = new Image();
-          imgPreload.src = newProductImage;
-
-          fade('out', 300, document.querySelector('#main-prod-image'), true)
-            .then(() => {
-              this.$emit('productImageChanged', newProductImage);
-              setTimeout(() => fade('in', 300, document.querySelector('#main-prod-image'), true), 200);
-            });
-        }
-      },
 		},
 	}
 </script>

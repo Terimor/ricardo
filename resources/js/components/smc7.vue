@@ -20,7 +20,7 @@
 
             <div class="row">
                 <div class="container">
-                    <ProductOffer :product="checkoutData.product" />
+                    <ProductOffer />
                 </div>
             </div>
 
@@ -39,6 +39,12 @@
 
                         <div class="smc7__step-1">
                             <h2><span>{{textStep}}</span> 1: <span>{{textChooseDeal}}</span></h2>
+
+                            <Installments
+                              popperClass="emc1-popover-variant"
+                              :extraFields="extraFields"
+                              :form="form" />
+
                             <div class="smc7__step-1__titles">
                                 <h3>{{textArtcile}}</h3>
                                 <h3>{{textPrice}}</h3>
@@ -55,6 +61,7 @@
                                       :showDiscount=false
                                       :customBackground=false
                                       v-for="item in purchase"
+                                      :quantityOfInstallments="quantityOfInstallments"
                                       :item="{
                                         ...item,
                                         value: item.totalQuantity,
@@ -139,15 +146,16 @@
                         </div>
                         <h2 class="step-title"><span>{{textStep}}</span> {{ !isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
-                                :countryList="setCountryList"
-                                :$v="$v"
-                                :paymentForm="form"/>
+                          :countryList="setCountryList"
+                          :extraFields="extraFields"
+                          :paymentForm="form"
+                          :$v="$v" />
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
                             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
-                              v-if="form.paymentProvider !== 'instant_transfer'"
+                              v-if="form.paymentProvider !== 'paypal'"
                               @click="submit"
                               id="purchase-button"
                               type="button"
@@ -158,11 +166,11 @@
                               <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
-                                    v-show="form.paymentProvider === 'instant_transfer'"
-                                    :createOrder="paypalCreateOrder"
-                                    :onApprove="paypalOnApprove"
-                                    :$v="$v.form.deal"
-                                    @click="paypalSubmit"
+                              v-show="form.paymentProvider === 'paypal'"
+                              :createOrder="paypalCreateOrder"
+                              :onApprove="paypalOnApprove"
+                              :$v="$v.form.deal"
+                              @click="paypalSubmit"
                             >{{ paypalRiskFree }}</paypal-button>
                             <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         </template>
@@ -204,9 +212,11 @@
 </template>
 
 <script>
+  import * as extraFields from '../mixins/extraFields';
   import { preparePurchaseData } from "../utils/checkout";
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
+  import Installments from './common/extra-fields/Installments';
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import smc7validation from "../validation/smc7-validation";
@@ -227,6 +237,7 @@
     name: 'smc7',
     components: {
       SaleBadge,
+      Installments,
       RadioButtonItemDeal,
       ProductOffer,
       PurchasAlreadyExists,
@@ -235,6 +246,7 @@
     validations: smc7validation,
     mixins: [
       queryToComponent,
+      extraFields.tplMixin,
       purchasMixin,
       scrollToError,
     ],
@@ -258,17 +270,12 @@
           city: null,
           state: null,
           zipCode: null,
-          installments: 1,
           paymentProvider: null,
-          paymentMethod: null,
           cardNumber: null,
           month: null,
           year: null,
           cvv: null,
-          cardType: 'credit',
         },
-        purchase: [],
-        variantList: [],
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
         isSubmitted: false,
@@ -281,12 +288,9 @@
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
-          this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
           this.form.deal = parseInt(selectedProductData.deal, 10) || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
-          this.form.installments = selectedProductData.installments || this.form.installments;
-          this.form.cardType = selectedProductData.cardType || this.form.cardType;
           this.form.fname = selectedProductData.fname || this.form.fname;
           this.form.lname = selectedProductData.lname || this.form.lname;
           this.form.email = selectedProductData.email || this.form.email;
@@ -383,18 +387,74 @@
         return country ? country.dialCode : '1';
       },
 
+      purchase() {
+        const currentVariant = this.skusList.find(it => it.code === this.form.variant);
+
+        return preparePurchaseData({
+          purchaseList: this.productData.prices,
+          product_name: this.productData.product_name,
+          variant: currentVariant && currentVariant.name || null,
+          installments: this.form.installments,
+          quantityToShow: [1, 2, 3, 4, 5],
+          customOrder: true,
+        });
+      },
+
+      variantList() {
+        return this.skusList.map((it) => ({
+          label: it.name,
+          text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
+          value: it.code,
+          imageUrl: it.quantity_image[1]
+        }));
+      },
+
+    },
+    mounted() {
+      this.refreshTopBlock();
     },
     watch: {
-      'form.variant'(val) {
-        this.setPurchase({
-          variant: val,
-          installments: this.form.installments,
-        })
+      purchase() {
+        this.refreshTopBlock();
+      },
+      'form.payment_method'() {
+        this.form.paymentProvider = this.form.payment_method !== 'instant_transfer'
+          ? 'credit-card'
+          : 'paypal';
       },
     },
     methods: {
       onVariantChange() {
         this.animateProductImage();
+      },
+      refreshTopBlock() {
+        const oldPrice = document.querySelector('#old-price');
+        const newPrice = document.querySelector('#new-price');
+        let oldValueText, valueText;
+
+        switch(this.form.installments) {
+          case 3:
+            oldValueText = checkoutData.product.prices[1].installments3_old_value_text;
+            valueText = checkoutData.product.prices[1].installments3_value_text;
+            break;
+          case 6:
+            oldValueText = checkoutData.product.prices[1].installments6_old_value_text;
+            valueText = checkoutData.product.prices[1].installments6_value_text;
+            break;
+          case 1:
+          default:
+            oldValueText = checkoutData.product.prices[1].old_value_text;
+            valueText = checkoutData.product.prices[1].value_text;
+            break;
+        }
+
+        if (oldPrice) {
+          document.querySelector('#old-price').innerHTML = this.quantityOfInstallments + oldValueText;
+        }
+
+        if (newPrice) {
+          document.querySelector('#new-price').innerHTML = this.quantityOfInstallments + valueText;
+        }
       },
       submit() {
         this.$v.form.$touch();
@@ -424,6 +484,26 @@
         const phoneNumber = this.form.phone.replace(/[^0-9]/g, '');
         const cardNumber = this.form.cardNumber.replace(/\s/g, '');
 
+        let data = {
+          deal: this.form.deal,
+          variant: this.form.variant,
+          isWarrantyChecked: this.form.isWarrantyChecked,
+          paymentProvider: this.form.paymentProvider,
+          fname: this.form.fname,
+          lname: this.form.lname,
+          email: this.form.email,
+          phone: this.form.phone,
+          countryCodePhoneField: this.form.countryCodePhoneField,
+          streetAndNumber: this.form.streetAndNumber,
+          city: this.form.city,
+          state: this.form.state,
+          zipcode: this.form.zipCode,
+          country: this.form.country,
+        };
+
+        this.setExtraFieldsForLocalStorage(data);
+        this.setDataToLocalStorage(data);
+
         let fields = {
           billing_first_name: this.form.fname,
           billing_last_name: this.form.lname,
@@ -440,26 +520,6 @@
           credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
           cvv_code: this.form.cvv,
         };
-
-        this.setDataToLocalStorage({
-          deal: this.form.deal,
-          variant: this.form.variant,
-          isWarrantyChecked: this.form.isWarrantyChecked,
-          installments: this.form.installments,
-          paymentProvider: this.form.paymentProvider,
-          paymentMethod: this.form.paymentMethod,
-          cardType: this.form.cardType,
-          fname: this.form.fname,
-          lname: this.form.lname,
-          email: this.form.email,
-          phone: this.form.phone,
-          countryCodePhoneField: this.form.countryCodePhoneField,
-          streetAndNumber: this.form.streetAndNumber,
-          city: this.form.city,
-          state: this.form.state,
-          zipcode: this.form.zipCode,
-          country: this.form.country,
-        });
 
         Promise.resolve()
           .then(() => ipqsCheck(fields))
@@ -491,10 +551,11 @@
                 cvv: this.form.cvv,
                 month: ('0' + this.form.month).slice(-2),
                 year: '' + this.form.year,
-                type: this.form.cardType,
               },
               ipqs: ipqsResult,
             };
+
+            this.setExtraFieldsForCardPayment(data);
 
             sendCheckoutRequest(data)
               .then(res => {
@@ -509,16 +570,6 @@
         if (val.iso2) {
           this.form.countryCodePhoneField = val.iso2;
         }
-      },
-      setPurchase({variant, installments}) {
-        this.purchase = preparePurchaseData({
-          purchaseList: this.productData.prices,
-          quantityToShow: [1, 2, 3, 4, 5],
-          product_name: this.productData.product_name,
-          variant,
-          installments,
-          customOrder: true
-        })
       },
       setPromotionalModal(val) {
         this.isOpenPromotionModal = val
@@ -558,7 +609,7 @@
       paypalOnApprove: paypalOnApprove,
 
       paypalSubmit() {
-        this.form.paymentType = 'instant_transfer';
+        this.form.paymentType = 'paypal';
 
         if (this.$v.form.deal.$invalid) {
           const element = document.querySelector('.smc7__deal');
@@ -607,19 +658,6 @@
         }
       },
     },
-    mounted() {
-      this.variantList = this.productData.skus.map((it) => ({
-        label: it.name,
-        text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
-        value: it.code,
-        imageUrl: it.quantity_image[1]
-      }));
-
-      this.setPurchase({
-        variant: this.form.variant,
-        installments: 1,
-      })
-    }
   }
 </script>
 
@@ -628,6 +666,20 @@
 
     .smc7.container {
         max-width: 970px;
+    }
+
+    .smc7__step-1__titles {
+      display: flex;
+      margin: 17px 8px 17px 12px;
+
+      h3 {
+        margin: 0;
+        padding: 0;
+
+        &:first-child {
+          flex-grow: 1;
+        }
+      }
     }
 
     .smc7 {
