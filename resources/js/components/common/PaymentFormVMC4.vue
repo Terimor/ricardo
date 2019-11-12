@@ -254,7 +254,7 @@
         <div class="buttons">
           <div class="form-navigation">
             <button @click="isAllowNext(step)" v-if="step !== 3" v-html="textNext" class="next-btn btn-active"></button>
-            <button v-if="step > 1" class="back-btn" @click="step--">&lt;&lt; <span v-html="textBack"></span></button>
+            <button v-if="step > 1" class="back-btn" @click="animatePrevStep">&lt;&lt; <span v-html="textBack"></span></button>
           </div>
         </div>
       </div>
@@ -483,12 +483,6 @@
 
                 this.$parent.setPaymentMethodByCardNumber(newVal);
             },
-            'step'(val) {
-                fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
-                  .then(() => {
-                      fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
-                  });
-            },
             'form.stepThree.cvv'(newVal, oldValue) {
                 if (this.form.stepThree.cvv) {
                     if (newVal.match(/^[0-9]{0,4}$/g)) {
@@ -649,9 +643,23 @@
         } else if (currentStep === 3 && isStepThreeInvalid) {
           this.$v.form.stepThree.$touch();
         } else {
-          this.step++
+          this.animateNextStep();
         }
 			},
+      animateNextStep() {
+        fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
+          .then(() => {
+              this.step++;
+              fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
+          });
+      },
+      animatePrevStep() {
+        fade('out', 300, document.querySelector('.payment-form-vmc4'), true)
+          .then(() => {
+              this.step--;
+              fade('in', 300, document.querySelector('.payment-form-vmc4'), true)
+          });
+      },
       paypalCreateOrder() {
         const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
           ? checkoutData.product.prices.currency
