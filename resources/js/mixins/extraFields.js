@@ -159,7 +159,9 @@ export const tplMixin = {
 
     setExtraFieldsForLocalStorage(data) {
       for (let name of Object.keys(formFields)) {
-        data[name] = this.form[name];
+        if (!data[name]) {
+          data[name] = this.form[name];
+        }
       }
     },
 

@@ -306,6 +306,7 @@
         isLoading: {
           address: false
         },
+        ipqsResult: null,
         isOpenCVVModal: false,
         isSubmitted: false,
         paymentError: '',
@@ -540,32 +541,41 @@
         this.$parent.setExtraFieldsForLocalStorage(data);
         this.setDataToLocalStorage(data);
 
-        let fields = {
-          billing_first_name: paymentForm.fname,
-          billing_last_name: paymentForm.lname,
-          billing_country: paymentForm.country,
-          billing_address_1: paymentForm.street,
-          billing_city: paymentForm.city,
-          billing_region: paymentForm.state,
-          billing_postcode: paymentForm.zipcode,
-          billing_email: paymentForm.email,
-          billing_phone: this.dialCode + phoneNumber,
-        };
-
-        if (paymentForm.paymentProvider === 'credit-card') {
-          fields = {
-            ...fields,
-            credit_card_bin: cardNumber.substr(0, 6),
-            credit_card_hash: window.sha256(cardNumber),
-            credit_card_expiration_month: ('0' + paymentForm.month).slice(-2),
-            credit_card_expiration_year: ('' + paymentForm.year).substr(2, 2),
-            cvv_code: paymentForm.cvv,
-          }
-        }
-
         Promise.resolve()
-          .then(() => ipqsCheck(fields))
+          .then(() => {
+            if (this.ipqsResult) {
+              return this.ipqsResult;
+            }
+
+            let data = {
+              billing_first_name: paymentForm.fname,
+              billing_last_name: paymentForm.lname,
+              billing_country: paymentForm.country,
+              billing_address_1: paymentForm.street,
+              billing_city: paymentForm.city,
+              billing_region: paymentForm.state,
+              billing_postcode: paymentForm.zipcode,
+              billing_email: paymentForm.email,
+              billing_phone: this.dialCode + phoneNumber,
+            };
+
+            if (paymentForm.paymentProvider === 'credit-card') {
+              data = {
+                ...data,
+                credit_card_bin: cardNumber.substr(0, 6),
+                credit_card_hash: window.sha256(cardNumber),
+                credit_card_expiration_month: ('0' + paymentForm.month).slice(-2),
+                credit_card_expiration_year: ('' + paymentForm.year).substr(2, 2),
+                cvv_code: paymentForm.cvv,
+              };
+            }
+
+            return ipqsCheck(data);
+          })
           .then(ipqsResult => {
+            this.ipqsResult = ipqsResult;
+          })
+          .then(() => {
             if (paymentForm.paymentProvider === 'bank-payment') {
               this.isSubmitted = false;
               this.$emit('showCart');
@@ -601,7 +611,7 @@
                   month: ('0' + paymentForm.month).slice(-2),
                   year: '' + paymentForm.year,
                 },
-                ipqs: ipqsResult,
+                ipqs: this.ipqsResult,
               };
 
               this.$parent.setExtraFieldsForCardPayment(data);

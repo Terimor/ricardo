@@ -407,7 +407,9 @@ const promo = new Vue({
     },
 
     getFormHeight() {
+      if (this.slideFormSteps[this.slideFormStep]) {
         this.carouselFormHeight = `${this.slideFormSteps[this.slideFormStep].offsetHeight}px`;
+      }
     },
 
     setStickyFooter() {
@@ -435,6 +437,11 @@ const promo = new Vue({
   },
 
   watch: {
+    '$root.paymentMethods'() {
+      setTimeout(() => {
+        this.getFormHeight();
+      }, 100);
+    },
     slideFormStep() {
       this.setStickyFooter();
     },

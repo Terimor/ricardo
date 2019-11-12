@@ -276,6 +276,7 @@
           year: null,
           cvv: null,
         },
+        ipqsResult: null,
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
         isSubmitted: false,
@@ -504,26 +505,35 @@
         this.setExtraFieldsForLocalStorage(data);
         this.setDataToLocalStorage(data);
 
-        let fields = {
-          billing_first_name: this.form.fname,
-          billing_last_name: this.form.lname,
-          billing_country: this.form.country,
-          billing_address_1: this.form.streetAndNumber,
-          billing_city: this.form.city,
-          billing_region: this.form.state,
-          billing_postcode: this.form.zipCode,
-          billing_email: this.form.email,
-          billing_phone: this.dialCode + phoneNumber,
-          credit_card_bin: cardNumber.substr(0, 6),
-          credit_card_hash: window.sha256(cardNumber),
-          credit_card_expiration_month: ('0' + this.form.month).slice(-2),
-          credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
-          cvv_code: this.form.cvv,
-        };
-
         Promise.resolve()
-          .then(() => ipqsCheck(fields))
+          .then(() => {
+            if (this.ipqsResult) {
+              return this.ipqsResult;
+            }
+
+            const data = {
+              billing_first_name: this.form.fname,
+              billing_last_name: this.form.lname,
+              billing_country: this.form.country,
+              billing_address_1: this.form.streetAndNumber,
+              billing_city: this.form.city,
+              billing_region: this.form.state,
+              billing_postcode: this.form.zipCode,
+              billing_email: this.form.email,
+              billing_phone: this.dialCode + phoneNumber,
+              credit_card_bin: cardNumber.substr(0, 6),
+              credit_card_hash: window.sha256(cardNumber),
+              credit_card_expiration_month: ('0' + this.form.month).slice(-2),
+              credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
+              cvv_code: this.form.cvv,
+            };
+
+            return ipqsCheck(data);
+          })
           .then(ipqsResult => {
+            this.ipqsResult = ipqsResult;
+          })
+          .then(() => {
             const data = {
               product: {
                 sku: this.form.variant,
@@ -552,7 +562,7 @@
                 month: ('0' + this.form.month).slice(-2),
                 year: '' + this.form.year,
               },
-              ipqs: ipqsResult,
+              ipqs: this.ipqsResult,
             };
 
             this.setExtraFieldsForCardPayment(data);

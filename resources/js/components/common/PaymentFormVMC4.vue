@@ -340,6 +340,7 @@
         paymentError: '',
         paypalPaymentError: '',
         isSubmitted: false,
+        ipqsResult: null,
 				form: {
 					stepTwo: {
 						fname: null,
@@ -537,24 +538,33 @@
         this.$parent.setExtraFieldsForLocalStorage(data);
         this.setDataToLocalStorage(data);
 
-        let fields = {
-          billing_first_name: this.form.stepTwo.fname,
-          billing_last_name: this.form.stepTwo.lname,
-          billing_country: this.form.stepThree.country,
-          billing_city: this.form.stepThree.city,
-          billing_region: this.form.stepThree.state,
-          billing_postcode: this.form.stepThree.zipCode,
-          billing_email: this.form.stepTwo.email,
-          billing_phone: this.dialCode + phoneNumber,
-          credit_card_bin: cardNumber.substr(0, 6),
-          credit_card_hash: window.sha256(cardNumber),
-          credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
-          credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
-          cvv_code: this.form.stepThree.cvv,
-        };
-
         Promise.resolve()
-          .then(() => ipqsCheck(fields))
+          .then(() => {
+            if (this.ipqsResult) {
+              return this.ipqsResult;
+            }
+
+            const data = {
+              billing_first_name: this.form.stepTwo.fname,
+              billing_last_name: this.form.stepTwo.lname,
+              billing_country: this.form.stepThree.country,
+              billing_city: this.form.stepThree.city,
+              billing_region: this.form.stepThree.state,
+              billing_postcode: this.form.stepThree.zipCode,
+              billing_email: this.form.stepTwo.email,
+              billing_phone: this.dialCode + phoneNumber,
+              credit_card_bin: cardNumber.substr(0, 6),
+              credit_card_hash: window.sha256(cardNumber),
+              credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
+              credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
+              cvv_code: this.form.stepThree.cvv,
+            };
+
+            return ipqsCheck(data);
+          })
+          .then(ipqsResult => {
+            this.ipqsResult = ipqsResult;
+          })
           .then(ipqsResult => {
             if (this.form.paymentProvider === 'bank-payment') {
               this.isSubmitted = false;
@@ -590,7 +600,7 @@
                   month: ('0' + this.form.stepThree.month).slice(-2),
                   year: '' + this.form.stepThree.year,
                 },
-                ipqs: ipqsResult,
+                ipqs: this.ipqsResult,
               };
 
               this.$parent.setExtraFieldsForCardPayment(data);
