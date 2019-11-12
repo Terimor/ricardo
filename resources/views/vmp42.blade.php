@@ -34,7 +34,7 @@
     <div class="promo" id="promo">
         <preloader-3
             v-if="showPreloader"
-            :country-code="checkoutData.countryCode"
+            :country-code="form.country"
             :show-preloader.sync="showPreloader">
         </preloader-3>
 
@@ -58,11 +58,11 @@
                                     <div>
                                         <span class="bold">{{ t('checkout.header_banner.price') }}:</span>
                                         <span class="promo__price--double bold">
-                                            @{{countOfInstallments}} @{{ warrantyOldPrice }}
+                                            @{{countOfInstallments}} @{{ oldPrice }}
                                         </span>
                                     </div>
                                     <span class="promo__price promo__text-red bold">
-                                        @{{countOfInstallments}} @{{ warrantyPriceText }}
+                                        @{{countOfInstallments}} @{{ priceText }}
                                     </span>
                                 </div>
                             </div>
@@ -80,30 +80,24 @@
             </div>
             <!-- promo__jumbotron end -->
 
-
-            <!-- promo__installments -->
-            <div class="container">
-                <div class="promo__installments">
-                    <select-field
-                            v-if="withInstallments"
-                            theme="variant-1"
-                            :rest="{
-                            placeholder: 'Installments'
-                        }"
-                            :list="$options.installmentsList"
-                            v-model="installments"
-                            @input="getImplValue"
-                    />
-                </div>
-            </div>
-            <!-- promo__installments end -->
-
             <!-- promo__wrapper -->
             <div class="promo__wrapper" :style="{height: carouselFormHeight}">
 
                 <div class="promo__step promo__products">
                     <div class="container">
                         <div class="row promo__products-row" v-cloak>
+
+                            <!-- promo__installments -->
+                            <div class="container">
+                                <div class="promo__installments">
+                                    <Installments
+                                      popperClass="emc1-popover-variant"
+                                      :extra-fields="extraFields"
+                                      :form="form" />
+                                </div>
+                            </div>
+                            <!-- promo__installments end -->
+            
                             <div class="col-12">
                                 <h2 class="promo__title j-header-products">{{ t('checkout.secure_deal') }}</h2>
                             </div>
@@ -206,11 +200,12 @@
                         <div class="promo__step-title">{{ t('checkout.step') }} 1: {{ t('checkout.pay_securely') }}</div>
                         <div class="promo__paypal-button-wrapper">
                             <paypal-button
-                                    :style="{ 'max-width': '400px' }"
-                                    :create-order="paypalCreateOrder"
-                                    :on-approve="paypalOnApprove"
-                                    :$v="$v.form.deal"
-                                    @click="paypalSubmit"
+                                v-show="form.installments === 1"
+                                :style="{ 'max-width': '400px' }"
+                                :create-order="paypalCreateOrder"
+                                :on-approve="paypalOnApprove"
+                                :$v="$v.form.deal"
+                                @click="paypalSubmit"
                             >{{ t('checkout.paypal.risk_free') }}</paypal-button>
                             <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         </div>
@@ -238,8 +233,7 @@
                                 :installments="form.installments"
                                 :payment-form="form"
                                 :has-warranty="true"
-                                :country-code="checkoutData.countryCode"
-                                :is-brazil="checkoutData.countryCode === 'br'"
+                                :country-code="form.country"
                                 :country-list="countriesList"
                                 :quantity-of-installments="countOfInstallments"
                                 :warranty-price-text="warrantyPriceText"

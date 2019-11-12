@@ -10,9 +10,12 @@ use App\Mappers\CheckoutDotComAmountMapper;
 use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use Checkout\CheckoutApi;
+use Checkout\Library\Model;
 use Checkout\Models\Tokens\Card;
+use Checkout\Models\Payments\Capture;
 use Checkout\Models\Payments\Payment;
 use Checkout\Models\Payments\Source;
+use Checkout\Models\Payments\Voids;
 use Checkout\Models\Payments\CardSource;
 use Checkout\Models\Payments\TokenSource;
 use Checkout\Library\Exceptions\CheckoutHttpException;
@@ -200,6 +203,44 @@ class CheckoutDotComService
     }
 
     /**
+     * Captures payment
+     * @param  string $id
+     * @return bool
+     */
+    public function capture(string $id): bool
+    {
+        $result = false;
+        try {
+            $res = $this->checkout->payments()->capture(new Capture($id));
+            $result = $res->http_code === 202 ? true : false;
+        } catch (CheckoutHttpException $ex) {
+            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+        } catch (CheckoutException $ex) {
+            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+        }
+        return $result;
+    }
+
+    /**
+     * Voids payment
+     * @param  string $id
+     * @return bool
+     */
+    public function void(string $id): bool
+    {
+        $result = false;
+        try {
+            $res = $this->checkout->payments()->void(new Voids($id));
+            $result = $res->http_code === 202 ? true : false;
+        } catch (CheckoutHttpException $ex) {
+            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+        } catch (CheckoutException $ex) {
+            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+        }
+        return $result;
+    }
+
+    /**
      * Creates a new payment by card
      * @param  array $card
      * @param  array $contact
@@ -298,7 +339,6 @@ class CheckoutDotComService
         // parse response
         try {
             ini_set('serialize_precision', 15);
-            // logger()->info('Checkout.com', ['payload' => json_encode($payment->getValues())]);
 
             $res = $this->checkout->payments()->request($payment);
 
@@ -308,12 +348,14 @@ class CheckoutDotComService
 
             if ($res->http_code === 201) { // authorized
                 $response_code = (string)$res->response_code;
-                $result['currency']         = $res->currency;
-                $result['value']            = CheckoutDotComAmountMapper::fromProvider((int)$res->amount, $res->currency);
+                $result['currency'] = $res->currency;
+                $result['value']    = CheckoutDotComAmountMapper::fromProvider((int)$res->amount, $res->currency);
 
-                if (in_array($response_code, [self::SUCCESS_CODE, self::SUCCESS_FLAGGED_CODE])) {
-                    $result['status']       = Txn::STATUS_CAPTURED;
-                    $result['is_flagged']   = $response_code === self::SUCCESS_FLAGGED_CODE ? true : false;
+                if ($response_code === self::SUCCESS_CODE) {
+                    $result['status']   = Txn::STATUS_CAPTURED;
+                } elseif ($response_code === self::SUCCESS_FLAGGED_CODE) {
+                    $result['status']       = Txn::STATUS_AUTHORIZED;
+                    $result['is_flagged']   = true;
                 } else {
                     $result['errors']  = [CheckoutDotComCodeMapper::toPhrase($response_code)];
                 }
@@ -322,10 +364,6 @@ class CheckoutDotComService
                 $result['redirect_url'] = $res->_links['redirect']['href'];
             }
         } catch (CheckoutHttpException $ex) {
-            // $body = json_decode($ex->getBody(), true);
-            // if (!empty($body['request_id'])) {
-            //     $result['hash'] = $body['request_id'];
-            // }
             $result['provider_data'] = $ex->getBody();
             $result['errors'] = array_map(function($code) {
                 return CheckoutDotComCodeMapper::toPhrase($code);

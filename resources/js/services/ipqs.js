@@ -23,6 +23,22 @@ export function check(fields = {}) {
   return new Promise(resolve => {
     const params = queryParams();
 
+    if (params['3ds'] === 'failure') {
+      let result = null;
+
+      try {
+        result = JSON.parse(localStorage.getItem('3ds_ipqs'));
+      }
+      catch (err) {
+        
+      }
+
+      if (result) {
+        resolve(result);
+        return;
+      }
+    }
+
     if (!window.Startup) {
       resolve(null);
       return;
@@ -47,6 +63,7 @@ export function check(fields = {}) {
     }
 
     Startup.success = result => {
+      localStorage.setItem('3ds_ipqs', JSON.stringify(result));
       resolve(result);
     };
 

@@ -85,7 +85,9 @@ const smc7validation = function () {
     }
   };
 
-  return config
+  this.setExtraFieldsValidationRules(config.form);
+
+  return config;
 };
 
 export default smc7validation

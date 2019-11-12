@@ -1,6 +1,6 @@
 <template>
   <label class="date-picker-manual" :class="{ 'with-error': invalid }">
-    <span>{{label}}</span>
+    <span class="label">{{label}}</span>
     <div class="date-picker-manual__input">
       <div class="placeholder" v-html="preparedPlaceholder"></div>
       <input
@@ -67,10 +67,9 @@
 
             & > .placeholder {
                 user-select: none;
-                border: 1px solid #ddd;
-                border-radius: 3px;
-                background-color: rgba(255, 253, 228, 0.6);
+                pointer-events: none;
                 color: #ddd;
+                z-index: 1;
             }
 
             & > input {

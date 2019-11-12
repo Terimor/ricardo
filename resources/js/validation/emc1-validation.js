@@ -102,38 +102,7 @@ const emc1Validation = function () {
     };
   }
 */
-  if (this.extraFields.district) {
-    allRules.district = {
-      required,
-      isValid(value) {
-        return new RegExp(this.extraFields.district.pattern).test(value);
-      },
-    };
-  }
-
-  if (this.extraFields.card_type) {
-    allRules.cardType = {
-      required,
-    };
-  }
-
-  if (this.extraFields.document_type) {
-    allRules.documentType = {
-      required,
-    };
-  }
-
-  if (this.extraFields.document_number) {
-    allRules.documentNumber = {
-      isValidNumber(value) {
-        const pattern = typeof this.extraFields.document_number.pattern === 'object'
-          ? this.extraFields.document_number.pattern[this.form.documentType] || ''
-          : this.extraFields.document_number.pattern;
-
-        return new RegExp(pattern).test(value);
-      }
-    };
-  }
+  this.setExtraFieldsValidationRules(allRules);
 
   return { form: allRules };
 }

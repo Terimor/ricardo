@@ -27,7 +27,7 @@
           <img :src="$root.cdnUrl + '/assets/images/best-seller-checkout4.png'" alt="Bestseller">
         </div>
         <span>
-          {{ item.newPrice || item.price }}
+          {{ price }}
         </span>
       </div>
     </div>
@@ -47,6 +47,7 @@
 		props: [
 			'item',
 			'value',
+      'quantityOfInstallments',
 			'showShareArrow',
 			'showPerUnitPrice',
 			'showDiscount'
@@ -61,15 +62,19 @@
         }
 			}
 		},
-        computed: {
-          textUnit: () => t('checkout.unit'),
-          textSoldOut: () => t('checkout.sold_out'),
-        },
-        mounted(){
-          this.$nextTick(function () {
-            this.$emit('finish-render')
-          })
-        }
+    computed: {
+      textUnit: () => t('checkout.unit'),
+      textSoldOut: () => t('checkout.sold_out'),
+
+      price() {
+        return this.quantityOfInstallments + (this.item.newPrice || this.item.price);
+      },
+    },
+    mounted() {
+      this.$nextTick(function () {
+        this.$emit('finish-render')
+      })
+    }
 	}
 </script>
 

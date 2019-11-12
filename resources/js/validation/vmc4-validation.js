@@ -6,13 +6,15 @@ import * as dateFns from 'date-fns';
 
 const vmc4validation = function () {
 	const config = {
-		form: {
+		vmc4Form: {
 			deal: {
 				required
 			},
 			variant: {
 				required
 			},
+		},
+		form: {
 			stepTwo: {
 				fname: {
 					required,
@@ -85,6 +87,13 @@ const vmc4validation = function () {
 			}
 		}
 	};
+
+	this.$parent.setExtraFieldsValidationRules(config.vmc4Form);
+
+	if (this.extraFields.state) {
+    config.vmc4Form.state = config.form.stepThree.state;
+    delete config.form.stepThree.state;
+  }
 
 	return config
 };

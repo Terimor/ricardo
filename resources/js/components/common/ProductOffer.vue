@@ -22,8 +22,10 @@
 
     export default {
         name: 'ProductOffer',
-        props: ['product'],
         computed: {
+            product() {
+                return checkoutData.product;
+            },
             speсialOffer: () => t('checkout.header_banner.prefix'),
             price: () => t('checkout.header_banner.price'),
             discount: () => t('checkout.header_banner.discount'),

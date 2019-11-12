@@ -1,7 +1,7 @@
 <template>
     <div v-if="$v && !showPreloader">
         <div class="container">
-            <ProductOffer :product="checkoutData.product" />
+            <ProductOffer />
         </div>
         <div class="container main">
             <div class="row">
@@ -14,14 +14,11 @@
                             <p class="main__deal__text" v-html="textMainDealText"></p>
                         </div>
                         <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
-                        <select-field
-                                v-if="extraFields.installments && installmentsVisible"
-                                :label="textInstallmentsTitle"
-                                popperClass="emc1-popover-variant"
-                                :list="installmentsList"
-                                v-model="form.installments"
-                                @input="setImplValue"
-                        />
+
+                        <Installments
+                          popperClass="emc1-popover-variant"
+                          :extraFields="extraFields"
+                          :form="form" />
 
                         <div class="step1-titles">
                           <h3 v-html="textArtcile"></h3>
@@ -31,31 +28,25 @@
                         <span class="error" v-show="$v.form.deal.$dirty && $v.form.deal.$invalid" v-html="textMainDealError"></span>
 
                         <radio-button-group
-                                v-model="form.deal"
-                                :list="dealList"
-                                @input="setWarrantyPriceText"
-                                :validation="$v.form.deal"
-                        />
+                          v-model="form.deal"
+                          :validation="$v.form.deal"
+                          :list="dealList" />
 
                         <div v-if="isShowVariant">
                             <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
-                            <!-- TODO: check if this is useless, remove it:
-                            warrantyPriceText="setWarrantyPriceText()"  -->
                             <select-field
-                                    popperClass="emc1-popover-variant"
-                                    v-model="form.variant"
-                                    :validation="$v.form.variant"
-                                    validationMessage="Invalid field"
-                                    :config="{
-                  prefix: 'EchoBeat7'
-                }"
-                                    :rest="{
-                  placeholder: 'Variant'
-                }"
-                                    :list="variantList"
-                                    warrantyPriceText="setWarrantyPriceText()"
-                                    @input="onVariantChange"
-                            />
+                              popperClass="emc1-popover-variant"
+                              v-model="form.variant"
+                              :validation="$v.form.variant"
+                              validationMessage="Invalid field"
+                              :config="{
+                                prefix: 'EchoBeat7'
+                              }"
+                              :rest="{
+                                placeholder: 'Variant'
+                              }"
+                              :list="variantList"
+                              @input="onVariantChange" />
                         </div>
 
                         <transition name="el-zoom-in-top">
@@ -78,31 +69,30 @@
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
                         <h3 v-html="textPaySecurely"></h3>
                         <payment-provider-radio-list
-                                v-model="form.paymentProvider"
-                                @input="activateForm" />
+                          v-model="form.paymentProvider"
+                          @input="activateForm" />
                         <paypal-button
-                                :createOrder="paypalCreateOrder"
-                                :onApprove="paypalOnApprove"
-                                v-show="form.installments === 1"
-                                :$v="$v.form.deal"
-                                @click="paypalSubmit"
+                          :createOrder="paypalCreateOrder"
+                          :onApprove="paypalOnApprove"
+                          v-show="form.installments === 1"
+                          :$v="$v.form.deal"
+                          @click="paypalSubmit"
                         >{{ paypalRiskFree }}</paypal-button>
                         <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         <transition name="el-zoom-in-top">
                             <payment-form
-                                    :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"
-                                    :secondTitle="`${textStep} ${getStepOrder(5)}: ${textDeliveryAddress}`"
-                                    :thirdTitle="`${textStep} ${getStepOrder(6)}: ${textPaymentDetails}`"
-                                    v-if="form.paymentProvider && isFormShown"
-                                    @showCart="isOpenSpecialOfferModal = true"
-                                    :$v="$v"
-                                    :installments="form.installments"
-                                    :paymentForm="form"
-                                    :countryCode="form.country"
-                                    :countryList="setCountryList"
-                                    :extraFields="extraFields"
-                                    @setPromotionalModal="setPromotionalModal"
-                                    @setAddress="setAddress"/>
+                              :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"
+                              :secondTitle="`${textStep} ${getStepOrder(5)}: ${textDeliveryAddress}`"
+                              :thirdTitle="`${textStep} ${getStepOrder(6)}: ${textPaymentDetails}`"
+                              v-if="form.paymentProvider && isFormShown"
+                              @showCart="isOpenSpecialOfferModal = true"
+                              :$v="$v"
+                              :paymentForm="form"
+                              :countryCode="form.country"
+                              :countryList="setCountryList"
+                              :extraFields="extraFields"
+                              @setPromotionalModal="setPromotionalModal"
+                              @setAddress="setAddress"/>
                         </transition>
                         <div class="main__bottom">
                             <img
@@ -186,17 +176,18 @@
 <script>
   import emc1Validation from '../validation/emc1-validation'
   import notification from '../mixins/notification'
+  import * as extraFields from '../mixins/extraFields';
   import queryToComponent from '../mixins/queryToComponent'
   import { t, timage } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
-  import { getCountOfInstallments, preparePartByInstallments } from '../utils/installments';
   import ProductItem from './common/ProductItem';
   import Cart from './common/Cart';
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
+  import Installments from './common/extra-fields/Installments';
   import { fade } from '../utils/common';
-  import { getPaymentMethods, preparePurchaseData } from '../utils/checkout';
+  import { preparePurchaseData } from '../utils/checkout';
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { queryParams } from  '../utils/queryParams';
@@ -208,6 +199,7 @@
     mixins: [
       notification,
       queryToComponent,
+      extraFields.tplMixin,
       purchasMixin,
     ],
     components: {
@@ -216,6 +208,7 @@
       Cart,
       ProductOffer,
       PurchasAlreadyExists,
+      Installments,
     },
     props: ['showPreloader', 'skusList'],
     data () {
@@ -226,9 +219,6 @@
           prices: null,
           quantity: null,
         },
-        ImplValue: null,
-        radioIdx: null,
-        warrantyPriceText: null,
         mockData: {
           productList: [
             {
@@ -274,34 +264,26 @@
           ],
         },
         cart: {},
-        purchase: [],
-        variantList: [],
         form: {
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
           deal: null,
           variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
-          installments: 1,
           paymentProvider: null,
-          paymentMethod: null,
           fname: null,
           lname: null,
           //dateOfBirth: null,
           email: null,
           phone: null,
           street: null,
-          district: null,
           city: null,
           state: null,
           zipcode: null,
           country: checkoutData.countryCode,
-          cardType: null,
           cardNumber: null,
           month: null,
           year: null,
           cvv: null,
-          documentType: null,
-          documentNumber: null,
         },
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
@@ -310,8 +292,6 @@
       }
     },
     created() {
-      this.applyDefaultValues();
-
       if (this.queryParams['3ds'] === 'failure') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
@@ -319,10 +299,7 @@
           this.form.deal = selectedProductData.deal || this.form.deal;
           this.form.variant = selectedProductData.variant || this.form.variant;
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
-          this.form.installments = selectedProductData.installments || this.form.installments;
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
-          this.form.paymentMethod = selectedProductData.paymentMethod || this.form.paymentMethod;
-          this.form.cardType = selectedProductData.cardType || this.form.cardType;
           this.form.fname = selectedProductData.fname || this.form.fname;
           this.form.lname = selectedProductData.lname || this.form.lname;
           //this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
@@ -330,14 +307,10 @@
           this.form.phone = selectedProductData.phone || this.form.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
           this.form.street = selectedProductData.street || this.form.street;
-          this.form.district = selectedProductData.district || this.form.district;
           this.form.city = selectedProductData.city || this.form.city;
           this.form.state = selectedProductData.state || this.form.state;
           this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
           this.form.country = selectedProductData.country || this.form.country;
-          this.form.documentType = selectedProductData.documentType || this.form.documentType;
-          this.form.documentNumber = selectedProductData.documentNumber || this.form.documentNumber;
-          this.setWarrantyPriceText(this.form.deal);
           this.isFormShown = true;
         }
         catch (err) {
@@ -361,43 +334,13 @@
         }));
       },
       codeOrDefault () {
-        return this.queryParams.product || (this.checkoutData.product.skus[0] && this.checkoutData.product.skus[0].code) || null;
+        return this.queryParams.product || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
       },
       productData () {
         return checkoutData.product
       },
       isEmptyCart () {
         return Object.values(this.cart).every(it => it === 0)
-      },
-      withInstallments () {
-        return !!this.extraFields.installments;
-      },
-      quantityOfInstallments () {
-        const { installments } = this.form
-        return installments && installments !== 1 ? installments + '× ' : ''
-      },
-      extraFields() {
-        const firstMethod = Object.keys(this.$root.paymentMethods || []).filter(name => name !== 'instant_transfer').shift();
-        const paymentMethod = this.form.paymentMethod || firstMethod;
-
-        return this.$root.paymentMethods && this.$root.paymentMethods[paymentMethod] && this.$root.paymentMethods[paymentMethod].extra_fields || {};
-      },
-      installmentsList() {
-        return this.extraFields.installments.items.map(item => ({
-          value: item.value,
-          label: t(item.phrase),
-          text: t(item.phrase),
-        }));
-      },
-      installmentsVisible() {
-        const valuesMap = {
-          card_type: this.form.cardType, 
-        };
-
-        return Object.keys(this.extraFields.installments.visibility || {}).reduce((visible, name) => {
-          const allowedValues = this.extraFields.installments.visibility[name];
-          return allowedValues.indexOf(valuesMap[name]) !== -1;
-        }, true);
       },
       dealList () {
         const isSellOutArray = queryParams().sellout
@@ -421,19 +364,46 @@
         const product = checkoutData.product.skus.find(sku => variant === sku.code);
         return Object.values(product.quantity_image);
       },
-      checkoutData () {
-        return checkoutData
-      },
-      warrantyPrice () {
-        const currentDeal = this.purchase.find(it => +it.totalQuantity === +this.form.deal)
+      purchase() {
+        const currentVariant = this.skusList.find(it => it.code === this.form.variant);
 
-        return currentDeal && Math.round((currentDeal.newPrice || currentDeal.price) * 10) / 100
+        return preparePurchaseData({
+          purchaseList: this.productData.prices,
+          product_name: this.productData.product_name,
+          variant: currentVariant && currentVariant.name || null,
+          installments: this.form.installments,
+        });
+      },
+      variantList() {
+        return this.skusList.map((it) => ({
+          label: it.name,
+          text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
+          value: it.code,
+          imageUrl: it.quantity_image[1],
+        }));
+      },
+      warrantyPriceText() {
+        const prices = checkoutData.product.prices;
+
+        if (!this.form.deal) {
+          return 0;
+        }
+
+        switch (this.form.installments) {
+          case 1:
+            return prices[this.form.deal].warranty_price_text;
+          case 3:
+            return prices[this.form.deal].installments3_warranty_price_text;
+          case 6:
+            return prices[this.form.deal].installments6_warranty_price_text;
+        }
+
+        return 0;
       },
       textDynamicSaleBadge: () => t('checkout.dynamic_sale_badge'),
       textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + checkoutData.countryCode) }),
       textStep: () => t('checkout.step'),
       textChooseDeal: () => t('checkout.choose_deal'),
-      textInstallmentsTitle: () => t('checkout.payment_form.installments.title'),
       textArtcile: () => t('checkout.article'),
       textPrice: () => t('checkout.header_banner.price'),
       textMainDealError: () => t('checkout.main_deal.error'),
@@ -458,28 +428,8 @@
       imageSafePayment: () => timage('safe_payment'),
     },
     watch: {
-      'form.country'(value) {
-        getPaymentMethods(value).then(res => {
-          this.$root.paymentMethods = res || [];
-          this.applyDefaultValues();
-        });
-      },
-      'form.installments' (val) {
-        this.setPurchase({
-          variant: this.form.variant,
-          installments: val,
-        })
-      },
-      'form.variant' (val) {
-        this.setPurchase({
-          variant: val,
-          installments: this.form.installments,
-        });
-      },
-      'form.cardType'(value) {
-        if (!this.installmentsVisible) {
-          this.form.installments = 1;
-        }
+      purchase() {
+        this.refreshTopBlock();
       },
     },
     validations: emc1Validation,
@@ -499,7 +449,7 @@
         })
       },
       paypalSubmit() {
-        this.form.paymentProvider = 'instant_transfer';
+        this.form.paymentProvider = 'paypal';
 
         if (this.$v.form.deal.$invalid) {
           const element = document.querySelector('.main__deal');
@@ -509,54 +459,6 @@
           }
 
           this.isOpenPromotionModal = true;
-        }
-      },
-      applyDefaultValues() {
-        if (this.extraFields.installments) {
-          this.form.installments = this.extraFields.installments.default;
-        }
-
-        if (this.extraFields.state) {
-          this.form.state = this.extraFields.state.default;
-        }
-
-        if (this.extraFields.card_type) {
-          this.form.cardType = this.extraFields.card_type.default;
-        }
-
-        if (this.extraFields.document_type) {
-          this.form.documentType = this.extraFields.document_type.default;
-        }
-      },
-      setImplValue(value) {
-        this.implValue = value;
-        if (this.radioIdx) this.changeWarrantyValue();
-      },
-      setWarrantyPriceText(radioIdx) {
-        this.radioIdx = Number(radioIdx);
-        this.changeWarrantyValue();
-      },
-      changeWarrantyValue () {
-        const prices = this.checkoutData.product.prices;
-
-        if (!this.implValue) {
-          this.implValue = this.withInstallments
-            ? 3
-            : 1;
-        }
-
-        switch(this.implValue) {
-          case 1:
-            this.warrantyPriceText = prices[this.radioIdx].warranty_price_text;
-            break;
-          case 3:
-            this.warrantyPriceText = prices[this.radioIdx].installments3_warranty_price_text;
-            break;
-          case 6:
-            this.warrantyPriceText = prices[this.radioIdx].installments6_warranty_price_text;
-            break;
-          default:
-            break;
         }
       },
       paypalCreateOrder () {
@@ -607,12 +509,12 @@
           ...address
         }
       },
-      setPurchase ({ variant, installments }) {
+      refreshTopBlock() {
         const oldPrice = document.querySelector('#old-price');
         const newPrice = document.querySelector('#new-price');
         let oldValueText, valueText;
 
-        switch(installments) {
+        switch(this.form.installments) {
           case 3:
             oldValueText = checkoutData.product.prices[1].installments3_old_value_text;
             valueText = checkoutData.product.prices[1].installments3_value_text;
@@ -629,21 +531,12 @@
         }
 
         if (oldPrice) {
-          document.querySelector('#old-price').innerHTML = getCountOfInstallments(installments) + oldValueText;
+          document.querySelector('#old-price').innerHTML = this.quantityOfInstallments + oldValueText;
         }
 
         if (newPrice) {
-          document.querySelector('#new-price').innerHTML = getCountOfInstallments(installments) + valueText;
+          document.querySelector('#new-price').innerHTML = this.quantityOfInstallments + valueText;
         }
-
-        const currentVariant = this.skusList.find(it => it.code === variant)
-
-        this.purchase = preparePurchaseData({
-          purchaseList: this.productData.prices,
-          product_name: this.productData.product_name,
-          variant: currentVariant && currentVariant.name,
-          installments,
-        })
       },
       getStepOrder(number) {
         return !this.isShowVariant ? number - 1 : number;
@@ -679,49 +572,20 @@
       },
     },
     mounted () {
-      window.setTestData = () => {
-        this.form = {
-          ...this.form,
-          fname: 'Name',
-          lname: 'LName',
-          email: 'email@gmail.mail',
-          phone: '44444444',
-          zipcode: '13010-111',
-          number: '111',
-          district: 'district',
-          cardNumber: '378282246310005',
-          cvv: '123',
-          year: 2021,
-          month: 1,
-          documentNumber: '111.111.111-11',
-        }
-      }
-
       this.setCart(this.mockData.productList.reduce((acc, { key }) => {
         acc[key] = 0
 
         return acc
       }, {}))
 
-      this.variantList = this.skusList.map((it) => ({
-        label: it.name,
-        text: `<div><img src="${it.quantity_image[1]}" alt=""><span>${it.name}</span></div>`,
-        value: it.code,
-        imageUrl: it.quantity_image[1]
-      }))
-
-      this.setPurchase({
-        variant: this.form.variant,
-        installments: this.form.installments,
-      })
-
       const qty = +this.queryParams.qty;
       const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
 
       if (deal) {
-        this.setWarrantyPriceText(qty);
         this.form.deal = qty;
       }
+
+      this.refreshTopBlock();
     }
   }
 </script>

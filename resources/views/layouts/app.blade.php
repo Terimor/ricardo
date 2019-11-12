@@ -142,6 +142,18 @@
     @if (Route::is('checkout') || Route::is('checkout_price_set'))
       <noscript><img src="https://www.ipqualityscore.com/api/*/{{ $setting['ipqualityscore_api_hash'] }}/pixel.png" /></noscript>
     @endif
+
+    @if (!Route::is('checkout') && !Route::is('checkout_price_set') && !Route::is('upsells') && !Route::is('thankyou'))
+      <script>
+        function initFreshChat() {
+          window.fcWidget.init({
+            token: "{{ $FreshchatToken }}",
+            host: "https://wchat.freshchat.com"
+          });
+        }
+        function initialize(i,t){var e;i.getElementById(t)?initFreshChat():((e=i.createElement("script")).id=t,e.async=!0,e.src="https://wchat.freshchat.com/js/widget.js",e.onload=initFreshChat,i.head.appendChild(e))}function initiateCall(){initialize(document,"freshchat-js-sdk")}window.addEventListener?window.addEventListener("load",initiateCall,!1):window.attachEvent("load",initiateCall,!1);
+      </script>
+    @endif
     
     @if (!empty($htmlToApp['pixels']))
         @foreach($htmlToApp['pixels'] as $pixel)

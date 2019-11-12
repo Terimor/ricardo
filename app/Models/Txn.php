@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\TxnNotFoundException;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Validator;
 
@@ -50,6 +51,21 @@ class Txn extends Model
                 $model->currency = strtoupper($model->currency);
             }
         });
+    }
+
+    /**
+     * Returns Txn by ID
+     * @param  string    $id
+     * @param  boolean   $throwable default=true
+     * @return Txn|null
+     */
+    public static function getById(string $id, bool $throwable = true): ?Txn
+    {
+        $model = self::find($id);
+        if (!$model && $throwable) {
+            throw new TxnNotFoundException("Txn [{$id}] not found");
+        }
+        return $model;
     }
 
     /**

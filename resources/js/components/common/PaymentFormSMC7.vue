@@ -23,6 +23,11 @@
           autocomplete: 'street-address'
         }"
         v-model="paymentForm.streetAndNumber"/>
+    <District
+      :extraFields="extraFields"
+      :withPlaceholder="true"
+      :form="paymentForm"
+      :$v="$v" />
     <text-field
         :validation="$v.form.city"
         :validationMessage="textCityRequired"
@@ -34,7 +39,14 @@
           autocomplete: 'shipping locality'
         }"
         v-model="paymentForm.city"/>
+    <State
+      v-if="extraFields.state"
+      :country="paymentForm.country"
+      :extraFields="extraFields"
+      :form="paymentForm"
+      :$v="$v" />
     <text-field
+        v-else
         :validation="$v.form.state"
         :validationMessage="textStateRequired"
         element-loading-spinner="el-icon-loading"
@@ -58,7 +70,7 @@
     <h2><span>{{paySecurelyWith}}</span></h2>
     <radio-button-group
         :withCustomLabels="true"
-        v-model="paymentForm.paymentProvider">
+        v-model="paymentForm.payment_method">
       <div class="card-types">
         <pay-method-item
           v-for="item in cardNames"
@@ -67,22 +79,23 @@
             value: item.value,
             imgUrl: item.imgUrl,
           }"
-          :value="paymentForm.paymentProvider"
+          :value="paymentForm.payment_method"
         />
       </div>
-
     </radio-button-group>
 
-    <select-field
-        :validation="$v.form.paymentProvider"
-        :validationMessage="textCardTypeRequired"
-        theme="variant-1"
-        :rest="{
-          placeholder: textCardType
-        }"
-        :list="cardNames"
-        v-model="paymentForm.paymentProvider"/>
-    <form id="payment-data-form" v-if="paymentForm.paymentProvider !== 'instant_transfer'">
+    <PaymentMethod
+      :extraFields="extraFields"
+      :form="paymentForm"
+      :$v="$v" />
+
+    <form id="payment-data-form" v-if="paymentForm.paymentProvider !== 'paypal'">
+
+      <CardType
+        :extraFields="extraFields"
+        :form="paymentForm"
+        :$v="$v" />
+
       <text-field
           :validation="$v.form.cardNumber"
           :rest="{
@@ -98,7 +111,7 @@
           theme="variant-1"
           :label="textCardNumber"
           v-model="paymentForm.cardNumber"
-          :prefix="`<img src='${cardUrl}' />`"
+          :prefix="`<img src='${$parent.paymentMethodURL}' />`"
           :postfix="`<i class='fa fa-lock'></i>`"
       />
       <div class="card-date input-container" :class="{ invalid: $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
@@ -142,6 +155,14 @@
           v-model="paymentForm.cvv"
           postfix="<i class='fa fa-question-circle'></i>"
       />
+      <DocumentType
+        :extraFields="extraFields"
+        :form="paymentForm"
+        :$v="$v" />
+      <DocumentNumber
+        :extraFields="extraFields"
+        :form="paymentForm"
+        :$v="$v" />
       <el-dialog
           @click="isOpenCVVModal = false"
           class="cvv-popup"
@@ -159,38 +180,49 @@
 </template>
 <script>
   import * as dateFns from 'date-fns';
-	import { getCardUrl, getPaymentMethods } from "../../utils/checkout";
-	import creditCardType from 'credit-card-type'
 	import PayMethodItem from "./PayMethodItem";
+  import PaymentMethod from './extra-fields/PaymentMethod';
+  import State from './extra-fields/State';
+  import District from './extra-fields/District';
+  import CardType from './extra-fields/CardType';
+  import DocumentType from './extra-fields/DocumentType';
+  import DocumentNumber from './extra-fields/DocumentNumber';
   import { t } from '../../utils/i18n';
 
 	export default {
 		name: "PaymentFormSMC7",
-		components: {PayMethodItem},
-		props: ['$v', 'paymentForm', 'countryList'],
+		components: {
+      PayMethodItem,
+      PaymentMethod,
+      State,
+      District,
+      CardType,
+      DocumentType,
+      DocumentNumber,
+    },
+		props: ['$v', 'paymentForm', 'countryList', 'extraFields'],
 		data() {
 			return {
-				cardType: null,
 				isOpenCVVModal: false
 			}
 		},
 		computed: {
-			cardUrl() {
-				return getCardUrl(this.cardType)
-      },
 
       cardNames() {
-        const cardNames = Object.keys(this.$root.paymentMethods || []).filter(name => name !== 'instant_transfer');
+        const paymentMethods = this.$root.paymentMethods || {};
+
+        const values = Object.keys(this.$root.paymentMethods || [])
+          .filter(name => name !== 'instant_transfer');
 
         if (this.paymentForm.installments === 1) {
-          cardNames.push('instant_transfer');
+          values.push('instant_transfer');
         }
 
-        return cardNames.map(cardName => ({
-          value: cardName,
-          text: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].name || '',
-          label: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].name || '',
-          imgUrl: this.$root.paymentMethods && this.$root.paymentMethods[cardName] && this.$root.paymentMethods[cardName].logo || '',
+        return values.map(value => ({
+          value,
+          text: paymentMethods[value] && paymentMethods[value].name || '',
+          label: paymentMethods[value] && paymentMethods[value].name || '',
+          imgUrl: paymentMethods[value] && paymentMethods[value].logo || '',
         }));
       },
 
@@ -216,8 +248,6 @@
       textCountryRequired: () => t('checkout.payment_form.сountry.required'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
-      textCardType: () => t('checkout.payment_form.card_type.title'),
-      textCardTypeRequired: () => t('checkout.payment_form.card_type.required'),
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),
@@ -233,22 +263,14 @@
       textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
 		},
 		watch: {
-      'paymentForm.country'(value) {
-        getPaymentMethods(value).then(res => this.$root.paymentMethods = res || []);
-      },
 			'paymentForm.cardNumber'(newVal, oldValue) {
         newVal = newVal || '';
-				const creditCardTypeList = creditCardType(newVal);
-				this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
-					? creditCardTypeList[0].type
-					: null;
-				this.paymentForm.paymentProvider = this.cardType = creditCardTypeList.length > 0 && newVal.length > 0
-					? creditCardTypeList[0].type
-					: null
 
         if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
           this.paymentForm.cardNumber = oldValue;
         }
+
+        this.$parent.setPaymentMethodByCardNumber(newVal);
 			},
       'paymentForm.cvv' (newVal, oldValue) {
           if(this.paymentForm.cvv) {
