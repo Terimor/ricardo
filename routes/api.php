@@ -19,7 +19,7 @@ use Illuminate\Routing\Router;
 //     return $request->user();
 // });
 
-Route::group(['middleware' => ['auth.x-api-key']], function (Router $router) {
+Route::group(['middleware' => ['auth.apikey']], function (Router $router) {
     $router->post('order/{orderId}/payment/{hash}/capture', 'ApiController@capturePayment');
     $router->post('order/{orderId}/payment/{hash}/void', 'ApiController@voidPayment');
 });
