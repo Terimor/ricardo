@@ -605,15 +605,35 @@
 
         this.paypalPaymentError = '';
 
-        return paypalCreateOrder({
-            xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-            sku_code: this.codeOrDefault,
-            sku_quantity: this.form.deal,
-            is_warranty_checked: this.form.isWarrantyChecked,
-            page_checkout: document.location.href,
-            cur: currency,
-            offer: searchParams.get('offer'),
-            affiliate: searchParams.get('affiliate'),
+        return Promise.resolve()
+          .then(() => {
+            if (this.ipqsResult) {
+              return this.ipqsResult;
+            }
+
+            return ipqsCheck();
+          })
+          .then(ipqsResult => {
+            this.ipqsResult = ipqsResult;
+          })
+          .then(() => {
+            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+              return setTimeout(() => {
+                this.paypalPaymentError = t('checkout.abuse_error');
+              }, 1000);
+            }
+
+            return paypalCreateOrder({
+              xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+              sku_code: this.codeOrDefault,
+              sku_quantity: this.form.deal,
+              is_warranty_checked: this.form.isWarrantyChecked,
+              page_checkout: document.location.href,
+              cur: currency,
+              offer: searchParams.get('offer'),
+              affiliate: searchParams.get('affiliate'),
+              ipqsResult: this.ipqsResult,
+            });
           })
           .then(res => {
             if (res.paypalPaymentError) {

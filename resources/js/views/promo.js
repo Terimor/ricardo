@@ -15,6 +15,7 @@ import * as extraFields from '../mixins/extraFields';
 import notification from '../mixins/notification';
 import queryToComponent from '../mixins/queryToComponent';
 import purchasMixin from '../mixins/purchas';
+import { check as ipqsCheck } from '../services/ipqs';
 import { queryParams } from  '../utils//queryParams';
 import globals from '../mixins/globals';
 import wait from '../utils/wait';
@@ -39,6 +40,7 @@ const promo = new Vue({
       showPreloader: preload === '{preload}' || +preload === 3,
       isFormShown: false,
       selectedPlan: null,
+      ipqsResult: null,
       paypalPaymentError: '',
       stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
         value: it,
@@ -319,15 +321,35 @@ const promo = new Vue({
 
       this.paypalPaymentError = '';
 
-      return paypalCreateOrder({
-          xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-          sku_code: this.form.variant,
-          sku_quantity: this.form.deal,
-          is_warranty_checked: this.form.isWarrantyChecked,
-          page_checkout: document.location.href,
-          cur: currency,
-          offer: new URL(document.location.href).searchParams.get('offer'),
-          affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+      return Promise.resolve()
+        .then(() => {
+          if (this.ipqsResult) {
+            return this.ipqsResult;
+          }
+
+          return ipqsCheck();
+        })
+        .then(ipqsResult => {
+          this.ipqsResult = ipqsResult;
+        })
+        .then(() => {
+          if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+            return setTimeout(() => {
+              this.paypalPaymentError = t('checkout.abuse_error');
+            }, 1000);
+          }
+
+          return paypalCreateOrder({
+            xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
+            sku_code: this.form.variant,
+            sku_quantity: this.form.deal,
+            is_warranty_checked: this.form.isWarrantyChecked,
+            page_checkout: document.location.href,
+            cur: currency,
+            offer: new URL(document.location.href).searchParams.get('offer'),
+            affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+            ipqsResult: this.ipqsResult,
+          });
         })
         .then(res => {
           if (res.paypalPaymentError) {

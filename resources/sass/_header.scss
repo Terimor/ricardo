@@ -32,6 +32,7 @@
   }
 
   &__menu-item {
+    position: relative;
     margin-left: 15px;
 
     @media screen and ($s-down) {
@@ -42,12 +43,43 @@
   }
 
   &__menu-link {
-    color: inherit;
+    cursor: pointer;
     text-decoration: none;
     color: #6c6c6c;
 
     &--selected {
       color: #ef6129;
     }
+  }
+
+  &__submenu {
+    display: none;
+    position: absolute;
+    flex-direction: column;
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #ebeef5;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    padding: 10px 0;
+    z-index: 1;
+  }
+
+  &__menu-item:hover > .header__submenu {
+    display: flex;
+  }
+
+  &__submenu-item {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 36px;
+  }
+
+  &__submenu-link {
+    color: inherit;
+    text-decoration: none;
+    color: #6c6c6c;
+    white-space: nowrap;
   }
 }

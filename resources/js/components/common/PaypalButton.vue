@@ -61,7 +61,7 @@
 
             return createOrder()
               .then(res => {
-                return res.id || null;
+                return res && res.id || null;
               });
           },
 

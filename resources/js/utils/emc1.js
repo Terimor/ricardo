@@ -1,5 +1,4 @@
 import { getCountOfInstallments } from './installments';
-import { check as ipqsCheck } from '../services/ipqs';
 import { goTo } from './goTo';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
@@ -170,10 +169,10 @@ export function paypalCreateOrder ({
   cur,
   offer = new URL(document.location.href).searchParams.get('offer'),
   affiliate = new URL(document.location.href).searchParams.get('affiliate'),
+  ipqsResult,
 }) {
   return Promise.resolve()
-    .then(() => ipqsCheck())
-    .then(ipqsResult => fetch('/paypal-create-order', {
+    .then(() => fetch('/paypal-create-order', {
       method: 'post',
       credentials: 'same-origin',
       headers: {
