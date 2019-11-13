@@ -534,6 +534,13 @@
             this.ipqsResult = ipqsResult;
           })
           .then(() => {
+            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+              return setTimeout(() => {
+                this.paymentError = t('checkout.abuse_error');
+                this.isSubmitted = false;
+              }, 1000);
+            }
+
             const data = {
               product: {
                 sku: this.form.variant,

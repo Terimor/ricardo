@@ -12,8 +12,6 @@
     <div class="container">
         <div class="static__wrapper">
             {!! t('about.content') !!}
-            <br>
-            <br>
             @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>

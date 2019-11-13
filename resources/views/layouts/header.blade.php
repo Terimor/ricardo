@@ -14,17 +14,17 @@
             <ul class="header__menu">
                 <li class="header__menu-item">
                     <a href="/" class="header__menu-link header__menu-link--selected">
-                        Home
+                        {{ t('footer.home') }}
                     </a>
                 </li>
                 <li class="header__menu-item">
                     <a href="/about" class="header__menu-link">
-                        Our History
+                        {{ t('footer.about') }}
                     </a>
                 </li>
                 <li class="header__menu-item">
                     <a href="/contact-us" class="header__menu-link">
-                        Contact us
+                        {{ t('footer.contact') }}
                     </a>
                 </li>
             </ul>

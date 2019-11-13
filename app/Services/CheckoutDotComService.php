@@ -213,8 +213,6 @@ class CheckoutDotComService
         try {
             $res = $this->checkout->payments()->capture(new Capture($id));
             $result = $res->http_code === 202 ? true : false;
-        } catch (CheckoutHttpException $ex) {
-            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         } catch (CheckoutException $ex) {
             logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         }
@@ -232,10 +230,8 @@ class CheckoutDotComService
         try {
             $res = $this->checkout->payments()->void(new Voids($id));
             $result = $res->http_code === 202 ? true : false;
-        } catch (CheckoutHttpException $ex) {
-            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         } catch (CheckoutException $ex) {
-            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+            logger()->error("Checkout.com void", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         }
         return $result;
     }

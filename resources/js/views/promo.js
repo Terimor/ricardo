@@ -220,7 +220,7 @@ const promo = new Vue({
       });
     },
 
-    priceText() {
+    promoPriceText() {
       const prices = checkoutData.product.prices;
 
       switch (this.form.installments) {
@@ -235,7 +235,7 @@ const promo = new Vue({
       return 0;
     },
 
-    oldPrice() {
+    promoOldPrice() {
       const prices = checkoutData.product.prices;
 
       switch (this.form.installments) {
