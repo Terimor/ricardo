@@ -65,7 +65,7 @@
                 return this.$t('exit_popup.text', {
                     count: this.mainQuantity,
                     amount: this.freeQuantity,
-                    price: this.priceText,
+                    payment_details: this.priceText,
                 });
             },
 

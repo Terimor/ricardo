@@ -102,7 +102,6 @@ class I18n extends Model
         '#PRODUCTNAME#',
         '#SHOPNAME#',
         '#SUPPORT_TEAM#',
-        '#PRICE#',
         '#AMOUNT#',
         '#COUNT#',
         '#ADDRESS#',
