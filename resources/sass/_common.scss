@@ -399,3 +399,40 @@ h3 {
 }
 
 /* inputs end */
+
+#fc_frame {
+  #fc_widget {
+    visibility: hidden;
+  }
+
+  .freshchat-image {
+    position: fixed;
+    max-width: 160px;
+    cursor: pointer;
+    bottom: 15px;
+    right: 15px;
+    animation-duration: .4s;
+    animation-fill-mode: both;
+    animation-name: zoomIn;
+  }
+
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale3d(.3,.3,.3);
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  &.fc-open {
+    #fc_widget {
+      visibility: visible;
+    }
+
+    .freshchat-image {
+      display: none;
+    }
+  }
+}

@@ -48,13 +48,6 @@ if (location.pathname === '/splash') {
 }
 
 
-// document ready
-function documentReady() {
-  document.documentElement.classList.remove('js-hidden');
-  populateLinksWithGetParams();
-}
-
-
 // populate links with GET params
 function populateLinksWithGetParams() {
   [...document.querySelectorAll('a[href]')].forEach(link => {
@@ -74,6 +67,33 @@ function populateLinksWithGetParams() {
       link.setAttribute('href', url.pathname + url.search + url.hash);
     }
   });
+}
+
+
+// initialize FreshChat custom widget
+wait(
+  () => !!document.querySelector('#fc_frame'),
+  () => {
+    let image = document.createElement('img');
+
+    image.src = cdnUrl + '/assets/images/live_chat-full.png';
+    image.className = 'freshchat-image';
+
+    image.addEventListener('load', () => {
+      document.querySelector('#fc_frame').appendChild(image);
+    });
+
+    image.addEventListener('click', () => {
+      fcWidget.open();
+    });
+  },
+);
+
+
+// document ready
+function documentReady() {
+  document.documentElement.classList.remove('js-hidden');
+  populateLinksWithGetParams();
 }
 
 if (document.readyState !== 'interactive' && document.readyState !== 'complete') {
