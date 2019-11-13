@@ -32,7 +32,7 @@ class OdinOrder extends OdinModel
      */
     protected $attributes = [
         'number' => null, // * U (O1908USXXXXXX, X = A-Z0-9)
-        'status' => self::STATUS_NEW, // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled']
+        'status' => self::STATUS_NEW, // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled', 'error']
         'currency' => null, // * enum string
         'exchange_rate' => null, // * float
         'total_paid' => null, // * float amount totally paid in local currency; decreases after refund
@@ -120,6 +120,7 @@ class OdinOrder extends OdinModel
     const STATUS_SHIPPED = 'shipped';
     const STATUS_DELIVERED = 'delivered';
     const STATUS_CANCELLED = 'cancelled';
+    const STATUS_ERROR = 'error';
 
     public static $statuses = [
         self::STATUS_NEW => 'New',
@@ -128,7 +129,8 @@ class OdinOrder extends OdinModel
         self::STATUS_SHIPPED => 'Shipped',
         self::STATUS_DELIVERED => 'Delivered',
         self::STATUS_CANCELLED => 'Cancelled',
-        self:: STATUS_HALFPAID => 'Halfpaid',
+        self::STATUS_HALFPAID => 'Halfpaid',
+        self::STATUS_ERROR => 'Error',
     ];
 
     /**

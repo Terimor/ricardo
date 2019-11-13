@@ -142,7 +142,8 @@ class CurrencyService
         'MXN',
         'HTG',
         'IRR',
-        'VUV'
+        'VUV',
+        'AFN'
     ];
 
     /**
