@@ -24,14 +24,14 @@
                 </li>
                 <li class="header__menu-item">
                     <a href="/contact-us" class="header__menu-link">
-                        {{ t('footer.contact') }}
+                        {{ t('footer.contact') }}<img class="header__menu-icon" src="{{ $cdnUrl }}/assets/images/contact.png" />
                     </a>
                 </li>
                 <li class="header__menu-item">
                     <a class="header__menu-link">
-                        {{ t('footer.call') }}
+                        {{ t('footer.call') }}<img class="header__menu-icon" src="{{ $cdnUrl }}/assets/images/call.png" />
                     </a>
-                    <ul class="header__submenu">
+                    <ul class="header__submenu right">
                         <li class="header__submenu-item">
                             <a href="tel:+13518882441" class="header__submenu-link">(&#127482;&#127480;/&#127464;&#127462;) (351) 888-2441</a>
                         </li>

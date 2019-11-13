@@ -26,29 +26,47 @@
 
   &__menu {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     list-style: none;
     padding-left: 0;
+    margin: 8px 0;
   }
 
   &__menu-item {
     position: relative;
-    margin-left: 15px;
 
     @media screen and ($s-down) {
-      margin-left: 10px;
       font-size: 13px;
       white-space: nowrap;
     }
   }
 
   &__menu-link {
+    display: flex;
+    align-items: center;
+    margin: 8px 8px;
     cursor: pointer;
     text-decoration: none;
     color: #6c6c6c;
 
+    @media screen and ($s-down) {
+      margin: 8px 4px;
+    }
+
     &--selected {
       color: #ef6129;
+    }
+  }
+
+  &__menu-icon {
+    max-width: 24px;
+    margin-left: 2px;
+    margin-top: -2px;
+
+    @media screen and ($s-down) {
+      max-width: 16px;
     }
   }
 
@@ -63,6 +81,10 @@
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     padding: 10px 0;
     z-index: 1;
+
+    &.right {
+      right: -20px;
+    }
   }
 
   &__menu-item:hover > .header__submenu {
