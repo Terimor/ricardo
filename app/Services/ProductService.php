@@ -16,7 +16,7 @@ use NumberFormatter;
  */
 class ProductService
 {
-    const AMOUNT = 10;
+    public static $amountValues = [10, 15, 20];
     
     /**
      * @param Request $request
@@ -303,13 +303,13 @@ class ProductService
             $prices[$quantity]['symbol'] = $symbol;
         }
         
-        // for 10
-        $prices[static::AMOUNT]['amount'] = static::AMOUNT;
-        $prices[static::AMOUNT]['value'] = $pricesOld[1]['value'] * static::AMOUNT;       
-        $prices[static::AMOUNT]['value_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[static::AMOUNT]['value'], $currency);
-        $prices[static::AMOUNT]['currency'] = $currency->code;
-        $prices[static::AMOUNT]['symbol'] = $symbol;
-        
+        foreach (static::$amountValues as $value) {
+            $prices[$value]['amount'] = $value;
+            $prices[$value]['value'] = $pricesOld[1]['value'] * $value;       
+            $prices[$value]['value_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[$value]['value'], $currency);
+            $prices[$value]['currency'] = $currency->code;
+            $prices[$value]['symbol'] = $symbol;
+        }
         return $prices;
     }
 
