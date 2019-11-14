@@ -297,7 +297,9 @@ class ProductService
         
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
             $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
+            $prices[$quantity]['2xvalue'] = $pricesOld[$quantity]['value'] * 2;            
             $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
+            $prices[$quantity]['2xvalue_text'] = CurrencyService::formatCurrency($numberFormatter, $pricesOld[$quantity]['value'] * 2, $currency);;
             $prices[$quantity]['amount'] = $quantity;
             $prices[$quantity]['currency'] = $currency->code;
             $prices[$quantity]['symbol'] = $symbol;
@@ -305,8 +307,10 @@ class ProductService
         
         foreach (static::$amountValues as $value) {
             $prices[$value]['amount'] = $value;
-            $prices[$value]['value'] = $pricesOld[1]['value'] * $value;       
+            $prices[$value]['value'] = round($pricesOld[1]['value'] * $value, 2);
+            $prices[$value]['2xvalue'] = round($pricesOld[1]['value'] * $value * 2, 2);
             $prices[$value]['value_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[$value]['value'], $currency);
+            $prices[$value]['2xvalue_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[$value]['value'] * 2, $currency);
             $prices[$value]['currency'] = $currency->code;
             $prices[$value]['symbol'] = $symbol;
         }
