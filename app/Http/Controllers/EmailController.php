@@ -24,5 +24,21 @@ class EmailController extends Controller
     public function __construct(EmailService $emailService)
     {
         $this->emailService = $emailService;
-    }    
+    }
+    
+    /**
+     * Validate email using service
+     * @param Request $request
+     * @return boolean
+     */
+    public function validateEmail(Request $request)
+    {                        
+        $email = $request->get('email');
+        $isValid = false;
+        if ($email) {
+            $isValid = $this->emailService->validateEmailWithThechecker($email);            
+        }
+        
+        return response()->json(['success' => $isValid]);
+    }
 }
