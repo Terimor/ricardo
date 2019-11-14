@@ -74,7 +74,7 @@
             v-show="vmc4Form.installments === 1"
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
-            :$v="$v.vmc4Form.deal"
+            :$vdeal="$v.vmc4Form.deal"
             @click="paypalSubmit"
           >{{ paypalRiskFree }}</paypal-button>
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
@@ -627,7 +627,7 @@
           });
 			},
       paypalSubmit() {
-        this.form.paymentProvider = 'paypal';
+        
       },
 			setCountryCodeByPhoneField(val) {
 				if (val.iso2) {
@@ -686,7 +686,7 @@
           deal: this.vmc4Form.deal,
           variant: this.vmc4Form.variant,
           isWarrantyChecked: this.vmc4Form.isWarrantyChecked,
-          paymentProvider: this.form.paymentProvider,
+          paymentProvider: 'paypal',
         });
 
         this.paypalPaymentError = '';
@@ -729,7 +729,10 @@
             return res;
           });
       },
-      paypalOnApprove: paypalOnApprove,
+      paypalOnApprove(data) {
+        this.form.paymentProvider = 'paypal';
+        return paypalOnApprove(data);
+      },
 		},
 	}
 </script>

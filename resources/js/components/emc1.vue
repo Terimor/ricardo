@@ -49,18 +49,8 @@
                               @input="onVariantChange" />
                         </div>
 
-                        <transition name="el-zoom-in-top">
-                            <button v-show="warrantyPriceText" id="warranty-field-button">
-                                <label for="warranty-field" class="label-container-checkbox">
-                                    <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
-                                    <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
-                                <i class="fa fa-arrow-left slide-left"></i>
-                                <i class="fa fa-arrow-right slide-right"></i>
-                            </button>
-                        </transition>
+                        <Warranty
+                          :form="form" />
                     </div>
                 </div>
                 <div class="paper col-md-5 main__payment">
@@ -75,7 +65,7 @@
                           :createOrder="paypalCreateOrder"
                           :onApprove="paypalOnApprove"
                           v-show="form.installments === 1"
-                          :$v="$v.form.deal"
+                          :$vdeal="$v.form.deal"
                           @click="paypalSubmit"
                         >{{ paypalRiskFree }}</paypal-button>
                         <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
@@ -181,6 +171,7 @@
   import { t, timage } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
   import ProductItem from './common/ProductItem';
+  import Warranty from './common/Warranty';
   import Cart from './common/Cart';
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
@@ -207,6 +198,7 @@
       SaleBadge,
       ProductItem,
       Cart,
+      Warranty,
       ProductOffer,
       PurchasAlreadyExists,
       Installments,
@@ -384,24 +376,6 @@
           imageUrl: it.quantity_image[1],
         }));
       },
-      warrantyPriceText() {
-        const prices = checkoutData.product.prices;
-
-        if (!this.form.deal) {
-          return 0;
-        }
-
-        switch (this.form.installments) {
-          case 1:
-            return prices[this.form.deal].warranty_price_text;
-          case 3:
-            return prices[this.form.deal].installments3_warranty_price_text;
-          case 6:
-            return prices[this.form.deal].installments6_warranty_price_text;
-        }
-
-        return 0;
-      },
       textDynamicSaleBadge: () => t('checkout.dynamic_sale_badge'),
       textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + checkoutData.countryCode) }),
       textStep: () => t('checkout.step'),
@@ -413,7 +387,6 @@
       textMainDealErrorPopupMessage: () => t('checkout.main_deal.error_popup.message'),
       textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
       textSelectVariant: () => t('checkout.select_variant'),
-      textWarranty: () => t('checkout.warranty'),
       textPaymentMethod: () => t('checkout.payment_method'),
       textPaySecurely: () => t('checkout.pay_securely'),
       textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
@@ -451,8 +424,6 @@
         })
       },
       paypalSubmit() {
-        this.form.paymentProvider = 'paypal';
-
         if (this.$v.form.deal.$invalid) {
           const element = document.querySelector('.main__deal');
 
@@ -472,7 +443,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
-          paymentProvider: this.form.paymentProvider,
+          paymentProvider: 'paypal',
         });
 
         this.paypalPaymentError = '';
@@ -515,7 +486,10 @@
             return res;
           });
       },
-      paypalOnApprove: paypalOnApprove,
+      paypalOnApprove(data) {
+        this.form.paymentProvider = 'paypal';
+        return paypalOnApprove(data);
+      },
       setCart (cart) {
         this.cart = {
           ...this.cart,
@@ -688,6 +662,23 @@
 
           &:first-child {
             flex-grow: 1;
+          }
+        }
+      }
+
+      #warranty-field-button {
+        margin-top: 22px;
+
+        label[for=warranty-field] {
+          @media screen and (max-width: 991px) {
+            & {
+              font-size: 14px;
+              margin: 18px 40px 18px 80px;
+
+              [dir="rtl"] & {
+                margin: 18px 80px 18px 40px;
+              }
+            }
           }
         }
       }
@@ -869,96 +860,6 @@
                     }
                 }
             }
-
-            #warranty-field-button {
-                display: flex;
-                justify-content: center;
-                flex-direction: column;
-                width: 100%;
-                position: relative;
-                margin-top: 22px;
-                padding: 0;
-                background-color: rgba(216, 216, 216, .71);
-                border-radius: 5px;
-                border: 1px solid rgba(0, 0, 0, 0.4);
-                outline: none;
-
-                &:hover {
-                    background-color: rgba(191,191,191,.71);
-                    background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
-                }
-
-                label[for=warranty-field] {
-                    font-weight: bold;
-                    line-height: 1.8;
-                    text-align: left;
-                    margin: 18px 70px 18px 100px;
-                    padding: 0;
-                    text-transform: capitalize;
-                    font-size: 16px;
-
-                    [dir="rtl"] & {
-                      margin: 18px 100px 18px 70px;
-                      text-align: right;
-                    }
-
-                    .checkmark {
-                        top: 3px;
-                        left: -30px;
-
-                      [dir="rtl"] & {
-                        left: auto;
-                        right: -30px;
-                      }
-                    }
-                }
-
-                input[type=checkbox] {
-                    position: absolute;
-                    top: 23px;
-                    left: 45px;
-                }
-
-                & > img {
-                    position: absolute;
-                    width: 30px;
-                    height: auto;
-                    top: -7px;
-                    right: -7px;
-
-                    [dir="rtl"] & {
-                      left: -7px;
-                      right: auto;
-                      transform: rotate(-24deg);
-                    }
-                }
-
-                & > .fa-arrow-left {
-                    display: none;
-                    position: absolute;
-                    font-size: 18px;
-                    color: #dc003a;
-                    top: 20px;
-                    right: 10px;
-                    
-
-                    [dir="rtl"] & {
-                      display: block;
-                    }
-                }
-
-                & > .fa-arrow-right {
-                    position: absolute;
-                    font-size: 18px;
-                    color: #dc003a;
-                    top: 20px;
-                    left: 10px;
-
-                    [dir="rtl"] & {
-                      display: none;
-                    }
-                }
-            }
         }
 
         &__payment {
@@ -1092,31 +993,9 @@
             }
         }
 
-        @media screen and (max-width: 991px) {
-          &__deal {
-            #warranty-field-button {
-              label[for=warranty-field] {
-                margin-right: 40px;
-              }
-            }
-          }
-        }
-
         @media screen and (max-width: 767px) {
             .col-md-7 {
                 padding: 0;
-            }
-
-            &__deal {
-                #warranty-field-button {
-                    label[for=warranty-field] {
-                        font-size: 14px;
-
-                        .checkmark {
-                          top: 2px;
-                        }
-                    }
-                }
             }
         }
     }

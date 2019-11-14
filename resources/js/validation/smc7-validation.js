@@ -4,6 +4,8 @@ import creditCardType from 'credit-card-type'
 import * as dateFns from 'date-fns';
 
 
+const searchParams = new URL(location).searchParams;
+
 const smc7validation = function () {
   const config = {
     form: {
@@ -84,6 +86,14 @@ const smc7validation = function () {
       },
     }
   };
+
+  if (searchParams.get('tpl') === 'smc7p') {
+    config.form.terms = {
+      isValid(value) {
+        return value === true;
+      },
+    };
+  }
 
   this.setExtraFieldsValidationRules(config.form);
 

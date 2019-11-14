@@ -17,23 +17,28 @@
     props: [
       'createOrder',
       'onApprove',
-      '$v'
+      '$vterms',
+      '$vdeal',
     ],
 
     data() {
       return {
-        inputCheckbox: this.$v.required,
         isSubmitted: false,
-        action: null
-      }
+        action: null,
+      };
     },
 
     watch: {
-      '$v.$invalid' () {
-        if (this.action) {
+      '$vdeal.$invalid'() {
+        if (this.action && this.isValid()) {
           this.action.enable();
         }
-      }
+      },
+      '$vterms.$invalid'() {
+        if (this.action && this.isValid()) {
+          this.action.enable();
+        }
+      },
     },
 
     mounted () {
@@ -44,14 +49,18 @@
     },
 
     methods: {
+      isValid() {
+        return (!this.$vdeal || !this.$vdeal.$invalid) && (!this.$vterms || !this.$vterms.$invalid);
+      },
       initButton () {
-        const { createOrder, onApprove, $v } = this;
+        const { createOrder, onApprove } = this;
         const that = this;
 
         paypal.Buttons({
           onInit(data, actions) {
             that.action = actions;
-            if ($v.$invalid) {
+
+            if (!that.isValid()) {
               actions.disable();
             }
           },
@@ -66,10 +75,7 @@
           },
 
           onClick () {
-            if (!$v.required || !$v.$dirty) {
-              that.$emit('click', true);
-              return true;
-            }
+            that.$emit('click', true);
           },
 
           onApprove (data, actions) {
@@ -77,10 +83,6 @@
               .then(() => {
                 setTimeout(() => that.isSubmitted = false, 1000);
               });
-            // Commented out so order verification will pass (temporary change)
-            // if ($v.required || $v.$dirty) {
-            //     return onApprove(data);
-            // }
           },
 
           onError(err) {

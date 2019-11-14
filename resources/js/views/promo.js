@@ -299,10 +299,9 @@ const promo = new Vue({
 
   methods: {
     scrollTo: scrollTo,
-    paypalOnApprove: paypalOnApprove,
 
     paypalSubmit() {
-      this.form.paymentProvider = 'paypal';
+      
     },
 
     paypalCreateOrder () {
@@ -316,7 +315,7 @@ const promo = new Vue({
         deal: this.form.deal,
         variant: this.form.variant,
         isWarrantyChecked: this.form.isWarrantyChecked,
-        paymentProvider: this.form.paymentProvider,
+        paymentProvider: 'paypal',
       });
 
       this.paypalPaymentError = '';
@@ -358,6 +357,11 @@ const promo = new Vue({
 
           return res;
         });
+    },
+
+    paypalOnApprove(data) {
+      this.form.paymentProvider = 'paypal';
+      return paypalOnApprove(data);
     },
 
     setSelectedPlan(deal) {

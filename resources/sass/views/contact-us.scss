@@ -46,7 +46,8 @@
 
   .footer {
     &__row {
-      justify-content: flex-start;
+      justify-content: center;
+      max-width: none;
       margin: 0;
     }
 

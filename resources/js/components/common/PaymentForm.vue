@@ -943,11 +943,6 @@
     }
   }
 
-  .label-container-checkbox {
-    position: relative;
-    margin-left: 30px;
-  }
-
   #payment-data-form {
     display: flex;
     flex-wrap: wrap;
