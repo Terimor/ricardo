@@ -53,6 +53,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/order-amount-total/{orderId}', 'OrderController@orderAmountTotal');
 
     $router->get('/product-price', 'ProductController@getProductPrice');
+    $router->get('/validate-email', 'EmailController@validateEmailUsingService');
     
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
