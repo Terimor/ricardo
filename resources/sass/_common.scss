@@ -354,6 +354,11 @@ h3 {
   @media screen and ($s-down) {
     font-size: 16px;
   }
+
+  [dir="rtl"] & {
+    padding-left: 0;
+    padding-right: 35px;
+  }
 }
 
 .label-container-checkbox input {
@@ -372,6 +377,11 @@ h3 {
   width: 20px;
   background-color: #fff;
   border: 1px solid #000;
+
+  [dir="rtl"] & {
+    left: auto;
+    right: 0;
+  }
 }
 
 .label-container-checkbox .checkmark:after {

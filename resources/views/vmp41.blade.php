@@ -307,7 +307,7 @@
                         :style="{ 'max-width': '400px' }"
                         :create-order="paypalCreateOrder"
                         :on-approve="paypalOnApprove"
-                        :$v="$v.form.deal"
+                        :$vdeal="$v.form.deal"
                         @click="paypalSubmit"
                     >{{ t('checkout.paypal.risk_free') }}</paypal-button>
                     <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>

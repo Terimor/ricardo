@@ -150,8 +150,15 @@
                           :extraFields="extraFields"
                           :paymentForm="form"
                           :$v="$v" />
+                        <Warranty
+                          :form="form"
+                          class="small" />
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
+                            <TermsCheckbox
+                              v-if="isSMC7p"
+                              :form="form"
+                              :$v="$v" />
                             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
@@ -169,7 +176,8 @@
                               v-show="form.paymentProvider === 'paypal'"
                               :createOrder="paypalCreateOrder"
                               :onApprove="paypalOnApprove"
-                              :$v="$v.form.deal"
+                              :$vterms="$v.form.terms"
+                              :$vdeal="$v.form.deal"
                               @click="paypalSubmit"
                             >{{ paypalRiskFree }}</paypal-button>
                             <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
@@ -217,6 +225,8 @@
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import Installments from './common/extra-fields/Installments';
+  import TermsCheckbox from './common/TermsCheckbox';
+  import Warranty from './common/Warranty';
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import smc7validation from "../validation/smc7-validation";
@@ -241,6 +251,8 @@
       RadioButtonItemDeal,
       ProductOffer,
       PurchasAlreadyExists,
+      TermsCheckbox,
+      Warranty,
       Spinner,
     },
     validations: smc7validation,
@@ -257,6 +269,7 @@
         disableAnimation: true,
         paypalPaymentError: '',
         form: {
+          terms: null,
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
           deal: null,
@@ -352,6 +365,10 @@
       textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
 
       imageSafePayment: () => timage('safe_payment'),
+
+      isSMC7p() {
+        return searchParams.get('tpl') === 'smc7p';
+      },
 
       isShowVariant() {
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
@@ -600,7 +617,7 @@
           deal: this.form.deal,
           variant: this.form.variant,
           isWarrantyChecked: this.form.isWarrantyChecked,
-          paymentProvider: this.form.paymentProvider,
+          paymentProvider: 'paypal',
         });
 
         this.paypalPaymentError = '';
@@ -643,11 +660,8 @@
             return res;
           });
       },
-      paypalOnApprove: paypalOnApprove,
 
       paypalSubmit() {
-        this.form.paymentType = 'paypal';
-
         if (this.$v.form.deal.$invalid) {
           const element = document.querySelector('.smc7__deal');
 
@@ -656,7 +670,20 @@
           }
 
           this.isOpenPromotionModal = true;
+        } else if (this.$v.form.terms && this.$v.form.terms.$invalid) {
+          const element = document.querySelector('.terms-checkbox');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
+          this.$v.form.terms.$touch();
         }
+      },
+
+      paypalOnApprove(data) {
+        this.form.paymentProvider = 'paypal';
+        return paypalOnApprove(data);
       },
 
       getProductImage() {
@@ -720,6 +747,11 @@
     }
 
     .smc7 {
+
+      .label-container-radio__discount {
+        color: #16a085;
+      }
+
         &__product {
             display: flex;
 
@@ -974,10 +1006,6 @@
                 }
             }
 
-            #payment-data-form {
-              margin-bottom: 10px;
-            }
-
             .card-date {
                 display: flex;
                 flex-direction: row;
@@ -1122,6 +1150,10 @@
                     }
                 }
             }
+        }
+
+        #warranty-field-button {
+          margin-bottom: 15px;
         }
     }
 

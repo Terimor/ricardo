@@ -95,7 +95,6 @@
                     class="submit-button"
                     :createOrder="paypalCreateOrder"
                     :onApprove="paypalOnApprove"
-                    :$v="true"
                   >
                     {{ textBuyNow }}
                   </paypal-button>
