@@ -31,7 +31,7 @@ class EmailController extends Controller
      * @param Request $request
      * @return boolean
      */
-    public function validateEmailUsingService(Request $request)
+    public function validateEmail(Request $request)
     {                        
         $email = $request->get('email');
         $isValid = false;
