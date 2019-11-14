@@ -34,7 +34,7 @@ class EmailController extends Controller
      */
     public function validateEmailUsingService(Request $request)
     {        
-        $apiKey = Setting::getValue('thechecker_api_key', '478132cebcbdb2273989ead9e86313b30cc1e6dd55e29139623ee11bda7c1215');
+        $apiKey = Setting::getValue('thechecker_api_key');
         
         $email = $request->get('email');
         $isValid = 0;
