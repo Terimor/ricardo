@@ -3,21 +3,42 @@ import * as cookies from '../utils/cookies';
 const searchParams = new URL(location).searchParams;
 
 
-// clear cookies if product changed
-/*
+// clear data if product changed
 if (location.pathname.startsWith('/checkout')) {
-  const product_id = cookies.getCookie('product_id');
+  const product_id = localStorage.getItem('product_id');
+
+  const cookieFields = [
+    'txid',
+  ];
+
+  const lsFields = [
+    'selectedProductData',
+    'odin_order_created_at',
+    'odin_order_id',
+    'order_currency',
+    'order_number',
+    'order_id',
+    'order_failed',
+    'subOrder',
+    '3ds_params',
+    '3ds_ipqs',
+  ];
 
   if (product_id !== checkoutData.product.id) {
     if (product_id) {
-      localStorage.clear();
-      cookies.clearCookies({ except: ['XSRF-TOKEN'] });
+      for (let fieldName of cookieFields) {
+        cookies.deleteCookie(fieldName);
+      }
+
+      for (let fieldName of lsFields) {
+        localStorage.removeItem(fieldName);
+      }
     }
 
-    cookies.setCookie('product_id', checkoutData.product.id);
+    localStorage.setItem('product_id', checkoutData.product.id);
   }
 }
-*/
+
 
 // direct linking logic
 if (location.pathname.startsWith('/checkout')) {
