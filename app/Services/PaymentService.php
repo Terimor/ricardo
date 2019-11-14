@@ -49,7 +49,7 @@ class PaymentService
     const CACHE_ERRORS_PREFIX   = 'PayErrors';
     const CACHE_TOKEN_TTL_MIN   = 15;
     const CACHE_ERRORS_TTL_MIN  = 1;
-    
+
     const BILLING_DESCRIPTOR_MAX_LENGTH = 25;
 
     /**
@@ -302,9 +302,6 @@ class PaymentService
         $installments = (int)$req->input('card.installments', 0);
         $method = PaymentMethodMapper::toMethod($card['number']);
 
-        // throw is ip abused
-        self::checkIsIpAbused($ipqs); // throwable
-
         // find order for update
         $order = null;
         if (!empty($order_id)) {
@@ -327,6 +324,9 @@ class PaymentService
                 ['country' => $contact['country'], 'method' => $method, 'card' => substr_replace($card['number'], '********', 4, 8)]
             );
             throw new ProviderNotFoundException('Provider not found');
+        } elseif ($provider === PaymentProviders::CHECKOUTCOM) {
+            // throw is ip abused
+            self::checkIsIpAbused($ipqs); // throwable
         }
 
         $this->addCustomer($contact); // throwable
