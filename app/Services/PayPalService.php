@@ -559,10 +559,10 @@ class PayPalService
                     })
                     ->toArray();
 
-                // check is flagged
+                // reset flagged
                 $main_product = $order->getMainProduct(false);
                 if (!empty($main_product) && $main_product['txn_hash'] === $txn['hash']) {
-                    $order->is_flagged = $this->isPayPalOrderFlagged($paypal_order);
+                    $order->is_flagged = false;
                 }
 
                 $total = collect($order->txns)->reduce(function ($carry, $item) {
