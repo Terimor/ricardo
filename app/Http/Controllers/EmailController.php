@@ -15,7 +15,6 @@ class EmailController extends Controller
 {
     
     protected $emailService;
-    public static $emailValidStatus = 'deliverable';
     
     /**
      * Create a new controller instance.
@@ -33,32 +32,13 @@ class EmailController extends Controller
      * @return boolean
      */
     public function validateEmailUsingService(Request $request)
-    {        
-        $apiKey = Setting::getValue('thechecker_api_key');
-        
+    {                        
         $email = $request->get('email');
-        $isValid = 0;
-        if ($email) {            
-            // validate email using php
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {                
-                $url = "https://api.thechecker.co/v2/verify?email={$email}&api_key={$apiKey}";
-                $result = file_get_contents($url);
-                $res = json_decode($result);
-                if ($res) {
-                    if (!empty($res->result) && $res->result == static::$emailValidStatus) {
-                        $isValid = 1;
-                    } else {
-                        $isValid = 0;
-                    }
-                } else {
-                    $isValid = 1;
-                    logger()->error("Validate email fail, can't decode {$url}");
-                }
-            } else {
-                $isValid = 0;
-            }
+        $isValid = false;
+        if ($email) {
+            $isValid = $this->emailService->validateEmailWithThechecker($email);            
         }
         
-        return $isValid;        
+        return response()->json(['success' => $isValid]);
     }
 }

@@ -11,6 +11,9 @@ use App\Models\OdinCustomer;
  */
 class EmailService
 {
+    
+    public static $thecheckerEmailValidStatus = 'deliverable';
+    
     /**
      *
      * @var type 
@@ -27,145 +30,33 @@ class EmailService
     }
     
     /**
-     * Send confirmation email to SAGA service
-     * @param type $customer
-     * @param type $products
+     * Validate email with thecheker.io
+     * @param string $email
+     * @return bool
      */
-    public function sendConfirmationEmail(OdinOrder $order, $customer = null, $isMain = true) 
-    {
-        $client = new \GuzzleHttp\Client();
-        
-        $urlPath = Setting::getValue('saga_api_endpoint');
-        $urlPath = !empty($urlPath) ? $urlPath : '';
-        
-        $url = $urlPath.'?r=odin-api/send-confirmation-email';
-
-        if (!$order || !$order->customer_email || !$order->products) {
-            logger()->error('Fail confirmation email on order', ['order' => $order->attributesToArray()]);
-            abort(404);
-        }
-        
-        // get customer by email
-        if (!$customer) {
-            $customer = OdinCustomer::where('email', $order->customer_email)->first();            
-        }
-        
-        // address
-        $address = $this->prepareOrderAddress($order);
-        
-        /*$products = [];
-        // products array
-        foreach ($order->products as $product) {
-            if ($isMain) {
-                if (!empty($product['is_main']) && $product['is_main']) {
-                    $products[] = $product;
+    public function validateEmailWithThechecker(string $email) : bool
+    {        
+        $apiKey = Setting::getValue('thechecker_api_key');
+        // validate email using php
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {                
+            $url = "https://api.thechecker.co/v2/verify?email={$email}&api_key={$apiKey}";
+            $result = file_get_contents($url);
+            $res = json_decode($result);
+            if ($res) {
+                if (!empty($res->result) && $res->result == static::$thecheckerEmailValidStatus) {
+                    $isValid = 1;
+                } else {
+                    $isValid = 0;
                 }
             } else {
-                if (!empty($product['is_upsells']) && $product['is_upsells']) {
-                    $products[] = $product;
-                }
+                $isValid = 1;
+                logger()->error("Validate email fail, can't decode {$url}");
             }
-        }*/
-        
-        $request = $client->request('POST', $url, [
-            'headers' => [
-                'api-token' => $this->apiKey,
-            ],
-            'form_params' => [
-                'language' => app()->getLocale(),
-                'customer_number' => $customer->number,
-                'customer_name' => trim($customer->first_name.' '.$customer->last_name),
-                'customer_address' => $address,
-                'customer_email' => $customer->email,
-                'products' => $order->products,
-                'currency' => $order->currency                
-            ]
-        ]);
-        
-        /*$response = $request->getBody()->getContents();        
-        echo '<pre>'; var_dump($response); echo '</pre>'; exit;*/
-    }
-    
-    /**
-     * Send satisfaction email to SAGA service     
-     * @param type $customer
-     */
-    public function sendSatisfactionEmail(OdinOrder $order, $customer = null)
-    {
-        $client = new \GuzzleHttp\Client();
-        
-        $urlPath = Setting::getValue('saga_api_endpoint');
-        $urlPath = !empty($urlPath) ? $urlPath : '';
-        
-        $url = $urlPath.'?r=odin-api/send-satisfaction-email';
-        
-        if (!$order || !$order->customer_email || !$order->products) {
-            logger()->error('Fail satisfaction email on order', ['order' => $order->attributesToArray()]);
-            abort(404);
-        }
-        
-        // get customer by email        
-        if (!$customer) {
-            $customer = OdinCustomer::where('email', $order->customer_email)->first();            
-        }
-
-        $product = null;
-        // products array
-        foreach ($order->products as $product) {
-            if (!empty($product['is_main']) && $product['is_main']) {
-                break;
-            }
+        } else {
+            $isValid = 0;
         }        
-        
-        $request = $client->request('POST', $url, [
-            'headers' => [
-                'api-token' => $this->apiKey,
-            ],
-            'form_params' => [
-                'language' => app()->getLocale(),
-                'customer_number' => $customer->number,
-                'customer_name' => trim($customer->first_name.' '.$customer->last_name),
-                'customer_email' => $customer->email,
-                'order_number' => $order->number,
-                'product'   => $product,
-                'domain'    => request()->server('SERVER_NAME')
-            ]
-        ]);
-        
-        /*$response = $request->getBody()->getContents();
-        echo '<pre>'; var_dump($response); echo '</pre>'; exit;*/
+        return $isValid ? true : false;
     }
-    
-    /**
-     * Prepare order address
-     * @param OdinOrder $order
-     */
-    public function prepareOrderAddress(OdinOrder $order) : string
-    {
-        $address = ' ';
-        
-        if (!empty($order['shipping_zipcode'])) {
-            $address .= $order['shipping_zipcode'].' ';
-        }
-        
-        if (!empty($order['shipping_city'])) {
-            $address .= $order['shipping_city'].' ';
-        }
-        
-        if (!empty($order['shipping_street'])) {
-            $address .= '- '.$order['shipping_street'].' ';
-        }
-        
-        if (!empty($order['shipping_street2'])) {
-            $address .= $order['shipping_street2'].' ';
-        }
-        
-        if (!empty($order['shipping_apt'])) {
-            $address .= ', '.$order['shipping_apt'].' ';
-        }
-        
-        return trim($address);
-    }   
     
 
 }
