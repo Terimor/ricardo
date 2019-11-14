@@ -74,13 +74,16 @@ function populateLinksWithGetParams() {
 wait(
   () => !!document.querySelector('#fc_frame'),
   () => {
+    const parent = document.querySelector('#fc_frame');
     let image = document.createElement('img');
 
     image.src = cdnUrl + '/assets/images/live_chat-full.png';
     image.className = 'freshchat-image';
 
     image.addEventListener('load', () => {
-      document.querySelector('#fc_frame').appendChild(image);
+      if (parent) {
+        parent.appendChild(image);
+      }
     });
 
     image.addEventListener('click', () => {
@@ -90,10 +93,33 @@ wait(
 );
 
 
+// bind static topbar events
+function bindStaticTopbarBlock() {
+  const parent = document.querySelector('#static-topbar');
+  const chatLink = document.querySelector('#static-topbar a.openchat');
+
+  if (parent) {
+    parent.classList.remove('hidden');
+    document.body.classList.add('with-static-topbar');  
+  }
+
+  if (chatLink) {
+    chatLink.addEventListener('click', event => {
+      event.preventDefault();
+
+      if (window.fcWidget) {
+        fcWidget.open();
+      }
+    });
+  }
+}
+
+
 // document ready
 function documentReady() {
   document.documentElement.classList.remove('js-hidden');
   populateLinksWithGetParams();
+  bindStaticTopbarBlock();
 }
 
 if (document.readyState !== 'interactive' && document.readyState !== 'complete') {
