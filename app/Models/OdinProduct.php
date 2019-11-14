@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Services\CurrencyService;
+use App\Services\PaymentService;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
 use App\Models\Setting;
@@ -300,8 +301,14 @@ class OdinProduct extends Model
      */
     public function getBillingDescriptorAttribute($value)
     {
-        $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');        
-        return $billingDescriptorPrefix ? "*{$billingDescriptorPrefix}*{$value}" : $value;
+        $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
+        $host = str_replace('www.', '', request()->getHost());
+        $value = "*{$host}*{$value}";
+        $value = $billingDescriptorPrefix ? "*{$billingDescriptorPrefix}*{$value}" : $value;
+        if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
+            $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
+        }        
+        return $value;
     }
 
     /**

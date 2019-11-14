@@ -49,6 +49,8 @@ class PaymentService
     const CACHE_ERRORS_PREFIX   = 'PayErrors';
     const CACHE_TOKEN_TTL_MIN   = 15;
     const CACHE_ERRORS_TTL_MIN  = 1;
+    
+    const BILLING_DESCRIPTOR_MAX_LENGTH = 25;
 
     /**
      * @var CustomerService $customerService
