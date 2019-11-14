@@ -44,18 +44,18 @@ class EmailService
             $res = json_decode($result);
             if ($res) {
                 if (!empty($res->result) && $res->result == static::$thecheckerEmailValidStatus) {
-                    $isValid = 1;
+                    $isValid = true;
                 } else {
-                    $isValid = 0;
+                    $isValid = false;
                 }
             } else {
-                $isValid = 1;
+                $isValid = true;
                 logger()->error("Validate email fail, can't decode {$url}");
             }
         } else {
-            $isValid = 0;
+            $isValid = false;
         }        
-        return $isValid ? true : false;
+        return $isValid;
     }
     
 
