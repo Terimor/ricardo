@@ -111,16 +111,11 @@
                                   }"
                                   v-model="form.lname"/>
                             </div>
-                            <text-field
-                              :validation="$v.form.email"
-                              :validationMessage="textEmailRequired"
-                              theme="variant-1"
-                              :label="textEmailAddress"
-                              :rest="{
-                                placeholder: textEmailAddress,
-                                autocomplete: 'email'
-                              }"
-                              v-model="form.email"/>
+                            <Email
+                              name="email"
+                              :form="form"
+                              :placeholder="true"
+                              :$v="$v.form.email" />
                             <phone-field
                               @onCountryChange="setCountryCodeByPhoneField"
                               :validation="$v.form.phone"
@@ -225,6 +220,7 @@
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import Installments from './common/extra-fields/Installments';
+  import Email from './common/common-fields/Email';
   import TermsCheckbox from './common/TermsCheckbox';
   import Warranty from './common/Warranty';
   import SaleBadge from './common/SaleBadge';
@@ -254,6 +250,7 @@
       TermsCheckbox,
       Warranty,
       Spinner,
+      Email,
     },
     validations: smc7validation,
     mixins: [
@@ -348,7 +345,6 @@
       textContactInformation: () => t('checkout.contact_information'),
       textFirstName: () => t('checkout.payment_form.first_name'),
       textLastName: () => t('checkout.payment_form.last_name'),
-      textEmailAddress: () => t('checkout.payment_form.email'),
       textPhoneNumber: () => t('checkout.payment_form.phone'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
@@ -358,7 +354,6 @@
       okText: () => t('checkout.main_deal.error_popup.button'),
       textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
       textLastNameRequired: () => t('checkout.payment_form.last_name.required'),
-      textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaymentError: () => t('checkout.payment_error'),
       textGet: () => t('checkout.get'),

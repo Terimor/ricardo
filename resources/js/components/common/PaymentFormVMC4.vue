@@ -47,12 +47,10 @@
                 class="last-name"
                 v-model="form.stepTwo.lname"/>
           </div>
-          <text-field
-              :validation="$v.form.stepTwo.email"
-              :validationMessage="textEmailRequired"
-              theme="variant-1"
-              :label="textEmail"
-              v-model="form.stepTwo.email"/>
+          <Email
+            name="email"
+            :form="form.stepTwo"
+            :$v="$v.form.stepTwo.email" />
           <phone-field
               :validation="$v.form.stepTwo.phone"
               @onCountryChange="setCountryCodeByPhoneField"
@@ -128,7 +126,7 @@
                         placeholder: textCardValidYearPlaceholder
                       }"
                       theme="variant-1"
-                      :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+                      :list="Array.apply(null, Array(12)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                       v-model="form.stepThree.year"
                     />
                   </div>
@@ -295,6 +293,7 @@
 	import {fade} from "../../utils/common";
   import { queryParams } from  '../../utils/queryParams';
   import Installments from './extra-fields/Installments';
+  import Email from './common-fields/Email';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
@@ -314,6 +313,7 @@
       RadioButtonItemDeal,
       Spinner,
       Installments,
+      Email,
       State,
       District,
       CardType,
@@ -439,8 +439,6 @@
       textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
       textLastName: () => t('checkout.payment_form.last_name'),
       textLastNameRequired: () => t('checkout.payment_form.last_name.required'),
-      textEmail: () => t('checkout.payment_form.email'),
-      textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhone: () => t('checkout.payment_form.phone'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaySecurely: () => t('checkout.pay_securely'),

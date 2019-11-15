@@ -39,16 +39,10 @@
             :label="textBirthday"
         />
 -->
-        <text-field
-            :validation="$v.form.email"
-            :validationMessage="textEmailRequired"
-            theme="variant-1"
-            :label="textEmail"
-            :rest="{
-              autocomplete: 'email',
-              name: 'email'
-            }"
-            v-model="paymentForm.email"/>
+        <Email
+          name="email"
+          :form="paymentForm"
+          :$v="$v.form.email" />
         <phone-field
             @onCountryChange="setCountryCodeByPhoneField"
             :validation="$v.form.phone"
@@ -185,7 +179,7 @@
                           placeholder: textCardValidYearPlaceholder
                         }"
                         theme="variant-1"
-                        :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+                        :list="Array.apply(null, Array(12)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
                         v-model="paymentForm.year"/>
                     <span
                       class="error"
@@ -266,6 +260,7 @@
   import { sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
+  import Email from './common-fields/Email';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
@@ -295,6 +290,7 @@
     ],
     components: {
       Spinner,
+      Email,
       State,
       District,
       CardType,
@@ -370,8 +366,6 @@
       textBirthday: () => t('checkout.payment_form.birthday'),
       textBirthdayPlaceHolder: () => t('checkout.payment_form.birthday.placeholder'),
       textBirthdayRequired: () => t('checkout.payment_form.birthday.required'),
-      textEmail: () => t('checkout.payment_form.email'),
-      textEmailRequired: () => t('checkout.payment_form.email.required'),
       textPhone: () => t('checkout.payment_form.phone'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textStreet: () => t('checkout.payment_form.street'),

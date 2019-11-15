@@ -1,5 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
-//import { isValidZipcode } from './validators';
+import { setEmailValidationRule } from './validators';
 import creditCardType from 'credit-card-type'
 import * as dateFns from 'date-fns';
 
@@ -19,10 +19,6 @@ const emc1Validation = function () {
     lname: {
       required,
       minLength: minLength(1)
-    },
-    email: {
-      required,
-      type: email
     },
     phone: {
       required,
@@ -80,6 +76,7 @@ const emc1Validation = function () {
       minLength: minLength(3)
     },
   }
+
 /*
   if (this.form.country === 'de') {
     allRules.dateOfBirth = {
@@ -102,6 +99,9 @@ const emc1Validation = function () {
     };
   }
 */
+
+  setEmailValidationRule(allRules, 'email');
+
   this.setExtraFieldsValidationRules(allRules);
 
   return { form: allRules };
