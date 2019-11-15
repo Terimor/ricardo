@@ -25,6 +25,7 @@ use App\Mappers\PaymentMethodMapper;
 use App\Constants\PaymentProviders;
 use App\Constants\PaymentMethods;
 use Http\Client\Exception\HttpException;
+use Utils;
 
 /**
  * Payment Service class
