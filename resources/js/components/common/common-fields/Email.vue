@@ -4,8 +4,8 @@
     id="email-field"
     v-model="form[name]"
     :validation="$v"
-    :validationMessage="validationMessage"
-    :forceInvalid="forceInvalid"
+    :validationMessage="textRequired"
+    :warningMessage="warningMessage"
     :label="textLabel"
     :rest="{
       placeholder: placeholder
@@ -38,7 +38,7 @@
 
     data() {
       return {
-        forceInvalid: false,
+        warningMessage: null,
       };
     },
 
@@ -49,12 +49,12 @@
         return this.$t('checkout.payment_form.email');
       },
 
-      validationMessage() {
-        if (this.forceInvalid) {
-          return this.$t('checkout.payment_form.email.invalid');
-        }
-
+      textRequired() {
         return this.$t('checkout.payment_form.email.required');
+      },
+
+      textWarning() {
+        return this.$t('checkout.payment_form.email.invalid');
       },
 
     },
@@ -65,9 +65,11 @@
       input() {
         const value = this.form[this.name];
 
-        this.forceInvalid = cache[value] !== undefined
+        this.warningMessage = cache[value] !== undefined
           ? !cache[value]
-          : false;
+            ? this.textWarning
+            : null
+          : null;
       },
 
       blur() {
@@ -78,17 +80,22 @@
         }
 
         if (cache[value] !== undefined) {
-          return this.forceInvalid = !cache[value];
+          return this.warningMessage = !cache[value]
+            ? this.textWarning
+            : null;
         }
 
         fetch('/validate-email?email=' + value)
           .then(res => res.json())
           .then(res => {
             cache[value] = res.success;
-            this.forceInvalid = !res.success;
+
+            this.warningMessage = !res.success
+              ? this.textWarning
+              : null;
           })
           .catch(err => {
-            this.forceInvalid = true;
+            this.warningMessage = this.textWarning;
           });
       },
 

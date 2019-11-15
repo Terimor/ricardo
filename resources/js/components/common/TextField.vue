@@ -20,6 +20,7 @@
         }"
         :value="value">
     </div>
+    <span v-if="warningMessage" class="warning">{{ warningMessage }}</span>
     <span class="error" v-show="invalid">{{validationMessage}}</span>
   </label>
 </template>
@@ -35,7 +36,7 @@ export default {
     'postfix',
     'validation',
     'validationMessage',
-    'forceInvalid',
+    'warningMessage',
     'rest'
   ],
   computed: {
@@ -43,7 +44,7 @@ export default {
       return !!document.querySelector('html[dir="rtl"]');
     },
     invalid() {
-      return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid || this.forceInvalid;
+      return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid;
     }
   },
   methods: {
@@ -72,6 +73,10 @@ export default {
     .label {
       color: #e74c3c;
     }
+  }
+
+  .warning {
+    color: #2196F3;
   }
 
   &__input {
