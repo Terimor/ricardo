@@ -30,42 +30,39 @@ class PaymentProviders {
             'in_prod'   => true,
             'methods'   => [
                 PaymentMethods::CREDITCARD => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'um', 'vi'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 PaymentMethods::VISA => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'um', 'vi'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 PaymentMethods::MASTERCARD => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'um', 'vi'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 PaymentMethods::AMEX => [
-                    '+3ds' => ['europe', 'by', 'in', 'ko', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'um', 'vi'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'mx', 'co']
                 ],
                 PaymentMethods::DISCOVER => [
-                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'um', 'vi'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'co', 'mx']
-                    // '-3ds' => ['us']
                 ],
                 PaymentMethods::DINERSCLUB => [
-                    '+3ds' => ['europe', 'by', 'in', 'il', 'sa', 'ru', 'id', 'kr', 'gb', 'se'],
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'um', 'vi'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'co', 'mx']
-                    // '-3ds' => ['us', 'ko']
                 ],
                 PaymentMethods::JCB => [
-                    '+3ds' => ['europe', 'il', 'ko', 'id', 'id', 'kr', 'gb', 'se'],
+                    '+3ds' => ['europe', 'gb', 'gy', 'id', 'il', 'is', 'ko', 'kr', 'lk', 'ro', 'se', 'um', 'vi'],
                     '-3ds' => ['*'],
                     'excl' => ['ar', 'br', 'co', 'mx']
-                    // '-3ds' => ['sg', 'jp', 'tw', 'hk', 'mo', 'th', 'vn', 'kh', 'my', 'mm']
                 ],
             ]
         ],
@@ -374,6 +371,91 @@ class PaymentProviders {
                 ],
                 PaymentMethods::CREDIMAS => [
                     '-3ds' => ['ar']
+                ]
+            ]
+        ],
+        self::BLUESNAP    => [
+            'name'      => 'Bluesnap',
+            'is_active' => false,
+            'in_prod'   => false,
+            'extra_fields'  => [
+                'br' => [
+                    'district' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ],
+                    'document_type'     => [
+                        'type'  => 'dropdown',
+                        'items' => [
+                            ['value' => 'CNPJ', 'label' => 'Cadastro Nacional da Pessoa Jurídica'],
+                            ['value' => 'CPF', 'label' => 'Cadastro de Pessoas Físicas']
+                        ],
+                        'default'   => 'CUIT'
+                    ],
+                    'document_number'   => [
+                        'type'  => 'text',
+                        'pattern' => [
+                            'CNPJ'  => '^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$',
+                            'CPF'   => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$'
+                        ],
+                        'placeholder' => [
+                            'CPF'   => 'xxx.xxx.xxx-xx',
+                            'CNPJ'  => 'xx.xxx.xxx/xxxx-xx'
+                        ]
+                    ],
+                    'state' => [
+                        'type'  => 'dropdown',
+                        'items' => [
+                            ['value' => 'DF', 'label' => 'Distrito Federal'],
+                            ['value' => 'AC', 'label' => 'Acre'],
+                            ['value' => 'AL', 'label' => 'Alagoas'],
+                            ['value' => 'AP', 'label' => 'Amapá'],
+                            ['value' => 'AM', 'label' => 'Amazonas'],
+                            ['value' => 'BA', 'label' => 'Bahia'],
+                            ['value' => 'CE', 'label' => 'Ceará'],
+                            ['value' => 'ES', 'label' => 'Espírito Santo'],
+                            ['value' => 'GO', 'label' => 'Goiás'],
+                            ['value' => 'MA', 'label' => 'Maranhão'],
+                            ['value' => 'MT', 'label' => 'Mato Grosso'],
+                            ['value' => 'MS', 'label' => 'Mato Grosso do Sul'],
+                            ['value' => 'MG', 'label' => 'Minas Gerais'],
+                            ['value' => 'PA', 'label' => 'Pará'],
+                            ['value' => 'PB', 'label' => 'Paraíba'],
+                            ['value' => 'PR', 'label' => 'Paraná'],
+                            ['value' => 'PE', 'label' => 'Pernambuco'],
+                            ['value' => 'PI', 'label' => 'Piauí'],
+                            ['value' => 'RJ', 'label' => 'Rio de Janeiro'],
+                            ['value' => 'RN', 'label' => 'Rio Grande do Norte'],
+                            ['value' => 'RS', 'label' => 'Rio Grande do Sul'],
+                            ['value' => 'RO', 'label' => 'Rondônia'],
+                            ['value' => 'RR', 'label' => 'Roraima'],
+                            ['value' => 'SC', 'label' => 'Santa Catarina'],
+                            ['value' => 'SP', 'label' => 'São Paulo'],
+                            ['value' => 'SE', 'label' => 'Sergipe'],
+                            ['value' => 'TO', 'label' => 'Tocantins']
+                        ],
+                        'default' => 'DF'
+                    ]
+                ]
+            ],
+            'methods'   => [
+                PaymentMethods::MASTERCARD => [
+                    '-3ds' => ['br']
+                ],
+                PaymentMethods::VISA => [
+                    '-3ds' => ['br']
+                ],
+                PaymentMethods::AMEX => [
+                    '-3ds' => ['br']
+                ],
+                PaymentMethods::JCB => [
+                    '-3ds' => ['br']
+                ],
+                PaymentMethods::DISCOVER => [
+                    '-3ds' => ['br'],
+                ],
+                PaymentMethods::HIPERCARD => [
+                    '-3ds' => ['br']
                 ]
             ]
         ],
