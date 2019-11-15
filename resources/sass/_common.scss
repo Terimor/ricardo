@@ -424,6 +424,10 @@ h3 {
     animation-duration: .4s;
     animation-fill-mode: both;
     animation-name: zoomIn;
+
+    &.hidden {
+      display: none;
+    }
   }
 
   @keyframes zoomIn {
@@ -447,20 +451,15 @@ h3 {
   }
 }
 
-body.with-static-topbar {
-  padding-top: 50px;
-}
-
 #static-topbar {
   position: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 50px;
   right: 0;
   left: 0;
   top: 0;
-  padding: 0 24px;
+  padding: 16px 24px;
   text-align: center;
   transition: height .3s ease;
   background-color: #248cc8;
@@ -469,12 +468,13 @@ body.with-static-topbar {
 
   @media screen and ($s-down) {
     & {
-      font-size: 13px;
+      padding: 12px 24px;
+      font-size: 15px;
     }
   }
 
   &.hidden {
-    height: 0;
+    visibility: hidden;
   }
 
   a {

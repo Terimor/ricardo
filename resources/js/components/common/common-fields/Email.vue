@@ -5,6 +5,7 @@
     v-model="form[name]"
     :validation="$v"
     :validationMessage="validationMessage"
+    :forceInvalid="forceInvalid"
     :label="textLabel"
     :rest="{
       placeholder: placeholder
@@ -14,13 +15,17 @@
       name: 'email',
     }"
     theme="variant-1"
+    @input="input"
     @blur="blur" />
 
 </template>
 
 
 <script>
-  
+
+  let cache = {};
+
+
   export default {
 
     props: [
@@ -31,6 +36,13 @@
     ],
 
 
+    data() {
+      return {
+        forceInvalid: false,
+      };
+    },
+
+
     computed: {
 
       textLabel() {
@@ -38,7 +50,7 @@
       },
 
       validationMessage() {
-        if (!this.$v.isValid) {
+        if (this.forceInvalid) {
           return this.$t('checkout.payment_form.email.invalid');
         }
 
@@ -50,14 +62,34 @@
 
     methods: {
 
+      input() {
+        const value = this.form[this.name];
+
+        this.forceInvalid = cache[value] !== undefined
+          ? !cache[value]
+          : false;
+      },
+
       blur() {
         const value = this.form[this.name];
 
-        this.form[this.name] = '';
+        if (this.$v.$invalid) {
+          return;
+        }
 
-        this.$nextTick(() => {
-          this.form[this.name] = value;
-        });
+        if (cache[value] !== undefined) {
+          return this.forceInvalid = !cache[value];
+        }
+
+        fetch('/validate-email?email=' + value)
+          .then(res => res.json())
+          .then(res => {
+            cache[value] = res.success;
+            this.forceInvalid = !res.success;
+          })
+          .catch(err => {
+            this.forceInvalid = true;
+          });
       },
 
     },

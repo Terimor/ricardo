@@ -226,8 +226,14 @@ export function sendCheckoutRequest(data) {
               res.paymentError = res.message || Object.values(res.errors)[0][0];
             }
           }
-        } else if (res.error && res.error.message) {
-          res.paymentError = res.error.message;
+        }
+
+        if (res.error) {
+          if (res.error.phrase) {
+            res.paymentError = t(res.error.phrase);
+          } else if (res.error.message) {
+            res.paymentError = res.error.message;
+          }
         }
       }
 

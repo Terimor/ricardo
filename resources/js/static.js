@@ -71,26 +71,49 @@ function populateLinksWithGetParams() {
 
 
 // initialize FreshChat custom widget
-wait(
-  () => !!document.querySelector('#fc_frame'),
-  () => {
-    const parent = document.querySelector('#fc_frame');
-    let image = document.createElement('img');
+function initFreshChatWidget() {
+  wait(
+    () => !!document.querySelector('#fc_frame'),
+    () => {
+      const parent = document.querySelector('#fc_frame');
+      const footer = document.querySelector('.footer__row');
+      let image = document.createElement('img');
 
-    image.src = cdnUrl + '/assets/images/live_chat-full.png';
-    image.className = 'freshchat-image';
-
-    image.addEventListener('load', () => {
-      if (parent) {
-        parent.appendChild(image);
+      if (!parent) {
+        return;
       }
-    });
 
-    image.addEventListener('click', () => {
-      fcWidget.open();
-    });
-  },
-);
+      image.src = cdnUrl + '/assets/images/live_chat-full.png';
+      image.className = 'freshchat-image';
+
+      image.addEventListener('load', () => {
+        parent.appendChild(image);
+      });
+
+      image.addEventListener('click', () => {
+        fcWidget.open();
+      });
+
+      if (footer) {
+        const callback = () => {
+          setTimeout(() => {
+            const html = document.documentElement;
+
+            if (html.clientWidth < 768) {
+              const diff = html.scrollHeight - (html.scrollTop + html.clientHeight);
+              image.classList[diff < footer.clientHeight ? 'add' : 'remove']('hidden');
+            } else {
+              image.classList.remove('hidden');
+            }
+          }, 500);
+        };
+
+        window.addEventListener('mousewheel', callback);
+        window.addEventListener('resize', callback);
+      }
+    },
+  );
+}
 
 
 // bind static topbar events
@@ -100,7 +123,15 @@ function bindStaticTopbarBlock() {
 
   if (parent) {
     parent.classList.remove('hidden');
-    document.body.classList.add('with-static-topbar');  
+
+    wait(
+      () => parent.clientHeight > 0,
+      () => document.body.style['padding-top'] = parent.clientHeight + 'px',
+    );
+
+    window.addEventListener('resize', () => {
+      document.body.style['padding-top'] = parent.clientHeight + 'px';
+    });
   }
 
   if (chatLink) {
@@ -120,6 +151,7 @@ function documentReady() {
   document.documentElement.classList.remove('js-hidden');
   populateLinksWithGetParams();
   bindStaticTopbarBlock();
+  initFreshChatWidget();
 }
 
 if (document.readyState !== 'interactive' && document.readyState !== 'complete') {
