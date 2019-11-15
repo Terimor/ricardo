@@ -155,7 +155,15 @@ class AffiliateSetting extends Model
                 $qtyForCalculation = (int) (($qtyForCalculation+1) - ($tempRateCount * static::$salesQtyInTable));
             }
             
-            // if we have mainQtyRules percentage
+            // if we haven't mainQtyRules percentage check product reduce_percent
+            if (!isset($reducePercent)) {
+                $product = OdinProduct::getById($productId);
+                if (!empty($product->reduce_percent)) {
+                    $reducePercent = $product->reduce_percent;
+                }
+            }
+            
+            // if we haven't product reduce_percent
             if (!isset($reducePercent)) {
                 $reducePercent = !empty($affiliate->postback_percent) ? $affiliate->postback_percent : static::$defaultPercent;
             }

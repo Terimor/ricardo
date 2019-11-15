@@ -30,13 +30,13 @@ class OdinProduct extends Model
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
         'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency',
-        'image_ids', 'splash_description'
+        'image_ids', 'splash_description', 'reduce_percent'
     ];
 
     protected $hidden = [
         '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at', 'image_id',
     'logo_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only', 'is_3ds_required',
-        'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden'
+        'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent'
     ];
 
     /**
@@ -450,10 +450,18 @@ class OdinProduct extends Model
     /**
      * Get by cop_id
      */
-    public static function getByCopId($copId)
+    public static function getByCopId(string $copId)
     {
         return OdinProduct::where('prices.price_set', $copId)->first(); 
     }
+    
+    /**
+     * Get by cop_id
+     */
+    public static function getById(string $productId)
+    {
+        return OdinProduct::where('_id', $productId)->first(); 
+    }    
 
     /**
      * Retuen array skus -> product
