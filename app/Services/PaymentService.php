@@ -747,7 +747,7 @@ class PaymentService
             $result = true;
             if (self::THROW_IS_IP_ABUSED && $throwable) {
                 // logger()->warning('Payment refused', ['ipqs' => $ipqs]);
-                throw new PaymentException('Payment is refused');
+                throw new PaymentException('Payment is refused', 'card.error.abuse');
             }
         }
         return $result;
