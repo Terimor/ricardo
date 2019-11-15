@@ -330,7 +330,8 @@ class PaymentService
         }
         
         // delete first 0
-        if (!empty($contact['phone']['number'])) {                    
+        if (!empty($contact['phone']['number'])) {
+            $contact['phone']['number'] = preg_replace("/[^0-9]/", "", $contact['phone']['number']);
             if ($contact['phone']['number'][0] == '0') {
                 $contact['phone']['number'] = substr($contact['phone']['number'], 1);
             }        
