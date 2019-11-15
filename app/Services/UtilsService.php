@@ -830,4 +830,16 @@ class UtilsService
         
         return $images;
     }
+    
+    /**
+     * Prepare phone for save
+     * @param type $phone
+     * @return string
+     */
+    public static function preparePhone($phone): string
+    {
+        $phone = preg_replace("/[^0-9]/", "", $phone);
+        $phone = strval(intval($phone));
+        return $phone;
+    }
 }

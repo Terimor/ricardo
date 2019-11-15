@@ -327,16 +327,7 @@ class PaymentService
         } elseif ($provider === PaymentProviders::CHECKOUTCOM) {
             // throw is ip abused
             self::checkIsIpAbused($ipqs); // throwable
-        }
-        
-        // delete first 0
-        if (!empty($contact['phone']['number'])) {
-            $contact['phone']['number'] = preg_replace("/[^0-9]/", "", $contact['phone']['number']);
-            if ($contact['phone']['number'][0] == '0') {
-                $contact['phone']['number'] = substr($contact['phone']['number'], 1);
-            }        
-        }
-        
+        }        
         
         $this->addCustomer($contact); // throwable
 
@@ -377,7 +368,7 @@ class PaymentService
                 'customer_email'        => $contact['email'],
                 'customer_first_name'   => $contact['first_name'],
                 'customer_last_name'    => $contact['last_name'],
-                'customer_phone'        => $contact['phone']['country_code'] . $contact['phone']['number'],
+                'customer_phone'        => $contact['phone']['country_code'] . Utils::preparePhone($contact['phone']['number']),
                 'customer_doc_id'       => $contact['document_number'] ?? null,
                 'ip'                    => $contact['ip'],
                 'language'              => app()->getLocale(),
@@ -403,7 +394,7 @@ class PaymentService
             $order->customer_email      = $contact['email'];
             $order->customer_first_name = $contact['first_name'];
             $order->customer_last_name  = $contact['last_name'];
-            $order->customer_phone      = $contact['phone']['country_code'] . $contact['phone']['number'];
+            $order->customer_phone      = $contact['phone']['country_code'] . Utils::preparePhone($contact['phone']['number']);
             $order->customer_doc_id     = $contact['document_number'] ?? null;
             $order->shipping_country    = $contact['country'];
             $order->shipping_zip        = $contact['zip'];
