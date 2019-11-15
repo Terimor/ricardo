@@ -35,6 +35,7 @@ export default {
     'postfix',
     'validation',
     'validationMessage',
+    'forceInvalid',
     'rest'
   ],
   computed: {
@@ -42,7 +43,7 @@ export default {
       return !!document.querySelector('html[dir="rtl"]');
     },
     invalid() {
-      return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid;
+      return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid || this.forceInvalid;
     }
   },
   methods: {

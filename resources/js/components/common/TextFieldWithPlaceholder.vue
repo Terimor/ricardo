@@ -28,7 +28,7 @@
         return '&nbsp;'.repeat(length) + this.placeholder.slice(length)
       },
       invalid () {
-        return this.validation && this.validation.$dirty && this.validation.$invalid
+        return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid;
       }
     },
     methods: {
