@@ -226,6 +226,8 @@ export function sendCheckoutRequest(data) {
               res.paymentError = res.message || Object.values(res.errors)[0][0];
             }
           }
+        } else if (res.error && res.error.message) {
+          res.paymentError = res.error.message;
         }
       }
 

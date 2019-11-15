@@ -1,5 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
-//import { isValidZipcode } from './validators';
+import { setEmailValidationRule } from './validators';
 import creditCardType from 'credit-card-type'
 import * as dateFns from 'date-fns';
 
@@ -22,10 +22,6 @@ const smc7validation = function () {
       lname: {
         required,
         minLength: minLength(1)
-      },
-      email: {
-        required,
-        type: email
       },
       phone: {
         required,
@@ -94,6 +90,8 @@ const smc7validation = function () {
       },
     };
   }
+
+  setEmailValidationRule(config.form, 'email');
 
   this.setExtraFieldsValidationRules(config.form);
 

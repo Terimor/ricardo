@@ -1,9 +1,6 @@
 <?php
 
 namespace App\Exceptions;
-
-use Exception;
-use App\Exceptions\ProviderNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -44,7 +41,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function report(\Exception $exception)
     {
         if (\App::environment() === 'production' && app()->bound('sentry') && $this->shouldReport($exception)) {
             //log to sentry in production only
@@ -61,7 +58,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, \Exception $exception)
     {
         $class = get_class($exception);
         switch ($class):
@@ -76,15 +73,29 @@ class Handler extends ExceptionHandler
             case OrderNotFoundException::class:
             case ProductNotFoundException::class:
             case TxnNotFoundException::class:
-            case ProviderNotFoundException::class:
                 return response()->json([
                     'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
                 ], 404);
+            case ProviderNotFoundException::class:
+                return response()->json([
+                    'error' => [
+                        'code'      => $exception->getCode(),
+                        'message'   => $exception->getMessage(),
+                        'phrase'    => $exception->getPhrase()
+                    ]
+                ], 404);
             case CustomerUpdateException::class:
             case OrderUpdateException::class:
-            case PaymentException::class:
                 return response()->json([
                     'error' => ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+                ], 500);
+            case PaymentException::class:
+                return response()->json([
+                    'error' => [
+                        'code'      => $exception->getCode(),
+                        'message'   => $exception->getMessage(),
+                        'phrase'    => $exception->getPhrase()
+                    ]
                 ], 500);
             case PPCurrencyNotSupportedException::class:
                 $message = json_decode($exception->getMessage(), true);

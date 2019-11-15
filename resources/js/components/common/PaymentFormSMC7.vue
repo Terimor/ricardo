@@ -134,7 +134,7 @@
               placeholder: textCardValidYearPlaceholder
             }"
             theme="variant-1"
-            :list="Array.apply(null, Array(10)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
+            :list="Array.apply(null, Array(12)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
             v-model="paymentForm.year"/>
         <span
           class="error"

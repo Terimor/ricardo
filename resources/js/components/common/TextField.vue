@@ -10,6 +10,7 @@
       <div v-html="prefix" v-if="prefix" class="prefix"></div>
       <div @click="$emit('click-postfix')" v-html="postfix" v-if="postfix" class="postfix"></div>
       <input
+        @blur="blur"
         @input="input"
         v-bind="rest"
         :style="{
@@ -40,11 +41,14 @@ export default {
     isRTL() {
       return !!document.querySelector('html[dir="rtl"]');
     },
-    invalid () {
-      return this.validation && this.validation.$dirty && this.validation.$invalid
+    invalid() {
+      return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid;
     }
   },
   methods: {
+    blur(event) {
+      this.$emit('blur', event);
+    },
     input (e) {
       this.$emit('input', e.target.value)
       if (this.validation) {

@@ -446,3 +446,40 @@ h3 {
     }
   }
 }
+
+body.with-static-topbar {
+  padding-top: 50px;
+}
+
+#static-topbar {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  right: 0;
+  left: 0;
+  top: 0;
+  padding: 0 24px;
+  text-align: center;
+  transition: height .3s ease;
+  background-color: #248cc8;
+  color: #fff;
+  font-size: 16px;
+
+  @media screen and ($s-down) {
+    & {
+      font-size: 13px;
+    }
+  }
+
+  &.hidden {
+    height: 0;
+  }
+
+  a {
+    color: #fff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
