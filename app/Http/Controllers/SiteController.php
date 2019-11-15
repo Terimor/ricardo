@@ -123,7 +123,7 @@ class SiteController extends Controller
      * @return type
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
-    {               
+    {        
 		$viewTemplate = 'checkout';
         
         if (!empty($priceSet)) {

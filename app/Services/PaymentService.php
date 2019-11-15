@@ -331,7 +331,7 @@ class PaymentService
         
         // delete first 0
         if (!empty($contact['phone']['number'])) {                    
-            if ($contact['phone']['number']{0} == '0') {
+            if ($contact['phone']['number'][0] == '0') {
                 $contact['phone']['number'] = substr($contact['phone']['number'], 1);
             }        
         }
