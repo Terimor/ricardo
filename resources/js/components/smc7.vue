@@ -384,10 +384,6 @@
         }));
       },
 
-      codeOrDefault () {
-        return this.queryParams.product || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
-      },
-
       radioIdx() {
         return this.form.deal;
       },
@@ -639,7 +635,7 @@
 
             return paypalCreateOrder({
               xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-              sku_code: this.codeOrDefault,
+              sku_code: this.form.variant,
               sku_quantity: this.form.deal,
               is_warranty_checked: this.form.isWarrantyChecked,
               page_checkout: document.location.href,

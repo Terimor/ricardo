@@ -280,10 +280,6 @@ const promo = new Vue({
       return checkoutData.product.skus;
     },
 
-    codeOrDefault () {
-      return this.queryParams.product || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
-    },
-
     hasTimer() {
       return document.getElementById('timer-component');
     },

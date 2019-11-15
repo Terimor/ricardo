@@ -404,9 +404,6 @@
       isShowVariant() {
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
-      codeOrDefault () {
-        return this.queryParams.product || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
-      },
       dialCode() {
         const allCountries = window.intlTelInputGlobals.getCountryData();
         const phoneCountryCode = this.form.countryCodePhoneField;
@@ -711,7 +708,7 @@
 
             return paypalCreateOrder({
               xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
-              sku_code: this.codeOrDefault,
+              sku_code: this.vmc4Form.variant,
               sku_quantity: this.vmc4Form.deal,
               is_warranty_checked: this.vmc4Form.isWarrantyChecked,
               page_checkout: document.location.href,
