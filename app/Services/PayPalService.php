@@ -236,8 +236,8 @@ class PayPalService
     {
         $ipqs = $request->input('ipqs', null);
 
-        // throw is ip abused
-        PaymentService::checkIsIpAbused($ipqs);
+        // refuse payment if  there is fraud
+        PaymentService::fraudCheck($ipqs);
 
         $order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
         if ($order) {

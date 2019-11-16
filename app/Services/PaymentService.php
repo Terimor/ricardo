@@ -35,8 +35,9 @@ class PaymentService
     const CARD_CREDIT = 'credit';
     const CARD_DEBIT  = 'debit';
 
-    const FRAUD_CHANCE_LIMIT    = 85;
-    const FRAUD_CHANCE_MAX      = 100;
+    const FRAUD_CHANCE_3DS_LIMIT       = 60;
+    const FRAUD_CHANCE_REFUSE_LIMIT    = 84;
+    const FRAUD_CHANCE_MAX             = 100;
 
     const THROW_IS_IP_ABUSED    = true;
 
@@ -326,10 +327,10 @@ class PaymentService
             );
             throw new ProviderNotFoundException('Provider not found');
         } elseif ($provider === PaymentProviders::CHECKOUTCOM) {
-            // throw is ip abused
-            self::checkIsIpAbused($ipqs); // throwable
-        }        
-        
+            // refuse payment if  there is fraud
+            self::fraudCheck($ipqs); // throwable
+        }
+
         $this->addCustomer($contact); // throwable
 
         if (empty($order)) {
@@ -735,23 +736,22 @@ class PaymentService
     }
 
     /**
-     * Checks is ip abused
+     * Checks payment to fraud
      * @param  ?array   $ipqs
      * @param  bool     $thowable
-     * @return bool
+     * @return void
      * @throws PaymentException
      */
-    public static function checkIsIpAbused(?array $ipqs, bool $throwable = true): bool
+    public static function fraudCheck(?array $ipqs, bool $throwable = true): void
     {
-        $result = false;
-        if (!empty($ipqs) && $ipqs['recent_abuse']) {
-            $result = true;
-            if (self::THROW_IS_IP_ABUSED && $throwable) {
-                // logger()->warning('Payment refused', ['ipqs' => $ipqs]);
-                throw new PaymentException('Payment is refused', 'card.error.abuse');
+        if (!empty($ipqs) && \App::environment() === 'production') {
+            $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
+            $is_bot = $ipqs['bot_status'] ?? false;
+            $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
+            if ($fraud_chance > self::FRAUD_CHANCE_REFUSE_LIMIT || $is_bot || $is_valid_email === false) {
+                throw new PaymentException('Payment is refused', 'card.error.refused');
             }
         }
-        return $result;
     }
 
     /**
@@ -918,21 +918,16 @@ class PaymentService
      * Checks if 3ds is available
      * @param  string $card_type
      * @param  string $country
-     * @param  array|null $ipqs
+     * @param  array  $ipqs
      * @return object
      */
-    private static function checkIs3dsNeeded(string $card_type, string $country, ?array $ipqs): bool
+    private static function checkIs3dsNeeded(string $card_type, string $country, array $ipqs = []): bool
     {
         $result = true;
         $setting = PaymentProviders::$list[PaymentProviders::CHECKOUTCOM]['methods'][$card_type] ?? [];
-        $fraud_chance = PaymentService::FRAUD_CHANCE_MAX;
-        $recent_abuse = false;
-        if (!empty($ipqs)) {
-            $fraud_chance = (int)$ipqs['fraud_chance'];
-            $recent_abuse = (bool)$ipqs['recent_abuse'];
-        }
+        $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
 
-        if ($fraud_chance < PaymentService::FRAUD_CHANCE_LIMIT || $recent_abuse) {
+        if ($fraud_chance < PaymentService::FRAUD_CHANCE_3DS_LIMIT) {
             if (in_array($country, $setting['+3ds'] ?? []) ) {
                 $result = true;
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
