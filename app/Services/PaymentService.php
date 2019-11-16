@@ -749,6 +749,7 @@ class PaymentService
             $is_bot = $ipqs['bot_status'] ?? false;
             $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
             if ($fraud_chance > self::FRAUD_CHANCE_REFUSE_LIMIT || $is_bot || $is_valid_email === false) {
+                logger()->warning('Payment refused', ['ipqs' => $ipqs]);
                 throw new PaymentException('Payment is refused', 'card.error.refused');
             }
         }
