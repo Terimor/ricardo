@@ -438,7 +438,7 @@ class PaymentService
                 'ip'        => $order->ip,
                 'id'        => $order->getIdAttribute(),
                 'number'    => $order->number,
-                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $ipqs),
+                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
                 'description'   => $product->product_name,
                 // TODO: remove city hardcode
                 'billing_descriptor'   => ['name' => $product->billing_descriptor, 'city' => 'Msida']
