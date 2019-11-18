@@ -36,7 +36,7 @@
       },
 
       list() {
-        const year = new Date().getFullYear();
+        const year = new Date().getFullYear() || 2020;
         const years = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
         return years.map(value => {
