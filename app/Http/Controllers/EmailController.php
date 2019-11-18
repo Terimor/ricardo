@@ -34,11 +34,9 @@ class EmailController extends Controller
     public function validateEmail(Request $request)
     {                        
         $email = $request->get('email');
-        $isValid = false;
-        if ($email) {
-            $isValid = $this->emailService->validateEmailWithThechecker($email);            
-        }
+
+        $res = $this->emailService->validateEmailWithIPQS((string)$email);            
         
-        return response()->json(['success' => $isValid]);
+        return response()->json($res);
     }
 }

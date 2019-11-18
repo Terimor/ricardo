@@ -143,7 +143,9 @@ class CurrencyService
         'HTG',
         'IRR',
         'VUV',
-        'AFN'
+        'AFN',
+        'KPW',
+        'SDG'
     ];
 
     /**
