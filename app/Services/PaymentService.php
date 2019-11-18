@@ -431,6 +431,7 @@ class PaymentService
                 ]
             );
         } else {
+            $billing_descriptor = $product->billing_descriptor;
             $checkoutService = new CheckoutDotComService();
             $payment = $checkoutService->payByCard($card, $contact, [
                 'amount'    => $order->total_price,
@@ -441,8 +442,10 @@ class PaymentService
                 '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
                 'description'   => $product->product_name,
                 // TODO: remove city hardcode
-                'billing_descriptor'   => ['name' => $product->billing_descriptor, 'city' => 'Msida']
+                'billing_descriptor'   => ['name' => $billing_descriptor, 'city' => 'Msida']
             ]);
+            // save billing_descriptor to order
+            $order->billing_descriptor = $billing_descriptor;
             if ($payment['status'] !== Txn::STATUS_FAILED) {
                 $payment['token'] = $checkoutService->requestToken($card, $contact);
             }
