@@ -107,28 +107,14 @@
                     <span class="label" v-html="textCardValidUntil"></span>
                   </div>
                   <div class="card-date d-flex">
-                    <select-field
-                      :standart="true"
-                      :validation="$v.form.stepThree.month"
-                      :validationMessage="textCardValidMonthRequired"
-                      :rest="{
-                        placeholder: textCardValidMonthPlaceholder
-                      }"
-                      theme="variant-1"
-                      :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
-                      v-model="form.stepThree.month"
-                    />
-                    <select-field
-                      :standart="true"
-                      :validation="$v.form.stepThree.year"
-                      :validationMessage="textCardValidYearRequired"
-                      :rest="{
-                        placeholder: textCardValidYearPlaceholder
-                      }"
-                      theme="variant-1"
-                      :list="Array.apply(null, Array(12)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
-                      v-model="form.stepThree.year"
-                    />
+                    <Month
+                      :$v="$v.form.stepThree.month"
+                      :form="form.stepThree"
+                      name="month" />
+                    <Year
+                      :$v="$v.form.stepThree.year"
+                      :form="form.stepThree"
+                      name="year" />
                   </div>
                   <span
                     class="error"
@@ -294,6 +280,8 @@
   import { queryParams } from  '../../utils/queryParams';
   import Installments from './extra-fields/Installments';
   import Email from './common-fields/Email';
+  import Month from './common-fields/Month';
+  import Year from './common-fields/Year';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
@@ -314,6 +302,8 @@
       Spinner,
       Installments,
       Email,
+      Month,
+      Year,
       State,
       District,
       CardType,

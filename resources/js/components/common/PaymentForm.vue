@@ -161,26 +161,14 @@
                   class="card-date"
                   :class="{ 'with-error': $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
                     <span class="label" v-html="textCardValidUntil"></span>
-                    <select-field
-                        :standart="true"
-                        :validation="$v.form.month"
-                        :validationMessage="textCardValidMonthRequired"
-                        :rest="{
-                          placeholder: textCardValidMonthPlaceholder
-                        }"
-                        theme="variant-1"
-                        :list="Array.apply(null, Array(12)).map((_, idx) => ({ value: idx + 1 }))"
-                        v-model="paymentForm.month"/>
-                    <select-field
-                        :standart="true"
-                        :validation="$v.form.year"
-                        :validationMessage="textCardValidYearRequired"
-                        :rest="{
-                          placeholder: textCardValidYearPlaceholder
-                        }"
-                        theme="variant-1"
-                        :list="Array.apply(null, Array(12)).map((_, ind) => ({ value: new Date().getFullYear() + ind }))"
-                        v-model="paymentForm.year"/>
+                    <Month
+                      :$v="$v.form.month"
+                      :form="paymentForm"
+                      name="month" />
+                    <Year
+                      :$v="$v.form.year"
+                      :form="paymentForm"
+                      name="year" />
                     <span
                       class="error"
                       v-show="paymentForm.month && paymentForm.year && isCardExpired"
@@ -261,6 +249,8 @@
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
   import Email from './common-fields/Email';
+  import Month from './common-fields/Month';
+  import Year from './common-fields/Year';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
@@ -291,6 +281,8 @@
     components: {
       Spinner,
       Email,
+      Month,
+      Year,
       State,
       District,
       CardType,
@@ -382,10 +374,6 @@
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),
-      textCardValidMonthRequired: () => t('checkout.payment_form.card_valid_month.required'),
-      textCardValidMonthPlaceholder: () => t('checkout.payment_form.card_valid_month.placeholder'),
-      textCardValidYearRequired: () => t('checkout.payment_form.card_valid_year.required'),
-      textCardValidYearPlaceholder: () => t('checkout.payment_form.card_valid_year.placeholder'),
       textCardExpired: () => t('checkout.payment_form.card_expired'),
       textCardCVV: () => t('checkout.payment_form.card_cvv'),
       textCardCVVRequired: () => t('checkout.payment_form.card_cvv.required'),

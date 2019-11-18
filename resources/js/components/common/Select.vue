@@ -31,7 +31,7 @@
       v-else
       ref="select"
       :value="value"
-      @input="onChange"
+      @change="onChange"
       class="el-input__inner select-standart"
       :style="{
         ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
@@ -81,14 +81,14 @@ export default {
     onVisibleChange(opened) {
       this.opened = opened;
     },
-    onChange (e) {
+    onChange(value) {
       if (!this.standart) {
-        this.$emit('input', e, this.value)
+        this.$emit('input', value, this.value)
       } else {
         this.$emit('input', this.$refs.select.value, this.value);
       }
       if (this.validation) {
-        this.validation.$touch()
+        this.validation.$touch();
       }
     }
   }
