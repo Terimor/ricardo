@@ -67,7 +67,7 @@ class BluesnapService
         $this->login = $login;
         $this->password = $password;
         $this->data_protection_key = $protect_key;
-        $this->endpoint = 'https://' . $environment === self::ENV_LIVE ? 'ws' : 'sandbox' . '.bluesnap.com/services/2/';
+        $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'ws' : 'sandbox') . '.bluesnap.com/services/2/';
     }
 
     /**
@@ -172,7 +172,7 @@ class BluesnapService
         ];
 
         try {
-            $res = $client->request('POST', 'transactions', [
+            $res = $client->post('/transactions', [
                 'json' => [
                     'amount'        => $order_details['amount'],
                     'cardHolderInfo'=> $card_holder,
