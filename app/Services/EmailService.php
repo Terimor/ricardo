@@ -97,7 +97,7 @@ class EmailService
                             $warning = true;
                         }
                         
-                        if (!empty($res->suggested_domain) && $res->suggested_domain != 'N/A') {
+                        if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
                             $domain = explode('@', $email)[1];
                             $suggest = str_replace($domain, $res->suggested_domain, $email);
                         }
