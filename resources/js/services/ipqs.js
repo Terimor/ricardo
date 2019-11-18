@@ -19,11 +19,13 @@ wait(
 );
 
 
-export function check(fields = {}) {
+export function ipqsCheck(fields = {}) {
   return new Promise(resolve => {
-    const params = queryParams();
+    let attempt = 0;
 
-    if (params['3ds'] === 'failure') {
+    const searchParams = new URL(location).searchParams;
+
+    if (searchParams.get('3ds') === 'failure') {
       let result = null;
 
       try {
@@ -44,33 +46,33 @@ export function check(fields = {}) {
       return;
     }
 
-    for (const key of Object.keys(params)) {
-      Startup.Store(key, params[key]);
-    }
+    const sendRequest = () => {
+      attempt++;
 
-    for (const key of Object.keys(fields)) {
-      Startup.FieldStore(key, fields[key]);
-    }
-
-    if (location.pathname.startsWith('/checkout')) {
-      if (!params.tpl) {
-        Startup.Store('tpl', 'emc1');
+      for (let key of searchParams.keys()) {
+        Startup.Store(key, searchParams.get(key));
       }
 
-      if (!params.product) {
-        Startup.Store('product', checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null);
+      for (let key of Object.keys(fields)) {
+        Startup.FieldStore(key, fields[key]);
       }
-    }
 
-    Startup.success = result => {
-      localStorage.setItem('3ds_ipqs', JSON.stringify(result));
-      resolve(result);
+      Startup.success = result => {
+        localStorage.setItem('3ds_ipqs', JSON.stringify(result));
+        resolve(result);
+      };
+
+      Startup.failure = result => {
+        if (attempt < 3) {
+          setTimeout(sendRequest, 1000);
+        } else {
+          resolve(null);
+        }
+      };
+
+      Startup.Init();
     };
 
-    Startup.failure = result => {
-      resolve(null);
-    };
-
-    Startup.Init();
+    sendRequest();
   });
 }

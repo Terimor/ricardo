@@ -181,7 +181,7 @@
   import { preparePurchaseData } from '../utils/checkout';
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
-  import { check as ipqsCheck } from '../services/ipqs';
+  import { ipqsCheck } from '../services/ipqs';
   import { queryParams } from  '../utils/queryParams';
 
   const searchParams = new URL(location).searchParams;

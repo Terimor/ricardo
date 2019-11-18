@@ -267,7 +267,7 @@
 <script>
   import * as dateFns from 'date-fns';
   import { t } from '../../utils/i18n';
-  import { check as ipqsCheck } from '../../services/ipqs';
+  import { ipqsCheck } from '../../services/ipqs';
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';

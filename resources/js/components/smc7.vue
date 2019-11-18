@@ -232,7 +232,7 @@
   import { t, timage } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
-  import { check as ipqsCheck } from '../services/ipqs';
+  import { ipqsCheck } from '../services/ipqs';
   import { sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
   import { queryParams } from  '../utils/queryParams';

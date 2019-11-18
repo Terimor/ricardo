@@ -240,7 +240,7 @@
 <script>
   import * as dateFns from 'date-fns';
   import apiUrlList from '../../constants/api-url'
-  import { check as ipqsCheck } from '../../services/ipqs';
+  import { ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
   import queryToComponent from '../../mixins/queryToComponent';
