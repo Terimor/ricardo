@@ -88,6 +88,7 @@ class EmailService
                     if ($res) {                        
                         // block if recent_abuse, leaked or disposable
                         if (!empty($res->recent_abuse) || !empty($res->leaked) || !empty($res->disposable)) {
+                            logger()->error("Blocked email", ['res' => $res, 'email' => $email]);
                             $success = false;
                         }
                         
