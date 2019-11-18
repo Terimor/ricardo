@@ -129,8 +129,6 @@ class BluesnapService
         return $this->pay(
             self::createCardObj($card, $contact),
             self::createCardHolderObj($contact),
-            self::createPerson($contact),
-            array_map(function($item) { return self::createItem($item); }, $items),
             $order_details
         );
     }
