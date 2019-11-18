@@ -13,6 +13,8 @@ class EmailService
 {
     
     public static $thecheckerEmailValidStatus = 'deliverable';
+    public static $ipqsLowDeliverability = 'low';
+    public static $NA = 'N/A';
     
     /**
      *
@@ -55,7 +57,64 @@ class EmailService
         } else {
             $isValid = false;
         }        
+        
         return $isValid;
+    }
+    
+    /**
+     * Validate Email with ipqualityscore.com
+     * @param string $email
+     * @return type
+     */
+    public function validateEmailWithIPQS(string $email)
+    {
+        $apiKey = Setting::getValue('ipqualityscore_private_api_key');
+        $success = true; $suggest = ''; $warning = false;
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
+            $timeOut = stream_context_create(
+                array('http'=>
+                    array(
+                        'timeout' => 5,  
+                    )
+                )
+            );
+            for ($i=1; $i<=3; $i++) {
+                try {
+                    $result = file_get_contents($url, false, $timeOut);                
+                    
+                    $res = json_decode($result);
+                    if ($res) {                        
+                        // block if recent_abuse, leaked or disposable
+                        if (!empty($res->recent_abuse) || !empty($res->leaked) || !empty($res->disposable)) {
+                            $success = false;
+                        }
+                        
+                        // check warning 
+                        if (empty($res->valid) || !empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
+                            $warning = true;
+                        }
+                        
+                        if (!empty($res->suggested_domain) && $res->suggested_domain != 'N/A') {
+                            $domain = explode('@', $email)[1];
+                            $suggest = str_replace($domain, $res->suggested_domain, $email);
+                        }
+                        
+                        break;
+                    }
+                } catch (\Exception $ex) {                    
+                    logger()->error("Validate email IPQS connection error", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+                }
+            }
+        } else {
+            $success = false;
+        }
+        return [
+            'success' => $success,
+            'warning' => $warning,
+            'suggest' => $suggest
+        ];
     }
     
 
