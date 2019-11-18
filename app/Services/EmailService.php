@@ -5,6 +5,7 @@ use GuzzleHttp\Client;
 use App\Models\Setting;
 use App\Models\OdinOrder;
 use App\Models\OdinCustomer;
+use Exception;
 
 /**
  * Email Service class
@@ -69,7 +70,7 @@ class EmailService
     public function validateEmailWithIPQS(string $email)
     {
         $apiKey = Setting::getValue('ipqs_private_api_key');
-        $block = false; $suggest = ''; $warning = false;
+        $block = false; $suggest = ''; $warning = false; $valid = false;
         if ($email) {
             $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
             $timeOut = stream_context_create(
@@ -84,11 +85,12 @@ class EmailService
                     $result = file_get_contents($url, false, $timeOut);                
 
                     $res = json_decode($result);
-                    if ($res) {                        
+                    if ($res) {
                         // block if recent_abuse, leaked or disposable
                         if ((isset($res->overall_score) && $res->overall_score == 0) || !empty($res->recent_abuse) || !empty($res->leaked) || !empty($res->disposable)) {
-                            logger()->error("Blocked email", ['res' => $res, 'email' => $email]);
-                            $block = false;
+                            logger()->error("Blocked email", ['email' => $email, 'res' => $res]);                            
+                            throw new \Exception("Blocked email {$email}");
+                            $block = true;
                         }
 
                         // check warning 
@@ -99,6 +101,10 @@ class EmailService
                         if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
                             $domain = explode('@', $email)[1];
                             $suggest = str_replace($domain, $res->suggested_domain, $email);
+                        }
+                        
+                        if ((isset($res->overall_score) && $res->overall_score > 0)) {
+                            $valid = true;
                         }
 
                         break;
@@ -114,7 +120,8 @@ class EmailService
         return [
             'block' => $block,
             'warning' => $warning,
-            'suggest' => $suggest
+            'suggest' => $suggest,
+            'valid' => $valid
         ];
     }
     
