@@ -23,6 +23,7 @@ class VerifyCsrfToken extends Middleware
         'pay-by-card-upsells',
         'checkoutdotcom-captured-webhook',
         'checkoutdotcom-failed-webhook',
+        'bluesnap-webhook',
         'ebanx-webhook',
         'paypal-webhooks',
         'payments/three',

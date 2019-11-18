@@ -38,7 +38,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/checkoutdotcom-captured-webhook', 'PaymentsController@checkoutDotComCapturedWebhook');
     $router->post('/checkoutdotcom-failed-webhook', 'PaymentsController@checkoutDotComFailedWebhook');
     $router->post('/ebanx-webhook', 'PaymentsController@ebanxWebhook');
-    $router->get('/test-paypal', 'PaymentsController@testPaypal');
+    $router->post('/bluesnap-webhook', 'PaymentsController@bluesnapWebhook');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
     //$router->post('/payment/bluesnap-transaction', 'Payments\BluesnapController@createTransaction')->name('bluesnap-payment');
@@ -54,14 +54,14 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     $router->get('/product-price', 'ProductController@getProductPrice');
     $router->get('/validate-email', 'EmailController@validateEmail');
-    
+
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
     $router->post('/paypal-webhooks', 'Payments\PaypalController@webhooks');
 
     /* test routes */
     $router->post('/test-payments', 'PaymentsController@test');
-    $router->get('/test-postbacks', 'SiteController@logPostback');  
+    $router->get('/test-postbacks', 'SiteController@logPostback');
 });
 
 /*Route::get('/debug-sentry', function () {
