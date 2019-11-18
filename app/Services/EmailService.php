@@ -70,42 +70,45 @@ class EmailService
     {
         $apiKey = Setting::getValue('ipqs_private_api_key');
         $block = false; $suggest = ''; $warning = false;
-        
-        $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
-        $timeOut = stream_context_create(
-            array('http'=>
-                array(
-                    'timeout' => 5,  
+        if ($email) {
+            $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
+            $timeOut = stream_context_create(
+                array('http'=>
+                    array(
+                        'timeout' => 5,  
+                    )
                 )
-            )
-        );
-        for ($i=1; $i<=3; $i++) {
-            try {
-                $result = file_get_contents($url, false, $timeOut);                
+            );
+            for ($i=1; $i<=3; $i++) {
+                try {
+                    $result = file_get_contents($url, false, $timeOut);                
 
-                $res = json_decode($result);
-                if ($res) {                        
-                    // block if recent_abuse, leaked or disposable
-                    if (!empty($res->recent_abuse) || !empty($res->leaked) || !empty($res->disposable)) {
-                        logger()->error("Blocked email", ['res' => $res, 'email' => $email]);
-                        $block = false;
+                    $res = json_decode($result);
+                    if ($res) {                        
+                        // block if recent_abuse, leaked or disposable
+                        if (!empty($res->recent_abuse) || !empty($res->leaked) || !empty($res->disposable)) {
+                            logger()->error("Blocked email", ['res' => $res, 'email' => $email]);
+                            $block = false;
+                        }
+
+                        // check warning 
+                        if (empty($res->valid) || !empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
+                            $warning = true;
+                        }
+
+                        if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
+                            $domain = explode('@', $email)[1];
+                            $suggest = str_replace($domain, $res->suggested_domain, $email);
+                        }
+
+                        break;
                     }
-
-                    // check warning 
-                    if (empty($res->valid) || !empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
-                        $warning = true;
-                    }
-
-                    if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
-                        $domain = explode('@', $email)[1];
-                        $suggest = str_replace($domain, $res->suggested_domain, $email);
-                    }
-
-                    break;
+                } catch (\Exception $ex) {                    
+                    logger()->error("Validate email IPQS connection error", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
                 }
-            } catch (\Exception $ex) {                    
-                logger()->error("Validate email IPQS connection error", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
             }
+        } else {
+            $block = true;
         }
 
         return [
