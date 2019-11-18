@@ -152,10 +152,7 @@ class BluesnapService
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
             'auth' => [$this->login, $this->password],
-            'headers' => [
-                'Accept'        => 'application/json',
-                'Content-Type'  => 'application/json'
-            ]
+            'headers' => ['Accept'  => 'application/json']
         ]);
 
         $result = [
@@ -175,7 +172,7 @@ class BluesnapService
         ];
 
         try {
-            $res = $client->post('transactions', [
+            $res = $client->request('POST', '/transactions', [
                 'json' => [
                     'amount'        => $order_details['amount'],
                     'cardHolderInfo'=> $card_holder,
