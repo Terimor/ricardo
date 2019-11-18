@@ -152,7 +152,10 @@ class BluesnapService
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
             'auth' => [$this->login, $this->password],
-            'headers' => ['Accept' => 'application/json']
+            'headers' => [
+                'Accept'        => 'application/json',
+                'Content-Type'  => 'application/json'
+            ]
         ]);
 
         $result = [
