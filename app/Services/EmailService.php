@@ -69,7 +69,7 @@ class EmailService
     public function validateEmailWithIPQS(string $email)
     {
         $apiKey = Setting::getValue('ipqualityscore_private_api_key');
-        $success = true; $suggest = ''; $warning = false;
+        $block = false; $suggest = ''; $warning = false;
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
@@ -89,7 +89,7 @@ class EmailService
                         // block if recent_abuse, leaked or disposable
                         if (!empty($res->recent_abuse) || !empty($res->leaked) || !empty($res->disposable)) {
                             logger()->error("Blocked email", ['res' => $res, 'email' => $email]);
-                            $success = false;
+                            $block = false;
                         }
                         
                         // check warning 
@@ -109,10 +109,10 @@ class EmailService
                 }
             }
         } else {
-            $success = false;
+            $block = false;
         }
         return [
-            'success' => $success,
+            'block' => $block,
             'warning' => $warning,
             'suggest' => $suggest
         ];
