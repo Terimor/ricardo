@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\BluesnapService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
 use App\Services\PaymentService;
@@ -107,6 +108,26 @@ class PaymentsController extends Controller
     }
 
     /**
+     * Bluesnap webhook endpoint
+     * @param  Request $req
+     * @return string
+     */
+    public function bluesnapWebhook(Request $req): string
+    {
+        logger()->info('Bluesnap webhook', ['content' => $req->getContent()]);
+
+        $bluesnap = new BluesnapService();
+        $reply = $bluesnap->validateWebhook($req);
+
+        if (!$reply['status']) {
+            logger()->error('Bluesnap unauthorized webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            throw new AuthException('Unauthorized');
+        }
+
+        return $reply['result'];
+    }
+
+    /**
      * Accepts checkout.com charges.captured webhook
      * @param  Request $req
      * @return void
@@ -169,9 +190,26 @@ class PaymentsController extends Controller
         }
     }
 
-    public function test(Request $req)
+    public function test(PaymentCardCreateOrderRequest $req)
     {
-        return PaymentService::getPaymentMethodsByCountry('ar');
-    }
+        $reply = $this->paymentService->testBluesnapOrder($req);
 
+        $result = [
+            'order_currency'    => $reply['order_currency'],
+            'order_number'      => $reply['order_number'],
+            'order_id'          => $reply['order_id'],
+            'id'                => $reply['id'],
+            'status'            => $reply['status']
+        ];
+
+        if (!empty($reply['errors'])) {
+            $result['errors'] = $reply['errors'];
+            PaymentService::cacheErrors([
+                'order_number'  => $reply['order_number'],
+                'errors'        => $reply['errors']
+            ]);
+        }
+
+        return $result;
+    }
 }
