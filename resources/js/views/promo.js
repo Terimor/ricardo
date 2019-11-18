@@ -15,7 +15,7 @@ import * as extraFields from '../mixins/extraFields';
 import notification from '../mixins/notification';
 import queryToComponent from '../mixins/queryToComponent';
 import purchasMixin from '../mixins/purchas';
-import { check as ipqsCheck } from '../services/ipqs';
+import { ipqsCheck } from '../services/ipqs';
 import { queryParams } from  '../utils//queryParams';
 import globals from '../mixins/globals';
 import wait from '../utils/wait';
