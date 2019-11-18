@@ -303,9 +303,9 @@ class OdinProduct extends Model
     {
         $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
         $host = str_replace('www.', '', request()->getHost());
-        $value = "*{$host}*{$value}";
-        $value = str_replace('**', '*', $value);
+        $value = "*{$host}*{$value}";        
         $value = $billingDescriptorPrefix ? "*{$billingDescriptorPrefix}*{$value}" : $value;
+        $value = str_replace('**', '*', $value);
         if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
             $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
         }        
