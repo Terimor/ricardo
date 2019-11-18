@@ -172,7 +172,7 @@ class BluesnapService
         ];
 
         try {
-            $res = $client->post('/transactions', [
+            $res = $client->post('transactions', [
                 'json' => [
                     'amount'        => $order_details['amount'],
                     'cardHolderInfo'=> $card_holder,
