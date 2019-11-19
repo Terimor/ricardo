@@ -501,7 +501,6 @@ class PaymentService
         $order_main_product = $order->getMainProduct(); // throwable
         $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
         $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
-        $card_token = self::getCardToken($order->number);
 
         // prepare upsells result
         $upsells = array_map(function($v) {
@@ -509,7 +508,7 @@ class PaymentService
             return $v;
         }, $upsells);
 
-        if ($this->orderService->checkIfUpsellsPossible($order) && !empty($card_token)) {
+        if ($this->orderService->checkIfUpsellsPossible($order)) {
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
@@ -540,7 +539,8 @@ class PaymentService
             $payment = [];
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
-                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX) {
+                $card_token = self::getCardToken($order->number);
+                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX && $card_token) {
                     $ebanx = new EbanxService();
                     $payment = $ebanx->payByToken(
                         $card_token,
@@ -575,7 +575,7 @@ class PaymentService
                             'installments'  => $order->installments
                         ]
                     );
-                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::CHECKOUTCOM && $card_token) {
                     $checkout = new CheckoutDotComService();
                     $payment = $checkout->payByToken(
                         $card_token,
@@ -598,7 +598,7 @@ class PaymentService
                         [
                             'amount'    => $checkout_price,
                             'currency'  => $order->currency,
-                            'billing_descriptor'   => $main_product->billing_descriptor,
+                            'billing_descriptor'   => $main_product->billing_descriptor
                         ]
                     );
                 }
