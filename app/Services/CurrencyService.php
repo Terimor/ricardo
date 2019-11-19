@@ -36,8 +36,7 @@ class CurrencyService
         'HRK' => 'HRK',
         'AUD' => '$',
         'NZD' => '$',
-        'SGD' => '$',
-        'HKD' => '$',
+        'SGD' => '$',        
         'TWD' => '$'
     ];
 
