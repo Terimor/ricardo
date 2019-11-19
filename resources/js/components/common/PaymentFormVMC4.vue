@@ -689,7 +689,7 @@
             }
 
             const data = {
-              order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
+              order_amount: this.getOrderAmount(this.vmc4Form.deal, this.vmc4Form.isWarrantyChecked),
             };
 
             return ipqsCheck(data);
