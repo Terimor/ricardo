@@ -23,6 +23,9 @@ class BluesnapService
     const HTTP_CODE_SUCCESS = 200;
     const HTTP_CODE_ERROR   = 400;
 
+    const TYPE_WEBHOOK_CHARGE   = 'CHARGE';
+    const TYPE_WEBHOOK_DECLINE  = 'DECLINE';
+
     /**
      * @var string
      */
@@ -166,9 +169,9 @@ class BluesnapService
             'hash'              => null,
             'payer_id'          => null,
             'provider_data'     => null,
-            'redirect_url'      => null,
+            // 'redirect_url'      => null,
             'errors'            => null,
-            'token'             => null
+            // 'token'             => null
         ];
 
         try {
@@ -185,6 +188,7 @@ class BluesnapService
 
             if ($res->getStatusCode() === self::HTTP_CODE_SUCCESS) {
                 $body_decoded = \json_decode($res->getBody(), true);
+                $result['payer_id'] = $body_decoded['vaultedShopperId'];
                 $result['hash']     = $body_decoded['transactionId'];
                 $result['currency'] = $body_decoded['currency'];
                 $result['value']    = $body_decoded['amount'];
@@ -224,19 +228,26 @@ class BluesnapService
      */
     public function validateWebhook(Request $req)
     {
-        $authKey = $req->input('authKey', '');
-        $content = $req->getContent();
-
-        logger()->info('Bluesnap webhook auth', [
-            'authKey' => $authKey,
-            'md5' => md5('ok' . $this->data_protection_key)
-        ]);
+        $authKey    = $req->input('authKey', '');
+        $currency   = $req->input('invoiceChargeCurrency');
+        $fee        = $req->input('bluesnapManualFee', 0);
+        $hash       = $req->input('referenceNumber');
+        $type       = $req->input('transactionType');
+        $value      = $req->input('invoiceChargeAmount', 0);
 
         $result = ['status' => false];
-
-        // check ips
         if (in_array($req->ip(), $this->ips)) {
-            $result = ['status' => true, 'result' => md5('ok' . $this->data_protection_key)];
+            $result = [
+                'status' => true,
+                'txn' => [
+                    'currency'  => $currency,
+                    'fee'       => $fee,
+                    'hash'      => $hash,
+                    'status'    => $type === self::TYPE_WEBHOOK_CHARGE ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
+                    'value'     => $value
+                ],
+                'result' => md5($authKey . 'ok' . $this->data_protection_key)
+            ];
         }
 
         return $result;
