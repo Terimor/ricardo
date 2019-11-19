@@ -151,7 +151,7 @@ class BluesnapService
 
     /**
      * Provides payment
-     * @param  array   $sorce
+     * @param  array   $source
      * @param  array   $order_details
      * [
      *  'currency'=>string,
@@ -192,7 +192,7 @@ class BluesnapService
                         'softDescriptor'    =>  $order_details['billing_descriptor'],
                         'storeCard'     => true
                     ],
-                    $sorce
+                    $source
                 )
             ]);
 
