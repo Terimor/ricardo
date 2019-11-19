@@ -70,7 +70,7 @@ class EmailService
     public function validateEmailWithIPQS(string $email)
     {
         $apiKey = Setting::getValue('ipqs_private_api_key');
-        $block = false; $suggest = ''; $warning = false; $valid = false;
+        $block = false; $suggest = ''; $warning = false; $valid = false; $disposable = false;
         if ($email) {
             $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
             $timeOut = stream_context_create(
