@@ -67,7 +67,9 @@
       },
 
       textSuggestion() {
-        return this.$t('checkout.payment_form.email.suggestion', { email: suggestion });
+        return this.$t('checkout.payment_form.email.suggestion', {
+          email: '<a href="#" class="suggestion">' + this.suggestion + '</a>',
+        });
       },
 
       textWarning() {
@@ -139,8 +141,10 @@
           return;
         }
 
-        if (res.suggestion) {
+        if (res.suggest) {
+          this.suggestion = res.suggest;
           this.warningMessage = this.textSuggestion;
+          setTimeout(() => this.bindSuggestion(), 100);
           return;
         }
 
@@ -155,6 +159,25 @@
         }
       },
 
+      bindSuggestion() {
+        const element = this.$el.querySelector('.suggestion');
+
+        if (element && !element.clickListener) {
+          element.clickListener = true;
+
+          element.addEventListener('click', event => {
+            event.preventDefault();
+
+            this.form[this.name] = this.suggestion;
+
+            setTimeout(() => {
+              this.input();
+              this.blur();
+            }, 100);
+          });
+        }
+      },
+
     },
 
   };
@@ -163,5 +186,5 @@
 
 
 <style lang="scss" scoped>
-  
+
 </style>

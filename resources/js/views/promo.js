@@ -323,7 +323,7 @@ const promo = new Vue({
           }
 
           const data = {
-            order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
+            order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
           };
 
           return ipqsCheck(data);

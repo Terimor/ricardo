@@ -24,7 +24,10 @@ export default {
         ? checkoutData.product.prices[deal].warranty_price || 0
         : 0;
 
-      return (price + warranty) / exchange_rate;
+      let result = ((price + warranty) / exchange_rate) || 0;
+      result = Math.round(result * 100) / 100;
+
+      return result;
     },
   },
   computed: {

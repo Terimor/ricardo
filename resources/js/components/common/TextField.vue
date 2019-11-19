@@ -20,8 +20,8 @@
         }"
         :value="value">
     </div>
-    <span v-if="warningMessage" class="warning">{{ warningMessage }}</span>
-    <span v-if="invalid" class="error">{{ validationMessage }}</span>
+    <span v-if="warningMessage" class="warning" v-html="warningMessage"></span>
+    <span v-if="invalid" class="error" v-html="validationMessage"></span>
   </label>
 </template>
 
@@ -78,6 +78,10 @@ export default {
 
   .warning {
     color: #2196F3;
+  }
+
+  .suggestion {
+    
   }
 
   &__input {
