@@ -52,7 +52,7 @@ class PaymentService
     const CACHE_TOKEN_TTL_MIN   = 15;
     const CACHE_ERRORS_TTL_MIN  = 1;
 
-    const BILLING_DESCRIPTOR_MAX_LENGTH = 25;
+    const BILLING_DESCRIPTOR_MAX_LENGTH = 20;
 
     /**
      * @var CustomerService $customerService

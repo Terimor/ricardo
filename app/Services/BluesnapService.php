@@ -67,7 +67,7 @@ class BluesnapService
         $this->login = $login;
         $this->password = $password;
         $this->data_protection_key = $protect_key;
-        $this->endpoint = "https://" . $environment === self::ENV_LIVE ? 'ws' : 'sanbox' . ".bluesnap.com/services/2/";
+        $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'ws' : 'sandbox') . '.bluesnap.com/services/2/';
     }
 
     /**
@@ -152,7 +152,7 @@ class BluesnapService
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
             'auth' => [$this->login, $this->password],
-            'headers' => ['Accept' => 'application/json']
+            'headers' => ['Accept'  => 'application/json']
         ]);
 
         $result = [

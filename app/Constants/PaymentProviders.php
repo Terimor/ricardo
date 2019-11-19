@@ -167,7 +167,7 @@ class PaymentProviders {
                             ['value' => 3, 'phrase' => 'checkout.payment_form.installments.pay_3'],
                             ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
                         ],
-                        'default' => 1
+                        'default' => 3
                     ],
                     'state' => [
                         'type'  => 'dropdown',
