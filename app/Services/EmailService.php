@@ -104,7 +104,7 @@ class EmailService
                         // block if recent_abuse, leaked or overall_score = 0
                         if ((isset($res->overall_score) && $res->overall_score == 0) || !empty($res->recent_abuse) || !empty($res->leaked)) {
                             $block = true;
-                            logger()->error("Blocked email", ['email' => $email, 'res' => $res]);
+                            logger()->info("Blocked email", ['email' => $email, 'res' => $res]);
                             try {
                                 throw new \Exception("Blocked email {$email}");
                             } catch (\Exception $ex) {
