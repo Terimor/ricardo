@@ -74,7 +74,8 @@ class OdinModel extends Model
 
                             } else {
                                 // add to changed fields
-                                $fields[] = [$fieldName, $original[$fieldName], $changedField, $isArray];
+                                $originalField = $original[$fieldName] ?? null;
+                                $fields[] = [$fieldName, $originalField, $changedField, $isArray];
                             }
                         }
                     }
