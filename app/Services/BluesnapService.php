@@ -169,9 +169,7 @@ class BluesnapService
             'hash'              => null,
             'payer_id'          => null,
             'provider_data'     => null,
-            // 'redirect_url'      => null,
-            'errors'            => null,
-            // 'token'             => null
+            'errors'            => null
         ];
 
         try {
@@ -182,7 +180,8 @@ class BluesnapService
                     'creditCard'    => $card,
                     'currency'      => $order_details['currency'],
                     'cardTransactionType'   => 'AUTH_CAPTURE',
-                    'softDescriptor'    =>  $order_details['billing_descriptor']
+                    'softDescriptor'    =>  $order_details['billing_descriptor'],
+                    'storeCard'     => true
                 ]
             ]);
 
@@ -208,10 +207,6 @@ class BluesnapService
                     }, $body_decoded['message']);
                 }
             }
-            $result['provider_data'] = [
-                'code' => $ex->getCode(),
-                'message' => $res ? Psr7\str($res) : null
-            ];
             logger()->error("Bluesnap pay", [
                 'code'      => $ex->getCode(),
                 'request'   => Psr7\str($ex->getRequest()),
