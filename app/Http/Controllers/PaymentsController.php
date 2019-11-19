@@ -53,8 +53,8 @@ class PaymentsController extends Controller
         if (!empty($reply['errors'])) {
             $result['errors'] = $reply['errors'];
             PaymentService::cacheErrors([
-                'order_number'  => $reply['order_number'],
-                'errors'        => $reply['errors']
+                'number'    => $reply['order_number'],
+                'errors'    => $reply['errors']
             ]);
         }
         if (!empty($reply['redirect_url'])) {
@@ -114,7 +114,11 @@ class PaymentsController extends Controller
      */
     public function bluesnapWebhook(Request $req): string
     {
-        logger()->info('Bluesnap webhook', ['content' => $req->getContent()]);
+        $type = $req->input('transactionType');
+
+        if (!in_array($type, [BluesnapService::TYPE_WEBHOOK_CHARGE, BluesnapService::TYPE_WEBHOOK_DECLINE])) {
+            logger()->info('Bluesnap unprocessed webhook', ['content' => $req->getContent()]);
+        }
 
         $bluesnap = new BluesnapService();
         $reply = $bluesnap->validateWebhook($req);
@@ -123,6 +127,8 @@ class PaymentsController extends Controller
             logger()->error('Bluesnap unauthorized webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new AuthException('Unauthorized');
         }
+
+        $this->paymentService->approveOrder($reply['txn']);
 
         return $reply['result'];
     }
@@ -160,9 +166,9 @@ class PaymentsController extends Controller
             throw new AuthException('checkout.com captured webhook unauthorized');
         }
 
-        $this->paymentService->rejectTxn($reply);
+        $this->paymentService->rejectTxn($reply['txn']);
 
-        PaymentService::cacheErrors($reply);
+        PaymentService::cacheErrors($reply['txn']);
     }
 
     /**
@@ -205,8 +211,8 @@ class PaymentsController extends Controller
         if (!empty($reply['errors'])) {
             $result['errors'] = $reply['errors'];
             PaymentService::cacheErrors([
-                'order_number'  => $reply['order_number'],
-                'errors'        => $reply['errors']
+                'number'  => $reply['order_number'],
+                'errors'  => $reply['errors']
             ]);
         }
 

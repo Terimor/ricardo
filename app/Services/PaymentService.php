@@ -452,7 +452,7 @@ class PaymentService
         }
 
         // cache token
-        self::setCardToken($order->number, $payment['token']);
+        self::setCardToken($order->number, $payment['token'] ?? null);
 
         // add Txn, update OdinOrder
         if (!empty($payment['hash'])) {
@@ -648,10 +648,17 @@ class PaymentService
      */
     public function approveOrder(array $data): void
     {
-        $order = OdinOrder::getByNumber($data['number']); // throwable
+        $order = null;
+        if (!empty($data['number'])) {
+            $order = OdinOrder::getByNumber($data['number']); // throwable
+        } elseif (!empty($data['hash'])) {
+            $order = OdinOrder::getByTxnHash($data['hash']); // throwable
+        } else {
+            logger()->error('Order approve failed', $data);
+        }
 
         // check webhook reply
-        if (!$order || !in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
+        if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
             return;
         }
 
@@ -707,11 +714,11 @@ class PaymentService
      */
     public function rejectTxn(array $data): void
     {
-        $order = OdinOrder::getByNumber($data['order_number']); // throwable
+        $order = OdinOrder::getByNumber($data['number']); // throwable
 
-        $txn = $order->getTxnByHash($data['txn_hash'], false);
+        $txn = $order->getTxnByHash($data['hash'], false);
         if ($txn) {
-            $txn['status'] = $data['txn_status'];
+            $txn['status'] = $data['status'];
             $order->addTxn($txn);
         }
 
@@ -730,7 +737,7 @@ class PaymentService
      */
     public static function cacheErrors(array $data = []): void
     {
-        $order_number = $data['order_number'] ?? null;
+        $order_number = $data['number'] ?? null;
         $errors = $data['errors'] ?? null;
         if ($order_number && !empty($errors)) {
             $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_ERRORS_TTL_MIN . "M"));

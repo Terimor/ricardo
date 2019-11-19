@@ -450,10 +450,12 @@ class CheckoutDotComService
             $response_code = (string)$data['response_code'];
             $result = [
                 'status'    => true,
-                'errors'    => [CheckoutDotComCodeMapper::toPhrase($response_code)],
-                'txn_status'    => Txn::STATUS_FAILED,
-                'txn_hash'      => $data['id'],
-                'order_number'  => $data['reference']
+                'txn' => [
+                    'errors'    => [CheckoutDotComCodeMapper::toPhrase($response_code)],
+                    'status'    => Txn::STATUS_FAILED,
+                    'hash'      => $data['id'],
+                    'number'    => $data['reference']
+                ]
             ];
         }
 
