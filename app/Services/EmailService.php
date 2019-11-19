@@ -80,7 +80,7 @@ class EmailService
                 try {
                     $result = file_get_contents($url, false, $timeOut);                
                 } catch (\Exception $ex) {                    
-                    logger()->error("Validate email IPQS connection error", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+                    logger()->error("Validate email IPQS connection error", ['email' => $email,'code' => $ex->getCode(), 'message' => $ex->getMessage()]);
                 }
                 if (isset($result)) {
                     $res = json_decode($result);                    
@@ -104,8 +104,12 @@ class EmailService
                         // block if recent_abuse, leaked or overall_score = 0
                         if ((isset($res->overall_score) && $res->overall_score == 0) || !empty($res->recent_abuse) || !empty($res->leaked)) {
                             $block = true;
-                            logger()->error("Blocked email", ['email' => $email, 'res' => $res]);                            
-                            throw new \Exception("Blocked email {$email}");                            
+                            logger()->error("Blocked email", ['email' => $email, 'res' => $res]);
+                            try {
+                                throw new \Exception("Blocked email {$email}");
+                            } catch (\Exception $ex) {
+
+                            }                                                
                         }                        
 
                         break;
