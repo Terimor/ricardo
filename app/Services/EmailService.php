@@ -74,16 +74,15 @@ class EmailService
         if ($email) {
             $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
             $timeOut = stream_context_create(
-                array('http'=>
-                    array(
-                        'timeout' => 5,  
-                    )
-                )
+                ['http'=> ['timeout' => 5 ]]
             );
             for ($i=1; $i<=3; $i++) {
                 try {
                     $result = file_get_contents($url, false, $timeOut);                
-
+                } catch (\Exception $ex) {                    
+                    logger()->error("Validate email IPQS connection error", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+                }
+                if (isset($result)) {
                     $res = json_decode($result);                    
                     if ($res) {
                         // check warning 
@@ -95,11 +94,11 @@ class EmailService
                             $domain = explode('@', $email)[1];
                             $suggest = str_replace($domain, $res->suggested_domain, $email);
                         }
-                        
+
                         if ((isset($res->overall_score) && $res->overall_score > 0)) {
                             $valid = true;
                         }
-                        
+
                         $disposable = $res->disposable ?? false;
 
                         // block if recent_abuse, leaked or overall_score = 0
@@ -108,11 +107,9 @@ class EmailService
                             logger()->error("Blocked email", ['email' => $email, 'res' => $res]);                            
                             throw new \Exception("Blocked email {$email}");                            
                         }                        
-                        
+
                         break;
                     }
-                } catch (\Exception $ex) {                    
-                    logger()->error("Validate email IPQS connection error", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
                 }
             }
         } else {
