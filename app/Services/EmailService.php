@@ -86,13 +86,6 @@ class EmailService
 
                     $res = json_decode($result);                    
                     if ($res) {
-                        // block if recent_abuse, leaked or disposable
-                        if ((isset($res->overall_score) && $res->overall_score == 0) || !empty($res->recent_abuse) || !empty($res->leaked)) {
-                            logger()->error("Blocked email", ['email' => $email, 'res' => $res]);                            
-                            throw new \Exception("Blocked email {$email}");
-                            $block = true;
-                        }
-
                         // check warning 
                         if (!empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
                             $warning = true;
@@ -109,6 +102,13 @@ class EmailService
                         
                         $disposable = $res->disposable ?? false;
 
+                        // block if recent_abuse, leaked or disposable
+                        if ((isset($res->overall_score) && $res->overall_score == 0) || !empty($res->recent_abuse) || !empty($res->leaked)) {
+                            $block = true;
+                            logger()->error("Blocked email", ['email' => $email, 'res' => $res]);                            
+                            throw new \Exception("Blocked email {$email}");                            
+                        }                        
+                        
                         break;
                     }
                 } catch (\Exception $ex) {                    
