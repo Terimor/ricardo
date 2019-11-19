@@ -41,13 +41,10 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/bluesnap-webhook', 'PaymentsController@bluesnapWebhook');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
-    //$router->post('/payment/bluesnap-transaction', 'Payments\BluesnapController@createTransaction')->name('bluesnap-payment');
     $router->get('/test', 'SiteController@test');
     //$router->post('/save-txn', 'OrderController@saveTxn');
     //$router->post('/send-order', 'OrderController@saveOrder');
     //$router->post('/save-customer', 'OrderController@saveCustomer');
-    $router->post('/payments/bluesnap-generate-token', 'Payments\BluesnapController@generateToken');
-    $router->post('/payments/bluesnap-send-transaction', 'Payments\BluesnapController@sendTransaction');
     $router->get('/upsell-product/{productId}', 'ProductController@getUpsellProduct');
 	$router->post('/calculate-upsells-total', 'ProductController@calculateUpsellsTotal');
     $router->get('/order-amount-total/{orderId}', 'OrderController@orderAmountTotal');

@@ -193,7 +193,7 @@ class BluesnapService
                 $result['errors'] = [BluesnapCodeMapper::toPhrase()];
                 logger()->error("Bluesnap pay", ['res' => $res]);
             }
-            $result['provider_data'] = $res->getBody();
+            $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
             if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
