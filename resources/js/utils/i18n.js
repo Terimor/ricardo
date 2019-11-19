@@ -32,7 +32,7 @@ export function t(phrase, args = {}, options = {}) {
       translated = specials[phrase](lang, country, translated);
     }
   } else {
-    console.error('URGENT: `' + phrase + '` not found in translations. Arguments: ' + JSON.stringify(args));
+    logError('URGENT: `' + phrase + '` not found in translations. Arguments: ' + JSON.stringify(args));
   }
 
   for (const key of Object.keys(args)) {
@@ -40,14 +40,14 @@ export function t(phrase, args = {}, options = {}) {
     translated = translated.split(placeholder).join(args[key]);
 
     if (args[key] === undefined || args[key] === null) {
-      console.error('URGENT: Null of undefined placeholder for `' + phrase + '`: ' + placeholder + '. Arguments: ' + JSON.stringify(args));
+      logError('URGENT: Null of undefined placeholder for `' + phrase + '`: ' + placeholder + '. Arguments: ' + JSON.stringify(args));
     }
   }
 
   const nonTranslated = translated.match(/#[A-Z0-9_]+#/g) || [];
 
   if (nonTranslated.length > 0) {
-    console.error('URGENT: Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args));
+    logError('URGENT: Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args));
   }
 
   textarea.innerHTML = translated;
@@ -68,10 +68,19 @@ export function timage(name) {
   if (loadedImages[name] && loadedImages[name].url) {
     translated = loadedImages[name];
   } else {
-    console.error('URGENT: `' + name + '` is in use, but no such key or empty url');
+    logError('URGENT: `' + name + '` is in use, but no such key or empty url');
   }
 
   return translated;
+}
+
+
+function logError(errText) {
+  if (window.Sentry) {
+    Sentry.captureException(errText);
+  }
+
+  console.error(errText);
 }
 
 

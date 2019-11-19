@@ -1,5 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
-import { setEmailValidationRule } from './validators';
+import * as validators from './validators';
 import creditCardType from 'credit-card-type'
 import * as dateFns from 'date-fns';
 
@@ -55,12 +55,6 @@ const vmc4validation = function () {
 		        return creditCardTypeList[0].lengths.includes(val.length) || commonRule;
 					}
 				},
-				month: {
-					required,
-				},
-				year: {
-					required,
-				},
 				cvv: {
 					required,
 					minLength: minLength(3)
@@ -84,7 +78,9 @@ const vmc4validation = function () {
 		}
 	};
 
-	setEmailValidationRule(config.form.stepTwo, 'email');
+	validators.setEmailValidationRule(config.form.stepTwo, 'email');
+	validators.setMonthValidationRule(config.form.stepThree, 'month');
+  validators.setYearValidationRule(config.form.stepThree, 'year');
 
 	this.$parent.setExtraFieldsValidationRules(config.vmc4Form);
 

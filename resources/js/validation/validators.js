@@ -17,3 +17,15 @@ export function setEmailValidationRule(rules, name) {
     type: email,
   };
 }
+
+export function setMonthValidationRule(rules, name) {
+  rules[name] = {
+    required,
+  };
+}
+
+export function setYearValidationRule(rules, name) {
+  rules[name] = {
+    required,
+  };
+}

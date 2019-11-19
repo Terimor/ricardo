@@ -499,6 +499,13 @@
         const phoneNumber = this.form.stepTwo.phone.replace(/[^0-9]/g, '');
         const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
 
+        if (this.form.stepTwo.emailForceInvalid) {
+          return setTimeout(() => {
+            this.paymentError = t('checkout.abuse_error');
+            this.isSubmitted = false;
+          }, 1000);
+        }
+
         let data = {
           deal: this.vmc4Form.deal,
           variant: this.vmc4Form.variant,
@@ -526,6 +533,7 @@
             }
 
             const data = {
+              order_amount: this.getOrderAmount(this.vmc4Form.deal, this.vmc4Form.isWarrantyChecked),
               billing_first_name: this.form.stepTwo.fname,
               billing_last_name: this.form.stepTwo.lname,
               billing_country: this.form.stepThree.country,
@@ -680,7 +688,11 @@
               return this.ipqsResult;
             }
 
-            return ipqsCheck();
+            const data = {
+              order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
+            };
+
+            return ipqsCheck(data);
           })
           .then(ipqsResult => {
             this.ipqsResult = ipqsResult;

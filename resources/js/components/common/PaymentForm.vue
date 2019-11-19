@@ -502,6 +502,13 @@
         const phoneNumber = paymentForm.phone.replace(/[^0-9]/g, '');
         const cardNumber = paymentForm.cardNumber.replace(/\s/g, '');
 
+        if (paymentForm.emailForceInvalid) {
+          return setTimeout(() => {
+            this.paymentError = t('checkout.abuse_error');
+            this.isSubmitted = false;
+          }, 1000);
+        }
+
         let data = {
           deal: paymentForm.deal,
           variant: paymentForm.variant,
@@ -530,6 +537,7 @@
             }
 
             let data = {
+              order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
               billing_first_name: paymentForm.fname,
               billing_last_name: paymentForm.lname,
               billing_country: paymentForm.country,

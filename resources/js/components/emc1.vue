@@ -373,7 +373,6 @@
           imageUrl: it.quantity_image[1],
         }));
       },
-      textDynamicSaleBadge: () => t('checkout.dynamic_sale_badge'),
       textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + checkoutData.countryCode) }),
       textStep: () => t('checkout.step'),
       textChooseDeal: () => t('checkout.choose_deal'),
@@ -451,7 +450,11 @@
               return this.ipqsResult;
             }
 
-            return ipqsCheck();
+            const data = {
+              order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
+            };
+
+            return ipqsCheck(data);
           })
           .then(ipqsResult => {
             this.ipqsResult = ipqsResult;

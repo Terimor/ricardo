@@ -21,7 +21,7 @@
         :value="value">
     </div>
     <span v-if="warningMessage" class="warning">{{ warningMessage }}</span>
-    <span class="error" v-show="invalid">{{validationMessage}}</span>
+    <span v-if="invalid" class="error">{{ validationMessage }}</span>
   </label>
 </template>
 
@@ -37,6 +37,7 @@ export default {
     'validation',
     'validationMessage',
     'warningMessage',
+    'forceInvalid',
     'rest'
   ],
   computed: {
@@ -44,7 +45,7 @@ export default {
       return !!document.querySelector('html[dir="rtl"]');
     },
     invalid() {
-      return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid;
+      return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid || this.forceInvalid;
     }
   },
   methods: {

@@ -493,6 +493,13 @@
         const phoneNumber = this.form.phone.replace(/[^0-9]/g, '');
         const cardNumber = this.form.cardNumber.replace(/\s/g, '');
 
+        if (this.form.emailForceInvalid) {
+          return setTimeout(() => {
+            this.paymentError = t('checkout.abuse_error');
+            this.isSubmitted = false;
+          }, 1000);
+        }
+
         let data = {
           deal: this.form.deal,
           variant: this.form.variant,
@@ -520,6 +527,7 @@
             }
 
             const data = {
+              order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
               billing_first_name: this.form.fname,
               billing_last_name: this.form.lname,
               billing_country: this.form.country,
@@ -621,7 +629,11 @@
               return this.ipqsResult;
             }
 
-            return ipqsCheck();
+            const data = {
+              order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
+            };
+
+            return ipqsCheck(data);
           })
           .then(ipqsResult => {
             this.ipqsResult = ipqsResult;

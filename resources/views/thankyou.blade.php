@@ -86,7 +86,7 @@
             </p>
             <p class="paragraph d-flex justify-content-between">
                 <span>{{ t('thankyou.payment.method') }}:</span>
-                <span>{{ $payment_method['name'] }}</span>
+                <span>{{ $payment_method['name'] ?? '' }}</span>
             </p>
 
             <hr>

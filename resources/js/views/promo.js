@@ -322,7 +322,11 @@ const promo = new Vue({
             return this.ipqsResult;
           }
 
-          return ipqsCheck();
+          const data = {
+            order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
+          };
+
+          return ipqsCheck(data);
         })
         .then(ipqsResult => {
           this.ipqsResult = ipqsResult;

@@ -11,7 +11,21 @@ export default {
       };
 
       localStorage.setItem('selectedProductData', JSON.stringify(selectedProductData));
-    }
+    },
+    getOrderAmount(deal, isWarrantyChecked) {
+      if (!deal || !checkoutData.product.prices[deal]) {
+        return 0;
+      }
+
+      const price = checkoutData.product.prices[deal].value || 0;
+      const exchange_rate = checkoutData.product.prices.exchange_rate || 1;
+
+      const warranty = isWarrantyChecked
+        ? checkoutData.product.prices[deal].warranty_price || 0
+        : 0;
+
+      return (price + warranty) / exchange_rate;
+    },
   },
   computed: {
     isPurchasAlreadyExists() {
