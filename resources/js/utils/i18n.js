@@ -68,16 +68,24 @@ export function timage(name) {
   if (loadedImages[name] && loadedImages[name].url) {
     translated = loadedImages[name];
   } else {
-    logError('URGENT: `' + name + '` is in use, but no such key or empty url');
+    logError('URGENT: `' + name + '` is in use, but no such key or empty url.', {
+      loadedImages: JSON.stringify(window.loadedImages),
+    });
   }
 
   return translated;
 }
 
 
-function logError(errText) {
+function logError(errText, extraParams = {}) {
   if (window.Sentry) {
-    Sentry.captureException(errText);
+    Sentry.withScope(function(scope) {
+      for (let paramName of Object.keys(extraParams)) {
+        scope.setExtra(paramName, extraParams[paramName]);
+      }
+
+      Sentry.captureException(new Error(errText));
+    });
   }
 
   console.error(errText);
