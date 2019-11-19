@@ -152,7 +152,8 @@ class CurrencyService
         'VUV',
         'AFN',
         'KPW',
-        'SDG'
+        'SDG',
+        'STD'
     ];
 
     /**

@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Models\OdinOrder;
 use App\Models\OdinCustomer;
 use Exception;
+use App\Exceptions\BlockEmailException;
 
 /**
  * Email Service class
@@ -104,12 +105,14 @@ class EmailService
                         // block if recent_abuse, leaked or overall_score = 0
                         if (!empty($res->recent_abuse) || !empty($res->leaked)) {
                             $block = true;
-                            logger()->info("Blocked email", ['email' => $email, 'res' => $res]);
-                            try {
-                                throw new \Exception("Blocked email {$email}");
-                            } catch (\Exception $ex) {
-
-                            }                                                
+                            logger()->info("Blocked email", ['email' => $email, 'res' => $res]);                            
+                            throw new BlockEmailException([
+                                'block' => $block,
+                                'warning' => $warning,
+                                'suggest' => $suggest,
+                                'valid' => $valid,
+                                'disposable' => $disposable
+                            ], "Email blocked {$email}, answer: ".json_encode($res));
                         }                        
 
                         break;

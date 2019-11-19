@@ -103,6 +103,8 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'error' => ['code' => $exception->getCode(), 'message' => $message]
                 ], 200);
+            case BlockEmailException::class:
+                return response()->json($exception->getParams(), 200);
             default:
                 return parent::render($request, $exception);
         endswitch;
