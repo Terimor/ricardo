@@ -84,10 +84,10 @@ class EmailService
                 try {
                     $result = file_get_contents($url, false, $timeOut);                
 
-                    $res = json_decode($result);
+                    $res = json_decode($result);                    
                     if ($res) {
                         // block if recent_abuse, leaked or disposable
-                        if ((isset($res->overall_score) && $res->overall_score == 0) || !empty($res->recent_abuse) || !empty($res->leaked) || !empty($res->disposable)) {
+                        if ((isset($res->overall_score) && $res->overall_score == 0) || !empty($res->recent_abuse) || !empty($res->leaked)) {
                             logger()->error("Blocked email", ['email' => $email, 'res' => $res]);                            
                             throw new \Exception("Blocked email {$email}");
                             $block = true;
@@ -106,6 +106,8 @@ class EmailService
                         if ((isset($res->overall_score) && $res->overall_score > 0)) {
                             $valid = true;
                         }
+                        
+                        $disposable = $res->disposable ?? false;
 
                         break;
                     }
@@ -121,7 +123,8 @@ class EmailService
             'block' => $block,
             'warning' => $warning,
             'suggest' => $suggest,
-            'valid' => $valid
+            'valid' => $valid,
+            'disposable' => $disposable
         ];
     }
     
