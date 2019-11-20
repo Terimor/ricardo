@@ -124,33 +124,43 @@ class BluesnapService
      * Provides payment by card
      * @param  array   $card
      * @param  array   $contact
-     * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
+     * @param  array   $order_details ['currency'=>string,'amount'=>float,'billing_descriptor'=>string]
      * @return array
      */
     public function payByCard(array $card, array $contact, array $order_details): array
     {
         return $this->pay(
-            self::createCardObj($card, $contact),
-            self::createCardHolderObj($contact),
+            [
+                'cardHolderInfo'    => self::createCardHolderObj($contact),
+                'creditCard'        => self::createCardObj($card, $contact),
+            ],
             $order_details
         );
     }
 
     /**
+     * Provides payment by vaulted shopper id
+     * @param  array   $shooper_id
+     * @param  array   $order_details ['currency'=>string,'amount'=>float,'billing_descriptor'=>string]
+     * @return array
+     */
+    public function payByVaultedShopperId(string $shopper_id, array $order_details): array
+    {
+        return $this->pay(['vaultedShopperId' => $shopper_id], $order_details);
+    }
+
+    /**
      * Provides payment
-     * @param  array   $card
-     * @param  array   $card_holder
+     * @param  array   $source
      * @param  array   $order_details
      * [
      *  'currency'=>string,
      *  'amount'=>float,
      *  'billing_descriptor'=>string,
-     *  'number'=>string,
-     *  'installments'=>int
      * ]
      * @return array
      */
-    private function pay(array $card, array $card_holder, array $order_details): array
+    private function pay(array $source, array $order_details): array
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
@@ -169,21 +179,21 @@ class BluesnapService
             'hash'              => null,
             'payer_id'          => null,
             'provider_data'     => null,
-            // 'redirect_url'      => null,
-            'errors'            => null,
-            // 'token'             => null
+            'errors'            => null
         ];
 
         try {
             $res = $client->post('transactions', [
-                'json' => [
-                    'amount'        => $order_details['amount'],
-                    'cardHolderInfo'=> $card_holder,
-                    'creditCard'    => $card,
-                    'currency'      => $order_details['currency'],
-                    'cardTransactionType'   => 'AUTH_CAPTURE',
-                    'softDescriptor'    =>  $order_details['billing_descriptor']
-                ]
+                'json' => \array_merge(
+                    [
+                        'amount'        => $order_details['amount'],
+                        'currency'      => $order_details['currency'],
+                        'cardTransactionType'   => 'AUTH_CAPTURE',
+                        'softDescriptor'    =>  $order_details['billing_descriptor'],
+                        'storeCard'     => true
+                    ],
+                    $source
+                )
             ]);
 
             if ($res->getStatusCode() === self::HTTP_CODE_SUCCESS) {
@@ -208,10 +218,6 @@ class BluesnapService
                     }, $body_decoded['message']);
                 }
             }
-            $result['provider_data'] = [
-                'code' => $ex->getCode(),
-                'message' => $res ? Psr7\str($res) : null
-            ];
             logger()->error("Bluesnap pay", [
                 'code'      => $ex->getCode(),
                 'request'   => Psr7\str($ex->getRequest()),

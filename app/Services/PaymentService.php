@@ -503,7 +503,6 @@ class PaymentService
         $order_main_product = $order->getMainProduct(); // throwable
         $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
         $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
-        $card_token = self::getCardToken($order->number);
 
         // prepare upsells result
         $upsells = array_map(function($v) {
@@ -511,7 +510,7 @@ class PaymentService
             return $v;
         }, $upsells);
 
-        if ($this->orderService->checkIfUpsellsPossible($order) && !empty($card_token)) {
+        if ($this->orderService->checkIfUpsellsPossible($order)) {
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
@@ -539,11 +538,13 @@ class PaymentService
                 }
             }
 
+            $payment = [];
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
-                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX) {
-                    $ebanxService = new EbanxService();
-                    $payment = $ebanxService->payByToken(
+                $card_token = self::getCardToken($order->number);
+                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX && $card_token) {
+                    $ebanx = new EbanxService();
+                    $payment = $ebanx->payByToken(
                         $card_token,
                         [
                             'street'            => $order->shipping_street,
@@ -576,9 +577,9 @@ class PaymentService
                             'installments'  => $order->installments
                         ]
                     );
-                } else {
-                    $checkoutService = new CheckoutDotComService();
-                    $payment = $checkoutService->payByToken(
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::CHECKOUTCOM && $card_token) {
+                    $checkout = new CheckoutDotComService();
+                    $payment = $checkout->payByToken(
                         $card_token,
                         ['payer_id' => $order_main_txn['payer_id']],
                         [
@@ -592,11 +593,20 @@ class PaymentService
                             'billing_descriptor'   => ['name' => $main_product->billing_descriptor, 'city' => 'Msida']
                         ]
                     );
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
+                    $bluesnap = new BluesnapService();
+                    $payment = $bluesnap->payByVaultedShopperId(
+                        $order_main_txn['payer_id'],
+                        [
+                            'amount'    => $checkout_price,
+                            'currency'  => $order->currency,
+                            'billing_descriptor'   => $main_product->billing_descriptor
+                        ]
+                    );
                 }
 
                 // update order if transaction is passed
                 if (!empty($payment['hash'])) {
-
                     $upsells = array_map(function($v) use ($payment) {
                         if ($payment['status'] !== Txn::STATUS_FAILED) {
                             $v['status'] = self::STATUS_OK;
@@ -638,7 +648,7 @@ class PaymentService
             'order_currency'    => $order->currency,
             'order_number'      => $order->number,
             'order_id'          => $order->getIdAttribute(),
-            'id'                => isset($payment) && !empty($payment['hash']) ? $payment['hash'] : $order_main_product['txn_hash'],
+            'id'                => $payment['hash'] ?? $order_main_product['txn_hash'],
             'status'            => $order_main_txn['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
             'upsells'           => $upsells
         ];
