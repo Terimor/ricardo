@@ -42,7 +42,8 @@ class Domain extends Model
      */
      public static function getByName($name = null)
      {
-         $name = $name ?? request()->getHost();
+         $host = str_replace('www.', '', request()->getHost());
+         $name = $name ?? $host;
 
          return Domain::where('name', $name)->first();
      }

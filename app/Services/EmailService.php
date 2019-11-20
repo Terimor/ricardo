@@ -81,7 +81,7 @@ class EmailService
                 try {
                     $result = file_get_contents($url, false, $timeOut);                
                 } catch (\Exception $ex) {                    
-                    logger()->error("Validate email IPQS connection error", ['email' => $email,'code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+                    //logger()->error("Validate email IPQS connection error", ['email' => $email,'code' => $ex->getCode(), 'message' => $ex->getMessage()]);
                 }
                 if (isset($result)) {
                     $res = json_decode($result);                    
