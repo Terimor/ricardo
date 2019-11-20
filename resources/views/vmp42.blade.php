@@ -44,39 +44,37 @@
 
             <!-- promo__jumbotron -->
             <div class="fade-wrapper" :class="{'fade-wrapper_empty': !isShownJumbotron}">
-                <transition name="fade">
-                    <div v-if="isShownJumbotron" class="container">
-                        <div class="promo__jumbotron"
-                             @click="scrollTo('.j-header-products')">
-                            <h2 class="promo__heading-battery">{{ t('checkout.promo.title') }}</h2>
-                            <div class="text-content">
-                                <p class="promo__offer">
-                                    <span class="bold">{{ t('checkout.header_banner.prefix') }}:</span>
-                                    {{ $product->long_name }}
-                                </p>
-                                <div class="promo__discount" v-cloak>
-                                    <div>
-                                        <span class="bold">{{ t('checkout.header_banner.price') }}:</span>
-                                        <span class="promo__price--double bold">
-                                            @{{countOfInstallments}} @{{ promoOldPrice }}
-                                        </span>
-                                    </div>
-                                    <span class="promo__price promo__text-red bold">
-                                        @{{countOfInstallments}} @{{ promoPriceText }}
+                <div v-if="isShownJumbotron" class="container">
+                    <div class="promo__jumbotron"
+                         @click="scrollTo('.j-header-products')">
+                        <h2 class="promo__heading-battery">{{ t('checkout.promo.title') }}</h2>
+                        <div class="text-content">
+                            <p class="promo__offer">
+                                <span class="bold">{{ t('checkout.header_banner.prefix') }}:</span>
+                                {{ $product->long_name }}
+                            </p>
+                            <div class="promo__discount" v-cloak>
+                                <div>
+                                    <span class="bold">{{ t('checkout.header_banner.price') }}:</span>
+                                    <span class="promo__price--double bold">
+                                        @{{countOfInstallments}} @{{ promoOldPrice }}
                                     </span>
                                 </div>
-                            </div>
-                            <h3>
-                                <span class="promo__go-to-selector promo__text-red" v-cloak>
-                                    @{{ textPromoDiscount }}
+                                <span class="promo__price promo__text-red bold">
+                                    @{{countOfInstallments}} @{{ promoPriceText }}
                                 </span>
-                            </h3>
-                            <div class="promo__subtitle">
-                                <div>{{ t('checkout.promo.subtitle') }}</div>
                             </div>
                         </div>
+                        <h3>
+                            <span class="promo__go-to-selector promo__text-red" v-cloak>
+                                @{{ textPromoDiscount }}
+                            </span>
+                        </h3>
+                        <div class="promo__subtitle">
+                            <div>{{ t('checkout.promo.subtitle') }}</div>
+                        </div>
                     </div>
-                </transition>
+                </div>
             </div>
             <!-- promo__jumbotron end -->
 
@@ -123,9 +121,10 @@
                                             <strong>@{{ item.discountName || textDiscountStarter }}</strong>
                                         </div>
                                         <div class="promo__product-content">
-                                            <img :src="item.image"
+                                            <img
                                                  :alt="item.textComposite"
                                                  class="promo__discount-image"
+                                                 :src="productImages[item.totalQuantity] || item.image"
                                             >
                                             <div class="promo__product-info-wrapper">
                                                 <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
@@ -278,7 +277,7 @@
                     </div>
                 </section>
 
-                <section class="promo__reviews">
+                <!--<section class="promo__reviews">
                     <div class="container">
                         <h2 class="promo__title">
                             {{ t('checkout.happy_users', ['product' => $product->product_name]) }}
@@ -305,11 +304,11 @@
                             </div>
                         </div>
                     </div>
-                </section>
+                </section>-->
             </template>
 
 
-            <section v-if="isShownFooter" class="promo__scroll-to-top">
+            <section v-if="!selectedPlan" class="promo__scroll-to-top">
                 <div class="container">
                     <div class="promo__people-rate-block">
                         <h1 class="bold promo__title">

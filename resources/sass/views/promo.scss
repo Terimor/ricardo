@@ -571,7 +571,7 @@ header {
     &__step {
       flex: 0 0 100% ;
       padding: 0 0 30px 0;
-      transition: all .67s;
+      transition: all .3s;
       &__title {
         margin-top: 0;
       }
@@ -611,7 +611,7 @@ header {
     }
   }
   .fade-enter-active, .fade-leave-active {
-    transition: opacity .67s;
+    transition: opacity .3s;
   }
   .fade-enter, .fade-leave-to  {
     opacity: 0;
