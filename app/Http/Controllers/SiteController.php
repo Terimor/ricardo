@@ -13,6 +13,7 @@ use App\Services\OrderService;
 use App\Constants\PaymentMethods;
 use Cache;
 use App\Models\OdinOrder;
+use App\Models\Domain;
 
 class SiteController extends Controller
 {
@@ -87,7 +88,9 @@ class SiteController extends Controller
     {
         $loadedPhrases = (new I18nService())->loadPhrases('terms_page');
         $product = $productService->resolveProduct($request, true);
-        return view('terms', compact('loadedPhrases', 'product'));
+        $domain = Domain::getByName();        
+        $domainName = $domain ? (!empty($domain->display_name) ? $domain->display_name : $domain->name) : '';
+        return view('terms', compact('loadedPhrases', 'product', 'domainName'));
     }
 
      /**
