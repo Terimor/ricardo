@@ -75,7 +75,7 @@ class EmailService
         if ($email) {
             $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}";
             $timeOut = stream_context_create(
-                ['http'=> ['timeout' => 5 ]]
+                ['http'=> ['timeout' => 3 ]]
             );
             for ($i=1; $i<=3; $i++) {
                 try {

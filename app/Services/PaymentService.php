@@ -53,6 +53,8 @@ class PaymentService
     const CACHE_ERRORS_TTL_MIN  = 1;
 
     const BILLING_DESCRIPTOR_MAX_LENGTH = 20;
+    const BILLING_DESCRIPTOR_COUNTRIES = ['us', 'ca'];
+    const BILLING_DESCRIPTOR_COUNTRIES_CODE = '888-743-8103';
 
     /**
      * @var CustomerService $customerService
@@ -431,7 +433,7 @@ class PaymentService
                 ]
             );
         } else {
-            $billing_descriptor = $product->billing_descriptor;
+            $billing_descriptor = $product->getPaymentBillingDescriptor($contact['country']);
             $checkoutService = new CheckoutDotComService();
             $payment = $checkoutService->payByCard($card, $contact, [
                 'amount'    => $order->total_price,

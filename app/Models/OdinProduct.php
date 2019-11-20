@@ -311,6 +311,23 @@ class OdinProduct extends Model
         }        
         return $value;
     }
+    
+    /**
+     * Return payment billing descriptor
+     * @param type $countryCode
+     * @return string
+     */
+    public function getPaymentBillingDescriptor($countryCode = null)
+    {
+        $value = $this->billing_descriptror;
+        if ($countryCode && in_array(PaymentService::BILLING_DESCRIPTOR_COUNTRIES, strtolower($countryCode))) {
+            $value =  PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.$value;
+        }
+        if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
+            $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
+        }
+        return $value;
+    }
 
     /**
      * Return image
