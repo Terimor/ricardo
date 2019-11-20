@@ -320,7 +320,7 @@ class OdinProduct extends Model
     public function getPaymentBillingDescriptor($countryCode = null)
     {
         $value = $this->billing_descriptror;
-        if ($countryCode && in_array(PaymentService::BILLING_DESCRIPTOR_COUNTRIES, strtolower($countryCode))) {
+        if ($countryCode && in_array(strtolower($countryCode), PaymentService::BILLING_DESCRIPTOR_COUNTRIES)) {
             $value =  PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.$value;
         }
         if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
