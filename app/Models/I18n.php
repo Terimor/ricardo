@@ -89,7 +89,7 @@ class I18n extends Model
         '#TRACKING_LINK#',
         '#CODE#',
         '#DOMAIN#',
-        '#DOMAINNAME#',
+        '#WEBSITENAME#',
         '#LANGUAGE#',
         '#SHIPPING_DAYS#',
         '#SUPPORTER#',
