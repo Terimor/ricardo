@@ -128,9 +128,9 @@
                         </div>
                         <div class="promo__product-content">
                             <img
-                                :src="item.image"
                                 :alt="item.textComposite"
                                 class="promo__discount-image"
+                                :src="productImages[item.totalQuantity] || item.image"
                             >
                             <div class="promo__product-info-wrapper">
                                 <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
@@ -178,7 +178,7 @@
                         <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/NewYourToday_3.png" alt="">
                     </carousel>
                 </section>
-                <section class="promo__reviews">
+                <!--<section class="promo__reviews">
                     <h2 class="promo__title">
                         {{ t('checkout.happy_users', ['product' => $product->product_name]) }}
                     </h2>
@@ -246,7 +246,7 @@
                             </div>
                         </div>
                     </div>
-                </section>
+                </section>-->
             </template>
         </div>
         <div

@@ -222,6 +222,10 @@ const promo = new Vue({
       });
     },
 
+    productImages() {
+      return checkoutData.product.skus && checkoutData.product.skus[0] && checkoutData.product.skus[0].quantity_image || {};
+    },
+
     promoPriceText() {
       const prices = checkoutData.product.prices;
 
