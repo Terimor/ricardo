@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use app\models\OdinProduct;
 
 /**
  * Class Category
@@ -26,6 +25,14 @@ class Domain extends Model
     protected $fillable = [
         'name', 'logo', 'odin_product_id', 'ga_id', 'display_name'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function product()
+    {
+        return $this->hasOne(OdinProduct::class, '_id', 'odin_product_id');
+    }
 
     /**
      * Returns domain by name
