@@ -2,7 +2,8 @@
 
 namespace App\Constants;
 
-class PaymentProviders {
+class PaymentProviders
+{
     const PAYPAL           = 'paypal';
     const EBANX            = 'ebanx';
     const CHECKOUTCOM      = 'checkoutcom';
@@ -17,6 +18,7 @@ class PaymentProviders {
         self::PAYPAL => [
             'name'      => 'PayPal',
             'is_active' => true,
+            'is_main'   => true,
             'in_prod'   => true,
             'methods'   => [
                 PaymentMethods::INSTANT_TRANSFER => [
@@ -27,6 +29,7 @@ class PaymentProviders {
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
             'is_active' => true,
+            'is_main'   => true,
             'in_prod'   => true,
             'methods'   => [
                 PaymentMethods::CREDITCARD => [
@@ -66,9 +69,10 @@ class PaymentProviders {
                 ],
             ]
         ],
-        self::EBANX       => [
+        self::EBANX => [
             'name'      => 'EBANX',
             'is_active' => true,
+            'is_main'   => true,
             'in_prod'   => true,
             'extra_fields'  => [
                 'ar' => [
@@ -374,96 +378,47 @@ class PaymentProviders {
                 ]
             ]
         ],
-        self::BLUESNAP    => [
+        self::BLUESNAP  => [
             'name'      => 'Bluesnap',
-            'is_active' => false,
+            'is_active' => true,
+            'is_main'   => false,
             'in_prod'   => false,
-            'extra_fields'  => [
-                'br' => [
-                    'district' => [
-                        'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
-                    ],
-                    'document_type'     => [
-                        'type'  => 'dropdown',
-                        'items' => [
-                            ['value' => 'CNPJ', 'label' => 'Cadastro Nacional da Pessoa Jurídica'],
-                            ['value' => 'CPF', 'label' => 'Cadastro de Pessoas Físicas']
-                        ],
-                        'default'   => 'CUIT'
-                    ],
-                    'document_number'   => [
-                        'type'  => 'text',
-                        'pattern' => [
-                            'CNPJ'  => '^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$',
-                            'CPF'   => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$'
-                        ],
-                        'placeholder' => [
-                            'CPF'   => 'xxx.xxx.xxx-xx',
-                            'CNPJ'  => 'xx.xxx.xxx/xxxx-xx'
-                        ]
-                    ],
-                    'state' => [
-                        'type'  => 'dropdown',
-                        'items' => [
-                            ['value' => 'DF', 'label' => 'Distrito Federal'],
-                            ['value' => 'AC', 'label' => 'Acre'],
-                            ['value' => 'AL', 'label' => 'Alagoas'],
-                            ['value' => 'AP', 'label' => 'Amapá'],
-                            ['value' => 'AM', 'label' => 'Amazonas'],
-                            ['value' => 'BA', 'label' => 'Bahia'],
-                            ['value' => 'CE', 'label' => 'Ceará'],
-                            ['value' => 'ES', 'label' => 'Espírito Santo'],
-                            ['value' => 'GO', 'label' => 'Goiás'],
-                            ['value' => 'MA', 'label' => 'Maranhão'],
-                            ['value' => 'MT', 'label' => 'Mato Grosso'],
-                            ['value' => 'MS', 'label' => 'Mato Grosso do Sul'],
-                            ['value' => 'MG', 'label' => 'Minas Gerais'],
-                            ['value' => 'PA', 'label' => 'Pará'],
-                            ['value' => 'PB', 'label' => 'Paraíba'],
-                            ['value' => 'PR', 'label' => 'Paraná'],
-                            ['value' => 'PE', 'label' => 'Pernambuco'],
-                            ['value' => 'PI', 'label' => 'Piauí'],
-                            ['value' => 'RJ', 'label' => 'Rio de Janeiro'],
-                            ['value' => 'RN', 'label' => 'Rio Grande do Norte'],
-                            ['value' => 'RS', 'label' => 'Rio Grande do Sul'],
-                            ['value' => 'RO', 'label' => 'Rondônia'],
-                            ['value' => 'RR', 'label' => 'Roraima'],
-                            ['value' => 'SC', 'label' => 'Santa Catarina'],
-                            ['value' => 'SP', 'label' => 'São Paulo'],
-                            ['value' => 'SE', 'label' => 'Sergipe'],
-                            ['value' => 'TO', 'label' => 'Tocantins']
-                        ],
-                        'default' => 'DF'
-                    ]
-                ]
-            ],
             'methods'   => [
-                PaymentMethods::MASTERCARD => [
-                    '-3ds' => ['br']
+                PaymentMethods::CREDITCARD => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::VISA => [
-                    '-3ds' => ['br']
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::MASTERCARD => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::AMEX => [
-                    '-3ds' => ['br']
-                ],
-                PaymentMethods::JCB => [
-                    '-3ds' => ['br']
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::DISCOVER => [
-                    '-3ds' => ['br'],
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
-                PaymentMethods::HIPERCARD => [
-                    '-3ds' => ['br']
+                PaymentMethods::DINERSCLUB => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::JCB => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ]
             ]
         ],
-        self::NOVALNET    => [
-            'name'      => 'Novalnet',
-            'is_active' => false,
-            'in_prod'   => false,
-            'methods'   => [
+        self::NOVALNET  => [
+            'name'          => 'Novalnet',
+            'is_active'     => false,
+            'in_prod'       => false,
+            'methods'       => [
                 PaymentMethods::PREZELEWY24 => [
                     '-3ds' => ['pl']
                 ],
@@ -476,4 +431,16 @@ class PaymentProviders {
             ]
         ]
     ];
+
+    /**
+     * Checks is provider active
+     * @param  string  $name
+     * @param  boolean $is_main
+     * @return bool
+     */
+    public static function isActive(string $name, bool $is_main = true): bool
+    {
+        $is_active_in_env = \App::environment() === 'production' ? self::$list[$name]['in_prod'] : true;
+        return self::$list[$name]['is_active'] && self::$list[$name]['is_main'] === $is_main && $is_active_in_env;
+    }
 }

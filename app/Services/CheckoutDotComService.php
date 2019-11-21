@@ -47,6 +47,11 @@ class CheckoutDotComService
     const REPORTING_API_URL = 'https://api.checkout.com/reporting/';
 
     /**
+     * @var array
+     */
+    private static $fallback_codes = ['20005'];
+
+    /**
      * @var string
      */
     private $secret_key;
@@ -318,13 +323,14 @@ class CheckoutDotComService
 
         $result = [
             'fee'               => 0,
+            'fallback'          => false,
             'is_flagged'        => false,
             'currency'          => $order_details['currency'],
             'value'             => $order_details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::CHECKOUTCOM,
             'payment_method'    => PaymentMethods::CREDITCARD,
-            'hash'              => null,
+            'hash'              => "fail_" . UtilsService::randomString(16),
             'payer_id'          => null,
             'provider_data'     => null,
             'redirect_url'      => null,
@@ -353,6 +359,9 @@ class CheckoutDotComService
                     $result['status']       = Txn::STATUS_AUTHORIZED;
                     $result['is_flagged']   = true;
                 } else {
+                    if (in_array($response_code, self::$fallback_codes)) {
+                        $result['fallback'] = true;
+                    }
                     $result['errors']  = [CheckoutDotComCodeMapper::toPhrase($response_code)];
                 }
             } elseif ($res->http_code === 202 && $res->status === self::STATUS_PENDING) { // pending 3ds
