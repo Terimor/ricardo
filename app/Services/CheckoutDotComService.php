@@ -293,8 +293,7 @@ class CheckoutDotComService
     {
         $payment = new Payment($source, $order_details['currency']);
         $payment->reference = $order_details['number'];
-        $payment->amount = 12305;
-        // $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
+        $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
         $payment->description = $order_details['description'];
         $payment->billing_descriptor = (object)$order_details['billing_descriptor'];
         if (!empty($contact['payer_id'])) {
