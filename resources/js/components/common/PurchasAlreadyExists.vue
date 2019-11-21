@@ -11,7 +11,7 @@ export default {
   computed: {
     textAlert: () => t('checkout.purchase_exists', {
       order: localStorage.getItem('order_number'),
-      email: 'help@support-deals.com',
+      email: 'support@maxdeals.ltd',
     }),
   },
 }
