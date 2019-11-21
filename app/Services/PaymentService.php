@@ -468,7 +468,7 @@ class PaymentService
         $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
         if (!empty($payment['fallback']) && $fallback_provider === PaymentProviders::BLUESNAP) {
 
-            logger()->info("Bluesnap fallback order [${$order->number}]");
+            logger()->info("Bluesnap fallback order [{$order->number}]");
 
             $bluesnap = new BluesnapService();
             $payment = $bluesnap->payByCard(
