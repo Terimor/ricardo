@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
@@ -483,16 +482,14 @@ class PaymentService
         self::setCardToken($order->number, $payment['token'] ?? null);
 
         // add Txn, update OdinOrder
-        if (!empty($payment['hash'])) {
-            $order_product['txn_hash'] = $payment['hash'];
-            $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
-            $order->addProduct($order_product, true);
-            $order->is_flagged = $payment['is_flagged'];
-            if (!$order->save()) {
-                $validator = $order->validate();
-                if ($validator->fails()) {
-                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                }
+        $order_product['txn_hash'] = $payment['hash'];
+        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+        $order->addProduct($order_product, true);
+        $order->is_flagged = $payment['is_flagged'];
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
             }
         }
 
@@ -614,9 +611,12 @@ class PaymentService
                             'ip'        => $order->ip,
                             'id'        => $order->getIdAttribute(),
                             'number'    => $order->number,
-                            'description'   => implode(', ', array_column($products, 'product_name')),
+                            'description' => implode(', ', array_column($products, 'product_name')),
                             // TODO: remove city hardcode
-                            'billing_descriptor'   => ['name' => $main_product->billing_descriptor, 'city' => 'Msida']
+                            'billing_descriptor' => [
+                                'name' => $main_product->getPaymentBillingDescriptor($order->shipping_country),
+                                'city' => 'Msida'
+                            ]
                         ]
                     );
                 } elseif ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
@@ -626,45 +626,43 @@ class PaymentService
                         [
                             'amount'    => $checkout_price,
                             'currency'  => $order->currency,
-                            'billing_descriptor'   => $main_product->billing_descriptor
+                            'billing_descriptor' => $main_product->getPaymentBillingDescriptor($order->shipping_country)
                         ]
                     );
                 }
 
-                // update order if transaction is passed
-                if (!empty($payment['hash'])) {
-                    $upsells = array_map(function($v) use ($payment) {
-                        if ($payment['status'] !== Txn::STATUS_FAILED) {
-                            $v['status'] = self::STATUS_OK;
-                        } else {
-                            $v['status'] = self::STATUS_FAIL;
-                            $v['errors'] = $payment['errors'];
-                        }
-                        return $v;
-                    }, $upsells);
-
-                    // add upsell products
-                    foreach ($upsell_products as $item) {
-                        $item['txn_hash'] = $payment['hash'];
-                        $order->addProduct($item);
+                // update order
+                $upsells = array_map(function($v) use ($payment) {
+                    if ($payment['status'] !== Txn::STATUS_FAILED) {
+                        $v['status'] = self::STATUS_OK;
+                    } else {
+                        $v['status'] = self::STATUS_FAIL;
+                        $v['errors'] = $payment['errors'];
                     }
+                    return $v;
+                }, $upsells);
 
-                    $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method'], $order_main_txn['card_type']);
+                // add upsell products
+                foreach ($upsell_products as $item) {
+                    $item['txn_hash'] = $payment['hash'];
+                    $order->addProduct($item);
+                }
 
-                    if ($order->status === OdinOrder::STATUS_PAID) {
-                        $order->status = OdinOrder::STATUS_HALFPAID;
-                    }
+                $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method'], $order_main_txn['card_type']);
 
-                    $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
-                    $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
-                    $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($order->total_price / $order->exchange_rate, Currency::DEF_CUR);
-                    $order->is_invoice_sent = false;
+                if ($order->status === OdinOrder::STATUS_PAID) {
+                    $order->status = OdinOrder::STATUS_HALFPAID;
+                }
 
-                    if (!$order->save()) {
-                        $validator = $order->validate();
-                        if ($validator->fails()) {
-                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                        }
+                $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
+                $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
+                $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($order->total_price / $order->exchange_rate, Currency::DEF_CUR);
+                $order->is_invoice_sent = false;
+
+                if (!$order->save()) {
+                    $validator = $order->validate();
+                    if ($validator->fails()) {
+                        throw new OrderUpdateException(json_encode($validator->errors()->all()));
                     }
                 }
             }

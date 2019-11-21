@@ -176,7 +176,7 @@ class BluesnapService
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::BLUESNAP,
             'payment_method'    => PaymentMethods::CREDITCARD,
-            'hash'              => null,
+            'hash'              => "fail_" . UtilsService::randomString(),
             'payer_id'          => null,
             'provider_data'     => null,
             'errors'            => null
@@ -210,6 +210,7 @@ class BluesnapService
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
+            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => null];
             if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
                 $body_decoded = \json_decode($res->getBody(), true);
                 if (!empty($body_decoded['message'])) {
@@ -217,11 +218,11 @@ class BluesnapService
                         return BluesnapCodeMapper::toPhrase($v['errorName']);
                     }, $body_decoded['message']);
                 }
+                $result['provider_data']['res'] = $body_decoded;
             }
             logger()->error("Bluesnap pay", [
-                'code'      => $ex->getCode(),
                 'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $result['provider_data']['message']
+                'response'  => $result['provider_data']
             ]);
         }
         return $result;

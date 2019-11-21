@@ -330,7 +330,7 @@ class CheckoutDotComService
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::CHECKOUTCOM,
             'payment_method'    => PaymentMethods::CREDITCARD,
-            'hash'              => null,
+            'hash'              => "fail_" . UtilsService::randomString(),
             'payer_id'          => null,
             'provider_data'     => null,
             'redirect_url'      => null,
