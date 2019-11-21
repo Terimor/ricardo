@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
+use app\models\OdinProduct;
 
 /**
  * Class Category
@@ -27,14 +28,6 @@ class Domain extends Model
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function product()
-    {
-        return $this->hasOne(OdinProduct::class, '_id', 'odin_product_id');
-    }
-
-    /**
      * Returns domain by name
      *
      * @param null $name
@@ -47,4 +40,46 @@ class Domain extends Model
 
          return Domain::where('name', $name)->first();
      }
+     
+    /**
+     * Returns domain by product id
+     * @param string id
+     * @return Domain|null
+     */
+     public static function getByProductId($id): ?Domain {
+         return Domain::where('odin_product_id', (string)$id)->first();
+     }
+     
+    /**
+     * Returns domain by request parameters
+     * @param array $request
+     * @return Domain|null
+     */
+     public static function getByRequest($request): ?Domain
+     {         
+         $domain = null;
+         // check by cop_id
+         if ($request->get('cop_id')) {
+             $product = OdinProduct::getByCopId($request->get('cop_id'));
+             if ($product) {
+                 $domain = static::getByProductId($product->_id);
+             }
+         }
+         
+         // check by sku
+         if (!$domain && $request->get('product')) {
+             $product = OdinProduct::getBySku($request->get('product'));
+             if ($product) {
+                 $domain = static::getByProductId($product->_id);
+             }
+         }
+         
+         if (!$domain) {
+            $host = str_replace('www.', '', request()->getHost());
+            $name = $name ?? $host;
+            $domain = Domain::where('name', $name)->first();
+         }
+
+         return $domain;
+     }     
 }
