@@ -462,6 +462,8 @@ class PaymentService
             );
         }
 
+        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+
         // check is this fallback
         $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
         if (!empty($payment['fallback']) && $fallback_provider === PaymentProviders::BLUESNAP) {
@@ -476,6 +478,7 @@ class PaymentService
                     'billing_descriptor'   => $order->billing_descriptor
                 ]
             );
+            $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
         }
 
         // cache token
@@ -483,7 +486,6 @@ class PaymentService
 
         // add Txn, update OdinOrder
         $order_product['txn_hash'] = $payment['hash'];
-        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
         $order->addProduct($order_product, true);
         $order->is_flagged = $payment['is_flagged'];
         if (!$order->save()) {
