@@ -223,13 +223,13 @@ class ProductService
             if (!$sku['is_published']) {
                 continue;
             }
-
-            $skus[$key]['code'] = $sku['code'];
-            $skus[$key]['name'] = $sku['name'];
-            $skus[$key]['brief'] = $sku['brief'];
-            $skus[$key]['has_battery'] = $sku['has_battery'];
-            $skus[$key]['quantity_image'] = $sku['quantity_image'];
-
+            $skus[] = [
+                'code' => $sku['code'],
+                'name' => $sku['name'],
+                'brief' => $sku['brief'],
+                'has_battery' => $sku['has_battery'],
+                'quantity_image' => $sku['quantity_image'],
+            ];
         }
         $lp->skus = $skus;
 
