@@ -293,8 +293,7 @@ class CheckoutDotComService
     {
         $payment = new Payment($source, $order_details['currency']);
         $payment->reference = $order_details['number'];
-        $payment->amount = 12305;
-        // $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
+        $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
         $payment->description = $order_details['description'];
         $payment->billing_descriptor = (object)$order_details['billing_descriptor'];
         if (!empty($contact['payer_id'])) {
@@ -315,12 +314,12 @@ class CheckoutDotComService
         $payment->payment_ip = $order_details['ip'];
 
         // enable 3ds
-        // if ($source instanceof CardSource) {
-        //     $qs = http_build_query(['order' => $order_details['id']]);
-        //     $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
-        //     $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
-        //     $payment->{'3ds'} = (object)['enabled' => $order_details['3ds'] ?? false];
-        // }
+        if ($source instanceof CardSource) {
+            $qs = http_build_query(['order' => $order_details['id']]);
+            $payment->success_url = request()->getSchemeAndHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
+            $payment->failure_url = request()->getSchemeAndHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
+            $payment->{'3ds'} = (object)['enabled' => $order_details['3ds'] ?? false];
+        }
 
         $result = [
             'fee'               => 0,
