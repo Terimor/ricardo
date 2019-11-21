@@ -82,9 +82,7 @@ class Domain extends Model
          }
          
          if (!$domain) {
-            $host = str_replace('www.', '', request()->getHost());
-            $name = $name ?? $host;
-            $domain = Domain::where('name', $name)->first();
+            $domain = Domain::getByName();
          }
 
          return $domain;
