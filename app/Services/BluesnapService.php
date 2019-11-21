@@ -176,7 +176,7 @@ class BluesnapService
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::BLUESNAP,
             'payment_method'    => PaymentMethods::CREDITCARD,
-            'hash'              => "fail_" . UtilsService::randomString(),
+            'hash'              => "fail_" . UtilsService::randomString(16),
             'payer_id'          => null,
             'provider_data'     => null,
             'errors'            => null
