@@ -198,24 +198,7 @@ class PaymentsController extends Controller
 
     public function test(PaymentCardCreateOrderRequest $req)
     {
-        $reply = $this->paymentService->testBluesnapOrder($req);
-
-        $result = [
-            'order_currency'    => $reply['order_currency'],
-            'order_number'      => $reply['order_number'],
-            'order_id'          => $reply['order_id'],
-            'id'                => $reply['id'],
-            'status'            => $reply['status']
-        ];
-
-        if (!empty($reply['errors'])) {
-            $result['errors'] = $reply['errors'];
-            PaymentService::cacheErrors([
-                'number'  => $reply['order_number'],
-                'errors'  => $reply['errors']
-            ]);
-        }
-
-        return $result;
+        $method = \App\Mappers\PaymentMethodMapper::toMethod($req->input('card.number'));
+        return PaymentService::getProviderByCountryAndMethod($req->input('address.country'), $method, true);
     }
 }

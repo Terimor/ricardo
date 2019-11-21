@@ -355,6 +355,7 @@ class PaymentService
             $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
             $order = $this->addOrder([
+                'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
                 'currency'              => $price['currency'],
                 'exchange_rate'         => $price['usd_rate'],
                 'total_paid'            => 0,
@@ -432,8 +433,7 @@ class PaymentService
                     'installments'  => $installments
                 ]
             );
-        } else {
-            $billing_descriptor = $product->getPaymentBillingDescriptor($contact['country']);
+        } elseif ($provider === PaymentProviders::CHECKOUTCOM) {
             $checkoutService = new CheckoutDotComService();
             $payment = $checkoutService->payByCard($card, $contact, [
                 'amount'    => $order->total_price,
@@ -444,13 +444,39 @@ class PaymentService
                 '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
                 'description'   => $product->product_name,
                 // TODO: remove city hardcode
-                'billing_descriptor'   => ['name' => $billing_descriptor, 'city' => 'Msida']
+                'billing_descriptor'   => ['name' => $order->billing_descriptor, 'city' => 'Msida']
             ]);
-            // save billing_descriptor to order
-            $order->billing_descriptor = $billing_descriptor;
             if ($payment['status'] !== Txn::STATUS_FAILED) {
                 $payment['token'] = $checkoutService->requestToken($card, $contact);
             }
+        } else if ($provider === PaymentProviders::BLUESNAP) {
+            $bluesnap = new BluesnapService();
+            $payment = $bluesnap->payByCard(
+                $card,
+                $contact,
+                [
+                    'amount'        => $order->total_price,
+                    'currency'      => $order->currency,
+                    'number'        => $order->number,
+                    'billing_descriptor'   => $order->billing_descriptor
+                ]
+            );
+        }
+
+        // check is this fallback
+        $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
+        if ($fallback_provider === PaymentProviders::BLUESNAP) {
+            $bluesnap = new BluesnapService();
+            $payment = $bluesnap->payByCard(
+                $card,
+                $contact,
+                [
+                    'amount'        => $order->total_price,
+                    'currency'      => $order->currency,
+                    'number'        => $order->number,
+                    'billing_descriptor'   => $order->billing_descriptor
+                ]
+            );
         }
 
         // cache token
@@ -802,44 +828,35 @@ class PaymentService
      *   ]
      * ];
      * @param string $country
+     * @param bool   $is_main default=true
      * @return boolean
      */
-    public static function getPaymentMethodsByCountry(string $country)
+    public static function getPaymentMethodsByCountry(string $country, bool $is_main = true)
     {
         $country = strtolower($country);
         $result = [];
-        foreach (PaymentProviders::$list as $providerId => $provider)
-        {
-            $is_pass_method = \App::environment() === 'production' ? $provider['in_prod'] : true;
-            if ($provider['is_active'] && $is_pass_method)
-            {
+        foreach (PaymentProviders::$list as $providerId => $provider) {
+            if (PaymentProviders::isActive($providerId, $is_main)) {
                 $result[$providerId] = [];
 
                 //check every method of provider
-                foreach ($provider['methods'] as $methodId => $method)
-                {
-                    if (PaymentMethods::$list[$methodId]['is_active'])
-                    {
+                foreach ($provider['methods'] as $methodId => $method) {
+                    if (PaymentMethods::$list[$methodId]['is_active']) {
                         //check 3DS settings
-                        if (!empty($method['+3ds']) && static::checkIfMethodInCountries($country, $method['+3ds']))
-                        {
+                        if (!empty($method['+3ds']) && static::checkIfMethodInCountries($country, $method['+3ds'])) {
                             $result[$providerId][$methodId] = ['3ds' => true];
-                        } elseif (!empty($method['-3ds']) && static::checkIfMethodInCountries($country, $method['-3ds']))
-                        {
+                        } elseif (!empty($method['-3ds']) && static::checkIfMethodInCountries($country, $method['-3ds'])) {
                             $result[$providerId][$methodId] = ['3ds' => false];
                         }
 
                         //check if country is excluded
-                        if (!empty($method['excl']) && static::checkIfMethodInCountries($country, $method['excl']))
-                        {
+                        if (!empty($method['excl']) && static::checkIfMethodInCountries($country, $method['excl'])) {
                             unset($result[$providerId][$methodId]);
                         }
                     }
                 }
-                if ($result[$providerId])
-                {
-                    foreach ($result[$providerId] as $methodId => &$methodData)
-                    {
+                if ($result[$providerId]) {
+                    foreach ($result[$providerId] as $methodId => &$methodData) {
                         $method             = PaymentMethods::$list[$methodId];
                         $methodData['name'] = $method['name'];
                         $methodData['logo'] = $method['logo'];
@@ -847,8 +864,7 @@ class PaymentService
                             $methodData['extra_fields'] = $provider['extra_fields'][$country];
                         }
                     }
-                } else
-                {
+                } else {
                     //no suitable methods found for this provider
                     unset($result[$providerId]);
                 }
@@ -861,13 +877,14 @@ class PaymentService
      * Returns available provider for country and payment method
      * @param   string $country
      * @param   string $method
+     * @param   bool   $is_main
      * @param   string $pref default=checkoutcom
      * @param   array  $excl default=[]
      * @return  string|null
      */
-    public static function getProviderByCountryAndMethod(string $country, string $method, string $pref = PaymentProviders::CHECKOUTCOM, array $excl = []): ?string
+    public static function getProviderByCountryAndMethod(string $country, string $method, bool $is_main = true, string $pref = PaymentProviders::CHECKOUTCOM, array $excl = []): ?string
     {
-        $providers = self::getPaymentMethodsByCountry($country);
+        $providers = self::getPaymentMethodsByCountry($country, $is_main);
 
         if (!EbanxService::isCountrySupported($country)) {
             $excl[] = PaymentProviders::EBANX;
@@ -956,147 +973,6 @@ class PaymentService
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
                 $result = false;
             }
-        }
-
-        return $result;
-    }
-
-
-    public function testBluesnapOrder(PaymentCardCreateOrderRequest $req)
-    {
-        ['sku' => $sku, 'qty' => $qty] = $req->get('product');
-        $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $contact = array_merge($req->get('contact'), $req->get('address'), ['ip' => $req->ip()]);
-        $page_checkout = $req->input('page_checkout', $req->header('Referer'));
-        $ipqs = $req->input('ipqs', null);
-        $card = $req->get('card');
-        $order_id = $req->get('order');
-        $installments = (int)$req->input('card.installments', 0);
-        $method = PaymentMethodMapper::toMethod($card['number']);
-
-        // find order for update
-        $order = null;
-        if (!empty($order_id)) {
-            $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
-        }
-
-        $product = null;
-        if ($req->get('cop_id')) {
-            $product = OdinProduct::getByCopId($req->get('cop_id'));
-        }
-        if (!$product) {
-            $product = OdinProduct::getBySku($sku); // throwable
-        }
-
-        $this->addCustomer($contact); // throwable
-
-        if (empty($order)) {
-            $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
-
-            $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
-
-            $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
-            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
-            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
-            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
-
-            $order = $this->addOrder([
-                'currency'              => $price['currency'],
-                'exchange_rate'         => $price['usd_rate'],
-                'total_paid'            => 0,
-                'total_price'           => $order_product['total_price'],
-                'total_price_usd'       => $order_product['total_price_usd'],
-                'txns_fee_usd'          => 0,
-                'installments'          => $installments,
-                'is_reduced'            => false,
-                'is_invoice_sent'       => false,
-                'is_survey_sent'        => false,
-                'is_flagged'            => false,
-                'is_refunding'          => false,
-                'is_refunded'           => false,
-                'is_qc_passed'          => false,
-                'customer_email'        => $contact['email'],
-                'customer_first_name'   => $contact['first_name'],
-                'customer_last_name'    => $contact['last_name'],
-                'customer_phone'        => $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']),
-                'customer_doc_id'       => $contact['document_number'] ?? null,
-                'ip'                    => $contact['ip'],
-                'language'              => app()->getLocale(),
-                'txns'                  => [],
-                'shipping_country'      => $contact['country'],
-                'shipping_zip'          => $contact['zip'],
-                'shipping_state'        => $contact['state'],
-                'shipping_city'         => $contact['city'],
-                'shipping_street'       => $contact['street'],
-                'shipping_street2'      => $contact['district'] ?? null,
-                'shop_currency'         => $price['currency'],
-                'warehouse_id'          => $product->warehouse_id,
-                'products'              => [$order_product],
-                'page_checkout'         => $page_checkout,
-                'params'                => $params,
-                'offer'                 => $offerId,
-                'affiliate'             => $affId,
-                'txid'                  => $validTxid,
-                'ipqualityscore'        => $ipqs
-            ]);
-        } else {
-            $order_product = $order->getMainProduct(); // throwable
-            $order->customer_email      = $contact['email'];
-            $order->customer_first_name = $contact['first_name'];
-            $order->customer_last_name  = $contact['last_name'];
-            $order->customer_phone      = $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']);
-            $order->customer_doc_id     = $contact['document_number'] ?? null;
-            $order->shipping_country    = $contact['country'];
-            $order->shipping_zip        = $contact['zip'];
-            $order->shipping_state      = $contact['state'];
-            $order->shipping_city       = $contact['city'];
-            $order->shipping_street     = $contact['street'];
-            $order->shipping_street2    = $contact['district'] ?? null;
-            $order->installments        = $installments;
-        }
-        // select provider and create payment
-        $payment = [];
-
-        $bluesnap = new BluesnapService();
-        $payment = $bluesnap->payByCard(
-            $card,
-            $contact,
-            [
-                'amount'        => $order->total_price,
-                'currency'      => $order->currency,
-                'number'        => $order->number,
-                'installments'  => $installments,
-                'billing_descriptor'   => $product->billing_descriptor
-            ]
-        );
-
-        // add Txn, update OdinOrder
-        if (!empty($payment['hash'])) {
-            $order_product['txn_hash'] = $payment['hash'];
-            $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
-            $order->addProduct($order_product, true);
-            if (!$order->save()) {
-                $validator = $order->validate();
-                if ($validator->fails()) {
-                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                }
-            }
-        }
-
-        // response
-        $result = [
-            'id'                => null,
-            'order_currency'    => $order->currency,
-            'order_number'      => $order->number,
-            'order_id'          => $order->getIdAttribute(),
-            'status'            => self::STATUS_FAIL
-        ];
-
-        if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['id'] = $payment['hash'];
-            $result['status'] = self::STATUS_OK;
-        } else {
-            $result['errors'] = $payment['errors'];
         }
 
         return $result;
