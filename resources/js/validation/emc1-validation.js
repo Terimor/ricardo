@@ -20,20 +20,6 @@ const emc1Validation = function () {
       required,
       minLength: minLength(1)
     },
-    phone: {
-      required,
-      isValidPhone (val) {
-        if (window.libphonenumber) {
-          const phoneNumber = libphonenumber.parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField.toUpperCase())
-
-          if (phoneNumber) {
-            return phoneNumber.isValid()
-          }
-        }
-
-        return true
-      }
-    },
     street: {
       required
     },
@@ -48,9 +34,6 @@ const emc1Validation = function () {
       /*isValidZipcode(value) {
         return isValidZipcode(value, this.form.country || checkoutData.countryCode);
       },*/
-    },
-    country: {
-      required
     },
     cardNumber: {
       required,
@@ -95,6 +78,8 @@ const emc1Validation = function () {
 */
 
   validators.setEmailValidationRule(allRules, 'email');
+  validators.setPhoneValidationRule(allRules, 'phone');
+  validators.setCountryValidationRule(allRules, 'country');
   validators.setMonthValidationRule(allRules, 'month');
   validators.setYearValidationRule(allRules, 'year');
 

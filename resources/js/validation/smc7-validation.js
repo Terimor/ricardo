@@ -23,20 +23,6 @@ const smc7validation = function () {
         required,
         minLength: minLength(1)
       },
-      phone: {
-        required,
-        isValidPhone (val) {
-          if (window.libphonenumber) {
-            const phoneNumber = libphonenumber.parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField.toUpperCase())
-
-            if (phoneNumber) {
-              return phoneNumber.isValid()
-            }
-          }
-
-          return true
-        }
-      },
       streetAndNumber: {
         required
       },
@@ -67,9 +53,6 @@ const smc7validation = function () {
           return creditCardTypeList[0].lengths.includes(val.length) || commonRule;
         }
       },
-      country: {
-        required
-      },
       cvv: {
         required,
         minLength: minLength(3)
@@ -86,6 +69,8 @@ const smc7validation = function () {
   }
 
   validators.setEmailValidationRule(config.form, 'email');
+  validators.setPhoneValidationRule(config.form, 'phone');
+  validators.setCountryValidationRule(config.form, 'country');
   validators.setMonthValidationRule(config.form, 'month');
   validators.setYearValidationRule(config.form, 'year');
 

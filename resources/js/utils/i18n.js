@@ -32,7 +32,9 @@ export function t(phrase, args = {}, options = {}) {
       translated = specials[phrase](lang, country, translated);
     }
   } else {
-    logError('URGENT: `' + phrase + '` not found in translations. Arguments: ' + JSON.stringify(args));
+    logError('URGENT: `' + phrase + '` not found in translations. Arguments: ' + JSON.stringify(args), {
+      loadedPhrases: JSON.stringify(window.loadedPhrases),
+    });
   }
 
   for (const key of Object.keys(args)) {
@@ -40,14 +42,18 @@ export function t(phrase, args = {}, options = {}) {
     translated = translated.split(placeholder).join(args[key]);
 
     if (args[key] === undefined || args[key] === null) {
-      logError('URGENT: Null of undefined placeholder for `' + phrase + '`: ' + placeholder + '. Arguments: ' + JSON.stringify(args));
+      logError('URGENT: Null of undefined placeholder for `' + phrase + '`: ' + placeholder + '. Arguments: ' + JSON.stringify(args), {
+        loadedPhrases: JSON.stringify(window.loadedPhrases),
+      });
     }
   }
 
   const nonTranslated = translated.match(/#[A-Z0-9_]+#/g) || [];
 
   if (nonTranslated.length > 0) {
-    logError('URGENT: Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args));
+    logError('URGENT: Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args), {
+      loadedPhrases: JSON.stringify(window.loadedPhrases),
+    });
   }
 
   textarea.innerHTML = translated;

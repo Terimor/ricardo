@@ -194,11 +194,22 @@ const promo = new Vue({
     },
 
     countriesList() {
-      return checkoutData.countries.map(name => ({
-        value: name,
-        text: t('country.' + name),
-        label: t('country.' + name),
-      }));
+      return checkoutData.countries
+        .map(name => {
+          const label = t('country.' + name);
+
+          return {
+            value: name,
+            lc: label.toLowerCase(),
+            text: label,
+            label,
+          };
+        })
+        .sort((a, b) => {
+          if (a.lc > b.lc) return 1;
+          if (a.lc < b.lc) return -1;
+          return 0;
+        });
     },
 
     variantList() {

@@ -18,6 +18,35 @@ export function setEmailValidationRule(rules, name) {
   };
 }
 
+export function setPhoneValidationRule(rules, name) {
+  rules[name] = {
+    required,
+    isValid(val) {
+      val = val || '';
+
+      if (/^\+/.test(val) || val.length === 1) {
+        return false;
+      }
+
+      if (window.libphonenumber) {
+        const phoneNumber = libphonenumber.parsePhoneNumberFromString(val, this.form.countryCodePhoneField.toUpperCase());
+
+        if (!phoneNumber || !phoneNumber.isValid()) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+  };
+}
+
+export function setCountryValidationRule(rules, name) {
+  rules[name] = {
+    required,
+  };
+}
+
 export function setMonthValidationRule(rules, name) {
   rules[name] = {
     required,

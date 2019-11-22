@@ -22,7 +22,6 @@
               <div class="col-content" id="form-steps">
                 <payment-form-vmc4
                     :vmc4Form="form"
-                    :countryList="countryList"
                     :dealList="dealList"
                     :variantList="variantList"
                     :extraFields="extraFields">
@@ -136,14 +135,6 @@
           })
         }))
       },
-      countryList () {
-        return checkoutData.countries.map(name => ({
-          value: name,
-          text: t('country.' + name),
-          label: t('country.' + name),
-        }));
-      },
-
       variantList() {
         return this.skusList.map((it) => ({
           label: it.name,
@@ -152,7 +143,6 @@
           imageUrl: it.quantity_image[1]
         }));
       },
-
       warrantyPriceText() {
         const prices = checkoutData.product.prices;
 
@@ -183,7 +173,12 @@
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
         const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
-        const skuVariant = checkoutData.product.skus.find(sku => variant === sku.code) || null;
+
+        const skus = Array.isArray(checkoutData.product.skus)
+          ? checkoutData.product.skus
+          : [];
+
+        const skuVariant = skus.find(sku => variant === sku.code) || null;
 
         const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
