@@ -49,7 +49,7 @@ class CheckoutDotComService
     /**
      * @var array
      */
-    private static $fallback_codes = ['20005'];
+    private static $fallback_codes = ['20005','20024','20031','20046','200N0','200T3','20105'];
 
     /**
      * @var string

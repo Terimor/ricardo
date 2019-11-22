@@ -115,7 +115,7 @@ class PaymentProviders
                             ['value' => 'WV', 'label' => 'West Virginia'],
                             ['value' => 'WY', 'label' => 'Wyoming']
                         ],
-                        'default' => 'WA'
+                        'default' => 'DC'
                     ]
                 ]
             ],
