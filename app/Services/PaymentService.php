@@ -619,7 +619,7 @@ class PaymentService
                             'description' => implode(', ', array_column($products, 'product_name')),
                             // TODO: remove city hardcode
                             'billing_descriptor' => [
-                                'name' => $main_product->getPaymentBillingDescriptor($order->shipping_country),
+                                'name' => $order->billing_descriptor,
                                 'city' => 'Msida'
                             ]
                         ]
@@ -631,7 +631,7 @@ class PaymentService
                         [
                             'amount'    => $checkout_price,
                             'currency'  => $order->currency,
-                            'billing_descriptor' => $main_product->getPaymentBillingDescriptor($order->shipping_country)
+                            'billing_descriptor' => $order->billing_descriptor
                         ]
                     );
                 }
