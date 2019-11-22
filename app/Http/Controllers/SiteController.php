@@ -88,7 +88,7 @@ class SiteController extends Controller
     {
         $loadedPhrases = (new I18nService())->loadPhrases('terms_page');
         $product = $productService->resolveProduct($request, true);
-        $domain = Domain::getByRequest($request);
+        $domain = Domain::getByRequest($request->get('cop_id'), $request->get('product'));
         $domainName = $domain ? (!empty($domain->display_name) ? $domain->display_name : $domain->name) : '';
         return view('terms', compact('loadedPhrases', 'product', 'domainName'));
     }

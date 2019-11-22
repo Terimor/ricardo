@@ -62,20 +62,20 @@ class Domain extends Model
      * @param array $request
      * @return Domain|null
      */
-     public static function getByRequest($request): ?Domain
+     public static function getByParams($copId = null, $sku = null): ?Domain
      {         
          $domain = null;
          // check by cop_id
-         if ($request->get('cop_id')) {
-             $product = OdinProduct::getByCopId($request->get('cop_id'));
+         if ($copId) {
+             $product = OdinProduct::getByCopId($copId);
              if ($product) {
                  $domain = static::getByProductId($product->_id);
              }
          }
          
          // check by sku
-         if (!$domain && $request->get('product')) {
-             $product = OdinProduct::getBySku($request->get('product'));
+         if (!$domain && $sku) {
+             $product = OdinProduct::getBySku($sku);
              if ($product) {
                  $domain = static::getByProductId($product->_id);
              }
