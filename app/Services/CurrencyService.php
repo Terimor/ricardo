@@ -57,6 +57,7 @@ class CurrencyService
         'NAD' => '$',        
         'SBD' => '$',
         'SRD' => '$',
+        'ARS' => '$'
     ];
 
     /**
