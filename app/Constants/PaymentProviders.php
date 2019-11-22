@@ -382,7 +382,7 @@ class PaymentProviders
             'name'      => 'Bluesnap',
             'is_active' => true,
             'is_main'   => false,
-            'in_prod'   => false,
+            'in_prod'   => true,
             'methods'   => [
                 PaymentMethods::CREDITCARD => [
                     '-3ds' => ['*'],
