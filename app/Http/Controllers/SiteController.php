@@ -87,10 +87,8 @@ class SiteController extends Controller
     public function terms(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('terms_page');
-        $product = $productService->resolveProduct($request, true);
-        $domain = Domain::getByParams($request->get('cop_id'), $request->get('product'));
-        $domainName = $domain ? (!empty($domain->display_name) ? $domain->display_name : $domain->name) : '';
-        return view('terms', compact('loadedPhrases', 'product', 'domainName'));
+        $product = $productService->resolveProduct($request, true);        
+        return view('terms', compact('loadedPhrases', 'product'));
     }
 
      /**

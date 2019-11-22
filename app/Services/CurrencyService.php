@@ -171,7 +171,8 @@ class CurrencyService
         'AFN',
         'KPW',
         'SDG',
-        'STD'
+        'STD',
+        'MRO'
     ];
 
     /**
