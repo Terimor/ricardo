@@ -156,7 +156,7 @@ class SiteController extends Controller
 
         $setting['payment_methods'] = collect(PaymentService::getPaymentMethodsByCountry($countryCode))->collapse()->all();
 
-        $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
+        $recentlyBoughtData = OdinOrder::getRecentlyBoughtData();
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
 

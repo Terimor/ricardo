@@ -9,6 +9,8 @@ use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
 use App\Models\Txn;
 use App\Services\OrderService;
+use App\Services\UtilsService;
+use App\Constants\CountryCustomers;
 
 class OdinOrder extends OdinModel
 {
@@ -525,6 +527,97 @@ class OdinOrder extends OdinModel
         }
         return $isNotFlagged;
     }
+    
+    /**
+     * Returns customers notification data from order
+     *
+     * @param string|null $country_code
+     * @param int $limit
+     * @return array
+     */
+    public static function getRecentlyBoughtData(string $country_code = null, int $limit = OdinCustomer::RECENTLY_BOUGHT_LIMIT): array
+    {
+        if (!$country_code) {
+            $country_code = UtilsService::getLocationCountryCode();
+        }
+
+        $recentlyBoughtNames = $recentlyBoughtCities = [];
+
+        // Get customers from a current users country and get their cities.
+        $ordersCollection = OdinOrder::getCustomersByCountryCode($country_code, $limit);        
+        if ($ordersCollection) {
+            foreach ($ordersCollection as $order) {                
+                $name = $order->getPublicCustomerName();            
+                if (!in_array($name, $recentlyBoughtNames)) {
+                    $recentlyBoughtNames[] = $name;
+                }
+
+                $city = $order->getPublicCityName();
+                if ($city && !in_array($city, $recentlyBoughtCities)) {
+                    $recentlyBoughtCities[] = $city;
+                }
+            }
+        }
+        
+        $tempNamesCount = count($recentlyBoughtNames);
+        $tempCityCount = count($recentlyBoughtCities);
+       
+        // get from constants and merge
+        if (count($recentlyBoughtNames) < $limit) {            
+            if (isset(CountryCustomers::$list[$country_code]['names']) && is_array(CountryCustomers::$list[$country_code]['names'])) {
+                shuffle(CountryCustomers::$list[$country_code]['names']);
+                
+                foreach(CountryCustomers::$list[$country_code]['names'] as $value) {
+                    if (!in_array($value, $recentlyBoughtNames)) {
+                        $recentlyBoughtNames[] = $value;
+                        $tempNamesCount++;
+                        if ($tempNamesCount >= $limit) {
+                            break;
+                        }
+                    }                                                            
+                }                                
+            }
+            
+            if (isset(CountryCustomers::$list[$country_code]['cities']) && is_array(CountryCustomers::$list[$country_code]['cities'])) {
+                shuffle(CountryCustomers::$list[$country_code]['cities']);
+                
+                foreach(CountryCustomers::$list[$country_code]['cities'] as $value) {
+                    if (!in_array($value, $recentlyBoughtCities)) {
+                        $recentlyBoughtCities[] = $value;
+                        $tempCityCount++;
+                        if ($tempCityCount >= $limit) {
+                            break;
+                        }
+                    }                    
+                }                                
+            }
+        }
+        
+        // if we still have < than limit get it from us        
+        if ($tempNamesCount < $limit) {
+            $ordersCollection = OdinOrder::getCustomersByCountryCode('us', $limit - $tempNamesCount);
+            if ($ordersCollection) {
+                foreach ($ordersCollection as $order) {
+                    $name = $order->getPublicCustomerName();            
+                    if (!in_array($name, $recentlyBoughtNames)) {
+                        $recentlyBoughtNames[] = $name;
+                    }
+
+                    $city = $order->getPublicCityName();
+                    if ($city && !in_array($city, $recentlyBoughtCities) && $tempCityCount < $limit) {
+                        $recentlyBoughtCities[] = $city;
+                    }
+                }
+            }
+        }
+
+        $recently_bought_data = [
+            'recentlyBoughtNames' => $recentlyBoughtNames,
+            'recentlyBoughtCities' => $recentlyBoughtCities
+        ];
+
+        return $recently_bought_data;
+    }    
     
     /**
      *
