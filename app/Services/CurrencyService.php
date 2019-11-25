@@ -580,7 +580,7 @@ class CurrencyService
      * Format currency
      * @return type
      */
-    public static function formatCurrency($numberFormatter, $price, $currency, $removeDecimals = false)
+    public static function formatCurrency(\NumberFormatter $numberFormatter, $price, Currency $currency, bool $removeDecimals = false)
     {
         if (in_array($currency->code, static::$zeroAtTheEnd) || $removeDecimals) {
             $fractionDigits = 0;
