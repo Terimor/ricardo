@@ -625,7 +625,7 @@ class OdinOrder extends OdinModel
      * @param int $limit
      * @return Collection
      */
-    public static function getPaidCustomersByCountry(string $country_code, int $limit = OdinCustomer::RECENTLY_BOUGHT_LIMIT)
+    public static function getPaidCustomersByCountry(string $country_code, int $limit = 25)
     {
         return self::select('customer_first_name', 'customer_last_name', 'shipping_city', 'shipping_country')
             ->where('shipping_country', $country_code)
