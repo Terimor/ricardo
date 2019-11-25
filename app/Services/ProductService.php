@@ -308,10 +308,10 @@ class ProductService
         
         foreach (static::$amountValues as $value) {
             $prices[$value]['amount'] = $value;
-            $prices[$value]['value'] = floor($pricesOld[1]['value'] * $value);
-            $prices[$value]['2xvalue'] = floor($pricesOld[1]['value'] * $value * 2);
-            $prices[$value]['value_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[$value]['value'], $currency);
-            $prices[$value]['2xvalue_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[$value]['value'] * 2, $currency);
+            $prices[$value]['value'] = round($pricesOld[1]['value'] * $value, 0);
+            $prices[$value]['2xvalue'] = round($pricesOld[1]['value'] * $value * 2, 0);
+            $prices[$value]['value_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[$value]['value'], $currency, true);
+            $prices[$value]['2xvalue_text'] = CurrencyService::formatCurrency($numberFormatter, $prices[$value]['value'] * 2, $currency, true);
             $prices[$value]['currency'] = $currency->code;
             $prices[$value]['symbol'] = $symbol;
         }

@@ -580,13 +580,13 @@ class CurrencyService
      * Format currency
      * @return type
      */
-    public static function formatCurrency($numberFormatter, $price, $currency)
+    public static function formatCurrency($numberFormatter, $price, $currency, $removeDecimals = false)
     {
-        if (in_array($currency->code, static::$zeroAtTheEnd)) {
+        if (in_array($currency->code, static::$zeroAtTheEnd) || $removeDecimals) {
             $fractionDigits = 0;
             $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
         }
-
+        
         $priceText = $numberFormatter->formatCurrency($price, $currency->code);
 
         // check use symbol from db for formatting
