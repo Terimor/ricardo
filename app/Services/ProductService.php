@@ -317,5 +317,80 @@ class ProductService
         }
         return $prices;
     }
+    
+    /**
+     * Get domain products
+     * @return type
+     */
+    public static function getDomainProducts() 
+    {
+        $domain = Domain::getByName();
+        $productsLocale = null;
+        if (!empty($domain->sold_products)) {
+            $soldProducts = $domain->sold_products;
+            $products = OdinProduct::getByIds($soldProducts);
+            foreach ($products as $product) {
+                $productsLocale[] = static::getDataForMiniShop($product);
+            }
+        }
+        return $productsLocale;
+    }
+    
+    /**
+     * Prepare data for mini shop product
+     * @param OdinProduct $product
+     * @return Localize
+     */
+    public static function getDataForMiniShop(OdinProduct $product) {
+        $lp = new Localize();
+        $lp->id = $product->_id;
+        $lp->product_name = $product->product_name;
+        $lp->description = $product->description;
+        $lp->long_name = $product->long_name;
+        
+        $skus = [];
+        $skusOld = $product->skus;
+        // skus, if not published skip it
+        foreach ($skusOld as $key => $sku) {
+            if (!$sku['is_published']) {
+                continue;
+            }
+            $skus[] = [
+                'code' => $sku['code'],
+                'name' => $sku['name'],
+                'brief' => $sku['brief'],
+                'has_battery' => $sku['has_battery'],
+                'quantity_image' => $sku['quantity_image'],
+            ];
+        }
+        
+        $prices = [];
+        $pricesOld = $product->prices;
+
+        for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
+            if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
+                logger()->error("Price is 0 for {$product->product_name}", ['product' => $lp->toArray()]);
+                continue;
+            }
+            $prices[$quantity]['is_bestseller'] = $pricesOld[$quantity]['is_bestseller'];
+            $prices[$quantity]['is_popular'] = $pricesOld[$quantity]['is_popular'];
+            $prices[$quantity]['discount_percent'] = $pricesOld[$quantity]['discount_percent'];
+            $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
+            $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
+            $prices[$quantity]['unit_value_text'] = $pricesOld[$quantity]['unit_value_text'];
+            $prices[$quantity]['old_value_text'] = $pricesOld[$quantity]['old_value_text'];
+            $prices[$quantity]['warranty_price_text'] = $pricesOld[$quantity]['warranty_price_text'];
+            $prices[$quantity]['warranty_price'] = $pricesOld[$quantity]['warranty_price'];
+        }
+        $prices['currency'] = $pricesOld['currency'] ?? 'USD';
+        $prices['exchange_rate'] = $pricesOld['exchange_rate'];
+        $lp->prices = $prices;
+        
+        
+        $lp->skus = $skus;
+        $lp->image = $product->image;
+        
+        return $lp;
+    }
 
 }

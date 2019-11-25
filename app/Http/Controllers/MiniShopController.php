@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\ProductService;
+use App\Services\I18nService;
 
 class MiniShopController extends Controller
 {
@@ -15,7 +16,8 @@ class MiniShopController extends Controller
       */
      public function index(Request $request, ProductService $productService)
      {
-         $loadedPhrases = (new I18nService())->loadPhrases('minishop_page');         
-         return view('about', compact('loadedPhrases'));
+         $loadedPhrases = (new I18nService())->loadPhrases('minishop_page');
+         $products = ProductService::getDomainProducts();         
+         return view('mini_shop.index', compact('loadedPhrases', 'products'));
      }    
 }

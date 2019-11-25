@@ -521,4 +521,16 @@ class OdinProduct extends Model
     {
         return $this->getFieldLocalText($value);
     }
+    
+    /**
+     * Get products by ids
+     * @param type $ids
+     */
+    public static function getByIds($ids) {
+        $products = null;
+        if ($ids) {
+            $products = OdinProduct::whereIn('_id', $ids)->get();
+        }
+        return $products;
+    }
 }
