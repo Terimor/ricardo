@@ -544,7 +544,7 @@ class OdinOrder extends OdinModel
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
         // Get customers from a current users country and get their cities.
-        $ordersCollection = OdinOrder::getCustomersByCountryCode($country_code, $limit);        
+        $ordersCollection = OdinOrder::getPaidCustomersByCountry($country_code, $limit);        
         if ($ordersCollection) {
             foreach ($ordersCollection as $order) {                
                 $name = $order->getPublicCustomerName();            
@@ -595,7 +595,7 @@ class OdinOrder extends OdinModel
         
         // if we still have < than limit get it from us        
         if ($tempNamesCount < $limit) {
-            $ordersCollection = OdinOrder::getCustomersByCountryCode('us', $limit - $tempNamesCount);
+            $ordersCollection = OdinOrder::getPaidCustomersByCountry('us', $limit - $tempNamesCount);
             if ($ordersCollection) {
                 foreach ($ordersCollection as $order) {
                     $name = $order->getPublicCustomerName();            
@@ -625,7 +625,7 @@ class OdinOrder extends OdinModel
      * @param int $limit
      * @return Collection
      */
-    public static function getCustomersByCountryCode(string $country_code, int $limit = OdinCustomer::RECENTLY_BOUGHT_LIMIT)
+    public static function getPaidCustomersByCountry(string $country_code, int $limit = OdinCustomer::RECENTLY_BOUGHT_LIMIT)
     {
         return self::select('customer_first_name', 'customer_last_name', 'shipping_city', 'shipping_country')
             ->where('shipping_country', $country_code)
