@@ -525,4 +525,38 @@ class OdinOrder extends OdinModel
         }
         return $isNotFlagged;
     }
+    
+    /**
+     *
+     * @param string|null $country_code
+     * @param int $limit
+     * @return Collection
+     */
+    public static function getCustomersByCountryCode(string $country_code = null, int $limit = OdinCustomer::RECENTLY_BOUGHT_LIMIT)
+    {
+        return self::select('customer_first_name', 'customer_last_name', 'shipping_city', 'shipping_country')
+            ->where('shipping_country', $country_code)
+            ->where('status', static::STATUS_PAID)
+            ->orderBy('_id', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+    
+    /**
+     * Get public customer name for display
+     * @return type
+     */
+    public function getPublicCustomerName()
+    {
+        return mb_convert_case(mb_strtolower($this->customer_first_name), MB_CASE_TITLE) . ' ' . mb_strtoupper(mb_substr($this->customer_last_name, 0, 1)).'.';
+    }
+    
+    /**
+     * Get public city name for display
+     * @return type
+     */
+    public function getPublicCityName()
+    {
+        return $this->shipping_city ? mb_convert_case(mb_strtolower($this->shipping_city), MB_CASE_TITLE) : null;
+    }    
 }

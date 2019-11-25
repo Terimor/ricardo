@@ -141,15 +141,15 @@ class OdinCustomer extends Model
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
         // Get customers from a current users country and get their cities.
-        $customersCollection = self::getCustomersByCountryCode($country_code, $limit);        
-        if ($customersCollection) {
-            foreach ($customersCollection as $customer) {
-                $name = $customer->getPublicCustomerName();            
+        $ordersCollection = OdinOrder::getCustomersByCountryCode($country_code, $limit);        
+        if ($ordersCollection) {
+            foreach ($ordersCollection as $order) {                
+                $name = $order->getPublicCustomerName();            
                 if (!in_array($name, $recentlyBoughtNames)) {
                     $recentlyBoughtNames[] = $name;
                 }
 
-                $city = $customer->getPublicCityName();
+                $city = $order->getPublicCityName();
                 if ($city && !in_array($city, $recentlyBoughtCities)) {
                     $recentlyBoughtCities[] = $city;
                 }
@@ -161,7 +161,7 @@ class OdinCustomer extends Model
         
         // get from constants and merge
         if (count($recentlyBoughtNames) < $limit) {
-            $customerLists = CountryCustomers::$list;
+            $orderLists = CountryCustomers::$list;
             if (isset(CountryCustomers::$list[$country_code]['names']) && is_array(CountryCustomers::$list[$country_code]['names'])) {
                 shuffle(CountryCustomers::$list[$country_code]['names']);
                 
@@ -191,17 +191,17 @@ class OdinCustomer extends Model
             }
         }
         
-        // if we still have < than limit get it from us
+        // if we still have < than limit get it from us        
         if ($tempNamesCount < $limit) {
-            $customersCollection = self::getCustomersByCountryCode('us', $limit - $tempNamesCount);
-            if ($customersCollection) {
-                foreach ($customersCollection as $customer) {
-                    $name = $customer->getPublicCustomerName();            
+            $ordersCollection = OdinOrder::getCustomersByCountryCode('us', $limit - $tempNamesCount);
+            if ($ordersCollection) {
+                foreach ($ordersCollection as $order) {
+                    $name = $order->getPublicCustomerName();            
                     if (!in_array($name, $recentlyBoughtNames)) {
                         $recentlyBoughtNames[] = $name;
                     }
 
-                    $city = $customer->getPublicCityName();
+                    $city = $order->getPublicCityName();
                     if ($city && !in_array($city, $recentlyBoughtCities) && $tempCityCount < $limit) {
                         $recentlyBoughtCities[] = $city;
                     }

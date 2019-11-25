@@ -159,7 +159,7 @@ class SiteController extends Controller
         $recentlyBoughtData = OdinCustomer::getRecentlyBoughtData();
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
-
+echo '<pre>'; var_dump($recentlyBoughtCities); echo '</pre>'; exit;
         $imagesNames = ['safe_payment'];
         $loadedImages = \Utils::getLocalizedImages($imagesNames);
 
