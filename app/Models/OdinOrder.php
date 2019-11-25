@@ -535,7 +535,7 @@ class OdinOrder extends OdinModel
      * @param int $limit
      * @return array
      */
-    public static function getRecentlyBoughtData(string $country_code = null, int $limit = OdinCustomer::RECENTLY_BOUGHT_LIMIT): array
+    public static function getRecentlyBoughtData(string $country_code = null, int $limit = 25): array
     {
         if (!$country_code) {
             $country_code = UtilsService::getLocationCountryCode();
