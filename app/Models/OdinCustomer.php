@@ -158,7 +158,7 @@ class OdinCustomer extends Model
         
         $tempNamesCount = count($recentlyBoughtNames);
         $tempCityCount = count($recentlyBoughtCities);
-        
+       
         // get from constants and merge
         if (count($recentlyBoughtNames) < $limit) {
             $orderLists = CountryCustomers::$list;

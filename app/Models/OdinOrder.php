@@ -536,7 +536,8 @@ class OdinOrder extends OdinModel
     {
         return self::select('customer_first_name', 'customer_last_name', 'shipping_city', 'shipping_country')
             ->where('shipping_country', $country_code)
-            ->where('status', static::STATUS_PAID)
+            ->where('status', '!=', static::STATUS_NEW)
+            ->where('status', '!=', static::STATUS_CANCELLED)
             ->orderBy('_id', 'desc')
             ->limit($limit)
             ->get();
