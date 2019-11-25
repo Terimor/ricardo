@@ -131,7 +131,7 @@ class OdinCustomer extends Model
      * @param int $limit
      * @return Collection
      */
-    private static function getCustomersByCountryCode(string $country_code, int $limit = self::RECENTLY_BOUGHT_LIMIT)
+    private static function getCustomersByCountryCode(string $country_code, int $limit = 25)
     {
         return self::select('first_name', 'last_name', 'addresses.city')
             ->where('addresses.country', $country_code)
