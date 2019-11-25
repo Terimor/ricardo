@@ -26,6 +26,8 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
     $router->get('/prober', 'SiteController@prober')->name('prober');
 
+    $router->get('/minishop/products', 'MinishopController@products')->name('minishop.products');
+
     //$router->get('/products', 'SiteController@products')->name('products');
     $router->get('/product/{product}', 'ProductController@getProduct')->name('ajax.product');
     $router->get('/product', 'ProductController@view')->name('product');
@@ -52,8 +54,6 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/product-price', 'ProductController@getProductPrice');
     $router->get('/validate-email', 'EmailController@validateEmail');
     
-    $router->get('/shop', 'MiniShopController@index');
-
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
     $router->post('/paypal-webhooks', 'Payments\PaypalController@webhooks');

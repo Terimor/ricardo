@@ -1,0 +1,170 @@
+@import 'regions/header';
+@import 'regions/content';
+@import 'regions/footer';
+
+
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+p {
+    font-weight: 300;
+    font-size: 18px;
+}
+
+button:hover,
+button:focus,
+button:active {
+  outline: none;
+}
+
+.mt-17 {
+  margin-top: 17px;
+}
+
+.pb-100 {
+  padding-bottom: 100px;
+}
+
+.pt-100 {
+  padding-top: 100px;
+}
+
+.full-height {
+  height: 100vh;
+}
+
+.btn-cta, .btn-default {
+  background: #d7440a;
+  background: -moz-linear-gradient(top, #d7440a 0%, #f4672f 50%, #d7440a 100%);
+  background: -webkit-linear-gradient(top, #d7440a 0%,#f4672f 50%,#d7440a 100%);
+  background: linear-gradient(to bottom, #d7440a 0%,#f4672f 50%,#d7440a 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d7440a', endColorstr='#d7440a',GradientType=0 );
+  color: #fff;
+  padding: 20px 100px;
+  border-radius: 3px;
+}
+
+.btn-cta:hover, .btn-default:hover  {
+  color: #fff;
+}
+
+.btn-default i {
+  padding-right: 15px;
+}
+
+
+@media (min-width: 1200px) {
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+
+@media (max-width: 575px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .pb-25-m {
+    padding-bottom: 25px;
+  }
+
+  .pt-25-m {
+    padding-top: 25px;
+  }
+
+  .pr-m-20 {
+    padding-right: 20px;
+  }
+
+  .py-5-m {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .mt-0-m {
+    margin-top: 0 !important;
+  }
+
+  .mt-25-m {
+    margin-top: 25px !important;
+  }
+
+  .mb-15-m {
+    margin-bottom: 15px;
+  }
+
+  .mb-25-m {
+    margin-bottom: 25px !important;
+  }
+
+  .my-25-m {
+    margin-top: 25px !important;
+    margin-bottom: 25px !important;
+  }
+
+  .nmb-m {
+    margin-bottom: 0 !important;
+  }
+
+  .mx-auto-m {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .d-none-m {
+    display: none;
+  }
+
+  .d-block-m {
+    display: block
+  }
+
+  .order-1-m {
+    order: 1;
+  }
+
+  .order-2-m {
+    order: 2;
+  }
+
+  .text-left-m {
+    text-align: left !important;
+  }
+
+  .text-center-m {
+    text-align: center !important;
+  }
+
+  .bb-m {
+    border-bottom: 1px solid #f2f2f2;
+  }
+
+  .full-height {
+    height: auto;
+  }
+
+  .half-width-m {
+    width: 50%;
+    float: left;
+  }
+
+  .btn-cta {
+    margin: 50px 0 0 0 !important;
+    width: 100%;
+  }
+
+  .btn-default {
+    padding: 20px 50px;
+    width: 100%;
+  }
+}
+
+
+@media (min-width: 576px) {
+  .visible-m {
+    display: none !important;
+  }
+}

@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Models\AffiliateSetting;
 use App\Services\UtilsService;
 use App\Services\AffiliateService;
+use App\Http\Controllers\MiniShopController;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Request;
@@ -67,5 +68,7 @@ class ViewServiceProvider extends ServiceProvider
         View::composer('thankyou', function($view) {
             $view->with('cdnUrl', UtilsService::getCdnUrl());
         });
+
+        MiniShopController::boot();
     }
 }

@@ -87,4 +87,28 @@ class Domain extends Model
 
          return $domain;
      }     
+
+     /**
+     * Set local logo
+     */
+    public function setLocalLogo()
+    {
+        if (!isset($this->logo)) {
+            return;
+        };
+
+        $images = AwsImage::where('_id', $this->logo)->get();
+
+        if (count($images) === 0) {
+            return;
+        }
+
+        $lang = app()->getLocale();
+
+        $this->logo = isset($images[0]->urls[$lang])
+            ? \Utils::replaceUrlForCdn($images[0]->urls[$lang])
+            : (isset($images[0]->urls['en'])
+                ? \Utils::replaceUrlForCdn($images[0]->urls['en'])
+                : '');
+    }
 }
