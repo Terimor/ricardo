@@ -118,19 +118,10 @@
                 :label="textZipcode"
                 id="zip-code-field"
                 v-model="paymentForm.zipcode"/>
-            <select-field
-                :standart="true"
-                :validation="$v.form.country"
-                :validationMessage="textCountryRequired"
-                theme="variant-1"
-                :label="textCountry"
-                :rest="{
-                  placeholder: textCountryPlaceholder,
-                  autocomplete: 'country-name',
-                  name: 'country-name'
-                }"
-                :list="countryList"
-                v-model="paymentForm.country"/>
+            <Country
+              :$v="$v.form.country"
+              :form="paymentForm"
+              name="country" />
         </div>
         <template v-if="paymentForm.paymentProvider !== 'bank-payment'">
             <h2>
@@ -249,6 +240,7 @@
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
   import Email from './common-fields/Email';
+  import Country from './common-fields/Country';
   import Month from './common-fields/Month';
   import Year from './common-fields/Year';
   import State from './extra-fields/State';
@@ -261,7 +253,6 @@
     name: 'PaymentForm',
     props: [
       'input',
-      'countryList',
       'countryCode',
       'paymentForm',
       '$v',
@@ -281,6 +272,7 @@
     components: {
       Spinner,
       Email,
+      Country,
       Month,
       Year,
       State,
@@ -368,9 +360,6 @@
       textCityRequired: () => t('checkout.payment_form.city.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
       textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
-      textCountry: () => t('checkout.payment_form.сountry'),
-      textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),
-      textCountryRequired: () => t('checkout.payment_form.сountry.required'),
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),

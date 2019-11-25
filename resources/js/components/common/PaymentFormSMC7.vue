@@ -1,17 +1,9 @@
 <template>
   <div v-if="$v" class="flex-wrap payment-form-smc7">
-    <select-field
-        :standart="true"
-        :validation="$v.form.country"
-        :validationMessage="textCountryRequired"
-        theme="variant-1"
-        :label="textCountry"
-        class="country"
-        :rest="{
-          placeholder: textCountry
-        }"
-        :list="countryList"
-        v-model="paymentForm.country"/>
+    <Country
+      :$v="$v.form.country"
+      :form="paymentForm"
+      name="country" />
     <text-field
         :validation="$v.form.streetAndNumber"
         :validationMessage="textStreetAndNumberRequired"
@@ -170,6 +162,7 @@
   import * as dateFns from 'date-fns';
 	import PayMethodItem from "./PayMethodItem";
   import PaymentMethod from './extra-fields/PaymentMethod';
+  import Country from './common-fields/Country';
   import Month from './common-fields/Month';
   import Year from './common-fields/Year';
   import State from './extra-fields/State';
@@ -184,6 +177,7 @@
 		components: {
       PayMethodItem,
       PaymentMethod,
+      Country,
       Month,
       Year,
       State,
@@ -192,7 +186,7 @@
       DocumentType,
       DocumentNumber,
     },
-		props: ['$v', 'paymentForm', 'countryList', 'extraFields'],
+		props: ['$v', 'paymentForm', 'extraFields'],
 		data() {
 			return {
 				isOpenCVVModal: false
@@ -236,8 +230,6 @@
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
       textZipCodeRequired: () => t('checkout.payment_form.zipcode.required'),
-      textCountry : () => t('checkout.payment_form.сountry'),
-      textCountryRequired: () => t('checkout.payment_form.сountry.required'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
       textCardNumber: () => t('checkout.payment_form.card_number'),

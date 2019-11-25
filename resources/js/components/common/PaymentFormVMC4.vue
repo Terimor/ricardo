@@ -196,18 +196,10 @@
                 }"
                 id="zip-code-field"
                 v-model="form.stepThree.zipCode"/>
-              <select-field
-                :standart="true"
-                :validation="$v.form.stepThree.country"
-                :validationMessage="textCountryRequired"
-                theme="variant-1"
-                :label="textCountry"
-                class="country"
-                :rest="{
-                  placeholder: textCountryPlaceholder
-                }"
-                :list="countryList"
-                v-model="form.stepThree.country"/>
+              <Country
+                :$v="$v.form.stepThree.country"
+                :form="form.stepThree"
+                name="country" />
             </div>
             <el-dialog
               @click="isOpenCVVModal = false"
@@ -280,6 +272,7 @@
   import { queryParams } from  '../../utils/queryParams';
   import Installments from './extra-fields/Installments';
   import Email from './common-fields/Email';
+  import Country from './common-fields/Country';
   import Month from './common-fields/Month';
   import Year from './common-fields/Year';
   import State from './extra-fields/State';
@@ -302,6 +295,7 @@
       Spinner,
       Installments,
       Email,
+      Country,
       Month,
       Year,
       State,
@@ -313,7 +307,6 @@
 		validations: vmc4validation,
 		props: [
       'productImage',
-			'countryList',
 			'dealList',
 			'variantList',
       'countryCode',
@@ -439,9 +432,6 @@
       textCityRequired: () => t('checkout.payment_form.city.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
       textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
-      textCountry: () => t('checkout.payment_form.сountry'),
-      textCountryPlaceholder: () => t('checkout.payment_form.сountry.placeholder'),
-      textCountryRequired: () => t('checkout.payment_form.сountry.required'),
       textCardExpired: () => t('checkout.payment_form.card_expired'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),

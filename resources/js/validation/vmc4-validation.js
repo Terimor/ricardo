@@ -24,20 +24,6 @@ const vmc4validation = function () {
 					required,
 					minLength: minLength(2)
 				},
-				phone: {
-					required,
-					isValidPhone (val) {
-						if (window.libphonenumber) {
-							const phoneNumber = libphonenumber.parsePhoneNumberFromString(val || '', this.form.countryCodePhoneField.toUpperCase())
-
-							if (phoneNumber) {
-								return phoneNumber.isValid()
-							}
-						}
-
-						return true
-					}
-				}
 			},
 			stepThree: {
 				cardNumber: {
@@ -71,14 +57,13 @@ const vmc4validation = function () {
 						return isValidZipcode(value, this.form.stepThree.country || checkoutData.countryCode);
 					},*/
 				},
-				country: {
-					required
-				}
 			}
 		}
 	};
 
 	validators.setEmailValidationRule(config.form.stepTwo, 'email');
+	validators.setPhoneValidationRule(config.form.stepTwo, 'phone');
+	validators.setCountryValidationRule(config.form.stepThree, 'country');
 	validators.setMonthValidationRule(config.form.stepThree, 'month');
   validators.setYearValidationRule(config.form.stepThree, 'year');
 

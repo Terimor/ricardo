@@ -700,6 +700,7 @@ class PaymentService
 
         // check webhook reply
         if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
+            logger()->info("Bluesnap webhook ignored, order status [{$order->status}]");
             return;
         }
 
