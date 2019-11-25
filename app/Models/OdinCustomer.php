@@ -19,8 +19,6 @@ class OdinCustomer extends Model
 
     protected $guarded = ['addresses', 'ip', 'phones'];
 
-    const RECENTLY_BOUGHT_LIMIT = 25;
-
     /**
      *
      * @var type
