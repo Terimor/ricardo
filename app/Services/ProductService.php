@@ -185,6 +185,7 @@ class ProductService
         $lp->logo_image = $product->logo_image;
         $lp->favicon_image = $product->favicon_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
+        $lp->vimeo_id = $product->vimeo_id;
 
         $prices = [];
         $pricesOld = $product->prices;
