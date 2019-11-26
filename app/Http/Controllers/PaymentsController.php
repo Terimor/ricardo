@@ -231,6 +231,9 @@ class PaymentsController extends Controller
 
     public function test(PaymentCardCreateOrderRequest $req)
     {
+        if (\App::environment() === 'production') {
+            throw new AuthException('Unauthorized');
+        }
         $reply = $this->paymentService->createMinteOrder($req);
 
         $result = [
