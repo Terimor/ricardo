@@ -3,13 +3,23 @@
   <div
     class="sale-badge dynamic-sale-badge">
 
-    <div
-      class="dynamic-sale-badge__background"></div>
+    <template
+      v-if="!isBlackFriday">
 
-    <div
-      v-html="textSaleBadge"
-      :style="styleFontSize"
-      class="dynamic-sale-badge__container"></div>
+      <div
+        class="dynamic-sale-badge__background"></div>
+
+      <div
+        v-html="textSaleBadge"
+        :style="styleFontSize"
+        class="dynamic-sale-badge__container"></div>
+
+    </template>
+
+    <img
+      v-else
+      class="black-friday"
+      :src="$root.cdnUrl + '/assets/images/bfl.png'" />
 
   </div>
 
@@ -32,6 +42,10 @@
         return {
           'font-size': (this.fontSizes[checkoutData.langCode] || 12) + 'px',
         };
+      },
+
+      isBlackFriday() {
+        return !!window.blackFridayEnabled;
       },
 
       fontSizes() {
@@ -134,6 +148,12 @@
     [dir="rtl"] & {
       transform: rotate(371deg);
     }
+  }
+
+  .black-friday {
+    margin: -5px 0 0 -5px;
+    max-width: 120%;
+    height: auto;
   }
 
 </style>

@@ -40,6 +40,7 @@
 
     <template v-if="!showPreloader">
         <notice></notice>
+        @include('components.black_friday')
         <div class="container">
             <div
                 class="promo__jumbotron"

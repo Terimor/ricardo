@@ -67,6 +67,7 @@
   import * as extraFields from '../mixins/extraFields';
 	import { preparePurchaseData } from "../utils/checkout";
   import queryToComponent from '../mixins/queryToComponent';
+  import blackFriday from '../mixins/blackFriday';
   import { t, timage } from '../utils/i18n';
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
@@ -81,6 +82,7 @@
     mixins: [
       queryToComponent,
       extraFields.tplMixin,
+      blackFriday,
     ],
 		props: ['showPreloader', 'skusList'],
 		data() {

@@ -167,6 +167,7 @@
   import notification from '../mixins/notification'
   import * as extraFields from '../mixins/extraFields';
   import queryToComponent from '../mixins/queryToComponent'
+  import blackFriday from '../mixins/blackFriday';
   import { t, timage } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
   import ProductItem from './common/ProductItem';
@@ -192,6 +193,7 @@
       queryToComponent,
       extraFields.tplMixin,
       purchasMixin,
+      blackFriday,
     ],
     components: {
       SaleBadge,
