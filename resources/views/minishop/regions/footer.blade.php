@@ -1,4 +1,6 @@
-<footer class="footer">
+<footer
+  ref="footer"
+  class="footer">
 
   <div class="container">
     
