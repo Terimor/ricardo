@@ -14,6 +14,8 @@ use App\Constants\PaymentMethods;
 use Cache;
 use App\Models\OdinOrder;
 use App\Models\Domain;
+use App\Http\Requests\ZipcodeRequest;
+use App\Services\EbanxService;
 
 class SiteController extends Controller
 {
@@ -309,4 +311,15 @@ class SiteController extends Controller
         file_put_contents(storage_path("log_postbacks.txt"), json_encode($request->all())."\n", FILE_APPEND);
         return response('Ok', 200);
     }
+    
+    /**
+     * Get address by zip code using Ebanx
+     * @param Request $request
+     * @param EbanxService $ebanxService
+     * @return type
+     */
+    public function getEbanxAddressByZip(ZipcodeRequest $request, EbanxService $ebanxService)
+    {                
+        return response()->json($ebanxService->getAddressByZip($request->get('zipcode')));
+    }    
 }
