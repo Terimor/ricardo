@@ -20,6 +20,7 @@ use Ebanx\Benjamin\Models\Person;
 use Ebanx\Benjamin\Models\Item;
 use Ebanx\Benjamin\Models\Notification;
 use Ebanx\Benjamin\Util\Http as EbanxUtils;
+use Ebanx\Benjamin\Services\Http\Client as EbanxClient;
 
 /**
  * EbanxService class
@@ -48,9 +49,6 @@ class EbanxService
         Country::MEXICO     => [Currency::MXN, Currency::USD],
         Country::PERU       => [Currency::PEN, Currency::USD]
     ];
-    
-    const ZIPCODE_URL = 'https://api.ebanxpay.com/ws/zipcode';
-    const SANDBOX_ZIPCODE_URL = 'https://sandbox.ebanxpay.com/ws/zipcode';
 
     /**
      * @var string
@@ -391,9 +389,9 @@ class EbanxService
         $zipcode = preg_replace('/\D/', '', $zipcode);                      
         $client = new \GuzzleHttp\Client();
         
-        $url = $this->environment === static::ENV_LIVE ? static::ZIPCODE_URL : static::SANDBOX_ZIPCODE_URL;
+        $url = $this->environment === static::ENV_LIVE ? EbanxClient::LIVE_URL : EbanxClient::SANDBOX_URL;
 
-        $request = $client->request('POST', $url, [
+        $request = $client->request('POST', $url.'ws/zipcode', [
             'form_params' => [
                 'integration_key' => $this->integration_key,
                 'zipcode' => $zipcode,
