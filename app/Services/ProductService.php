@@ -322,10 +322,10 @@ class ProductService
      * Get domain products
      * @return type
      */
-    public static function getDomainProducts() 
+    public static function getDomainProducts(): array
     {
         $domain = Domain::getByName();
-        $productsLocale = null;
+        $productsLocale = [];
         if (!empty($domain->sold_products)) {
             $soldProducts = $domain->sold_products;
             $products = OdinProduct::getByIds($soldProducts);

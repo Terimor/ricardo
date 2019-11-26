@@ -28,7 +28,7 @@ class MiniShopController extends Controller
    * @return type
    */
   public function products(Request $request, ProductService $productService) {
-    $products = ProductService::getDomainProducts() ?? [];
+    $products = ProductService::getDomainProducts();
     return view('minishop/pages/products/products', compact('products'));
   }
 }
