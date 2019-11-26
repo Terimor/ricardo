@@ -19,7 +19,7 @@
     <img
       v-else
       class="black-friday"
-      :src="$root.cdnUrl + '/assets/images/bfl.png'" />
+      :src="$root.cdnUrl + '/assets/images/BF_badge_V2.png'" />
 
   </div>
 
