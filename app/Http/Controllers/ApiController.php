@@ -56,8 +56,8 @@ class ApiController extends Controller
      * @return type
      */
     public function getEbanxAddressByZip(ZipcodeRequest $request, EbanxService $ebanxService)
-    {        
-        return $ebanxService->getAddressByZip($request->get('zipcode'));
+    {                
+        return response()->json($ebanxService->getAddressByZip($request->get('zipcode')));
     }
 
 }

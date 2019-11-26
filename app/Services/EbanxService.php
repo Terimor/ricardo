@@ -384,7 +384,7 @@ class EbanxService
      * Get address by zipcode
      * @param  string $zipcode     
      */
-    public function getAddressByZip(string $zipcode)
+    public function getAddressByZip(string $zipcode): array
     {
         $zipcode = preg_replace('/\D/', '', $zipcode);                      
         $client = new \GuzzleHttp\Client();
@@ -399,6 +399,15 @@ class EbanxService
         ]);
         
         $response = $request->getBody()->getContents();
-        return $response;
+        $response = json_decode($response, true);   
+        $returnedArray = [];
+        if ($response && isset($response['status'])) {
+            $returnedArray = [
+                'state' => $response['zipcode']['state'] ?? '',
+                'city' => $response['zipcode']['city'] ?? '',
+                'address' => $response['zipcode']['address'] ?? '',
+            ];
+        }
+        return $returnedArray;
     }
 }
