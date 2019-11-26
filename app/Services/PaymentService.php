@@ -298,13 +298,17 @@ class PaymentService
     {
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $contact = array_merge($req->get('contact'), $req->get('address'), ['ip' => $req->ip()]);
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
         $user_agent = $req->header('User-Agent');
         $ipqs = $req->input('ipqs', null);
         $card = $req->get('card');
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
+        $contact = array_merge(
+            $req->get('contact'),
+            $req->get('address'),
+            ['ip' => $req->ip(), 'email' => strtolower($req->input('contact.email'))]
+        );
         $method = PaymentMethodMapper::toMethod($card['number']);
 
         // find order for update
