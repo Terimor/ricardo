@@ -48,6 +48,9 @@ class EbanxService
         Country::MEXICO     => [Currency::MXN, Currency::USD],
         Country::PERU       => [Currency::PEN, Currency::USD]
     ];
+    
+    const ZIPCODE_URL = 'https://api.ebanxpay.com/ws/zipcode';
+    const SANDBOX_ZIPCODE_URL = 'https://sandbox.ebanxpay.com/ws/zipcode';
 
     /**
      * @var string
@@ -377,5 +380,27 @@ class EbanxService
         }
 
         return $result;
+    }
+    
+    /**
+     * Get address by zipcode
+     * @param  string $zipcode     
+     */
+    public function getAddressByZip(string $zipcode)
+    {
+        $zipcode = preg_replace('/\D/', '', $zipcode);                      
+        $client = new \GuzzleHttp\Client();
+        
+        $url = $this->environment === static::ENV_LIVE ? static::ZIPCODE_URL : static::SANDBOX_ZIPCODE_URL;
+
+        $request = $client->request('POST', $url, [
+            'form_params' => [
+                'integration_key' => $this->integration_key,
+                'zipcode' => $zipcode,
+            ]
+        ]);
+        
+        $response = $request->getBody()->getContents();
+        return $response;
     }
 }

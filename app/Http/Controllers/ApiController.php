@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\ZipcodeRequest;
 use App\Services\PaymentService;
+use App\Services\EbanxService;
 use App\Http\Requests\CaptureOrVoidPaymentApiRequest;
 
 class ApiController extends Controller
@@ -45,6 +47,17 @@ class ApiController extends Controller
         return [
             'status' => $this->paymentService->void($order_id, $txn_hash)
         ];
+    }
+    
+    /**
+     * Get address by zip code using Ebanx
+     * @param Request $request
+     * @param EbanxService $ebanxService
+     * @return type
+     */
+    public function getEbanxAddressByZip(ZipcodeRequest $request, EbanxService $ebanxService)
+    {        
+        return $ebanxService->getAddressByZip($request->get('zipcode'));
     }
 
 }

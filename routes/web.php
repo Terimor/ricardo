@@ -53,6 +53,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     $router->get('/product-price', 'ProductController@getProductPrice');
     $router->get('/validate-email', 'EmailController@validateEmail');
+    $router->get('/get-address-by-zip', 'ApiController@getEbanxAddressByZip');
     
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
