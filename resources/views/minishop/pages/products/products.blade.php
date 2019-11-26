@@ -1,7 +1,7 @@
 @extends('minishop.layout')
 
 
-@section('title', $i18n['minishop.products.page_title'] ?? '')
+@section('title', t('minishop.products.page_title'))
 
 
 @section('js_data')
@@ -53,7 +53,7 @@
       <div class="row">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12">
           <h1 class="mb-5 mb-25-m font-weight-bold text-center">
-            {{ $i18n['minishop.products.page_title'] ?? '' }}
+            {{ t('minishop.products.page_title') }}
           </h1>
         </div>
       </div>
@@ -77,7 +77,7 @@
               <div
                 class="add-to-cart"
                 @click.stop="add_to_cart('{{ $product->id ?? '' }}')">
-                <i class="fas fa-cart-plus"></i>{{ $i18n['minishop.products.add_to_cart'] }}
+                <i class="fas fa-cart-plus"></i>{{ t('minishop.products.add_to_cart') }}
               </div>
 
               <p class="text-center font-weight-bold">

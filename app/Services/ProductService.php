@@ -342,11 +342,15 @@ class ProductService
      * @return Localize
      */
     public static function getDataForMiniShop(OdinProduct $product) {
+        //set images
+        $product->setLocalImages();
+        
         $lp = new Localize();
         $lp->id = $product->_id;
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
+        $lp->logo_image = $product->logo_image;
         
         $skus = [];
         $skusOld = $product->skus;
