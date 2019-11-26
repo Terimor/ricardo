@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Services\BluesnapService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
+use App\Services\MintService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
+use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\GetPaymentMethodsByCountryRequest;
@@ -196,9 +198,61 @@ class PaymentsController extends Controller
         }
     }
 
+    /**
+     * Mint-e redirect after 3ds
+     * @param  Request $req
+     * @param
+     * @return void
+     */
+    public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
+    {
+        $txn_status = $req->input('status');
+
+        $mint = new MintService();
+        $reply = $mint->validateRedirect($req, $order_id);
+
+        if (!$reply['status']) {
+            logger()->error('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            throw new AuthException('Unauthorized');
+        }
+
+        $query = ['order' => $order_id];
+        if ($txn_status === MintService::STATUS_OK) {
+            $this->paymentService->approveOrder($reply['txn']);
+            $query['3ds'] = 'success';
+        } else {
+            $order = $this->paymentService->rejectTxn($reply['txn']);
+            PaymentService::cacheErrors(array_merge($reply['txn'], ['number' => $order->number]));
+            $query['3ds'] = 'failure';
+        }
+
+        return \redirect('/checkout?' . $qs = http_build_query($query));
+    }
+
     public function test(PaymentCardCreateOrderRequest $req)
     {
-        $method = \App\Mappers\PaymentMethodMapper::toMethod($req->input('card.number'));
-        return PaymentService::getProviderByCountryAndMethod($req->input('address.country'), $method, true);
+        $reply = $this->paymentService->createMinteOrder($req);
+
+        $result = [
+            'order_currency'    => $reply['order_currency'],
+            'order_number'      => $reply['order_number'],
+            'order_id'          => $reply['order_id'],
+            'id'                => $reply['id'],
+            'status'            => $reply['status']
+        ];
+
+        if (!empty($reply['errors'])) {
+            $result['errors'] = $reply['errors'];
+            PaymentService::cacheErrors([
+                'number'    => $reply['order_number'],
+                'errors'    => $reply['errors']
+            ]);
+        }
+
+        if (!empty($reply['redirect_url'])) {
+            $result['redirect_url'] = stripslashes($reply['redirect_url']);
+        }
+
+        return $result;
     }
 }

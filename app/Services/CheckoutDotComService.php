@@ -250,7 +250,6 @@ class CheckoutDotComService
      *                  'currency'=>string,
      *                  'billing_descriptor'=>['name'=>string,'city'=>string]
      *                  'description'=>string,
-     *                  'ip'=>string,
      *                  'id'=>string,
      *                  'number'=>string,
      *                  '3ds'=>?bool
@@ -272,7 +271,6 @@ class CheckoutDotComService
      *                  'currency'=>string,
      *                  'billing_descriptor'=>['name'=>string,'city'=>string]
      *                  'description'=>string,
-     *                  'ip'=>string,
      *                  'id'=>string,
      *                  'number'=>string
      *              ]
@@ -311,7 +309,7 @@ class CheckoutDotComService
                 'phone' => (object)[$contact['phone']]
             ];
         }
-        $payment->payment_ip = $order_details['ip'];
+        $payment->payment_ip = $contact['ip'];
 
         // enable 3ds
         if ($source instanceof CardSource) {
@@ -329,7 +327,6 @@ class CheckoutDotComService
             'value'             => $order_details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::CHECKOUTCOM,
-            'payment_method'    => PaymentMethods::CREDITCARD,
             'hash'              => "fail_" . UtilsService::randomString(16),
             'payer_id'          => null,
             'provider_data'     => null,

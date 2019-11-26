@@ -9,6 +9,7 @@ class PaymentProviders
     const CHECKOUTCOM      = 'checkoutcom';
     const BLUESNAP         = 'bluesnap';
     const NOVALNET         = 'novalnet';
+    const MINT             = 'minte';
 
     /**
      * Payment providers
@@ -516,6 +517,42 @@ class PaymentProviders
                 PaymentMethods::EPS => [
                     '-3ds' => ['at']
                 ],
+            ]
+        ],
+        self::MINT  => [
+            'name'      => 'Mint-E',
+            'is_active' => true,
+            'is_main'   => false,
+            'in_prod'   => false,
+            'methods'   => [
+                PaymentMethods::CREDITCARD => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::VISA => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::MASTERCARD => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::AMEX => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::DISCOVER => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::DINERSCLUB => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ],
+                PaymentMethods::JCB => [
+                    '-3ds' => ['*'],
+                    'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                ]
             ]
         ]
     ];

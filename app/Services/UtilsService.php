@@ -20,7 +20,7 @@ class UtilsService
     const S3_URL_PRODUCTION = 'mediaodin.s3.amazonaws.com';
     const CDN_HOST_PRODUCTION = 'cdn.backenddomainsecure.com';
     const CDN_HOST_STAGING = 'cdn.odin.saga-be.host';
-        
+
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];
     /**
      * Array using global parameters on site
@@ -541,10 +541,10 @@ class UtilsService
         'zm' => 'Zambia',
         'zw' => 'Zimbabwe'
     ];
-    
+
     public static $unsetGet = [
-        'cur' => '{aff_currency}',        
-        'lang'  => '{lang}',        
+        'cur' => '{aff_currency}',
+        'lang'  => '{lang}',
     ];
 
     /**
@@ -771,6 +771,18 @@ class UtilsService
     }
 
     /**
+     * Returns current time in milliseconds
+     * @return string
+     */
+    public static function millitime()
+    {
+        $comps = explode(' ', microtime());
+      // Note: Using a string here to prevent loss of precision
+      // in case of "overflow" (PHP converts it to a double)
+      return sprintf('%d%03d', $comps[1], $comps[0] * 1000);
+    }
+
+    /**
      * Get device
      */
     public static function getDevice(): string
@@ -795,7 +807,7 @@ class UtilsService
     {
         return request()->server('SERVER_NAME');
     }
-    
+
     /**
      * Unset get parameters
      * @param Request $request
@@ -803,13 +815,13 @@ class UtilsService
     public static function unsetGetParameters(Request $request)
     {
         foreach (static::$unsetGet as $key => $value) {
-            $valueCoding = str_replace(['{', '}'], '','%7B'.$value.'%7D');            
-            if ($request->get($key) === $value || $request->get($key) === $valueCoding) {                
+            $valueCoding = str_replace(['{', '}'], '','%7B'.$value.'%7D');
+            if ($request->get($key) === $value || $request->get($key) === $valueCoding) {
                 unset($request[$key]);
             }
         }
     }
-    
+
     /**
      * Returns array of localized images
      * @return type
@@ -818,7 +830,7 @@ class UtilsService
     {
         $imagesObj = AwsImage::whereIn('name', $localizeImages)->get();
         $images = [];
-        
+
         foreach ($imagesObj as $image) {
             if (!empty($image->name)) {
                 $images[$image->name] = [
@@ -827,10 +839,10 @@ class UtilsService
                 ];
             }
         }
-        
+
         return $images;
     }
-    
+
     /**
      * Prepare phone for save
      * @param type $phone

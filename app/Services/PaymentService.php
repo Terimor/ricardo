@@ -19,6 +19,7 @@ use App\Services\CurrencyService;
 use App\Services\CustomerService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
+use App\Services\MintService;
 use App\Services\OrderService;
 use App\Services\AffiliateService;
 use App\Mappers\PaymentMethodMapper;
@@ -139,19 +140,19 @@ class PaymentService
             'provider_data'     => $data['provider_data'],
             'payment_method'    => $payment_method,
             'payment_provider'  => $data['payment_provider'],
-            'payer_id'          => $data['payer_id']
+            'payer_id'          => $data['payer_id'] ?? null
         ]);
 
         $order->addTxn([
             'hash'              => $data['hash'],
             'value'             => $data['value'],
             'status'            => $data['status'],
-            'fee'               => $data['fee'],
+            'fee'               => $data['fee'] ?? 0,
             'card_type'         => $card_type,
             'is_charged_back'   => false,
             'payment_method'    => $payment_method,
             'payment_provider'  => $data['payment_provider'],
-            'payer_id'          => $data['payer_id']
+            'payer_id'          => $data['payer_id'] ?? null
         ]);
     }
 
@@ -299,6 +300,7 @@ class PaymentService
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
         $contact = array_merge($req->get('contact'), $req->get('address'), ['ip' => $req->ip()]);
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
+        $user_agent = $req->header('User-Agent');
         $ipqs = $req->input('ipqs', null);
         $card = $req->get('card');
         $order_id = $req->get('order');
@@ -437,7 +439,6 @@ class PaymentService
             $payment = $checkoutService->payByCard($card, $contact, [
                 'amount'    => $order->total_price,
                 'currency'  => $order->currency,
-                'ip'        => $order->ip,
                 'id'        => $order->getIdAttribute(),
                 'number'    => $order->number,
                 '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
@@ -609,11 +610,10 @@ class PaymentService
                     $checkout = new CheckoutDotComService();
                     $payment = $checkout->payByToken(
                         $card_token,
-                        ['payer_id' => $order_main_txn['payer_id']],
+                        ['payer_id' => $order_main_txn['payer_id'], 'ip' => $order->ip],
                         [
                             'amount'    => $checkout_price,
                             'currency'  => $order->currency,
-                            'ip'        => $order->ip,
                             'id'        => $order->getIdAttribute(),
                             'number'    => $order->number,
                             'description' => implode(', ', array_column($products, 'product_name')),
@@ -633,6 +633,12 @@ class PaymentService
                             'currency'  => $order->currency,
                             'billing_descriptor' => $order->billing_descriptor
                         ]
+                    );
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::MINT && $card_token) {
+                    $mint = new MintService();
+                    $payment = $mint->payByToken(
+                        $card_token,
+                        ['amount' => $checkout_price, 'currency' => $order->currency, 'descriptor' => $order->billing_descriptor]
                     );
                 }
 
@@ -670,6 +676,11 @@ class PaymentService
                         throw new OrderUpdateException(json_encode($validator->errors()->all()));
                     }
                 }
+
+                // approve order if txn is approved
+                if ($payment['status'] === Txn::STATUS_APPROVED) {
+                    $order = $this->approveOrder($payment);
+                }
             }
         }
 
@@ -685,9 +696,10 @@ class PaymentService
 
     /**
      * Approves order
-     * @param array $data
+     * @param array $data ['hash'=>string,'number'=>?string,'fee'=>?float,'value'=>?float,'status'=>string]
+     * @return OdinOrder|null
      */
-    public function approveOrder(array $data): void
+    public function approveOrder(array $data): ?OdinOrder
     {
         $order = null;
         if (!empty($data['number'])) {
@@ -696,19 +708,24 @@ class PaymentService
             $order = OdinOrder::getByTxnHash($data['hash']); // throwable
         } else {
             logger()->error('Order approve failed', $data);
+            return $order;
         }
 
         // check webhook reply
         if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
-            logger()->info("Bluesnap webhook ignored, order status [{$order->status}]");
-            return;
+            logger()->info("Webhook ignored, order status [{$order->status}]");
+            return $order;
         }
 
         $txn = $order->getTxnByHash($data['hash'], false);
         if ($txn) {
-            $txn['fee']     = $data['fee'];
+            if (isset($data['fee'])) {
+                $txn['fee'] = $data['fee'];
+            }
+            if (isset($data['value'])) {
+                $txn['value'] = $data['value'];
+            }
             $txn['status']  = $data['status'];
-            $txn['value']   = $data['value'];
             $order->addTxn($txn);
         }
 
@@ -747,16 +764,25 @@ class PaymentService
             }
         }
 
+        return $order;
     }
 
     /**
      * Reject txn
      * @param array $data
-     * @return void
+     * @return OdinOrder|null
      */
-    public function rejectTxn(array $data): void
+    public function rejectTxn(array $data): ?OdinOrder
     {
-        $order = OdinOrder::getByNumber($data['number']); // throwable
+        $order = null;
+        if (!empty($data['number'])) {
+            $order = OdinOrder::getByNumber($data['number']); // throwable
+        } elseif (!empty($data['hash'])) {
+            $order = OdinOrder::getByTxnHash($data['hash']); // throwable
+        } else {
+            logger()->error('Order txn reject failed', $data);
+            return $order;
+        }
 
         $txn = $order->getTxnByHash($data['hash'], false);
         if ($txn) {
@@ -770,6 +796,7 @@ class PaymentService
                 throw new OrderUpdateException(json_encode($validator->errors()->all()));
             }
         }
+        return $order;
     }
 
     /**
@@ -977,6 +1004,160 @@ class PaymentService
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
                 $result = false;
             }
+        }
+
+        return $result;
+    }
+
+    public function createMinteOrder(PaymentCardCreateOrderRequest $req)
+    {
+        ['sku' => $sku, 'qty' => $qty] = $req->get('product');
+        $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
+        $contact = array_merge($req->get('contact'), $req->get('address'), ['ip' => $req->ip()]);
+        $page_checkout = $req->input('page_checkout', $req->header('Referer'));
+        $user_agent = $req->header('User-Agent');
+        $ipqs = $req->input('ipqs', null);
+        $card = $req->get('card');
+        $order_id = $req->get('order');
+        $installments = (int)$req->input('card.installments', 0);
+        $method = PaymentMethodMapper::toMethod($card['number']);
+
+        // find order for update
+        $order = null;
+        if (!empty($order_id)) {
+            $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
+        }
+
+        $product = null;
+        if ($req->get('cop_id')) {
+            $product = OdinProduct::getByCopId($req->get('cop_id'));
+        }
+        if (!$product) {
+            $product = OdinProduct::getBySku($sku); // throwable
+        }
+
+        // select provider by country
+        $provider = PaymentProviders::MINT;
+        // refuse payment if  there is fraud
+        self::fraudCheck($ipqs); // throwable
+
+        $this->addCustomer($contact); // throwable
+
+        if (empty($order)) {
+            $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
+
+            $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
+
+            $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
+            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
+            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
+
+            $order = $this->addOrder([
+                'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
+                'currency'              => $price['currency'],
+                'exchange_rate'         => $price['usd_rate'],
+                'total_paid'            => 0,
+                'total_price'           => $order_product['total_price'],
+                'total_price_usd'       => $order_product['total_price_usd'],
+                'txns_fee_usd'          => 0,
+                'installments'          => $installments,
+                'is_reduced'            => false,
+                'is_invoice_sent'       => false,
+                'is_survey_sent'        => false,
+                'is_flagged'            => false,
+                'is_refunding'          => false,
+                'is_refunded'           => false,
+                'is_qc_passed'          => false,
+                'customer_email'        => $contact['email'],
+                'customer_first_name'   => $contact['first_name'],
+                'customer_last_name'    => $contact['last_name'],
+                'customer_phone'        => $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']),
+                'customer_doc_id'       => $contact['document_number'] ?? null,
+                'ip'                    => $contact['ip'],
+                'language'              => app()->getLocale(),
+                'txns'                  => [],
+                'shipping_country'      => $contact['country'],
+                'shipping_zip'          => $contact['zip'],
+                'shipping_state'        => $contact['state'],
+                'shipping_city'         => $contact['city'],
+                'shipping_street'       => $contact['street'],
+                'shipping_street2'      => $contact['district'] ?? null,
+                'shop_currency'         => $price['currency'],
+                'warehouse_id'          => $product->warehouse_id,
+                'products'              => [$order_product],
+                'page_checkout'         => $page_checkout,
+                'params'                => $params,
+                'offer'                 => $offerId,
+                'affiliate'             => $affId,
+                'txid'                  => $validTxid,
+                'ipqualityscore'        => $ipqs
+            ]);
+        } else {
+            $order_product = $order->getMainProduct(); // throwable
+            $order->customer_email      = $contact['email'];
+            $order->customer_first_name = $contact['first_name'];
+            $order->customer_last_name  = $contact['last_name'];
+            $order->customer_phone      = $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']);
+            $order->customer_doc_id     = $contact['document_number'] ?? null;
+            $order->shipping_country    = $contact['country'];
+            $order->shipping_zip        = $contact['zip'];
+            $order->shipping_state      = $contact['state'];
+            $order->shipping_city       = $contact['city'];
+            $order->shipping_street     = $contact['street'];
+            $order->shipping_street2    = $contact['district'] ?? null;
+            $order->installments        = $installments;
+        }
+        // select provider and create payment
+        $payment = [];
+        $mint = new MintService();
+        $payment = $mint->payByCard($card, $contact, [
+            '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
+            'amount'    => $order->total_price,
+            'currency'  => $order->currency,
+            'order_id'  => $order->getIdAttribute(),
+            'order_number'  => $order->number,
+            'user_agent'    => $user_agent,
+            'descriptor'    => $order->billing_descriptor
+        ]);
+
+        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+
+        // cache token
+        self::setCardToken($order->number, $payment['token'] ?? null);
+
+        // add Txn, update OdinOrder
+        $order_product['txn_hash'] = $payment['hash'];
+        $order->addProduct($order_product, true);
+        $order->is_flagged = $payment['is_flagged'];
+
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
+            }
+        }
+
+        // approve order if txn is approved
+        if ($payment['status'] === Txn::STATUS_APPROVED) {
+            $order = $this->approveOrder($payment);
+        }
+
+        // response
+        $result = [
+            'id'                => null,
+            'order_currency'    => $order->currency,
+            'order_number'      => $order->number,
+            'order_id'          => $order->getIdAttribute(),
+            'status'            => self::STATUS_FAIL
+        ];
+
+        if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $result['id'] = $payment['hash'];
+            $result['status'] = self::STATUS_OK;
+            $result['redirect_url'] = $payment['redirect_url'] ?? null;
+        } else {
+            $result['errors'] = $payment['errors'];
         }
 
         return $result;

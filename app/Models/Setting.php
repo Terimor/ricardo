@@ -7,9 +7,9 @@ use Jenssegers\Mongodb\Eloquent\Model;
 class Setting extends Model
 {
     protected $collection = 'setting';
-    
+
     protected $dates = ['updated_at'];
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -18,7 +18,7 @@ class Setting extends Model
     protected $fillable = [
         'key', 'value', 'description', 'auto'
     ];
-	
+
 	/**
 	* Returns value
 	* @param string $key
@@ -34,8 +34,8 @@ class Setting extends Model
                 if (empty($returnedValues[$keyName])) {
                     $returnedValues[$keyName] = $default;
                 }
-            }             
-        } else {        
+            }
+        } else {
             $returnedValues = static::where(['key' => $key])->first();
             if ($returnedValues) {
                 $returnedValues = $returnedValues->value;
@@ -45,4 +45,39 @@ class Setting extends Model
         }
         return $returnedValues;
 	}
+
+    /**
+     * Increments integer value
+     * @param type $key
+     * @param type $inc
+     * @return type
+     */
+    public static function incValue($key, $inc = 1)
+    {
+        $val = intval(static::getValue($key, 0));
+        $val += $inc;
+        static::setValue($key, $val);
+        return $val;
+    }
+
+    /**
+     * Sets value
+     * @param string $key
+     * @param object $value
+     * @return Setting
+     */
+    public static function setValue($key, $value)
+    {
+        $model = static::where(['key' => $key])->first();
+        if (!$model) {
+            $model = new self();
+            $model->key = $key;
+            $model->description = '';
+            $model->auto = true;
+            $model->multiline = false;
+        }
+        $model->value = $value;
+        $model->save();
+        return $model;
+    }
 }

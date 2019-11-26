@@ -11,6 +11,7 @@ class BluesnapCodeMapper
      */
     private static $map = [
         self::CODE_COMMON       => 'card.error.common',
+        'DO_NOT_HONOR'          => 'card.error.not_functioning',
         'FRAUD_DETECTED'        => 'card.error.not_functioning',
         'CVV_ERROR'             => 'card.error.cvv_incorrect',
         'INSUFFICIENT_FUNDS'    => 'card.error.funds_insufficient',
