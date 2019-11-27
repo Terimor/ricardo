@@ -1,3 +1,6 @@
+import wait from '../utils/wait';
+
+
 export default {
 
   mounted() {
@@ -31,22 +34,26 @@ export default {
     },
 
     blackFridayShow() {
-      setTimeout(() => {
-        const blackFriday = this.$root.$refs.blackFriday;
-        const height = blackFriday.clientHeight;
+      const blackFriday = this.$root.$refs.blackFriday;
 
-        blackFriday.style['height'] = 0;
-        blackFriday.classList.remove('hidden');
+      wait(
+        () => blackFriday.clientHeight > 0,
+        () => {
+          const height = blackFriday.clientHeight;
 
-        setTimeout(() => {
-          document.body.style['padding-top'] = height + 'px';
-          blackFriday.style['height'] = height + 'px';
+          blackFriday.style['height'] = 0;
+          blackFriday.classList.remove('hidden');
 
           setTimeout(() => {
-            blackFriday.style.removeProperty('height');
-          }, 1000);
-        }, 100);
-      }, 100);
+            document.body.style['padding-top'] = height + 'px';
+            blackFriday.style['height'] = height + 'px';
+
+            setTimeout(() => {
+              blackFriday.style.removeProperty('height');
+            }, 1000);
+          }, 100);
+        },
+      );
     },
 
     blackFridayHide() {
