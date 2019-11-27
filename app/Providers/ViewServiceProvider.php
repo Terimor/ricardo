@@ -164,7 +164,8 @@ class ViewServiceProvider extends ServiceProvider
 
             // Footer Menu
             View::composer('minishop.regions.footer.menu', function($view) use ($is_signup_hidden) {
-              $view->with('footer_menu', MiniShopService::getFooterMenu(['is_signup_hidden' => $is_signup_hidden]));
+              $view->with('footer_menu', MiniShopService::$footerMenu);
+              $view->with('is_signup_hidden', $is_signup_hidden);
             });
 
             // Freshchat (Custom Image)

@@ -59,26 +59,6 @@ class MiniShopService
         'url' => '/privacy',
         'phrase' => 'minishop.menu.privacy',
       ],
-      [
-        'url' => 'https://www.h8m8.com',
-        'phrase' => 'minishop.menu.affiliate',
-        'visibility' => [
-          'is_signup_hidden' => false,
-        ],
-      ],
     ];
 
-    public static function getFooterMenu(array $visibility_options = []): array {
-      return array_filter(self::$footerMenu, function($item) use ($visibility_options) {
-        if (isset($item['visibility'])) {
-          foreach ($item['visibility'] as $name => $value) {
-            if (isset($visibility_options[$name]) && $value !== $visibility_options[$name]) {
-              return false;
-            }
-          }
-        }
-
-        return true;
-      });
-    }
 }

@@ -1,4 +1,5 @@
 <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+
   @foreach ($header_menu as $menu_item)
     <li
       class="nav-item{{ isset($menu_item['class']) ? ' ' . $menu_item['class'] : '' }}{{ isset($menu_item['active']) && Route::is($menu_item['active']) ? ' active' : '' }}">
@@ -32,4 +33,5 @@
 
     </li>
   @endforeach
+
 </ul>
