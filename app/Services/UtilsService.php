@@ -680,6 +680,18 @@ class UtilsService
     public static function getCdnUrl() {
         $env = \App::environment();
 
+        // hardcode
+        $wifibostCdn = 'https://cdn.12buyme34.com';
+        $xdroneCdn = 'https://cdn.8xgb.com';
+        $host = request()->getHost();
+        if (strpos(' '.$host, 'wifiboostr.pro')) {
+            return $wifibostCdn;
+        } else if (strpos(' '.$host, 'drone720.pro')) {
+            return $xdroneCdn;
+        } else if (strpos(' '.$host, '127.')) {
+            return $xdroneCdn;
+        }
+        
         return ($env === 'production'
             ? 'https://' . self::CDN_HOST_PRODUCTION
             : ($env === 'staging'
@@ -701,6 +713,18 @@ class UtilsService
             $urlReplace = self::CDN_HOST_STAGING;
             $s3Url = self::S3_URL_STAGING;
         }
+        
+        // hardcode
+        $wifibostCdn = 'cdn.12buyme34.com';
+        $xdroneCdn = 'cdn.8xgb.com';
+        $host = request()->getHost();
+        if (strpos(' '.$host, 'wifiboostr.pro')) {
+            $urlReplace = $wifibostCdn;
+        } else if (strpos(' '.$host, 'drone720.pro')) {
+            $urlReplace = $xdroneCdn;
+        } else if (strpos(' '.$host, '127.')) {
+            $urlReplace = $xdroneCdn;
+        }        
 
         $url = str_replace($s3Url, $urlReplace, $url);
 		// cut www. from url
