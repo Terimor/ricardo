@@ -894,7 +894,7 @@ class PaymentService
                     foreach ($result[$providerId] as $methodId => &$methodData) {
                         $method             = PaymentMethods::$list[$methodId];
                         $methodData['name'] = $method['name'];
-                        $methodData['logo'] = $method['logo'];
+                        $methodData['logo'] = \Utils::getCdnUrl().$method['logo'];
                         if (isset($provider['extra_fields']) && isset($provider['extra_fields'][$country])) {
                             $methodData['extra_fields'] = $provider['extra_fields'][$country];
                         }
