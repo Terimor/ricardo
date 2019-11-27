@@ -326,15 +326,32 @@ class ProductService
     public static function getDomainProducts(): array
     {
         $domain = Domain::getByName();
-        $productsLocale = [];
+        $productsLocaleSorted = [];
         if (!empty($domain->sold_products)) {
-            $soldProducts = $domain->sold_products;
-            $products = OdinProduct::getByIds($soldProducts);
-            foreach ($products as $product) {
-                $productsLocale[] = static::getDataForMiniShop($product);
+            $soldProducts = $domain->sold_products ?? [];
+            if ($soldProducts) {
+                arsort($soldProducts);                
+                $productIds = array_keys($soldProducts);            
+
+                $products = OdinProduct::getByIds($productIds);
+                foreach ($products as $product) {
+                    $productsLocale[] = static::getDataForMiniShop($product);
+                }
+                // sort products by sold qty
+                if ($productsLocale) {
+                    $productsLocaleSorted = [];
+                    foreach ($soldProducts as $productId => $sp) {
+                        foreach ($productsLocale as $localeProduct) {
+                            if ($localeProduct->id == $productId) {
+                                $productsLocaleSorted[] = $localeProduct;
+                            }
+                        }
+                    }
+                }
             }
         }
-        return $productsLocale;
+
+        return $productsLocaleSorted;
     }
     
     /**
