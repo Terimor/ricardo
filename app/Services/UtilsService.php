@@ -680,7 +680,8 @@ class UtilsService
     public static function getCdnUrl() {
         $env = \App::environment();
 
-        // hardcode
+        // hardcode: temporary replace cdn urls for two domains
+        // Remove after check
         $wifibostCdn = 'https://cdn.12buyme34.com';
         $xdroneCdn = 'https://cdn.8xgb.com';
         $host = request()->getHost();
@@ -712,7 +713,8 @@ class UtilsService
             $s3Url = self::S3_URL_STAGING;
         }
         
-        // hardcode
+        // hardcode: temporary replace cdn urls for two domains
+        // Remove after check
         $wifibostCdn = 'cdn.12buyme34.com';
         $xdroneCdn = 'cdn.8xgb.com';
         $host = request()->getHost();
