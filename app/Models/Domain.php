@@ -117,7 +117,7 @@ class Domain extends Model
      * @param array $value
      * @return string
      */
-    public function getDisplayedName()
+    public function getDisplayedName(): string
     {
         return !empty($this->display_name) ? $this->display_name : $this->name;
     }
