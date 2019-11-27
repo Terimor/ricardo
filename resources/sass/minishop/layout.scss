@@ -9,9 +9,13 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
+#app {
+  transition: padding-top .3s ease;
+}
+
 p {
-    font-weight: 300;
-    font-size: 18px;
+  font-weight: 300;
+  font-size: 18px;
 }
 
 button:hover,
@@ -55,6 +59,9 @@ button:active {
   padding-right: 15px;
 }
 
+.no-transition {
+  transition: none!important;
+}
 
 @media (min-width: 1200px) {
   .container {

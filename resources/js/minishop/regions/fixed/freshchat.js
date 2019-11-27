@@ -1,7 +1,9 @@
 export default {
 
   data: {
-    freshchat_opened: false,
+    freshchat: {
+      opened: false,
+    },
   },
 
 
@@ -20,7 +22,7 @@ export default {
 
     freshchat_class() {
       return {
-        'fc-open': this.freshchat_opened,
+        'fc-open': this.freshchat.opened,
       };
     },
 
@@ -45,11 +47,11 @@ export default {
     },
 
     freshchat_opened_event() {
-      this.freshchat_opened = true;
+      this.freshchat.opened = true;
     },
 
     freshchat_closed_event() {
-      this.freshchat_opened = false;
+      this.freshchat.opened = false;
     },
 
     freshchat_click() {

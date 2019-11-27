@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\Router $router) {
-    $router->get('/', 'SiteController@index');
+    $router->get('/', 'SiteController@index')->name('home');
     $router->get('/contact-us', 'SiteController@contactUs')->name('contact-us');
     $router->get('/returns', 'SiteController@returns')->name('returns');
     $router->get('/privacy', 'SiteController@privacy')->name('privacy');

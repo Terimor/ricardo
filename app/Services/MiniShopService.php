@@ -16,7 +16,7 @@ class MiniShopService
       [
         'url' => '/',
         'label' => 'minishop.menu.home',
-        'active' => 'minishop.home',
+        'active' => 'home',
       ],
       [
         'url' => '/about',

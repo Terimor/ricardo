@@ -94,6 +94,7 @@ class ViewServiceProvider extends ServiceProvider
 
             $domain = Domain::getByName();
             optional($domain)->setLocalLogo();
+            $website_name = $domain->getDisplayedName();
 
             $req = Request();
             $aff_id = AffiliateService::getAffIdFromRequest($req);
@@ -107,6 +108,7 @@ class ViewServiceProvider extends ServiceProvider
             // All
             $view->with('domain', $domain);
             $view->with('cdn_url', $cdn_url);
+            $view->with('website_name', $website_name);
 
             // Layout
             View::composer('minishop.layout', function($view) use ($lang, $direction) {

@@ -1,4 +1,5 @@
 import cart from './services/cart';
+import document from './utils/document';
 import request from './utils/request';
 import toggler from './regions/header/toggler';
 import freshchat from './regions/fixed/freshchat';
@@ -9,6 +10,7 @@ export default {
 
   mixins: [
     cart,
+    document,
     request,
     toggler,
     freshchat,

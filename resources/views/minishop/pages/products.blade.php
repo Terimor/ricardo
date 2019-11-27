@@ -1,15 +1,13 @@
 @extends('minishop.layout')
 
 
-@section('title', t('minishop.products.page_title'))
+@section('title', $website_name)
 
 
 @section('js_deps')
 
   <script type="text/javascript">
-    js_deps.show([
-      'products.css',
-    ]);
+    js_deps.show(['page-styles']);
   </script>
 
 @endsection
@@ -19,7 +17,7 @@
 
   <link
     href="{{ mix_cdn('assets/css/minishop/products.css') }}"
-    onload="js_deps.ready.call(this, 'products.css')"
+    onload="js_deps.ready.call(this, 'page-styles')"
     rel="stylesheet"
     media="none" />
 
@@ -30,7 +28,7 @@
 
   <script
     src="{{ mix_cdn('assets/js/minishop/products.js') }}"
-    onload="js_deps.ready('products')"
+    onload="js_deps.ready('page-scripts')"
     async></script>
 
 @endsection
