@@ -689,8 +689,6 @@ class UtilsService
             return $wifibostCdn;
         } else if (strpos(' '.$host, 'drone720.pro')) {
             return $xdroneCdn;
-        } else if (strpos(' '.$host, 'odin.saga-be.host')) {
-            return $xdroneCdn;
         }
         
         return ($env === 'production'
@@ -723,8 +721,6 @@ class UtilsService
         if (strpos(' '.$host, 'wifiboostr.pro')) {
             $urlReplace = $wifibostCdn;
         } else if (strpos(' '.$host, 'drone720.pro')) {
-            $urlReplace = $xdroneCdn;
-        } else if (strpos(' '.$host, 'odin.saga-be.host')) {
             $urlReplace = $xdroneCdn;
         }
 
