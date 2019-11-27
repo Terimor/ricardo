@@ -685,9 +685,9 @@ class UtilsService
         $wifibostCdn = 'https://cdn.12buyme34.com';
         $xdroneCdn = 'https://cdn.8xgb.com';
         $host = request()->getHost();
-        if (strpos(' '.$host, 'wifiboostr.pro')) {
+        if (stripos(' '.$host, 'wifiboost.tech')) {
             return $wifibostCdn;
-        } else if (strpos(' '.$host, 'xdronehd.pro')) {
+        } else if (stripos(' '.$host, 'xdronehd.pro')) {
             return $xdroneCdn;
         }
         
@@ -718,9 +718,9 @@ class UtilsService
         $wifibostCdn = 'cdn.12buyme34.com';
         $xdroneCdn = 'cdn.8xgb.com';
         $host = request()->getHost();
-        if (strpos(' '.$host, 'wifiboostr.pro')) {
+        if (stripos(' '.$host, 'wifiboost.tech')) {
             $urlReplace = $wifibostCdn;
-        } else if (strpos(' '.$host, 'xdronehd.pro')) {
+        } else if (stripos(' '.$host, 'xdronehd.pro')) {
             $urlReplace = $xdroneCdn;
         }
 
