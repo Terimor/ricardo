@@ -45,7 +45,9 @@
 
   <body>
 
-    <div id="app">
+    <div
+      id="app"
+      ref="app">
 
       <!-- Header Region -->
       @include('minishop.regions.header')

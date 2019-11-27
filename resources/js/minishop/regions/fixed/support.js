@@ -1,38 +1,72 @@
 export default {
 
-  mounted() {
-    this.support_toolbar_adjust();
-    this.support_toolbar_bind_chat();
-    this.support_toolbar_bind_contact();
+  watch: {
 
-    addEventListener('resize', this.support_toolbar_adjust);
+    'document.readyState': {
+      immediate: true,
+      handler() {
+        if (this.document.readyState === 'complete') {
+          this.support_toolbar_init();
+        }
+      },
+    },
+
+  },
+
+
+  computed: {
+
+    support_toolbar_chat_link() {
+      return this.$refs.support_toolbar.querySelector('.chat-link');
+    },
+
+    support_toolbar_contact_link() {
+      return this.$refs.support_toolbar.querySelector('.contact-link');
+    },
+
   },
 
 
   methods: {
 
-    support_toolbar_adjust() {
-      setTimeout(() => {
-        const support_toolbar = this.$refs.support_toolbar;
+    support_toolbar_init() {
+      this.support_toolbar_show();
+      this.support_toolbar_bind_chat();
+      this.support_toolbar_bind_contact();
 
-        document.body.style['padding-top'] = support_toolbar.clientHeight + 'px';
-        support_toolbar.classList.remove('invisible');
+      addEventListener('resize', this.support_toolbar_adjust);
+    },
+
+    support_toolbar_show() {
+      const height = this.$refs.support_toolbar.clientHeight;
+
+      this.$refs.support_toolbar.style.height = 0;
+      this.$refs.support_toolbar.classList.remove('invisible');
+
+      setTimeout(() => {
+        this.$refs.app.style['padding-top'] = height + 'px';
+        this.$refs.support_toolbar.style.height = height + 'px';
+
+        setTimeout(() => {
+          this.$refs.support_toolbar.style.removeProperty('height');
+        }, 1000);
       }, 100);
     },
 
-    support_toolbar_bind_chat() {
-      const support_toolbar = this.$refs.support_toolbar;
-      const chat_link = support_toolbar.querySelector('.chat-link');
+    support_toolbar_adjust() {
+      this.$refs.app.style['padding-top'] = this.$refs.support_toolbar.clientHeight + 'px';
+    },
 
-      if (chat_link) {
-        chat_link.addEventListener('click', this.freshchat_click);
+    support_toolbar_bind_chat() {
+      if (this.support_toolbar_chat_link) {
+        this.support_toolbar_chat_link.addEventListener('click', this.freshchat_click);
       }
     },
 
     support_toolbar_bind_contact() {
-      const support_toolbar = this.$refs.support_toolbar;
-      const contact_link = support_toolbar.querySelector('.contact-link');
-      contact_link.href = this.searchPopulate('/contact-us');
+      if (this.support_toolbar_contact_link) {
+        this.support_toolbar_contact_link.href = this.searchPopulate('/contact-us');
+      }
     },
 
   },
