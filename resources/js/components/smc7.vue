@@ -184,8 +184,8 @@
                               :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
                                 <p><i class="fa fa-lock"></i>{{ textSafeSSLEncryption }}</p>
-                                <p>{{ textCreditCardInvoiced }}<br/>"MDE/Hal-Balzan{{ productData.billing_descriptor }}"</p>
-                                <p>MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
+                                <p>{{ textCreditCardInvoiced }}<br/>"{{ isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ productData.billing_descriptor }}"</p>
+                                <p v-if="isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
                             </div>
                         </div>
                     </div>
