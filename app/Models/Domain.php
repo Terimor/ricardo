@@ -113,8 +113,7 @@ class Domain extends Model
     }
     
     /**
-     * Returns translated splash_description attribute
-     *
+     * Returns displayed name     
      * @param array $value
      * @return string
      */
