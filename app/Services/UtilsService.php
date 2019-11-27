@@ -687,7 +687,7 @@ class UtilsService
         $host = request()->getHost();
         if (strpos(' '.$host, 'wifiboostr.pro')) {
             return $wifibostCdn;
-        } else if (strpos(' '.$host, 'drone720.pro')) {
+        } else if (strpos(' '.$host, 'xdronehd.pro')) {
             return $xdroneCdn;
         }
         
@@ -720,7 +720,7 @@ class UtilsService
         $host = request()->getHost();
         if (strpos(' '.$host, 'wifiboostr.pro')) {
             $urlReplace = $wifibostCdn;
-        } else if (strpos(' '.$host, 'drone720.pro')) {
+        } else if (strpos(' '.$host, 'xdronehd.pro')) {
             $urlReplace = $xdroneCdn;
         }
 
