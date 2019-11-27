@@ -15,16 +15,6 @@
       <!-- Menu -->
       @include('minishop.regions.header.menu')
 
-      <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-
-        <!-- Login -->
-        @include('minishop.regions.header.login')
-
-        <!-- Cart -->
-        @include('minishop.regions.header.cart')
-
-      </ul>
-
     </div>
 
   </div>

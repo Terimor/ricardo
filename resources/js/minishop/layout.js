@@ -1,4 +1,3 @@
-import cart from './services/cart';
 import document from './utils/document';
 import request from './utils/request';
 import toggler from './regions/header/toggler';
@@ -9,7 +8,6 @@ import support from './regions/fixed/support';
 export default {
 
   mixins: [
-    cart,
     document,
     request,
     toggler,

@@ -16,7 +16,7 @@
 @section('styles')
 
   <link
-    href="{{ mix_cdn('assets/css/minishop/products.css') }}"
+    href="{{ mix_cdn('assets/css/minishop/home.css') }}"
     onload="js_deps.ready.call(this, 'page-styles')"
     rel="stylesheet"
     media="none" />
@@ -27,7 +27,7 @@
 @section('scripts')
 
   <script
-    src="{{ mix_cdn('assets/js/minishop/products.js') }}"
+    src="{{ mix_cdn('assets/js/minishop/home.js') }}"
     onload="js_deps.ready('page-scripts')"
     async></script>
 

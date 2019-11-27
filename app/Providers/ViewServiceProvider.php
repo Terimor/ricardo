@@ -104,6 +104,8 @@ class ViewServiceProvider extends ServiceProvider
             }
 
             $html_to_app = AffiliateService::getHtmlToApp($req, $affiliate ?? null);
+            $locale_affiliate = AffiliateSetting::getLocaleAffiliate($affiliate ?? null);
+            $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
 
             // All
             $view->with('domain', $domain);
@@ -161,8 +163,8 @@ class ViewServiceProvider extends ServiceProvider
             });
 
             // Footer Menu
-            View::composer('minishop.regions.footer.menu', function($view) {
-              $view->with('footer_menu', MiniShopService::$footerMenu);
+            View::composer('minishop.regions.footer.menu', function($view) use ($is_signup_hidden) {
+              $view->with('footer_menu', MiniShopService::getFooterMenu(['is_signup_hidden' => $is_signup_hidden]));
             });
 
             // Freshchat (Custom Image)

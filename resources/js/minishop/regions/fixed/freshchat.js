@@ -1,12 +1,5 @@
 export default {
 
-  data: {
-    freshchat: {
-      opened: false,
-    },
-  },
-
-
   mounted() {
     addEventListener('mousewheel', this.freshchat_adjust);
     addEventListener('resize', this.freshchat_adjust);
@@ -18,12 +11,15 @@ export default {
   },
 
 
-  computed: {
+  watch: {
 
-    freshchat_class() {
-      return {
-        'fc-open': this.freshchat.opened,
-      };
+    'document.readyState': {
+      immediate: true,
+      handler() {
+        if (this.document.readyState === 'complete') {
+          this.freshchat_init();
+        }
+      },
     },
 
   },
@@ -31,27 +27,29 @@ export default {
 
   methods: {
 
+    freshchat_init() {
+      this.$refs.freshchat_image.classList.remove('d-none');
+    },
+
     freshchat_adjust() {
       setTimeout(() => {
         const html = document.documentElement;
-        const image = this.$refs.freshchat_image;
-        const footer = this.$refs.footer;
 
         if (html.clientWidth < 768) {
           const diff = html.scrollHeight - (html.scrollTop + html.clientHeight);
-          image.classList[diff < footer.clientHeight ? 'add' : 'remove']('d-none');
+          this.$refs.freshchat_image.classList[diff < this.$refs.footer.clientHeight ? 'add' : 'remove']('d-none');
         } else {
-          image.classList.remove('d-none');
+          this.$refs.freshchat_image.classList.remove('d-none');
         }
       }, 500);
     },
 
     freshchat_opened_event() {
-      this.freshchat.opened = true;
+      this.$refs.freshchat_image.classList.add('d-none');
     },
 
     freshchat_closed_event() {
-      this.freshchat.opened = false;
+      this.$refs.freshchat_image.classList.remove('d-none');
     },
 
     freshchat_click() {

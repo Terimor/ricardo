@@ -76,7 +76,7 @@ class SiteController extends Controller
      */
     private function indexMinishop(Request $request, ProductService $productService, Domain $domain, array $products)
     {
-        return view('minishop/pages/products', compact('products'));
+        return view('minishop/pages/home', compact('products'));
     }
 
     /**

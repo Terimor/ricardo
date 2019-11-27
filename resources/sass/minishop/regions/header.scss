@@ -1,5 +1,6 @@
 .navbar {
-  padding: 1.5rem 1rem;
+  padding: 1rem 1rem;
+  box-shadow: 1px 1px 1px 1px hsla(0,0%,83.9%,.4);
 
   .navbar-brand {
     img {
@@ -23,6 +24,20 @@
     border-radius: 10px;
     line-height: 16px;
   }
+
+  .dropdown-menu {
+    margin: 0;
+  }
+
+  .call-us {
+    position: relative;
+
+    &:hover .dropdown-menu {
+      display: block;
+      left: auto;
+      right: -20px;
+    }
+  }
 }
 
 .navbar-light {
@@ -31,6 +46,7 @@
       font-size: 18px;
       color: rgba(57, 57, 57, 1);
       font-weight: 300;
+      cursor: pointer;
     }
 
     .active {
