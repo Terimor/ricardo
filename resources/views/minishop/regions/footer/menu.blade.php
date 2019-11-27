@@ -1,24 +1,15 @@
 <ul>
 
-  @foreach ($footer_menu as $menu_item)
-    <li>
-      <a
-        class="nav-link"
-        href="{{ $menu_item['url'] }}">
-        {!! isset($menu_item['phrase']) ? t($menu_item['phrase']) : ($menu_item['label'] ?? '') !!}
-      </a>
-    </li>
-  @endforeach
+  <li><a class="nav-link" href="/contact-us">{{ t('minishop.menu.contact_us') }}</a></li>
+
+  <li><a class="nav-link" href="/terms">{{ t('minishop.menu.terms') }}</a></li>
+
+  <li><a class="nav-link" href="/privacy">{{ t('minishop.menu.privacy') }}</a></li>
 
   @if (!$is_signup_hidden)
-    <li>
-      <a
-        target="_blank"
-        class="nav-link"
-        href="https://www.h8m8.com">
-        {!! t('minishop.menu.affiliate') !!}
-      </a>
-    </li>
+    <li><a class="nav-link" href="https://www.h8m8.com" target="_blank">{{ t('minishop.menu.affiliate') }}</a></li>
   @endif
+
+  <li><a class="nav-link" href="/delivery">{{ t('minishop.menu.delivery') }}</a></li>
 
 </ul>

@@ -65,10 +65,12 @@ const promo = new Vue({
         state: null,
         zipcode: null,
         country: checkoutData.countryCode,
-        cardNumber: '',
+        cardHolder: null,
+        cardNumber: null,
         month: null,
         year: null,
         cvv: null,
+        terms: null,
       },
       mockData: {
         reviews: [

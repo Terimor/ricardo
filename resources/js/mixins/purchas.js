@@ -35,6 +35,9 @@ export default {
     },
   },
   computed: {
+    isAffIDEmpty() {
+      return !new URL(location).searchParams.get('aff_id');
+    },
     isPurchasAlreadyExists() {
       let selectedProductData = {};
       const odin_order_created_at = localStorage.getItem('odin_order_created_at');

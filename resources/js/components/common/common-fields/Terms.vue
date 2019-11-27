@@ -11,7 +11,7 @@
       <input 
         type="checkbox"
         id="terms-checkbox"
-        v-model="form.terms" />
+        v-model="form[name]" />
 
       <span
         class="checkmark"></span>
@@ -19,7 +19,7 @@
       <a
         href="/terms"
         target="_blank"
-        v-html="textTermsCheckbox"></a>
+        v-html="textLabel"></a>
 
     </label>
 
@@ -32,25 +32,27 @@
   
   export default {
 
-    name: 'TermsCheckbox',
-
-
     props: [
       'form',
+      'name',
       '$v',
     ],
 
 
     computed: {
 
+      invalid() {
+        return this.$v.$dirty && !this.$v.$pending && this.$v.$invalid;
+      },
+
       classObject() {
         return {
-          invalid: this.$v.form.terms.$dirty && this.$v.form.terms.$invalid,
+          invalid: this.invalid,
         };
       },
 
-      textTermsCheckbox() {
-        return this.$t('checkout.terms_checkbox');
+      textLabel() {
+        return this.$t('checkout.payment_form.terms');
       },
 
     },
@@ -69,6 +71,7 @@
 
   .checkmark {
     top: 1px;
+    left: 6px;
 
     .invalid & {
       animation: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error;

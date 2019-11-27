@@ -80,8 +80,10 @@ const emc1Validation = function () {
   validators.setEmailValidationRule(allRules, 'email');
   validators.setPhoneValidationRule(allRules, 'phone');
   validators.setCountryValidationRule(allRules, 'country');
+  validators.setCardHolderValidationRule(allRules, 'cardHolder');
   validators.setMonthValidationRule(allRules, 'month');
   validators.setYearValidationRule(allRules, 'year');
+  validators.setTermsValidationRule(allRules, 'terms');
 
   this.setExtraFieldsValidationRules(allRules);
 

@@ -45,20 +45,5 @@ class MiniShopService
         ],
       ],
     ];
-    
-    public static $footerMenu = [
-      [
-        'url' => '/contact-us',
-        'phrase' => 'minishop.menu.contact_us',
-      ],
-      [
-        'url' => '/terms',
-        'phrase' => 'minishop.menu.terms',
-      ],
-      [
-        'url' => '/privacy',
-        'phrase' => 'minishop.menu.privacy',
-      ],
-    ];
 
 }

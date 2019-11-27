@@ -78,6 +78,12 @@
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
           <slot name="warranty" />
           <form v-if="form.paymentProvider && isFormShown">
+            <CardHolder
+              v-if="isAffIDEmpty"
+              :$v="$v.form.stepThree.cardHolder"
+              :form="form.stepThree"
+              :placeholder="true"
+              name="cardHolder" />
             <CardType
               class="input-container"
               :extraFields="extraFields"
@@ -213,6 +219,11 @@
                 <p v-html="textCVVPopupLine2"></p>
               </div>
             </el-dialog>
+            <Terms
+              v-if="isAffIDEmpty"
+              :$v="$v.form.stepThree.terms"
+              :form="form.stepThree"
+              name="terms" />
             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
             <button
               @click="submit"
@@ -273,8 +284,10 @@
   import Installments from './extra-fields/Installments';
   import Email from './common-fields/Email';
   import Country from './common-fields/Country';
+  import CardHolder from './common-fields/CardHolder';
   import Month from './common-fields/Month';
   import Year from './common-fields/Year';
+  import Terms from './common-fields/Terms';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
@@ -296,8 +309,10 @@
       Installments,
       Email,
       Country,
+      CardHolder,
       Month,
       Year,
+      Terms,
       State,
       District,
       CardType,
@@ -332,6 +347,7 @@
 						phone: null,
 					},
 					stepThree: {
+            cardHolder: null,
 						cardNumber: null,
 						month: null,
 						year: null,
@@ -340,6 +356,7 @@
 						city: null,
 						state: null,
 						zipCode: null,
+            terms: null,
 					},
 					countryCodePhoneField: checkoutData.countryCode,
 					paymentProvider: null,
@@ -590,6 +607,10 @@
                 },
                 ipqs: this.ipqsResult,
               };
+
+              if (this.isAffIDEmpty) {
+                data.card.holder = this.form.stepThree.cardHolder;
+              }
 
               this.$parent.setExtraFieldsForCardPayment(data);
 
@@ -896,6 +917,10 @@
           border: 0;
           border-bottom: 1px solid #d2d2d2;
         }
+      }
+
+      .terms-checkbox {
+        margin-top: 16px;
       }
 
       #payment-error {

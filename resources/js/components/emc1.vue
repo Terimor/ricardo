@@ -89,7 +89,8 @@
                               :alt="imageSafePayment.title"
                               :title="imageSafePayment.title">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
-                            <p><span v-html="textCreditCardInvoiced"></span> "{{ productData.billing_descriptor }}"</p>
+                            <p><span v-html="textCreditCardInvoiced"></span><br/>"MDE/Hal-Balzan{{ productData.billing_descriptor }}"</p>
+                            <p>MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
                         </div>
                     </template>
                     <PurchasAlreadyExists
@@ -275,10 +276,12 @@
           state: null,
           zipcode: null,
           country: checkoutData.countryCode,
+          cardHolder: null,
           cardNumber: null,
           month: null,
           year: null,
           cvv: null,
+          terms: null,
         },
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
@@ -980,6 +983,7 @@
             }
 
             p {
+                padding: 4px 24px;
                 text-align: center;
                 font-size: 13px;
 

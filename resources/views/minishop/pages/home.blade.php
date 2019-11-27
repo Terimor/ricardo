@@ -1,7 +1,7 @@
 @extends('minishop.layout')
 
 
-@section('title', $website_name)
+@section('title', $website_name . ' - Shop')
 
 
 @section('js_deps')

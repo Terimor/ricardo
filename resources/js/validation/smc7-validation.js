@@ -4,8 +4,6 @@ import creditCardType from 'credit-card-type'
 import * as dateFns from 'date-fns';
 
 
-const searchParams = new URL(location).searchParams;
-
 const smc7validation = function () {
   const config = {
     form: {
@@ -60,19 +58,13 @@ const smc7validation = function () {
     }
   };
 
-  if (searchParams.get('tpl') === 'smc7p') {
-    config.form.terms = {
-      isValid(value) {
-        return value === true;
-      },
-    };
-  }
-
   validators.setEmailValidationRule(config.form, 'email');
   validators.setPhoneValidationRule(config.form, 'phone');
   validators.setCountryValidationRule(config.form, 'country');
+  validators.setCardHolderValidationRule(config.form, 'cardHolder');
   validators.setMonthValidationRule(config.form, 'month');
   validators.setYearValidationRule(config.form, 'year');
+  validators.setTermsValidationRule(config.form, 'terms');
 
   this.setExtraFieldsValidationRules(config.form);
 

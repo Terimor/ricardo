@@ -106,6 +106,19 @@ class SiteController extends Controller
     }
 
     /**
+     * Delivery page
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
+     */
+    public function delivery(Request $request, ProductService $productService)
+    {
+        $loadedPhrases = (new I18nService())->loadPhrases('delivery_page');
+        $product = $productService->resolveProduct($request, true);
+        return view('delivery', compact('loadedPhrases', 'product'));
+    }
+
+    /**
      * Privacy page
      * @param Request $request
      * @param ProductService $productService

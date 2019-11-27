@@ -31,5 +31,9 @@
                 <a href="https://www.h8m8.com" target="_blank" class="footer__link">{{ t('footer.affiliate') }}</a>
             </li>
         @endif
+        <li class="footer__row-item">
+            <a href="/delivery" class="footer__link">{{ t('footer.delivery') }}</a>
+        </li>
     </ul>
+    <div class="company-address">MDE Commerce Ltd. - 29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</div>
 </footer>

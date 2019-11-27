@@ -83,6 +83,13 @@
 
     <form id="payment-data-form" v-if="paymentForm.paymentProvider !== 'paypal'">
 
+      <CardHolder
+        v-if="isAffIDEmpty"
+        :$v="$v.form.cardHolder"
+        :form="paymentForm"
+        :placeholder="true"
+        name="cardHolder" />
+
       <CardType
         :extraFields="extraFields"
         :form="paymentForm"
@@ -163,6 +170,7 @@
 	import PayMethodItem from "./PayMethodItem";
   import PaymentMethod from './extra-fields/PaymentMethod';
   import Country from './common-fields/Country';
+  import CardHolder from './common-fields/CardHolder';
   import Month from './common-fields/Month';
   import Year from './common-fields/Year';
   import State from './extra-fields/State';
@@ -170,14 +178,19 @@
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
   import DocumentNumber from './extra-fields/DocumentNumber';
+  import purchasMixin from '../../mixins/purchas';
   import { t } from '../../utils/i18n';
 
 	export default {
 		name: "PaymentFormSMC7",
+    mixins: [
+      purchasMixin,
+    ],
 		components: {
       PayMethodItem,
       PaymentMethod,
       Country,
+      CardHolder,
       Month,
       Year,
       State,

@@ -20,10 +20,16 @@
 
         a {
           color: rgba(57, 57, 57, 1);
+          text-align: center;
           font-weight: 300;
         }
       }
     }
+  }
+
+  .company-name {
+    font-size: 14px;
+    font-weight: 300;
   }
 }
 

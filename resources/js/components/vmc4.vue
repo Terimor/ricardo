@@ -51,8 +51,10 @@
                 <div class="text-content">
                   <p>
                     <img alt="" src="//static.saratrkr.com/images/lock.png">
-                    <span v-html="textSafeSSLEncryption"></span><br><span v-html="textCreditCardInvoiced"></span> {{billing_descriptor}}
+                    <span v-html="textSafeSSLEncryption"></span>
                   </p>
+                  <p><span v-html="textCreditCardInvoiced"></span><br/>"MDE/Hal-Balzan{{ billing_descriptor }}"</p>
+                  <p>MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
                 </div>
               </div>
             </div>
@@ -288,7 +290,7 @@
         .logos-content {
           display: flex;
           justify-content: center;
-          margin: 15px 0 20px;
+          margin: 15px 0 0;
 
           img {
             max-width: 350px;
@@ -296,10 +298,12 @@
         }
 
         .text-content {
+          padding: 8px 0;
+
           p {
             font-size: 13px;
             text-align: center;
-            margin-bottom: 10px;
+            padding: 4px 0;
 
             img {
               max-width: 12px;

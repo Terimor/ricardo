@@ -149,10 +149,11 @@
                           class="small" />
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
-                            <TermsCheckbox
-                              v-if="isSMC7p"
+                            <Terms
+                              v-if="isAffIDEmpty || isSMC7p"
+                              :$v="$v.form.terms"
                               :form="form"
-                              :$v="$v" />
+                              name="terms" />
                             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
                             <button
                               :disabled="isSubmitted"
@@ -183,7 +184,8 @@
                               :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
                                 <p><i class="fa fa-lock"></i>{{ textSafeSSLEncryption }}</p>
-                                <p>{{ textCreditCardInvoiced }} "{{ productData.billing_descriptor }}"</p>
+                                <p>{{ textCreditCardInvoiced }}<br/>"MDE/Hal-Balzan{{ productData.billing_descriptor }}"</p>
+                                <p>MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
                             </div>
                         </div>
                     </div>
@@ -220,7 +222,7 @@
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import Installments from './common/extra-fields/Installments';
   import Email from './common/common-fields/Email';
-  import TermsCheckbox from './common/TermsCheckbox';
+  import Terms from './common/common-fields/Terms';
   import Warranty from './common/Warranty';
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
@@ -247,10 +249,10 @@
       RadioButtonItemDeal,
       ProductOffer,
       PurchasAlreadyExists,
-      TermsCheckbox,
       Warranty,
       Spinner,
       Email,
+      Terms,
     },
     validations: smc7validation,
     mixins: [
@@ -267,7 +269,6 @@
         disableAnimation: true,
         paypalPaymentError: '',
         form: {
-          terms: null,
           isWarrantyChecked: false,
           countryCodePhoneField: checkoutData.countryCode,
           deal: null,
@@ -282,10 +283,12 @@
           state: null,
           zipCode: null,
           paymentProvider: null,
+          cardHolder: null,
           cardNumber: null,
           month: null,
           year: null,
           cvv: null,
+          terms: null,
         },
         ipqsResult: null,
         isOpenPromotionModal: false,
@@ -582,6 +585,10 @@
               },
               ipqs: this.ipqsResult,
             };
+
+            if (this.isAffIDEmpty) {
+              data.card.holder = this.form.cardHolder;
+            }
 
             this.setExtraFieldsForCardPayment(data);
 
@@ -1134,10 +1141,12 @@
             }
 
             &__safe {
+              padding: 8px 0;
+
                 p {
+                    padding: 4px 0;
                     text-align: center;
                     font-size: 13px;
-                    padding-top: 20px;
                 }
 
                 p i {

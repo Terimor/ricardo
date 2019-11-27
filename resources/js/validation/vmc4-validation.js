@@ -64,8 +64,10 @@ const vmc4validation = function () {
 	validators.setEmailValidationRule(config.form.stepTwo, 'email');
 	validators.setPhoneValidationRule(config.form.stepTwo, 'phone');
 	validators.setCountryValidationRule(config.form.stepThree, 'country');
+	validators.setCardHolderValidationRule(config.form.stepThree, 'cardHolder');
 	validators.setMonthValidationRule(config.form.stepThree, 'month');
   validators.setYearValidationRule(config.form.stepThree, 'year');
+  validators.setTermsValidationRule(config.form.stepThree, 'terms');
 
 	this.$parent.setExtraFieldsValidationRules(config.vmc4Form);
 

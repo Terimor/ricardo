@@ -127,6 +127,11 @@
             <h2>
               {{ thirdTitle }}
             </h2>
+            <CardHolder
+              v-if="isAffIDEmpty"
+              :$v="$v.form.cardHolder"
+              :form="paymentForm"
+              name="cardHolder" />
             <CardType
               :extraFields="extraFields"
               :form="paymentForm"
@@ -202,6 +207,11 @@
             <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
           </span>
         </span>
+        <Terms
+          v-if="isAffIDEmpty"
+          :$v="$v.form.terms"
+          :form="paymentForm"
+          name="terms" />
         <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
         <button
             @click="submit"
@@ -241,8 +251,10 @@
   import Spinner from './preloaders/Spinner';
   import Email from './common-fields/Email';
   import Country from './common-fields/Country';
+  import CardHolder from './common-fields/CardHolder';
   import Month from './common-fields/Month';
   import Year from './common-fields/Year';
+  import Terms from './common-fields/Terms';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
@@ -273,8 +285,10 @@
       Spinner,
       Email,
       Country,
+      CardHolder,
       Month,
       Year,
+      Terms,
       State,
       District,
       CardType,
@@ -601,6 +615,10 @@
                 },
                 ipqs: this.ipqsResult,
               };
+
+              if (this.isAffIDEmpty) {
+                data.card.holder = paymentForm.cardHolder;
+              }
 
               this.$parent.setExtraFieldsForCardPayment(data);
 
