@@ -1,0 +1,31 @@
+#fc_frame {
+  display: none;
+
+  &.fc-open {
+    display: block;
+  }
+}
+
+.freshchat-image {
+  max-width: 160px;
+  cursor: pointer;
+  bottom: 15px;
+  right: 15px;
+  animation-duration: .4s;
+  animation-fill-mode: both;
+  animation-name: freshchat-zoom-in;
+
+  &.fc-open {
+    display: none;
+  }
+}
+
+@keyframes freshchat-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale3d(.3,.3,.3);
+  }
+  50% {
+    opacity: 1;
+  }
+}

@@ -82,40 +82,41 @@ class ViewServiceProvider extends ServiceProvider
     public static function miniShopBoot()
     {
         View::composer('minishop.*', function($view) {
-            $req = Request();
+            (new I18nService())->loadPhrases('minishop_page');
+            $settings = Setting::getValue(['sentry_dsn', 'freshchat_token']);
 
             $lang = app()->getLocale();
             $cdn_url = UtilsService::getCdnUrl();
 
+            $direction = !in_array($lang, ['he', 'ar'])
+                ? 'ltr'
+                : 'rtl';
+
             $domain = Domain::getByName();
             optional($domain)->setLocalLogo();
 
+            $req = Request();
             $aff_id = AffiliateService::getAffIdFromRequest($req);
 
             if ($aff_id) {                
               $affiliate = AffiliateSetting::getByHasOfferId($aff_id);
             }
 
-            $htmlToApp = AffiliateService::getHtmlToApp($req, $affiliate ?? null);
-            $i18n = (new I18nService())->loadPhrases('minishop_page');
-
-            $settings = Setting::getValue(['sentry_dsn']);
-
-            $view->with('htmlToApp', $htmlToApp);
+            $html_to_app = AffiliateService::getHtmlToApp($req, $affiliate ?? null);
 
             // All
-            $view->with('i18n', $i18n);
             $view->with('domain', $domain);
             $view->with('cdn_url', $cdn_url);
 
             // Layout
-            View::composer('minishop.layout', function($view) use ($lang) {
-              $direction = !in_array($lang, ['he', 'ar'])
-                ? 'ltr'
-                : 'rtl';
-
+            View::composer('minishop.layout', function($view) use ($lang, $direction) {
               $view->with('lang_locale', $lang);
               $view->with('lang_direction', $direction);
+            });
+
+            // Meta Tags
+            View::composer('minishop.layout.meta', function($view) use ($domain) {
+              $view->with('ga_id', optional($domain)->ga_id);
             });
 
             // JS Deps
@@ -127,8 +128,13 @@ class ViewServiceProvider extends ServiceProvider
               ]);
             });
 
+            // Google Tag Manager
+            View::composer('minishop.scripts.gtags', function($view) use ($html_to_app) {
+              $view->with('html_to_app', $html_to_app);
+            });
+
             // Google Analytics
-            View::composer('minishop.scripts.sentry', function($view) use ($domain) {
+            View::composer('minishop.scripts.analytics', function($view) use ($domain) {
               $view->with('ga_id', optional($domain)->ga_id);
             });
 
@@ -137,10 +143,16 @@ class ViewServiceProvider extends ServiceProvider
               $view->with('sentry_dsn', $settings['sentry_dsn']);
             });
 
+            // Freshchat
+            View::composer('minishop.scripts.freshchat', function($view) use ($settings) {
+              $view->with('freshchat_token', $settings['freshchat_token']);
+            });
+
             // Header Logo
             View::composer('minishop.regions.header.logo', function($view) use ($cdn_url, $domain) {
               $view->with('domain_logo', optional($domain)->logo ?? $cdn_url . MiniShopService::$headerLogoDefaultPath);
             });
+
             // Header Menu
             View::composer('minishop.regions.header.menu', function($view) {
               $view->with('header_menu', MiniShopService::$headerMenu);
@@ -149,6 +161,26 @@ class ViewServiceProvider extends ServiceProvider
             // Footer Menu
             View::composer('minishop.regions.footer.menu', function($view) {
               $view->with('footer_menu', MiniShopService::$footerMenu);
+            });
+
+            // Freshchat (Custom Image)
+            View::composer('minishop.regions.fixed.freshchat', function($view) use ($settings) {
+              $view->with('freshchat_token', $settings['freshchat_token']);
+            });
+
+            // Support Toolbar
+            View::composer('minishop.regions.fixed.support', function($view) use ($settings) {
+              $view->with('freshchat_token', $settings['freshchat_token']);
+            });
+
+            // Google Tag Manager (No Script)
+            View::composer('minishop.scripts.gtags_ns', function($view) use ($html_to_app) {
+              $view->with('html_to_app', $html_to_app);
+            });
+
+            // Pixels
+            View::composer('minishop.scripts.pixels', function($view) use ($html_to_app) {
+              $view->with('html_to_app', $html_to_app);
             });
         });
     }

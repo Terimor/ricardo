@@ -286,6 +286,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: padding-top .3s ease;
 
   &.white-bg {
     background-color: #fff;
@@ -461,7 +462,6 @@ h3 {
   top: 0;
   padding: 16px 24px;
   text-align: center;
-  transition: height .3s ease;
   background-color: #248cc8;
   color: #fff;
   font-size: 16px;
@@ -479,6 +479,45 @@ h3 {
 
   a {
     color: #fff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.black-friday-toolbar {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  text-align: center;
+  transition: height .3s ease;
+  background-color: #000;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  z-index: 1500;
+
+  @media screen and ($s-down) {
+    & {
+      font-size: 15px;
+    }
+  }
+
+  &.hidden {
+    visibility: hidden;
+    transition: none!important;
+  }
+
+  > .inside {
+    margin: 16px 24px;
+  }
+
+  a {
+    color: #f00;
     cursor: pointer;
     text-decoration: underline;
   }

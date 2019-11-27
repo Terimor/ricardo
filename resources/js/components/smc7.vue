@@ -227,6 +227,7 @@
   import smc7validation from "../validation/smc7-validation";
   import queryToComponent from '../mixins/queryToComponent';
   import scrollToError from '../mixins/formScrollToError';
+  import blackFriday from '../mixins/blackFriday';
   import {fade} from "../utils/common";
   import { t, timage } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
@@ -257,6 +258,7 @@
       extraFields.tplMixin,
       purchasMixin,
       scrollToError,
+      blackFriday,
     ],
     props: ['showPreloader', 'skusList'],
     data() {

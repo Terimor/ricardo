@@ -4,15 +4,6 @@
 @section('title', t('minishop.products.page_title'))
 
 
-@section('js_data')
-
-  <script type="text/javascript">
-    js_data.products = @json($products);
-  </script>
-
-@endsection
-
-
 @section('js_deps')
 
   <script type="text/javascript">
@@ -65,18 +56,17 @@
               class="product-box"
               @click.stop="goto_checkout('{{ $product->skus[0]['code'] ?? '' }}')">
 
-              <div class="images-holder">
+              <div class="images-holder d-flex position-relative align-items-center justify-content-center px-4">
                 <img
+                  class="d-block img-1 mw-100 mh-100"
                   src="{{ $product->image[0] ?? '' }}"
-                  class="d-block mx-auto img-fluid img-1"
                   alt="" />
               </div>
 
               <h3 class="text-center font-weight-bold my-3">{{ $product->product_name ?? '' }}</h3>
 
               <div
-                class="add-to-cart"
-                @click.stop="add_to_cart('{{ $product->id ?? '' }}')">
+                class="add-to-cart">
                 <i class="fas fa-cart-plus"></i>{{ t('minishop.products.add_to_cart') }}
               </div>
 

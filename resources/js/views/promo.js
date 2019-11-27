@@ -15,6 +15,7 @@ import * as extraFields from '../mixins/extraFields';
 import notification from '../mixins/notification';
 import queryToComponent from '../mixins/queryToComponent';
 import purchasMixin from '../mixins/purchas';
+import blackFriday from '../mixins/blackFriday';
 import { ipqsCheck } from '../services/ipqs';
 import { queryParams } from  '../utils//queryParams';
 import globals from '../mixins/globals';
@@ -33,6 +34,7 @@ const promo = new Vue({
     extraFields.appMixin,
     extraFields.tplMixin,
     purchasMixin,
+    blackFriday,
   ],
 
   data() {

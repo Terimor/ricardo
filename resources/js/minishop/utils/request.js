@@ -7,7 +7,6 @@ export default {
 
   mounted() {
     this.searchPopulatePageLinks();
-    this.searchPopulateJSVariables();
   },
 
 
@@ -40,12 +39,6 @@ export default {
           element.setAttribute('href', this.searchPopulate(element.href));
         }
       }
-    },
-
-    searchPopulateJSVariables() {
-      this.searchParams.forEach((value, key) => {
-        window[key + 'js'] = value;
-      });
     },
 
   },

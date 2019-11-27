@@ -41,6 +41,7 @@
         if (this.media != 'all') this.media = 'all';
         if (className) document.documentElement.classList.remove(className);
       }
+      window.blackFridayEnabled = new Date(2019, 11, 3).getTime() > new Date().getTime();
     </script>
 
     @include('components.3ds_redirect')
@@ -127,6 +128,8 @@
     @endif
     
     <div id="app" class="hidden">
+        @include('components.black_friday')
+
         @if (Request::is('splash'))
             @include('layouts.header_splash', ['product' => $product])
         @elseif (Request::is('orderTracking'))

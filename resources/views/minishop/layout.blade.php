@@ -37,6 +37,7 @@
     @include('minishop.scripts.analytics')
     @include('minishop.scripts.sentry')
     @include('minishop.scripts.vue')
+    @include('minishop.scripts.freshchat')
     @yield('scripts')
 
   </head>
@@ -44,21 +45,25 @@
 
   <body>
 
-    <!-- No Script -->
-    @include('minishop.scripts.gtags_ns')
-
     <div id="app">
 
-        <!-- Header Region -->
-        @include('minishop.regions.header')
+      <!-- Header Region -->
+      @include('minishop.regions.header')
 
-        <!-- Content Region -->
-        @yield('content')
+      <!-- Content Region -->
+      @yield('content')
 
-        <!-- Footer Region -->
-        @include('minishop.regions.footer')
+      <!-- Footer Region -->
+      @include('minishop.regions.footer')
+
+      <!-- Fixed Region -->
+      @include('minishop.regions.fixed.freshchat')
+      @include('minishop.regions.fixed.support')
 
     </div>
+
+    <!-- No Script -->
+    @include('minishop.scripts.gtags_ns')
 
     <!-- Pixels -->
     @include('minishop.scripts.pixels')

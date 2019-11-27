@@ -25,11 +25,7 @@
 }
 
 .images-holder {
-  position: relative;
-
-  img {
-    max-width: 40%;
-  }
+  height: 180px;
 }
 
 .img-2 {
@@ -51,6 +47,7 @@ span.old-price {
   color: #181818;
   font-size: 18px;
   position: absolute;
+  text-decoration: line-through;
   transform: translateX(-100%);
   padding: 0 10px;
 }

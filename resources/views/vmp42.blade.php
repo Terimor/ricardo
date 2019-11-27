@@ -41,6 +41,7 @@
         <template v-if="!showPreloader">
             <notice></notice>
 
+            @include('components.black_friday')
 
             <!-- promo__jumbotron -->
             <div class="fade-wrapper" :class="{'fade-wrapper_empty': !isShownJumbotron}">

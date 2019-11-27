@@ -41,6 +41,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/checkoutdotcom-failed-webhook', 'PaymentsController@checkoutDotComFailedWebhook');
     $router->post('/ebanx-webhook', 'PaymentsController@ebanxWebhook');
     $router->post('/bluesnap-webhook', 'PaymentsController@bluesnapWebhook');
+    $router->post('/minte-3ds/{orderId}', 'PaymentsController@minte3ds');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
     $router->get('/test', 'SiteController@test');
@@ -54,7 +55,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/product-price', 'ProductController@getProductPrice');
     $router->get('/validate-email', 'EmailController@validateEmail');
     $router->get('/address-by-zip', 'SiteController@getEbanxAddressByZip');
-    
+
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
     $router->post('/paypal-webhooks', 'Payments\PaypalController@webhooks');
