@@ -13,6 +13,7 @@
   @if (!$is_signup_hidden)
     <li>
       <a
+        target="_blank"
         class="nav-link"
         href="https://www.h8m8.com">
         {!! t('minishop.menu.affiliate') !!}
