@@ -323,7 +323,7 @@ class ProductService
      * Get domain products
      * @return type
      */
-    public static function getDomainProducts(Domain $domain = null): array
+    public static function getDomainProducts(?Domain $domain = null): array
     {
         if (!$domain) {
             $domain = Domain::getByName();
