@@ -675,9 +675,10 @@ class UtilsService
 
     /**
      * Get CDN URL
+     * @param $set_production - set production URL
      * @return string
      */
-    public static function getCdnUrl() {
+    public static function getCdnUrl($set_production = false) {
         $env = \App::environment();
 
         // hardcode: temporary replace cdn urls for two domains
@@ -691,7 +692,7 @@ class UtilsService
             return $xdroneCdn;
         }
         
-        return ($env === 'production'
+        return ($env === 'production' || $set_production
             ? 'https://' . self::CDN_HOST_PRODUCTION
             : ($env === 'staging'
                 ? 'https://' . self::CDN_HOST_STAGING

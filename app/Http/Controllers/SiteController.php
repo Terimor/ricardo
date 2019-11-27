@@ -279,7 +279,7 @@ class SiteController extends Controller
             $main_txn = $orderCustomer->getTxnByHash($main_product['txn_hash'], false) ?? [];
             if (!empty($main_txn['payment_method']) && PaymentMethods::$list[$main_txn['payment_method']]) {
                 $payment_method['name'] = PaymentMethods::$list[$main_txn['payment_method']]['name'];
-                $payment_method['logo'] = \Utils::getCdnUrl().PaymentMethods::$list[$main_txn['payment_method']]['logo'];
+                $payment_method['logo'] = \Utils::getCdnUrl(true).PaymentMethods::$list[$main_txn['payment_method']]['logo'];
             }
         }
 
