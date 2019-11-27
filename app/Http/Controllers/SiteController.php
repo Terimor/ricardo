@@ -36,9 +36,48 @@ class SiteController extends Controller
      */
     public function index(Request $request, ProductService $productService)
     {
+        //get domain and check views logic
+        $domain = Domain::getByName();
+        $isMultiproduct = false;
+        if (!empty($domain->is_multiproduct)) {
+            $products = ProductService::getDomainProducts();
+            if ($products && count($products) > 0) {
+                $isMultiproduct = true;
+            }
+        }        
+
+        if (!$isMultiproduct) {            
+            return $this->indexSite($request, $productService);
+        } else {
+            return $this->indexMiniShop($request, $productService, $domain, $products);
+        }
+    }
+    
+    /**
+     * index for site logic
+     * @param Request $request
+     * @param ProductService $productService
+     * @return type
+     */
+    private function indexSite(Request $request, ProductService $productService)
+    {
         $loadedPhrases = (new I18nService())->loadPhrases('index_page');
         $product = $productService->resolveProduct($request, true);        
         return view('index', compact('product', 'loadedPhrases'));
+    }
+    
+    /**
+     * Index for minishop logic
+     * @param Request $request
+     * @param ProductService $productService
+     * @param Domain $domain
+     * @param array $products
+     * @return type
+     */
+    private function indexMinishop(Request $request, ProductService $productService, Domain $domain, array $products)
+    {
+        $websiteName = $domain->getDisplayedName();        
+        return view('minishop/pages/products', compact('products', 'websiteName'));
     }
 
     /**

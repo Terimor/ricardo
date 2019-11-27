@@ -111,4 +111,15 @@ class Domain extends Model
                 ? \Utils::replaceUrlForCdn($images[0]->urls['en'])
                 : '');
     }
+    
+    /**
+     * Returns translated splash_description attribute
+     *
+     * @param array $value
+     * @return string
+     */
+    public function getDisplayedName()
+    {
+        return !empty($this->display_name) ? $this->display_name : $this->name;
+    }
 }

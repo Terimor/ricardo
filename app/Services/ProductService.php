@@ -333,7 +333,7 @@ class ProductService
                 arsort($soldProducts);                
                 $productIds = array_keys($soldProducts);            
 
-                $products = OdinProduct::getByIds($productIds);
+                $products = OdinProduct::getActiveByIds($productIds);
                 foreach ($products as $product) {
                     $productsLocale[] = static::getDataForMiniShop($product);
                 }

@@ -526,10 +526,10 @@ class OdinProduct extends Model
      * Get products by ids
      * @param type $ids
      */
-    public static function getByIds(?array $ids) {
+    public static function getActiveByIds(?array $ids) {
         $products = null;
         if ($ids) {
-            $products = OdinProduct::whereIn('_id', $ids)->get();
+            $products = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true)->get();
         }        
         return $products;
     }
