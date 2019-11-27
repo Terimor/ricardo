@@ -40,7 +40,7 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $isMultiproduct = false;
         if (!empty($domain->is_multiproduct)) {
-            $products = ProductService::getDomainProducts();
+            $products = ProductService::getDomainProducts($domain);
             if ($products && count($products) > 0) {
                 $isMultiproduct = true;
             }

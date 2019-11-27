@@ -323,9 +323,11 @@ class ProductService
      * Get domain products
      * @return type
      */
-    public static function getDomainProducts(): array
+    public static function getDomainProducts(Domain $domain = null): array
     {
-        $domain = Domain::getByName();
+        if (!$domain) {
+            $domain = Domain::getByName();
+        }
         $productsLocaleSorted = [];
         if (!empty($domain->sold_products)) {
             $soldProducts = $domain->sold_products ?? [];
