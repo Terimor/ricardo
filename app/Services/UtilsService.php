@@ -683,7 +683,7 @@ class UtilsService
 
         // hardcode: temporary replace cdn urls for two domains
         // Remove after check
-        $wifibostCdn = 'https://cdn.12buyme34.com';
+        $wifibostCdn = 'https://cdn.wifiboost.tech';
         $xdroneCdn = 'https://cdn.8xgb.com';
         $host = request()->getHost();
         if (stripos(' '.$host, 'wifiboost.tech')) {
@@ -716,7 +716,7 @@ class UtilsService
         
         // hardcode: temporary replace cdn urls for two domains
         // Remove after check
-        $wifibostCdn = 'cdn.12buyme34.com';
+        $wifibostCdn = 'cdn.wifiboost.tech';
         $xdroneCdn = 'cdn.8xgb.com';
         $host = request()->getHost();
         if (stripos(' '.$host, 'wifiboost.tech')) {
