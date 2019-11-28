@@ -35,5 +35,7 @@
             <a href="/delivery" class="footer__link">{{ t('footer.delivery') }}</a>
         </li>
     </ul>
-    <div class="company-address">MDE Commerce Ltd. - 29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</div>
+    @if ($is_aff_id_empty)
+        <div class="company-address">MDE Commerce Ltd. - 29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</div>
+    @endif
 </footer>

@@ -150,7 +150,7 @@
                         <PurchasAlreadyExists v-if="isPurchasAlreadyExists"/>
                         <template v-else>
                             <Terms
-                              v-if="isAffIDEmpty || isSMC7p"
+                              v-if="isSMC7p || $root.isAffIDEmpty"
                               :$v="$v.form.terms"
                               :form="form"
                               name="terms" />
@@ -184,8 +184,8 @@
                               :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
                                 <p><i class="fa fa-lock"></i>{{ textSafeSSLEncryption }}</p>
-                                <p>{{ textCreditCardInvoiced }}<br/>"{{ isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ productData.billing_descriptor }}"</p>
-                                <p v-if="isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
+                                <p>{{ textCreditCardInvoiced }}<br/>"{{ $root.isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ productData.billing_descriptor }}"</p>
+                                <p v-if="$root.isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
                             </div>
                         </div>
                     </div>
@@ -586,7 +586,7 @@
               ipqs: this.ipqsResult,
             };
 
-            if (this.isAffIDEmpty) {
+            if (this.$root.isAffIDEmpty) {
               data.card.holder = this.form.cardHolder;
             }
 

@@ -58,13 +58,13 @@ const smc7validation = function () {
     }
   };
 
-  validators.setEmailValidationRule(config.form, 'email');
-  validators.setPhoneValidationRule(config.form, 'phone');
-  validators.setCountryValidationRule(config.form, 'country');
-  validators.setCardHolderValidationRule(config.form, 'cardHolder');
-  validators.setMonthValidationRule(config.form, 'month');
-  validators.setYearValidationRule(config.form, 'year');
-  validators.setTermsValidationRule(config.form, 'terms');
+  validators.setEmailValidationRule.call(this, config.form, 'email');
+  validators.setPhoneValidationRule.call(this, config.form, 'phone');
+  validators.setCountryValidationRule.call(this, config.form, 'country');
+  validators.setCardHolderValidationRule.call(this, config.form, 'cardHolder');
+  validators.setMonthValidationRule.call(this, config.form, 'month');
+  validators.setYearValidationRule.call(this, config.form, 'year');
+  validators.setTermsValidationRule.call(this, config.form, 'terms');
 
   this.setExtraFieldsValidationRules(config.form);
 

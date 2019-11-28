@@ -79,7 +79,7 @@
           <slot name="warranty" />
           <form v-if="form.paymentProvider && isFormShown">
             <CardHolder
-              v-if="isAffIDEmpty"
+              v-if="$root.isAffIDEmpty"
               :$v="$v.form.stepThree.cardHolder"
               :form="form.stepThree"
               :placeholder="true"
@@ -220,7 +220,7 @@
               </div>
             </el-dialog>
             <Terms
-              v-if="isAffIDEmpty"
+              v-if="$root.isAffIDEmpty"
               :$v="$v.form.stepThree.terms"
               :form="form.stepThree"
               name="terms" />
@@ -608,7 +608,7 @@
                 ipqs: this.ipqsResult,
               };
 
-              if (this.isAffIDEmpty) {
+              if (this.$root.isAffIDEmpty) {
                 data.card.holder = this.form.stepThree.cardHolder;
               }
 

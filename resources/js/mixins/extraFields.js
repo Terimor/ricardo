@@ -67,7 +67,7 @@ export const tplMixin = {
         .filter(name => name !== 'instant_transfer')
         .shift();
 
-      const payment_method = this.form.payment_method || firstMethod;
+      const payment_method = /*this.form.payment_method ||*/ firstMethod;
 
       return this.$root.paymentMethods[payment_method]
         ? this.$root.paymentMethods[payment_method].extra_fields || {}

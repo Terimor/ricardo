@@ -3,7 +3,6 @@ import postcode from 'postcode-validator';
 
 
 const searchParams = new URL(location).searchParams;
-const isAffIDEmpty = !searchParams.get('aff_id');
 const tpl = searchParams.get('tpl') || 'emc1';
 
 
@@ -53,7 +52,7 @@ export function setCountryValidationRule(rules, name) {
 }
 
 export function setCardHolderValidationRule(rules, name) {
-  if (isAffIDEmpty) {
+  if (this.$root.isAffIDEmpty) {
     rules[name] = {
       required,
     };
@@ -73,7 +72,7 @@ export function setYearValidationRule(rules, name) {
 }
 
 export function setTermsValidationRule(rules, name) {
-  if (isAffIDEmpty || tpl === 'smc7p') {
+  if (tpl === 'smc7p' || this.$root.isAffIDEmpty) {
     rules[name] = {
       required,
       isValid(val) {

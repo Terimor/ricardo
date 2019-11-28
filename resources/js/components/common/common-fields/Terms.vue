@@ -13,13 +13,9 @@
         id="terms-checkbox"
         v-model="form[name]" />
 
-      <span
-        class="checkmark"></span>
+      <span class="checkmark"></span>
 
-      <a
-        href="/terms"
-        target="_blank"
-        v-html="textLabel"></a>
+      <span v-html="textLabel"></span>
 
     </label>
 
@@ -52,7 +48,7 @@
       },
 
       textLabel() {
-        return this.$t('checkout.payment_form.terms');
+        return this.$t('checkout.payment_form.terms', { address: '/terms' });
       },
 
     },
@@ -67,6 +63,18 @@
   label {
     font-size: 16px;
     line-height: 1.5;
+
+    .invalid & {
+      color: #e74c3c;
+    }
+
+    :global(a) {
+      color: #333;
+
+      .invalid & {
+        color: #e74c3c;
+      }
+    }
   }
 
   .checkmark {
@@ -75,15 +83,6 @@
 
     .invalid & {
       animation: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error;
-    }
-  }
-
-  a {
-    color: #333;
-    text-decoration: none;
-
-    .invalid & {
-      color: #e74c3c;
     }
   }
 

@@ -1,9 +1,17 @@
+const searchParams = new URL(location).searchParams;
+
+
 export default {
 
   computed: {
 
     cdnUrl() {
       return cdnUrl;
+    },
+
+    isAffIDEmpty() {
+      return (!searchParams.get('aff_id') || searchParams.get('aff_id') === '0')
+        && (!searchParams.get('affid') || searchParams.get('affid') === '0');
     },
 
     sortedCountryList() {

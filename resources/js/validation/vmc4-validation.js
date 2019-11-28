@@ -61,13 +61,13 @@ const vmc4validation = function () {
 		}
 	};
 
-	validators.setEmailValidationRule(config.form.stepTwo, 'email');
-	validators.setPhoneValidationRule(config.form.stepTwo, 'phone');
-	validators.setCountryValidationRule(config.form.stepThree, 'country');
-	validators.setCardHolderValidationRule(config.form.stepThree, 'cardHolder');
-	validators.setMonthValidationRule(config.form.stepThree, 'month');
-  validators.setYearValidationRule(config.form.stepThree, 'year');
-  validators.setTermsValidationRule(config.form.stepThree, 'terms');
+	validators.setEmailValidationRule.call(this, config.form.stepTwo, 'email');
+	validators.setPhoneValidationRule.call(this, config.form.stepTwo, 'phone');
+	validators.setCountryValidationRule.call(this, config.form.stepThree, 'country');
+	validators.setCardHolderValidationRule.call(this, config.form.stepThree, 'cardHolder');
+	validators.setMonthValidationRule.call(this, config.form.stepThree, 'month');
+  validators.setYearValidationRule.call(this, config.form.stepThree, 'year');
+  validators.setTermsValidationRule.call(this, config.form.stepThree, 'terms');
 
 	this.$parent.setExtraFieldsValidationRules(config.vmc4Form);
 

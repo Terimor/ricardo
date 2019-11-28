@@ -128,7 +128,7 @@
               {{ thirdTitle }}
             </h2>
             <CardHolder
-              v-if="isAffIDEmpty"
+              v-if="$root.isAffIDEmpty"
               :$v="$v.form.cardHolder"
               :form="paymentForm"
               name="cardHolder" />
@@ -208,7 +208,7 @@
           </span>
         </span>
         <Terms
-          v-if="isAffIDEmpty"
+          v-if="$root.isAffIDEmpty"
           :$v="$v.form.terms"
           :form="paymentForm"
           name="terms" />
@@ -616,7 +616,7 @@
                 ipqs: this.ipqsResult,
               };
 
-              if (this.isAffIDEmpty) {
+              if (this.$root.isAffIDEmpty) {
                 data.card.holder = paymentForm.cardHolder;
               }
 

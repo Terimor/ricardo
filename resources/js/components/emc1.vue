@@ -89,8 +89,8 @@
                               :alt="imageSafePayment.title"
                               :title="imageSafePayment.title">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
-                            <p><span v-html="textCreditCardInvoiced"></span><br/>"{{ isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ productData.billing_descriptor }}"</p>
-                            <p v-if="isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
+                            <p><span v-html="textCreditCardInvoiced"></span><br/>"{{ $root.isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ productData.billing_descriptor }}"</p>
+                            <p v-if="$root.isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
                         </div>
                     </template>
                     <PurchasAlreadyExists

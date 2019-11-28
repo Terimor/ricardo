@@ -53,8 +53,8 @@
                     <img alt="" src="//static.saratrkr.com/images/lock.png">
                     <span v-html="textSafeSSLEncryption"></span>
                   </p>
-                  <p><span v-html="textCreditCardInvoiced"></span><br/>"{{ isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ billing_descriptor }}"</p>
-                  <p v-if="isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
+                  <p><span v-html="textCreditCardInvoiced"></span><br/>"{{ $root.isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ billing_descriptor }}"</p>
+                  <p v-if="$root.isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
                 </div>
               </div>
             </div>
