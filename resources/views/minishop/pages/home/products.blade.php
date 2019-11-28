@@ -4,9 +4,9 @@
 
   <div class="title row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-      <h1 class="mb-5 mb-25-m font-weight-bold text-center">
+      <h2 class="mb-5 mb-25-m font-weight-bold text-center">
         {{ t('minishop.home.products.title') }}
-      </h1>
+      </h2>
     </div>
   </div>
 

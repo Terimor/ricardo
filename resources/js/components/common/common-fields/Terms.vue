@@ -48,7 +48,7 @@
       },
 
       textLabel() {
-        return this.$t('checkout.payment_form.terms', { address: '/terms' });
+        return this.$t('checkout.payment_form.terms', { address: '/terms', domain: '/privacy' });
       },
 
     },
