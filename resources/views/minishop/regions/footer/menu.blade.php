@@ -1,4 +1,4 @@
-<ul>
+<ul class="flex-wrap justify-content-center">
 
   <li><a class="nav-link" href="/contact-us">{{ t('minishop.menu.contact_us') }}</a></li>
 
