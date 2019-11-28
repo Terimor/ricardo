@@ -886,7 +886,7 @@ class UtilsService
      * @param string $phraseText
      * @return string
      */
-    public static function generatePageTitle(Domain $domain, $product, ?string $copId = '', ?string $phraseText = ''): string
+    public static function generatePageTitle($domain = null, $product, ?string $copId = '', ?string $phraseText = ''): string
     {
         $title = '';
         if (!empty($domain->is_multiproduct) && empty($copId)) {

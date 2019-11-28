@@ -59,7 +59,7 @@ class SiteController extends Controller
      * @param ProductService $productService
      * @return type
      */
-    private function indexSite(Request $request, ProductService $productService, Domain $domain)
+    private function indexSite(Request $request, ProductService $productService, $domain)
     {
         //generatePageTitle
         $loadedPhrases = (new I18nService())->loadPhrases('index_page');
@@ -76,7 +76,7 @@ class SiteController extends Controller
      * @param array $products
      * @return type
      */
-    private function indexMinishop(Request $request, ProductService $productService, Domain $domain, array $products)
+    private function indexMinishop(Request $request, ProductService $productService, $domain, array $products)
     {        
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
