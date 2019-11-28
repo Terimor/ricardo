@@ -95,7 +95,7 @@ class ViewServiceProvider extends ServiceProvider
 
             $domain = Domain::getByName();
             optional($domain)->setLocalLogo();
-            $website_name = $domain->getDisplayedName();
+            $website_name = optional($domain)->getDisplayedName();
 
             $req = Request();
             $aff_id = AffiliateService::getAffIdFromRequest($req);
@@ -111,7 +111,6 @@ class ViewServiceProvider extends ServiceProvider
             $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
 
             // All
-            $view->with('domain', $domain);
             $view->with('cdn_url', $cdn_url);
             $view->with('website_name', $website_name);
 
@@ -177,11 +176,6 @@ class ViewServiceProvider extends ServiceProvider
 
             // Freshchat (Custom Image)
             View::composer('minishop.regions.fixed.freshchat', function($view) use ($settings) {
-              $view->with('freshchat_token', $settings['freshchat_token']);
-            });
-
-            // Support Toolbar
-            View::composer('minishop.regions.fixed.support', function($view) use ($settings) {
               $view->with('freshchat_token', $settings['freshchat_token']);
             });
 
