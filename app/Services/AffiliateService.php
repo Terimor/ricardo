@@ -352,6 +352,16 @@ class AffiliateService
     }
     
     /**
+     * returns affiliate id from request
+     * @param Request $request
+     * @return type
+     */
+    public static function isAffiliateRequestEmpty(Request $request)
+    {        
+        return empty($request->get('aff_id')) && empty($request->get('affid'));
+    }    
+    
+    /**
      * Get attribute by priority
      * @param type $param1
      * @param type $param2
