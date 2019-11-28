@@ -1,6 +1,6 @@
 @extends('layouts.app', ['product' => $product])
 
-@section('title', $product->page_title . ' ' . t('checkout.page_title'))
+@section('title', $page_title)
 
 @section('styles')
   <link rel="stylesheet" href="{{ mix_cdn('assets/js/app.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">

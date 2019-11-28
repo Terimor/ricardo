@@ -1,6 +1,6 @@
 @extends('layouts.app', ['product' => $product])
 
-@section('title', $product->page_title . ' - ' . $loadedPhrases['upsells.title'])
+@section('title', $page_title)
 
 @section('head')
     @if (!empty($product->favicon_image))

@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Models\Setting;
 use App\Models\Pixel;
 use App\Models\AwsImage;
+use App\Models\Domain;
 use MongoDB\BSON\UTCDateTime;
 use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
@@ -876,5 +877,26 @@ class UtilsService
         $phone = preg_replace("/[^0-9]/", "", $phone);
         $phone = strval(intval($phone));
         return $phone;
+    }
+    
+    /**
+     * Generate page title by domain multiproduct logic
+     * @param \App\Services\Domain $domain
+     * @param type $product
+     * @param string $phraseText
+     * @return string
+     */
+    public static function generatePageTitle(Domain $domain, $product, ?string $copId = '', ?string $phraseText = ''): string
+    {
+        $title = '';
+        if (!empty($domain->is_multiproduct) && empty($copId)) {
+            $title = $domain->getDisplayedName();
+        } else {
+            $title = $product->page_title ?? $product->product_name;
+        }
+        
+        $title .= ' '.$phraseText;
+        
+        return trim($title);
     }
 }

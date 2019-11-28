@@ -1,6 +1,6 @@
 @extends('layouts.app', ['product' => $product])
 
-@section('title', $product->page_title )
+@section('title', $product_title )
 
 @section('styles')
   <link rel="stylesheet" href="{{ mix_cdn('assets/css/order-tracking.css') }}" media="none" onload="styleOnLoad.call(this)">

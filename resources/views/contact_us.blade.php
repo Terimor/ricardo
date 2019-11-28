@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->page_title . ' - ' . $loadedPhrases['contact_title'])
+@section('title', $page_title)
 
 @section('styles')
     <link rel="stylesheet" href="{{ mix_cdn('assets/css/contact-us.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
