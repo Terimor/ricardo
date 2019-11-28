@@ -895,7 +895,7 @@ class UtilsService
             $title = $product->page_title ?? $product->product_name;
         }
         
-        $title .= ' '.$phraseText;
+        $title .= ' - '.$phraseText;
         
         return trim($title);
     }
