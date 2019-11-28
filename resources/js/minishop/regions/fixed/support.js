@@ -30,11 +30,13 @@ export default {
   methods: {
 
     support_toolbar_init() {
-      this.support_toolbar_show();
-      this.support_toolbar_bind_chat();
-      this.support_toolbar_bind_contact();
+      if (this.$refs.support_toolbar) {
+        this.support_toolbar_show();
+        this.support_toolbar_bind_chat_link();
+        this.support_toolbar_bind_contact_link();
 
-      addEventListener('resize', this.support_toolbar_adjust);
+        addEventListener('resize', this.support_toolbar_adjust);
+      }
     },
 
     support_toolbar_show() {
@@ -57,13 +59,13 @@ export default {
       this.$refs.app.style['padding-top'] = this.$refs.support_toolbar.clientHeight + 'px';
     },
 
-    support_toolbar_bind_chat() {
+    support_toolbar_bind_chat_link() {
       if (this.support_toolbar_chat_link) {
         this.support_toolbar_chat_link.addEventListener('click', this.freshchat_click);
       }
     },
 
-    support_toolbar_bind_contact() {
+    support_toolbar_bind_contact_link() {
       if (this.support_toolbar_contact_link) {
         this.support_toolbar_contact_link.href = this.searchPopulate('/contact-us');
       }

@@ -1,16 +1,5 @@
 export default {
 
-  mounted() {
-    addEventListener('mousewheel', this.freshchat_adjust);
-    addEventListener('resize', this.freshchat_adjust);
-
-    js_deps.wait(['freshchat'], () => {
-      fcWidget.on('widget:opened', this.freshchat_opened_event);
-      fcWidget.on('widget:closed', this.freshchat_closed_event);
-    });
-  },
-
-
   watch: {
 
     'document.readyState': {
@@ -28,7 +17,17 @@ export default {
   methods: {
 
     freshchat_init() {
-      this.$refs.freshchat_image.classList.remove('d-none');
+      if (this.$refs.freshchat_image) {
+        js_deps.wait(['freshchat'], () => {
+          fcWidget.on('widget:opened', this.freshchat_opened_event);
+          fcWidget.on('widget:closed', this.freshchat_closed_event);
+        });
+
+        addEventListener('mousewheel', this.freshchat_adjust);
+        addEventListener('resize', this.freshchat_adjust);
+
+        this.$refs.freshchat_image.classList.remove('d-none');
+      }
     },
 
     freshchat_adjust() {

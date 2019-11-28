@@ -1,4 +1,6 @@
 import layout from '../layout';
+import welcome from './home/welcome';
+import products from './home/products';
 
 
 const deps = [
@@ -14,16 +16,9 @@ js_deps.wait(deps, () => {
 
     mixins: [
       layout,
+      welcome,
+      products,
     ],
-
-
-    methods: {
-
-      goto_checkout(sku_code) {
-        this.goto('/checkout?product=' + sku_code);
-      },
-
-    },
 
   });
 });
