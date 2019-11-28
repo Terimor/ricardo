@@ -77,8 +77,7 @@ class SiteController extends Controller
      * @return type
      */
     private function indexMinishop(Request $request, ProductService $productService, Domain $domain, array $products)
-    {
-        $page_title = \Utils::generatePageTitle($domain, $product);
+    {        
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
         return view('minishop/pages/home', compact('products', 'page_title'));
