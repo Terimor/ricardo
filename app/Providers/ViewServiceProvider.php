@@ -105,7 +105,7 @@ class ViewServiceProvider extends ServiceProvider
             }
 
             $html_to_app = AffiliateService::getHtmlToApp($req, $affiliate ?? null);
-            $is_aff_id_empty = empty($req->get('aff_id')) && empty($req->get('aff_id'));
+            $is_aff_id_empty = empty($req->get('aff_id')) && empty($req->get('affid'));
 
             $locale_affiliate = AffiliateSetting::getLocaleAffiliate($affiliate ?? null);
             $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
