@@ -81,19 +81,16 @@
             <div class="card-info">
               <CardHolder
                 v-if="$root.isAffIDEmpty"
-                :tabindex="100"
                 :$v="$v.form.stepThree.cardHolder"
                 :form="form.stepThree"
                 :placeholder="true"
                 name="cardHolder" />
               <CardType
-                :tabindex="101"
                 class="input-container"
                 :extraFields="extraFields"
                 :form="vmc4Form"
                 :$v="$v" />
               <text-field
-                  :tabindex="102"
                   :validation="$v.form.stepThree.cardNumber"
                   :rest="{
                     pattern: '\\d*',
@@ -117,12 +114,10 @@
                   </div>
                   <div class="card-date d-flex">
                     <Month
-                      :tabindex="103"
                       :$v="$v.form.stepThree.month"
                       :form="form.stepThree"
                       name="month" />
                     <Year
-                      :tabindex="104"
                       :$v="$v.form.stepThree.year"
                       :form="form.stepThree"
                       name="year" />
@@ -138,7 +133,6 @@
                       <span class="label" v-html="textCardCVV"></span>
                     </div>
                     <text-field
-                      :tabindex="105"
                       :validation="$v.form.stepThree.cvv"
                       @click-postfix="openCVVModal"
                       :validationMessage="textCardCVVRequired"
@@ -155,26 +149,31 @@
                 </div>
               </div>
               <DocumentType
-                :tabindex="106"
                 class="input-container"
                 :extraFields="extraFields"
                 :form="vmc4Form"
                 :$v="$v" />
               <DocumentNumber
-                :tabindex="107"
                 :extraFields="extraFields"
                 :form="vmc4Form"
                 :$v="$v" />
             </div>
             <div class="d-flex flex-column">
+              <ZipCode
+                v-if="countryCode === 'br'"
+                :$v="$v.form.stepThree.zipCode"
+                :isLoading="isLoading"
+                @setBrazilAddress="setBrazilAddress"
+                :country="form.stepThree.country"
+                :form="form.stepThree"
+                :placeholder="true"
+                name="zipCode" />
               <District
-                :tabindex="200"
                 :extraFields="extraFields"
                 :withPlaceholder="true"
                 :form="vmc4Form"
                 :$v="$v" />
               <text-field
-                :tabindex="201"
                 :validation="$v.form.stepThree.city"
                 :validationMessage="textCityRequired"
                 v-loading="isLoading.address"
@@ -188,7 +187,6 @@
                 v-model="form.stepThree.city"/>
               <State
                 v-if="extraFields.state"
-                :tabindex="202"
                 class="input-container"
                 :country="form.stepThree.country"
                 :extraFields="extraFields"
@@ -197,7 +195,6 @@
                 :$v="$v" />
               <text-field
                 v-else
-                :tabindex="202"
                 :validation="$v.form.stepThree.state"
                 :validationMessage="textStateRequired"
                 v-loading="isLoading.address"
@@ -210,8 +207,7 @@
                 }"
                 v-model="form.stepThree.state"/>
               <ZipCode
-                :tabindex="countryCode === 'br' ? 199 : 203"
-                :order="countryCode === 'br' ? -1 : null"
+                v-if="countryCode !== 'br'"
                 :$v="$v.form.stepThree.zipCode"
                 :isLoading="isLoading"
                 @setBrazilAddress="setBrazilAddress"
@@ -220,7 +216,6 @@
                 :placeholder="true"
                 name="zipCode" />
               <Country
-                :tabindex="204"
                 :$v="$v.form.stepThree.country"
                 :form="form.stepThree"
                 name="country" />
@@ -239,13 +234,11 @@
             </el-dialog>
             <Terms
               v-if="$root.isAffIDEmpty"
-              :tabindex="300"
               :$v="$v.form.stepThree.terms"
               :form="form.stepThree"
               name="terms" />
             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
             <button
-              :tabindex="301"
               @click="submit"
               :disabled="isSubmitted"
               :class="{ 'btn-active': !isSubmitted }"

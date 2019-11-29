@@ -6,15 +6,6 @@ const searchParams = new URL(location).searchParams;
 const tpl = searchParams.get('tpl') || 'emc1';
 
 
-export function isValidZipcode(value, country) {
-  if (country === 'gb') {
-    country = 'uk';
-  }
-
-  return postcode.validate(value, country);
-}
-
-
 export function setEmailValidationRule(rules, name) {
   rules[name] = {
     required,

@@ -5,7 +5,6 @@
         </h2>
         <div class="payment-form__contact-information">
           <text-field
-              :tabindex="100"
               :validation="$v.form.fname"
               :validationMessage="textFirstNameRequired"
               theme="variant-1"
@@ -17,7 +16,6 @@
               }"
               v-model="paymentForm.fname"/>
           <text-field
-              :tabindex="101"
               :validation="$v.form.lname"
               :validationMessage="textLastNameRequired"
               theme="variant-1"
@@ -43,12 +41,10 @@
           />
   -->
           <Email
-            :tabindex="102"
             name="email"
             :form="paymentForm"
             :$v="$v.form.email" />
           <phone-field
-              :tabindex="103"
               @onCountryChange="setCountryCodeByPhoneField"
               :validation="$v.form.phone"
               :validationMessage="textPhoneRequired"
@@ -65,8 +61,15 @@
           {{ secondTitle }}
         </h2>
         <div class="payment-form__delivery-address">
+            <ZipCode
+              v-if="countryCode === 'br'"
+              :$v="$v.form.zipcode"
+              :isLoading="isLoading"
+              @setBrazilAddress="setBrazilAddress"
+              :country="paymentForm.country"
+              :form="paymentForm"
+              name="zipcode" />
             <text-field
-                :tabindex="200"
                 :validation="$v.form.street"
                 :validationMessage="textStreetRequired"
                 v-loading="isLoading.address"
@@ -79,12 +82,10 @@
                 }"
                 v-model="paymentForm.street"/>
             <District
-              :tabindex="201"
               :extraFields="extraFields"
               :form="paymentForm"
               :$v="$v" />
             <text-field
-                :tabindex="202"
                 :validation="$v.form.city"
                 :validationMessage="textCityRequired"
                 v-loading="isLoading.address"
@@ -98,7 +99,6 @@
                 v-model="paymentForm.city"/>
             <State
               v-if="extraFields.state"
-              :tabindex="203"
               :country="paymentForm.country"
               :extraFields="extraFields"
               :isLoading="isLoading"
@@ -106,7 +106,6 @@
               :$v="$v" />
             <text-field
                 v-else
-                :tabindex="203"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 :validation="$v.form.state"
@@ -119,8 +118,7 @@
                 :label="textStateTitle"
                 v-model="paymentForm.state" />
             <ZipCode
-              :tabindex="countryCode === 'br' ? 199 : 204"
-              :order="countryCode === 'br' ? -1 : null"
+              v-if="countryCode !== 'br'"
               :$v="$v.form.zipcode"
               :isLoading="isLoading"
               @setBrazilAddress="setBrazilAddress"
@@ -128,7 +126,6 @@
               :form="paymentForm"
               name="zipcode" />
             <Country
-              :tabindex="205"
               :$v="$v.form.country"
               :form="paymentForm"
               name="country" />
@@ -140,18 +137,15 @@
             <div class="payment-form__payment-details">
               <CardHolder
                 v-if="$root.isAffIDEmpty"
-                :tabindex="300"
                 :$v="$v.form.cardHolder"
                 :form="paymentForm"
                 name="cardHolder" />
               <CardType
-                :tabindex="301"
                 :extraFields="extraFields"
                 :form="paymentForm"
                 :$v="$v" />
               <div id="payment-data-form">
                   <text-field
-                      :tabindex="302"
                       :validation="$v.form.cardNumber"
                       :rest="{
                         pattern: '\\d*',
@@ -172,12 +166,10 @@
                     :class="{ 'with-error': $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
                       <span class="label" v-html="textCardValidUntil"></span>
                       <Month
-                        :tabindex="303"
                         :$v="$v.form.month"
                         :form="paymentForm"
                         name="month" />
                       <Year
-                        :tabindex="304"
                         :$v="$v.form.year"
                         :form="paymentForm"
                         name="year" />
@@ -187,7 +179,6 @@
                         v-html="textCardExpired"></span>
                   </label>
                   <text-field
-                      :tabindex="305"
                       @click-postfix="openCVVModal"
                       :validation="$v.form.cvv"
                       :validationMessage="textCardCVVRequired"
@@ -203,12 +194,10 @@
                   />
               </div>
               <DocumentType
-                :tabindex="306"
                 :extraFields="extraFields"
                 :form="paymentForm"
                 :$v="$v" />
               <DocumentNumber
-                :tabindex="307"
                 :extraFields="extraFields"
                 :form="paymentForm"
                 :$v="$v" />
@@ -220,7 +209,7 @@
             <i class="fa fa-arrow-left slide-left warranty-field-arrow"></i>
             <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
             <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
-            <input :tabindex="400" id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
+            <input id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
             <span class="checkmark"></span>
           </label>
           <span class="warranty-field-icon">
@@ -229,13 +218,11 @@
         </span>
         <Terms
           v-if="$root.isAffIDEmpty"
-          :tabindex="401"
           :$v="$v.form.terms"
           :form="paymentForm"
           name="terms" />
         <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
         <button
-            :tabindex="402"
             @click="submit"
             :disabled="isSubmitted"
             id="purchase-button"

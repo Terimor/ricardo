@@ -1,13 +1,19 @@
 <template>
   <div v-if="$v" class="flex-wrap payment-form-smc7">
     <Country
-      :order="-100"
-      :tabindex="95"
       :$v="$v.form.country"
       :form="paymentForm"
       name="country" />
+    <ZipCode
+      v-if="countryCode === 'br'"
+      :$v="$v.form.zipCode"
+      :isLoading="isLoading"
+      @setBrazilAddress="setBrazilAddress"
+      :country="paymentForm.country"
+      :form="paymentForm"
+      :placeholder="true"
+      name="zipCode" />
     <text-field
-        :tabindex="101"
         :validation="$v.form.streetAndNumber"
         :validationMessage="textStreetAndNumberRequired"
         v-loading="isLoading.address"
@@ -20,13 +26,11 @@
         }"
         v-model="paymentForm.streetAndNumber"/>
     <District
-      :tabindex="102"
       :extraFields="extraFields"
       :withPlaceholder="true"
       :form="paymentForm"
       :$v="$v" />
     <text-field
-        :tabindex="103"
         :validation="$v.form.city"
         :validationMessage="textCityRequired"
         v-loading="isLoading.address"
@@ -40,7 +44,6 @@
         v-model="paymentForm.city"/>
     <State
       v-if="extraFields.state"
-      :tabindex="104"
       :country="paymentForm.country"
       :extraFields="extraFields"
       :isLoading="isLoading"
@@ -48,7 +51,6 @@
       :$v="$v" />
     <text-field
         v-else
-        :tabindex="104"
         :validation="$v.form.state"
         :validationMessage="textStateRequired"
         v-loading="isLoading.address"
@@ -61,8 +63,7 @@
         }"
         v-model="paymentForm.state"/>
     <ZipCode
-      :tabindex="countryCode === 'br' ? 99 : 105"
-      :order="countryCode === 'br' ? -1 : null"
+      v-if="countryCode !== 'br'"
       :$v="$v.form.zipCode"
       :isLoading="isLoading"
       @setBrazilAddress="setBrazilAddress"
@@ -72,7 +73,6 @@
       name="zipCode" />
     <h2><span>{{paySecurelyWith}}</span></h2>
     <radio-button-group
-        :tabindex="106"
         :withCustomLabels="true"
         v-model="paymentForm.payment_method">
       <div class="card-types">
@@ -89,7 +89,6 @@
     </radio-button-group>
 
     <PaymentMethod
-      :tabindex="107"
       :extraFields="extraFields"
       :form="paymentForm"
       :$v="$v" />
@@ -98,20 +97,17 @@
 
       <CardHolder
         v-if="$root.isAffIDEmpty"
-        :tabindex="108"
         :$v="$v.form.cardHolder"
         :form="paymentForm"
         :placeholder="true"
         name="cardHolder" />
 
       <CardType
-        :tabindex="109"
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
 
       <text-field
-          :tabindex="110"
           :validation="$v.form.cardNumber"
           :rest="{
             pattern: '\\d*',
@@ -132,12 +128,10 @@
       <div class="card-date input-container" :class="{ invalid: $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
         <span class="label">{{textCardValidUntil}}</span>
         <Month
-          :tabindex="111"
           :$v="$v.form.month"
           :form="paymentForm"
           name="month" />
         <Year
-          :tabindex="112"
           :$v="$v.form.year"
           :form="paymentForm"
           name="year" />
@@ -147,7 +141,6 @@
           v-html="textCardExpired"></span>
       </div>
       <text-field
-          :tabindex="113"
           @click-postfix="openCVVModal"
           :validation="$v.form.cvv"
           :validationMessage="textCardCVVRequired"
@@ -162,12 +155,10 @@
           postfix="<i class='fa fa-question-circle'></i>"
       />
       <DocumentType
-        :tabindex="114"
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
       <DocumentNumber
-        :tabindex="115"
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
@@ -326,9 +317,6 @@
 </script>
 <style lang="scss">
   .payment-form-smc7 {
-    display: flex;
-    flex-direction: column;
-
     .card-types {
       display: flex;
       width: 100%;

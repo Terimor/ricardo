@@ -66,17 +66,21 @@
           return;
         }
 
-        if (cache[value]) {
-          return this.apply(cache[value]);
+        const zipcode = value
+          ? value.replace(/[^0-9]/g, '')
+          : '';
+
+        if (cache[zipcode]) {
+          return this.apply(cache[zipcode]);
         }
 
         this.isLoading.address = true;
 
-        fetch('/address-by-zip?zipcode=' + value)
+        fetch('/address-by-zip?zipcode=' + zipcode)
           .then(res => res.json())
           .then(res => {
             this.isLoading.address = false;
-            cache[value] = res;
+            cache[zipcode] = res;
             this.apply(res);
           })
           .catch(err => {
