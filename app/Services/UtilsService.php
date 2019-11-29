@@ -685,7 +685,7 @@ class UtilsService
         // hardcode: temporary replace cdn urls for two domains
         // Remove after check
         $wifibostCdn = 'https://cdn.wifiboost.tech';
-        $xdroneCdn = 'https://cdn.8xgb.com';
+        $xdroneCdn = 'https://cdn.xdronehd.pro';
         $host = request()->getHost();
         if (stripos(' '.$host, 'wifiboost.tech')) {
             return $wifibostCdn;
@@ -718,7 +718,7 @@ class UtilsService
         // hardcode: temporary replace cdn urls for two domains
         // Remove after check
         $wifibostCdn = 'cdn.wifiboost.tech';
-        $xdroneCdn = 'cdn.8xgb.com';
+        $xdroneCdn = 'cdn.xdronehd.pro';
         $host = request()->getHost();
         if (stripos(' '.$host, 'wifiboost.tech')) {
             $urlReplace = $wifibostCdn;
