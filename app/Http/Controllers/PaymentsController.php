@@ -13,6 +13,7 @@ use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\GetPaymentMethodsByCountryRequest;
+use App\Models\Txn;
 use Illuminate\Http\Request;
 
 /*use com\checkout;
@@ -206,10 +207,12 @@ class PaymentsController extends Controller
      */
     public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
     {
-        $txn_status = $req->input('status');
+        $auth_status = $req->input('status');
+
+        logger()->info('Mint-e 3ds redirect debug', ['ip' => $req->ip(), 'body' => $req->getContent()]);
 
         $mint = new MintService();
-        $reply = $mint->validateRedirect($req, $order_id);
+        $reply = $mint->captureAfterAuth3ds($req, $order_id);
 
         if (!$reply['status']) {
             logger()->error('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
@@ -217,8 +220,8 @@ class PaymentsController extends Controller
         }
 
         $query = ['order' => $order_id];
-        if ($txn_status === MintService::STATUS_OK) {
-            $this->paymentService->approveOrder($reply['txn']);
+        if ($reply['txn']['status'] === Txn::STATUS_APPROVED) {
+            $this->paymentService->approveOrder($mint->capture($reply['txn']));
             $query['3ds'] = 'success';
         } else {
             $order = $this->paymentService->rejectTxn($reply['txn']);

@@ -76,7 +76,7 @@ class MintService
      */
     public function payByCard(array $card, array $contact, array $details): array
     {
-        return $this->pay(
+        $payment = $this->authorize(
             array_merge($card, ['year' => substr($card['year'], 2)]),
             array_merge(
                 $contact,
@@ -86,6 +86,10 @@ class MintService
             ),
             $details
         );
+        if ($payment['status'] === Txn::STATUS_CAPTURED) {
+            return $this->capture($payment);
+        }
+        return $payment;
     }
 
     /**
@@ -100,7 +104,7 @@ class MintService
     }
 
     /**
-     * Provides payment
+     * Authorizes payment
      * @param  array   $card
      * @param  array   $contact
      * @param  array   $details
@@ -115,7 +119,7 @@ class MintService
      * ]
      * @return array
      */
-    private function pay(array $card, array $contact, array $details): array
+    private function authorize(array $card, array $contact, array $details): array
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
@@ -135,12 +139,12 @@ class MintService
         ];
 
         try {
-            $route_path = 'sale';
+            $route_path = 'authorize';
 
             // setup 3DS
             $obj3ds = [];
             if ($details['3ds']) {
-                $route_path = 'sale3ds';
+                $route_path = 'authorize3ds';
                 $obj3ds = [
                     'redirecturl'   => request()->getSchemeAndHttpHost() . "/minte-3ds/{$details['order_id']}",
                     'useragent'     => $details['user_agent']
@@ -187,14 +191,14 @@ class MintService
             if ($body_decoded['status'] === self::STATUS_OK) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['token']    = $body_decoded['token'];
-                $result['status']   = Txn::STATUS_APPROVED;
+                $result['status']   = Txn::STATUS_CAPTURED;
             } elseif ($body_decoded['status'] === self::STATUS_3DS) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_AUTHORIZED;
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
                 $result['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
-                logger()->error("Mint-e pay", ['body' => $body_decoded]);
+                logger()->error("Mint-e auth", ['body' => $body_decoded]);
             }
             $result['provider_data'] = $body_decoded;
         } catch (GuzzReqException $ex) {
@@ -203,12 +207,62 @@ class MintService
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MintCodeMapper::toPhrase()];
 
-            logger()->error("Mint-e pay", [
+            logger()->error("Mint-e auth", [
                 'request'   => Psr7\str($ex->getRequest()),
                 'response'  => $result['provider_data']
             ]);
         }
         return $result;
+    }
+
+    /**
+     * Captures payment
+     * @param  array   $payment ['hash'=>string]
+     * @return array
+     */
+    private function capture(array $payment): array
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'headers' => ['Accept'  => 'application/json']
+        ]);
+
+        try {
+            $nonce = UtilsService::millitime();
+
+            $res = $client->put('capture', [
+                'json' => [
+                    'mid'       => $this->mid,
+                    'nonce'     => $nonce,
+                    'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
+                    'referenceid' => $payment['hash']
+                ]
+            ]);
+
+            logger()->info('Mint-e capture res debug', ['body' => $res->getBody()]);
+
+            $body_decoded = json_decode($res->getBody(), true);
+
+            if ($body_decoded['status'] === self::STATUS_OK) {
+                $payment['hash']     = $body_decoded['midtransid'];
+                $payment['status']   = Txn::STATUS_APPROVED;
+            } else {
+                $payment['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
+                logger()->error("Mint-e capture", ['body' => $body_decoded]);
+            }
+            $payment['provider_data'] = $body_decoded;
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
+
+            $payment['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
+            $payment['errors'] = [MintCodeMapper::toPhrase()];
+
+            logger()->error("Mint-e capture", [
+                'request'   => Psr7\str($ex->getRequest()),
+                'response'  => $payment['provider_data']
+            ]);
+        }
+        return $payment;
     }
 
     /**
@@ -273,12 +327,13 @@ class MintService
         }
         return $result;
     }
+
     /**
-     * Validates redirect
+     * Captures payment after 3ds authorization
      * @param PaymentCardMinte3dsRequest $req
      * @return array
      */
-    private function validateRedirect(PaymentCardMinte3dsRequest $req): bool
+    private function captureAfterAuth3ds(PaymentCardMinte3dsRequest $req): bool
     {
         $err_code   = $req->input('errorcode');
         $sign       = $req->input('signature');
@@ -289,15 +344,12 @@ class MintService
         $result = ['status' => false];
 
         if ($sign === hash('sha256', $txn_hash . $txn_ts . $this->api_key)) {
-            $result = [
-                'status' => true,
-                'txn' => ['hash' => $data['hash']]
-            ];
+            $result = ['status' => true, 'txn' => ['hash' => $txn_hash]];
             if ($txn_status === self::STATUS_OK) {
-                $result['status'] = Txn::STATUS_APPROVED;
+                $result['txn'] = $this->capture(['hash' => $txn_hash]);
             } else {
-                $result['status'] = Txn::STATUS_FAILED;
-                $result['errors'] = [MintCodeMapper::toPhrase($err_code)];
+                $result['txn']['status'] = Txn::STATUS_FAILED;
+                $result['txn']['errors'] = [MintCodeMapper::toPhrase($err_code)];
             }
         }
 
