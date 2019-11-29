@@ -65,7 +65,7 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('index_page');
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
-        return view('index', compact('product', 'loadedPhrases', 'page_title'));
+        return view('index', compact('product', 'loadedPhrases', 'page_title', 'main_logo'));
     }
     
     /**
@@ -80,7 +80,7 @@ class SiteController extends Controller
     {        
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
-        return view('minishop/pages/home', compact('products', 'page_title'));
+        return view('minishop/pages/home', compact('products', 'page_title', 'main_logo'));
     }
 
     /**
@@ -95,7 +95,8 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('contact_title'));
-        return view('contact_us', compact('loadedPhrases', 'product', 'page_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo'));
     }
 
     /**
@@ -110,7 +111,8 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('refunds_title'));
-        return view('returns', compact('loadedPhrases', 'product', 'page_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('returns', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
     /**
@@ -124,8 +126,9 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('delivery_page');
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('delivery_title'));        
-        return view('delivery', compact('loadedPhrases', 'product', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('delivery_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('delivery', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
     /**
@@ -139,8 +142,9 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('privacy_page');
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('privacy_title'));         
-        return view('privacy', compact('loadedPhrases', 'product', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('privacy_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('privacy', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
     /**
@@ -154,8 +158,9 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('terms_page');
         $product = $productService->resolveProduct($request, true);  
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('terms_title'));         
-        return view('terms', compact('loadedPhrases', 'product', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('terms_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('terms', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
      /**
@@ -169,8 +174,9 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('about_page');
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('about_title'));          
-        return view('about', compact('loadedPhrases', 'product', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('about_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('about', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
      }
 
     /**
@@ -184,8 +190,9 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('tracking.order_tracking'));         
-        return view('order_tracking', compact('loadedPhrases', 'product', 'setting', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('tracking.order_tracking'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('order_tracking', compact('loadedPhrases', 'product', 'setting', 'page_title', 'main_logo'));
     }
 
     /**
@@ -235,12 +242,13 @@ class SiteController extends Controller
         $loadedImages = \Utils::getLocalizedImages($imagesNames);
         
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('checkout.page_title')); 
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('checkout.page_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
         return view(
             $viewTemplate,
             compact(
                 'langCode', 'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
-                'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title'
+                'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo'
             )
         );
     }
@@ -280,8 +288,9 @@ class SiteController extends Controller
             $order_aff = $order_aff ? $order_aff->toArray() : null;
         }
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('upsells.title'));         
-        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('upsells.title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
     }
 
     /**
@@ -330,8 +339,9 @@ class SiteController extends Controller
             $order_aff = $order_aff ? $order_aff->toArray() : null;
         }
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('thankyou_title')); 
-        return view('thankyou', compact('countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('thankyou_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('thankyou', compact('countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
     }
 
     /**
@@ -343,8 +353,9 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('splash_page');
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');         
-        return view('splash', compact('loadedPhrases', 'product', 'page_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        return view('splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
     /**

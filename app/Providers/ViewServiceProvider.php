@@ -93,8 +93,7 @@ class ViewServiceProvider extends ServiceProvider
                 ? 'ltr'
                 : 'rtl';
 
-            $domain = Domain::getByName();
-            optional($domain)->setLocalLogo();
+            $domain = Domain::getByName();            
             $website_name = optional($domain)->getDisplayedName();
 
             $req = Request();

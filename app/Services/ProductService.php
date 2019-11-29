@@ -36,8 +36,7 @@ class ProductService
 
         // Domain resolve logic
         if (!$product) {
-            $host = str_replace('www.', '', request()->getHost());
-            $domain = Domain::where('name', $host)->first();
+            $domain = Domain::getByName();
             if ($domain && !empty($domain->product)) {
                 $product =  $domain->product;
             }

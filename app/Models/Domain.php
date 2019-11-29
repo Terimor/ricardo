@@ -86,31 +86,7 @@ class Domain extends Model
          }
 
          return $domain;
-     }     
-
-     /**
-     * Set local logo
-     */
-    public function setLocalLogo()
-    {
-        if (!isset($this->logo)) {
-            return;
-        };
-
-        $images = AwsImage::where('_id', $this->logo)->get();
-
-        if (count($images) === 0) {
-            return;
-        }
-
-        $lang = app()->getLocale();
-
-        $this->logo = isset($images[0]->urls[$lang])
-            ? \Utils::replaceUrlForCdn($images[0]->urls[$lang])
-            : (isset($images[0]->urls['en'])
-                ? \Utils::replaceUrlForCdn($images[0]->urls['en'])
-                : '');
-    }
+     }
     
     /**
      * Returns displayed name     
@@ -120,5 +96,35 @@ class Domain extends Model
     public function getDisplayedName(): string
     {
         return !empty($this->display_name) ? $this->display_name : $this->name;
+    }
+    
+    /**
+     * Getter logo image
+     */
+    public function getLogoAttribute($value)
+    {
+        $images = AwsImage::where('_id', $value)->get();        
+        $lang = app()->getLocale();
+        return isset($images[0]->urls[$lang]) ? \Utils::replaceUrlForCdn($images[0]->urls[$lang]) : (isset($images[0]->urls['en']) ? \Utils::replaceUrlForCdn($images[0]->urls['en']) : null);
+    }    
+    
+    /**
+     * Get main logo
+     * @param $product
+     * @param $copId
+     */
+    public function getMainLogo($product, $copId)
+    {
+        
+        $logo = null;
+        if (!empty($this->is_multiproduct) && empty($copId)) {            
+            $logo = $this->logo;
+        }
+        
+        if (!$logo) {             
+            $logo = $product->logo_image;        
+        }
+        
+        return $logo;
     }
 }
