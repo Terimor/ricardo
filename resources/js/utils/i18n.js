@@ -32,9 +32,7 @@ export function t(phrase, args = {}, options = {}) {
       translated = specials[phrase](lang, country, translated);
     }
   } else {
-    logError('URGENT: `' + phrase + '` not found in translations. Arguments: ' + JSON.stringify(args), {
-      loadedPhrases: JSON.stringify(window.loadedPhrases),
-    });
+    logError('URGENT: `' + phrase + '` not found in translations. Arguments: ' + JSON.stringify(args) + ', loadedPhrases: ' + JSON.stringify(window.loadedPhrases));
   }
 
   for (const key of Object.keys(args)) {
@@ -42,18 +40,14 @@ export function t(phrase, args = {}, options = {}) {
     translated = translated.split(placeholder).join(args[key]);
 
     if (args[key] === undefined || args[key] === null) {
-      logError('URGENT: Null of undefined placeholder for `' + phrase + '`: ' + placeholder + '. Arguments: ' + JSON.stringify(args), {
-        loadedPhrases: JSON.stringify(window.loadedPhrases),
-      });
+      logError('URGENT: Null of undefined placeholder for `' + phrase + '`: ' + placeholder + '. Arguments: ' + JSON.stringify(args) + ', loadedPhrases: ' + JSON.stringify(window.loadedPhrases));
     }
   }
 
   const nonTranslated = translated.match(/#[A-Z0-9_]+#/g) || [];
 
   if (nonTranslated.length > 0) {
-    logError('URGENT: Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args), {
-      loadedPhrases: JSON.stringify(window.loadedPhrases),
-    });
+    logError('URGENT: Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args) + ', loadedPhrases: ' + JSON.stringify(window.loadedPhrases));
   }
 
   textarea.innerHTML = translated;
@@ -74,24 +68,16 @@ export function timage(name) {
   if (loadedImages[name] && loadedImages[name].url) {
     translated = loadedImages[name];
   } else {
-    logError('URGENT: `' + name + '` is in use, but no such key or empty url.', {
-      loadedImages: JSON.stringify(window.loadedImages),
-    });
+    logError('URGENT: `' + name + '` is in use, but no such key or empty url. loadedImages: ' + JSON.stringify(window.loadedImages));
   }
 
   return translated;
 }
 
 
-function logError(errText, extraParams = {}) {
+function logError(errText) {
   if (window.Sentry) {
-    Sentry.withScope(function(scope) {
-      for (let paramName of Object.keys(extraParams)) {
-        scope.setExtra(paramName, extraParams[paramName]);
-      }
-
-      Sentry.captureException(new Error(errText));
-    });
+    Sentry.captureException(new Error(errText));
   }
 
   console.error(errText);

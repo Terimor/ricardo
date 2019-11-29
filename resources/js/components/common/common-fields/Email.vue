@@ -16,6 +16,8 @@
       name: 'email',
     }"
     theme="variant-1"
+    :tabindex="tabindex"
+    :order="order"
     @input="input"
     @blur="blur" />
 
@@ -33,6 +35,8 @@
       'form',
       'name',
       'placeholder',
+      'tabindex',
+      'order',
       '$v',
     ],
 

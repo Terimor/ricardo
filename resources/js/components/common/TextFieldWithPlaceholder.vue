@@ -1,5 +1,5 @@
 <template>
-  <label class="date-picker-manual" :class="{ 'with-error': invalid }">
+  <label class="date-picker-manual" :class="{ 'with-error': invalid }" :style="{ order: order || null }">
     <span class="label">{{label}}</span>
     <div class="date-picker-manual__input">
       <div class="placeholder" v-html="preparedPlaceholder"></div>
@@ -12,6 +12,7 @@
         :style="{
           ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
         }"
+        :tabindex="tabindex || null"
         v-bind="rest" />
     </div>
     <div v-show="invalid" class="error">{{validationMessage}}</div>
@@ -21,7 +22,7 @@
 <script>
   export default {
     name: 'TextFieldWithPlaceholder',
-    props: ['label', 'value', 'format', 'rest', 'placeholder', 'validationMessage', 'validation'],
+    props: ['label', 'value', 'format', 'tabindex', 'order', 'rest', 'placeholder', 'validationMessage', 'validation'],
     computed: {
       preparedPlaceholder () {
         const length = this.value && this.value.length || 0;

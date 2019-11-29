@@ -1,12 +1,14 @@
 <template>
   <label
     class="phone-input-container scroll-when-error"
+    :style="{ order: order || null }"
     :class="{
       [theme]: theme,
       invalid: invalid
     }">
     <span class="label">{{label}}</span>
     <input
+      :tabindex="tabindex || null"
       :style="{
         ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
       }"
@@ -25,7 +27,7 @@
 
   export default {
     name: 'PhoneField',
-    props: ['value', 'label', 'theme', 'validation', 'validationMessage', 'countryCode'],
+    props: ['value', 'label', 'theme', 'tabindex', 'order', 'validation', 'validationMessage', 'countryCode'],
 
     data() {
       return {

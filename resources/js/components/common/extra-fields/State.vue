@@ -4,13 +4,15 @@
     :standart="true"
     v-if="extraFields.state"
     v-model="form.state"
-    v-loading="isLoading && isLoading.address"
-    element-loading-spinner="el-icon-loading"
     :list="extraFields.state.items"
     :validation="$v.form.state"
     :validationMessage="textRequired"
+    v-loading="isLoading && isLoading.address"
+    element-loading-spinner="el-icon-loading"
     :label="textTitle"
-    theme="variant-1" />
+    theme="variant-1"
+    :tabindex="tabindex"
+    :order="order" />
 
 </template>
 
@@ -25,6 +27,8 @@
       'extraFields',
       'isLoading',
       'country',
+      'tabindex',
+      'order',
       'form',
       '$v',
     ],

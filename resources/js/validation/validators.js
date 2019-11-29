@@ -1,5 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators';
-import postcode from 'postcode-validator';
+//import postcode from 'postcode-validator';
 
 
 const searchParams = new URL(location).searchParams;
@@ -42,6 +42,30 @@ export function setPhoneValidationRule(rules, name) {
 
       return true;
     },
+  };
+}
+
+export function setZipCodeValidationRule(rules, name) {
+  rules[name] = {
+    required,
+    minLength(value) {
+      if (this.form.country === 'br') {
+        if (value && value.replace(/[^0-9]/g, '').length < 8) {
+          return false;
+        }
+      }
+
+      return true;
+    },
+    /*isValidZipcode(value) {
+      let country = this.form.country;
+
+      if (country === 'gb') {
+        country = 'uk';
+      }
+
+      return postcode.validate(value, country);
+    },*/
   };
 }
 

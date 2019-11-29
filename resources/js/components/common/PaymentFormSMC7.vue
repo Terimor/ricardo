@@ -1,12 +1,16 @@
 <template>
   <div v-if="$v" class="flex-wrap payment-form-smc7">
     <Country
+      :order="-100"
+      :tabindex="95"
       :$v="$v.form.country"
       :form="paymentForm"
       name="country" />
     <text-field
+        :tabindex="101"
         :validation="$v.form.streetAndNumber"
         :validationMessage="textStreetAndNumberRequired"
+        v-loading="isLoading.address"
         element-loading-spinner="el-icon-loading"
         theme="variant-1 street"
         :label="textStreetAndNumber"
@@ -16,13 +20,16 @@
         }"
         v-model="paymentForm.streetAndNumber"/>
     <District
+      :tabindex="102"
       :extraFields="extraFields"
       :withPlaceholder="true"
       :form="paymentForm"
       :$v="$v" />
     <text-field
+        :tabindex="103"
         :validation="$v.form.city"
         :validationMessage="textCityRequired"
+        v-loading="isLoading.address"
         element-loading-spinner="el-icon-loading"
         theme="variant-1"
         :label="textCity"
@@ -33,14 +40,18 @@
         v-model="paymentForm.city"/>
     <State
       v-if="extraFields.state"
+      :tabindex="104"
       :country="paymentForm.country"
       :extraFields="extraFields"
+      :isLoading="isLoading"
       :form="paymentForm"
       :$v="$v" />
     <text-field
         v-else
+        :tabindex="104"
         :validation="$v.form.state"
         :validationMessage="textStateRequired"
+        v-loading="isLoading.address"
         element-loading-spinner="el-icon-loading"
         theme="variant-1"
         :label="textState"
@@ -49,18 +60,19 @@
           autocomplete: 'shipping locality'
         }"
         v-model="paymentForm.state"/>
-    <text-field
-        :validation="$v.form.zipCode"
-        :validationMessage="textZipCodeRequired"
-        theme="variant-1"
-        :label="textZipCode"
-        :rest="{
-          placeholder: textZipCode
-        }"
-        id="zip-code-field"
-        v-model="paymentForm.zipCode"/>
+    <ZipCode
+      :tabindex="countryCode === 'br' ? 99 : 105"
+      :order="countryCode === 'br' ? -1 : null"
+      :$v="$v.form.zipCode"
+      :isLoading="isLoading"
+      @setBrazilAddress="setBrazilAddress"
+      :country="paymentForm.country"
+      :form="paymentForm"
+      :placeholder="true"
+      name="zipCode" />
     <h2><span>{{paySecurelyWith}}</span></h2>
     <radio-button-group
+        :tabindex="106"
         :withCustomLabels="true"
         v-model="paymentForm.payment_method">
       <div class="card-types">
@@ -77,6 +89,7 @@
     </radio-button-group>
 
     <PaymentMethod
+      :tabindex="107"
       :extraFields="extraFields"
       :form="paymentForm"
       :$v="$v" />
@@ -85,17 +98,20 @@
 
       <CardHolder
         v-if="$root.isAffIDEmpty"
+        :tabindex="108"
         :$v="$v.form.cardHolder"
         :form="paymentForm"
         :placeholder="true"
         name="cardHolder" />
 
       <CardType
+        :tabindex="109"
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
 
       <text-field
+          :tabindex="110"
           :validation="$v.form.cardNumber"
           :rest="{
             pattern: '\\d*',
@@ -116,10 +132,12 @@
       <div class="card-date input-container" :class="{ invalid: $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
         <span class="label">{{textCardValidUntil}}</span>
         <Month
+          :tabindex="111"
           :$v="$v.form.month"
           :form="paymentForm"
           name="month" />
         <Year
+          :tabindex="112"
           :$v="$v.form.year"
           :form="paymentForm"
           name="year" />
@@ -129,6 +147,7 @@
           v-html="textCardExpired"></span>
       </div>
       <text-field
+          :tabindex="113"
           @click-postfix="openCVVModal"
           :validation="$v.form.cvv"
           :validationMessage="textCardCVVRequired"
@@ -143,10 +162,12 @@
           postfix="<i class='fa fa-question-circle'></i>"
       />
       <DocumentType
+        :tabindex="114"
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
       <DocumentNumber
+        :tabindex="115"
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
@@ -169,6 +190,7 @@
   import * as dateFns from 'date-fns';
 	import PayMethodItem from "./PayMethodItem";
   import PaymentMethod from './extra-fields/PaymentMethod';
+  import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
   import Month from './common-fields/Month';
@@ -189,6 +211,7 @@
 		components: {
       PayMethodItem,
       PaymentMethod,
+      ZipCode,
       Country,
       CardHolder,
       Month,
@@ -202,10 +225,17 @@
 		props: ['$v', 'paymentForm', 'extraFields'],
 		data() {
 			return {
-				isOpenCVVModal: false
+        isLoading: {
+          address: false,
+        },
+				isOpenCVVModal: false,
 			}
 		},
 		computed: {
+
+      countryCode() {
+        return this.paymentForm.country;
+      },
 
       cardNames() {
         const paymentMethods = this.$root.paymentMethods || {};
@@ -276,6 +306,11 @@
       }
 		},
 		methods: {
+      setBrazilAddress(res) {
+        this.paymentForm.streetAndNumber = res.address;
+        this.paymentForm.city = res.city;
+        this.paymentForm.state = res.state;
+      },
 			openCVVModal () {
 				const node = document.querySelector('.cvv-popup .el-dialog');
 				const listener = () => {
@@ -291,6 +326,9 @@
 </script>
 <style lang="scss">
   .payment-form-smc7 {
+    display: flex;
+    flex-direction: column;
+
     .card-types {
       display: flex;
       width: 100%;

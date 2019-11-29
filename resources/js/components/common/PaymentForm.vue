@@ -1,65 +1,72 @@
 <template>
-    <form v-if="$v" class="flex-wrap payment-form" :class="{ 'is-brazil': countryCode === 'br' }">
+    <form v-if="$v" class="flex-wrap payment-form">
         <h2>
           {{ firstTitle }}
         </h2>
-        <text-field
-            :validation="$v.form.fname"
-            :validationMessage="textFirstNameRequired"
-            theme="variant-1"
-            :label="textFirstName"
-            class="first-name"
-            :rest="{
-              autocomplete: 'name',
-              name: 'name'
-            }"
-            v-model="paymentForm.fname"/>
-        <text-field
-            :validation="$v.form.lname"
-            :validationMessage="textLastNameRequired"
-            theme="variant-1"
-            :label="textLastName"
-            class="last-name"
-            :rest="{
-              autocomplete: 'family-name',
-              name: 'family-name'
-            }"
-            v-model="paymentForm.lname"/>
-<!--
-        <text-field-with-placeholder
-            :validation="$v.form.dateOfBirth"
-            :validationMessage="textBirthdayRequired"
-            v-if="countryCode === 'de'"
-            :rest="{
-              'format': 'dd/mm/yyyy',
-            }"
-            :placeholder="textBirthdayPlaceHolder"
-            v-model="paymentForm.dateOfBirth"
-            theme="variant-1"
-            :label="textBirthday"
-        />
--->
-        <Email
-          name="email"
-          :form="paymentForm"
-          :$v="$v.form.email" />
-        <phone-field
-            @onCountryChange="setCountryCodeByPhoneField"
-            :validation="$v.form.phone"
-            :validationMessage="textPhoneRequired"
-            :countryCode="countryCode"
-            theme="variant-1"
-            :label="textPhone"
-            :rest="{
-              autocomplete: 'off',
-              name: 'phone'
-            }"
-            v-model="paymentForm.phone"/>
+        <div class="payment-form__contact-information">
+          <text-field
+              :tabindex="100"
+              :validation="$v.form.fname"
+              :validationMessage="textFirstNameRequired"
+              theme="variant-1"
+              :label="textFirstName"
+              class="first-name"
+              :rest="{
+                autocomplete: 'name',
+                name: 'name'
+              }"
+              v-model="paymentForm.fname"/>
+          <text-field
+              :tabindex="101"
+              :validation="$v.form.lname"
+              :validationMessage="textLastNameRequired"
+              theme="variant-1"
+              :label="textLastName"
+              class="last-name"
+              :rest="{
+                autocomplete: 'family-name',
+                name: 'family-name'
+              }"
+              v-model="paymentForm.lname"/>
+  <!--
+          <text-field-with-placeholder
+              :validation="$v.form.dateOfBirth"
+              :validationMessage="textBirthdayRequired"
+              v-if="countryCode === 'de'"
+              :rest="{
+                'format': 'dd/mm/yyyy',
+              }"
+              :placeholder="textBirthdayPlaceHolder"
+              v-model="paymentForm.dateOfBirth"
+              theme="variant-1"
+              :label="textBirthday"
+          />
+  -->
+          <Email
+            :tabindex="102"
+            name="email"
+            :form="paymentForm"
+            :$v="$v.form.email" />
+          <phone-field
+              :tabindex="103"
+              @onCountryChange="setCountryCodeByPhoneField"
+              :validation="$v.form.phone"
+              :validationMessage="textPhoneRequired"
+              :countryCode="countryCode"
+              theme="variant-1"
+              :label="textPhone"
+              :rest="{
+                autocomplete: 'off',
+                name: 'phone'
+              }"
+              v-model="paymentForm.phone"/>
+        </div>
         <h2>
           {{ secondTitle }}
         </h2>
         <div class="payment-form__delivery-address">
             <text-field
+                :tabindex="200"
                 :validation="$v.form.street"
                 :validationMessage="textStreetRequired"
                 v-loading="isLoading.address"
@@ -72,10 +79,12 @@
                 }"
                 v-model="paymentForm.street"/>
             <District
+              :tabindex="201"
               :extraFields="extraFields"
               :form="paymentForm"
               :$v="$v" />
             <text-field
+                :tabindex="202"
                 :validation="$v.form.city"
                 :validationMessage="textCityRequired"
                 v-loading="isLoading.address"
@@ -89,6 +98,7 @@
                 v-model="paymentForm.city"/>
             <State
               v-if="extraFields.state"
+              :tabindex="203"
               :country="paymentForm.country"
               :extraFields="extraFields"
               :isLoading="isLoading"
@@ -96,6 +106,7 @@
               :$v="$v" />
             <text-field
                 v-else
+                :tabindex="203"
                 v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 :validation="$v.form.state"
@@ -107,18 +118,17 @@
                 }"
                 :label="textStateTitle"
                 v-model="paymentForm.state" />
-            <text-field
-                :validation="$v.form.zipcode"
-                :validationMessage="textZipcodeRequired"
-                theme="variant-1"
-                :rest="{
-                  autocomplete: 'postal-code',
-                  name: 'postal-code'
-                }"
-                :label="textZipcode"
-                id="zip-code-field"
-                v-model="paymentForm.zipcode"/>
+            <ZipCode
+              :tabindex="countryCode === 'br' ? 199 : 204"
+              :order="countryCode === 'br' ? -1 : null"
+              :$v="$v.form.zipcode"
+              :isLoading="isLoading"
+              @setBrazilAddress="setBrazilAddress"
+              :country="paymentForm.country"
+              :form="paymentForm"
+              name="zipcode" />
             <Country
+              :tabindex="205"
               :$v="$v.form.country"
               :form="paymentForm"
               name="country" />
@@ -127,72 +137,82 @@
             <h2>
               {{ thirdTitle }}
             </h2>
-            <CardHolder
-              v-if="$root.isAffIDEmpty"
-              :$v="$v.form.cardHolder"
-              :form="paymentForm"
-              name="cardHolder" />
-            <CardType
-              :extraFields="extraFields"
-              :form="paymentForm"
-              :$v="$v" />
-            <div id="payment-data-form">
-                <text-field
-                    :validation="$v.form.cardNumber"
-                    :rest="{
-                      pattern: '\\d*',
-                      type: 'tel',
-                      autocomplete: 'cc-number',
-                        'data-bluesnap': 'encryptedCreditCard'
+            <div class="payment-form__payment-details">
+              <CardHolder
+                v-if="$root.isAffIDEmpty"
+                :tabindex="300"
+                :$v="$v.form.cardHolder"
+                :form="paymentForm"
+                name="cardHolder" />
+              <CardType
+                :tabindex="301"
+                :extraFields="extraFields"
+                :form="paymentForm"
+                :$v="$v" />
+              <div id="payment-data-form">
+                  <text-field
+                      :tabindex="302"
+                      :validation="$v.form.cardNumber"
+                      :rest="{
+                        pattern: '\\d*',
+                        type: 'tel',
+                        autocomplete: 'cc-number',
+                          'data-bluesnap': 'encryptedCreditCard'
+                        }"
+                      :validationMessage="textCardNumberRequired"
+                      class="card-number"
+                      theme="variant-1"
+                      :label="textCardNumber"
+                      v-model="paymentForm.cardNumber"
+                      :prefix="`<img src='${$parent.paymentMethodURL}' />`"
+                      :postfix="`<i class='fa fa-lock'></i>`"
+                  />
+                  <label
+                    class="card-date"
+                    :class="{ 'with-error': $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
+                      <span class="label" v-html="textCardValidUntil"></span>
+                      <Month
+                        :tabindex="303"
+                        :$v="$v.form.month"
+                        :form="paymentForm"
+                        name="month" />
+                      <Year
+                        :tabindex="304"
+                        :$v="$v.form.year"
+                        :form="paymentForm"
+                        name="year" />
+                      <span
+                        class="error"
+                        v-show="paymentForm.month && paymentForm.year && isCardExpired"
+                        v-html="textCardExpired"></span>
+                  </label>
+                  <text-field
+                      :tabindex="305"
+                      @click-postfix="openCVVModal"
+                      :validation="$v.form.cvv"
+                      :validationMessage="textCardCVVRequired"
+                      class="cvv-field"
+                      theme="variant-1"
+                      :label="textCardCVV"
+                      :rest="{
+                        autocomplete: 'cc-csc',
+                        'data-bluesnap': 'encryptedCvv'
                       }"
-                    :validationMessage="textCardNumberRequired"
-                    class="card-number"
-                    theme="variant-1"
-                    :label="textCardNumber"
-                    v-model="paymentForm.cardNumber"
-                    :prefix="`<img src='${$parent.paymentMethodURL}' />`"
-                    :postfix="`<i class='fa fa-lock'></i>`"
-                />
-                <label
-                  class="card-date"
-                  :class="{ 'with-error': $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
-                    <span class="label" v-html="textCardValidUntil"></span>
-                    <Month
-                      :$v="$v.form.month"
-                      :form="paymentForm"
-                      name="month" />
-                    <Year
-                      :$v="$v.form.year"
-                      :form="paymentForm"
-                      name="year" />
-                    <span
-                      class="error"
-                      v-show="paymentForm.month && paymentForm.year && isCardExpired"
-                      v-html="textCardExpired"></span>
-                </label>
-                <text-field
-                    @click-postfix="openCVVModal"
-                    :validation="$v.form.cvv"
-                    :validationMessage="textCardCVVRequired"
-                    class="cvv-field"
-                    theme="variant-1"
-                    :label="textCardCVV"
-                    :rest="{
-                      autocomplete: 'cc-csc',
-                      'data-bluesnap': 'encryptedCvv'
-                    }"
-                    v-model="paymentForm.cvv"
-                    postfix="<i class='fa fa-question-circle'></i>"
-                />
+                      v-model="paymentForm.cvv"
+                      postfix="<i class='fa fa-question-circle'></i>"
+                  />
+              </div>
+              <DocumentType
+                :tabindex="306"
+                :extraFields="extraFields"
+                :form="paymentForm"
+                :$v="$v" />
+              <DocumentNumber
+                :tabindex="307"
+                :extraFields="extraFields"
+                :form="paymentForm"
+                :$v="$v" />
             </div>
-            <DocumentType
-              :extraFields="extraFields"
-              :form="paymentForm"
-              :$v="$v" />
-            <DocumentNumber
-              :extraFields="extraFields"
-              :form="paymentForm"
-              :$v="$v" />
         </template>
         <!-- vmp41/42 block -->
         <span v-show="hasWarranty" class="warranty-field-button">
@@ -200,7 +220,7 @@
             <i class="fa fa-arrow-left slide-left warranty-field-arrow"></i>
             <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
             <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
-            <input id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
+            <input :tabindex="400" id="warranty-field" type="checkbox" v-model="paymentForm.isWarrantyChecked">
             <span class="checkmark"></span>
           </label>
           <span class="warranty-field-icon">
@@ -209,11 +229,13 @@
         </span>
         <Terms
           v-if="$root.isAffIDEmpty"
+          :tabindex="401"
           :$v="$v.form.terms"
           :form="paymentForm"
           name="terms" />
         <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
         <button
+            :tabindex="402"
             @click="submit"
             :disabled="isSubmitted"
             id="purchase-button"
@@ -250,6 +272,7 @@
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
   import Email from './common-fields/Email';
+  import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
   import Month from './common-fields/Month';
@@ -284,6 +307,7 @@
     components: {
       Spinner,
       Email,
+      ZipCode,
       Country,
       CardHolder,
       Month,
@@ -298,7 +322,7 @@
     data () {
       return {
         isLoading: {
-          address: false
+          address: false,
         },
         ipqsResult: null,
         isOpenCVVModal: false,
@@ -349,14 +373,6 @@
         return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
       },
 
-      textStatePlaceholder() {
-        return t('checkout.payment_form.state.placeholder', {}, { country: this.paymentForm.country });
-      },
-
-      textZipcode() {
-        return t('checkout.payment_form.zipcode', {}, { country: this.paymentForm.country });
-      },
-
       textFirstName: () => t('checkout.payment_form.first_name'),
       textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
       textLastName: () => t('checkout.payment_form.last_name'),
@@ -373,7 +389,6 @@
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
-      textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
       textCardNumber: () => t('checkout.payment_form.card_number'),
       textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),
@@ -396,11 +411,6 @@
         }
 
         this.$parent.setPaymentMethodByCardNumber(newVal);
-      },
-      'paymentForm.zipcode' (zipcode) {
-        if (this.countryCode === 'br' && !this.$v.form.zipcode.$invalid) {
-          this.getLocationByZipcode(zipcode)
-        }
       },
 /*
       'paymentForm.dateOfBirth' (val) {
@@ -445,35 +455,11 @@
 
         this.isOpenCVVModal = true
       },
-      getLocationByZipcode: debounce(function (zipcode) {
-        const { ebanxpay: { url, integration_key } } = apiUrlList
-        this.isLoading.address = true
-
-        return Promise.resolve()
-          .then(() => {
-            return fetch('https://cors-anywhere.herokuapp.com/' + url + '/ws/zipcode?integration_key=' + encodeURIComponent(integration_key) + '&zipcode=' + encodeURIComponent(zipcode), {
-              method: 'post',
-            });
-          })
-          .then(res => res.json())
-          .then(res => {
-            this.isLoading.address = false
-
-            if (res.status === 'ERROR') return
-
-            const { zipcode: { address, city, state } } = res
-
-            this.$emit('setAddress', {
-              street: address,
-              city,
-              state,
-            })
-          })
-          .catch((err) => {
-            console.error(err)
-            this.isLoading.address = false
-          })
-      }, 333),
+      setBrazilAddress(res) {
+        this.paymentForm.street = res.address;
+        this.paymentForm.city = res.city;
+        this.paymentForm.state = res.state;
+      },
       submit () {
         const { paymentForm, exp } = this;
 
@@ -689,14 +675,12 @@
             }
         }
 
-        &__delivery-address {
+        &__contact-information,
+        &__delivery-address,
+        &__payment-details, {
             display: flex;
             flex-wrap: wrap;
             width: 100%;
-
-            .input-container, .select {
-                order: 1;
-            }
 
             .el-loading-mask {
                 top: 26px;
@@ -706,14 +690,6 @@
                     margin-top: 0;
                     transform: translateY(-50%);
                     top: 20px;
-                }
-            }
-        }
-
-        &.is-brazil {
-            .payment-form__delivery-address {
-                #zip-code-field {
-                    order: 0;
                 }
             }
         }
@@ -801,6 +777,11 @@
                 width: 90%;
                 margin-top: 15% !important;
             }
+        }
+
+        #purchase-button:focus {
+          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+          border-color: #409EFF;
         }
 
         .purchase-button-text {

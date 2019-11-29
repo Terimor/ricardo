@@ -2,16 +2,18 @@
 
   <div
     class="terms-checkbox"
+    :style="{ order: order || null }"
     :class="classObject">
 
     <label
       for="terms-checkbox"
       class="label-container-checkbox">
 
-      <input 
+      <input
         type="checkbox"
         id="terms-checkbox"
-        v-model="form[name]" />
+        v-model="form[name]"
+        :tabindex="tabindex || null" />
 
       <span class="checkmark"></span>
 
@@ -31,6 +33,8 @@
     props: [
       'form',
       'name',
+      'tabindex',
+      'order',
       '$v',
     ],
 
@@ -84,6 +88,11 @@
     .invalid & {
       animation: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error;
     }
+  }
+
+  input:focus + .checkmark {
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+    border-color: #409EFF;
   }
 
 </style>

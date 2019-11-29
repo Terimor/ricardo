@@ -51,18 +51,13 @@ const vmc4validation = function () {
 				state: {
 					required
 				},
-				zipCode: {
-					required,
-					/*isValidZipcode(value) {
-						return isValidZipcode(value, this.form.stepThree.country || checkoutData.countryCode);
-					},*/
-				},
 			}
 		}
 	};
 
 	validators.setEmailValidationRule.call(this, config.form.stepTwo, 'email');
 	validators.setPhoneValidationRule.call(this, config.form.stepTwo, 'phone');
+	validators.setZipCodeValidationRule.call(this, config.form.stepThree, 'zipCode');
 	validators.setCountryValidationRule.call(this, config.form.stepThree, 'country');
 	validators.setCardHolderValidationRule.call(this, config.form.stepThree, 'cardHolder');
 	validators.setMonthValidationRule.call(this, config.form.stepThree, 'month');

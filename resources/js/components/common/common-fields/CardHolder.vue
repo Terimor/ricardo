@@ -10,7 +10,9 @@
         ? textLabel
         : null,
     }"
-    theme="variant-1" />
+    theme="variant-1"
+    :tabindex="tabindex"
+    :order="order" />
 
 </template>
 
@@ -23,6 +25,8 @@
       'form',
       'name',
       'placeholder',
+      'tabindex',
+      'order',
       '$v',
     ],
 

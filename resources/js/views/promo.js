@@ -413,13 +413,6 @@ const promo = new Vue({
       }
     },
 
-    setAddress (address) {
-      this.form = {
-        ...this.form,
-        ...address
-      }
-    },
-
     activateForm() {
       this.isFormShown = true;
       this.scrollTo('.j-payment-form');

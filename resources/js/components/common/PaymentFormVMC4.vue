@@ -78,35 +78,38 @@
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
           <slot name="warranty" />
           <form v-if="form.paymentProvider && isFormShown">
-            <CardHolder
-              v-if="$root.isAffIDEmpty"
-              :$v="$v.form.stepThree.cardHolder"
-              :form="form.stepThree"
-              :placeholder="true"
-              name="cardHolder" />
-            <CardType
-              class="input-container"
-              :extraFields="extraFields"
-              :form="vmc4Form"
-              :$v="$v" />
-            <text-field
-                :validation="$v.form.stepThree.cardNumber"
-                :rest="{
-                  pattern: '\\d*',
-                  type: 'tel',
-                  placeholder: '**** **** **** ****',
-                  autocomplete: 'cc-number',
-                    'data-bluesnap': 'encryptedCreditCard'
-                  }"
-                :validationMessage="textCardNumberRequired"
-                class="card-number"
-                theme="variant-1"
-                :label="textCardNumber"
-                v-model="form.stepThree.cardNumber"
-                :prefix="`<img src='${$parent.paymentMethodURL}' alt='Card Number' />`"
-                :postfix="`<i class='fa fa-lock'></i>`"
-            />
             <div class="card-info">
+              <CardHolder
+                v-if="$root.isAffIDEmpty"
+                :tabindex="100"
+                :$v="$v.form.stepThree.cardHolder"
+                :form="form.stepThree"
+                :placeholder="true"
+                name="cardHolder" />
+              <CardType
+                :tabindex="101"
+                class="input-container"
+                :extraFields="extraFields"
+                :form="vmc4Form"
+                :$v="$v" />
+              <text-field
+                  :tabindex="102"
+                  :validation="$v.form.stepThree.cardNumber"
+                  :rest="{
+                    pattern: '\\d*',
+                    type: 'tel',
+                    placeholder: '**** **** **** ****',
+                    autocomplete: 'cc-number',
+                      'data-bluesnap': 'encryptedCreditCard'
+                    }"
+                  :validationMessage="textCardNumberRequired"
+                  class="card-number"
+                  theme="variant-1"
+                  :label="textCardNumber"
+                  v-model="form.stepThree.cardNumber"
+                  :prefix="`<img src='${$parent.paymentMethodURL}' alt='Card Number' />`"
+                  :postfix="`<i class='fa fa-lock'></i>`"
+              />
               <div class="d-flex input-container" :class="{ invalid: $v.form && $v.form.stepThree && $v.form.stepThree.month && $v.form.stepThree.month.$dirty && $v.form.stepThree.year && $v.form.stepThree.year.$dirty && ($v.form.stepThree.month.$invalid || $v.form.stepThree.year.$invalid || isCardExpired) }">
                 <div style="flex-grow:1">
                   <div class="card-info__labels">
@@ -114,10 +117,12 @@
                   </div>
                   <div class="card-date d-flex">
                     <Month
+                      :tabindex="103"
                       :$v="$v.form.stepThree.month"
                       :form="form.stepThree"
                       name="month" />
                     <Year
+                      :tabindex="104"
                       :$v="$v.form.stepThree.year"
                       :form="form.stepThree"
                       name="year" />
@@ -133,6 +138,7 @@
                       <span class="label" v-html="textCardCVV"></span>
                     </div>
                     <text-field
+                      :tabindex="105"
                       :validation="$v.form.stepThree.cvv"
                       @click-postfix="openCVVModal"
                       :validationMessage="textCardCVVRequired"
@@ -149,22 +155,29 @@
                 </div>
               </div>
               <DocumentType
+                :tabindex="106"
                 class="input-container"
                 :extraFields="extraFields"
                 :form="vmc4Form"
                 :$v="$v" />
               <DocumentNumber
+                :tabindex="107"
                 :extraFields="extraFields"
                 :form="vmc4Form"
                 :$v="$v" />
+            </div>
+            <div class="d-flex flex-column">
               <District
+                :tabindex="200"
                 :extraFields="extraFields"
                 :withPlaceholder="true"
                 :form="vmc4Form"
                 :$v="$v" />
               <text-field
+                :tabindex="201"
                 :validation="$v.form.stepThree.city"
                 :validationMessage="textCityRequired"
+                v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
                 :label="textCity"
@@ -175,15 +188,19 @@
                 v-model="form.stepThree.city"/>
               <State
                 v-if="extraFields.state"
+                :tabindex="202"
                 class="input-container"
                 :country="form.stepThree.country"
                 :extraFields="extraFields"
+                :isLoading="isLoading"
                 :form="vmc4Form"
                 :$v="$v" />
               <text-field
                 v-else
+                :tabindex="202"
                 :validation="$v.form.stepThree.state"
                 :validationMessage="textStateRequired"
+                v-loading="isLoading.address"
                 element-loading-spinner="el-icon-loading"
                 theme="variant-1"
                 :label="textState"
@@ -192,17 +209,18 @@
                   autocomplete: 'shipping locality'
                 }"
                 v-model="form.stepThree.state"/>
-              <text-field
-                :validation="$v.form.stepThree.zipCode"
-                :validationMessage="textZipcodeRequired"
-                theme="variant-1"
-                :label="textZipcode"
-                :rest="{
-                  placeholder: textZipcodePlaceholder
-                }"
-                id="zip-code-field"
-                v-model="form.stepThree.zipCode"/>
+              <ZipCode
+                :tabindex="countryCode === 'br' ? 199 : 203"
+                :order="countryCode === 'br' ? -1 : null"
+                :$v="$v.form.stepThree.zipCode"
+                :isLoading="isLoading"
+                @setBrazilAddress="setBrazilAddress"
+                :country="form.stepThree.country"
+                :form="form.stepThree"
+                :placeholder="true"
+                name="zipCode" />
               <Country
+                :tabindex="204"
                 :$v="$v.form.stepThree.country"
                 :form="form.stepThree"
                 name="country" />
@@ -221,11 +239,13 @@
             </el-dialog>
             <Terms
               v-if="$root.isAffIDEmpty"
+              :tabindex="300"
               :$v="$v.form.stepThree.terms"
               :form="form.stepThree"
               name="terms" />
             <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
             <button
+              :tabindex="301"
               @click="submit"
               :disabled="isSubmitted"
               :class="{ 'btn-active': !isSubmitted }"
@@ -283,6 +303,7 @@
   import { queryParams } from  '../../utils/queryParams';
   import Installments from './extra-fields/Installments';
   import Email from './common-fields/Email';
+  import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
   import Month from './common-fields/Month';
@@ -308,6 +329,7 @@
       Spinner,
       Installments,
       Email,
+      ZipCode,
       Country,
       CardHolder,
       Month,
@@ -324,7 +346,6 @@
       'productImage',
 			'dealList',
 			'variantList',
-      'countryCode',
       'extraFields',
       'vmc4Form',
 		],
@@ -339,6 +360,9 @@
         paypalPaymentError: '',
         isSubmitted: false,
         ipqsResult: null,
+        isLoading: {
+          address: false,
+        },
 				form: {
 					stepTwo: {
 						fname: null,
@@ -359,6 +383,7 @@
             terms: null,
 					},
 					countryCodePhoneField: checkoutData.countryCode,
+          country: checkoutData.countryCode,
 					paymentProvider: null,
 				},
 			}
@@ -401,6 +426,9 @@
       }
     },
 		computed: {
+      countryCode() {
+        return this.form.stepThree.country;
+      },
       isShowVariant() {
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
@@ -461,6 +489,7 @@
 		},
         watch: {
             'form.stepThree.country'(country) {
+              this.form.country = this.form.stepThree.country;
               this.$parent.reloadPaymentMethods(country);
             },
             'form.stepThree.cardNumber'(newVal, oldValue) {
@@ -487,6 +516,10 @@
 		methods: {
       activateForm() {
         this.isFormShown = true;
+      },
+      setBrazilAddress(res) {
+        this.form.stepThree.city = res.city;
+        this.form.stepThree.state = res.state;
       },
 			submit() {
 				this.$v.form.$touch();

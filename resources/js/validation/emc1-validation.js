@@ -29,12 +29,6 @@ const emc1Validation = function () {
     state: {
       required
     },
-    zipcode: {
-      required,
-      /*isValidZipcode(value) {
-        return isValidZipcode(value, this.form.country || checkoutData.countryCode);
-      },*/
-    },
     cardNumber: {
       required,
       isValid (val) {
@@ -79,6 +73,7 @@ const emc1Validation = function () {
 
   validators.setEmailValidationRule.call(this, allRules, 'email');
   validators.setPhoneValidationRule.call(this, allRules, 'phone');
+  validators.setZipCodeValidationRule.call(this, allRules, 'zipcode');
   validators.setCountryValidationRule.call(this, allRules, 'country');
   validators.setCardHolderValidationRule.call(this, allRules, 'cardHolder');
   validators.setMonthValidationRule.call(this, allRules, 'month');

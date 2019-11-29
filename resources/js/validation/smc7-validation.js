@@ -30,12 +30,6 @@ const smc7validation = function () {
       state: {
         required
       },
-      zipCode: {
-        required,
-        /*isValidZipcode(value) {
-          return isValidZipcode(value, this.form.country || checkoutData.countryCode);
-        },*/
-      },
       cardNumber: {
         required,
         isValid (val) {
@@ -60,6 +54,7 @@ const smc7validation = function () {
 
   validators.setEmailValidationRule.call(this, config.form, 'email');
   validators.setPhoneValidationRule.call(this, config.form, 'phone');
+  validators.setZipCodeValidationRule.call(this, config.form, 'zipCode');
   validators.setCountryValidationRule.call(this, config.form, 'country');
   validators.setCardHolderValidationRule.call(this, config.form, 'cardHolder');
   validators.setMonthValidationRule.call(this, config.form, 'month');

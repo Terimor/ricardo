@@ -9,7 +9,9 @@
     :rest="{
       placeholder: textPlaceholder,
     }"
-    theme="variant-1" />
+    theme="variant-1"
+    :tabindex="tabindex"
+    :order="order" />
 
 </template>
 
@@ -21,6 +23,8 @@
     props: [
       'form',
       'name',
+      'tabindex',
+      'order',
       '$v',
     ],
 

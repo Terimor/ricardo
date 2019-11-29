@@ -1,6 +1,7 @@
 <template>
   <form
     class="radio-button-group"
+    :style="{ order: order || null }"
     @input="onInput">
 
     <template v-if="withCustomLabels">
@@ -17,6 +18,7 @@
                :checked="input.value == value"
                name="radio"
                :value="input.value"
+               :tabindex="tabindex || null"
                :disabled="input.isOutOfStock">
         <span class="checkmark"></span>
       </label>
@@ -32,7 +34,9 @@ export default {
     'value',
     'labelStyles',
     'withCustomLabels',
-    'validation'
+    'validation',
+    'tabindex',
+    'order',
   ],
   methods: {
     onInput (e) {

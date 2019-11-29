@@ -1,6 +1,7 @@
 <template>
   <label
     class="input-container scroll-when-error"
+    :style="{ order: order || null }"
     :class="{
       [theme]: theme,
       invalid: invalid
@@ -18,6 +19,7 @@
           ...postfix && { ['padding-' + (isRTL ? 'left' : 'right')]: '45px' },
           ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
         }"
+        :tabindex="tabindex || null"
         :value="value">
     </div>
     <span v-if="warningMessage" class="warning" v-html="warningMessage"></span>
@@ -38,7 +40,9 @@ export default {
     'validationMessage',
     'warningMessage',
     'forceInvalid',
-    'rest'
+    'tabindex',
+    'order',
+    'rest',
   ],
   computed: {
     isRTL() {

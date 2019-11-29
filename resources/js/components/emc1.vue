@@ -80,8 +80,7 @@
                               :paymentForm="form"
                               :countryCode="form.country"
                               :extraFields="extraFields"
-                              @setPromotionalModal="setPromotionalModal"
-                              @setAddress="setAddress"/>
+                              @setPromotionalModal="setPromotionalModal"/>
                         </transition>
                         <div class="main__bottom">
                             <img
@@ -501,12 +500,6 @@
       },
       setPromotionalModal (val) {
         this.isOpenPromotionModal = val
-      },
-      setAddress (address) {
-        this.form = {
-          ...this.form,
-          ...address
-        }
       },
       refreshTopBlock() {
         const oldPrice = document.querySelector('#old-price');

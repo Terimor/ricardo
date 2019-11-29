@@ -1,5 +1,5 @@
 <template>
-  <div class="select scroll-when-error" :class="theme">
+  <div class="select scroll-when-error" :class="theme" :style="{ order: order || null }">
     <span v-if="label" class="label">{{label}}</span>
     <el-select
       v-if="!standart"
@@ -9,6 +9,7 @@
       @visible-change="onVisibleChange"
       @input="onChange"
       :value="value"
+      :tabindex="tabindex || null"
       :filterable="filterable"
       :disabled="disabled"
       :style="{
@@ -33,6 +34,7 @@
       :value="value"
       @change="onChange"
       class="el-input__inner select-standart"
+      :tabindex="tabindex || null"
       :style="{
         ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
       }">
@@ -62,6 +64,8 @@ export default {
     'theme',
     'label',
     'disabled',
+    'tabindex',
+    'order',
     'rest',
     'validation',
     'validationMessage',

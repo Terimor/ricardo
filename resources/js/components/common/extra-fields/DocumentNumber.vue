@@ -12,6 +12,8 @@
     }"
     class="input-container variant-1"
     theme="variant-1"
+    :tabindex="tabindex"
+    :order="order"
     @input="input" />
 
 </template>
@@ -28,6 +30,8 @@
 
     props: [
       'extraFields',
+      'tabindex',
+      'order',
       'form',
       '$v',
     ],

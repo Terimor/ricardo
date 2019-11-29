@@ -9,7 +9,9 @@
     :rest="{
       placeholder,
     }"
-    theme="variant-1" />
+    theme="variant-1"
+    :tabindex="tabindex"
+    :order="order" />
 
 </template>
 
@@ -23,6 +25,8 @@
     props: [
       'withPlaceholder',
       'extraFields',
+      'tabindex',
+      'order',
       'form',
       '$v',
     ],
