@@ -1,4 +1,4 @@
-@if (!$HasVueApp)
+@if (!$HasVueApp && !Route::is('splash'))
   <script>
     function initFreshChat() {
       window.fcWidget.init({

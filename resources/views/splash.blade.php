@@ -81,9 +81,7 @@
                                         </span>
                                     </div>
                                     <div class="testimonial-body">
-                                        <p>It was even smaller than I expected. Fits in my hand. The translation is
-                                            accurate and convenient! You can also use it to learn foreign language if
-                                            you like. Basically I love its the portable design.</p>
+                                        <p>It was even better than I expected. The {{ $product->product_name }} is indeed extremely convenient! Really portable and the built quality is really good too.</p>
                                         <div class="testimonial-images">
                                             <div class="testimonial-img"><img src="" alt=""></div>
                                         </div>
@@ -105,9 +103,7 @@
                                         </span>
                                     </div>
                                     <div class="testimonial-body">
-                                        <p>It was even smaller than I expected. Fits in my hand. The translation is
-                                            accurate and convenient! You can also use it to learn foreign language if
-                                            you like. Basically I love its the portable design.</p>
+                                        <p>I had a small issue during my purchase proccess, but their livechat helped me out within only 3 minutes. {{ $product->product_name }} arrived swiftly and nicely packaged. I simply love it!</p>
                                         <div class="testimonial-images">
                                             <div class="testimonial-img"><img src="" alt=""></div>
                                         </div>
@@ -129,9 +125,7 @@
                                         </span>
                                     </div>
                                     <div class="testimonial-body">
-                                        <p>It was even smaller than I expected. Fits in my hand. The translation is
-                                            accurate and convenient! You can also use it to learn foreign language if
-                                            you like. Basically I love its the portable design.</p>
+                                        <p>was a bit unsure at first. Could it really live up to its promises? But honestly, {{ $product->product_name }} has entirely surpassed my expectations! I can only say: 10/10!</p>
                                         <div class="testimonial-images">
                                             <div class="testimonial-img"><img src="" alt=""></div>
                                         </div>
@@ -140,6 +134,16 @@
                             </li>
                         </ul>
                     </div>
+
+                    <div class="splash-description">
+                        <h3>{{ $product->splash_description }}</h3>
+                        @if (!empty($product->image[2]))
+                            <div class="for-img">
+                                <img src="{{ $product->image[2] }}" alt="{{ $product->product_name }}">
+                            </div>
+                        @endif                        
+                    </div>
+
                 </div>
                 <div class="col-md-6">
                     <div class="product-media">
@@ -150,13 +154,17 @@
                             {{ t('splash_page.video_of') }}
                             {{ $product->long_name }}
                             {{ t('splash_page.in_action') }}:</h3>
-                        <div class="iframe-wrap">
-                            <iframe src=""
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen=""></iframe>
-                            <div class="iframe-stretch"></div>
-                        </div>
+                        @if (!empty($product->vimeo_id))
+                            <div class="iframe-wrap">
+                                <iframe src="https://player.vimeo.com/video/{{ $product->vimeo_id }}"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen=""></iframe>
+                                <div class="iframe-stretch"></div>
+                            </div>
+                        @else
+                            <img class="novideo-img" src="https://i.imgur.com/H7ti6MO.gif" alt="" />
+                        @endif
                         <div class="text-center">
                             <a href="/checkout" class="green-btn">
                                 {{ t('splash_page.add_to_cart') }}
@@ -169,13 +177,6 @@
                         @if (!empty($product->image[1]))
                             <div class="for-img">
                                 <img src="{{ $product->image[1] }}" alt="{{ $product->product_name }}">
-                            </div>
-                        @endif
-
-                        <h3>{{ $product->splash_description }}</h3>
-                        @if (!empty($product->image[2]))
-                            <div class="for-img">
-                                <img src="{{ $product->image[2] }}" alt="{{ $product->product_name }}">
                             </div>
                         @endif
 
