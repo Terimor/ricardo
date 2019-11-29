@@ -80,7 +80,7 @@ class SiteController extends Controller
     {        
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
-        return view('minishop/pages/home', compact('products', 'page_title', 'main_logo'));
+        return view('minishop/pages/home', compact('products', 'page_title'));
     }
 
     /**
