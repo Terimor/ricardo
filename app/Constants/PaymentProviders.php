@@ -180,10 +180,10 @@ class PaymentProviders
                     'document_type' => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 'CUIT', 'label' => 'Clave Única de Identificación Tributaria'],
-                            ['value' => 'CUIL', 'label' => 'Código único de Identificación Laboral'],
-                            ['value' => 'CDI', 'label'  => 'Clave de Identificación'],
-                            ['value' => 'DNI', 'label'  => 'Documento Nacional de Identidad']
+                            ['value' => 'CUIT', 'phrase' => 'document_type.ar.cuit'],
+                            ['value' => 'CUIL', 'phrase' => 'document_type.ar.cuil'],
+                            ['value' => 'CDI', 'phrase'  => 'document_type.ar.cdi'],
+                            ['value' => 'DNI', 'phrase'  => 'document_type.ar.dni']
                         ],
                         'default'   => 'CUIT'
                     ],
@@ -304,9 +304,9 @@ class PaymentProviders
                     'document_type' => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 'NIT', 'label' => 'Número de Identificación Tributaria'],
-                            ['value' => 'CC', 'label'  => 'Cédula de Ciudadanía'],
-                            ['value' => 'CE', 'label'  => 'Cédula de Extranjería']
+                            ['value' => 'NIT', 'phrase' => 'document_type.co.nit'],
+                            ['value' => 'CC', 'phrase'  => 'document_type.co.cc'],
+                            ['value' => 'CE', 'phrase'  => 'document_type.co.ce']
                         ],
                         'default'   => 'NIT'
                     ],
