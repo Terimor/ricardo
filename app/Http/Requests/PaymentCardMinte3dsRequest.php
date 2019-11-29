@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
 
 class PaymentCardMinte3dsRequest extends FormRequest
 {
@@ -44,5 +47,16 @@ class PaymentCardMinte3dsRequest extends FormRequest
             'errorcode' => ['string'],
             'errormessage' => ['string'],
         ];
+    }
+
+    /**
+     *
+     * @param Validator $validator
+     * @throws ValidationException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        $response = new JsonResponse(['errors' => $validator->errors()], 422);
+        throw new ValidationException($validator, $response);
     }
 }

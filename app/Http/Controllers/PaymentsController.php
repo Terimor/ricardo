@@ -202,7 +202,7 @@ class PaymentsController extends Controller
     /**
      * Mint-e redirect after 3ds
      * @param  Request $req
-     * @param
+     * @param string $order_id
      * @return void
      */
     public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
