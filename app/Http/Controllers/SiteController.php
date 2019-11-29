@@ -65,7 +65,7 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('index_page');
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
-        return view('index', compact('product', 'loadedPhrases', 'page_title', 'main_logo'));
+        return view('index', compact('product', 'loadedPhrases', 'page_title'));
     }
     
     /**
