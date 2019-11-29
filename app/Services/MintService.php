@@ -333,7 +333,7 @@ class MintService
      * @param PaymentCardMinte3dsRequest $req
      * @return array
      */
-    public function captureAfterAuth3ds(PaymentCardMinte3dsRequest $req): bool
+    public function captureAfterAuth3ds(PaymentCardMinte3dsRequest $req): array
     {
         $err_code   = $req->input('errorcode');
         $sign       = $req->input('signature');
