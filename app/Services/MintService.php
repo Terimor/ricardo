@@ -229,14 +229,17 @@ class MintService
 
         try {
             $nonce = UtilsService::millitime();
+            $body = [
+                'mid'       => $this->mid,
+                'nonce'     => $nonce,
+                'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
+                'referenceid' => $payment['hash']
+            ];
+
+            logger()->info('Mint-e capture body debug', ['body' => $body]);
 
             $res = $client->put('capture', [
-                'json' => [
-                    'mid'       => $this->mid,
-                    'nonce'     => $nonce,
-                    'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
-                    'referenceid' => $payment['hash']
-                ]
+                'json' => $body
             ]);
 
             logger()->info('Mint-e capture res debug', ['body' => $res->getBody()]);
@@ -247,6 +250,7 @@ class MintService
                 $payment['hash']     = $body_decoded['midtransid'];
                 $payment['status']   = Txn::STATUS_APPROVED;
             } else {
+                $payment['status']   = Txn::STATUS_FAILED;
                 $payment['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
                 logger()->error("Mint-e capture", ['body' => $body_decoded]);
             }
@@ -256,6 +260,7 @@ class MintService
 
             $payment['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $payment['errors'] = [MintCodeMapper::toPhrase()];
+            $payment['status']   = Txn::STATUS_FAILED;
 
             logger()->error("Mint-e capture", [
                 'request'   => Psr7\str($ex->getRequest()),

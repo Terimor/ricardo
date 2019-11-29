@@ -221,7 +221,7 @@ class PaymentsController extends Controller
 
         $query = ['order' => $order_id];
         if ($reply['txn']['status'] === Txn::STATUS_APPROVED) {
-            $this->paymentService->approveOrder($mint->capture($reply['txn']));
+            $this->paymentService->approveOrder($reply['txn']);
             $query['3ds'] = 'success';
         } else {
             $order = $this->paymentService->rejectTxn($reply['txn']);
