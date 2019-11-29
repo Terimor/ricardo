@@ -180,10 +180,10 @@ class PaymentProviders
                     'document_type' => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 'CUIT', 'phrase' => 'checkout.payment_form.document_type.ar.CUIT'],
-                            ['value' => 'CUIL', 'phrase' => 'checkout.payment_form.document_type.ar.CUIL'],
-                            ['value' => 'CDI', 'phrase'  => 'checkout.payment_form.document_type.ar.CDI'],
-                            ['value' => 'DNI', 'phrase'  => 'checkout.payment_form.document_type.ar.DNI']
+                            ['value' => 'CUIT', 'phrase' => 'document_type.ar.cuit'],
+                            ['value' => 'CUIL', 'phrase' => 'document_type.ar.cuil'],
+                            ['value' => 'CDI', 'phrase'  => 'document_type.ar.cdi'],
+                            ['value' => 'DNI', 'phrase'  => 'document_type.ar.dni']
                         ],
                         'default'   => 'CUIT'
                     ],
@@ -304,9 +304,9 @@ class PaymentProviders
                     'document_type' => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 'NIT', 'phrase' => 'checkout.payment_form.document_type.co.NIT'],
-                            ['value' => 'CC', 'phrase'  => 'checkout.payment_form.document_type.co.CC'],
-                            ['value' => 'CE', 'phrase'  => 'checkout.payment_form.document_type.co.CE']
+                            ['value' => 'NIT', 'phrase' => 'document_type.co.nit'],
+                            ['value' => 'CC', 'phrase'  => 'document_type.co.cc'],
+                            ['value' => 'CE', 'phrase'  => 'document_type.co.ce']
                         ],
                         'default'   => 'NIT'
                     ],
