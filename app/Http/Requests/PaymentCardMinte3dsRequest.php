@@ -56,7 +56,7 @@ class PaymentCardMinte3dsRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        logger()->error('Mint-e 3ds redirect', $validator->errors());
+        logger()->error('Mint-e 3ds redirect', ['errors' => $validator->errors()]);
 
         $response = new JsonResponse(['errors' => $validator->errors()], 422);
         throw new ValidationException($validator, $response);
