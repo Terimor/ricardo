@@ -247,7 +247,6 @@ class MintService
             $body_decoded = json_decode($res->getBody(), true);
 
             if ($body_decoded['status'] === self::STATUS_OK) {
-                $payment['hash']     = $body_decoded['midtransid'];
                 $payment['status']   = Txn::STATUS_APPROVED;
             } else {
                 $payment['status']   = Txn::STATUS_FAILED;
