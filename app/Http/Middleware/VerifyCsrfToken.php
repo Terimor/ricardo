@@ -26,7 +26,7 @@ class VerifyCsrfToken extends Middleware
         'bluesnap-webhook',
         'ebanx-webhook',
         'paypal-webhooks',
-        'minte-3ds',
+        'minte-3ds/*',
         'paypal-create-order',
         'paypal-verify-order',
 		'calculate-upsells-total',
