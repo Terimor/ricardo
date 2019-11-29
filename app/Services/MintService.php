@@ -168,7 +168,7 @@ class MintService
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
                     'nonce'     => $nonce,
-                    'recurring' => true,
+                    // 'recurring' => true,
                     'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
                     'cvv'       => $card['cvv'],
                     'expiry'    => $card['month'] . $card['year'],
