@@ -23,7 +23,7 @@
     <div id="orderTracking" class="orderTracking">
         <div class="orderTracking-header">
             <div class="container">
-                <img src="{{ $product->logo_image }}" alt="{{ $product->product_name }}">
+                <img src="{{ $main_logo ?? $product->logo_image }}" alt="{{ $product->product_name }}">
             </div>
         </div>
         <div class="orderTracking-body">
