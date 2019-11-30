@@ -531,6 +531,7 @@ class PaymentService
     public function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req)
     {
         $upsells = $req->input('upsells', []);
+        $user_agent = $req->header('User-Agent');
 
         $order = OdinOrder::getById($req->get('order')); // throwable
         $order_main_product = $order->getMainProduct(); // throwable
