@@ -243,11 +243,11 @@ class MintService
             if ($body_decoded['status'] === self::STATUS_OK) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_CAPTURED;
-                $payment['token']   = self::encrypt(json_encode($card), $details['order_id']);
+                $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
             } elseif ($body_decoded['status'] === self::STATUS_3DS) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_AUTHORIZED;
-                $payment['token']   = self::encrypt(json_encode($card), $details['order_id']);
+                $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
                 $result['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
