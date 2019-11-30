@@ -199,14 +199,14 @@ class OrderService
             if ($order->affiliate == $hoAffiliateId && $order->isTxnForReduce()) {
                 // check or create affiliate
                 $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
-                
+
                  // if not flagged check fired logic
                 if (empty($order->is_flagged)) {
                     // get first main product
                     $productId = $order->getFirstProductId();
                     if ($order->is_reduced === null && $productId) {
                         // check in affiliate product list
-                        $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);                        
+                        $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
                         $order->is_reduced = $isReduced;
                         $order->save();
                     }

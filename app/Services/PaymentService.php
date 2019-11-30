@@ -492,6 +492,8 @@ class PaymentService
         // cache token
         self::setCardToken($order->number, $payment['token'] ?? null);
 
+        logger()->info('Card token -> ' . $payment['token'] ?? 'none');
+
         // add Txn, update OdinOrder
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
@@ -543,7 +545,14 @@ class PaymentService
             return $v;
         }, $upsells);
 
-        if ($this->orderService->checkIfUpsellsPossible($order)) {
+        $card_token = null;
+        $is_upsells_possible = $this->orderService->checkIfUpsellsPossible($order);
+        if ($is_upsells_possible && $order_main_txn['payment_provider'] !== PaymentProviders::BLUESNAP) {
+            $card_token = self::getCardToken($order->number);
+            $is_upsells_possible = !!$card_token;
+        }
+
+        if ($is_upsells_possible) {
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
@@ -571,11 +580,9 @@ class PaymentService
                 }
             }
 
-            $payment = [];
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
-                $card_token = self::getCardToken($order->number);
-                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX && $card_token) {
+                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX) {
                     $ebanx = new EbanxService();
                     $payment = $ebanx->payByToken(
                         $card_token,
@@ -610,7 +617,7 @@ class PaymentService
                             'installments'  => $order->installments
                         ]
                     );
-                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::CHECKOUTCOM && $card_token) {
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
                     $checkout = new CheckoutDotComService();
                     $payment = $checkout->payByToken(
                         $card_token,
@@ -628,31 +635,21 @@ class PaymentService
                             ]
                         ]
                     );
-                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
-                    $bluesnap = new BluesnapService();
-                    $payment = $bluesnap->payByVaultedShopperId(
-                        $order_main_txn['payer_id'],
-                        [
-                            'amount'    => $checkout_price,
-                            'currency'  => $order->currency,
-                            'billing_descriptor' => $order->billing_descriptor
-                        ]
-                    );
-                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::MINT && $card_token) {
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::MINT) {
                     $mint = new MintService();
                     $payment = $mint->payByToken(
                         $card_token,
                         [
-                            'street'            => $order->shipping_street,
-                            'city'              => $order->shipping_city,
-                            'country'           => $order->shipping_country,
-                            'state'             => $order->shipping_state,
-                            'zip'               => $order->shipping_zip,
-                            'email'             => $order->customer_email,
-                            'first_name'        => $order->customer_first_name,
-                            'last_name'         => $order->customer_last_name,
-                            'phone'             => $order->customer_phone,
-                            'ip'                => $req->ip()
+                            'street'        => $order->shipping_street,
+                            'city'          => $order->shipping_city,
+                            'country'       => $order->shipping_country,
+                            'state'         => $order->shipping_state,
+                            'zip'           => $order->shipping_zip,
+                            'email'         => $order->customer_email,
+                            'first_name'    => $order->customer_first_name,
+                            'last_name'     => $order->customer_last_name,
+                            'phone'         => $order->customer_phone,
+                            'ip'            => $req->ip()
                         ],
                         [
                             'amount'    => $checkout_price,
@@ -661,6 +658,16 @@ class PaymentService
                             'descriptor'    => $order->billing_descriptor,
                             'order_number'  => $order->number,
                             'user_agent'    => $user_agent
+                        ]
+                    );
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
+                    $bluesnap = new BluesnapService();
+                    $payment = $bluesnap->payByVaultedShopperId(
+                        $order_main_txn['payer_id'],
+                        [
+                            'amount'    => $checkout_price,
+                            'currency'  => $order->currency,
+                            'billing_descriptor' => $order->billing_descriptor
                         ]
                     );
                 }
@@ -711,7 +718,7 @@ class PaymentService
             'order_currency'    => $order->currency,
             'order_number'      => $order->number,
             'order_id'          => $order->getIdAttribute(),
-            'id'                => $payment['hash'] ?? $order_main_product['txn_hash'],
+            'id'                => $order_main_product['txn_hash'],
             'status'            => $order_main_txn['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
             'upsells'           => $upsells
         ];
