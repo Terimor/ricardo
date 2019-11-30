@@ -25,6 +25,8 @@ class MintService
     const STATUS_3DS    = 'PENDING';
     const STATUS_FAIL   = 'FAILED';
 
+    const ENCRYPT_METHOD = 'AES-256-CBC';
+
     /**
      * @var string
      */
@@ -56,6 +58,40 @@ class MintService
         $this->mid = $mid;
         $this->api_key = $key;
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'prod' : 'test') . '.mint-e.com/process/v1.0/';
+    }
+
+    /**
+     * Encrypts card data
+     * @param  string $plaintext
+     * @param  string $password
+     * @return string
+     */
+    public static function encrypt($plaintext, $password) {
+        $key = hash('sha256', $password, true);
+        $iv = openssl_random_pseudo_bytes(16);
+
+        $ciphertext = openssl_encrypt($plaintext, self::ENCRYPT_METHOD, $key, OPENSSL_RAW_DATA, $iv);
+        $hash = hash_hmac('sha256', $ciphertext . $iv, $key, true);
+
+        return base64_encode($iv . $hash . $ciphertext);
+    }
+
+    /**
+     * Decrypts card data
+     * @param  string $cipherblock
+     * @param  string $password
+     * @return string
+     */
+    public static function decrypt($cipherblock, $password) {
+        $iv_hash_ciphertext = base64_decode($cipherblock);
+        $iv = substr($iv_hash_ciphertext, 0, 16);
+        $hash = substr($iv_hash_ciphertext, 16, 32);
+        $ciphertext = substr($iv_hash_ciphertext, 48);
+        $key = hash('sha256', $password, true);
+
+        if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
+
+        return openssl_decrypt($ciphertext, self::ENCRYPT_METHOD, $key, OPENSSL_RAW_DATA, $iv);
     }
 
     /**
@@ -94,13 +130,30 @@ class MintService
 
     /**
      * Provides payment by token
-     * @param  array   $card
-     * @param  array   $details ['currency'=>string,'amount'=>float,'descriptor'=>string]
+     * @param  string  $token
+     * @param  array   $contact
+     * @param  array   $details
+     * [
+     *  'currency'=>string,
+     *  'amount'=>float,
+     *  'order_id'=>string,
+     *  'order_number'=>string,
+     *  'user_agent'=>string,
+     *  'descriptor'=>string
+     * ]
      * @return array
      */
-    public function payByToken(string $token, array $details): array
+    public function payByToken(string $token, array $contact, array $details): array
     {
-        return $this->recurring($token, $details);
+        $cardjs = self::decrypt($token, $details['order_id']);
+
+        $payment = $this->authorize(json_decode($cardjs, true), $contact, $details);
+
+        if ($payment['status'] === Txn::STATUS_CAPTURED) {
+            return $this->capture($payment);
+        }
+
+        return $payment;
     }
 
     /**
@@ -135,7 +188,7 @@ class MintService
             'hash'              => "fail_" . UtilsService::randomString(16),
             'provider_data'     => null,
             'errors'            => null,
-            'token'             => null,
+            'token'             => null
         ];
 
         try {
@@ -168,7 +221,6 @@ class MintService
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
                     'nonce'     => $nonce,
-                    // 'recurring' => true,
                     'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
                     'cvv'       => $card['cvv'],
                     'expiry'    => $card['month'] . $card['year'],
@@ -190,11 +242,12 @@ class MintService
 
             if ($body_decoded['status'] === self::STATUS_OK) {
                 $result['hash']     = $body_decoded['transid'];
-                $result['token']    = $body_decoded['token'];
                 $result['status']   = Txn::STATUS_CAPTURED;
+                $payment['token']   = self::encrypt(json_encode($card), $details['order_id']);
             } elseif ($body_decoded['status'] === self::STATUS_3DS) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_AUTHORIZED;
+                $payment['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
                 $result['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];

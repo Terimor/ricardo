@@ -642,13 +642,32 @@ class PaymentService
                     $mint = new MintService();
                     $payment = $mint->payByToken(
                         $card_token,
-                        ['amount' => $checkout_price, 'currency' => $order->currency, 'descriptor' => $order->billing_descriptor]
+                        [
+                            'street'            => $order->shipping_street,
+                            'city'              => $order->shipping_city,
+                            'country'           => $order->shipping_country,
+                            'state'             => $order->shipping_state,
+                            'zip'               => $order->shipping_zip,
+                            'email'             => $order->customer_email,
+                            'first_name'        => $order->customer_first_name,
+                            'last_name'         => $order->customer_last_name,
+                            'phone'             => $order->customer_phone,
+                            'ip'                => $req->ip()
+                        ],
+                        [
+                            'amount'    => $checkout_price,
+                            'currency'  => $order->currency,
+                            'order_id'  => $order->getIdAttribute(),
+                            'descriptor'    => $order->billing_descriptor,
+                            'order_number'  => $order->number,
+                            'user_agent'    => $user_agent
+                        ]
                     );
                 }
 
                 // update order
                 $upsells = array_map(function($v) use ($payment) {
-                    if ($payment['status'] !== Txn::STATUS_FAILED) {
+                    if (in_array($payment['status'], [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED])) {
                         $v['status'] = self::STATUS_OK;
                     } else {
                         $v['status'] = self::STATUS_FAIL;

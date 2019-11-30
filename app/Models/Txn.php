@@ -12,7 +12,7 @@ class Txn extends Model
     const STATUS_AUTHORIZED = 'authorized';
     const STATUS_CAPTURED = 'captured';
     const STATUS_APPROVED = 'approved';
-    const STATUS_FAILED= 'failed';
+    const STATUS_FAILED = 'failed';
 
     protected $collection = 'txn';
 

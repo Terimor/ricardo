@@ -225,6 +225,7 @@ class PaymentsController extends Controller
             $query['3ds'] = 'success';
         } else {
             $order = $this->paymentService->rejectTxn($reply['txn']);
+            PaymentService::getCardToken($order->number); // remove token
             PaymentService::cacheErrors(array_merge($reply['txn'], ['number' => $order->number]));
             $query['3ds'] = 'failure';
         }
@@ -261,4 +262,5 @@ class PaymentsController extends Controller
 
         return $result;
     }
+
 }
