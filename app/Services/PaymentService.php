@@ -492,8 +492,6 @@ class PaymentService
         // cache token
         self::setCardToken($order->number, $payment['token'] ?? null);
 
-        logger()->info('Card token -> ' . $payment['token'] ?? 'none');
-
         // add Txn, update OdinOrder
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
@@ -1155,6 +1153,8 @@ class PaymentService
 
         // cache token
         self::setCardToken($order->number, $payment['token'] ?? null);
+
+        logger()->info('Card token -> ' . $payment['token'] ?? 'none');
 
         // add Txn, update OdinOrder
         $order_product['txn_hash'] = $payment['hash'];
