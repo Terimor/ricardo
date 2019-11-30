@@ -147,7 +147,7 @@ class MintService
     {
         $cardjs = self::decrypt($token, $details['order_id']);
 
-        $payment = $this->authorize(json_decode($cardjs, true), $contact, $details);
+        $payment = $this->authorize(json_decode($cardjs, true), $contact, array_merge($details, ['3ds' => false]));
 
         if ($payment['status'] === Txn::STATUS_CAPTURED) {
             return $this->capture($payment);
