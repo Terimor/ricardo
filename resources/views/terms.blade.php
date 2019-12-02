@@ -11,7 +11,7 @@
 <div class="static">
     <div class="container">
         <div class="static__wrapper">
-            {!! t('terms.content', ['websitename' => $product->product_name]) !!}
+            {!! t('terms.content', ['websitename' => $website_name]) !!}
             @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>

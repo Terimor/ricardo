@@ -23,7 +23,7 @@ class Domain extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'sold_products', 'is_multiproduct'
+        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'sold_products', 'is_multiproduct', 'is_catch_all'
     ];
 
     /**
@@ -131,4 +131,23 @@ class Domain extends Model
         
         return $logo;
     }
+    
+    /**
+     * Get website name
+     * @param $product
+     * @param $copId
+     * @param $sku
+     * return string $websiteName
+     */
+    public function getWebsiteName($product, ?string $copId = '', ?string $sku = ''): string
+    {
+        $websiteName = '';
+        if ($copId || $sku) {
+            $websiteName = $product->product_name;            
+        } else {
+            $websiteName = $this->getDisplayedName();
+        }
+        
+        return $websiteName;
+    }    
 }

@@ -144,7 +144,8 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('privacy_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view('privacy', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
+        $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
+        return view('privacy', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name'));
     }
 
     /**
@@ -160,7 +161,8 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('terms_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view('terms', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
+        $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
+        return view('terms', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name'));
     }
 
      /**

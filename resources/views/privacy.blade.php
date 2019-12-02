@@ -11,7 +11,7 @@
 <div class="static">
     <div class="container">
         <div class="static__wrapper">
-            {!! t('privacy.content') !!}
+            {!! t('privacy.content', ['websitename' => $website_name]) !!}
             @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>
