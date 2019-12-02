@@ -107,53 +107,24 @@
         :form="paymentForm"
         :$v="$v" />
 
-      <text-field
-          :validation="$v.form.cardNumber"
-          :rest="{
-            pattern: '\\d*',
-            type: 'tel',
-            placeholder: '**** **** **** ****',
-            autocomplete:
-              'cc-number',
-              'data-bluesnap': 'encryptedCreditCard'
-          }"
-          :validationMessage="textCardNumberRequired"
-          class="card-number"
-          theme="variant-1"
-          :label="textCardNumber"
-          v-model="paymentForm.cardNumber"
-          :prefix="`<img src='${$parent.paymentMethodURL}' />`"
-          :postfix="`<i class='fa fa-lock'></i>`"
-      />
-      <div class="card-date input-container" :class="{ invalid: $v.form && $v.form.month && $v.form.month.$dirty && $v.form.year && $v.form.year.$dirty && ($v.form.month.$invalid || $v.form.year.$invalid || isCardExpired) }">
-        <span class="label">{{textCardValidUntil}}</span>
-        <Month
-          :$v="$v.form.month"
+      <CardNumber
+        :$v="$v.form.cardNumber"
+        :placeholder="true"
+        placeholderText="**** **** **** ****"
+        :paymentMethodURL="paymentMethodURL"
+        @setPaymentMethodByCardNumber="value => $emit('setPaymentMethodByCardNumber', value)"
+        :form="paymentForm"
+        name="cardNumber" />
+      <div class="card-date-cvv">
+        <CardDate
+          :$v="$v.form.cardDate"
           :form="paymentForm"
-          name="month" />
-        <Year
-          :$v="$v.form.year"
+          name="cardDate" />
+        <CVV
+          :$v="$v.form.cvv"
           :form="paymentForm"
-          name="year" />
-        <span
-          class="error"
-          v-if="paymentForm.month && paymentForm.year && isCardExpired"
-          v-html="textCardExpired"></span>
+          name="cvv" />
       </div>
-      <text-field
-          @click-postfix="openCVVModal"
-          :validation="$v.form.cvv"
-          :validationMessage="textCardCVVRequired"
-          class="cvv-field"
-          theme="variant-1"
-          :label="textCardCVV"
-          :rest="{
-            autocomplete: 'cc-csc',
-            'data-bluesnap': 'encryptedCvv'
-          }"
-          v-model="paymentForm.cvv"
-          postfix="<i class='fa fa-question-circle'></i>"
-      />
       <DocumentType
         :extraFields="extraFields"
         :form="paymentForm"
@@ -162,30 +133,19 @@
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
-      <el-dialog
-          @click="isOpenCVVModal = false"
-          class="cvv-popup"
-          :title="textCVVPopupTitle"
-          :visible.sync="isOpenCVVModal">
-        <div class="cvv-popup__content">
-          <p>{{ textCVVPopupLine1 }}</p>
-          <div><img :src="$root.cdnUrl + '/assets/images/cvv_popup.jpg'" alt=""></div>
-          <p>{{ textCVVPopupLine2 }}</p>
-        </div>
-      </el-dialog>
     </form>
 
   </div>
 </template>
 <script>
-  import * as dateFns from 'date-fns';
 	import PayMethodItem from "./PayMethodItem";
   import PaymentMethod from './extra-fields/PaymentMethod';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
-  import Month from './common-fields/Month';
-  import Year from './common-fields/Year';
+  import CardNumber from './common-fields/CardNumber';
+  import CardDate from './common-fields/CardDate';
+  import CVV from './common-fields/CVV';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
@@ -205,21 +165,26 @@
       ZipCode,
       Country,
       CardHolder,
-      Month,
-      Year,
+      CardNumber,
+      CardDate,
+      CVV,
       State,
       District,
       CardType,
       DocumentType,
       DocumentNumber,
     },
-		props: ['$v', 'paymentForm', 'extraFields'],
+		props: [
+      '$v',
+      'paymentForm',
+      'extraFields',
+      'paymentMethodURL',
+    ],
 		data() {
 			return {
         isLoading: {
           address: false,
         },
-				isOpenCVVModal: false,
 			}
 		},
 		computed: {
@@ -246,10 +211,6 @@
         }));
       },
 
-      isCardExpired() {
-        return !dateFns.isFuture(new Date(this.paymentForm.year, this.paymentForm.month));
-      },
-
       textState() {
         return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
       },
@@ -264,59 +225,23 @@
       textCity: () => t('checkout.payment_form.city'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
       textZipCodeRequired: () => t('checkout.payment_form.zipcode.required'),
-      textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
-      textCardNumber: () => t('checkout.payment_form.card_number'),
-      textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
-      textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),
-      textCardExpired: () => t('checkout.payment_form.card_expired'),
-      textCardCVV: () => t('checkout.payment_form.card_cvv'),
-      textCardCVVRequired: () => t('checkout.payment_form.card_cvv.required'),
-      textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
-      textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
-      textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
 		},
-		watch: {
-			'paymentForm.cardNumber'(newVal, oldValue) {
-        newVal = newVal || '';
 
-        if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
-          this.paymentForm.cardNumber = oldValue;
-        }
-
-        this.$parent.setPaymentMethodByCardNumber(newVal);
-			},
-      'paymentForm.cvv' (newVal, oldValue) {
-          if(this.paymentForm.cvv) {
-              if(newVal.match(/^[0-9]{0,4}$/g)) {
-                  this.paymentForm.cvv = newVal;
-              } else {
-                  this.paymentForm.cvv = oldValue;
-              }
-          }
-      }
-		},
 		methods: {
       setBrazilAddress(res) {
         this.paymentForm.streetAndNumber = res.address;
         this.paymentForm.city = res.city;
         this.paymentForm.state = res.state;
       },
-			openCVVModal () {
-				const node = document.querySelector('.cvv-popup .el-dialog');
-				const listener = () => {
-					this.isOpenCVVModal = false
-				};
-				node.removeEventListener('click', listener);
-				node.addEventListener('click', listener);
-
-				this.isOpenCVVModal = true
-			}
 		}
 	}
 </script>
+
 <style lang="scss">
+
   .payment-form-smc7 {
+
     .card-types {
       display: flex;
       width: 100%;
@@ -326,65 +251,29 @@
         margin: 5px 12px;
       }
     }
-    .cvv-popup {
-      .el-dialog {
-        margin-top: 10vh !important;
-        max-width: 600px;
-      }
-      .el-dialog__header {
-        display: flex;
-        justify-content: center;
-      }
-      .el-dialog__title {
-        text-align: center;
-        font-size: 20px;
-        font-weight: 700;
-      }
 
-      &__content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        p {
-          font-family: 'Noto Sans', sans-serif;
-          font-size: 17px;
-          width: 100%;
-        }
-
-        img {
-          max-width: 300px;
-          height: auto;
-          margin: 0 auto;
-        }
-      }
-    }
-
-    .prefix {
-      & > img {
-        height: 22px;
-        width: auto;
-      }
-
-      input {
-        &:after {
-          content: '\f023';
-          display: block;
-          color: #555;
-          font-family: FontAwesome !important;
-          position: absolute;
-          top: 8px;
-          right: 15px;
-        }
-      }
-    }
     .card-icons {
       display: flex;
     }
+
     .fa.fa-question-circle {
       cursor: pointer;
     }
-  }
 
+    .card-date-cvv {
+      display: flex;
+      width: 100%;
+    }
+
+    #card-date-field {
+      padding-right: 30px;
+      width: 70%;
+    }
+
+    #cvv-field {
+      width: 30%;
+    }
+
+  }
 
 </style>

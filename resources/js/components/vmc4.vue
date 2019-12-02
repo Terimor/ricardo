@@ -24,7 +24,9 @@
                     :vmc4Form="form"
                     :dealList="dealList"
                     :variantList="variantList"
-                    :extraFields="extraFields">
+                    :extraFields="extraFields"
+                    :paymentMethodURL="paymentMethodURL"
+                    @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber">
                     <template slot="warranty">
                       <transition name="el-zoom-in-top">
                         <button v-show="warrantyPriceText" id="warranty-field-button">

@@ -340,6 +340,8 @@
                         :quantity-of-installments="countOfInstallments"
                         :warranty-price-text="warrantyPriceText"
                         :extra-fields="extraFields"
+                        :payment-method-u-r-l="paymentMethodURL"
+                        @set-payment-method-by-cardnumber="setPaymentMethodByCardNumber"
                     />
                 </div>
             </div>
