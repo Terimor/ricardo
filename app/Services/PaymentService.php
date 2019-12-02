@@ -333,7 +333,7 @@ class PaymentService
                 ['country' => $contact['country'], 'method' => $method, 'card' => substr_replace($card['number'], '********', 4, 8)]
             );
             throw new ProviderNotFoundException('Provider not found');
-        } elseif ($provider === PaymentProviders::CHECKOUTCOM) {
+        } elseif (in_array($provider, [PaymentProviders::CHECKOUTCOM, PaymentProviders::MINT])) {
             // refuse payment if  there is fraud
             self::fraudCheck($ipqs); // throwable
         }
@@ -465,6 +465,17 @@ class PaymentService
                     'billing_descriptor'   => $order->billing_descriptor
                 ]
             );
+        } else if ($provider === PaymentProviders::MINT) {
+            $mint = new MintService();
+            $payment = $mint->payByCard($card, $contact, [
+                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
+                'amount'    => $order->total_price,
+                'currency'  => $order->currency,
+                'order_id'  => $order->getIdAttribute(),
+                'order_number'  => $order->number,
+                'user_agent'    => $user_agent,
+                'descriptor'    => $order->billing_descriptor
+            ]);
         }
 
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);

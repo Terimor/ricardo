@@ -29,7 +29,7 @@ class PaymentProviders
         ],
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'in_prod'   => true,
             'extra_fields'  => [
@@ -522,34 +522,129 @@ class PaymentProviders
         self::MINT  => [
             'name'      => 'Mint-E',
             'is_active' => true,
-            'is_main'   => false,
+            'is_main'   => true,
             'in_prod'   => false,
+            'extra_fields'  => [
+                'ca' => [
+                    'state' => [
+                        'type' => 'dropdown',
+                        'default' => 'ON',
+                        'items' => [
+                            ['value' => 'AB', 'label' => 'Alberta'],
+                            ['value' => 'BC', 'label' => 'British Columbia'],
+                            ['value' => 'MB', 'label' => 'Manitoba'],
+                            ['value' => 'NB', 'label' => 'New Brunswick'],
+                            ['value' => 'NL', 'label' => 'Newfoundland and Labrador'],
+                            ['value' => 'NS', 'label' => 'Nova Scotia'],
+                            ['value' => 'NT', 'label' => 'Northwest Territories'],
+                            ['value' => 'NU', 'label' => 'Nunavut'],
+                            ['value' => 'ON', 'label' => 'Ontario'],
+                            ['value' => 'PE', 'label' => 'Prince Edward Island'],
+                            ['value' => 'QC', 'label' => 'Quebec'],
+                            ['value' => 'SK', 'label' => 'Saskatchewan'],
+                            ['value' => 'YT', 'label' => 'Yukon Territory']
+                        ]
+                    ]
+                ],
+                'us' => [
+                    'state' => [
+                        'type'  => 'dropdown',
+                        'items' => [
+                            ['value' => 'AE', 'label' => 'Armed Forces (AE)'],
+                            ['value' => 'AK', 'label' => 'Alaska'],
+                            ['value' => 'AL', 'label' => 'Alabama'],
+                            ['value' => 'AP', 'label' => 'Armed Forces Pacific'],
+                            ['value' => 'AR', 'label' => 'Arkansas'],
+                            ['value' => 'AS', 'label' => 'American Samoa'],
+                            ['value' => 'AZ', 'label' => 'Arizona'],
+                            ['value' => 'CA', 'label' => 'California'],
+                            ['value' => 'CO', 'label' => 'Colorado'],
+                            ['value' => 'CT', 'label' => 'Connecticut'],
+                            ['value' => 'DC', 'label' => 'District Of Columbia'],
+                            ['value' => 'DE', 'label' => 'Delaware'],
+                            ['value' => 'FL', 'label' => 'Florida'],
+                            ['value' => 'GA', 'label' => 'Georgia'],
+                            ['value' => 'GU', 'label' => 'Guam'],
+                            ['value' => 'HI', 'label' => 'Hawaii'],
+                            ['value' => 'IA', 'label' => 'Iowa'],
+                            ['value' => 'ID', 'label' => 'Idaho'],
+                            ['value' => 'IL', 'label' => 'Illinois'],
+                            ['value' => 'IN', 'label' => 'Indiana'],
+                            ['value' => 'KS', 'label' => 'Kansas'],
+                            ['value' => 'KY', 'label' => 'Kentucky'],
+                            ['value' => 'LA', 'label' => 'Louisiana'],
+                            ['value' => 'MA', 'label' => 'Massachusetts'],
+                            ['value' => 'MD', 'label' => 'Maryland'],
+                            ['value' => 'ME', 'label' => 'Maine'],
+                            ['value' => 'MI', 'label' => 'Michigan'],
+                            ['value' => 'MN', 'label' => 'Minnesota'],
+                            ['value' => 'MO', 'label' => 'Missouri'],
+                            ['value' => 'MS', 'label' => 'Mississippi'],
+                            ['value' => 'MT', 'label' => 'Montana'],
+                            ['value' => 'NC', 'label' => 'North Carolina'],
+                            ['value' => 'ND', 'label' => 'North Dakota'],
+                            ['value' => 'NE', 'label' => 'Nebraska'],
+                            ['value' => 'NH', 'label' => 'New Hampshire'],
+                            ['value' => 'NJ', 'label' => 'New Jersey'],
+                            ['value' => 'NM', 'label' => 'New Mexico'],
+                            ['value' => 'NV', 'label' => 'Nevada'],
+                            ['value' => 'NY', 'label' => 'New York'],
+                            ['value' => 'OH', 'label' => 'Ohio'],
+                            ['value' => 'OK', 'label' => 'Oklahoma'],
+                            ['value' => 'OR', 'label' => 'Oregon'],
+                            ['value' => 'PA', 'label' => 'Pennsylvania'],
+                            ['value' => 'PR', 'label' => 'Puerto Rico'],
+                            ['value' => 'RI', 'label' => 'Rhode Island'],
+                            ['value' => 'SC', 'label' => 'South Carolina'],
+                            ['value' => 'SD', 'label' => 'South Dakota'],
+                            ['value' => 'TN', 'label' => 'Tennessee'],
+                            ['value' => 'TX', 'label' => 'Texas'],
+                            ['value' => 'UT', 'label' => 'Utah'],
+                            ['value' => 'VA', 'label' => 'Virgina'],
+                            ['value' => 'VI', 'label' => 'Virgin Islands'],
+                            ['value' => 'VT', 'label' => 'Vermont'],
+                            ['value' => 'WA', 'label' => 'Washington'],
+                            ['value' => 'WI', 'label' => 'Wisconsin'],
+                            ['value' => 'WV', 'label' => 'West Virginia'],
+                            ['value' => 'WY', 'label' => 'Wyoming']
+                        ],
+                        'default' => 'DC'
+                    ]
+                ]
+            ],
             'methods'   => [
                 PaymentMethods::CREDITCARD => [
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                     '-3ds' => ['*'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::VISA => [
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                     '-3ds' => ['*'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::MASTERCARD => [
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                     '-3ds' => ['*'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::AMEX => [
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                     '-3ds' => ['*'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::DISCOVER => [
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                     '-3ds' => ['*'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::DINERSCLUB => [
+                    '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                     '-3ds' => ['*'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::JCB => [
+                    '+3ds' => ['europe', 'gb', 'gy', 'id', 'il', 'is', 'ko', 'kr', 'lk', 'ro', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                     '-3ds' => ['*'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ]
