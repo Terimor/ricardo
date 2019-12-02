@@ -440,7 +440,13 @@ class OdinOrder extends OdinModel
                 }
                 return false;
             })
-            ->merge([$product])->all();
+            ->merge([
+                collect($product)->only([
+                    'sku_code','quantity','price','price_usd','warranty_price',
+                    'warranty_price_usd','is_main','is_paid','is_exported',
+                    'is_plus_one','is_upsells','price_set','txn_hash'
+                ])->all()
+            ])->all();
     }
 
     /**
@@ -527,7 +533,7 @@ class OdinOrder extends OdinModel
         }
         return $isNotFlagged;
     }
-    
+
     /**
      * Returns customers notification data from order
      *
@@ -544,10 +550,10 @@ class OdinOrder extends OdinModel
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
         // Get customers from a current users country and get their cities.
-        $ordersCollection = OdinOrder::getPaidCustomersByCountry($country_code, $limit);        
+        $ordersCollection = OdinOrder::getPaidCustomersByCountry($country_code, $limit);
         if ($ordersCollection) {
-            foreach ($ordersCollection as $order) {                
-                $name = $order->getPublicCustomerName();            
+            foreach ($ordersCollection as $order) {
+                $name = $order->getPublicCustomerName();
                 if (!in_array($name, $recentlyBoughtNames)) {
                     $recentlyBoughtNames[] = $name;
                 }
@@ -558,15 +564,15 @@ class OdinOrder extends OdinModel
                 }
             }
         }
-        
+
         $tempNamesCount = count($recentlyBoughtNames);
         $tempCityCount = count($recentlyBoughtCities);
-       
+
         // get from constants and merge
-        if (count($recentlyBoughtNames) < $limit) {            
+        if (count($recentlyBoughtNames) < $limit) {
             if (isset(CountryCustomers::$list[$country_code]['names']) && is_array(CountryCustomers::$list[$country_code]['names'])) {
                 shuffle(CountryCustomers::$list[$country_code]['names']);
-                
+
                 foreach(CountryCustomers::$list[$country_code]['names'] as $value) {
                     if (!in_array($value, $recentlyBoughtNames)) {
                         $recentlyBoughtNames[] = $value;
@@ -574,13 +580,13 @@ class OdinOrder extends OdinModel
                         if ($tempNamesCount >= $limit) {
                             break;
                         }
-                    }                                                            
-                }                                
+                    }
+                }
             }
-            
+
             if (isset(CountryCustomers::$list[$country_code]['cities']) && is_array(CountryCustomers::$list[$country_code]['cities'])) {
                 shuffle(CountryCustomers::$list[$country_code]['cities']);
-                
+
                 foreach(CountryCustomers::$list[$country_code]['cities'] as $value) {
                     if (!in_array($value, $recentlyBoughtCities)) {
                         $recentlyBoughtCities[] = $value;
@@ -588,17 +594,17 @@ class OdinOrder extends OdinModel
                         if ($tempCityCount >= $limit) {
                             break;
                         }
-                    }                    
-                }                                
+                    }
+                }
             }
         }
-        
-        // if we still have < than limit get it from us        
+
+        // if we still have < than limit get it from us
         if ($tempNamesCount < $limit) {
-            $ordersCollection = OdinOrder::getPaidCustomersByCountry('us', $limit - $tempNamesCount);            
+            $ordersCollection = OdinOrder::getPaidCustomersByCountry('us', $limit - $tempNamesCount);
             if ($ordersCollection) {
                 foreach ($ordersCollection as $order) {
-                    $name = $order->getPublicCustomerName();            
+                    $name = $order->getPublicCustomerName();
                     if (!in_array($name, $recentlyBoughtNames)) {
                         $recentlyBoughtNames[] = $name;
                     }
@@ -617,8 +623,8 @@ class OdinOrder extends OdinModel
         ];
 
         return $recently_bought_data;
-    }    
-    
+    }
+
     /**
      *
      * @param string|null $country_code
@@ -635,7 +641,7 @@ class OdinOrder extends OdinModel
             ->limit($limit)
             ->get();
     }
-    
+
     /**
      * Get public customer name for display
      * @return type
@@ -644,7 +650,7 @@ class OdinOrder extends OdinModel
     {
         return mb_convert_case(mb_strtolower($this->customer_first_name), MB_CASE_TITLE) . ' ' . mb_strtoupper(mb_substr($this->customer_last_name, 0, 1)).'.';
     }
-    
+
     /**
      * Get public city name for display
      * @return type
@@ -652,5 +658,5 @@ class OdinOrder extends OdinModel
     public function getPublicCityName()
     {
         return $this->shipping_city ? mb_convert_case(mb_strtolower($this->shipping_city), MB_CASE_TITLE) : null;
-    }    
+    }
 }
