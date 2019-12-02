@@ -42,8 +42,8 @@
         if (className) document.documentElement.classList.remove(className);
       }
       const currentTime = new Date().getTime();
-      window.blackFridayEnabled = currentTime > new Date(2019, 10, 25).getTime() && currentTime < new Date(2019, 11, 2).getTime();
-      window.christmasEnabled = currentTime > new Date(2019, 11, 2).getTime() && currentTime < new Date(2019, 11, 25).getTime();
+      window.blackFridayEnabled = currentTime > new Date(2019, 10, 25).getTime() && currentTime < new Date(2019, 11, 3).getTime();
+      window.christmasEnabled = currentTime > new Date(2019, 11, 3).getTime() && currentTime < new Date(2019, 11, 25).getTime();
     </script>
 
     @include('components.3ds_redirect')
