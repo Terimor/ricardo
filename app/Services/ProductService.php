@@ -43,7 +43,7 @@ class ProductService
         }
 
         if (!$product) {
-            logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => $host]);
+            logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => $domain]);
             $product = OdinProduct::orderBy('_id', 'desc')->where('skus.is_published', true)->firstOrFail();
         }
 
