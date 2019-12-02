@@ -522,3 +522,42 @@ h3 {
     text-decoration: underline;
   }
 }
+
+.christmas-toolbar {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 0;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  text-align: center;
+  transition: height .3s ease;
+  background-color: #87050C;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  z-index: 1500;
+
+  @media screen and ($s-down) {
+    & {
+      font-size: 15px;
+    }
+  }
+
+  &.hidden {
+    visibility: hidden;
+    transition: none!important;
+  }
+
+  > .inside {
+    margin: 16px 24px;
+  }
+
+  a {
+    color: #fff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

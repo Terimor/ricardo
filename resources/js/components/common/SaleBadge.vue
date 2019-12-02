@@ -3,23 +3,24 @@
   <div
     class="sale-badge dynamic-sale-badge">
 
-    <template
-      v-if="!isBlackFriday">
+    <img
+      v-if="isBlackFriday"
+      class="black-friday"
+      :src="$root.cdnUrl + '/assets/images/BF_badge_V2.png'" />
 
-      <div
-        class="dynamic-sale-badge__background"></div>
+    <img
+      v-else-if="isChristmas"
+      class="christmas"
+      :src="$root.cdnUrl + '/assets/images/badge_christmas_V9.png'" />
+
+    <template v-else>
+      <div class="dynamic-sale-badge__background"></div>
 
       <div
         v-html="textSaleBadge"
         :style="styleFontSize"
         class="dynamic-sale-badge__container"></div>
-
     </template>
-
-    <img
-      v-else
-      class="black-friday"
-      :src="$root.cdnUrl + '/assets/images/BF_badge_V2.png'" />
 
   </div>
 
@@ -46,6 +47,10 @@
 
       isBlackFriday() {
         return !!window.blackFridayEnabled;
+      },
+
+      isChristmas() {
+        return !!window.christmasEnabled;
       },
 
       fontSizes() {
@@ -151,6 +156,12 @@
   }
 
   .black-friday {
+    margin: -5px 0 0 -5px;
+    max-width: 120%;
+    height: auto;
+  }
+
+  .christmas {
     margin: -5px 0 0 -5px;
     max-width: 120%;
     height: auto;

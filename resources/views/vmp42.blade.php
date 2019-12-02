@@ -42,6 +42,7 @@
             <notice></notice>
 
             @include('components.black_friday')
+            @include('components.christmas')
 
             <!-- promo__jumbotron -->
             <div class="fade-wrapper" :class="{'fade-wrapper_empty': !isShownJumbotron}">

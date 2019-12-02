@@ -168,6 +168,7 @@
   import * as extraFields from '../mixins/extraFields';
   import queryToComponent from '../mixins/queryToComponent'
   import blackFriday from '../mixins/blackFriday';
+  import christmas from '../mixins/christmas';
   import { t, timage } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
   import ProductItem from './common/ProductItem';
@@ -194,6 +195,7 @@
       extraFields.tplMixin,
       purchasMixin,
       blackFriday,
+      christmas,
     ],
     components: {
       SaleBadge,
@@ -422,6 +424,10 @@
 
             if (window.blackFridayEnabled) {
               position -= this.$root.$refs.blackFriday.clientHeight;
+            }
+
+            if (window.christmasEnabled) {
+              position -= this.$root.$refs.christmas.clientHeight;
             }
 
             scrollTo({

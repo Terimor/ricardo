@@ -230,6 +230,7 @@
   import queryToComponent from '../mixins/queryToComponent';
   import scrollToError from '../mixins/formScrollToError';
   import blackFriday from '../mixins/blackFriday';
+  import christmas from '../mixins/christmas';
   import {fade} from "../utils/common";
   import { t, timage } from '../utils/i18n';
   import purchasMixin from '../mixins/purchas';
@@ -261,6 +262,7 @@
       purchasMixin,
       scrollToError,
       blackFriday,
+      christmas,
     ],
     props: ['showPreloader', 'skusList'],
     data() {

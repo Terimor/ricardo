@@ -41,7 +41,9 @@
         if (this.media != 'all') this.media = 'all';
         if (className) document.documentElement.classList.remove(className);
       }
-      window.blackFridayEnabled = new Date(2019, 11, 3).getTime() > new Date().getTime();
+      const currentTime = new Date().getTime();
+      window.blackFridayEnabled = currentTime > new Date(2019, 10, 25).getTime() && currentTime < new Date(2019, 11, 2).getTime();
+      window.christmasEnabled = currentTime > new Date(2019, 11, 2).getTime() && currentTime < new Date(2019, 11, 25).getTime();
     </script>
 
     @include('components.3ds_redirect')
@@ -129,6 +131,7 @@
     
     <div id="app" class="hidden">
         @include('components.black_friday')
+        @include('components.christmas')
 
         @if (Request::is('splash'))
             @include('layouts.header_splash', ['product' => $product])
