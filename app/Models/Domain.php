@@ -44,8 +44,12 @@ class Domain extends Model
      {
          $host = str_replace('www.', '', request()->getHost());
          $name = $name ?? $host;
-
-         return Domain::where('name', $name)->first();
+         $domain = Domain::where('name', $name)->first();
+         if (!$domain) {
+             logger()->error("Can't find a domain", ['host' => request()->getHost()]);
+             $domain = Domain::first();
+         }                     
+         return $domain;
      }
      
     /**
