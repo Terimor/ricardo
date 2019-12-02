@@ -413,13 +413,23 @@
       activateForm() {
         this.isFormShown = true;
 
-        this.$nextTick(() => {
+        setTimeout(() => {
           const element = document.querySelector('.payment-form');
 
-          if (element && element.scrollIntoView) {
-            element.scrollIntoView();
+          if (element) {
+            let position = element.getBoundingClientRect().top;
+            position += document.documentElement.scrollTop;
+
+            if (window.blackFridayEnabled) {
+              position -= this.$root.$refs.blackFriday.clientHeight;
+            }
+
+            scrollTo({
+              top: position,
+              behavior: 'smooth',
+            });
           }
-        })
+        }, 100);
       },
       paypalSubmit() {
         if (this.$v.form.deal.$invalid) {
