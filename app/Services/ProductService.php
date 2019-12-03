@@ -17,8 +17,7 @@ use Cache;
  */
 class ProductService
 {
-    public static $amountValues = [10, 15, 20];
-    const SHOP_PER_PAGE = 12;
+    public static $amountValues = [10, 15, 20];    
     
     /**
      * @param Request $request
@@ -423,7 +422,7 @@ class ProductService
      * @param type $page
      * @return type
      */
-    public function getAllSoldDomainsProducts(?int $page = 1): array
+    public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit 12): array
     {
         $productsLocaleSorted = Cache::get('AllSoldProducts');
         
@@ -471,8 +470,7 @@ class ProductService
             Cache::put('AllSoldProducts', $productsLocaleSorted);
         }
         
-        // calculate data for pagination
-        $limit = static::SHOP_PER_PAGE;
+        // calculate data for pagination        
         $totalCount = count($productsLocaleSorted);
         $totalPages = ceil($totalCount / $limit);
         $page = max($page, 1); // get 1 page when page <= 0
