@@ -29,7 +29,7 @@ class PaymentProviders
         ],
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'in_prod'   => true,
             'extra_fields'  => [
@@ -521,7 +521,7 @@ class PaymentProviders
         ],
         self::MINT  => [
             'name'      => 'Mint-E',
-            'is_active' => false,
+            'is_active' => true,
             'is_main'   => true,
             'in_prod'   => false,
             'extra_fields'  => [

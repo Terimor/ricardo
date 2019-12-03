@@ -35,8 +35,8 @@ class PaymentService
     const CARD_CREDIT = 'credit';
     const CARD_DEBIT  = 'debit';
 
-    const FRAUD_CHANCE_3DS_LIMIT       = 60;
-    const FRAUD_CHANCE_REFUSE_LIMIT    = 84;
+    const FRAUD_CHANCE_3DS_LIMIT       = 85;
+    const FRAUD_CHANCE_REFUSE_LIMIT    = 99;
     const FRAUD_CHANCE_MAX             = 100;
 
     const THROW_IS_IP_ABUSED    = true;
@@ -445,7 +445,7 @@ class PaymentService
                 'currency'  => $order->currency,
                 'id'        => $order->getIdAttribute(),
                 'number'    => $order->number,
-                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
+                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $provider, (array)$ipqs),
                 'description'   => $product->product_name,
                 // TODO: remove city hardcode
                 'billing_descriptor'   => ['name' => $order->billing_descriptor, 'city' => 'Msida']
@@ -468,7 +468,7 @@ class PaymentService
         } else if ($provider === PaymentProviders::MINT) {
             $mint = new MintService();
             $payment = $mint->payByCard($card, $contact, [
-                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
+                '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $provider, (array)$ipqs),
                 'amount'    => $order->total_price,
                 'currency'  => $order->currency,
                 'order_id'  => $order->getIdAttribute(),
@@ -1027,15 +1027,16 @@ class PaymentService
 
     /**
      * Checks if 3ds is available
-     * @param  string $card_type
+     * @param  string $method
      * @param  string $country
+     * @param  string $prv default=minte
      * @param  array  $ipqs
-     * @return object
+     * @return bool
      */
-    private static function checkIs3dsNeeded(string $card_type, string $country, array $ipqs = []): bool
+    private static function checkIs3dsNeeded(string $method, string $country, string $prv = PaymentProviders::MINT, array $ipqs = []): bool
     {
         $result = true;
-        $setting = PaymentProviders::$list[PaymentProviders::CHECKOUTCOM]['methods'][$card_type] ?? [];
+        $setting = PaymentProviders::$list[$prv]['methods'][$method] ?? [];
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
 
         if ($fraud_chance < PaymentService::FRAUD_CHANCE_3DS_LIMIT) {
@@ -1152,7 +1153,7 @@ class PaymentService
         $payment = [];
         $mint = new MintService();
         $payment = $mint->payByCard($card, $contact, [
-            '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], (array)$ipqs),
+            '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $provider, (array)$ipqs),
             'amount'    => $order->total_price,
             'currency'  => $order->currency,
             'order_id'  => $order->getIdAttribute(),
