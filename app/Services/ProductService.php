@@ -397,7 +397,7 @@ class ProductService
                 'quantity_image' => $sku['quantity_image'],
             ];
         }
-
+        
         $prices = [];
         $pricesOld = $product->prices;
 
@@ -420,9 +420,8 @@ class ProductService
         $prices['exchange_rate'] = $pricesOld['exchange_rate'];
         $lp->prices = $prices;
 
-
         $lp->skus = $skus;
-        $lp->image = $product->image;
+        $lp->image = $images[$product->image] ?? null;
 
         return $lp;
     }

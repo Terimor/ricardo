@@ -93,7 +93,7 @@ class SiteController extends Controller
             $pagination = $products;
             $products = $products['products'];
             unset($pagination['products']);
-        }
+        }        
         return view('minishop/pages/home', compact('products', 'page_title', 'website_name', 'cdn_url', 'pagination'));
     }
 
