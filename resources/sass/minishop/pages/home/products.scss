@@ -23,7 +23,7 @@
 
       p {
         font-size: 25px;
-        color: #d7440a;
+        color: $orange;
         padding: 15px 0;
         position: relative;
         margin-bottom: 0;
@@ -35,7 +35,7 @@
     }
 
     .add-to-cart {
-      background: #d7440a;
+      background: $orange;
       color: #fff;
       padding: 3px 0;
       text-align: center;
@@ -64,10 +64,14 @@
       }
 
       i {
-        color: #d7440a;
+        color: $orange;
         padding-right: 10px;
       }
     }
+
+  }
+
+  .pager {
 
   }
 

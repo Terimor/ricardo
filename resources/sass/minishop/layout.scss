@@ -1,3 +1,4 @@
+@import 'constants';
 @import 'regions/header';
 @import 'regions/content';
 @import 'regions/footer';
@@ -52,11 +53,11 @@ button:active {
 }
 
 .btn-cta, .btn-default {
-  background: #d7440a;
-  background: -moz-linear-gradient(top, #d7440a 0%, #f4672f 50%, #d7440a 100%);
-  background: -webkit-linear-gradient(top, #d7440a 0%,#f4672f 50%,#d7440a 100%);
-  background: linear-gradient(to bottom, #d7440a 0%,#f4672f 50%,#d7440a 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d7440a', endColorstr='#d7440a',GradientType=0 );
+  background: $orange;
+  background: -moz-linear-gradient(top, $orange 0%, #f4672f 50%, $orange 100%);
+  background: -webkit-linear-gradient(top, $orange 0%, #f4672f 50%, $orange 100%);
+  background: linear-gradient(to bottom, $orange 0%, #f4672f 50%, $orange 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$orange', endColorstr='$orange',GradientType=0 );
   color: #fff;
   padding: 20px 100px;
   border-radius: 3px;
