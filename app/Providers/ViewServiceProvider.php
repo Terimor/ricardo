@@ -85,8 +85,7 @@ class ViewServiceProvider extends ServiceProvider
     public static function miniShopBoot()
     {        
         // Layout
-        View::composer('minishop.layout', function($view) {
-            (new I18nService())->loadPhrases('minishop_page');
+        View::composer('minishop.layout', function($view) {            
             $settings = Setting::getValue(['sentry_dsn', 'freshchat_token']);
 
             $lang = app()->getLocale();
