@@ -339,7 +339,7 @@ class PaymentService
 
         if (empty($order)) {
             // check currency, if it's not supported switch to default currency
-            $product->currency = self::checkCurrency($contact['country'], CurrencyService::getCurrency(), $provider);
+            $product->currency = self::checkCurrency($contact['country'], CurrencyService::getCurrency()->code, $provider);
 
             $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 

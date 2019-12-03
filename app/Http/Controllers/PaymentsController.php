@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\BluesnapService;
+use App\Services\CurrencyService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
 use App\Services\MintService;
@@ -14,6 +15,7 @@ use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\GetPaymentMethodsByCountryRequest;
 use App\Models\Txn;
+use App\Constants\PaymentProviders;
 use Illuminate\Http\Request;
 
 /*use com\checkout;
@@ -238,7 +240,6 @@ class PaymentsController extends Controller
         if (\App::environment() === 'production') {
             throw new AuthException('Unauthorized');
         }
-        return MintService::getCurrencyByCountry($req->input('address.country'), $req->get('cur'));
         $reply = $this->paymentService->createMinteOrder($req);
 
         $result = [
