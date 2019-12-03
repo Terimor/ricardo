@@ -8,15 +8,45 @@ const searchParams = new URL(location).searchParams;
 const tpl = searchParams.get('tpl') || 'emc1';
 
 
-export function setEmailValidationRule(rules, name) {
-  rules[name] = {
+export function getDealRules() {
+  return {
+    required,
+  };
+}
+
+export function getVariantRules() {
+  return {
+    required,
+  };
+}
+
+export function getInstallmentsRules() {
+  return {
+    required,
+  };
+}
+
+export function getFirstNameRules() {
+  return {
+    required,
+  };
+}
+
+export function getLastNameRules() {
+  return {
+    required,
+  };
+}
+
+export function getEmailRules() {
+  return {
     required,
     type: email,
   };
 }
 
-export function setPhoneValidationRule(rules, name) {
-  rules[name] = {
+export function getPhoneRules() {
+  return {
     required,
     isValid(value) {
       value = value || '';
@@ -38,8 +68,35 @@ export function setPhoneValidationRule(rules, name) {
   };
 }
 
-export function setZipCodeValidationRule(rules, name) {
-  rules[name] = {
+export function getStreetRules() {
+  return {
+    required,
+  };
+}
+
+export function getDistrictRules() {
+  return {
+    required,
+    isValid(value) {
+      return new RegExp(this.extraFields.district.pattern || '/.+/').test(value);
+    },
+  };
+}
+
+export function getCityRules() {
+  return {
+    required,
+  };
+}
+
+export function getStateRules() {
+  return {
+    required,
+  };
+}
+
+export function getZipCodeRules() {
+  return {
     required,
     minLength(value) {
       value = value || '';
@@ -64,22 +121,26 @@ export function setZipCodeValidationRule(rules, name) {
   };
 }
 
-export function setCountryValidationRule(rules, name) {
-  rules[name] = {
+export function getCountryRules() {
+  return {
     required,
   };
 }
 
-export function setCardHolderValidationRule(rules, name) {
-  if (this.$root.isAffIDEmpty) {
-    rules[name] = {
-      required,
-    };
-  }
+export function getCardTypeRules() {
+  return {
+    required,
+  };
 }
 
-export function setCardNumberValidationRule(rules, name) {
-  rules[name] = {
+export function getCardHolderRules() {
+  return {
+    required,
+  };
+}
+
+export function getCardNumberRules() {
+  return {
     required,
     isValid(value) {
       value = value || '';
@@ -95,8 +156,8 @@ export function setCardNumberValidationRule(rules, name) {
   };
 }
 
-export function setCardDateValidationRule(rules, name) {
-  rules[name] = {
+export function getCardDateRules() {
+  return {
     required,
     isValid(value) {
       value = value || '';
@@ -121,8 +182,8 @@ export function setCardDateValidationRule(rules, name) {
   };
 }
 
-export function setCVVValidationRule(rules, name) {
-  rules[name] = {
+export function getCVVRules() {
+  return {
     required,
     numeric,
     minLength: minLength(3),
@@ -130,13 +191,32 @@ export function setCVVValidationRule(rules, name) {
   };
 }
 
-export function setTermsValidationRule(rules, name) {
-  if (tpl === 'smc7p' || this.$root.isAffIDEmpty) {
-    rules[name] = {
-      required,
-      isValid(value) {
-        return value === true;
-      },
-    };
-  }
+export function getDocumentTypeRules() {
+  return {
+    required,
+  };
+}
+
+export function getDocumentNumberRules() {
+  return {
+    required,
+    isValid(value) {
+      const pattern = this.extraFields.document_number.pattern
+        ? typeof this.extraFields.document_number.pattern === 'object'
+          ? this.extraFields.document_number.pattern[this.form.document_type] || ''
+          : this.extraFields.document_number.pattern
+        : '/.+/';
+
+      return new RegExp(pattern).test(value);
+    },
+  };
+}
+
+export function getTermsRules() {
+  return {
+    required,
+    isValid(value) {
+      return value === true;
+    },
+  };
 }

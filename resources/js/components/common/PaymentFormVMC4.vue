@@ -32,36 +32,25 @@
         </div>
         <div class="step step-2" v-if="step === 2">
           <div class="full-name">
-            <text-field
-                :validation="$v.form.stepTwo.fname"
-                :validationMessage="textFirstNameRequired"
-                theme="variant-1"
-                :label="textFirstName"
-                class="first-name"
-                v-model="form.stepTwo.fname"/>
-            <text-field
-                :validation="$v.form.stepTwo.lname"
-                :validationMessage="textLastNameRequired"
-                theme="variant-1"
-                :label="textLastName"
-                class="last-name"
-                v-model="form.stepTwo.lname"/>
+            <FirstName
+              :$v="$v.form.stepTwo.fname"
+              :form="form.stepTwo"
+              name="fname" />
+            <LastName
+              :$v="$v.form.stepTwo.lname"
+              :form="form.stepTwo"
+              name="lname" />
           </div>
           <Email
-            name="email"
+            :$v="$v.form.stepTwo.email"
             :form="form.stepTwo"
-            :$v="$v.form.stepTwo.email" />
-          <phone-field
-              :validation="$v.form.stepTwo.phone"
-              @onCountryChange="setCountryCodeByPhoneField"
-              :validationMessage="textPhoneRequired"
-              :countryCode="form.countryCodePhoneField"
-              theme="variant-1"
-              :label="textPhone"
-              :rest="{
-                autocomplete: 'off'
-              }"
-              v-model="form.stepTwo.phone"/>
+            name="email" />
+          <Phone
+            :$v="$v.form.stepTwo.phone"
+            :ccform="form"
+            ccname="countryCodePhoneField"
+            :form="form.stepTwo"
+            name="phone" />
         </div>
         <div class="step step-3" v-if="step === 3">
           <h3 v-html="textPaySecurely"></h3>
@@ -98,16 +87,14 @@
                 @setPaymentMethodByCardNumber="value => $emit('setPaymentMethodByCardNumber', value)"
                 :form="form.stepThree"
                 name="cardNumber" />
-              <div class="card-date-cvv">
-                <CardDate
-                  :$v="$v.form.stepThree.cardDate"
-                  :form="form.stepThree"
-                  name="cardDate" />
-                <CVV
-                  :$v="$v.form.stepThree.cvv"
-                  :form="form.stepThree"
-                  name="cvv" />
-              </div>
+              <CardDate
+                :$v="$v.form.stepThree.cardDate"
+                :form="form.stepThree"
+                name="cardDate" />
+              <CVV
+                :$v="$v.form.stepThree.cvv"
+                :form="form.stepThree"
+                name="cvv" />
               <DocumentType
                 class="input-container"
                 :extraFields="extraFields"
@@ -120,7 +107,7 @@
             </div>
             <div class="d-flex flex-column">
               <ZipCode
-                v-if="countryCode === 'br'"
+                v-if="form.stepThree.country === 'br'"
                 :$v="$v.form.stepThree.zipCode"
                 :isLoading="isLoading"
                 @setBrazilAddress="setBrazilAddress"
@@ -133,41 +120,30 @@
                 :withPlaceholder="true"
                 :form="vmc4Form"
                 :$v="$v" />
-              <text-field
-                :validation="$v.form.stepThree.city"
-                :validationMessage="textCityRequired"
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
-                theme="variant-1"
-                :label="textCity"
-                :rest="{
-                  placeholder: textCityPlaceholder,
-                  autocomplete: 'shipping locality'
-                }"
-                v-model="form.stepThree.city"/>
+              <City
+                :$v="$v.form.stepThree.city"
+                :placeholder="true"
+                :isLoading="isLoading"
+                :form="form.stepThree"
+                name="city" />
               <State
-                v-if="extraFields.state"
+                v-if="!extraFields.state"
+                :$v="$v.form.stepThree.state"
+                :placeholder="true"
+                :isLoading="isLoading"
+                :country="form.stepThree.country"
+                :form="form.stepThree"
+                name="state" />
+              <EState
+                v-else
                 class="input-container"
                 :country="form.stepThree.country"
                 :extraFields="extraFields"
                 :isLoading="isLoading"
                 :form="vmc4Form"
                 :$v="$v" />
-              <text-field
-                v-else
-                :validation="$v.form.stepThree.state"
-                :validationMessage="textStateRequired"
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
-                theme="variant-1"
-                :label="textState"
-                :rest="{
-                  placeholder: textStatePlaceholder,
-                  autocomplete: 'shipping locality'
-                }"
-                v-model="form.stepThree.state"/>
               <ZipCode
-                v-if="countryCode !== 'br'"
+                v-if="form.stepThree.country !== 'br'"
                 :$v="$v.form.stepThree.zipCode"
                 :isLoading="isLoading"
                 @setBrazilAddress="setBrazilAddress"
@@ -242,7 +218,12 @@
 	import {fade} from "../../utils/common";
   import { queryParams } from  '../../utils/queryParams';
   import Installments from './extra-fields/Installments';
+  import FirstName from './common-fields/FirstName';
+  import LastName from './common-fields/LastName';
   import Email from './common-fields/Email';
+  import Phone from './common-fields/Phone';
+  import City from './common-fields/City';
+  import State from './common-fields/State';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
@@ -250,7 +231,7 @@
   import CardDate from './common-fields/CardDate';
   import CVV from './common-fields/CVV';
   import Terms from './common-fields/Terms';
-  import State from './extra-fields/State';
+  import EState from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -269,7 +250,12 @@
       RadioButtonItemDeal,
       Spinner,
       Installments,
+      FirstName,
+      LastName,
       Email,
+      Phone,
+      City,
+      State,
       ZipCode,
       Country,
       CardHolder,
@@ -277,7 +263,7 @@
       CardDate,
       CVV,
       Terms,
-      State,
+      EState,
       District,
       CardType,
       DocumentType,
@@ -367,9 +353,6 @@
       }
     },
 		computed: {
-      countryCode() {
-        return this.form.stepThree.country;
-      },
       isShowVariant() {
         return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
       },
@@ -380,49 +363,25 @@
 
         return country ? country.dialCode : '1';
       },
-      textState() {
-        return t('checkout.payment_form.state', {}, { country: this.form.stepThree.country });
-      },
-      textStatePlaceholder() {
-        return t('checkout.payment_form.state.placeholder', {}, { country: this.form.stepThree.country });
-      },
-      textZipcode() {
-        return t('checkout.payment_form.zipcode', {}, { country: this.form.stepThree.country });
-      },
-      textZipcodePlaceholder() {
-        return t('checkout.payment_form.zipcode.placeholder', {}, { country: this.form.stepThree.country });
-      },
       textChooseDeal: () => t('checkout.choose_deal'),
       textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
       textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
       textSelectVariant: () => t('checkout.select_variant'),
       textContactInformation: () => t('checkout.contact_information'),
       textPaymentMethod: () => t('checkout.payment_method'),
-      textFirstName: () => t('checkout.payment_form.first_name'),
-      textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
-      textLastName: () => t('checkout.payment_form.last_name'),
-      textLastNameRequired: () => t('checkout.payment_form.last_name.required'),
-      textPhone: () => t('checkout.payment_form.phone'),
-      textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaySecurely: () => t('checkout.pay_securely'),
-      textCity: () => t('checkout.payment_form.city'),
-      textCityPlaceholder: () => t('checkout.payment_form.city.placeholder'),
-      textCityRequired: () => t('checkout.payment_form.city.required'),
-      textStateRequired: () => t('checkout.payment_form.state.required'),
-      textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
-      textCardExpired: () => t('checkout.payment_form.card_expired'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
       textPaymentError: () => t('checkout.payment_error'),
       textNext: () => t('checkout.next'),
       textBack: () => t('checkout.back'),
 		},
-        watch: {
-            'form.stepThree.country'(country) {
-              this.form.country = this.form.stepThree.country;
-              this.$parent.reloadPaymentMethods(country);
-            },
-        },
+    watch: {
+      'form.stepThree.country'(country) {
+        this.form.country = this.form.stepThree.country;
+        this.$parent.reloadPaymentMethods(country);
+      },
+    },
 		methods: {
       activateForm() {
         this.isFormShown = true;
@@ -557,10 +516,6 @@
 
               this.$parent.setExtraFieldsForCardPayment(data);
 
-              if (this.extraFields.district) {
-                data.address.state = this.vmc4Form.state;
-              }
-
               sendCheckoutRequest(data)
                 .then(res => {
                   if (res.paymentError) {
@@ -574,11 +529,6 @@
       paypalSubmit() {
         
       },
-			setCountryCodeByPhoneField(val) {
-				if (val.iso2) {
-					this.form.countryCodePhoneField = val.iso2;
-				}
-			},
 			isAllowNext(currentStep) {
 				const isStepOneInvalid = this.$v.vmc4Form.deal.$invalid;
 				const isStepTwoInvalid = this.$v.form.stepTwo.$invalid;
@@ -767,18 +717,18 @@
         display: flex;
         margin-bottom: 15px;
 
-        .first-name {
+        #first-name-field {
           width: 40%;
-          margin-right: 10px;
+          padding-right: 10px;
 
           [dir="rtl"] & {
-            margin-left: 10px;
-            margin-right: 0;
+            padding-left: 10px;
+            padding-right: 0;
           }
         }
 
-        .last-name {
-          width: calc(60% - 11px);
+        #last-name-field {
+          width: 60%;
         }
       }
     }
@@ -802,21 +752,20 @@
 
       .card-info {
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex-wrap: wrap;
+      }
 
-        .card-date-cvv {
-          display: flex;
-          width: 100%;
-        }
+      #card-date-field {
+        width: 120px;
+      }
 
-        #card-date-field {
-          padding-right: 30px;
-          width: 70%;
-        }
+      #cvv-field {
+        width: 120px;
+        margin-left: 10px;
 
-        #cvv-field {
-          width: 30%;
+        [dir="rtl"] & {
+          margin-left: 0;
+          margin-right: 10px;
         }
       }
 

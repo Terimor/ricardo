@@ -234,7 +234,6 @@
                                 :installments="form.installments"
                                 :payment-form="form"
                                 :has-warranty="true"
-                                :country-code="form.country"
                                 :country-list="countriesList"
                                 :quantity-of-installments="countOfInstallments"
                                 :warranty-price-text="warrantyPriceText"

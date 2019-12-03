@@ -1,15 +1,19 @@
 <template>
 
   <text-field
-    id="card-holder-field"
+    id="city-field"
     v-model="form[name]"
     :validation="$v"
     :validationMessage="textRequired"
+    v-loading="isLoading.address"
+    element-loading-spinner="el-icon-loading"
     :label="textLabel"
     :rest="{
       placeholder: placeholder
         ? textLabel
         : null,
+      autocomplete: 'shipping locality',
+      name: 'city',
     }"
     theme="variant-1"
     :tabindex="tabindex"
@@ -25,6 +29,7 @@
     props: [
       'form',
       'name',
+      'isLoading',
       'placeholder',
       'tabindex',
       'order',
@@ -35,11 +40,11 @@
     computed: {
 
       textLabel() {
-        return this.$t('checkout.payment_form.card_holder');
+        return this.$t('checkout.payment_form.city');
       },
 
       textRequired() {
-        return this.$t('checkout.payment_form.card_holder.required');
+        return this.$t('checkout.payment_form.city.required');
       },
 
     },

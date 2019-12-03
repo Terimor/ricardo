@@ -4,121 +4,67 @@
           {{ firstTitle }}
         </h2>
         <div class="payment-form__contact-information">
-          <text-field
-              :validation="$v.form.fname"
-              :validationMessage="textFirstNameRequired"
-              theme="variant-1"
-              :label="textFirstName"
-              class="first-name"
-              :rest="{
-                autocomplete: 'name',
-                name: 'name'
-              }"
-              v-model="paymentForm.fname"/>
-          <text-field
-              :validation="$v.form.lname"
-              :validationMessage="textLastNameRequired"
-              theme="variant-1"
-              :label="textLastName"
-              class="last-name"
-              :rest="{
-                autocomplete: 'family-name',
-                name: 'family-name'
-              }"
-              v-model="paymentForm.lname"/>
-  <!--
-          <text-field-with-placeholder
-              :validation="$v.form.dateOfBirth"
-              :validationMessage="textBirthdayRequired"
-              v-if="countryCode === 'de'"
-              :rest="{
-                'format': 'dd/mm/yyyy',
-              }"
-              :placeholder="textBirthdayPlaceHolder"
-              v-model="paymentForm.dateOfBirth"
-              theme="variant-1"
-              :label="textBirthday"
-          />
-  -->
-          <Email
-            name="email"
+          <FirstName
+            :$v="$v.form.fname"
             :form="paymentForm"
-            :$v="$v.form.email" />
-          <phone-field
-              @onCountryChange="setCountryCodeByPhoneField"
-              :validation="$v.form.phone"
-              :validationMessage="textPhoneRequired"
-              :countryCode="countryCode"
-              theme="variant-1"
-              :label="textPhone"
-              :rest="{
-                autocomplete: 'off',
-                name: 'phone'
-              }"
-              v-model="paymentForm.phone"/>
+            name="fname" />
+          <LastName
+            :$v="$v.form.lname"
+            :form="paymentForm"
+            name="lname" />
+          <Email
+            :$v="$v.form.email"
+            :form="paymentForm"
+            name="email" />
+          <Phone
+            :$v="$v.form.phone"
+            :ccform="paymentForm"
+            ccname="countryCodePhoneField"
+            :form="paymentForm"
+            name="phone" />
         </div>
         <h2>
           {{ secondTitle }}
         </h2>
         <div class="payment-form__delivery-address">
             <ZipCode
-              v-if="countryCode === 'br'"
+              v-if="paymentForm.country === 'br'"
               :$v="$v.form.zipcode"
               :isLoading="isLoading"
               @setBrazilAddress="setBrazilAddress"
               :country="paymentForm.country"
               :form="paymentForm"
               name="zipcode" />
-            <text-field
-                :validation="$v.form.street"
-                :validationMessage="textStreetRequired"
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
-                theme="variant-1 street"
-                :label="textStreet"
-                :rest="{
-                  autocomplete: 'shipping street-address',
-                  name: 'ship-address'
-                }"
-                v-model="paymentForm.street"/>
+            <Street
+              :$v="$v.form.street"
+              :isLoading="isLoading"
+              :form="paymentForm"
+              name="street" />
             <District
               :extraFields="extraFields"
               :form="paymentForm"
               :$v="$v" />
-            <text-field
-                :validation="$v.form.city"
-                :validationMessage="textCityRequired"
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
-                theme="variant-1"
-                :label="textCity"
-                :rest="{
-                    autocomplete: 'shipping locality',
-                    name: 'city'
-                }"
-                v-model="paymentForm.city"/>
+            <City
+              :$v="$v.form.city"
+              :isLoading="isLoading"
+              :form="paymentForm"
+              name="city" />
             <State
-              v-if="extraFields.state"
+              v-if="!extraFields.state"
+              :$v="$v.form.state"
+              :isLoading="isLoading"
+              :country="paymentForm.country"
+              :form="paymentForm"
+              name="state" />
+            <EState
+              v-else
               :country="paymentForm.country"
               :extraFields="extraFields"
               :isLoading="isLoading"
               :form="paymentForm"
               :$v="$v" />
-            <text-field
-                v-else
-                v-loading="isLoading.address"
-                element-loading-spinner="el-icon-loading"
-                :validation="$v.form.state"
-                :validationMessage="textStateRequired"
-                theme="variant-1"
-                :rest="{
-                  autocomplete: 'shipping region',
-                  name: 'ship-state'
-                }"
-                :label="textStateTitle"
-                v-model="paymentForm.state" />
             <ZipCode
-              v-if="countryCode !== 'br'"
+              v-if="paymentForm.country !== 'br'"
               :$v="$v.form.zipcode"
               :isLoading="isLoading"
               @setBrazilAddress="setBrazilAddress"
@@ -151,16 +97,14 @@
                   @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
                   :form="paymentForm"
                   name="cardNumber" />
-                <div class="card-date-cvv">
-                  <CardDate
-                    :$v="$v.form.cardDate"
-                    :form="paymentForm"
-                    name="cardDate" />
-                  <CVV
-                    :$v="$v.form.cvv"
-                    :form="paymentForm"
-                    name="cvv" />
-                </div>
+                <CardDate
+                  :$v="$v.form.cardDate"
+                  :form="paymentForm"
+                  name="cardDate" />
+                <CVV
+                  :$v="$v.form.cvv"
+                  :form="paymentForm"
+                  name="cvv" />
               </div>
               <DocumentType
                 :extraFields="extraFields"
@@ -215,7 +159,13 @@
   import { sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
+  import FirstName from './common-fields/FirstName';
+  import LastName from './common-fields/LastName';
   import Email from './common-fields/Email';
+  import Phone from './common-fields/Phone';
+  import Street from './common-fields/Street';
+  import City from './common-fields/City';
+  import State from './common-fields/State';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
@@ -223,7 +173,7 @@
   import CardDate from './common-fields/CardDate';
   import CVV from './common-fields/CVV';
   import Terms from './common-fields/Terms';
-  import State from './extra-fields/State';
+  import EState from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -233,7 +183,6 @@
     name: 'PaymentForm',
     props: [
       'input',
-      'countryCode',
       'paymentForm',
       '$v',
       'firstTitle',
@@ -252,7 +201,13 @@
     ],
     components: {
       Spinner,
+      FirstName,
+      LastName,
       Email,
+      Phone,
+      Street,
+      City,
+      State,
       ZipCode,
       Country,
       CardHolder,
@@ -260,7 +215,7 @@
       CardDate,
       CVV,
       Terms,
-      State,
+      EState,
       District,
       CardType,
       DocumentType,
@@ -311,58 +266,16 @@
         }
       },
 
-      textStateTitle() {
-        return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
-      },
-
-      textFirstName: () => t('checkout.payment_form.first_name'),
-      textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
-      textLastName: () => t('checkout.payment_form.last_name'),
-      textLastNameRequired: () => t('checkout.payment_form.last_name.required'),
-      textBirthday: () => t('checkout.payment_form.birthday'),
-      textBirthdayPlaceHolder: () => t('checkout.payment_form.birthday.placeholder'),
-      textBirthdayRequired: () => t('checkout.payment_form.birthday.required'),
-      textPhone: () => t('checkout.payment_form.phone'),
-      textPhoneRequired: () => t('checkout.payment_form.phone.required'),
-      textStreet: () => t('checkout.payment_form.street'),
-      textStreetRequired: () => t('checkout.payment_form.street.required'),
-      textStreetNumber: () => t('checkout.payment_form.street_number'),
-      textStreetNumberRequired: () => t('checkout.payment_form.street_number.required'),
-      textCity: () => t('checkout.payment_form.city'),
-      textCityRequired: () => t('checkout.payment_form.city.required'),
       textStateRequired: () => t('checkout.payment_form.state.required'),
       textWarranty: () => t('checkout.warranty'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       textPaymentError: () => t('checkout.payment_error'),
     },
-    watch: {
-/*
-      'paymentForm.dateOfBirth' (val) {
-        let result = ''
-        const configForSlash = [2, 5]
-        for (let i = 0; i < val.length; i++) {
-          if (configForSlash.includes(i)) {
-            result += '/'
-          }
 
-          if (!isNaN(val[i]) && val[i] !== ' ') {
-            result += val[i]
-          }
-        }
-
-        this.paymentForm.dateOfBirth = result
-      },
-*/
-    },
     methods: {
       setPaymentMethodByCardNumber(value) {
         this.$emit('setPaymentMethodByCardNumber', value);
         this.$emit('set-payment-method-by-cardnumber', value);
-      },
-      setCountryCodeByPhoneField (val) {
-        if (val.iso2) {
-          this.paymentForm.countryCodePhoneField = val.iso2;
-        }
       },
       setBrazilAddress(res) {
         this.paymentForm.street = res.address;
@@ -414,7 +327,6 @@
           paymentProvider: paymentForm.paymentProvider,
           fname: paymentForm.fname,
           lname: paymentForm.lname,
-          //dateOfBirth: paymentForm.dateOfBirth,
           email: paymentForm.email,
           phone: paymentForm.phone,
           countryCodePhoneField: paymentForm.countryCodePhoneField,
@@ -570,32 +482,32 @@
             }
         }
 
-        .first-name {
-            width: 40%;
-            margin-right: 10px;
+        #first-name-field {
+          width: 40%;
+          padding-right: 10px;
 
-            [dir="rtl"] & {
-              margin-left: 10px;
-              margin-right: 0;
-            }
+          [dir="rtl"] & {
+            padding-left: 10px;
+            padding-right: 0;
+          }
         }
 
-        .last-name {
-            width: calc(60% - 11px);
-        }
-
-        .card-date-cvv {
-          display: flex;
-          width: 100%;
+        #last-name-field {
+          width: 60%;
         }
 
         #card-date-field {
-          padding-right: 30px;
-          width: 70%;
+          width: 120px;
         }
 
         #cvv-field {
-          width: 30%;
+          width: 120px;
+          margin-left: 10px;
+
+          [dir="rtl"] & {
+            margin-left: 0;
+            margin-right: 10px;
+          }
         }
 
         @media screen and ($s-down) {

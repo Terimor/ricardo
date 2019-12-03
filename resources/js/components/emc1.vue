@@ -78,7 +78,6 @@
                               @showCart="isOpenSpecialOfferModal = true"
                               :$v="$v"
                               :paymentForm="form"
-                              :countryCode="form.country"
                               :extraFields="extraFields"
                               :paymentMethodURL="paymentMethodURL"
                               @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
@@ -271,7 +270,6 @@
           paymentProvider: null,
           fname: null,
           lname: null,
-          //dateOfBirth: null,
           email: null,
           phone: null,
           street: null,
@@ -302,7 +300,6 @@
           this.form.paymentProvider = selectedProductData.paymentProvider || this.form.paymentProvider;
           this.form.fname = selectedProductData.fname || this.form.fname;
           this.form.lname = selectedProductData.lname || this.form.lname;
-          //this.form.dateOfBirth = selectedProductData.dateOfBirth || this.form.dateOfBirth;
           this.form.email = selectedProductData.email || this.form.email;
           this.form.phone = selectedProductData.phone || this.form.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
