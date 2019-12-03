@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
+use Cache;
 
 /**
  * Class ProductService
@@ -17,6 +18,7 @@ use NumberFormatter;
 class ProductService
 {
     public static $amountValues = [10, 15, 20];
+    const SHOP_PER_PAGE = 12;
     
     /**
      * @param Request $request
@@ -414,6 +416,80 @@ class ProductService
         $lp->image = $product->image;
         
         return $lp;
+    }
+    
+    /**
+     * Get all sold domains products
+     * @param type $page
+     * @return type
+     */
+    public function getAllSoldDomainsProducts(?int $page = 1): array
+    {
+        $productsLocaleSorted = Cache::get('AllSoldProducts');
+        
+        if (!$productsLocaleSorted) {
+            $domains = Domain::all();
+            $allSoldProducts = [];        
+            // collect domain products
+            foreach ($domains as $domain) {
+                if (!empty($domain->sold_products)) {
+                    $soldProducts = $domain->sold_products ?? [];
+                    if ($soldProducts) {
+                        // calculate qty by id
+                        foreach ($soldProducts as $id => $qty) {
+                            if (isset($allSoldProducts[$id])) {
+                                $allSoldProducts[$id] += $qty;
+                            } else {
+                                $allSoldProducts[$id] = $qty;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // sort
+            arsort($allSoldProducts);                
+            $productIds = array_keys($allSoldProducts);
+
+            $products = OdinProduct::getActiveByIds($productIds);
+            foreach ($products as $product) {
+                $productsLocale[] = static::getDataForMiniShop($product);
+            }
+
+            // sort products by sold qty
+            if ($productsLocale) {
+                $productsLocaleSorted = [];
+                foreach ($allSoldProducts as $productId => $sp) {
+                    foreach ($productsLocale as $localeProduct) {
+                        if ($localeProduct->id == $productId) {
+                            $productsLocaleSorted[] = $localeProduct;
+                        }
+                    }
+                }
+            }
+            
+            Cache::put('AllSoldProducts', $productsLocaleSorted);
+        }
+        
+        // calculate data for pagination
+        $limit = static::SHOP_PER_PAGE;
+        $totalCount = count($productsLocaleSorted);
+        $totalPages = ceil($totalCount / $limit);
+        $page = max($page, 1); // get 1 page when page <= 0
+        $page = min($page, $totalPages); // get last page when page > $totalPages
+        $offset = ($page - 1) * $limit;
+        if ($offset < 0 ) {
+            $offset = 0;
+        }
+        
+        $products = array_slice($productsLocaleSorted, $offset, $limit);
+        
+        return $data = [
+            'products' => $products,
+            'page' => $page,
+            'total' => $totalCount,
+            'total_pages' => $totalPages
+        ];     
     }
 
 }
