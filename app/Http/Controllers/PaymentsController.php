@@ -238,6 +238,7 @@ class PaymentsController extends Controller
         if (\App::environment() === 'production') {
             throw new AuthException('Unauthorized');
         }
+        return MintService::getCurrencyByCountry($req->input('address.country'), $req->get('cur'));
         $reply = $this->paymentService->createMinteOrder($req);
 
         $result = [

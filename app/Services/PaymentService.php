@@ -35,9 +35,7 @@ class PaymentService
     const CARD_CREDIT = 'credit';
     const CARD_DEBIT  = 'debit';
 
-    const FRAUD_CHANCE_3DS_LIMIT       = 65;
-    const FRAUD_CHANCE_REFUSE_LIMIT    = 85;
-    const FRAUD_CHANCE_MAX             = 100;
+    const FRAUD_CHANCE_MAX  = 100;
 
     const THROW_IS_IP_ABUSED    = true;
 
@@ -329,28 +327,21 @@ class PaymentService
         $provider = self::getProviderByCountryAndMethod($contact['country'], $method);
         if (!$provider) {
             logger()->warning(
-                "Provider not found",
+                'Provider not found',
                 ['country' => $contact['country'], 'method' => $method, 'card' => substr_replace($card['number'], '********', 4, 8)]
             );
             throw new ProviderNotFoundException('Provider not found');
-        } elseif (in_array($provider, [PaymentProviders::CHECKOUTCOM, PaymentProviders::MINT])) {
-            // refuse payment if  there is fraud
-            self::fraudCheck($ipqs); // throwable
         }
+
+        self::fraudCheck($ipqs, $provider); // throwable
 
         $this->addCustomer($contact); // throwable
 
         if (empty($order)) {
-            $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
+            // check currency, if it's not supported switch to default currency
+            $product->currency = self::checkCurrency($contact['country'], CurrencyService::getCurrency(), $provider);
 
-            // check if ebanx supports currency, otherwise switch to default currency
-            if ($provider === PaymentProviders::EBANX) {
-                $new_cur = EbanxService::getCurrencyByCountry($contact['country'], $price['currency']);
-                if ($new_cur !== $price['currency']) {
-                    $product->currency = $new_cur;
-                    $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
-                }
-            }
+            $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 
             $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
@@ -855,19 +846,39 @@ class PaymentService
     }
 
     /**
+     * Returns supported currency
+     * @param  string $country
+     * @param  string $currency
+     * @param  string $prv default=minte
+     * @return string
+     */
+    public static function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINT): string
+    {
+        switch ($prv):
+            case PaymentProviders::EBANX:
+                return EbanxService::getCurrencyByCountry($contact['country'], $price['currency']);
+            case PaymentProviders::MINT:
+                return MintService::getCurrencyByCountry($contact['country'], $price['currency']);
+            default:
+                return $currency;
+        endswitch;
+    }
+
+    /**
      * Checks payment to fraud
      * @param  ?array   $ipqs
      * @param  bool     $thowable
      * @return void
      * @throws PaymentException
      */
-    public static function fraudCheck(?array $ipqs, bool $throwable = true): void
+    public static function fraudCheck(?array $ipqs, string $prv = PaymentProviders::MINT, bool $throwable = true): void
     {
         if (!empty($ipqs) && \App::environment() === 'production') {
             $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
             $is_bot = $ipqs['bot_status'] ?? false;
             $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
-            if ($fraud_chance > self::FRAUD_CHANCE_REFUSE_LIMIT || $is_bot || $is_valid_email === false) {
+            $refuse_limit = PaymentProviders::$list[$prv]['fraud_setting']['refuse_limit'];
+            if ($fraud_chance > $refuse_limit || $is_bot || $is_valid_email === false) {
                 // logger()->warning('Payment refused', ['ipqs' => $ipqs]);
                 throw new PaymentException('Payment is refused', 'card.error.refused');
             }
@@ -953,7 +964,7 @@ class PaymentService
      * @param   array  $excl default=[]
      * @return  string|null
      */
-    public static function getProviderByCountryAndMethod(string $country, string $method, bool $is_main = true, string $pref = PaymentProviders::CHECKOUTCOM, array $excl = []): ?string
+    public static function getProviderByCountryAndMethod(string $country, string $method, bool $is_main = true, string $pref = PaymentProviders::MINT, array $excl = []): ?string
     {
         $providers = self::getPaymentMethodsByCountry($country, $is_main);
 
@@ -1038,8 +1049,9 @@ class PaymentService
         $result = true;
         $setting = PaymentProviders::$list[$prv]['methods'][$method] ?? [];
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
+        $fraud_chance_limit = PaymentProviders::$list[$prv]['fraud_setting']['3ds_limit'];
 
-        if ($fraud_chance < PaymentService::FRAUD_CHANCE_3DS_LIMIT) {
+        if ($fraud_chance < $fraud_chance_limit) {
             if (in_array($country, $setting['+3ds'] ?? []) ) {
                 $result = true;
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
