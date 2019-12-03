@@ -1,7 +1,7 @@
 <template>
 
-  <text-field
-    id="card-holder-field"
+  <phone-field
+    id="phone-field"
     v-model="form[name]"
     :validation="$v"
     :validationMessage="textRequired"
@@ -10,7 +10,11 @@
       placeholder: placeholder
         ? textLabel
         : null,
+      autocomplete: 'off',
+      name: 'phone',
     }"
+    :countryCode="ccform[ccname]"
+    @onCountryChange="setCountryCodeByPhoneField"
     theme="variant-1"
     :tabindex="tabindex"
     :order="order" />
@@ -25,6 +29,8 @@
     props: [
       'form',
       'name',
+      'ccform',
+      'ccname',
       'placeholder',
       'tabindex',
       'order',
@@ -35,11 +41,26 @@
     computed: {
 
       textLabel() {
-        return this.$t('checkout.payment_form.card_holder');
+        return this.$t('checkout.payment_form.phone');
       },
 
       textRequired() {
-        return this.$t('checkout.payment_form.card_holder.required');
+        return this.$t('checkout.payment_form.phone.required');
+      },
+
+      countryCode() {
+        return checkoutData.countryCode;
+      },
+
+    },
+
+
+    methods: {
+
+      setCountryCodeByPhoneField(value) {
+        if (value.iso2) {
+          this.ccform[this.ccname] = value.iso2;
+        }
       },
 
     },

@@ -7,7 +7,7 @@
     :list="extraFields.state.items"
     :validation="$v.form.state"
     :validationMessage="textRequired"
-    v-loading="isLoading && isLoading.address"
+    v-loading="isLoading.address"
     element-loading-spinner="el-icon-loading"
     :label="textTitle"
     theme="variant-1"

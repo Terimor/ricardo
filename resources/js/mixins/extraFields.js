@@ -1,5 +1,5 @@
 import creditCardType from 'credit-card-type';
-import { required } from 'vuelidate/lib/validators'
+import * as validators from '../validation/validators';
 
 
 const formFields = {
@@ -181,45 +181,38 @@ export const tplMixin = {
     },
 
     setExtraFieldsValidationRules(rules) {
+      if (this.extraFields.installments) {
+        rules.installments = validators.getInstallmentsRules();
+      }
+
+      if (this.extraFields.state) {
+        rules.state = validators.getStateRules();
+      }
+
       if (this.extraFields.district) {
-        rules.district = {
-          required,
-          isValid(value) {
-            return new RegExp(this.extraFields.district.pattern || '/.+/').test(value);
-          },
-        };
+        rules.district = validators.getDistrictRules();
       }
 
       if (this.extraFields.card_type) {
-        rules.card_type = {
-          required,
-        };
+        rules.card_type = validators.getCardTypeRules();
       }
 
       if (this.extraFields.document_type) {
-        rules.document_type = {
-          required,
-        };
+        rules.document_type = validators.getDocumentTypeRules();
       }
 
       if (this.extraFields.document_number) {
-        rules.document_number = {
-          isValidNumber(value) {
-            const pattern = this.extraFields.document_number.pattern
-              ? typeof this.extraFields.document_number.pattern === 'object'
-                ? this.extraFields.document_number.pattern[this.form.document_type] || ''
-                : this.extraFields.document_number.pattern
-              : '/.+/';
-
-            return new RegExp(pattern).test(value);
-          }
-        };
+        rules.document_number = validators.getDocumentNumberRules();
       }
     },
 
     setExtraFieldsForCardPayment(data) {
       if (this.extraFields.installments) {
         data.card.installments = this.form.installments;
+      }
+
+      if (this.extraFields.state) {
+        data.address.state = this.form.state;
       }
 
       if (this.extraFields.district) {

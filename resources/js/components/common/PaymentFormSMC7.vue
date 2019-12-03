@@ -5,7 +5,7 @@
       :form="paymentForm"
       name="country" />
     <ZipCode
-      v-if="countryCode === 'br'"
+      v-if="paymentForm.country === 'br'"
       :$v="$v.form.zipCode"
       :isLoading="isLoading"
       @setBrazilAddress="setBrazilAddress"
@@ -13,57 +13,40 @@
       :form="paymentForm"
       :placeholder="true"
       name="zipCode" />
-    <text-field
-        :validation="$v.form.streetAndNumber"
-        :validationMessage="textStreetAndNumberRequired"
-        v-loading="isLoading.address"
-        element-loading-spinner="el-icon-loading"
-        theme="variant-1 street"
-        :label="textStreetAndNumber"
-        :rest="{
-          placeholder: textStreetAndNumber,
-          autocomplete: 'street-address'
-        }"
-        v-model="paymentForm.streetAndNumber"/>
+    <Street
+      :$v="$v.form.streetAndNumber"
+      :placeholder="true"
+      :isLoading="isLoading"
+      :form="paymentForm"
+      name="streetAndNumber" />
     <District
       :extraFields="extraFields"
       :withPlaceholder="true"
       :form="paymentForm"
       :$v="$v" />
-    <text-field
-        :validation="$v.form.city"
-        :validationMessage="textCityRequired"
-        v-loading="isLoading.address"
-        element-loading-spinner="el-icon-loading"
-        theme="variant-1"
-        :label="textCity"
-        :rest="{
-          placeholder: textCity,
-          autocomplete: 'shipping locality'
-        }"
-        v-model="paymentForm.city"/>
+    <City
+      :$v="$v.form.city"
+      :placeholder="true"
+      :isLoading="isLoading"
+      :form="paymentForm"
+      name="city" />
     <State
-      v-if="extraFields.state"
+      v-if="!extraFields.state"
+      :$v="$v.form.state"
+      :placeholder="true"
+      :isLoading="isLoading"
+      :country="paymentForm.country"
+      :form="paymentForm"
+      name="state" />
+    <EState
+      v-else
       :country="paymentForm.country"
       :extraFields="extraFields"
       :isLoading="isLoading"
       :form="paymentForm"
       :$v="$v" />
-    <text-field
-        v-else
-        :validation="$v.form.state"
-        :validationMessage="textStateRequired"
-        v-loading="isLoading.address"
-        element-loading-spinner="el-icon-loading"
-        theme="variant-1"
-        :label="textState"
-        :rest="{
-          placeholder: textState,
-          autocomplete: 'shipping locality'
-        }"
-        v-model="paymentForm.state"/>
     <ZipCode
-      v-if="countryCode !== 'br'"
+      v-if="paymentForm.country !== 'br'"
       :$v="$v.form.zipCode"
       :isLoading="isLoading"
       @setBrazilAddress="setBrazilAddress"
@@ -115,24 +98,27 @@
         @setPaymentMethodByCardNumber="value => $emit('setPaymentMethodByCardNumber', value)"
         :form="paymentForm"
         name="cardNumber" />
-      <div class="card-date-cvv">
-        <CardDate
-          :$v="$v.form.cardDate"
-          :form="paymentForm"
-          name="cardDate" />
-        <CVV
-          :$v="$v.form.cvv"
-          :form="paymentForm"
-          name="cvv" />
-      </div>
+
+      <CardDate
+        :$v="$v.form.cardDate"
+        :form="paymentForm"
+        name="cardDate" />
+
+      <CVV
+        :$v="$v.form.cvv"
+        :form="paymentForm"
+        name="cvv" />
+
       <DocumentType
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
+
       <DocumentNumber
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v" />
+
     </form>
 
   </div>
@@ -140,13 +126,16 @@
 <script>
 	import PayMethodItem from "./PayMethodItem";
   import PaymentMethod from './extra-fields/PaymentMethod';
+  import Street from './common-fields/Street';
+  import City from './common-fields/City';
+  import State from './common-fields/State';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
   import CardNumber from './common-fields/CardNumber';
   import CardDate from './common-fields/CardDate';
   import CVV from './common-fields/CVV';
-  import State from './extra-fields/State';
+  import EState from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -162,13 +151,16 @@
 		components: {
       PayMethodItem,
       PaymentMethod,
+      Street,
+      City,
+      State,
       ZipCode,
       Country,
       CardHolder,
       CardNumber,
       CardDate,
       CVV,
-      State,
+      EState,
       District,
       CardType,
       DocumentType,
@@ -189,10 +181,6 @@
 		},
 		computed: {
 
-      countryCode() {
-        return this.paymentForm.country;
-      },
-
       cardNames() {
         const paymentMethods = this.$root.paymentMethods || {};
 
@@ -211,21 +199,7 @@
         }));
       },
 
-      textState() {
-        return t('checkout.payment_form.state', {}, { country: this.paymentForm.country });
-      },
-
-      textZipCode() {
-        return t('checkout.payment_form.zipcode', {}, { country: this.paymentForm.country });
-      },
-
-      textStreetAndNumber : () => t('checkout.payment_form.street_and_number'),
-      textStreetAndNumberRequired : () => t('checkout.payment_form.street_and_number.required'),
       paySecurelyWith : () => t('checkout.pay_securely_with'),
-      textCity: () => t('checkout.payment_form.city'),
-      textCityRequired: () => t('checkout.payment_form.city.required'),
-      textZipCodeRequired: () => t('checkout.payment_form.zipcode.required'),
-      textStateRequired: () => t('checkout.payment_form.state.required'),
 		},
 
 		methods: {
@@ -260,18 +234,18 @@
       cursor: pointer;
     }
 
-    .card-date-cvv {
-      display: flex;
-      width: 100%;
-    }
-
     #card-date-field {
-      padding-right: 30px;
-      width: 70%;
+      width: 120px;
     }
 
     #cvv-field {
-      width: 30%;
+      width: 120px;
+      margin-left: 10px;
+
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: 10px;
+      }
     }
 
   }

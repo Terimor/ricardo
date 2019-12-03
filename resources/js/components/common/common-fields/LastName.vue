@@ -1,7 +1,7 @@
 <template>
 
   <text-field
-    id="card-holder-field"
+    id="last-name-field"
     v-model="form[name]"
     :validation="$v"
     :validationMessage="textRequired"
@@ -10,6 +10,8 @@
       placeholder: placeholder
         ? textLabel
         : null,
+      autocomplete: 'family-name',
+      name: 'family-name',
     }"
     theme="variant-1"
     :tabindex="tabindex"
@@ -35,11 +37,11 @@
     computed: {
 
       textLabel() {
-        return this.$t('checkout.payment_form.card_holder');
+        return this.$t('checkout.payment_form.last_name');
       },
 
       textRequired() {
-        return this.$t('checkout.payment_form.card_holder.required');
+        return this.$t('checkout.payment_form.last_name.required');
       },
 
     },

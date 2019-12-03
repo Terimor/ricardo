@@ -88,45 +88,28 @@
                         <div class="smc7__step-3">
                             <h2><span>{{textStep}}</span> {{ !isShowVariant ? 2 : 3  }}: <span>{{textContactInformation}}</span></h2>
                             <div class="full-name">
-                                <text-field
-                                  :validation="$v.form.fname"
-                                  :validationMessage="textFirstNameRequired"
-                                  theme="variant-1"
-                                  :label="textFirstName"
-                                  class="first-name"
-                                  :rest="{
-                                    placeholder: textFirstName,
-                                    autocomplete: 'given-name'
-                                  }"
-                                  v-model="form.fname"/>
-                                <text-field
-                                  :validation="$v.form.lname"
-                                  :validationMessage="textLastNameRequired"
-                                  theme="variant-1"
-                                  :label="textLastName"
-                                  class="last-name"
-                                  :rest="{
-                                    placeholder: textLastName,
-                                    autocomplete: 'family-name'
-                                  }"
-                                  v-model="form.lname"/>
+                              <FirstName
+                                :$v="$v.form.fname"
+                                :placeholder="true"
+                                :form="form"
+                                name="fname" />
+                              <LastName
+                                :$v="$v.form.lname"
+                                :placeholder="true"
+                                :form="form"
+                                name="lname" />
                             </div>
                             <Email
-                              name="email"
-                              :form="form"
+                              :$v="$v.form.email"
                               :placeholder="true"
-                              :$v="$v.form.email" />
-                            <phone-field
-                              @onCountryChange="setCountryCodeByPhoneField"
-                              :validation="$v.form.phone"
-                              :validationMessage="textPhoneRequired"
-                              :countryCode="form.countryCodePhoneField"
-                              theme="variant-1"
-                              :label="textPhoneNumber"
-                              :rest="{
-                                autocomplete: 'off'
-                              }"
-                              v-model="form.phone"/>
+                              :form="form"
+                              name="email" />
+                            <Phone
+                              :$v="$v.form.phone"
+                              :ccform="form"
+                              ccname="countryCodePhoneField"
+                              :form="form"
+                              name="phone" />
                         </div>
                     </div>
                 </div>
@@ -223,7 +206,10 @@
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import Installments from './common/extra-fields/Installments';
+  import FirstName from './common/common-fields/FirstName';
+  import LastName from './common/common-fields/LastName';
   import Email from './common/common-fields/Email';
+  import Phone from './common/common-fields/Phone';
   import Terms from './common/common-fields/Terms';
   import Warranty from './common/Warranty';
   import SaleBadge from './common/SaleBadge';
@@ -254,7 +240,10 @@
       PurchasAlreadyExists,
       Warranty,
       Spinner,
+      FirstName,
+      LastName,
       Email,
+      Phone,
       Terms,
     },
     validations: smc7validation,
@@ -350,9 +339,6 @@
       freeShippingToday: () => t('checkout.free_shipping_today'),
       textSelectVariant: () => t('checkout.select_variant'),
       textContactInformation: () => t('checkout.contact_information'),
-      textFirstName: () => t('checkout.payment_form.first_name'),
-      textLastName: () => t('checkout.payment_form.last_name'),
-      textPhoneNumber: () => t('checkout.payment_form.phone'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
       textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
@@ -361,7 +347,6 @@
       okText: () => t('checkout.main_deal.error_popup.button'),
       textFirstNameRequired: () => t('checkout.payment_form.first_name.required'),
       textLastNameRequired: () => t('checkout.payment_form.last_name.required'),
-      textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaymentError: () => t('checkout.payment_error'),
       textGet: () => t('checkout.get'),
       textOffTodayFreeShipping: () => t('checkout.off_today_free_shipping'),
@@ -603,11 +588,6 @@
                 }
               });
           })
-      },
-      setCountryCodeByPhoneField (val) {
-        if (val.iso2) {
-          this.form.countryCodePhoneField = val.iso2;
-        }
       },
       setPromotionalModal(val) {
         this.isOpenPromotionModal = val
@@ -964,21 +944,21 @@
             }
 
             .full-name {
-                display: flex;
+              display: flex;
 
-                .first-name {
-                    width: 40%;
-                    margin-right: 10px;
+              #first-name-field {
+                width: 40%;
+                padding-right: 10px;
 
-                    [dir="rtl"] & {
-                      margin-left: 10px;
-                      margin-right: 0;
-                    }
+                [dir="rtl"] & {
+                  padding-left: 10px;
+                  padding-right: 0;
                 }
+              }
 
-                .last-name {
-                    width: calc(60% - 11px);
-                }
+              #last-name-field {
+                width: 60%;
+              }
             }
         }
 

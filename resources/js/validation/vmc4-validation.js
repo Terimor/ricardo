@@ -2,56 +2,43 @@ import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import * as validators from './validators';
 
 
-const vmc4validation = function () {
-	const config = {
-		vmc4Form: {
-			deal: {
-				required
-			},
-			variant: {
-				required
-			},
-		},
-		form: {
-			stepTwo: {
-				fname: {
-					required,
-					minLength: minLength(2)
-				},
-				lname: {
-					required,
-					minLength: minLength(2)
-				},
-			},
-			stepThree: {
-				city: {
-					required
-				},
-				state: {
-					required
-				},
-			}
-		}
-	};
+export default function() {
+  let vmc4Rules = {
+    deal: validators.getDealRules(),
+    variant: validators.getVariantRules(),
+  };
 
-	validators.setEmailValidationRule.call(this, config.form.stepTwo, 'email');
-	validators.setPhoneValidationRule.call(this, config.form.stepTwo, 'phone');
-	validators.setZipCodeValidationRule.call(this, config.form.stepThree, 'zipCode');
-	validators.setCountryValidationRule.call(this, config.form.stepThree, 'country');
-	validators.setCardHolderValidationRule.call(this, config.form.stepThree, 'cardHolder');
-	validators.setCardNumberValidationRule.call(this, config.form.stepThree, 'cardNumber');
-  validators.setCardDateValidationRule.call(this, config.form.stepThree, 'cardDate');
-  validators.setCVVValidationRule.call(this, config.form.stepThree, 'cvv');
-  validators.setTermsValidationRule.call(this, config.form.stepThree, 'terms');
+  let rules = {
+    stepTwo: {
+      fname: validators.getFirstNameRules(),
+      lname: validators.getLastNameRules(),
+      email: validators.getEmailRules(),
+      phone: validators.getPhoneRules(),
+    },
+    stepThree: {
+      city: validators.getCityRules(),
+      state: validators.getStateRules(),
+      zipCode: validators.getZipCodeRules(),
+      country: validators.getCountryRules(),
+      cardNumber: validators.getCardNumberRules(),
+      cardDate: validators.getCardDateRules(),
+      cvv: validators.getCVVRules(),
+    },
+  };
 
-	this.$parent.setExtraFieldsValidationRules(config.vmc4Form);
-
-	if (this.extraFields.state) {
-    config.vmc4Form.state = config.form.stepThree.state;
-    delete config.form.stepThree.state;
+  if (this.$root.isAffIDEmpty) {
+    rules.stepThree.cardHolder = validators.getCardHolderRules();
+    rules.stepThree.terms = validators.getTermsRules();
   }
 
-	return config
-};
+  this.$parent.setExtraFieldsValidationRules(vmc4Rules);
 
-export default vmc4validation
+  if (this.extraFields.state) {
+    delete rules.stepThree.state;
+  }
+
+  return {
+    vmc4Form: vmc4Rules,
+    form: rules,
+  };
+}

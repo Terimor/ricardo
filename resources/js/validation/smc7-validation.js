@@ -1,49 +1,32 @@
-import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import * as validators from './validators';
 
 
-const smc7validation = function () {
-  const config = {
-    form: {
-      deal: {
-        required
-      },
-      variant: {
-        required
-      },
-      fname: {
-        required,
-        minLength: minLength(1)
-      },
-      lname: {
-        required,
-        minLength: minLength(1)
-      },
-      streetAndNumber: {
-        required
-      },
-      city: {
-        required
-      },
-      state: {
-        required
-      },
-    }
+export default function() {
+  let rules = {
+    deal: validators.getDealRules(),
+    variant: validators.getVariantRules(),
+    fname: validators.getFirstNameRules(),
+    lname: validators.getLastNameRules(),
+    email: validators.getEmailRules(),
+    phone: validators.getPhoneRules(),
+    streetAndNumber: validators.getStreetRules(),
+    city: validators.getCityRules(),
+    state: validators.getStateRules(),
+    zipCode: validators.getZipCodeRules(),
+    country: validators.getCountryRules(),
+    cardNumber: validators.getCardNumberRules(),
+    cardDate: validators.getCardDateRules(),
+    cvv: validators.getCVVRules(),
   };
 
-  validators.setEmailValidationRule.call(this, config.form, 'email');
-  validators.setPhoneValidationRule.call(this, config.form, 'phone');
-  validators.setZipCodeValidationRule.call(this, config.form, 'zipCode');
-  validators.setCountryValidationRule.call(this, config.form, 'country');
-  validators.setCardHolderValidationRule.call(this, config.form, 'cardHolder');
-  validators.setCardNumberValidationRule.call(this, config.form, 'cardNumber');
-  validators.setCardDateValidationRule.call(this, config.form, 'cardDate');
-  validators.setCVVValidationRule.call(this, config.form, 'cvv');
-  validators.setTermsValidationRule.call(this, config.form, 'terms');
+  if (this.$root.isAffIDEmpty) {
+    rules.cardHolder = validators.getCardHolderRules();
+    rules.terms = validators.getTermsRules();
+  }
 
-  this.setExtraFieldsValidationRules(config.form);
+  this.setExtraFieldsValidationRules(rules);
 
-  return config;
-};
-
-export default smc7validation
+  return {
+    form: rules,
+  };
+}
