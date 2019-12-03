@@ -424,9 +424,9 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit = 12): array
     {
-        $productsLocaleSorted = Cache::get('AllSoldProducts');
+        $products = Cache::get('AllDomainProducts');
         
-        if (!$productsLocaleSorted) {
+        if (!$products) {
             $domains = Domain::all();
             $allSoldProducts = [];        
             // collect domain products
@@ -451,23 +451,23 @@ class ProductService
             $productIds = array_keys($allSoldProducts);
 
             $products = OdinProduct::getActiveByIds($productIds);
-            foreach ($products as $product) {
-                $productsLocale[] = static::getDataForMiniShop($product);
-            }
+            Cache::put('AllDomainProducts', $products);
+        }
+        
+        foreach ($products as $product) {
+            $productsLocale[] = static::getDataForMiniShop($product);
+        }
 
-            // sort products by sold qty
-            if ($productsLocale) {
-                $productsLocaleSorted = [];
-                foreach ($allSoldProducts as $productId => $sp) {
-                    foreach ($productsLocale as $localeProduct) {
-                        if ($localeProduct->id == $productId) {
-                            $productsLocaleSorted[] = $localeProduct;
-                        }
+        // sort products by sold qty
+        if ($productsLocale) {
+            $productsLocaleSorted = [];
+            foreach ($allSoldProducts as $productId => $sp) {
+                foreach ($productsLocale as $localeProduct) {
+                    if ($localeProduct->id == $productId) {
+                        $productsLocaleSorted[] = $localeProduct;
                     }
                 }
             }
-            
-            Cache::put('AllSoldProducts', $productsLocaleSorted);
         }
         
         // calculate data for pagination        
