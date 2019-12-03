@@ -85,7 +85,13 @@ class SiteController extends Controller
     {        
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
-        return view('minishop/pages/home', compact('products', 'page_title'));
+        $pagination = null;
+        if (isset($products['total'])) {
+            $pagination = $products;
+            $products = $products['products'];
+            unset($pagination['products']);
+        }
+        return view('minishop/pages/home', compact('products', 'page_title', 'pagination'));
     }
 
     /**

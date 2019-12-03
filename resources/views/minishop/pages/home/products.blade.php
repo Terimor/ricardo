@@ -2,6 +2,7 @@
   ref="home_products"
   class="home-products">
 
+  <!-- Title -->
   <div class="title row">
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
       <h2 class="mb-5 mb-25-m font-weight-bold text-center">
@@ -10,6 +11,7 @@
     </div>
   </div>
 
+  <!-- Grid -->
   <div class="grid row">
     @foreach ($products as $product)
       <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
@@ -39,5 +41,32 @@
       </div>
     @endforeach
   </div>
+
+  <!-- Pager -->
+  @if ($pagination && $pagination['total_pages'] > 1)
+    <div class="pager row">
+      <div class="col-12">
+        <nav>
+          <ul class="pagination">
+
+            <li class="page-item{{ $pagination['page'] <= 1 ? ' disabled' : '' }}">
+              <a class="page-link" href="/?page={{ $pagination['page'] - 1 }}">&laquo;</a>
+            </li>
+
+            @for ($index = 1; $index <= $pagination['total_pages']; $index++)
+              <li class="page-item{{ $index === $pagination['page'] ? ' active' : '' }}">
+                <a class="page-link" href="/?page={{ $index }}">{{ $index }}</a>
+              </li>
+            @endfor
+
+            <li class="page-item{{ $pagination['page'] >= $pagination['total_pages'] ? ' disabled' : '' }}">
+              <a class="page-link" href="/?page={{ $pagination['page'] + 1 }}">&raquo;</a>
+            </li>
+
+          </ul>
+        </nav>
+      </div>
+    </div>
+  @endif
 
 </div>
