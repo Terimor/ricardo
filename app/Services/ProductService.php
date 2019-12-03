@@ -342,10 +342,11 @@ class ProductService
                 $imagesArray = [];
                 foreach ($products as $product) {
                     $imagesIds = $product->getLocalMinishopImagesIds();
-                    $images = AwsImage::whereIn('_id', $imagesIds)->get();
-                    foreach ($images as $image) {
-                        $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
-                    }
+                }
+                
+                $images = AwsImage::whereIn('_id', $imagesIds)->get();
+                foreach ($images as $image) {
+                    $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
                 }                
                 
                 foreach ($products as $product) {
@@ -393,8 +394,7 @@ class ProductService
                 'code' => $sku['code'],
                 'name' => $sku['name'],
                 'brief' => $sku['brief'],
-                'has_battery' => $sku['has_battery'],
-                'quantity_image' => $sku['quantity_image'],
+                'has_battery' => $sku['has_battery'],                
             ];
         }
         
@@ -421,7 +421,17 @@ class ProductService
         $lp->prices = $prices;
 
         $lp->skus = $skus;
-        $lp->image = $images[$product->image] ?? null;
+        $image_ids = $product->image_ids;
+        $imagesArray = [];
+        if (is_array($image_ids)) {
+            foreach ($image_ids as $image_id) {
+                $imagesArray[] = $images[$image_id] ?? null;
+                // get only 0 element
+                break;
+            }
+        }
+        
+        $lp->image = $imagesArray;
 
         return $lp;
     }
