@@ -35,8 +35,8 @@ class PaymentService
     const CARD_CREDIT = 'credit';
     const CARD_DEBIT  = 'debit';
 
-    const FRAUD_CHANCE_3DS_LIMIT       = 85;
-    const FRAUD_CHANCE_REFUSE_LIMIT    = 99;
+    const FRAUD_CHANCE_3DS_LIMIT       = 65;
+    const FRAUD_CHANCE_REFUSE_LIMIT    = 85;
     const FRAUD_CHANCE_MAX             = 100;
 
     const THROW_IS_IP_ABUSED    = true;
