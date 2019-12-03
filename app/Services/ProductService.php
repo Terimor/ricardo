@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
-//use Cache;
+use Cache;
 
 /**
  * Class ProductService
@@ -424,7 +424,7 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit = 12): array
     {
-        $domainProductsData = null;//Cache::get('DomainProductsData');
+        $domainProductsData = Cache::get('DomainProductsData');
 
         if (!$domainProductsData || !isset($domainProudctsData['products']) || !isset($domainProudctsData['allSoldProducts'])) {
             $domains = Domain::all();
@@ -452,7 +452,7 @@ class ProductService
 
             $products = OdinProduct::getActiveByIds($productIds);
 
-            //Cache::put('DomainProductsData', ['products' => $products, 'allSoldProducts' => $allSoldProducts]);
+            Cache::put('DomainProductsData', ['products' => $products, 'allSoldProducts' => $allSoldProducts]);
         }
 
         foreach ($products as $product) {
