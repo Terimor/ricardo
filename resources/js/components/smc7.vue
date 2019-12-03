@@ -142,6 +142,8 @@
                         <h2 class="step-title"><span>{{textStep}}</span> {{ !isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
                           :extraFields="extraFields"
+                          :paymentMethodURL="paymentMethodURL"
+                          @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
                           :paymentForm="form"
                           :$v="$v" />
                         <Warranty
@@ -287,8 +289,7 @@
           paymentProvider: null,
           cardHolder: null,
           cardNumber: null,
-          month: null,
-          year: null,
+          cardDate: null,
           cvv: null,
           terms: null,
         },
@@ -489,7 +490,7 @@
         this.isSubmitted = true;
 
         const phoneNumber = this.form.phone.replace(/[^0-9]/g, '');
-        const cardNumber = this.form.cardNumber.replace(/\s/g, '');
+        const cardNumber = this.form.cardNumber.replace(/[^0-9]/g, '');
 
         if (this.form.emailForceInvalid) {
           return setTimeout(() => {
@@ -537,8 +538,8 @@
               billing_phone: this.dialCode + phoneNumber,
               credit_card_bin: cardNumber.substr(0, 6),
               credit_card_hash: window.sha256(cardNumber),
-              credit_card_expiration_month: ('0' + this.form.month).slice(-2),
-              credit_card_expiration_year: ('' + this.form.year).substr(2, 2),
+              credit_card_expiration_month: this.form.cardDate.split('/')[0],
+              credit_card_expiration_year: this.form.cardDate.split('/')[1],
               cvv_code: this.form.cvv,
             };
 
@@ -582,8 +583,8 @@
               card: {
                 number: cardNumber,
                 cvv: this.form.cvv,
-                month: ('0' + this.form.month).slice(-2),
-                year: '' + this.form.year,
+                month: this.form.cardDate.split('/')[0],
+                year: '20' + this.form.cardDate.split('/')[1],
               },
               ipqs: this.ipqsResult,
             };

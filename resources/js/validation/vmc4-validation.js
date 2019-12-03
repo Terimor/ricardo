@@ -1,7 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import * as validators from './validators';
-import creditCardType from 'credit-card-type'
-import * as dateFns from 'date-fns';
 
 
 const vmc4validation = function () {
@@ -26,25 +24,6 @@ const vmc4validation = function () {
 				},
 			},
 			stepThree: {
-				cardNumber: {
-					required,
-					isValid (val) {
-						val = val ? val.replace(/\s/g, '') : '';
-
-		        const creditCardTypeList = creditCardType(val);
-		        const commonRule = val.length > 12 && val.length <= 19;
-
-		        if (creditCardTypeList.length === 0) {
-		          return false;
-		        }
-
-		        return creditCardTypeList[0].lengths.includes(val.length) || commonRule;
-					}
-				},
-				cvv: {
-					required,
-					minLength: minLength(3)
-				},
 				city: {
 					required
 				},
@@ -60,8 +39,9 @@ const vmc4validation = function () {
 	validators.setZipCodeValidationRule.call(this, config.form.stepThree, 'zipCode');
 	validators.setCountryValidationRule.call(this, config.form.stepThree, 'country');
 	validators.setCardHolderValidationRule.call(this, config.form.stepThree, 'cardHolder');
-	validators.setMonthValidationRule.call(this, config.form.stepThree, 'month');
-  validators.setYearValidationRule.call(this, config.form.stepThree, 'year');
+	validators.setCardNumberValidationRule.call(this, config.form.stepThree, 'cardNumber');
+  validators.setCardDateValidationRule.call(this, config.form.stepThree, 'cardDate');
+  validators.setCVVValidationRule.call(this, config.form.stepThree, 'cvv');
   validators.setTermsValidationRule.call(this, config.form.stepThree, 'terms');
 
 	this.$parent.setExtraFieldsValidationRules(config.vmc4Form);

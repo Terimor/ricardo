@@ -90,63 +90,23 @@
                 :extraFields="extraFields"
                 :form="vmc4Form"
                 :$v="$v" />
-              <text-field
-                  :validation="$v.form.stepThree.cardNumber"
-                  :rest="{
-                    pattern: '\\d*',
-                    type: 'tel',
-                    placeholder: '**** **** **** ****',
-                    autocomplete: 'cc-number',
-                      'data-bluesnap': 'encryptedCreditCard'
-                    }"
-                  :validationMessage="textCardNumberRequired"
-                  class="card-number"
-                  theme="variant-1"
-                  :label="textCardNumber"
-                  v-model="form.stepThree.cardNumber"
-                  :prefix="`<img src='${$parent.paymentMethodURL}' alt='Card Number' />`"
-                  :postfix="`<i class='fa fa-lock'></i>`"
-              />
-              <div class="d-flex input-container" :class="{ invalid: $v.form && $v.form.stepThree && $v.form.stepThree.month && $v.form.stepThree.month.$dirty && $v.form.stepThree.year && $v.form.stepThree.year.$dirty && ($v.form.stepThree.month.$invalid || $v.form.stepThree.year.$invalid || isCardExpired) }">
-                <div style="flex-grow:1">
-                  <div class="card-info__labels">
-                    <span class="label" v-html="textCardValidUntil"></span>
-                  </div>
-                  <div class="card-date d-flex">
-                    <Month
-                      :$v="$v.form.stepThree.month"
-                      :form="form.stepThree"
-                      name="month" />
-                    <Year
-                      :$v="$v.form.stepThree.year"
-                      :form="form.stepThree"
-                      name="year" />
-                  </div>
-                  <span
-                    class="error"
-                    v-if="form.stepThree.month && form.stepThree.year && isCardExpired"
-                    v-html="textCardExpired"></span>
-                </div>
-                <div>
-                  <div class="card-cvv">
-                    <div class="card-info__labels">
-                      <span class="label" v-html="textCardCVV"></span>
-                    </div>
-                    <text-field
-                      :validation="$v.form.stepThree.cvv"
-                      @click-postfix="openCVVModal"
-                      :validationMessage="textCardCVVRequired"
-                      class="cvv-field"
-                      theme="variant-1"
-                      :rest="{
-                        autocomplete: 'cc-csc',
-                        'data-bluesnap': 'encryptedCvv'
-                      }"
-                      v-model="form.stepThree.cvv"
-                      postfix="<i class='fa fa-question-circle cursor-pointer'></i>"
-                    />
-                  </div>
-                </div>
+              <CardNumber
+                :$v="$v.form.stepThree.cardNumber"
+                :placeholder="true"
+                placeholderText="**** **** **** ****"
+                :paymentMethodURL="paymentMethodURL"
+                @setPaymentMethodByCardNumber="value => $emit('setPaymentMethodByCardNumber', value)"
+                :form="form.stepThree"
+                name="cardNumber" />
+              <div class="card-date-cvv">
+                <CardDate
+                  :$v="$v.form.stepThree.cardDate"
+                  :form="form.stepThree"
+                  name="cardDate" />
+                <CVV
+                  :$v="$v.form.stepThree.cvv"
+                  :form="form.stepThree"
+                  name="cvv" />
               </div>
               <DocumentType
                 class="input-container"
@@ -220,18 +180,6 @@
                 :form="form.stepThree"
                 name="country" />
             </div>
-            <el-dialog
-              @click="isOpenCVVModal = false"
-              class="cvv-popup"
-              :title="textCVVPopupTitle"
-              :visible.sync="isOpenCVVModal"
-            >
-              <div class="cvv-popup__content">
-                <p v-html="textCVVPopupLine1"></p>
-                <div><img :src="$root.cdnUrl + '/assets/images/cvv_popup.jpg'" alt=""></div>
-                <p v-html="textCVVPopupLine2"></p>
-              </div>
-            </el-dialog>
             <Terms
               v-if="$root.isAffIDEmpty"
               :$v="$v.form.stepThree.terms"
@@ -281,7 +229,6 @@
 
 </template>
 <script>
-  import * as dateFns from 'date-fns';
   import { t } from '../../utils/i18n';
   import { ipqsCheck } from '../../services/ipqs';
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
@@ -299,8 +246,9 @@
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
-  import Month from './common-fields/Month';
-  import Year from './common-fields/Year';
+  import CardNumber from './common-fields/CardNumber';
+  import CardDate from './common-fields/CardDate';
+  import CVV from './common-fields/CVV';
   import Terms from './common-fields/Terms';
   import State from './extra-fields/State';
   import District from './extra-fields/District';
@@ -325,8 +273,9 @@
       ZipCode,
       Country,
       CardHolder,
-      Month,
-      Year,
+      CardNumber,
+      CardDate,
+      CVV,
       Terms,
       State,
       District,
@@ -340,6 +289,7 @@
 			'dealList',
 			'variantList',
       'extraFields',
+      'paymentMethodURL',
       'vmc4Form',
 		],
 		data() {
@@ -347,7 +297,6 @@
 				step: 1,
 				maxSteps: 3,
         isFormShown: false,
-				isOpenCVVModal: false,
         isOpenPromotionModal: false,
         paymentError: '',
         paypalPaymentError: '',
@@ -366,8 +315,7 @@
 					stepThree: {
             cardHolder: null,
 						cardNumber: null,
-						month: null,
-						year: null,
+						cardDate: null,
 						cvv: null,
 						country: checkoutData.countryCode,
 						city: null,
@@ -432,9 +380,6 @@
 
         return country ? country.dialCode : '1';
       },
-      isCardExpired() {
-        return !dateFns.isFuture(new Date(this.form.stepThree.year, this.form.stepThree.month));
-      },
       textState() {
         return t('checkout.payment_form.state', {}, { country: this.form.stepThree.country });
       },
@@ -460,11 +405,6 @@
       textPhone: () => t('checkout.payment_form.phone'),
       textPhoneRequired: () => t('checkout.payment_form.phone.required'),
       textPaySecurely: () => t('checkout.pay_securely'),
-      textCardNumber: () => t('checkout.payment_form.card_number'),
-      textCardNumberRequired: () => t('checkout.payment_form.card_number.required'),
-      textCardValidUntil: () => t('checkout.payment_form.card_valid_until'),
-      textCardCVV: () => t('checkout.payment_form.card_cvv'),
-      textCardCVVRequired: () => t('checkout.payment_form.card_cvv.required'),
       textCity: () => t('checkout.payment_form.city'),
       textCityPlaceholder: () => t('checkout.payment_form.city.placeholder'),
       textCityRequired: () => t('checkout.payment_form.city.required'),
@@ -472,9 +412,6 @@
       textZipcodeRequired: () => t('checkout.payment_form.zipcode.required'),
       textCardExpired: () => t('checkout.payment_form.card_expired'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
-      textCVVPopupTitle: () => t('checkout.payment_form.cvv_popup.title'),
-      textCVVPopupLine1: () => t('checkout.payment_form.cvv_popup.line_1'),
-      textCVVPopupLine2: () => t('checkout.payment_form.cvv_popup.line_2'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
       textPaymentError: () => t('checkout.payment_error'),
       textNext: () => t('checkout.next'),
@@ -485,26 +422,6 @@
               this.form.country = this.form.stepThree.country;
               this.$parent.reloadPaymentMethods(country);
             },
-            'form.stepThree.cardNumber'(newVal, oldValue) {
-                newVal = newVal || '';
-
-                if (!newVal.replace(/\s/g, '').match(/^[0-9]{0,19}$/)) {
-                  this.form.stepThree.cardNumber = oldValue;
-                }
-
-                this.$parent.setPaymentMethodByCardNumber(newVal);
-            },
-            'form.stepThree.cvv'(newVal, oldValue) {
-                if (this.form.stepThree.cvv) {
-                    if (newVal.match(/^[0-9]{0,4}$/g)) {
-                        this.form.stepThree.cvv = newVal;
-                    } else {
-                        this.form.stepThree.cvv = oldValue;
-                    }
-                }
-            }
-
-
         },
 		methods: {
       activateForm() {
@@ -530,7 +447,7 @@
         this.isSubmitted = true;
 
         const phoneNumber = this.form.stepTwo.phone.replace(/[^0-9]/g, '');
-        const cardNumber = this.form.stepThree.cardNumber.replace(/\s/g, '');
+        const cardNumber = this.form.stepThree.cardNumber.replace(/[^0-9]/g, '');
 
         if (this.form.stepTwo.emailForceInvalid) {
           return setTimeout(() => {
@@ -577,8 +494,8 @@
               billing_phone: this.dialCode + phoneNumber,
               credit_card_bin: cardNumber.substr(0, 6),
               credit_card_hash: window.sha256(cardNumber),
-              credit_card_expiration_month: ('0' + this.form.stepThree.month).slice(-2),
-              credit_card_expiration_year: ('' + this.form.stepThree.year).substr(2, 2),
+              credit_card_expiration_month: this.form.stepThree.cardDate.split('/')[0],
+              credit_card_expiration_year: this.form.stepThree.cardDate.split('/')[1],
               cvv_code: this.form.stepThree.cvv,
             };
 
@@ -628,8 +545,8 @@
                 card: {
                   number: cardNumber,
                   cvv: this.form.stepThree.cvv,
-                  month: ('0' + this.form.stepThree.month).slice(-2),
-                  year: '' + this.form.stepThree.year,
+                  month: this.form.stepThree.cardDate.split('/')[0],
+                  year: '20' + this.form.stepThree.cardDate.split('/')[1],
                 },
                 ipqs: this.ipqsResult,
               };
@@ -661,16 +578,6 @@
 				if (val.iso2) {
 					this.form.countryCodePhoneField = val.iso2;
 				}
-			},
-			openCVVModal() {
-				const node = document.querySelector('.cvv-popup .el-dialog');
-				const listener = () => {
-					this.isOpenCVVModal = false
-				};
-				node.removeEventListener('click', listener);
-				node.addEventListener('click', listener);
-
-				this.isOpenCVVModal = true
 			},
 			isAllowNext(currentStep) {
 				const isStepOneInvalid = this.$v.vmc4Form.deal.$invalid;
@@ -898,41 +805,18 @@
         flex-direction: column;
         align-items: center;
 
-        .d-flex {
-          flex-direction: row;
+        .card-date-cvv {
+          display: flex;
+          width: 100%;
         }
 
-        .card-date {
-          margin-top: 6px;
+        #card-date-field {
+          padding-right: 30px;
+          width: 70%;
+        }
 
-          .select.variant-1:nth-child(1) {
-            margin-right: 5px;
-            width: 50%;
-
-            [dir="rtl"] & {
-              margin-left: 5px;
-              margin-right: 0;
-            }
-          }
-
-          .select.variant-1:nth-child(2) {
-            margin-right: 20px;
-            width: 50%;
-
-            [dir="rtl"] & {
-              margin-left: 20px;
-              margin-right: 0;
-            }
-          }
-
-          .card-cvv {
-            width: 30%;
-            .input-container {
-              .label {
-                margin-bottom: 0;
-              }
-            }
-          }
+        #cvv-field {
+          width: 30%;
         }
       }
 

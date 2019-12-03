@@ -80,7 +80,9 @@
                               :paymentForm="form"
                               :countryCode="form.country"
                               :extraFields="extraFields"
-                              @setPromotionalModal="setPromotionalModal"/>
+                              :paymentMethodURL="paymentMethodURL"
+                              @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
+                              @setPromotionalModal="setPromotionalModal" />
                         </transition>
                         <div class="main__bottom">
                             <img
@@ -279,8 +281,7 @@
           country: checkoutData.countryCode,
           cardHolder: null,
           cardNumber: null,
-          month: null,
-          year: null,
+          cardDate: null,
           cvv: null,
           terms: null,
         },

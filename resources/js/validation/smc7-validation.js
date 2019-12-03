@@ -1,7 +1,5 @@
 import { required, minLength, email, numeric } from 'vuelidate/lib/validators'
 import * as validators from './validators';
-import creditCardType from 'credit-card-type'
-import * as dateFns from 'date-fns';
 
 
 const smc7validation = function () {
@@ -30,25 +28,6 @@ const smc7validation = function () {
       state: {
         required
       },
-      cardNumber: {
-        required,
-        isValid (val) {
-          val = val ? val.replace(/\s/g, '') : '';
-
-          const creditCardTypeList = creditCardType(val);
-          const commonRule = val.length > 12 && val.length <= 19;
-
-          if (creditCardTypeList.length === 0) {
-            return false;
-          }
-
-          return creditCardTypeList[0].lengths.includes(val.length) || commonRule;
-        }
-      },
-      cvv: {
-        required,
-        minLength: minLength(3)
-      },
     }
   };
 
@@ -57,8 +36,9 @@ const smc7validation = function () {
   validators.setZipCodeValidationRule.call(this, config.form, 'zipCode');
   validators.setCountryValidationRule.call(this, config.form, 'country');
   validators.setCardHolderValidationRule.call(this, config.form, 'cardHolder');
-  validators.setMonthValidationRule.call(this, config.form, 'month');
-  validators.setYearValidationRule.call(this, config.form, 'year');
+  validators.setCardNumberValidationRule.call(this, config.form, 'cardNumber');
+  validators.setCardDateValidationRule.call(this, config.form, 'cardDate');
+  validators.setCVVValidationRule.call(this, config.form, 'cvv');
   validators.setTermsValidationRule.call(this, config.form, 'terms');
 
   this.setExtraFieldsValidationRules(config.form);

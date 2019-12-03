@@ -24,6 +24,7 @@
     </div>
     <span v-if="warningMessage" class="warning" v-html="warningMessage"></span>
     <span v-if="invalid" class="error" v-html="validationMessage"></span>
+    <slot />
   </label>
 </template>
 
