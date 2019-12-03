@@ -31,6 +31,7 @@ class UtilsService
     /**
      * Culture codes (for numberFormatter)
      * Two Letter Country Code -> Culture Info Code
+     * Linked to Saga: GeoConstants::$cultures
      * https://datahub.io/core/language-codes
      * https://support.conga.com/Reference/Supported_Culture_Codes
      */
@@ -288,7 +289,7 @@ class UtilsService
 
     /**
      * Country codes
-     * Linked to Saga: Utils::$country_codes
+     * Linked to Saga: GeoConstants::$countries
      */
     public static $countryCodes = [
         'af' => 'Afghanistan',
