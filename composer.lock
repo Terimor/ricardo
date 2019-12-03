@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "80bb62a45cf47e455550b59f0ef028e1",
+    "content-hash": "935675c44336b22b3624acbef829a5cb",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -122,9 +122,9 @@
             "authors": [
                 {
                     "name": "Marcel Pociot",
+                    "role": "Developer",
                     "email": "marcel@beyondco.de",
-                    "homepage": "https://beyondco.de",
-                    "role": "Developer"
+                    "homepage": "https://beyondco.de"
                 }
             ],
             "description": "Symfony Var-Dump Server for Laravel",
@@ -5087,6 +5087,44 @@
             "time": "2019-10-13T12:02:04+00:00"
         },
         {
+            "name": "tdanielcox/bluesnap-php",
+            "version": "v0.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tdanielcox/bluesnap-php.git",
+                "reference": "8636fab28e8c88f5e27c0f7e0c2127ab31e34e55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tdanielcox/bluesnap-php/zipball/8636fab28e8c88f5e27c0f7e0c2127ab31e34e55",
+                "reference": "8636fab28e8c88f5e27c0f7e0c2127ab31e34e55",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "tdanielcox\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Cox",
+                    "email": "tdanielcox@gmail.com"
+                }
+            ],
+            "description": "A PHP Library for the Bluesnap api",
+            "homepage": "https://github.com/tdanielcox/bluesnap-php",
+            "time": "2017-07-05T19:18:47+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "2.2.1",
             "source": {
@@ -7151,44 +7189,6 @@
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
             "time": "2016-10-03T07:35:21+00:00"
-        },
-        {
-            "name": "tdanielcox/bluesnap-php",
-            "version": "v0.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tdanielcox/bluesnap-php.git",
-                "reference": "8636fab28e8c88f5e27c0f7e0c2127ab31e34e55"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tdanielcox/bluesnap-php/zipball/8636fab28e8c88f5e27c0f7e0c2127ab31e34e55",
-                "reference": "8636fab28e8c88f5e27c0f7e0c2127ab31e34e55",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "~6.0",
-                "php": ">=5.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "tdanielcox\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Daniel Cox",
-                    "email": "tdanielcox@gmail.com"
-                }
-            ],
-            "description": "A PHP Library for the Bluesnap api",
-            "homepage": "https://github.com/tdanielcox/bluesnap-php",
-            "time": "2017-07-05T19:18:47+00:00"
         },
         {
             "name": "theseer/tokenizer",
