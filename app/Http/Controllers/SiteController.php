@@ -84,6 +84,7 @@ class SiteController extends Controller
      */
     private function indexMinishop(Request $request, ProductService $productService, $domain, array $products)
     {        
+        (new I18nService())->loadPhrases('minishop_page');        
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
         $website_name = $domain->getDisplayedName();
