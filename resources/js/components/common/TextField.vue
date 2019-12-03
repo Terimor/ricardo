@@ -101,8 +101,6 @@ export default {
 
   .label {
     margin-bottom: 6px;
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
   }
 

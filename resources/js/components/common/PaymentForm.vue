@@ -497,7 +497,7 @@
         }
 
         #card-date-field {
-          width: 120px;
+          width: 130px;
         }
 
         #cvv-field {
