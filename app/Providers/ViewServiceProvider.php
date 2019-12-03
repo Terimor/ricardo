@@ -15,9 +15,15 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+use App\Providers\CacheServiceProvider;
 
 class ViewServiceProvider extends ServiceProvider
 {
+    
+    public $bindings = [
+        ServerProvider::class => CacheServiceProvider::class,
+    ];    
+    
     /**
      * Register services.
      *
