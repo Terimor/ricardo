@@ -84,7 +84,6 @@ class ViewServiceProvider extends ServiceProvider
      */
     public static function miniShopBoot()
     {
-        (new I18nService())->loadPhrases('minishop_page');
         $settings = Setting::getValue(['sentry_dsn', 'freshchat_token']);
 
         $lang = app()->getLocale();
