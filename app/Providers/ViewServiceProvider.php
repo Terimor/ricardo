@@ -74,9 +74,7 @@ class ViewServiceProvider extends ServiceProvider
         });
 
         // run minishop boot
-        if (Request::is('/')) {        
-            static::miniShopBoot();
-        }
+        static::miniShopBoot();
     }
     
     /**
@@ -84,7 +82,7 @@ class ViewServiceProvider extends ServiceProvider
      */
     public static function miniShopBoot()
     {
-        //View::composer('minishop.*', function($view) {            
+        View::composer('minishop.*', function($view) {
             (new I18nService())->loadPhrases('minishop_page');
             $settings = Setting::getValue(['sentry_dsn', 'freshchat_token']);
 
@@ -112,32 +110,22 @@ class ViewServiceProvider extends ServiceProvider
             $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
 
             // All
-             View::composer('minishop.pages.home', function($view) use ($cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name); 
-             });
-            //$view->with('cdn_url', $cdn_url);
-            //$view->with('website_name', $website_name);
+            $view->with('cdn_url', $cdn_url);
+            $view->with('website_name', $website_name);
 
             // Layout
-            View::composer('minishop.layout', function($view) use ($lang, $direction, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.layout', function($view) use ($lang, $direction) {
               $view->with('lang_locale', $lang);
               $view->with('lang_direction', $direction);
             });
 
             // Meta Tags
-            View::composer('minishop.layout.meta', function($view) use ($domain, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.layout.meta', function($view) use ($domain) {
               $view->with('ga_id', optional($domain)->ga_id);
             });
 
             // JS Deps
-            View::composer('minishop.layout.js_deps', function($view) use ($cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.layout.js_deps', function($view) {
               $view->with('show_deps', [
                 'lato.css',
                 'awesome.css',
@@ -146,81 +134,59 @@ class ViewServiceProvider extends ServiceProvider
             });
 
             // Google Tag Manager
-            View::composer('minishop.scripts.gtags', function($view) use ($html_to_app, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.scripts.gtags', function($view) use ($html_to_app) {
               $view->with('html_to_app', $html_to_app);
             });
 
             // Google Analytics
-            View::composer('minishop.scripts.analytics', function($view) use ($domain, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.scripts.analytics', function($view) use ($domain) {
               $view->with('ga_id', optional($domain)->ga_id);
             });
 
             // Sentry.io
-            View::composer('minishop.scripts.sentry', function($view) use ($settings, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.scripts.sentry', function($view) use ($settings) {
               $view->with('sentry_dsn', $settings['sentry_dsn']);
             });
 
             // Freshchat
-            View::composer('minishop.scripts.freshchat', function($view) use ($settings, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.scripts.freshchat', function($view) use ($settings) {
               $view->with('freshchat_token', $settings['freshchat_token']);
             });
 
             // Header Logo
-            View::composer('minishop.regions.header.logo', function($view) use ($domain, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.regions.header.logo', function($view) use ($cdn_url, $domain) {
               $view->with('domain_logo', optional($domain)->logo ?? $cdn_url . MiniShopService::$headerLogoDefaultPath);
             });
 
             // Header Menu
-            View::composer('minishop.regions.header.menu', function($view) use ($cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.regions.header.menu', function($view) {
               $view->with('header_menu', MiniShopService::$headerMenu);
             });
 
             // Footer
-            View::composer('minishop.regions.footer', function($view) use ($is_aff_id_empty, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.regions.footer', function($view) use ($is_aff_id_empty) {
               $view->with('is_aff_id_empty', $is_aff_id_empty);
             });
 
             // Footer Menu
-            View::composer('minishop.regions.footer.menu', function($view) use ($is_signup_hidden, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.regions.footer.menu', function($view) use ($is_signup_hidden) {
               $view->with('is_signup_hidden', $is_signup_hidden);
             });
 
             // Freshchat (Custom Image)
-            View::composer('minishop.regions.fixed.freshchat', function($view) use ($settings, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.regions.fixed.freshchat', function($view) use ($settings) {
               $view->with('freshchat_token', $settings['freshchat_token']);
             });
 
             // Google Tag Manager (No Script)
-            View::composer('minishop.scripts.gtags_ns', function($view) use ($html_to_app, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.scripts.gtags_ns', function($view) use ($html_to_app) {
               $view->with('html_to_app', $html_to_app);
             });
 
             // Pixels
-            View::composer('minishop.scripts.pixels', function($view) use ($html_to_app, $cdn_url, $website_name) {
-                $view->with('cdn_url', $cdn_url);
-                $view->with('website_name', $website_name);                
+            View::composer('minishop.scripts.pixels', function($view) use ($html_to_app) {
               $view->with('html_to_app', $html_to_app);
             });
-        //});
+        });
     }
 }
