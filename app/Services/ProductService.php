@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
-use Cache;
+//use Cache;
 
 /**
  * Class ProductService
@@ -17,8 +17,8 @@ use Cache;
  */
 class ProductService
 {
-    public static $amountValues = [10, 15, 20];    
-    
+    public static $amountValues = [10, 15, 20];
+
     /**
      * @param Request $request
      * @return OdinProduct
@@ -26,11 +26,11 @@ class ProductService
     public function resolveProduct(Request $request, $needImages = false, $currency = null, $isPostback = false)
     {
         $product = null;
-        
+
         if ($request->has('cop_id')) {
             $product = OdinProduct::where('prices.price_set', $request->input('cop_id'))->first();
         }
-        
+
         if (!$product && $request->has('product')) {
             $product = OdinProduct::where('skus.code', $request->input('product'))->first();
         }
@@ -275,9 +275,9 @@ class ProductService
 
         return $lp;
     }
-    
+
     /**
-     * 
+     *
      * @param type $copId
      * @param type $country
      */
@@ -288,25 +288,25 @@ class ProductService
             abort(404);
         }
         $currency = Currency::getByCountry(strtolower($countryCode));
-        
+
         $product->currency = $currency->code;
         $prices = [];
         $pricesOld = $product->prices;
-        
-        $localeString = \Utils::getCultureCode(null, $countryCode);        
+
+        $localeString = \Utils::getCultureCode(null, $countryCode);
         $numberFormatter = new NumberFormatter($localeString, NumberFormatter::CURRENCY);
         $symbol = $numberFormatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
-        
+
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
             $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
-            $prices[$quantity]['2xvalue'] = $pricesOld[$quantity]['value'] * 2;            
+            $prices[$quantity]['2xvalue'] = $pricesOld[$quantity]['value'] * 2;
             $prices[$quantity]['value_text'] = $pricesOld[$quantity]['value_text'];
             $prices[$quantity]['2xvalue_text'] = CurrencyService::formatCurrency($numberFormatter, $pricesOld[$quantity]['value'] * 2, $currency);;
             $prices[$quantity]['amount'] = $quantity;
             $prices[$quantity]['currency'] = $currency->code;
             $prices[$quantity]['symbol'] = $symbol;
         }
-        
+
         foreach (static::$amountValues as $value) {
             $prices[$value]['amount'] = $value;
             $prices[$value]['value'] = round($pricesOld[1]['value'] * $value, 0);
@@ -318,7 +318,7 @@ class ProductService
         }
         return $prices;
     }
-    
+
     /**
      * Get domain products
      * @return type
@@ -332,8 +332,8 @@ class ProductService
         if (!empty($domain->sold_products)) {
             $soldProducts = $domain->sold_products ?? [];
             if ($soldProducts) {
-                arsort($soldProducts);                
-                $productIds = array_keys($soldProducts);            
+                arsort($soldProducts);
+                $productIds = array_keys($soldProducts);
 
                 $products = OdinProduct::getActiveByIds($productIds);
                 foreach ($products as $product) {
@@ -355,7 +355,7 @@ class ProductService
 
         return $productsLocaleSorted;
     }
-    
+
     /**
      * Prepare data for mini shop product
      * @param OdinProduct $product
@@ -364,14 +364,14 @@ class ProductService
     public static function getDataForMiniShop(OdinProduct $product) {
         //set images
         $product->setLocalImages();
-        
+
         $lp = new Localize();
         $lp->id = $product->_id;
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
         $lp->logo_image = $product->logo_image;
-        
+
         $skus = [];
         $skusOld = $product->skus;
         // skus, if not published skip it
@@ -387,7 +387,7 @@ class ProductService
                 'quantity_image' => $sku['quantity_image'],
             ];
         }
-        
+
         $prices = [];
         $pricesOld = $product->prices;
 
@@ -409,14 +409,14 @@ class ProductService
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
         $prices['exchange_rate'] = $pricesOld['exchange_rate'];
         $lp->prices = $prices;
-        
-        
+
+
         $lp->skus = $skus;
         $lp->image = $product->image;
-        
+
         return $lp;
     }
-    
+
     /**
      * Get all sold domains products
      * @param type $page
@@ -424,11 +424,11 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit = 12): array
     {
-        $domainProductsData = Cache::get('DomainProductsData');
+        $domainProductsData = null;//Cache::get('DomainProductsData');
 
         if (!$domainProductsData || !isset($domainProudctsData['products']) || !isset($domainProudctsData['allSoldProducts'])) {
             $domains = Domain::all();
-            $allSoldProducts = [];        
+            $allSoldProducts = [];
             // collect domain products
             foreach ($domains as $domain) {
                 if (!empty($domain->sold_products)) {
@@ -447,14 +447,14 @@ class ProductService
             }
 
             // sort
-            arsort($allSoldProducts);                
+            arsort($allSoldProducts);
             $productIds = array_keys($allSoldProducts);
 
             $products = OdinProduct::getActiveByIds($productIds);
-            
-            Cache::put('DomainProductsData', ['products' => $products, 'allSoldProducts' => $allSoldProducts]);
+
+            //Cache::put('DomainProductsData', ['products' => $products, 'allSoldProducts' => $allSoldProducts]);
         }
-        
+
         foreach ($products as $product) {
             $productsLocale[] = static::getDataForMiniShop($product);
         }
@@ -470,8 +470,8 @@ class ProductService
                 }
             }
         }
-        
-        // calculate data for pagination        
+
+        // calculate data for pagination
         $totalCount = count($productsLocaleSorted);
         $totalPages = ceil($totalCount / $limit);
         $page = max($page, 1); // get 1 page when page <= 0
@@ -480,16 +480,16 @@ class ProductService
         if ($offset < 0 ) {
             $offset = 0;
         }
-        
+
         $products = array_slice($productsLocaleSorted, $offset, $limit);
-        
+
         return $data = [
             'products' => $products,
             'page' => $page,
             'total' => $totalCount,
             'total_pages' => $totalPages,
             'per_page' => $limit
-        ];     
+        ];
     }
 
 }
