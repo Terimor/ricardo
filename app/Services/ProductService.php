@@ -424,9 +424,9 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit = 12): array
     {
-        $products = Cache::get('AllDomainProducts');
-        
-        if (!$products) {
+        $domainProductsData = Cache::get('DomainProductsData');
+
+        if (!$domainProductsData || !isset($domainProudctsData['products']) || !isset($domainProudctsData['allSoldProducts'])) {
             $domains = Domain::all();
             $allSoldProducts = [];        
             // collect domain products
@@ -451,7 +451,8 @@ class ProductService
             $productIds = array_keys($allSoldProducts);
 
             $products = OdinProduct::getActiveByIds($productIds);
-            Cache::put('AllDomainProducts', $products);
+            
+            Cache::put('DomainProductsData', ['products' => $products, 'allSoldProducts' => $allSoldProducts]);
         }
         
         foreach ($products as $product) {
