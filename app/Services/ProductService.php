@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\OdinProduct;
 use App\Models\Domain;
 use App\Models\Currency;
+use App\Models\AwsImage;
 use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
@@ -336,6 +337,14 @@ class ProductService
                 $productIds = array_keys($soldProducts);
 
                 $products = OdinProduct::getActiveByIds($productIds);
+                
+                // get all images                
+                $images = [];
+                foreach ($products as $product) {
+                    $imagesIds = $product->getLocalMinishopImagesIds();
+                    $images = AwsImage::whereIn('_id', $imagesIds)->get();
+                }                
+                echo '<pre>'; var_dump($images); echo '</pre>'; exit;
                 foreach ($products as $product) {
                     $productsLocale[] = static::getDataForMiniShop($product);
                 }

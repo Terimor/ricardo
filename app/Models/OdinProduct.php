@@ -265,6 +265,32 @@ class OdinProduct extends Model
             }
         }
     }
+    
+    /**
+     * Get local images ids
+     */
+    public function getLocalMinishopImagesIds()
+    {
+        $ids = [];
+        if(!empty($this->logo_image_id)) {
+            $ids[$this->logo_image_id] = $this->logo_image_id;
+        }
+        if(!empty($this->upsell_hero_image_id)) {
+            $ids[$this->upsell_hero_image_id] = $this->upsell_hero_image_id;
+        }
+        if (!empty($this->favicon_image_id)) {
+            $ids[$this->favicon_image_id] = $this->favicon_image_id;
+        }
+
+        // Product images
+        if (!empty($this->attributes['image_ids'])) {
+            foreach($this->attributes['image_ids'] as $imgId) {
+                $ids[$imgId] = $imgId;
+                break;
+            }
+        }
+        return $ids;
+    }
 
     /**
      * Getter logo image
