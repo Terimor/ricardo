@@ -422,7 +422,7 @@ class ProductService
      * @param type $page
      * @return type
      */
-    public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit 12): array
+    public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit = 12): array
     {
         $productsLocaleSorted = Cache::get('AllSoldProducts');
         
@@ -486,7 +486,8 @@ class ProductService
             'products' => $products,
             'page' => $page,
             'total' => $totalCount,
-            'total_pages' => $totalPages
+            'total_pages' => $totalPages,
+            'per_page' => $limit
         ];     
     }
 
