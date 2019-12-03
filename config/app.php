@@ -170,6 +170,7 @@ return [
         /*
          * Application Service Providers...
          */
+        App\Providers\CacheServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
@@ -184,8 +185,7 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         //Jenssegers\Mongodb\Session\SessionServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
-        Jenssegers\Agent\AgentServiceProvider::class,
-        App\Providers\CacheServiceProvider::class,
+        Jenssegers\Agent\AgentServiceProvider::class,        
     ],
 
     /*
