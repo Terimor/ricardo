@@ -339,14 +339,17 @@ class ProductService
                 $products = OdinProduct::getActiveByIds($productIds);
                 
                 // get all images                
-                $images = [];
+                $imagesArray = [];
                 foreach ($products as $product) {
                     $imagesIds = $product->getLocalMinishopImagesIds();
                     $images = AwsImage::whereIn('_id', $imagesIds)->get();
+                    foreach ($images as $image) {
+                        $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
+                    }
                 }                
-                echo '<pre>'; var_dump($images); echo '</pre>'; exit;
+                
                 foreach ($products as $product) {
-                    $productsLocale[] = static::getDataForMiniShop($product);
+                    $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
                 }
                 // sort products by sold qty
                 if ($productsLocale) {
@@ -370,16 +373,14 @@ class ProductService
      * @param OdinProduct $product
      * @return Localize
      */
-    public static function getDataForMiniShop(OdinProduct $product) {
-        //set images
-        $product->setLocalImages();
+    public static function getDataForMiniShop(OdinProduct $product, array $images) {        
 
         $lp = new Localize();
         $lp->id = $product->_id;
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
-        $lp->logo_image = $product->logo_image;
+        $lp->logo_image = $images[$product->logo_image] ?? '';
 
         $skus = [];
         $skusOld = $product->skus;
