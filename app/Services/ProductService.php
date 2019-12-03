@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\OdinProduct;
 use App\Models\Domain;
 use App\Models\Currency;
+use App\Models\AwsImage;
 use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
@@ -336,8 +337,24 @@ class ProductService
                 $productIds = array_keys($soldProducts);
 
                 $products = OdinProduct::getActiveByIds($productIds);
+                
+                // get all images                
+                $imagesArray = [];
+                $imagesIdsArray = [];
                 foreach ($products as $product) {
-                    $productsLocale[] = static::getDataForMiniShop($product);
+                    $imagesIds = $product->getLocalMinishopImagesIds();
+                    $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
+                }
+                
+                if ($imagesIdsArray) {
+                    $images = AwsImage::whereIn('_id', $imagesIdsArray)->get();
+                    foreach ($images as $image) {
+                        $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
+                    }
+                }
+                
+                foreach ($products as $product) {
+                    $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
                 }
                 // sort products by sold qty
                 if ($productsLocale) {
@@ -361,16 +378,14 @@ class ProductService
      * @param OdinProduct $product
      * @return Localize
      */
-    public static function getDataForMiniShop(OdinProduct $product) {
-        //set images
-        $product->setLocalImages();
+    public static function getDataForMiniShop(OdinProduct $product, array $images) {        
 
         $lp = new Localize();
         $lp->id = $product->_id;
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;
-        $lp->logo_image = $product->logo_image;
+        $lp->logo_image = $images[$product->logo_image] ?? '';
 
         $skus = [];
         $skusOld = $product->skus;
@@ -383,11 +398,10 @@ class ProductService
                 'code' => $sku['code'],
                 'name' => $sku['name'],
                 'brief' => $sku['brief'],
-                'has_battery' => $sku['has_battery'],
-                'quantity_image' => $sku['quantity_image'],
+                'has_battery' => $sku['has_battery'],                
             ];
         }
-
+        
         $prices = [];
         $pricesOld = $product->prices;
 
@@ -410,9 +424,18 @@ class ProductService
         $prices['exchange_rate'] = $pricesOld['exchange_rate'];
         $lp->prices = $prices;
 
-
         $lp->skus = $skus;
-        $lp->image = $product->image;
+        $image_ids = $product->image_ids;
+        $imagesArray = [];
+        if (is_array($image_ids)) {
+            foreach ($image_ids as $image_id) {
+                $imagesArray[] = $images[$image_id] ?? null;
+                // get only 0 element
+                break;
+            }
+        }
+        
+        $lp->image = $imagesArray;
 
         return $lp;
     }
