@@ -21,6 +21,10 @@ class PaymentProviders
             'is_active' => true,
             'is_main'   => true,
             'in_prod'   => true,
+            'fraud_setting' => [
+                '3ds_limit' => 85,
+                'refuse_limit' => 99
+            ],
             'methods'   => [
                 PaymentMethods::INSTANT_TRANSFER => [
                     '-3ds' => ['*']
@@ -29,9 +33,13 @@ class PaymentProviders
         ],
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'in_prod'   => true,
+            'fraud_setting' => [
+                '3ds_limit' => 65,
+                'refuse_limit' => 85
+            ],
             'extra_fields'  => [
                 'ca' => [
                     'state' => [
@@ -163,6 +171,10 @@ class PaymentProviders
             'is_active' => true,
             'is_main'   => true,
             'in_prod'   => true,
+            'fraud_setting' => [
+                '3ds_limit' => 101,
+                'refuse_limit' => 101
+            ],
             'extra_fields'  => [
                 'ar' => [
                     'card_type' => [
@@ -472,6 +484,10 @@ class PaymentProviders
             'is_active' => true,
             'is_main'   => false,
             'in_prod'   => true,
+            'fraud_setting' => [
+                '3ds_limit' => 101,
+                'refuse_limit' => 101
+            ],
             'methods'   => [
                 PaymentMethods::CREDITCARD => [
                     '-3ds' => ['*'],
@@ -507,6 +523,10 @@ class PaymentProviders
             'name'          => 'Novalnet',
             'is_active'     => false,
             'in_prod'       => false,
+            'fraud_setting' => [
+                '3ds_limit' => 101,
+                'refuse_limit' => 101
+            ],
             'methods'       => [
                 PaymentMethods::PREZELEWY24 => [
                     '-3ds' => ['pl']
@@ -520,10 +540,14 @@ class PaymentProviders
             ]
         ],
         self::MINT  => [
-            'name'      => 'Mint-E',
-            'is_active' => false,
+            'name'      => 'Mint-e',
+            'is_active' => true,
             'is_main'   => true,
             'in_prod'   => false,
+            'fraud_setting' => [
+                '3ds_limit' => 85,
+                'refuse_limit' => 99
+            ],
             'extra_fields'  => [
                 'ca' => [
                     'state' => [

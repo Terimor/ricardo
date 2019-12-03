@@ -237,7 +237,7 @@ class PayPalService
         $ipqs = $request->input('ipqs', null);
 
         // refuse payment if  there is fraud
-        PaymentService::fraudCheck($ipqs);
+        PaymentService::fraudCheck($ipqs, PaymentProviders::PAYPAL);
 
         $order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
         if ($order) {

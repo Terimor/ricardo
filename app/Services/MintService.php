@@ -27,6 +27,15 @@ class MintService
 
     const ENCRYPT_METHOD = 'AES-256-CBC';
 
+    const DEF_CRNCY = 'USD';
+
+    const CNTRY_CRNCY = [
+        'ca' => ['CAD', 'USD', 'EUR', 'GBP'],
+        'gb' => ['CAD', 'USD', 'EUR', 'GBP'],
+        'us' => ['CAD', 'USD', 'EUR', 'GBP'],
+        '*'  => ['CAD', 'USD', 'EUR', 'GBP']
+    ];
+
     /**
      * @var string
      */
@@ -66,7 +75,8 @@ class MintService
      * @param  string $password
      * @return string
      */
-    public static function encrypt($plaintext, $password) {
+    public static function encrypt($plaintext, $password): string
+    {
         $key = hash('sha256', $password, true);
         $iv = openssl_random_pseudo_bytes(16);
 
@@ -80,9 +90,10 @@ class MintService
      * Decrypts card data
      * @param  string $cipherblock
      * @param  string $password
-     * @return string
+     * @return string|null
      */
-    public static function decrypt($cipherblock, $password) {
+    public static function decrypt($cipherblock, $password): ?string
+    {
         $iv_hash_ciphertext = base64_decode($cipherblock);
         $iv = substr($iv_hash_ciphertext, 0, 16);
         $hash = substr($iv_hash_ciphertext, 16, 32);
@@ -92,6 +103,23 @@ class MintService
         if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
 
         return openssl_decrypt($ciphertext, self::ENCRYPT_METHOD, $key, OPENSSL_RAW_DATA, $iv);
+    }
+
+    /**
+     * Returns available currency by country
+     * @param  string $country
+     * @param  string|null $currency
+     * @return string
+     */
+    public static function getCurrencyByCountry(string $country, ?string $currency): ?string
+    {
+        if (isset(self::CNTRY_CRNCY[$country])) {
+            return in_array($currency, self::CNTRY_CRNCY[$country]) ? $currency : self::DEF_CRNCY;
+        } elseif (in_array($currency, self::CNTRY_CRNCY['*'])) {
+            return $currency;
+        } else {
+            return self::DEF_CRNCY;
+        }
     }
 
     /**
