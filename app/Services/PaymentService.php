@@ -856,9 +856,9 @@ class PaymentService
     {
         switch ($prv):
             case PaymentProviders::EBANX:
-                return EbanxService::getCurrencyByCountry($country, $price['currency']);
+                return EbanxService::getCurrencyByCountry($country, $currency);
             case PaymentProviders::MINT:
-                return MintService::getCurrencyByCountry($country, $price['currency']);
+                return MintService::getCurrencyByCountry($country, $currency);
             default:
                 return $currency;
         endswitch;
