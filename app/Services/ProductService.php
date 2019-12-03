@@ -346,10 +346,12 @@ class ProductService
                     $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
                 }
                 
-                $images = AwsImage::whereIn('_id', $imagesIdsArray)->get();
-                foreach ($images as $image) {
-                    $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
-                }                
+                if ($imagesIdsArray) {
+                    $images = AwsImage::whereIn('_id', $imagesIdsArray)->get();
+                    foreach ($images as $image) {
+                        $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
+                    }
+                }
                 
                 foreach ($products as $product) {
                     $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
