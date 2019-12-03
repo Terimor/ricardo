@@ -83,7 +83,7 @@ class SiteController extends Controller
      * @return type
      */
     private function indexMinishop(Request $request, ProductService $productService, $domain, array $products)
-    {        
+    {                        
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
         $website_name = $domain->getDisplayedName();
