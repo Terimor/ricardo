@@ -49,7 +49,7 @@ class SiteController extends Controller
                 $isMultiproduct = true;
             }
         }
-        echo '<pre>'; var_dump($products); echo '</pre>'; exit;
+        
         if (!$isMultiproduct) {            
             return $this->indexSite($request, $productService, $domain);
         } else {
