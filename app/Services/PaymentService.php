@@ -505,6 +505,11 @@ class PaymentService
             }
         }
 
+        // approve order if txn is approved
+        if ($payment['status'] === Txn::STATUS_APPROVED) {
+            $order = $this->approveOrder($payment);
+        }
+
         // response
         $result = [
             'id'                => null,
