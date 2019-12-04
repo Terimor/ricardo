@@ -259,7 +259,7 @@ class SiteController extends Controller
         
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('checkout.page_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));        
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
         return view(
             $viewTemplate,
             compact(
