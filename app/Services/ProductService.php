@@ -463,7 +463,19 @@ class ProductService
             Cache::put('DomainSoldProductsData', $allSoldProducts);
         }
         
-        $productIds = array_keys($allSoldProducts);           
+        // calculate data for pagination
+        $totalCount = count($allSoldProducts);
+        $totalPages = ceil($totalCount / $limit);
+        $page = max($page, 1); // get 1 page when page <= 0
+        $page = min($page, $totalPages); // get last page when page > $totalPages
+        $offset = ($page - 1) * $limit;
+        if ($offset < 0 ) {
+            $offset = 0;
+        }
+
+        $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);          
+        
+        $productIds = array_keys($allSoldProducts);
         $products = OdinProduct::getActiveByIds($productIds);        
         
         // get all images                
@@ -485,20 +497,8 @@ class ProductService
             }
         }
 
-        // calculate data for pagination
-        $totalCount = count($productsLocaleSorted);
-        $totalPages = ceil($totalCount / $limit);
-        $page = max($page, 1); // get 1 page when page <= 0
-        $page = min($page, $totalPages); // get last page when page > $totalPages
-        $offset = ($page - 1) * $limit;
-        if ($offset < 0 ) {
-            $offset = 0;
-        }
-
-        $products = array_slice($productsLocaleSorted, $offset, $limit);
-
         return $data = [
-            'products' => $products,
+            'products' => $productsLocaleSorted,
             'page' => $page,
             'total' => $totalCount,
             'total_pages' => $totalPages,
