@@ -15,6 +15,7 @@ use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\GetPaymentMethodsByCountryRequest;
 use App\Models\Txn;
+use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use Illuminate\Http\Request;
 
