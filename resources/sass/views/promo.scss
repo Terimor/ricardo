@@ -392,11 +392,11 @@ header {
   &__product-content {
     display: flex;
     flex-direction: column;
+    align-items: center;
     flex-grow: 1;
 
     @media screen and ($s-down) {
       flex-direction: row;
-      align-items: flex-start;
     }
   }
 
