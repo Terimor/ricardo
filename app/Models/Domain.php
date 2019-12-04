@@ -121,7 +121,7 @@ class Domain extends Model
     {
         
         $logo = null;
-        if (!empty($this->is_multiproduct) && empty($copId)) {            
+        if ((!empty($this->is_multiproduct) || !empty($this->is_catch_all)) && empty($copId)) {            
             $logo = $this->logo;
         }
         
