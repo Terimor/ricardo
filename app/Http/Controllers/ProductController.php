@@ -28,22 +28,6 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Get product by ID
-     *
-     * @param OdinProduct $product
-     * @return OdinProduct
-     */
-    /*public function getProduct($product)
-    {
-        $product->load([
-            'category',
-            'logoImage',
-            'upsellHeroImage'
-
-        ]);
-        return $product;
-    }*/
 
     /**
      * Get upsell product by ID
