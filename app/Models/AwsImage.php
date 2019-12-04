@@ -46,5 +46,18 @@ class AwsImage extends Model
           return 'Unknown';
         }
     }
+    
+    /**
+     * Get images by ids
+     * @param array $ids
+     */
+    public static function getByIds(?array $ids)
+    {
+        $images = null;
+        if ($ids) {
+            $images = AwsImage::whereIn('_id', $ids)->get();
+        }
+        return $images;
+    }
 
 }

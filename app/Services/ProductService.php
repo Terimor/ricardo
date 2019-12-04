@@ -339,19 +339,7 @@ class ProductService
                 $products = OdinProduct::getActiveByIds($productIds);
                 
                 // get all images                
-                $imagesArray = [];
-                $imagesIdsArray = [];
-                foreach ($products as $product) {
-                    $imagesIds = $product->getLocalMinishopImagesIds();
-                    $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
-                }
-                
-                if ($imagesIdsArray) {
-                    $images = AwsImage::whereIn('_id', $imagesIdsArray)->get();
-                    foreach ($images as $image) {
-                        $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
-                    }
-                }
+                $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
                 
                 foreach ($products as $product) {
                     $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
@@ -479,19 +467,7 @@ class ProductService
         $products = OdinProduct::getActiveByIds($productIds);        
         
         // get all images                
-        $imagesArray = [];
-        $imagesIdsArray = [];
-        foreach ($products as $product) {
-            $imagesIds = $product->getLocalMinishopImagesIds();
-            $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
-        }
-
-        if ($imagesIdsArray) {
-            $images = AwsImage::whereIn('_id', $imagesIdsArray)->get();
-            foreach ($images as $image) {
-                $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
-            }
-        }                
+        $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
 
         foreach ($products as $product) {
             $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
@@ -528,6 +504,28 @@ class ProductService
             'total_pages' => $totalPages,
             'per_page' => $limit
         ];
+    }
+    
+    /**
+     * Return images array for minishop
+     */
+    public static function getProductsImagesIdsForMinishop($products): array
+    {
+        // get all images                
+        $imagesArray = [];
+        $imagesIdsArray = [];
+        foreach ($products as $product) {
+            $imagesIds = $product->getLocalMinishopImagesIds();
+            $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
+        }
+
+        if ($imagesIdsArray) {
+            $images = AwsImage::getByIds($imagesIdsArray);
+            foreach ($images as $image) {
+                $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
+            }
+        }                
+        return $imagesArray;
     }
 
 }
