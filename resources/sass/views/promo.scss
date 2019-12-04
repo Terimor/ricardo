@@ -132,15 +132,16 @@ header {
   }
 
   &__product-info {
-    padding: 0 15px 0;
-    flex: 1 0 auto;
+    padding: 0 15px;
   }
 
   &__add-button {
-    flex: 0 0 auto;
+    
   }
 
   &__product-info-wrapper {
+    padding: 25px 0;
+
     @media screen and ($s-down) {
       padding-left: 10px;
     }
@@ -159,7 +160,6 @@ header {
 
     &.most-popular {
       #{ $self }__product-info-wrapper {
-        padding: 25px 0;
         @media screen and ($s-down) {
           padding: 0;
         }
@@ -229,7 +229,7 @@ header {
   }
 
   &__reviews {
-    margin-bottom: 30px;
+    margin: 80px 0;
   }
 
   &__review {
@@ -246,7 +246,11 @@ header {
         flex-direction: column;
       }
 
-      & .review-head, & .review-text {
+      & .review-head {
+        align-items: flex-end;
+      }
+
+      & .review-text {
         text-align: right;
 
         [dir="rtl"] & {
@@ -255,7 +259,11 @@ header {
       }
     }
 
-    & .review-head, & .review-text {
+    & .review-head {
+      align-items: flex-start;
+    }
+
+    & .review-text {
       text-align: left;
 
       [dir="rtl"] & {
@@ -275,15 +283,29 @@ header {
     }
   }
 
-  &__review-feedback {
-    margin: 10px 0;
+  .review-head {
+    display: flex;
+    flex-direction: column;
+  }
 
-    img {
-      max-width: 85%;
-      border-radius: 50px;
-      margin: 0 auto;
-      width: auto;
-      max-height: 80px;
+  &__review-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+
+    .wrapper {
+      display: flex;
+      overflow: hidden;
+      max-width: 100%;
+      max-height: 100%;
+
+      img {
+        border-radius: 50%;
+        object-fit: cover;
+        overflow: hidden;
+      }
     }
   }
 

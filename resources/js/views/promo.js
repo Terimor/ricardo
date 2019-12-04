@@ -73,41 +73,6 @@ const promo = new Vue({
         cvv: null,
         terms: null,
       },
-      mockData: {
-        reviews: [
-            {
-              user: {
-                userName: 'Harriet S.',
-                userImg: 'https://static-backend.saratrkr.com/image_assets/third_1.jpg'
-              },
-              title: 'My best companions!',
-              text: 'The color wasn\'t what I expected but other than that, perfect! Seems to last quite a\n' +
-                'while and I enjoy not having to untangle cords anymore.',
-              rate: 5
-            },
-            {
-                user: {
-                    userName: 'Adrian P.',
-                    userImg: 'https://static-backend.saratrkr.com/image_assets/first_1.jpg'
-                },
-                title: 'Better than expected',
-                text: 'Love the color, love the style, and comfortable too! The battery lasts for ages and\n' +
-                  'I like that it charges in the case. Well worth the money.',
-                rate: 4
-            },
-            {
-                user: {
-                    userName: 'Jack P.',
-                    userImg: 'https://static-backend.saratrkr.com/image_assets/second_1.jpg'
-                },
-                title: 'Thoroughly worth the money',
-                text: 'I looked at other wireless earphones and these were the cheapest.\n' +
-                  'I didn\'t think they would be any good but I tried my friends and these are far\n' +
-                  'better! The sound quality is good and so is the carry case. I love them.',
-                rate: 5
-            }
-        ],
-      },
       slideForm: null,
       carouselFormHeight: 'auto',
       slideFormStep: 0,

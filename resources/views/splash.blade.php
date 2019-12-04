@@ -150,11 +150,11 @@
                         <div class="for-img">
                             <img src="https://enence.com/theme/images/lang/en/safe.png" alt="">
                         </div>
+                        @if (!empty($product->vimeo_id))
                         <h3>
                             {{ t('splash_page.video_of') }}
                             {{ $product->long_name }}
                             {{ t('splash_page.in_action') }}:</h3>
-                        @if (!empty($product->vimeo_id))
                             <div class="iframe-wrap">
                                 <iframe src="https://player.vimeo.com/video/{{ $product->vimeo_id }}"
                                         frameborder="0"
@@ -162,8 +162,6 @@
                                         allowfullscreen=""></iframe>
                                 <div class="iframe-stretch"></div>
                             </div>
-                        @else
-                            <img class="novideo-img" src="https://i.imgur.com/H7ti6MO.gif" alt="" />
                         @endif
                         <div class="text-center">
                             <a href="/checkout" class="green-btn">

@@ -2,11 +2,10 @@
 
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
-<link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" media="none" onload="styleOnLoad.call(this)">
-
 @section('styles')
     <link rel="stylesheet" href="{{ mix_cdn('assets/css/promo.css') }}" media="none" onload="styleOnLoad.call(this)">
     <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/promo.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" media="none" onload="styleOnLoad.call(this)">
 @endsection
 
 @section('script')
@@ -280,34 +279,31 @@
                     </div>
                 </section>
 
-                <!--<section class="promo__reviews">
+                <section class="promo__reviews">
                     <div class="container">
                         <h2 class="promo__title">
                             {{ t('checkout.happy_users', ['product' => $product->product_name]) }}
                         </h2>
-                        <div class="promo__review" v-for="review in mockData.reviews">
-                            <div class="col-md-3 col-sm-3 col-xs-12 review-head">
-                                <div class="promo__review-feedback">
-                                    <img class="lazy"
-                                         :src="review.user.userImg">
+                        @foreach ($product->reviews as $review)
+                            <div class="promo__review">
+                                <div class="col-md-3 col-sm-3 col-xs-12 review-head">
+                                    <div class="promo__review-image">
+                                        <div class="wrapper">
+                                            <img class="lazy"
+                                                 src="{{ $review['image'] ?? '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="section-text stars">
+                                        <i class="fa fa-star"
+                                           v-for="rateStar in {{ $review['rate'] ?? 5 }}"></i>
+                                    </div>
+                                    <div class="section-text name">{{ $review['name'] ?? '' }}</div>
                                 </div>
-                                <div class="section-text stars">
-                                    <i class="fa fa-star"
-                                       v-for="rateStar in review.rate"></i>
-                                </div>
-                                <div class="section-text name">@{{ review.user.userName }}</div>
+                                <div class="col-md-9 col-sm-9 col-xs-12 review-text">{{ $review['text'] ?? '' }}</div>
                             </div>
-                            <div class="col-md-9 col-sm-9 col-xs-12 review-text">
-                                <div class="section-text promo__review-title">
-                                    @{{ review.title }}
-                                </div>
-                                <div>
-                                    @{{ review.text }}
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
-                </section>-->
+                </section>
             </template>
 
 

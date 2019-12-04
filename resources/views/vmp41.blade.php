@@ -2,11 +2,10 @@
 
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
-<link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" media="none" onload="styleOnLoad.call(this)">
-
 @section('styles')
   <link rel="stylesheet" href="{{ mix_cdn('assets/css/promo.css') }}" media="none" onload="styleOnLoad.call(this)">
   <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/promo.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" media="none" onload="styleOnLoad.call(this)">
 @endsection
 
 @section('script')
@@ -180,75 +179,33 @@
                         <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/NewYourToday_3.png" alt="">
                     </carousel>
                 </section>
-                <!--<section class="promo__reviews">
-                    <h2 class="promo__title">
-                        {{ t('checkout.happy_users', ['product' => $product->product_name]) }}
-                    </h2>
-                    <div class="promo__review">
-                        <div class="col-md-3 col-sm-3 col-xs-12 review-head">
-                            <div class="promo__review-feedback">
-                                <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/third_1.jpg">
+                
+                <section class="promo__reviews">
+                    <div class="container">
+                        <h2 class="promo__title">
+                            {{ t('checkout.happy_users', ['product' => $product->product_name]) }}
+                        </h2>
+                        @foreach ($product->reviews as $review)
+                            <div class="promo__review">
+                                <div class="col-md-3 col-sm-3 col-xs-12 review-head">
+                                    <div class="promo__review-image">
+                                        <div class="wrapper">
+                                            <img class="lazy"
+                                                 src="{{ $review['image'] ?? '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="section-text stars">
+                                        <i class="fa fa-star"
+                                           v-for="rateStar in {{ $review['rate'] ?? 5 }}"></i>
+                                    </div>
+                                    <div class="section-text name">{{ $review['name'] ?? '' }}</div>
+                                </div>
+                                <div class="col-md-9 col-sm-9 col-xs-12 review-text">{{ $review['text'] ?? '' }}</div>
                             </div>
-                            <div class="section-text stars">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <i class="fa fa-star"></i>
-                                @endfor
-                            </div>
-                            <div class="section-text name">Harriet S.</div>
-                        </div>
-                        <div class="col-md-9 col-sm-9 col-xs-12 review-text">
-                            <div class="section-text promo__review-title">
-                                My best companions!
-                            </div>
-                            <div>
-                                The color wasn't what I expected but other than that, perfect! Seems to last quite a while and I enjoy not having to untangle cords anymore.
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
-                    <div class="promo__review reverse">
-                        <div class="col-md-3 col-sm-3 col-xs-12 review-head">
-                            <div class="promo__review-feedback">
-                                <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/first_1.jpg">
-                            </div>
-                            <div class="section-text stars">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <i class="fa fa-star"></i>
-                                @endfor
-                            </div>
-                            <div class="section-text name">Adrian P.</div>
-                        </div>
-                        <div class="col-md-9 col-sm-9 col-xs-12 review-text">
-                            <div class="section-text promo__review-title">
-                                Better than expected
-                            </div>
-                            <div>
-                                Love the color, love the style, and comfortable too! The battery lasts for ages and I like that it charges in the case. Well worth the money.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="promo__review">
-                        <div class="col-md-3 col-sm-3 col-xs-12 review-head">
-                            <div class="promo__review-feedback">
-                                <img class="lazy" src="https://static-backend.saratrkr.com/image_assets/second_1.jpg">
-                            </div>
-                            <div class="section-text stars">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <i class="fa fa-star"></i>
-                                @endfor
-                            </div>
-                            <div class="section-text name">Jack P.</div>
-                        </div>
-                        <div class="col-md-9 col-sm-9 col-xs-12 review-text">
-                            <div class="section-text promo__review-title">
-                                Thoroughly worth the money
-                            </div>
-                            <div>
-                                I looked at other wireless earphones and these were the cheapest.
-                                I didn't think they would be any good but I tried my friends and these are far better! The sound quality is good and so is the carry case. I love them.
-                            </div>
-                        </div>
-                    </div>
-                </section>-->
+                </section>
+
             </template>
         </div>
         <div
