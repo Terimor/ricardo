@@ -234,6 +234,22 @@ class ProductService
             ];
         }
         $lp->skus = $skus;
+        
+        $reviews = [];
+        $reviewsOld = $product->reviews;
+        $c = 1;
+        // skus, if not published skip it
+        foreach ($reviewsOld as $key => $review) {
+            $reviews[] = [
+                'name' => $review['name'],
+                'text' => $review['text'],
+                'rate' => $review['rate'],
+                'image' => $review['image_id'],
+                'date' => date('M d,Y', strtotime("-{$c} day"))
+            ];
+            $c ++;
+        }
+        $lp->reviews = $reviews;      
 
         $lp->page_title = $product->page_title;
         $lp->upsell_plusone_text = $product->upsell_plusone_text;
@@ -391,6 +407,7 @@ class ProductService
                 'has_battery' => $sku['has_battery'],                
             ];
         }
+        $lp->skus = $skus;
         
         $prices = [];
         $pricesOld = $product->prices;
@@ -413,8 +430,7 @@ class ProductService
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
         $prices['exchange_rate'] = $pricesOld['exchange_rate'];
         $lp->prices = $prices;
-
-        $lp->skus = $skus;
+        
         $image_ids = $product->image_ids;
         $imagesArray = [];
         if (is_array($image_ids)) {

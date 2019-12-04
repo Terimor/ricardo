@@ -134,6 +134,22 @@ class OdinProduct extends Model
 
         return $value;
     }
+    
+    /**
+     * Getter reviews
+     */
+    public function getReviewsAttribute($value)
+    {
+        foreach ($value as $key => $val) {
+            $value[$key]['name'] = $this->getFieldLocalText($val['name']);
+            $value[$key]['text'] = $this->getFieldLocalText($val['text']);
+            $value[$key]['rate'] = $val['rate'];
+            
+            $value[$key]['image_id'] = !empty($this->images[$val['image_id']]) ? $this->images[$val['image_id']] : null;
+        }
+
+        return $value;
+    }    
 
     /**
      * Getter prices
@@ -262,6 +278,13 @@ class OdinProduct extends Model
                 }
             }
         }
+        
+        if (!empty($this->attributes['reviews'])) {
+            foreach ($this->attributes['reviews'] as $review) {
+                $ids[$review['image_id']] = $review['image_id'];
+            }
+        }
+        
         if ($ids) {
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
