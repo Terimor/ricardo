@@ -145,7 +145,7 @@ class OdinProduct extends Model
             $value[$key]['text'] = $this->getFieldLocalText($val['text']);
             $value[$key]['rate'] = $val['rate'];
             
-            $value[$key]['image_id'] = !empty($this->images[$val['image_id']]) ? $this->images[$val['image_id']] : null;
+            $value[$key]['image'] = !empty($this->images[$val['image_id']]) ? $this->images[$val['image_id']] : null;
         }
 
         return $value;
