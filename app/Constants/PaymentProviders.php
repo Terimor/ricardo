@@ -543,7 +543,7 @@ class PaymentProviders
             'name'      => 'Mint-e',
             'is_active' => true,
             'is_main'   => true,
-            'in_prod'   => false,
+            'in_prod'   => true,
             'fraud_setting' => [
                 '3ds_limit' => 85,
                 'refuse_limit' => 99
