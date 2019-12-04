@@ -39,17 +39,16 @@ class SiteController extends Controller
         //get domain and check views logic
         $domain = Domain::getByName();
         $isMultiproduct = false;
-        //if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {
-        if (!empty($domain->is_multiproduct)) {
-            //if (!empty($domain->is_catch_all)) {
-            //    $products = $productService->getAllSoldDomainsProducts($request->get('page'));  
-            //    $isMultiproduct = true;
-            //} else {
+        if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {        
+            if (!empty($domain->is_catch_all)) {
+                $products = $productService->getAllSoldDomainsProducts($request->get('page'));  
+                $isMultiproduct = true;
+            } else {
                 $products = ProductService::getDomainProducts($domain);
                 if ($products && count($products) > 0) {
                     $isMultiproduct = true;
                 }                
-           // }
+            }
         }
         
         if (!$isMultiproduct) {            

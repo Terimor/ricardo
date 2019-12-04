@@ -447,9 +447,9 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit = 12): array
     {
-        $domainProductsData = Cache::get('DomainProductsData');
+        $allSoldProducts = Cache::get('DomainSoldProductsData');
 
-        if (!$domainProductsData || !isset($domainProudctsData['products']) || !isset($domainProudctsData['allSoldProducts'])) {
+        if (!$allSoldProducts) {
             $domains = Domain::all();
             $allSoldProducts = [];
             // collect domain products
@@ -470,16 +470,31 @@ class ProductService
             }
 
             // sort
-            arsort($allSoldProducts);
-            $productIds = array_keys($allSoldProducts);
+            arsort($allSoldProducts);            
 
-            $products = OdinProduct::getActiveByIds($productIds);
-
-            Cache::put('DomainProductsData', ['products' => $products, 'allSoldProducts' => $allSoldProducts]);
+            Cache::put('DomainSoldProductsData', $allSoldProducts);
+        }
+        
+        $productIds = array_keys($allSoldProducts);           
+        $products = OdinProduct::getActiveByIds($productIds);        
+        
+        // get all images                
+        $imagesArray = [];
+        $imagesIdsArray = [];
+        foreach ($products as $product) {
+            $imagesIds = $product->getLocalMinishopImagesIds();
+            $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
         }
 
+        if ($imagesIdsArray) {
+            $images = AwsImage::whereIn('_id', $imagesIdsArray)->get();
+            foreach ($images as $image) {
+                $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
+            }
+        }                
+
         foreach ($products as $product) {
-            $productsLocale[] = static::getDataForMiniShop($product);
+            $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
         }
 
         // sort products by sold qty
