@@ -17,7 +17,8 @@
     @onCountryChange="setCountryCodeByPhoneField"
     theme="variant-1"
     :tabindex="tabindex"
-    :order="order" />
+    :order="order"
+    @input="input" />
 
 </template>
 
@@ -61,6 +62,14 @@
         if (value.iso2) {
           this.ccform[this.ccname] = value.iso2;
         }
+      },
+
+      input() {
+        let value = this.form[this.name] || '';
+
+        value = value.replace(/^0/, '');
+
+        this.form[this.name] = value;
       },
 
     },
