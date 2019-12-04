@@ -238,16 +238,18 @@ class ProductService
         $reviews = [];
         $reviewsOld = $product->reviews;
         $c = 1;
-        // skus, if not published skip it
-        foreach ($reviewsOld as $key => $review) {
-            $reviews[] = [
-                'name' => $review['name'],
-                'text' => $review['text'],
-                'rate' => $review['rate'],
-                'image' => $review['image'],
-                'date' => date('M d,Y', strtotime("-{$c} day"))
-            ];
-            $c ++;
+        // reviews
+        if ($reviewsOld) {
+            foreach ($reviewsOld as $key => $review) {
+                $reviews[] = [
+                    'name' => $review['name'],
+                    'text' => $review['text'],
+                    'rate' => $review['rate'],
+                    'image' => $review['image'],
+                    'date' => date('M d,Y', strtotime("-{$c} day"))
+                ];
+                $c ++;
+            }
         }
         $lp->reviews = $reviews;      
 

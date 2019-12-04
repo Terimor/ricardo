@@ -140,12 +140,16 @@ class OdinProduct extends Model
      */
     public function getReviewsAttribute($value)
     {
-        foreach ($value as $key => $val) {
-            $value[$key]['name'] = $this->getFieldLocalText($val['name']);
-            $value[$key]['text'] = $this->getFieldLocalText($val['text']);
-            $value[$key]['rate'] = $val['rate'];
-            
-            $value[$key]['image'] = !empty($this->images[$val['image_id']]) ? $this->images[$val['image_id']] : null;
+        if ($value) {
+            foreach ($value as $key => $val) {
+                $value[$key]['name'] = $this->getFieldLocalText($val['name']);
+                $value[$key]['text'] = $this->getFieldLocalText($val['text']);
+                $value[$key]['rate'] = $val['rate'];
+
+                $value[$key]['image'] = !empty($this->images[$val['image_id']]) ? $this->images[$val['image_id']] : null;
+            }
+        } else {
+            $value = [];
         }
 
         return $value;
