@@ -45,9 +45,4 @@
         <changefreq>daily</changefreq>
         <priority>1</priority>
     </url>
-    <url>
-        <loc>{{ route('order-tracking') }}</loc>
-        <changefreq>weekly</changefreq>
-        <priority>1</priority>
-    </url>
 </urlset>
