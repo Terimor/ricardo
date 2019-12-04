@@ -428,10 +428,8 @@ class SiteController extends Controller
     
     /**
      * Generate sitemap
-     * @param Request $request
-     * @param ProductService $productService
      */
-    public function sitemap(Request $request, ProductService $productService)
+    public function sitemap()
     {                
         return response()->view('sitemap')->header('Content-Type', 'text/xml');
     }
