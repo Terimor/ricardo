@@ -30,7 +30,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     //$router->get('/minishop/products', 'MiniShopController@products')->name('minishop.products');
 
     //$router->get('/products', 'SiteController@products')->name('products');
-    $router->get('/product/{product}', 'ProductController@getProduct')->name('ajax.product');
+    //$router->get('/product/{product}', 'ProductController@getProduct')->name('ajax.product');
     //$router->get('/product', 'ProductController@view')->name('product');
     $router->get('/product/local-price', 'ProductController@getLocalPrice');
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
