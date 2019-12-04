@@ -246,7 +246,7 @@ class ProductService
                     'text' => $review['text'],
                     'rate' => $review['rate'],
                     'image' => $review['image'],
-                    'date' => date('M d,Y', strtotime("-{$c} day"))
+                    'date' => date('M d, Y', strtotime("-{$c} day"))
                 ];
                 $c ++;
             }
