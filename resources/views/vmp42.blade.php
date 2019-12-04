@@ -110,34 +110,31 @@
                                      }"
                                      @click="setSelectedPlan(item.totalQuantity)">
 
-
-                                    <div class="promo__product-info">
-                                        <div class="promo__heading"
-                                             :class="{
-                                                'most-popular': item.isBestseller,
-                                                'most-profitable': item.isPopular,
-                                                'starter': item.discountName === '',
-                                             }"
-                                             style="max-width: 204px;">
-                                            <strong>@{{ item.discountName || textDiscountStarter }}</strong>
-                                        </div>
-                                        <div class="promo__product-content">
-                                            <img
-                                                 :alt="item.textComposite"
-                                                 class="promo__discount-image"
-                                                 :src="productImages[item.totalQuantity] || item.image"
-                                            >
-                                            <div class="promo__product-info-wrapper">
-                                                <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
-                                                <div class="products-price">
-                                                    <p class="promo__discount">
-                                                        <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
-                                                        <span class="promo__price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
-                                                    </p>
-                                                </div>
-                                                <div class="promo__fifty-discount">
-                                                    <p v-html="item.discountText"></p>
-                                                </div>
+                                    <div class="promo__heading"
+                                         :class="{
+                                            'most-popular': item.isBestseller,
+                                            'most-profitable': item.isPopular,
+                                            'starter': item.discountName === '',
+                                         }"
+                                         style="max-width: 204px;">
+                                        <strong>@{{ item.discountName || textDiscountStarter }}</strong>
+                                    </div>
+                                    <div class="promo__product-content">
+                                        <img
+                                             :alt="item.textComposite"
+                                             class="promo__discount-image"
+                                             :src="productImages[item.totalQuantity] || item.image"
+                                        >
+                                        <div class="promo__product-info-wrapper">
+                                            <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
+                                            <div class="products-price">
+                                                <p class="promo__discount">
+                                                    <span class="promo__price--double bold">@{{countOfInstallments}} @{{ item.price }}</span>
+                                                    <span class="promo__price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
+                                                </p>
+                                            </div>
+                                            <div class="promo__fifty-discount">
+                                                <p v-html="item.discountText"></p>
                                             </div>
                                         </div>
                                     </div>
