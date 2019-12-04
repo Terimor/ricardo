@@ -258,7 +258,7 @@ class MintService
                 $obj3ds
             );
 
-            logger()->info('Mint-e req debug', ['body' => $body]);
+            // logger()->info('Mint-e req debug', ['body' => $body]);
 
             $res = $client->put($route_path, [
                 'json' => $body
