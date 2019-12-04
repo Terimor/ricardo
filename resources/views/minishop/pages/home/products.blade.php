@@ -15,9 +15,9 @@
   <div class="grid row">
     @foreach ($products as $product)
       <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
-        <div
-          class="product-box"
-          @click="home_products_goto_checkout('{{ $product->skus[0]['code'] ?? '' }}')">
+        <a
+          class="product-box d-block text-decoration-none text-reset"
+          href="/checkout?product={{ $product->skus[0]['code'] ?? '' }}">
 
           <div class="images-holder d-flex position-relative align-items-center justify-content-center px-4">
             <img
@@ -26,7 +26,7 @@
               alt="" />
           </div>
 
-          <h3 class="text-center font-weight-bold my-3">{{ $product->product_name ?? '' }}</h3>
+          <h3 class="text-center font-weight-bold text-truncate my-3">{{ $product->product_name ?? '' }}</h3>
 
           <div
             class="add-to-cart">
@@ -37,7 +37,7 @@
             <span class="old-price">{{ $product->prices[1]['old_value_text'] ?? '' }}</span>{{ $product->prices[1]['value_text'] ?? '' }}
           </p>
 
-        </div>
+        </a>
       </div>
     @endforeach
   </div>

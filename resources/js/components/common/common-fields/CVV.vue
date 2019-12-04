@@ -88,11 +88,12 @@
     methods: {
 
       input() {
-        const value = this.form[this.name];
+        let value = this.form[this.name] || '';
 
-        this.form[this.name] = value
-          ? value.replace(/[^0-9]/g, '').substr(0, 4)
-          : '';
+        value = value.replace(/[^0-9]/g, '');
+        value = value.substr(0, 4);
+
+        this.form[this.name] = value;
       },
 
       openModal() {
