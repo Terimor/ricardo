@@ -508,9 +508,11 @@ class ProductService
     
     /**
      * Return images array for minishop
+     * @param $products
+     * return array $imagesArray
      */
     public static function getProductsImagesIdsForMinishop($products): array
-    {
+    {        
         // get all images                
         $imagesArray = [];
         $imagesIdsArray = [];

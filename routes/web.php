@@ -31,7 +31,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     //$router->get('/products', 'SiteController@products')->name('products');
     $router->get('/product/{product}', 'ProductController@getProduct')->name('ajax.product');
-    $router->get('/product', 'ProductController@view')->name('product');
+    //$router->get('/product', 'ProductController@view')->name('product');
     $router->get('/product/local-price', 'ProductController@getLocalPrice');
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
     $router->get('/payment-methods-by-country', 'PaymentsController@getPaymentMethodsByCountry');
@@ -64,6 +64,10 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     /* test routes */
     $router->post('/test-payments', 'PaymentsController@test');
     $router->get('/test-postbacks', 'SiteController@logPostback');
+    
+    // sitemap
+    $router->get('/sitemap.xml', 'SiteController@sitemap');
+    
 });
 
 /*Route::get('/debug-sentry', function () {

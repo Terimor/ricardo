@@ -424,5 +424,15 @@ class SiteController extends Controller
     public function getEbanxAddressByZip(ZipcodeRequest $request, EbanxService $ebanxService)
     {                
         return response()->json($ebanxService->getAddressByZip($request->get('zipcode')));
-    }    
+    }
+    
+    /**
+     * Generate sitemap
+     * @param Request $request
+     * @param ProductService $productService
+     */
+    public function sitemap(Request $request, ProductService $productService)
+    {                
+        return response()->view('sitemap')->header('Content-Type', 'text/xml');
+    }
 }
