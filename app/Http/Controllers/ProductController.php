@@ -34,7 +34,7 @@ class ProductController extends Controller
      * @param OdinProduct $product
      * @return OdinProduct
      */
-    public function getProduct($product)
+    /*public function getProduct($product)
     {
         $product->load([
             'category',
@@ -43,7 +43,7 @@ class ProductController extends Controller
 
         ]);
         return $product;
-    }
+    }*/
 
     /**
      * Get upsell product by ID
