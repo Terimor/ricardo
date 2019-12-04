@@ -341,7 +341,9 @@ class ProductService
                 // get all images                
                 $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
                 
+                $currency = CurrencyService::getCurrency();
                 foreach ($products as $product) {
+                    $product->currencyObject = $currency;
                     $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
                 }
                 // sort products by sold qty
@@ -480,8 +482,9 @@ class ProductService
         
         // get all images                
         $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
-
+        $currency = CurrencyService::getCurrency();
         foreach ($products as $product) {
+            $product->currencyObject = $currency;
             $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
         }
 

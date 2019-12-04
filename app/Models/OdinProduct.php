@@ -22,6 +22,7 @@ class OdinProduct extends Model
     protected $images;
     protected $upsellPrices;
     public $currency;
+    public $currencyObject;
     public $hide_cop_id_log = false;
 
     protected $fillable = [
@@ -140,7 +141,11 @@ class OdinProduct extends Model
      */
     public function getPricesAttribute($value)
     {
-        $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+        if ($this->currencyObject) {
+            $currency = $this->currencyObject;
+        } else {
+            $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+        }
         $returnedKey = 0; $priceSetFound = false;
 
       //iteration by price sets array
