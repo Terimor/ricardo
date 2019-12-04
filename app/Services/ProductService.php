@@ -486,8 +486,8 @@ class ProductService
         }
 
         // sort products by sold qty
-        if ($productsLocale) {
-            $productsLocaleSorted = [];
+        $productsLocaleSorted = [];
+        if ($productsLocale) {            
             foreach ($allSoldProducts as $productId => $sp) {
                 foreach ($productsLocale as $localeProduct) {
                     if ($localeProduct->id == $productId) {
