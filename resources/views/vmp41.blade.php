@@ -112,7 +112,6 @@
                         }"
                         @click="setSelectedPlan(item.totalQuantity)"
                     >
-                    <div class="promo__product-info">
                         <div
                             class="promo__heading"
                             :class="{
@@ -145,7 +144,6 @@
                                     <p v-html="item.discountText"></p>
                                 </div>
                             </div>
-                        </div>
                         </div>
                         <green-button :class="['promo__add-button', {'disabled': selectedPlan === item.totalQuantity}]">
                             <span v-if="selectedPlan === item.totalQuantity">{{ t('checkout.selected') }}</span>

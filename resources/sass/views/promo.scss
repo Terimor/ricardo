@@ -70,6 +70,7 @@ header {
 
   &__discount-image {
     max-width: 100%;
+    margin: auto 0;
     @media screen and ($s-down) {
       max-width: 30%;
       margin-top: 30px;
@@ -96,11 +97,12 @@ header {
 
   &__card-wrapper {
     display: flex;
+    justify-content: center;
     margin-bottom: 15px;
   }
 
   &__products-row {
-    align-items: center;
+    
   }
 
   &__card {
@@ -108,16 +110,14 @@ header {
 	  flex-direction: column;
     max-width: 360px;
     width: 100%;
-    min-height: 100%;
     border: 3px solid transparent;
     border-radius: 10px;
     box-shadow: 3px 2px 15px -5px rgba(0, 0, 0, 0.49);
     text-align: center;
-    margin: auto;
     transition: 0.2s all;
     cursor: pointer;
     font-size: 16px;
-    padding: 0 10px 10px;
+    padding: 0 25px 10px;
     margin-bottom: 20px;
   }
 
@@ -136,7 +136,8 @@ header {
   }
 
   &__add-button {
-    
+    margin: 0 -15px 15px!important;
+    width: auto!important;
   }
 
   &__product-info-wrapper {
@@ -185,13 +186,15 @@ header {
 
   &__heading {
     max-width: 158px;
-    margin: auto;
     display: flex;
     justify-content: center;
     transform: skewX(20deg);
     background-color: $blue;
     color: white;
+    white-space: nowrap;
+    align-self: center;
     margin-bottom: 10px;
+    padding: 0 16px;
 
     &.most-profitable {
       background-color: $orange;
@@ -387,8 +390,11 @@ header {
   }
 
   &__product-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
     @media screen and ($s-down) {
-      display: flex;
       flex-direction: row;
       align-items: flex-start;
     }
