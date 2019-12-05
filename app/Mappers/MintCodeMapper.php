@@ -11,7 +11,8 @@ class MintCodeMapper
      */
     private static $map = [
         self::CODE_COMMON => 'card.error.common',
-        'I-204' => 'card.error.common'
+        'I-204' => 'card.error.common',
+        '05'    => 'card.error.not_functioning',
     ];
 
     /**

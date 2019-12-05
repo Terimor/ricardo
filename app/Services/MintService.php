@@ -37,6 +37,11 @@ class MintService
     ];
 
     /**
+     * @var array
+     */
+    private static $fallback_codes = ['05'];
+
+    /**
      * @var string
      */
     private $endpoint;
@@ -244,7 +249,6 @@ class MintService
                     'state'     => $contact['state'],
                     'email'     => $contact['email'],
                     'phone'     => $contact['phone'],
-                    'customerip' => $contact['ip'],
                     'amount'    => $details['amount'],
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
@@ -252,6 +256,7 @@ class MintService
                     'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
                     'cvv'       => $card['cvv'],
                     'expiry'    => $card['month'] . $card['year'],
+                    'customerip' => $contact['ip'],
                     'cardnumber' => $card['number'],
                     'descriptor' => $details['descriptor']
                 ],
@@ -264,7 +269,7 @@ class MintService
                 'json' => $body
             ]);
 
-            logger()->info('Mint-e res debug', ['body' => $res->getBody()]);
+            // logger()->info('Mint-e res debug', ['body' => $res->getBody()]);
 
             $body_decoded = json_decode($res->getBody(), true);
 
@@ -278,6 +283,9 @@ class MintService
                 $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
+                if (in_array($body_decoded['errorcode'], self::$fallback_codes)) {
+                    $result['fallback'] = true;
+                }
                 $result['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
                 logger()->error("Mint-e auth", ['body' => $body_decoded]);
             }
@@ -317,13 +325,13 @@ class MintService
                 'referenceid' => $payment['hash']
             ];
 
-            logger()->info('Mint-e capture body debug', ['body' => $body]);
+            // logger()->info('Mint-e capture body debug', ['body' => $body]);
 
             $res = $client->put('capture', [
                 'json' => $body
             ]);
 
-            logger()->info('Mint-e capture res debug', ['body' => $res->getBody()]);
+            // logger()->info('Mint-e capture res debug', ['body' => $res->getBody()]);
 
             $body_decoded = json_decode($res->getBody(), true);
 

@@ -10,6 +10,7 @@ class CheckoutDotComCodeMapper
      * @var array $map
      */
     private static $map = [
+        '20005' => 'card.error.not_functioning',
         '20014' => 'card.error.number_incorrect',
         '20046' => 'card.error.not_functioning',
         '20051' => 'card.error.funds_insufficient',
