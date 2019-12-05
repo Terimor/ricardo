@@ -367,6 +367,7 @@ class ProductService
                 $currency = CurrencyService::getCurrency();
                 foreach ($products as $product) {
                     $product->currencyObject = $currency;
+                    $product->hide_cop_id_log = true;
                     $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
                 }
                 // sort products by sold qty
@@ -508,6 +509,7 @@ class ProductService
         $currency = CurrencyService::getCurrency();
         foreach ($products as $product) {
             $product->currencyObject = $currency;
+            $product->hide_cop_id_log = true;
             $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
         }
 
