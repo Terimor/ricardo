@@ -251,31 +251,11 @@ class ProductService
                 $c ++;
             }
         }
-        if (count($reviews) === 0) {
-            $reviews = [
-                [
-                    'name' => 'Claude',
-                    'text' => 'It was even better than I expected. The ' . $product->product_name . ' is indeed extremely convenient! Really portable and the built quality is really good too.',
-                    'rate' => 5,
-                    'image' => 'https://enence.com/theme/instant-translator/landing3/user.jpg',
-                    'date' => date('M d,Y', strtotime("-1 day")),
-                ],
-                [
-                    'name' => 'Claude',
-                    'text' => 'I had a small issue during my purchase proccess, but their livechat helped me out within only 3 minutes. ' . $product->product_name . ' arrived swiftly and nicely packaged. I simply love it!',
-                    'rate' => 5,
-                    'image' => 'https://enence.com/theme/instant-translator/landing3/user.jpg',
-                    'date' => date('M d,Y', strtotime("-2 day")),
-                ],
-                [
-                    'name' => 'Claude',
-                    'text' => 'was a bit unsure at first. Could it really live up to its promises? But honestly, ' . $product->product_name . ' has entirely surpassed my expectations! I can only say: 10/10!',
-                    'rate' => 5,
-                    'image' => 'https://enence.com/theme/instant-translator/landing3/user.jpg',
-                    'date' => date('M d,Y', strtotime("-3 day")),
-                ],
-            ];
+        
+        if (!$reviews) {
+            $reviews = $product->getDefaultReviews();
         }
+        
         $lp->reviews = $reviews;      
 
         $lp->page_title = $product->page_title;
@@ -387,6 +367,7 @@ class ProductService
                 $currency = CurrencyService::getCurrency();
                 foreach ($products as $product) {
                     $product->currencyObject = $currency;
+                    $product->hide_cop_id_log = true;
                     $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
                 }
                 // sort products by sold qty
@@ -528,6 +509,7 @@ class ProductService
         $currency = CurrencyService::getCurrency();
         foreach ($products as $product) {
             $product->currencyObject = $currency;
+            $product->hide_cop_id_log = true;
             $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
         }
 

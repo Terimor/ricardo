@@ -48,6 +48,31 @@ class OdinProduct extends Model
     protected $appends = ['image'];
 
     protected $attributes = ['image'];
+    
+    /**
+     * Default reviews array
+     */
+    public $defaultReviews = [
+        [
+            'name' => 'Claude',
+            'text' => 'It was even better than I expected. The #PRODUCTNAME# is indeed extremely convenient! Really portable and the built quality is really good too.',
+            'rate' => 5,
+            'image' => '/assets/images/review-user.jpg',            
+        ],
+        [
+            'name' => 'Claude',
+            'text' => 'I had a small issue during my purchase proccess, but their livechat helped me out within only 3 minutes. #PRODUCTNAME# arrived swiftly and nicely packaged. I simply love it!',
+            'rate' => 5,
+            'image' => '/assets/images/review-user.jpg',            
+        ],
+        [
+            'name' => 'Claude',
+            'text' => 'was a bit unsure at first. Could it really live up to its promises? But honestly, #PRODUCTNAME# has entirely surpassed my expectations! I can only say: 10/10!',
+            'rate' => 5,
+            'image' => '/assets/images/review-user.jpg',            
+        ],    
+    ];
+    
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -585,5 +610,26 @@ class OdinProduct extends Model
             $products = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true)->get();
         }        
         return $products;
+    }
+    
+    /**
+     * Get default product review
+     * return array $reviewArray
+     */
+    public function getDefaultReviews(): array
+    {
+        $reviewArray = []; $c = 1;
+        foreach ($this->defaultReviews as $review) {
+            $text = str_replace("#PRODUCTNAME#", $this->product_name, $review['text']);
+            $reviewArray[] = [
+                'name' => $review['name'],
+                'text' => $text,
+                'rate' => $review['rate'],
+                'image' => $review['image'],
+                'date' => date('M d, Y', strtotime("-{$c} day"))
+            ];
+            $c++;
+        }
+        return $reviewArray;
     }
 }
