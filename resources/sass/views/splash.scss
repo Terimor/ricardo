@@ -1,3 +1,5 @@
+@import '../variables';
+
 .green-btn  {
   position: relative;
   display: block;
@@ -26,7 +28,7 @@
   position: relative;
   display: block;
   margin: 12px 0 15px 0;
-  padding: 12px 0;
+  padding: 12px 16px;
   background: #fe0002;
   border: 1px dashed #fff;
   text-align: center;
@@ -53,12 +55,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  &:after {
-    order: -1;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 10px;
-    content: url("https://enence.com/theme/instant-translator/landing3/ex4.png");
+
+  .wrapper {
+    padding: 0 16px;
+
+    img, span {
+      vertical-align: middle;
+    }
+    img {
+      margin-right: 10px;
+    }
   }
 }
 
@@ -109,11 +115,27 @@ ul, ol {
   flex: 0 0 50%;
   max-width: 50%;
   padding: 0 10px;
+
+  @media screen and ($s-down) {
+    display: none;
+  }
 }
 .bunner-right {
   flex: 0 0 50%;
   max-width: 50%;
   padding: 0 10px;
+
+  @media screen and ($s-down) {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+}
+.mobile-bunner-img {
+  display: none;
+
+  @media screen and ($s-down) {
+    display: block;
+  }
 }
 .bunner-descr {
   text-align: center;
@@ -167,8 +189,24 @@ ul, ol {
     }
   }
   .testimonial-avatar {
-    width: 100%;
-    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+
+    .wrapper {
+      display: flex;
+      overflow: hidden;
+      max-width: 100%;
+      max-height: 100%;
+
+      img {
+        border-radius: 3px;
+        object-fit: cover;
+        overflow: hidden;
+      }
+    }
   }
   .testimonial-right {
     flex: 1 1 100%;
@@ -203,10 +241,15 @@ ul, ol {
   }
   .testimonial-rate {
     margin-left: auto;
+    color: #FFEA01;
 
     [dir="rtl"] & {
       margin-left: 0;
       margin-right: auto;
+    }
+
+    .fa-star {
+      font-size: 18px;
     }
   }
   .testimonial-body {
@@ -226,7 +269,7 @@ ul, ol {
 }
 
 .product-media {
-  margin: 50px 0 45px;
+  margin-bottom: 45px;
   text-align: center;
 }
 .iframe-wrap {

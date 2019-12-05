@@ -32,6 +32,9 @@
                             <p class="bunner-text_md">{{ t('splash_page.discount') }}</p>
                             <p class="bunner-text_xl">{{ $product->prices['1']['discount_percent'] }}%</p>
                             <p class="bunner-text_lg">{{ t('splash_page.last_chance') }}</p>
+                            <div class="mobile-bunner-img for-img mt-3">
+                                <img src="{{ $product->image[0] }}" alt="">
+                            </div>
                             <a href="/checkout" class="red-btn">
                                 <span>
                                     {{ t('splash_page.get') }}
@@ -66,72 +69,34 @@
                     <div class="testimonials">
                         <h2 class="testimonials-title">What Others are Saying...</h2>
                         <ul class="testimonials-list">
-                            <li class="testimonial">
-                                <div class="testimonial-left">
-                                    <div class="testimonial-avatar for-img">
-                                        <img src="https://enence.com/theme/instant-translator/landing3/user.jpg" alt="avatar icon">
-                                    </div>
-                                </div>
-                                <div class="testimonial-right">
-                                    <div class="testimonial-header">
-                                        <span class="testimonial-author">Claude</span>
-                                        <span class="testimonial-date">Sep 27, 2019</span>
-                                        <span class="testimonial-rate for-img">
-                                            <img src="https://enence.com/theme/instant-translator/landing3/5star.png" alt="rate stars">
-                                        </span>
-                                    </div>
-                                    <div class="testimonial-body">
-                                        <p>It was even better than I expected. The {{ $product->product_name }} is indeed extremely convenient! Really portable and the built quality is really good too.</p>
-                                        <div class="testimonial-images">
-                                            <div class="testimonial-img"><img src="" alt=""></div>
+                            @foreach ($product->reviews as $review)
+                                <li class="testimonial">
+                                    <div class="testimonial-left">
+                                        <div class="testimonial-avatar">
+                                            <div class="wrapper">
+                                                <img src="{{ $review['image'] ?? '' }}" alt="avatar icon">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
-                            <li class="testimonial">
-                                <div class="testimonial-left">
-                                    <div class="testimonial-avatar for-img">
-                                        <img src="https://enence.com/theme/instant-translator/landing3/user.jpg" alt="avatar icon">
-                                    </div>
-                                </div>
-                                <div class="testimonial-right">
-                                    <div class="testimonial-header">
-                                        <span class="testimonial-author">Claude</span>
-                                        <span class="testimonial-date">Sep 27, 2019</span>
-                                        <span class="testimonial-rate for-img">
-                                            <img src="https://enence.com/theme/instant-translator/landing3/5star.png" alt="rate stars">
-                                        </span>
-                                    </div>
-                                    <div class="testimonial-body">
-                                        <p>I had a small issue during my purchase proccess, but their livechat helped me out within only 3 minutes. {{ $product->product_name }} arrived swiftly and nicely packaged. I simply love it!</p>
-                                        <div class="testimonial-images">
-                                            <div class="testimonial-img"><img src="" alt=""></div>
+                                    <div class="testimonial-right">
+                                        <div class="testimonial-header">
+                                            <span class="testimonial-author">{{ $review['name'] ?? '' }}</span>
+                                            <span class="testimonial-date">{{ $review['date'] ?? '' }}</span>
+                                            <span class="testimonial-rate for-img">
+                                                @for ($i = 0; $i < ($review['rate'] ?? 5); $i++)
+                                                    <i class="fa fa-star"></i>
+                                                @endfor
+                                            </span>
+                                        </div>
+                                        <div class="testimonial-body">
+                                            <p>{{ $review['text'] ?? '' }}</p>
+                                            <div class="testimonial-images">
+                                                <div class="testimonial-img"><img src="" alt=""></div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
-                            <li class="testimonial">
-                                <div class="testimonial-left">
-                                    <div class="testimonial-avatar for-img">
-                                        <img src="https://enence.com/theme/instant-translator/landing3/user.jpg" alt="avatar icon">
-                                    </div>
-                                </div>
-                                <div class="testimonial-right">
-                                    <div class="testimonial-header">
-                                        <span class="testimonial-author">Claude</span>
-                                        <span class="testimonial-date">Sep 27, 2019</span>
-                                        <span class="testimonial-rate for-img">
-                                            <img src="https://enence.com/theme/instant-translator/landing3/5star.png" alt="rate stars">
-                                        </span>
-                                    </div>
-                                    <div class="testimonial-body">
-                                        <p>was a bit unsure at first. Could it really live up to its promises? But honestly, {{ $product->product_name }} has entirely surpassed my expectations! I can only say: 10/10!</p>
-                                        <div class="testimonial-images">
-                                            <div class="testimonial-img"><img src="" alt=""></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
+                                </li>
+                            @endforeach
                         </ul>
                     </div>
 
@@ -145,7 +110,7 @@
                     </div>
 
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 mt-md-5">
                     <div class="product-media">
                         <div class="for-img">
                             <img src="https://enence.com/theme/images/lang/en/safe.png" alt="">
@@ -180,10 +145,15 @@
 
                         <div class="text-center">
                             <a href="/checkout" class="btn-iconed green-btn">
-                                {{ t('splash_page.add_to_cart') }}
-                                {{ t('splash_page.with') }}
-                                {{ $product->prices['1']['discount_percent'] }}%
-                                {{ t('splash_page.discount') }} >>
+                                <div class="wrapper">
+                                    <img src="https://enence.com/theme/instant-translator/landing3/ex4.png" />
+                                    <span>
+                                        {{ t('splash_page.add_to_cart') }}
+                                        {{ t('splash_page.with') }}
+                                        {{ $product->prices['1']['discount_percent'] }}%
+                                        {{ t('splash_page.discount') }} >>
+                                    </span>
+                                </div>
                             </a>
                         </div>
                     </div>
