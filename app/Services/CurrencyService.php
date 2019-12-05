@@ -173,7 +173,8 @@ class CurrencyService
         'KPW',
         'SDG',
         'STD',
-        'MRO'
+        'MRO',
+        'ETB'
     ];
 
     /**

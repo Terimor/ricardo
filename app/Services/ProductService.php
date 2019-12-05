@@ -37,8 +37,8 @@ class ProductService
         }
 
         // Domain resolve logic
-        if (!$product) {
-            $domain = Domain::getByName();
+        $domain = Domain::getByName();
+        if (!$product) {            
             if ($domain && !empty($domain->product)) {
                 $product =  $domain->product;
             }
@@ -58,6 +58,10 @@ class ProductService
             $product->currency = $currency;
         }
 
+        if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {
+            $product->hide_cop_id_log = true;
+        }        
+        
         $localizedProduct = $this->localizeProduct($product);
         $localizedProduct->id = $product->id;
 
