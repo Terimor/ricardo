@@ -109,7 +109,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('contact_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo'));
     }
 
@@ -125,7 +125,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('refunds_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('returns', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
@@ -141,7 +141,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('delivery_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('delivery', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
@@ -157,7 +157,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('privacy_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         return view('privacy', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name'));
     }
@@ -174,7 +174,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);  
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('terms_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         return view('terms', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name'));
     }
@@ -191,7 +191,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('about_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('about', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
      }
 
@@ -207,7 +207,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('tracking.order_tracking'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('order_tracking', compact('loadedPhrases', 'product', 'setting', 'page_title', 'main_logo'));
     }
 
@@ -259,7 +259,7 @@ class SiteController extends Controller
         
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('checkout.page_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view(
             $viewTemplate,
             compact(
@@ -305,7 +305,7 @@ class SiteController extends Controller
         }
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('upsells.title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
     }
 
@@ -356,7 +356,7 @@ class SiteController extends Controller
         }
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('thankyou_title'));
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('thankyou', compact('countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
     }
 
@@ -370,7 +370,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
-        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $main_logo = $domain->getMainLogo($product, $request);
         return view('splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
