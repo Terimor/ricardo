@@ -117,11 +117,11 @@ class Domain extends Model
      * @param $product
      * @param $copId
      */
-    public function getMainLogo($product, $copId)
+    public function getMainLogo($product, $request)
     {
         
         $logo = null;
-        if ((!empty($this->is_multiproduct) || !empty($this->is_catch_all)) && empty($copId)) {            
+        if ((!empty($this->is_multiproduct) || !empty($this->is_catch_all)) && empty($request->get('cop_id')) && empty($request->get('product'))) {            
             $logo = $this->logo;
         }
         
