@@ -17,7 +17,7 @@
       <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3">
         <a
           class="product-box d-block text-decoration-none text-reset"
-          href="/checkout?product={{ $product->skus[0]['code'] ?? '' }}">
+          href="/{{ $is_catch_all ? 'splash' : 'checkout' }}?product={{ $product->skus[0]['code'] ?? '' }}">
 
           <div class="images-holder d-flex position-relative align-items-center justify-content-center px-4">
             <img
