@@ -30,10 +30,11 @@ class MintService
     const DEF_CRNCY = 'USD';
 
     const CNTRY_CRNCY = [
-        'ca' => ['CAD', 'USD', 'EUR', 'GBP'],
-        'gb' => ['CAD', 'USD', 'EUR', 'GBP'],
-        'us' => ['CAD', 'USD', 'EUR', 'GBP'],
-        '*'  => ['CAD', 'USD', 'EUR', 'GBP']
+        'us' => ['USD'],
+        '*'  => [
+            'CAD', 'USD', 'EUR', 'GBP','CHF', 'SEK', 'DKK', 'NOK', 'JPY', 'KRW', 'AUD', 'NZD', 'ZAR', 'AED', 'PLN', 'CZK', 'HUF',
+            'RON', 'BGN', 'TWD', 'HKD', 'SGD', 'INR', 'ILS', 'MYR', 'CLP', 'RUB', 'TRY', 'PHP', 'HRK', 'MXN', 'COP', 'ARS'
+        ]
     ];
 
     /**

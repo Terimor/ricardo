@@ -13,6 +13,7 @@ class MintCodeMapper
         self::CODE_COMMON => 'card.error.common',
         'I-204' => 'card.error.common',
         '05'    => 'card.error.not_functioning',
+        '54'    => 'card.error.expired',
     ];
 
     /**
