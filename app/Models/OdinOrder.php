@@ -41,6 +41,8 @@ class OdinOrder extends OdinModel
         'total_paid_usd' => null, // Full USD paid amount (with warranty); calculated from local paid amount using exchange rate; recalculated after refund.
         'total_price' => null, // * float full price in local currency (with warranty)
         'total_price_usd' => null, // * float, full USD price (with warranty)
+        'total_chargeback' => 0, // total chargeback amount in local currency
+        'total_chargeback_usd' => 0, // total chargeback amount in USD
         'txns_fee_usd' => 0, //float, total amount of all txns' fee in USD
         'shop_currency' => null, // enum string, //currency was used to display prices
         //'payment_provider' => null, // enum string
@@ -91,7 +93,6 @@ class OdinOrder extends OdinModel
 //	    'hash' => null, // string, //link to Txn hash
 //	    'value' => null, float, //decreases after refund
 //	    'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
-//	    'is_charged_back' => false, // — bool, default false,
 //	    'fee' => null,// — float, //provider's txn fee
 //	    'payment_provider' => '', // — enum string,
 //	    'payment_method' => '', // — enum string,

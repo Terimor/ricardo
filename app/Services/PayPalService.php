@@ -186,8 +186,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' =>  Txn::STATUS_CAPTURED,
-                'is_charged_back' => false,
+                'status' =>  Txn::STATUS_CAPTURED,                
                 'fee' => null,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
@@ -356,8 +355,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' =>  Txn::STATUS_CAPTURED,
-                'is_charged_back' => false,
+                'status' =>  Txn::STATUS_CAPTURED,                
                 'fee' => null,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
@@ -434,8 +432,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' => Txn::STATUS_CAPTURED,
-                'is_charged_back' => false,
+                'status' => Txn::STATUS_CAPTURED,                
                 'fee' => null,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
@@ -536,8 +533,7 @@ class PayPalService
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
-                    'status' => Txn::STATUS_APPROVED,
-                    'is_charged_back' => false,
+                    'status' => Txn::STATUS_APPROVED,                    
                     'fee' => (float)$fee,
                     'payment_provider' => $txn_response['txn']->payment_provider,
                     'payment_method' => $txn_response['txn']->payment_method,

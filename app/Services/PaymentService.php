@@ -146,8 +146,7 @@ class PaymentService
             'value'             => $data['value'],
             'status'            => $data['status'],
             'fee'               => $data['fee'] ?? 0,
-            'card_type'         => $card_type,
-            'is_charged_back'   => false,
+            'card_type'         => $card_type,            
             'payment_method'    => $payment_method,
             'payment_provider'  => $data['payment_provider'],
             'payer_id'          => $data['payer_id'] ?? null
