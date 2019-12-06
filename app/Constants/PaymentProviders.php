@@ -162,8 +162,8 @@ class PaymentProviders
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ],
                 PaymentMethods::JCB => [
-                    '+3ds' => ['europe', 'gb', 'gy', 'id', 'il', 'is', 'ko', 'kr', 'lk', 'ro', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
-                    '-3ds' => ['*'],
+                    '+3ds' => ['bd', 'cn', 'hk', 'id', 'jp', 'kr', 'la', 'mm', 'mn', 'ph', 'th', 'tw', 'vn'],
+                    '-3ds' => ['sg'],
                     'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                 ]
             ]
