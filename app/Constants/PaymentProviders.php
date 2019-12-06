@@ -34,7 +34,7 @@ class PaymentProviders
         ],
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
-            'is_active' => false,
+            'is_active' => true,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,
@@ -485,7 +485,7 @@ class PaymentProviders
         self::BLUESNAP  => [
             'name'      => 'Bluesnap',
             'is_active' => true,
-            'is_main'   => true,
+            'is_main'   => false,
             'is_fallback' => true,
             'in_prod'   => true,
             'extra_fields'  => [
@@ -635,7 +635,7 @@ class PaymentProviders
         ],
         self::MINT  => [
             'name'      => 'Mint-e',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,
