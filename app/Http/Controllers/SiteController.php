@@ -18,7 +18,7 @@ use App\Http\Requests\ZipcodeRequest;
 use App\Services\EbanxService;
 
 class SiteController extends Controller
-{
+{        
     /**
      * Create a new controller instance.
      *
@@ -393,16 +393,23 @@ class SiteController extends Controller
         $redis = $fail;
 
         //check Redis
-        $redisContent = Cache::get('SkuProduct');
-        if ($redisContent) {
+        $redisContent = Cache::get('SkuProduct');        
+        if ($redisContent) {            
             $redisValidation = current($redisContent)['name']['en'] ?? null;
-            if (!empty($redisValidation)) {
+            if (!empty($redisValidation)) {                               
                 $redis = $ok;
                 $result = $good;
             }
         }
-
-        return view('prober', compact('result', 'redis'));
+        
+        // get percent        
+        $txns = 100 - OrderService::getLastOrderTxnFailPercent();
+        
+        if ($txns < 50) {
+            //$result = $bad;
+        }
+        $txns.= '%';
+        return view('prober', compact('result', 'redis', 'txns'));
     }
 
     /**

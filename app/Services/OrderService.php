@@ -16,7 +16,7 @@ use App\Services\AffiliateService;
  * Order Service class
  */
 class OrderService
-{
+{    
     /**
      *
      * @param array $data
@@ -251,5 +251,40 @@ class OrderService
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Get last fail txns percent
+     * @return type
+     */
+    public static function getLastOrderTxnFailPercent($limit = 20)
+    {
+        // get last 20 orders with a txns
+        $percent = 0;
+        $orders = OdinOrder::getLastTxns($limit);        
+        $txns = []; $c = 0; $failed = 0; $fail = false; $failedPercent = 0;
+        foreach ($orders as $order) {            
+            $orderTxns = $order->txns;
+            foreach ($orderTxns as $txn) {
+                if (isset($txns[$txn['hash']])) {
+                    continue;
+                } else {
+                    $txns[$txn['hash']] = $txn['status'];
+                    if($txn['status'] ===  Txn::STATUS_FAILED) {
+                        $failed++;
+                    }
+                    $c++;
+                    if ($c == $limit) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ($failed > 0) {
+            $failedPercent = $failed / $limit * 100;
+        }
+
+        return $failedPercent;
     }
 }

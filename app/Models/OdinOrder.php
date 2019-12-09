@@ -660,4 +660,13 @@ class OdinOrder extends OdinModel
     {
         return $this->shipping_city ? mb_convert_case(mb_strtolower($this->shipping_city), MB_CASE_TITLE) : null;
     }
+    
+    /**
+     * Get last order txns
+     */
+    public static function getLastTxns($limit = 20) {
+        $minusMinute = \Utils::getMongoTimeFromTS(strtotime("-1minute"));
+        $orders = OdinOrder::where(['txns.hash' => ['$ne' => null]])->where('created_at', '<=', $minusMinute)->limit($limit)->orderBy('_id', 'desc')->get();        
+        return $orders;
+    }
 }
