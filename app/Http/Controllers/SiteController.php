@@ -440,4 +440,13 @@ class SiteController extends Controller
     {                
         return response()->view('sitemap')->header('Content-Type', 'text/xml');
     }
+    
+    /**
+     * Logger
+     * @param Request $request
+     */
+    public function logger(Request $request)
+    {        
+        logger()->info($request->all());
+    }
 }
