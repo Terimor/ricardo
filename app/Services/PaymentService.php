@@ -19,7 +19,7 @@ use App\Services\CurrencyService;
 use App\Services\CustomerService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
-use App\Services\MintService;
+use App\Services\MinteService;
 use App\Services\OrderService;
 use App\Services\AffiliateService;
 use App\Mappers\PaymentMethodMapper;
@@ -455,14 +455,15 @@ class PaymentService
                     'billing_descriptor'   => $order->billing_descriptor
                 ]
             );
-        } else if ($provider === PaymentProviders::MINT) {
-            $mint = new MintService();
+        } else if ($provider === PaymentProviders::MINTE) {
+            $mint = new MinteService();
             $payment = $mint->payByCard($card, $contact, [
                 '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $provider, (array)$ipqs),
                 'amount'    => $order->total_price,
                 'currency'  => $order->currency,
                 'order_id'  => $order->getIdAttribute(),
                 'order_number'  => $order->number,
+                'product_id'    => $product->getIdAttribute(),
                 'user_agent'    => $user_agent,
                 'descriptor'    => $order->billing_descriptor
             ]);
@@ -640,8 +641,8 @@ class PaymentService
                             ]
                         ]
                     );
-                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::MINT) {
-                    $mint = new MintService();
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::MINTE) {
+                    $mint = new MinteService();
                     $payment = $mint->payByToken(
                         $card_token,
                         [
@@ -662,7 +663,8 @@ class PaymentService
                             'order_id'  => $order->getIdAttribute(),
                             'descriptor'    => $order->billing_descriptor,
                             'order_number'  => $order->number,
-                            'user_agent'    => $user_agent
+                            'user_agent'    => $user_agent,
+                            'payment_api_id' => $order_main_txn['payment_api_id']
                         ]
                     );
                 } elseif ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
@@ -856,13 +858,13 @@ class PaymentService
      * @param  string $prv default=minte
      * @return string
      */
-    public static function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINT): string
+    public static function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINTE): string
     {
         switch ($prv):
             case PaymentProviders::EBANX:
                 return EbanxService::getCurrencyByCountry($country, $currency);
-            case PaymentProviders::MINT:
-                return MintService::getCurrencyByCountry($country, $currency);
+            case PaymentProviders::MINTE:
+                return MinteService::getCurrencyByCountry($country, $currency);
             default:
                 return $currency;
         endswitch;
@@ -875,7 +877,7 @@ class PaymentService
      * @return void
      * @throws PaymentException
      */
-    public static function fraudCheck(?array $ipqs, string $prv = PaymentProviders::MINT, bool $throwable = true): void
+    public static function fraudCheck(?array $ipqs, string $prv = PaymentProviders::MINTE, bool $throwable = true): void
     {
         if (!empty($ipqs) && \App::environment() === 'production') {
             $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
@@ -968,7 +970,7 @@ class PaymentService
      * @param   array  $excl default=[]
      * @return  string|null
      */
-    public static function getProviderByCountryAndMethod(string $country, string $method, bool $is_main = true, string $pref = PaymentProviders::MINT, array $excl = []): ?string
+    public static function getProviderByCountryAndMethod(string $country, string $method, bool $is_main = true, string $pref = PaymentProviders::MINTE, array $excl = []): ?string
     {
         $providers = self::getPaymentMethodsByCountry($country, $is_main);
 
@@ -1048,7 +1050,7 @@ class PaymentService
      * @param  array  $ipqs
      * @return bool
      */
-    private static function checkIs3dsNeeded(string $method, string $country, string $prv = PaymentProviders::MINT, array $ipqs = []): bool
+    private static function checkIs3dsNeeded(string $method, string $country, string $prv = PaymentProviders::MINTE, array $ipqs = []): bool
     {
         $result = true;
         $setting = PaymentProviders::$list[$prv]['methods'][$method] ?? [];
@@ -1094,7 +1096,7 @@ class PaymentService
         }
 
         // select provider by country
-        $provider = PaymentProviders::MINT;
+        $provider = PaymentProviders::MINTE;
         // refuse payment if  there is fraud
         self::fraudCheck($ipqs); // throwable
 
@@ -1167,7 +1169,7 @@ class PaymentService
         }
         // select provider and create payment
         $payment = [];
-        $mint = new MintService();
+        $mint = new MinteService();
         $payment = $mint->payByCard($card, $contact, [
             '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $provider, (array)$ipqs),
             'amount'    => $order->total_price,
@@ -1175,7 +1177,8 @@ class PaymentService
             'order_id'  => $order->getIdAttribute(),
             'order_number'  => $order->number,
             'user_agent'    => $user_agent,
-            'descriptor'    => $order->billing_descriptor
+            'descriptor'    => $order->billing_descriptor,
+            'product_id'    => $product->getIdAttribute()
         ]);
 
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);

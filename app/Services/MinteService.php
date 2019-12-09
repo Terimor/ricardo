@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
-use App\Mappers\MintCodeMapper;
+use App\Mappers\MinteCodeMapper;
 use Illuminate\Http\Request;
 use App\Http\Requests\PaymentCardMinte3dsRequest;
 use GuzzleHttp\Psr7;
@@ -14,9 +15,9 @@ use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
 /**
- * MintService class
+ * MinteService class
  */
-class MintService
+class MinteService
 {
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
@@ -44,6 +45,11 @@ class MintService
     private static $fallback_codes = ['05'];
 
     /**
+     * @var \Illuminate\Database\Eloquent\Collection
+     */
+    private $keys = [];
+
+    /**
      * @var string
      */
     private $endpoint;
@@ -51,28 +57,27 @@ class MintService
     /**
      * @var string
      */
-    private $api_key;
+    private $api_key = 'xxx';
 
     /**
      * @var string
      */
-    private $mid;
+    private $mid = '10000';
 
     /**
-     * MintService constructor
+     * MinteService constructor
      */
     public function __construct()
     {
-        $mid = Setting::getValue('mint_mid');
-        $key = Setting::getValue('mint_api_key');
-        $environment = Setting::getValue('mint_environment', self::ENV_LIVE);
+        $keys = PaymentApi::getAllByProvider(PaymentProviders::MINTE);
 
-        if (!$mid || !$key) {
-            logger()->error("Mint configuration needs to check");
+        if (empty($keys)) {
+            logger()->error("Mint-e configuration needs to check");
         }
 
-        $this->mid = $mid;
-        $this->api_key = $key;
+        $this->keys = $keys;
+
+        $environment = Setting::getValue('mint_environment', self::ENV_LIVE);
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'prod' : 'test') . '.mint-e.com/process/v1.0/';
     }
 
@@ -140,6 +145,7 @@ class MintService
      *  'amount'=>float,
      *  'order_id'=>string,
      *  'order_number'=>string,
+     *  'product_id'=>string,
      *  'user_agent'=>string,
      *  'descriptor'=>string
      * ]
@@ -175,6 +181,7 @@ class MintService
      *  'order_number'=>string,
      *  'user_agent'=>string,
      *  'descriptor'=>string
+     *  'payment_api_id'=>string
      * ]
      * @return array
      */
@@ -192,6 +199,31 @@ class MintService
     }
 
     /**
+     * Setup PaymentApi
+     * @param  array $attrs ['product_id'=>string,'payment_api_id'=>string]
+     * @return PaymentApi|null
+     */
+    public function getPaymentApi(array $attrs): ?PaymentApi
+    {
+        $default = collect($this->keys)->first(function($v, $k) {
+            return empty($v->product_ids);
+        });
+
+        $key = null;
+        if (!empty($attrs['product_id'])) {
+            $key = collect($this->keys)->first(function($v, $k) use ($attrs) {
+                return in_array($attrs['product_id'], $v->product_ids);
+            });
+        } elseif (!empty($attrs['payment_api_id'])) {
+            $key = collect($this->keys)->first(function($v, $k) use ($attrs) {
+                return $attrs['payment_api_id'] === (string)$v->getIdAttribute();
+            });
+        }
+
+        return $key ?? $default;
+    }
+
+    /**
      * Authorizes payment
      * @param  array   $card
      * @param  array   $contact
@@ -202,6 +234,7 @@ class MintService
      *  'amount'=>float,
      *  'order_id'=>string,
      *  'order_number'=>string,
+     *  'product_id'=>stirng,
      *  'user_agent'=>string,
      *  'descriptor'=>string
      * ]
@@ -219,12 +252,21 @@ class MintService
             'currency'          => $details['currency'],
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentProviders::MINT,
+            'payment_provider'  => PaymentProviders::MINTE,
+            'payment_api_id'    => null,
             'hash'              => "fail_" . UtilsService::randomString(16),
             'provider_data'     => null,
             'errors'            => null,
             'token'             => null
         ];
+
+        $api = $this->getPaymentApi($details);
+        if (empty($api)) {
+            logger()->error("Mint-e PaymentApi not found", ['product_id' => $details['product_id']]);
+            return $result;
+        }
+
+        $result['payment_api_id'] = (string)$api->getIdAttribute();
 
         try {
             $route_path = 'authorize';
@@ -242,7 +284,7 @@ class MintService
             $nonce = UtilsService::millitime();
             $body = array_merge(
                 [
-                    'mid'       => $this->mid,
+                    'mid'       => $api->login,
                     'name'      => $contact['first_name'] . ' ' . $contact['last_name'],
                     'address'   => $contact['street'],
                     'city'      => $contact['city'],
@@ -255,7 +297,7 @@ class MintService
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
                     'nonce'     => $nonce,
-                    'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
+                    'signature' => hash('sha256', $api->login . $nonce . $api->key),
                     'cvv'       => $card['cvv'],
                     'expiry'    => $card['month'] . $card['year'],
                     'customerip' => $contact['ip'],
@@ -288,7 +330,7 @@ class MintService
                 if (in_array($body_decoded['errorcode'], self::$fallback_codes)) {
                     $result['fallback'] = true;
                 }
-                $result['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
+                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'])];
                 logger()->error("Mint-e auth", ['body' => $body_decoded]);
             }
             $result['provider_data'] = $body_decoded;
@@ -296,19 +338,16 @@ class MintService
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
 
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
-            $result['errors'] = [MintCodeMapper::toPhrase()];
+            $result['errors'] = [MinteCodeMapper::toPhrase()];
 
-            logger()->error("Mint-e auth", [
-                'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $result['provider_data']
-            ]);
+            logger()->error("Mint-e auth", ['response'  => $result['provider_data']]);
         }
         return $result;
     }
 
     /**
      * Captures payment
-     * @param  array   $payment ['hash'=>string]
+     * @param  array   $payment ['hash'=>string,'payment_api_id'=>string]
      * @return array
      */
     private function capture(array $payment): array
@@ -318,12 +357,18 @@ class MintService
             'headers' => ['Accept'  => 'application/json']
         ]);
 
+        $api = $this->getPaymentApi($payment);
+        if (empty($api)) {
+            logger()->error("Mint-e PaymentApi not found", ['payment_api_id' => $payment['payment_api_id']]);
+            return $result;
+        }
+
         try {
             $nonce = UtilsService::millitime();
             $body = [
-                'mid'       => $this->mid,
+                'mid'       => $api->login,
                 'nonce'     => $nonce,
-                'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
+                'signature' => hash('sha256', $this->login . $nonce . $this->key),
                 'referenceid' => $payment['hash']
             ];
 
@@ -341,7 +386,7 @@ class MintService
                 $payment['status']   = Txn::STATUS_APPROVED;
             } else {
                 $payment['status']   = Txn::STATUS_FAILED;
-                $payment['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
+                $payment['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'])];
                 logger()->error("Mint-e capture", ['body' => $body_decoded]);
             }
             $payment['provider_data'] = $body_decoded;
@@ -349,7 +394,7 @@ class MintService
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
 
             $payment['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
-            $payment['errors'] = [MintCodeMapper::toPhrase()];
+            $payment['errors'] = [MinteCodeMapper::toPhrase()];
             $payment['status']   = Txn::STATUS_FAILED;
 
             logger()->error("Mint-e capture", [
@@ -363,7 +408,7 @@ class MintService
     /**
      * Provides recurring payment
      * @param  string   $token
-     * @param  array    $details ['currency'=>string,'amount'=>float,'descriptor'=>string]
+     * @param  array    $details ['currency'=>string,'amount'=>float,'descriptor'=>string,'payment_api_id'=>string]
      * @return array
      */
     private function recurring(string $token, array $details): array
@@ -377,11 +422,17 @@ class MintService
             'currency'          => $details['currency'],
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentProviders::MINT,
+            'payment_provider'  => PaymentProviders::MINTE,
             'hash'              => "fail_" . UtilsService::randomString(16),
             'provider_data'     => null,
             'errors'            => null
         ];
+
+        $api = $this->getPaymentApi($details);
+        if (empty($api)) {
+            logger()->error("Mint-e PaymentApi not found", ['payment_api_id' => $details['payment_api_id']]);
+            return $result;
+        }
 
         $nonce = UtilsService::millitime();
         try {
@@ -405,7 +456,7 @@ class MintService
                 $result['hash'] = $body_decoded['midtransid'];
                 $result['status'] = Txn::STATUS_APPROVED;
             } else {
-                $result['errors'] = [MintCodeMapper::toPhrase($body_decoded['errorcode'])];
+                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'])];
                 logger()->error("Mint-e pay", ['body' => $body_decoded]);
             }
             $result['provider_data'] = $body_decoded;
@@ -413,7 +464,7 @@ class MintService
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
 
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
-            $result['errors'] = [MintCodeMapper::toPhrase()];
+            $result['errors'] = [MinteCodeMapper::toPhrase()];
 
             logger()->error("Mint-e pay", [
                 'request'   => Psr7\str($ex->getRequest()),
@@ -426,9 +477,10 @@ class MintService
     /**
      * Captures payment after 3ds authorization
      * @param PaymentCardMinte3dsRequest $req
+     * @param array $details ['order_id'=>string,'payment_api_id'=>string]
      * @return array
      */
-    public function captureAfterAuth3ds(PaymentCardMinte3dsRequest $req): array
+    public function captureAfterAuth3ds(PaymentCardMinte3dsRequest $req, array $details): array
     {
         $err_code   = $req->input('errorcode');
         $sign       = $req->input('signature');
@@ -441,10 +493,10 @@ class MintService
         if ($sign === hash('sha256', $txn_hash . $txn_ts . $this->api_key)) {
             $result = ['status' => true, 'txn' => ['hash' => $txn_hash]];
             if ($txn_status === self::STATUS_OK) {
-                $result['txn'] = $this->capture(['hash' => $txn_hash]);
+                $result['txn'] = $this->capture(['hash' => $txn_hash, 'payment_api_id' => $details['payment_api_id']]);
             } else {
                 $result['txn']['status'] = Txn::STATUS_FAILED;
-                $result['txn']['errors'] = [MintCodeMapper::toPhrase($err_code)];
+                $result['txn']['errors'] = [MinteCodeMapper::toPhrase($err_code)];
             }
         }
 
