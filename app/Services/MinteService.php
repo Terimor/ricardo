@@ -368,7 +368,7 @@ class MinteService
             $body = [
                 'mid'       => $api->login,
                 'nonce'     => $nonce,
-                'signature' => hash('sha256', $this->login . $nonce . $this->key),
+                'signature' => hash('sha256', $this->login . $nonce . $api->key),
                 'referenceid' => $payment['hash']
             ];
 
