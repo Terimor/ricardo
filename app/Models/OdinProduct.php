@@ -612,7 +612,7 @@ class OdinProduct extends Model
                 $productsQuery->where(function ($query) use($search) {
                         $descriptionField = 'description.'.app()->getLocale();
                         $query->where('product_name', 'regexp', "/{$search}/i")
-                              ->orWhere('description.ru', 'regexp', "/{$search}/i");
+                              ->orWhere($descriptionField, 'regexp', "/{$search}/i");
                     });
             }
             $products = $productsQuery->get();
