@@ -17,7 +17,6 @@ use App\Services\AffiliateService;
  */
 class OrderService
 {    
-    
     /**
      *
      * @param array $data
