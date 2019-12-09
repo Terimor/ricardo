@@ -445,8 +445,16 @@ class SiteController extends Controller
      * Logger
      * @param Request $request
      */
-    public function logger(Request $request)
-    {        
-        logger()->info($request->all());
+    public function logData(Request $request)
+    {   
+        $type = $request->get('logger-type');
+        
+        if ($type == 'error') {
+            logger()->error($request->all());
+        } else if ($type == 'warning') {
+            logger()->warning($request->all());
+        } else {        
+            logger()->info($request->all());
+        }
     }
 }
