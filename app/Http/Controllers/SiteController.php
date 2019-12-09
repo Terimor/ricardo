@@ -393,8 +393,7 @@ class SiteController extends Controller
         $redis = $fail;
 
         //check Redis
-        $redisContent = Cache::get('SkuProduct');
-        
+        $redisContent = Cache::get('SkuProduct');        
         if ($redisContent) {            
             $redisValidation = current($redisContent)['name']['en'] ?? null;
             if (!empty($redisValidation)) {                               
