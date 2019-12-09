@@ -393,8 +393,6 @@ class SiteController extends Controller
         $fail = 'FAIL';
         $result = $good;
         $redis = $fail;
-        $redisOk = false;
-        $txnOk = true;
 
         //check Redis
         $redisContent = Cache::get('SkuProduct');
@@ -402,22 +400,18 @@ class SiteController extends Controller
             $redisValidation = current($redisContent)['name']['en'] ?? null;
             if (!empty($redisValidation)) {                               
                 $redis = $ok;
-                $redisOk = true;
+                $result = $bad;
             }
         }
         
         // get percent        
-        $txnPercent = OrderService::getLastOrderTxnFailPercent(static::LAST_TXNS_COUNT);
+        $txns = 100 - OrderService::getLastOrderTxnFailPercent(static::LAST_TXNS_COUNT);
         
-        if ($txnPercent < static::LAST_TXNS_COUNT_FAILED_PERCENT) {
-            $txnOk = false;
-        }
-
-        if (!$redisOk) {
-            $result = $bad;
+        if ($txns < static::LAST_TXNS_COUNT_FAILED_PERCENT) {
+            //$result = $bad;
         }
         
-        return view('prober', compact('result', 'redis', 'txnPercent'));
+        return view('prober', compact('result', 'redis', 'txns'));
     }
 
     /**
