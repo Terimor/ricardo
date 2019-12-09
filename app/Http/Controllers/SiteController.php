@@ -408,7 +408,7 @@ class SiteController extends Controller
         if ($txns < 50) {
             //$result = $bad;
         }
-        
+        $txns.= '%';
         return view('prober', compact('result', 'redis', 'txns'));
     }
 
