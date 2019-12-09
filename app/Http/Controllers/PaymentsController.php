@@ -246,6 +246,9 @@ class PaymentsController extends Controller
         if (\App::environment() === 'production') {
             throw new AuthException('Unauthorized');
         }
+        $mint = new MinteService();
+        $api = $mint->getPaymentApi(['product_id' => '5d7b6b426962ed6c260b7994']);
+        return $api->toArray();
         $reply = $this->paymentService->createMinteOrder($req);
 
         $result = [
