@@ -6,7 +6,7 @@ use App\Services\BluesnapService;
 use App\Services\CurrencyService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
-use App\Services\MintService;
+use App\Services\MinteService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
@@ -15,6 +15,7 @@ use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\GetPaymentMethodsByCountryRequest;
 use App\Models\Txn;
+use App\Models\OdinOrder;
 use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use Illuminate\Http\Request;
@@ -211,11 +212,15 @@ class PaymentsController extends Controller
     public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
     {
         $auth_status = $req->input('status');
+        $txn_hash    = $req->input('transid');
 
         logger()->info('Mint-e 3ds redirect debug', ['ip' => $req->ip(), 'body' => $req->getContent()]);
 
-        $mint = new MintService();
-        $reply = $mint->captureAfterAuth3ds($req, $order_id);
+        $order = OdinOrder::getById($order_id); // throwable
+        $order_txn = $order->getTxnByHash($txn_hash); // throwable
+
+        $mint = new MinteService();
+        $reply = $mint->captureAfterAuth3ds($req, ['order_id' => $order_id, 'payment_api_id' => $order_txn['payment_api_id']]);
 
         if (!$reply['status']) {
             logger()->error('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
@@ -233,7 +238,7 @@ class PaymentsController extends Controller
             $query['3ds'] = 'failure';
         }
 
-        return \redirect('/checkout?' . $qs = http_build_query($query));
+        return redirect('/checkout?' . $qs = http_build_query($query));
     }
 
     public function test(PaymentCardCreateOrderRequest $req)

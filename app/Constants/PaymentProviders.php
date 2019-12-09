@@ -9,7 +9,7 @@ class PaymentProviders
     const CHECKOUTCOM      = 'checkoutcom';
     const BLUESNAP         = 'bluesnap';
     const NOVALNET         = 'novalnet';
-    const MINT             = 'minte';
+    const MINTE            = 'minte';
 
     /**
      * Payment providers
@@ -636,7 +636,7 @@ class PaymentProviders
                 ],
             ]
         ],
-        self::MINT  => [
+        self::MINTE => [
             'name'      => 'Mint-e',
             'is_active' => true,
             'is_main'   => true,

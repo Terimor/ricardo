@@ -2,7 +2,7 @@
 
 namespace App\Mappers;
 
-class MintCodeMapper
+class MinteCodeMapper
 {
     private const CODE_COMMON = '*';
 
