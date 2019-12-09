@@ -360,7 +360,7 @@ class MinteService
         $api = $this->getPaymentApi($payment);
         if (empty($api)) {
             logger()->error("Mint-e PaymentApi not found", ['payment_api_id' => $payment['payment_api_id']]);
-            return $result;
+            return $payment;
         }
 
         try {
@@ -438,12 +438,12 @@ class MinteService
         try {
             $res = $client->put('sale/recurring', [
                 'json' => [
-                    'mid'       => $this->mid,
+                    'mid'       => $api->login,
                     'amount'    => $details['amount'],
                     'currency'  => $details['currency'],
                     'token'     => $token,
                     'nonce'     => $nonce,
-                    'signature' => hash('sha256', $this->mid . $nonce . $this->api_key),
+                    'signature' => hash('sha256', $api->login . $nonce . $api->api_key),
                     'descriptor' => $details['descriptor']
                 ]
             ]);
@@ -490,7 +490,13 @@ class MinteService
 
         $result = ['status' => false];
 
-        if ($sign === hash('sha256', $txn_hash . $txn_ts . $this->api_key)) {
+        $api = $this->getPaymentApi($details);
+        if (empty($api)) {
+            logger()->error("Mint-e PaymentApi not found", ['payment_api_id' => $payment['payment_api_id']]);
+            return $result;
+        }
+
+        if ($sign === hash('sha256', $txn_hash . $txn_ts . $api->api_key)) {
             $result = ['status' => true, 'txn' => ['hash' => $txn_hash]];
             if ($txn_status === self::STATUS_OK) {
                 $result['txn'] = $this->capture(['hash' => $txn_hash, 'payment_api_id' => $details['payment_api_id']]);
