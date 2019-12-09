@@ -1,6 +1,7 @@
 <pre>
 <ol>
-  <li>Synced Redis · · · · · · · · · · · · {{ $redis }}</li>
+    <?php foreach($results as $result): ?>
+        <li>{{ $result['name'] }} · · · · · · · · · · · · {{ $result['status'] }} - {{ $result['result'] }}</li>
+    <?php endforeach; ?>
 </ol>
-<b>{{ $result }}</b>
 </pre>

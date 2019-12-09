@@ -660,4 +660,12 @@ class OdinOrder extends OdinModel
     {
         return $this->shipping_city ? mb_convert_case(mb_strtolower($this->shipping_city), MB_CASE_TITLE) : null;
     }
+    
+    /**
+     * Get last order txns
+     */
+    public static function getLastTxns($limit = 20) {
+        $orders = OdinOrder::where(['txns.hash' => ['$ne' => null]])->limit($limit)->orderBy('_id', 'desc')->get();
+        return $orders;
+    }
 }

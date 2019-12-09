@@ -19,6 +19,7 @@ use App\Services\EbanxService;
 
 class SiteController extends Controller
 {
+    
     /**
      * Create a new controller instance.
      *
@@ -391,18 +392,33 @@ class SiteController extends Controller
         $fail = 'FAIL';
         $result = $bad;
         $redis = $fail;
+        $results['redis'] = [
+            'name' => 'Synced Redis',
+            'result' => $bad,
+            'status' => $fail
+        ];
 
         //check Redis
         $redisContent = Cache::get('SkuProduct');
-        if ($redisContent) {
+        if ($redisContent) {            
             $redisValidation = current($redisContent)['name']['en'] ?? null;
             if (!empty($redisValidation)) {
-                $redis = $ok;
-                $result = $good;
+                $results['redis'] = [
+                    'result' => $good,
+                    'status' => $ok                    
+                ];
             }
         }
+        
+        // get percent        
+        $percent = OrderService::getLastOrderTxnFailPercent();
+        $results['txns'] = [
+            'name' => 'Last Txns failed percent',
+            'status' => $percent.'%',
+            'result' => $percent >= OrderService::LAST_TXNS_COUNT_FAILED_PERCENT ? $fail : $ok,
+        ];        
 
-        return view('prober', compact('result', 'redis'));
+        return view('prober', compact('results'));
     }
 
     /**
