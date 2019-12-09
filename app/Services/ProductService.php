@@ -465,7 +465,7 @@ class ProductService
      * @param int $limit
      * @return type
      */
-    public function getAllSoldDomainsProducts(?int $page = 1, $search = '', ?int $limit = 1): array
+    public function getAllSoldDomainsProducts(?int $page = 1, $search = '', ?int $limit = 12): array
     {
         $allSoldProducts = Cache::get('DomainSoldProductsData');
 
