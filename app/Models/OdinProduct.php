@@ -608,11 +608,11 @@ class OdinProduct extends Model
         $products = null;
         if ($ids) {
             $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
-            if ($search) {                
+            if ($search) {
                 $productsQuery->where(function ($query) use($search) {
                         $descriptionField = 'description.'.app()->getLocale();
-                        $query->where('product_name', 'like', '%'.$search.'%')
-                              ->orWhere($descriptionField, 'like', '%'.$search.'%');
+                        $query->where('product_name', 'regexp', "/.*{$search}/i")
+                              ->orWhere('description.ru', 'regexp', "/.*{$search}/i");
                     });
             }
             $products = $productsQuery->get();
