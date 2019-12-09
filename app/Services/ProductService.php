@@ -508,13 +508,10 @@ class ProductService
             $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);          
         }
         $productIds = array_keys($allSoldProducts);
-        $products = OdinProduct::getActiveByIds($productIds, $search, $limit);        
+        $products = OdinProduct::getActiveByIds($productIds, $search, $limit);         
         
         if ($search) {
-            $totalCount = count($products);
-        }
-
-        if ($search) {            
+            $totalCount = $products->total();            
             $totalPages = ceil($totalCount / $limit);
             $page = max($page, 1); // get 1 page when page <= 0
             $page = min($page, $totalPages); // get last page when page > $totalPages
