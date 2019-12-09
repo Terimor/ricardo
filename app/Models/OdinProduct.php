@@ -601,7 +601,7 @@ class OdinProduct extends Model
     }
     
     /**
-     * Get products by ids
+     * Get products by ids and search string
      * @param type $ids
      */
     public static function getActiveByIds(?array $ids) {
