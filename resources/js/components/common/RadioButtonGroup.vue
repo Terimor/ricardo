@@ -14,7 +14,9 @@
           <div v-if="input.label" class="title" v-html="input.label" />
           <slot v-if="input.slot" :name="input.slot" />
         </div>
-        <input @change="onInput" type="radio"
+        <input type="radio"
+               @change="onInput"
+               @input.stop
                :checked="input.value == value"
                name="radio"
                :value="input.value"

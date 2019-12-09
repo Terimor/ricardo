@@ -13,6 +13,7 @@
         ...invalid && { 'animation': '0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error' }
       }"
       type="tel"
+      v-bind="rest"
       @input="input"
       :value="value"
       :id="id">
@@ -27,7 +28,7 @@
 
   export default {
     name: 'PhoneField',
-    props: ['value', 'label', 'theme', 'tabindex', 'order', 'validation', 'validationMessage', 'countryCode'],
+    props: ['value', 'label', 'theme', 'tabindex', 'order', 'validation', 'validationMessage', 'countryCode', 'rest'],
 
     data() {
       return {

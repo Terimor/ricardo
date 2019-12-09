@@ -11,6 +11,9 @@
       :showPreloader="showPreloader"
       :skusList="skusList"
       v-else-if="queryParams.tpl === 'vmc4'" />
+    <fmc5
+      :showPreloader="showPreloader"
+      v-else-if="queryParams.tpl === 'fmc5'" />
     <emc1-component
       :showPreloader="showPreloader"
       :skusList="skusList"
@@ -31,6 +34,7 @@ import { t } from './utils/i18n';
 import emc1 from './components/emc1'
 import smc7 from './components/smc7'
 import vmc4 from './components/vmc4'
+import fmc5 from './components/fmc5'
 import queryToComponent from './mixins/queryToComponent'
 
 const searchParams = new URL(location).searchParams;
@@ -50,7 +54,8 @@ export default {
   components: {
     emc1,
     smc7,
-    vmc4
+    vmc4,
+    fmc5,
   },
   methods: {
     initial () {

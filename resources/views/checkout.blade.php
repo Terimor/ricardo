@@ -4,6 +4,9 @@
 
 @section('styles')
   <link rel="stylesheet" href="{{ mix_cdn('assets/js/app.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
+  @if (request()->get('tpl') === 'fmc5')
+    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" onload="styleOnLoad.call(this)" rel="stylesheet" media="none" />
+  @endif
 @endsection
 
 @section('script')
