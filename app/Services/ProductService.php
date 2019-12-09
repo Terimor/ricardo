@@ -468,6 +468,9 @@ class ProductService
     public function getAllSoldDomainsProducts(?int $page = 1, $search = '', ?int $limit = 12): array
     {
         $allSoldProducts = Cache::get('DomainSoldProductsData');
+        if (strlen($search) < 2) {
+            $search = '';
+        }
 
         if (!$allSoldProducts) {
             $domains = Domain::all();
