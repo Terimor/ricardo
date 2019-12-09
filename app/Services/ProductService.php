@@ -508,10 +508,10 @@ class ProductService
             $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);          
         }
         $productIds = array_keys($allSoldProducts);
-        $products = OdinProduct::getActiveByIds($productIds, $search, $limit);         
+        $products = OdinProduct::getActiveByIds($productIds, $search);         
         
         if ($search) {
-            $totalCount = $products->total();            
+            $totalCount = count($products);
             $totalPages = ceil($totalCount / $limit);
             $page = max($page, 1); // get 1 page when page <= 0
             $page = min($page, $totalPages); // get last page when page > $totalPages
@@ -541,6 +541,10 @@ class ProductService
                     }
                 }
             }
+        }
+        
+        if ($search) {
+            $productsLocaleSorted = array_slice($productsLocaleSorted, $offset, $limit);
         }
 
         return $data = [

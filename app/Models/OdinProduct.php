@@ -604,7 +604,7 @@ class OdinProduct extends Model
      * Get products by ids
      * @param type $ids
      */
-    public static function getActiveByIds(?array $ids, $search = '', $limit = 12) {
+    public static function getActiveByIds(?array $ids, $search = '') {
         $products = null;
         if ($ids) {
             $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
@@ -615,11 +615,7 @@ class OdinProduct extends Model
                               ->orWhere($descriptionField, 'like', '%'.$search.'%');
                     });
             }
-        }
-        if (!$search) {
             $products = $productsQuery->get();
-        } else {
-            $products = $productsQuery->paginate($limit);
         }
         return $products;
     }
