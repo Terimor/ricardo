@@ -18,8 +18,7 @@ use App\Http\Requests\ZipcodeRequest;
 use App\Services\EbanxService;
 
 class SiteController extends Controller
-{
-    
+{ 
     /**
      * Create a new controller instance.
      *
