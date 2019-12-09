@@ -496,7 +496,7 @@ class MinteService
             return $result;
         }
 
-        if ($sign === hash('sha256', $txn_hash . $txn_ts . $api->api_key)) {
+        if ($sign === hash('sha256', $txn_hash . $txn_ts . $api->key)) {
             $result = ['status' => true, 'txn' => ['hash' => $txn_hash]];
             if ($txn_status === self::STATUS_OK) {
                 $result['txn'] = $this->capture(['hash' => $txn_hash, 'payment_api_id' => $details['payment_api_id']]);
