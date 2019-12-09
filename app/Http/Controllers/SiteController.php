@@ -18,7 +18,9 @@ use App\Http\Requests\ZipcodeRequest;
 use App\Services\EbanxService;
 
 class SiteController extends Controller
-{ 
+{
+    const LAST_TXNS_COUNT = 20;    
+    const LAST_TXNS_COUNT_FAILED_PERCENT = 50;    
     /**
      * Create a new controller instance.
      *
@@ -410,11 +412,11 @@ class SiteController extends Controller
         }
         
         // get percent        
-        $percent = OrderService::getLastOrderTxnFailPercent();
+        $percent = OrderService::getLastOrderTxnFailPercent(static::LAST_TXNS_COUNT);
         $results['txns'] = [
             'name' => 'Last Txns failed percent',
             'status' => $percent.'%',
-            'result' => $percent >= OrderService::LAST_TXNS_COUNT_FAILED_PERCENT ? $fail : $ok,
+            'result' => $percent >= static::LAST_TXNS_COUNT_FAILED_PERCENT ? $fail : $ok,
         ];        
 
         return view('prober', compact('results'));
