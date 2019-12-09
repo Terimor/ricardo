@@ -460,10 +460,12 @@ class ProductService
 
     /**
      * Get all sold domains products
-     * @param type $page
+     * @param int $page
+     * @param string $search - search string
+     * @param int $limit
      * @return type
      */
-    public function getAllSoldDomainsProducts(?int $page = 1, ?int $limit = 12): array
+    public function getAllSoldDomainsProducts(?int $page = 1, $search = '', ?int $limit = 1): array
     {
         $allSoldProducts = Cache::get('DomainSoldProductsData');
 
@@ -493,24 +495,39 @@ class ProductService
             Cache::put('DomainSoldProductsData', $allSoldProducts);
         }
         
-        // calculate data for pagination
-        $totalCount = count($allSoldProducts);
-        $totalPages = ceil($totalCount / $limit);
-        $page = max($page, 1); // get 1 page when page <= 0
-        $page = min($page, $totalPages); // get last page when page > $totalPages
-        $offset = ($page - 1) * $limit;
-        if ($offset < 0 ) {
-            $offset = 0;
+        if (!$search) {
+            // calculate data for pagination
+            $totalCount = count($allSoldProducts);
+            $totalPages = ceil($totalCount / $limit);
+            $page = max($page, 1); // get 1 page when page <= 0
+            $page = min($page, $totalPages); // get last page when page > $totalPages
+            $offset = ($page - 1) * $limit;
+            if ($offset < 0 ) {
+                $offset = 0;
+            }            
+            $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);          
+        }
+        $productIds = array_keys($allSoldProducts);
+        $products = OdinProduct::getActiveByIds($productIds, $search, $limit);        
+        
+        if ($search) {
+            $totalCount = count($products);
         }
 
-        $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);          
-        
-        $productIds = array_keys($allSoldProducts);
-        $products = OdinProduct::getActiveByIds($productIds);        
+        if ($search) {            
+            $totalPages = ceil($totalCount / $limit);
+            $page = max($page, 1); // get 1 page when page <= 0
+            $page = min($page, $totalPages); // get last page when page > $totalPages
+            $offset = ($page - 1) * $limit;
+            if ($offset < 0 ) {
+                $offset = 0;
+            }                                     
+        }
         
         // get all images                
         $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
         $currency = CurrencyService::getCurrency();
+        $productsLocale = [];
         foreach ($products as $product) {
             $product->currencyObject = $currency;
             $product->hide_cop_id_log = true;
