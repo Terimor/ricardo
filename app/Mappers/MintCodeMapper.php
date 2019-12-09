@@ -14,6 +14,7 @@ class MintCodeMapper
         'I-204' => 'card.error.common',
         '05'    => 'card.error.not_functioning',
         '54'    => 'card.error.expired',
+        '57'    => 'card.error.not_functioning',
     ];
 
     /**

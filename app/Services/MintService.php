@@ -32,8 +32,9 @@ class MintService
     const CNTRY_CRNCY = [
         'us' => ['USD'],
         '*'  => [
-            'CAD', 'USD', 'EUR', 'GBP','CHF', 'SEK', 'DKK', 'NOK', 'JPY', 'KRW', 'AUD', 'NZD', 'ZAR', 'AED', 'PLN', 'CZK', 'HUF',
-            'RON', 'BGN', 'TWD', 'HKD', 'SGD', 'INR', 'ILS', 'MYR', 'CLP', 'RUB', 'TRY', 'PHP', 'HRK', 'MXN', 'COP', 'ARS'
+            'CAD', 'EUR', 'GBP', 'USD'
+            // 'CAD', 'USD', 'EUR', 'GBP','CHF', 'SEK', 'DKK', 'NOK', 'JPY', 'KRW', 'AUD', 'NZD', 'ZAR', 'AED', 'PLN', 'CZK', 'HUF',
+            // 'RON', 'BGN', 'TWD', 'HKD', 'SGD', 'INR', 'ILS', 'MYR', 'CLP', 'RUB', 'TRY', 'PHP', 'HRK', 'MXN', 'COP', 'ARS'
         ]
     ];
 
