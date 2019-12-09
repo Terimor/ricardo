@@ -264,7 +264,7 @@ class OrderService
         $percent = 0;
         $orders = OdinOrder::getLastTxns($limit);        
         $txns = []; $c = 0; $failed = 0; $fail = false; $failedPercent = 0;
-        foreach ($orders as $order) {
+        foreach ($orders as $order) {            
             $orderTxns = $order->txns;
             foreach ($orderTxns as $txn) {
                 if (isset($txns[$txn['hash']])) {

@@ -391,35 +391,33 @@ class SiteController extends Controller
         $bad = 'ALARME!';
         $ok = 'OK';
         $fail = 'FAIL';
-        $result = $bad;
+        $result = $good;
         $redis = $fail;
-        $results['redis'] = [
-            'name' => 'Synced Redis',
-            'result' => $bad,
-            'status' => $fail
-        ];
+        $redisOk = false;
+        $txnOk = true;
 
         //check Redis
         $redisContent = Cache::get('SkuProduct');
         if ($redisContent) {            
             $redisValidation = current($redisContent)['name']['en'] ?? null;
-            if (!empty($redisValidation)) {
-                $results['redis'] = [
-                    'result' => $good,
-                    'status' => $ok                    
-                ];
+            if (!empty($redisValidation)) {                               
+                $redis = $ok;
+                $redisOk = true;
             }
         }
         
         // get percent        
-        $percent = OrderService::getLastOrderTxnFailPercent(static::LAST_TXNS_COUNT);
-        $results['txns'] = [
-            'name' => 'Last Txns failed percent',
-            'status' => $percent.'%',
-            'result' => $percent >= static::LAST_TXNS_COUNT_FAILED_PERCENT ? $fail : $ok,
-        ];        
+        $txnPercent = OrderService::getLastOrderTxnFailPercent(static::LAST_TXNS_COUNT);
+        
+        if ($txnPercent < static::LAST_TXNS_COUNT_FAILED_PERCENT) {
+            $txnOk = false;
+        }
 
-        return view('prober', compact('results'));
+        if (!$redisOk) {
+            $result = $bad;
+        }
+        
+        return view('prober', compact('result', 'redis', 'txnPercent'));
     }
 
     /**
