@@ -41,7 +41,7 @@ class SiteController extends Controller
         $isMultiproduct = false;
         if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {        
             if (!empty($domain->is_catch_all)) {
-                $products = $productService->getAllSoldDomainsProducts($request->get('page'));  
+                $products = $productService->getAllSoldDomainsProducts($request->get('page'), $request->get('search'));  
                 $isMultiproduct = true;
             } else {
                 $products = ProductService::getDomainProducts($domain);
@@ -439,5 +439,22 @@ class SiteController extends Controller
     public function sitemap()
     {                
         return response()->view('sitemap')->header('Content-Type', 'text/xml');
+    }
+    
+    /**
+     * Logger
+     * @param Request $request
+     */
+    public function logData(Request $request)
+    {   
+        $type = $request->get('logger-type');
+        
+        if ($type == 'error') {
+            logger()->error($request->all());
+        } else if ($type == 'warning') {
+            logger()->warning($request->all());
+        } else {        
+            logger()->info($request->all());
+        }
     }
 }

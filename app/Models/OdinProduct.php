@@ -604,11 +604,19 @@ class OdinProduct extends Model
      * Get products by ids
      * @param type $ids
      */
-    public static function getActiveByIds(?array $ids) {
+    public static function getActiveByIds(?array $ids, $search = '') {
         $products = null;
         if ($ids) {
-            $products = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true)->get();
-        }        
+            $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
+            if ($search) {
+                $productsQuery->where(function ($query) use($search) {
+                        $descriptionField = 'description.'.app()->getLocale();
+                        $query->where('product_name', 'regexp', "/{$search}/i")
+                              ->orWhere($descriptionField, 'regexp', "/{$search}/i");
+                    });
+            }
+            $products = $productsQuery->get();
+        }
         return $products;
     }
     

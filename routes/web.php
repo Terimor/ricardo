@@ -26,6 +26,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/thankyou', 'SiteController@thankyou')->name('thankyou');
     $router->get('/order-tracking', 'SiteController@orderTracking')->name('order-tracking');
     $router->get('/prober', 'SiteController@prober')->name('prober');
+    $router->post('/log-data', 'SiteController@logData')->name('log-data');
 
     //$router->get('/minishop/products', 'MiniShopController@products')->name('minishop.products');
 
