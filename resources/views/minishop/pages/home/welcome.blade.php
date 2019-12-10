@@ -1,6 +1,6 @@
 <div
-  ref="home_welcome"
-  class="home-welcome row">
+  ref="welcome"
+  class="welcome row">
 
   <div class="content col-12 col-lg-6">
     {!! t('minishop.home.welcome.content', ['websitename' => $website_name]) !!}

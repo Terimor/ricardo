@@ -1,6 +1,6 @@
 <div
-  ref="home_products"
-  class="home-products">
+  ref="products"
+  class="products">
 
   <!-- Title -->
   <div class="title row">
@@ -10,6 +10,24 @@
       </h2>
     </div>
   </div>
+
+  <!-- Search -->
+  @if ($is_catch_all)
+    <div class="search row">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-4">
+        <form class="mb-5 d-flex">
+          <input
+            v-model="search"
+            class="form-control"
+            placeholder="Search for product" />
+          <button
+            type="submit"
+            class="btn btn-primary ml-2 px-4"
+            @click.prevent="search_click">Search</button>
+        </form>
+      </div>
+    </div>
+  @endif
 
   <!-- Grid -->
   <div class="grid row">

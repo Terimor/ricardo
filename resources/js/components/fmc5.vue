@@ -401,7 +401,7 @@
           
           <div class="details">
 
-            <div class="details-left">
+            <div class="inside">
               <div class="product-name">{{ product.product_name }}</div>
               <div class="product-long-name">{{ product.long_name }}</div>
               <div class="product-bestseller">
@@ -413,11 +413,9 @@
                 class="product-5star" />
             </div>
 
-            <div class="details-right">
-              <img
-                :src="product.image[0]"
-                class="product-image" />
-            </div>
+            <img
+              :src="product.image[0]"
+              class="product-image" />
 
           </div>
 
@@ -1893,17 +1891,17 @@
     @media only screen and (max-width: 767px) {
       display: none;
     }
+
+    > .inside {
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      width: 62%;
+    }
   }
 
-  .details-left {
-    color: #000;
-    display: flex;
-    flex-direction: column;
-    width: 62%;
-  }
-
-  .details-right {
-    display: flex;
+  .product-image {
+    height: auto;
     width: 34%;
   }
 
@@ -1959,10 +1957,6 @@
   .product-5star {
     margin-top: 6px;
     width: 80px;
-  }
-
-  .product-image {
-    max-width: 100%;
   }
 
   .description {
