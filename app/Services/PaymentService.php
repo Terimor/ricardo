@@ -476,23 +476,43 @@ class PaymentService
         $is_fallback_available = self::checkIsFallbackAvailable($provider, $ipqs);
         if (!empty($payment['fallback']) && $is_fallback_available) {
 
-            logger()->info("Fallback order [{$order->number}]");
-
             $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
-            if ($fallback_provider === PaymentProviders::BLUESNAP) {
-                $bluesnap = new BluesnapService();
-                $payment = $bluesnap->payByCard(
-                    $card,
-                    $contact,
-                    [
-                        'amount'        => $order->total_price,
-                        'currency'      => $order->currency,
-                        'number'        => $order->number,
-                        'billing_descriptor'   => $order->billing_descriptor
-                    ]
-                );
-                $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
-            }
+
+            logger()->info("Fallback order [{$order->number}] provider {$fallback_provider}");
+
+            switch ($fallback_provider):
+                case PaymentProviders::BLUESNAP:
+                    logger()->info("Fallback order [{$order->number}], provider Bluesnap");
+                    $bluesnap = new BluesnapService();
+                    $payment = $bluesnap->payByCard(
+                        $card,
+                        $contact,
+                        [
+                            'amount'        => $order->total_price,
+                            'currency'      => $order->currency,
+                            'number'        => $order->number,
+                            'billing_descriptor'   => $order->billing_descriptor
+                        ]
+                    );
+                    $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+                    break;
+                case PaymentProviders::MINTE:
+                    $mint = new MinteService();
+                    $payment = $mint->payByCard($card, $contact, [
+                        '3ds'       => false,
+                        'amount'    => $order->total_price,
+                        'currency'  => $order->currency,
+                        'order_id'  => $order->getIdAttribute(),
+                        'order_number'  => $order->number,
+                        'product_id'    => $product->getIdAttribute(),
+                        'user_agent'    => $user_agent,
+                        'descriptor'    => $order->billing_descriptor
+                    ]);
+                    $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+                    break;
+                default:
+                    logger()->info("Fallback order [{$order->number}] provider not found");
+            endswitch;
         }
 
         // cache token
@@ -931,7 +951,7 @@ class PaymentService
                 $result[$providerId] = [];
 
                 //check every method of provider
-                foreach ($provider['methods'] as $methodId => $method) {
+                foreach ($provider['methods'][$is_main ? 'main' : 'fallback'] as $methodId => $method) {
                     if (PaymentMethods::$list[$methodId]['is_active']) {
                         //check 3DS settings
                         if (!empty($method['+3ds']) && static::checkIfMethodInCountries($country, $method['+3ds'])) {
@@ -1056,7 +1076,7 @@ class PaymentService
     private static function checkIs3dsNeeded(string $method, string $country, string $prv = PaymentProviders::MINTE, array $ipqs = []): bool
     {
         $result = true;
-        $setting = PaymentProviders::$list[$prv]['methods'][$method] ?? [];
+        $setting = PaymentProviders::$list[$prv]['methods']['main'][$method] ?? [];
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
         $fraud_chance_limit = PaymentProviders::$list[$prv]['fraud_setting']['3ds_limit'];
 
@@ -1075,13 +1095,21 @@ class PaymentService
      * Check if fallback provider available
      * @param  string $prv
      * @param  array|null  $ipqs
+     * @param  array|null  $details
      * @return bool
      */
-    private static function checkIsFallbackAvailable(string $prv = PaymentProviders::MINTE, ?array $ipqs = []): bool
+    private static function checkIsFallbackAvailable(string $prv, ?array $ipqs = [], ?array $details = []): bool
     {
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
         $fallback_limit = PaymentProviders::$list[$prv]['fraud_setting']['fallback_limit'];
-        return $fraud_chance < $fallback_limit;
+
+        $result = $fraud_chance < $fallback_limit;
+
+        if ($prv === PaymentProviders::EBANX) {
+            $result = !empty($details['installments']) && $details['installments'] <= EbanxService::INSTALLMENTS_MIN;
+        }
+
+        return $result;
     }
 
     public function createMinteOrder(PaymentCardCreateOrderRequest $req)

@@ -30,9 +30,9 @@ class MinteService
 
     const ENCRYPT_METHOD = 'AES-256-CBC';
 
-    const DEF_CRNCY = 'USD';
+    const DEFAULT_CURRENCY = 'USD';
 
-    const CNTRY_CRNCY = [
+    const COUNTRY_CURRENCY = [
         'us' => ['USD'],
         '*'  => [
             'CAD', 'EUR', 'GBP', 'USD'
@@ -127,12 +127,12 @@ class MinteService
      */
     public static function getCurrencyByCountry(string $country, ?string $currency): ?string
     {
-        if (isset(self::CNTRY_CRNCY[$country])) {
-            return in_array($currency, self::CNTRY_CRNCY[$country]) ? $currency : self::DEF_CRNCY;
-        } elseif (in_array($currency, self::CNTRY_CRNCY['*'])) {
+        if (isset(self::COUNTRY_CURRENCY[$country])) {
+            return in_array($currency, self::COUNTRY_CURRENCY[$country]) ? $currency : self::DEFAULT_CURRENCY;
+        } elseif (in_array($currency, self::COUNTRY_CURRENCY['*'])) {
             return $currency;
         } else {
-            return self::DEF_CRNCY;
+            return self::DEFAULT_CURRENCY;
         }
     }
 
