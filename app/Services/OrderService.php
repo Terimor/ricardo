@@ -257,34 +257,25 @@ class OrderService
      * Get last fail txns percent
      * @return type
      */
-    public static function getLastOrderTxnFailPercent($limit = 20)
+    public static function getLastOrdersTxnSuccessPercent($limit = 20)
     {
-        // get last 20 orders with a txns
-        $percent = 0;
-        $orders = OdinOrder::getLastTxns($limit);        
-        $txns = []; $c = 0; $failed = 0; $fail = false; $failedPercent = 0;
+        // get last 20 orders with a txns        
+        $orders = OdinOrder::getLastOrders($limit);        
+        $success_txns = 0; $successPercent = 0;
         foreach ($orders as $order) {            
-            $orderTxns = $order->txns;
+            $orderTxns = $order->txns;            
             foreach ($orderTxns as $txn) {
-                if (isset($txns[$txn['hash']])) {
-                    continue;
-                } else {
-                    $txns[$txn['hash']] = $txn['status'];
-                    if($txn['status'] ===  Txn::STATUS_FAILED) {
-                        $failed++;
-                    }
-                    $c++;
-                    if ($c == $limit) {
-                        break;
-                    }
+                if ($txn['status'] ===  Txn::STATUS_APPROVED) {
+                    $success_txns++;
+                    break;
                 }
-            }
+            }           
         }
 
-        if ($failed > 0) {
-            $failedPercent = $failed / $limit * 100;
+        if ($success_txns > 0) {
+            $successPercent = $success_txns / $limit * 100;
         }
 
-        return $failedPercent;
+        return $successPercent;
     }
 }
