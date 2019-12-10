@@ -3,6 +3,7 @@
   <select-field
     v-if="visible"
     v-model="form.installments"
+    id="installments"
     :label="textTitle"
     :list="list" />
 

@@ -117,7 +117,7 @@
                 name="zipCode" />
               <District
                 :extraFields="extraFields"
-                :withPlaceholder="true"
+                :placeholder="true"
                 :form="vmc4Form"
                 :$v="$v" />
               <City

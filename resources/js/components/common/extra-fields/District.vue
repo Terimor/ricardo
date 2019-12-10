@@ -5,9 +5,11 @@
     v-model="form.district"
     :validation="$v.form.district"
     :validationMessage="textRequired"
-    :label="textTitle"
+    :label="textLabel"
     :rest="{
-      placeholder,
+      placeholder: placeholder
+        ? textLabel
+        : null,
     }"
     theme="variant-1"
     :tabindex="tabindex"
@@ -23,7 +25,7 @@
     name: 'District',
 
     props: [
-      'withPlaceholder',
+      'placeholder',
       'extraFields',
       'tabindex',
       'order',
@@ -34,18 +36,12 @@
 
     computed: {
 
-      textTitle() {
+      textLabel() {
         return this.$t('checkout.payment_form.complemento');
       },
 
       textRequired() {
         return this.$t('checkout.payment_form.complemento.required');
-      },
-
-      placeholder() {
-        return this.withPlaceholder
-          ? this.textTitle
-          : null;
       },
 
     },

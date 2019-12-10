@@ -21,7 +21,7 @@
       name="streetAndNumber" />
     <District
       :extraFields="extraFields"
-      :withPlaceholder="true"
+      :placeholder="true"
       :form="paymentForm"
       :$v="$v" />
     <City
