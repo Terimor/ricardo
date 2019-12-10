@@ -20,9 +20,6 @@ use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use Illuminate\Http\Request;
 
-/*use com\checkout;
-use com\checkout\ApiServices;*/
-
 class PaymentsController extends Controller
 {
     /**

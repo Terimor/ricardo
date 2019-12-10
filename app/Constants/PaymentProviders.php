@@ -24,6 +24,7 @@ class PaymentProviders
             'in_prod'   => true,
             'fraud_setting' => [
                 '3ds_limit' => 85,
+                'fallback_limit' => 0,
                 'refuse_limit' => 99
             ],
             'methods'   => [
@@ -40,6 +41,7 @@ class PaymentProviders
             'in_prod'   => true,
             'fraud_setting' => [
                 '3ds_limit' => 65,
+                'fallback_limit' => 65,
                 'refuse_limit' => 85
             ],
             'extra_fields'  => [
@@ -176,6 +178,7 @@ class PaymentProviders
             'in_prod'   => true,
             'fraud_setting' => [
                 '3ds_limit' => 101,
+                'fallback_limit' => 0,
                 'refuse_limit' => 101
             ],
             'extra_fields'  => [
@@ -488,6 +491,11 @@ class PaymentProviders
             'is_main'   => false,
             'is_fallback' => true,
             'in_prod'   => true,
+            'fraud_setting' => [
+                '3ds_limit' => 101,
+                'fallback_limit' => 0,
+                'refuse_limit' => 99
+            ],
             'extra_fields'  => [
                 'ca' => [
                     'state' => [
@@ -576,10 +584,6 @@ class PaymentProviders
                     ]
                 ]
             ],
-            'fraud_setting' => [
-                '3ds_limit' => 101,
-                'refuse_limit' => 99
-            ],
             'methods'   => [
                 PaymentMethods::CREDITCARD => [
                     '-3ds' => ['*'],
@@ -619,6 +623,7 @@ class PaymentProviders
             'in_prod'       => false,
             'fraud_setting' => [
                 '3ds_limit' => 101,
+                'fallback_limit' => 0,
                 'refuse_limit' => 101
             ],
             'methods'       => [
@@ -641,6 +646,7 @@ class PaymentProviders
             'in_prod'   => true,
             'fraud_setting' => [
                 '3ds_limit' => 85,
+                'fallback_limit' => 50,
                 'refuse_limit' => 99
             ],
             'extra_fields'  => [

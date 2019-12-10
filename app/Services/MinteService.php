@@ -44,7 +44,7 @@ class MinteService
     /**
      * @var array
      */
-    private static $fallback_codes = ['05'];
+    private static $fallback_codes = ['05', 'Amount by terminal exceeded'];
 
     /**
      * @var \Illuminate\Database\Eloquent\Collection
@@ -284,13 +284,9 @@ class MinteService
                 $obj3ds
             );
 
-            // logger()->info('Mint-e req debug', ['body' => $body]);
-
             $res = $client->put($route_path, [
                 'json' => $body
             ]);
-
-            // logger()->info('Mint-e res debug', ['body' => $res->getBody()]);
 
             $body_decoded = json_decode($res->getBody(), true);
 
@@ -304,10 +300,11 @@ class MinteService
                 $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
-                if (in_array($body_decoded['errorcode'], self::$fallback_codes)) {
+                $code = !empty($body_decoded['errorcode']) ? $body_decoded['errorcode'] : $body_decoded['errormessage'];
+                if (in_array($code, self::$fallback_codes)) {
                     $result['fallback'] = true;
                 }
-                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'])];
+                $result['errors'] = [MinteCodeMapper::toPhrase($code)];
                 logger()->error("Mint-e auth", ['body' => $body_decoded]);
             }
             $result['provider_data'] = $body_decoded;

@@ -473,23 +473,26 @@ class PaymentService
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
 
         // check is this fallback
-        $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
-        if (!empty($payment['fallback']) && $fallback_provider === PaymentProviders::BLUESNAP) {
+        $is_fallback_available = self::checkIsFallbackAvailable($provider, $ipqs);
+        if (!empty($payment['fallback']) && $is_fallback_available) {
 
-            logger()->info("Bluesnap fallback order [{$order->number}]");
+            logger()->info("Fallback order [{$order->number}]");
 
-            $bluesnap = new BluesnapService();
-            $payment = $bluesnap->payByCard(
-                $card,
-                $contact,
-                [
-                    'amount'        => $order->total_price,
-                    'currency'      => $order->currency,
-                    'number'        => $order->number,
-                    'billing_descriptor'   => $order->billing_descriptor
-                ]
-            );
-            $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+            $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
+            if ($fallback_provider === PaymentProviders::BLUESNAP) {
+                $bluesnap = new BluesnapService();
+                $payment = $bluesnap->payByCard(
+                    $card,
+                    $contact,
+                    [
+                        'amount'        => $order->total_price,
+                        'currency'      => $order->currency,
+                        'number'        => $order->number,
+                        'billing_descriptor'   => $order->billing_descriptor
+                    ]
+                );
+                $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+            }
         }
 
         // cache token
@@ -886,7 +889,6 @@ class PaymentService
             $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
             $refuse_limit = PaymentProviders::$list[$prv]['fraud_setting']['refuse_limit'];
             if ($fraud_chance > $refuse_limit || $is_bot || $is_valid_email === false) {
-                // logger()->warning('Payment refused', ['ipqs' => $ipqs]);
                 throw new PaymentException('Payment is refused', 'card.error.refused');
             }
         }
@@ -1067,6 +1069,19 @@ class PaymentService
         }
 
         return $result;
+    }
+
+    /**
+     * Check if fallback provider available
+     * @param  string $prv
+     * @param  array|null  $ipqs
+     * @return bool
+     */
+    private static function checkIsFallbackAvailable(string $prv = PaymentProviders::MINTE, ?array $ipqs = []): bool
+    {
+        $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
+        $fallback_limit = PaymentProviders::$list[$prv]['fraud_setting']['fallback_limit'];
+        return $fraud_chance < $fallback_limit;
     }
 
     public function createMinteOrder(PaymentCardCreateOrderRequest $req)
