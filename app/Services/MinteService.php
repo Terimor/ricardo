@@ -253,7 +253,7 @@ class MinteService
             if ($details['3ds']) {
                 $route_path = 'authorize3ds';
                 $obj3ds = [
-                    'redirecturl'   => request()->getSchemeAndHttpHost() . "/minte-3ds/{$details['order_id']}",
+                    'redirecturl'   => 'https://' . request()->getHttpHost() . "/minte-3ds/{$details['order_id']}",
                     'useragent'     => $details['user_agent']
                 ];
             }
