@@ -19,11 +19,11 @@
           <input
             v-model="search"
             class="form-control"
-            placeholder="Search for product" />
+            placeholder="{{ t('minishop.home.products.search.input') }}" />
           <button
             type="submit"
             class="btn btn-primary ml-2 px-4"
-            @click.prevent="search_click">Search</button>
+            @click.prevent="search_click">{{ t('minishop.home.products.search.button') }}</button>
         </form>
       </div>
     </div>
