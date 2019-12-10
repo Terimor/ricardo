@@ -140,12 +140,12 @@ class PaymentProviders
                     PaymentMethods::VISA => [
                         '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
                     ],
                     PaymentMethods::AMEX => [
                         '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
@@ -646,12 +646,12 @@ class PaymentProviders
         ],
         self::MINTE => [
             'name'      => 'Mint-e',
-            'is_active' => false,
-            'is_main'   => false,
-            'is_fallback' => true,
+            'is_active' => true,
+            'is_main'   => true,
+            'is_fallback' => false,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 85,
+                '3ds_limit' => 99,
                 'fallback_limit' => 50,
                 'refuse_limit' => 99
             ],
@@ -748,13 +748,13 @@ class PaymentProviders
                     PaymentMethods::VISA => [
                         // '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                         // '-3ds' => ['*'],
-                        '-3ds' => ['ca', 'us'],
+                        '-3ds' => ['us'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         // '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                         // '-3ds' => ['*'],
-                        '-3ds' => ['ca', 'us'],
+                        '-3ds' => ['us'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]
                 ],
