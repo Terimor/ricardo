@@ -403,7 +403,7 @@ class SiteController extends Controller
         }
         
         // get percent        
-        $txns = OrderService::getLastOrderTxnSuccessPercent();
+        $txns = OrderService::getLastOrdersTxnSuccessPercent();
         
         if ($txns < 50) {
             //$result = $bad;
