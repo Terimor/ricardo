@@ -276,7 +276,8 @@
               class="step3">
 
               <payment-provider-radio-list
-                v-model="form.paymentProvider" />
+                v-model="form.paymentProvider"
+                @input="onCreditCardSelect" />
 
               <paypal-button
                 v-show="form.installments === 1"
@@ -291,9 +292,6 @@
                 id="paypal-payment-error"
                 class="error-container invalid"
                 v-html="paypalPaymentError"></div>
-
-              <Warranty
-                :form="form" />
 
               <transition name="fade">
                 <div
@@ -355,6 +353,9 @@
 
                 </div>
               </transition>
+
+              <Warranty
+                :form="form" />
 
             </div>
           </transition>
@@ -430,8 +431,7 @@
               class="guarantee-image" />
             <div class="guarantee-title">{{ textGuaranteeTitle }}</div>
             <div class="guarantee-text">{{ textGuaranteeText }}</div>
-            <div class="guarantee-text">{{ product.home_name }}</div>
-            <div class="guarantee-text">{{ product.splash_description }}</div>
+            <div class="guarantee-text">{{ product.home_name }} {{ product.splash_description }}</div>
           </div>
 
         </div>
@@ -491,6 +491,14 @@
           </div>
         </div>
 
+      </div>
+
+      <div class="buttons-bottom">
+        <div
+          class="button-next"
+          @click="nextBottomClick">
+          <div>Click here to buy now!</div>
+        </div>
       </div>
 
     </div>
@@ -860,6 +868,7 @@
 
       backClick() {
         this.step--;
+        setTimeout(() => this.scrollToSelector('.step'), 100);
       },
 
       nextClick() {
@@ -874,6 +883,10 @@
         if (this.step === 3) {
           return this.step3Submit();
         }
+      },
+
+      nextBottomClick() {
+        this.scrollToSelector('.step');
       },
 
       setBrazilAddress(res) {
@@ -904,6 +917,8 @@
         }
 
         this.step++;
+
+        setTimeout(() => this.scrollToSelector('.step'), 100);
       },
 
       step2Submit() {
@@ -912,6 +927,8 @@
         }
 
         this.step++;
+
+        setTimeout(() => this.scrollToSelector('.step'), 100);
       },
 
       step3Submit() {
@@ -938,6 +955,10 @@
           : null;
       },
 
+      onCreditCardSelect() {
+        setTimeout(() => this.scrollToSelector('.form'), 100);
+      },
+
       check3dsFailure() {
         if (this.searchParams.get('3ds') === 'failure') {
           try {
@@ -961,7 +982,7 @@
             get3dsErrors()
               .then(paymentError => {
                 this.paymentError = paymentError;
-                setTimeout(() => this.scrollToError('#payment-error'), 1000);
+                setTimeout(() => this.scrollToSelector('#payment-error'), 1000);
               });
 
             this.step = 3;
@@ -1762,8 +1783,12 @@
     padding: 15px 20px 0;
   }
 
+  .paypal-button-container {
+    margin-bottom: 30px;
+  }
+
   #warranty-field-button {
-    margin: 20px 0;
+    margin-bottom: 10px;
   }
 
   .terms-checkbox {
@@ -1815,13 +1840,13 @@
     font-weight: 700;
     justify-content: center;
     height: 62px;
+    padding: 0 10px;
     position: relative;
+    text-align: center;
 
     &.multi {
       @media only screen and (max-width: 1000px) {
         font-size: 24px;
-        padding: 0 10px;
-        text-align: center;
       }
 
       @media only screen and (max-width: 767px) {
@@ -2235,6 +2260,20 @@
       margin-right: 5px;
       margin-top: 5px;
       width: 15px;
+    }
+  }
+
+  .buttons-bottom {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+
+    .button-next {
+      max-width: 400px;
+
+      @media only screen and (max-width: 767px) {
+        font-size: 24px;
+      }
     }
   }
 

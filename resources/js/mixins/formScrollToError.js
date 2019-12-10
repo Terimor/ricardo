@@ -1,31 +1,42 @@
 export default {
+
   methods: {
-    scrollToError (selector) {
-      this.$nextTick(() => {
-        const inputsArr = [...document.querySelectorAll(selector || '.scroll-when-error')];
 
-        let targetInput = inputsArr.find((item) => {
-          return item.classList.contains('invalid');
-        });
+    scrollTopElement(element) {
+      if (element) {
+        let position = element.getBoundingClientRect().top - 20;
+        position += document.documentElement.scrollTop;
 
-        if (targetInput) {
-          let position = targetInput.getBoundingClientRect().top - 20;
-          position += document.documentElement.scrollTop;
-
-          if (window.blackFridayEnabled) {
-            position -= this.$root.$refs.blackFriday.clientHeight;
-          }
-
-          if (window.christmasEnabled) {
-            position -= this.$root.$refs.christmas.clientHeight;
-          }
-
-          scrollTo({
-            top: position,
-            behavior: 'smooth',
-          });
+        if (window.blackFridayEnabled) {
+          position -= this.$root.$refs.blackFriday.clientHeight;
         }
+
+        if (window.christmasEnabled) {
+          position -= this.$root.$refs.christmas.clientHeight;
+        }
+
+        scrollTo({
+          top: position,
+          behavior: 'smooth',
+        });
+      }
+    },
+    
+    scrollToError() {
+      this.$nextTick(() => {
+        const inputsArr = [...document.querySelectorAll('.scroll-when-error')];
+        const element = inputsArr.find((item) => item.classList.contains('invalid'));
+        this.scrollTopElement(element);
       });
-    }
-  }
-}
+    },
+
+    scrollToSelector(selector) {
+      this.$nextTick(() => {
+        const element = document.querySelector(selector);
+        this.scrollTopElement(element);
+      });
+    },
+
+  },
+
+};
