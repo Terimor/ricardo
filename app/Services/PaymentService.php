@@ -473,7 +473,7 @@ class PaymentService
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
 
         // check is this fallback
-        $is_fallback_available = self::checkIsFallbackAvailable($provider, $ipqs);
+        $is_fallback_available = self::checkIsFallbackAvailable($provider, $ipqs, ['installments' => $installments]);
         if (!empty($payment['fallback']) && $is_fallback_available) {
 
             $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
