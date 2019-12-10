@@ -11,28 +11,49 @@
       <div class="steps-line">
         <div class="step-line">
           <div class="step-line-triangle"></div>
-          <div>01. ORDER</div>
+          <div>01. {{ textStepsLineOrder }}</div>
         </div>
         <div class="step-line">
           <div class="step-line-triangle"></div>
-          <div>02. OFFER</div>
+          <div>02. {{ textStepsLineOffer }}</div>
         </div>
         <div class="step-line">
           <div class="step-line-triangle"></div>
-          <div>03. CONFIRM</div>
+          <div>03. {{ textStepsLineConfirm }}</div>
         </div>
       </div>
 
       <div class="content">
+
+        <div class="mproduct">
+
+          <div class="mproduct-title">{{ textMProductTitle }}</div>
+
+          <div class="mproduct-details">
+
+            <img
+              :src="product.image[0]"
+              class="mproduct-image" />
+
+            <div class="mproduct-details-text">
+              <div class="mproduct-long-name">{{ product.long_name }}</div>
+              <div
+                class="mdescription"
+                v-html="mproductDescription"></div>
+            </div>
+
+          </div>
+
+        </div>
         
         <div class="content-left">
 
           <div class="step">
             <img :src="imageStep" />
-            <strong>Step #{{ step }}:&nbsp;</strong>
-            <span v-if="step === 1">Select Quantity</span>
-            <span v-if="step === 2">Shipping Information</span>
-            <span v-if="step === 3">Payment Information</span>
+            <strong>{{ textStep }} #{{ step }}:&nbsp;</strong>
+            <span v-if="step === 1">{{ textStepQuantity }}</span>
+            <span v-if="step === 2">{{ textStepShipping }}</span>
+            <span v-if="step === 3">{{ textStepPayment }}</span>
           </div>
 
           <transition name="fade">
@@ -74,20 +95,20 @@
                         v-if="deal.is_bestseller"
                         class="deal-bestseller">
                         <div class="deal-special-triangle"></div>
-                        <div>Bestseller</div>
+                        <div>{{ textBestseller }}</div>
                       </div>
 
                       <div
                         v-if="deal.is_popular"
                         class="deal-popular">
                         <div class="deal-special-triangle"></div>
-                        <div>Best Deal</div>
+                        <div>{{ textBestdeal }}</div>
                       </div>
 
                     </div>
 
                     <div class="deal-right">
-                      <div class="deal-sameas">Same As</div>
+                      <div class="deal-sameas">{{ textSameas }}</div>
                     </div>
 
                   </div>
@@ -105,13 +126,13 @@
                         <div class="deal-name">&nbsp;{{ product.product_name }}&nbsp;</div>
                         <div
                           v-if="dealsFreeQuantities[deal.quantity]"
-                          class="deal-free">+ {{ dealsFreeQuantities[deal.quantity] }} Free</div>
+                          class="deal-free">+ {{ dealsFreeQuantities[deal.quantity] }} {{ textFree }}</div>
                       </div>
 
                       <div class="deal-discount">
                         <div class="deal-discount-o">o</div>
                         <div class="deal-discount-value">{{ deal.discount_percent }}%</div>
-                        <div class="deal-discount-off">&nbsp;OFF</div>
+                        <div class="deal-discount-off">&nbsp;{{ textOff }}</div>
                       </div>
 
                     </div>
@@ -122,7 +143,7 @@
                         <div v-if="form.installments === 6">6x {{ deal.installments6_unit_value_text }}</div>
                         <div v-if="form.installments === 3">3x {{ deal.installments3_unit_value_text }}</div>
                         <div v-if="form.installments === 1">{{ deal.unit_value_text }}</div>
-                        <div v-if="deal.quantity > 1">&nbsp;/ea</div>
+                        <div v-if="deal.quantity > 1">&nbsp;{{ textEach }}</div>
                       </div>
 
                       <div class="deal-price-total">
@@ -131,7 +152,7 @@
                         <div v-if="form.installments === 1">({{ deal.value_text }})</div>
                       </div>
 
-                      <div class="deal-free-shipping">Free Shipping</div>
+                      <div class="deal-free-shipping">{{ textFreeShipping }}</div>
 
                     </div>
 
@@ -140,6 +161,11 @@
                 </div>
 
               </div>
+
+              <Variant
+                :$v="$v.form.variant"
+                :form="form"
+                name="variant" />
 
             </div>
           </transition>
@@ -345,13 +371,13 @@
               v-if="step === 1 || step === 2"
               class="button-next"
               @click="nextClick">
-              <div>NEXT</div>
+              <div>{{ textNext }}</div>
             </div>
 
             <div
               v-if="step === 3 && form.paymentProvider === 'credit-card'"
               :class="{ submitted: isSubmitted }"
-              class="button-next"
+              class="button-next multi"
               @click="nextClick">
 
               <template v-if="isSubmitted">
@@ -361,7 +387,7 @@
 
               <div
                 :class="{ hidden: isSubmitted }">
-                <div>YES! COMPLETE MY ORDER</div>
+                <div>{{ textComplete }}</div>
               </div>
 
             </div>
@@ -379,7 +405,7 @@
               <div class="product-long-name">{{ product.long_name }}</div>
               <div class="product-bestseller">
                 <div class="product-bestseller-triangle"></div>
-                <div>#1 Best Seller</div>
+                <div>#1 {{ textN1Bestseller }}</div>
               </div>
               <img
                 :src="image5star"
@@ -402,8 +428,8 @@
             <img
               :src="imageGuarantee"
               class="guarantee-image" />
-            <div class="guarantee-title">30 Day Money Back Guarantee</div>
-            <div class="guarantee-text">You Risk Nothing! 100% Iron-Clad Guarantee!</div>
+            <div class="guarantee-title">{{ textGuaranteeTitle }}</div>
+            <div class="guarantee-text">{{ textGuaranteeText }}</div>
             <div class="guarantee-text">{{ product.home_name }}</div>
             <div class="guarantee-text">{{ product.splash_description }}</div>
           </div>
@@ -413,18 +439,18 @@
       </div>
 
       <div class="reviews">
-        
+
         <div class="reviews-title">
           <div class="reviews-title-left"></div>
           <div class="reviews-title-right"></div>
-          <div>CUSTOMER REVIEWS</div>
+          <div>{{ textReviewsTitle }}</div>
         </div>
 
         <div class="reviews-block">
 
           <div class="rate-box">
             <div class="rate-box-value">4.8</div>
-            <div class="rate-box-outof">Out of 5.0</div>
+            <div class="rate-box-outof">{{ textRateBoxOutof }} 5.0</div>
           </div> 
 
           <img
@@ -432,13 +458,13 @@
             class="stars-lines" />
 
           <div class="reviews-overall">
-            <div>Overall Rating</div>
+            <div>{{ textReviewsOverall }}</div>
             <img :src="image5star" />
           </div>
 
           <div class="reviews-percent">
             <div class="reviews-percent-value">91%</div>
-            <div class="reviews-percent-text">of customers that buy from this merchant give them a 5-Star rating</div>
+            <div class="reviews-percent-text">{{ textReviewsPercent }}</div>
           </div>
 
         </div>
@@ -459,7 +485,7 @@
 
             <div class="review-verified">
               <img :src="imageVerifiedCheck" />
-              <div>Verified Buyer</div>
+              <div>{{ textReviewsVerified }}</div>
             </div>
 
           </div>
@@ -479,13 +505,13 @@
   import validations from '../validation/fmc5-validation';
   import scrollToError from '../mixins/formScrollToError';
   import purchasMixin from '../mixins/purchas';
-  import notification from '../mixins/notification'
   import * as extraFields from '../mixins/extraFields';
   import blackFriday from '../mixins/blackFriday';
   import christmas from '../mixins/christmas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
   import { ipqsCheck } from '../services/ipqs';
+  import Variant from './common/common-fields/Variant';
   import FirstName from './common/common-fields/FirstName';
   import LastName from './common/common-fields/LastName';
   import Email from './common/common-fields/Email';
@@ -521,7 +547,6 @@
 
 
     mixins: [
-      notification,
       scrollToError,
       extraFields.tplMixin,
       purchasMixin,
@@ -553,6 +578,7 @@
       Installments,
       Spinner,
       Warranty,
+      Variant,
     },
 
 
@@ -563,7 +589,7 @@
           address: false,
         },
         form: {
-          deal: 3,
+          deal: 1,
           variant: null,
           isWarrantyChecked: false,
           paymentProvider: null,
@@ -683,6 +709,10 @@
         );
       },
 
+      mproductDescription() {
+        return this.productDescription.replace(/fmc5-list-check\.png/g, 'fmc5-mlist-check.png');
+      },
+
       dialCode() {
         const allCountries = intlTelInputGlobals.getCountryData();
         const phoneCountryCode = this.form.countryCodePhoneField;
@@ -715,8 +745,108 @@
         return this.$root.cdnUrl + '/assets/images/fmc5-verified-check.svg';
       },
 
+      textStepsLineOrder() {
+        return this.$t('fmc5.steps_line.order')
+      },
+
+      textStepsLineOffer() {
+        return this.$t('fmc5.steps_line.offer')
+      },
+
+      textStepsLineConfirm() {
+        return this.$t('fmc5.steps_line.confirm')
+      },
+
+      textMProductTitle() {
+        return this.$t('fmc5.mproduct.title')
+      },
+
+      textStep() {
+        return this.$t('fmc5.step');
+      },
+
+      textStepQuantity() {
+        return this.$t('fmc5.steps.quantity');
+      },
+
+      textStepShipping() {
+        return this.$t('fmc5.steps.shipping');
+      },
+
+      textStepPayment() {
+        return this.$t('fmc5.steps.payment');
+      },
+
+      textBestseller() {
+        return this.$t('fmc5.bestseller');
+      },
+
+      textBestdeal() {
+        return this.$t('fmc5.bestdeal');
+      },
+
+      textSameas() {
+        return this.$t('fmc5.sameas');
+      },
+
+      textFree() {
+        return this.$t('fmc5.free');
+      },
+
+      textOff() {
+        return this.$t('fmc5.off');
+      },
+
+      textEach() {
+        return this.$t('fmc5.each');
+      },
+
+      textFreeShipping() {
+        return this.$t('fmc5.free_shipping');
+      },
+
+      textNext() {
+        return this.$t('fmc5.next');
+      },
+
+      textComplete() {
+        return this.$t('fmc5.complete');
+      },
+
       textPaypalRiskFree() {
         return this.$t('checkout.paypal.risk_free');
+      },
+
+      textN1Bestseller() {
+        return this.$t('fmc5.n1_bestseller');
+      },
+
+      textGuaranteeTitle() {
+        return this.$t('fmc5.guarantee.title');
+      },
+
+      textGuaranteeText() {
+        return this.$t('fmc5.guarantee.text');
+      },
+
+      textReviewsTitle() {
+        return this.$t('fmc5.reviews.title');
+      },
+
+      textRateBoxOutof() {
+        return this.$t('fmc5.rate_box.outof');
+      },
+
+      textReviewsOverall() {
+        return this.$t('fmc5.reviews.overall');
+      },
+
+      textReviewsPercent() {
+        return this.$t('fmc5.reviews.percent');
+      },
+
+      textReviewsVerified() {
+        return this.$t('fmc5.reviews.verified');
       },
 
     },
@@ -1062,6 +1192,17 @@
     margin: 40px 0;
     position: relative;
     width: 970px;
+
+    @media only screen and (max-width: 1000px) {
+      width: 750px;
+    }
+
+    @media only screen and (max-width: 767px) {
+      margin: 15px 0;
+      max-width: 600px;
+      padding: 0 10px;
+      width: 100%;
+    }
   }
 
   .steps-line {
@@ -1069,6 +1210,11 @@
     background-color: #0089cc;
     display: flex;
     width: 74%;
+
+    @media only screen and (max-width: 767px) {
+      align-self: stretch;
+      width: auto;
+    }
   }
 
   .step-line {
@@ -1080,6 +1226,7 @@
     justify-content: center;
     height: 38px;
     position: relative;
+    white-space: nowrap;
     width: 33.33%;
 
     &:nth-child(2) {
@@ -1088,6 +1235,39 @@
 
     &:nth-child(3) {
       background-color: #001326;
+    }
+
+    @media only screen and (max-width: 767px) {
+      font-size: 15px;
+      width: 30%;
+
+      &:nth-child(1) {
+        padding-left: 10px;
+
+        [dir="rtl"] & {
+          padding-left: 0;
+          padding-right: 10px;
+        }
+      }
+
+      &:nth-child(2) {
+        padding-left: 20px;
+
+        [dir="rtl"] & {
+          padding-left: 0;
+          padding-right: 20px;
+        }
+      }
+
+      &:nth-child(3) {
+        padding-left: 15px;
+        width: 40%;
+
+        [dir="rtl"] & {
+          padding-left: 0;
+          padding-right: 15px;
+        }
+      }
     }
   }
 
@@ -1100,8 +1280,16 @@
     top: 0;
     z-index: 1;
 
+    [dir="rtl"] & {
+      border-left: none;
+      border-right: 19px solid #0089cc;
+      left: -19px;
+      right: auto;
+    }
+
     .step-line:nth-child(2) & {
       border-left-color: #026190;
+      border-right-color: #026190;
     }
 
     .step-line:nth-child(3) & {
@@ -1118,6 +1306,17 @@
     justify-content: space-between;
     margin-top: 40px;
     padding: 30px 30px 50px;
+
+    @media only screen and (max-width: 1000px) {
+      padding: 20px 20px;
+    }
+
+    @media only screen and (max-width: 767px) {
+      align-items: stretch;
+      flex-direction: column;
+      margin-top: 20px;
+      padding: 0;
+    }
   }
 
   .content-left {
@@ -1126,12 +1325,109 @@
     flex-direction: column;
     padding-bottom: 25px;
     width: 59%;
+
+    @media only screen and (max-width: 767px) {
+      box-shadow: none;
+      padding-bottom: 0;
+      width: auto;
+    }
   }
 
   .content-right {
     display: flex;
     flex-direction: column;
     width: 36%;
+
+    @media only screen and (max-width: 1000px) {
+      width: 38%;
+    }
+
+    @media only screen and (max-width: 767px) {
+      width: auto;
+    }
+  }
+
+  .mproduct {
+    display: none;
+    flex-direction: column;
+
+    @media only screen and (max-width: 767px) {
+      display: flex;
+    }
+  }
+
+  .mproduct-title {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 15px 15px 12px;
+  }
+
+  .mproduct-details {
+    align-items: center;
+    background-color: #026190;
+    display: flex;
+    padding: 5px 5px;
+  }
+
+  .mproduct-image {
+    border-radius: 50%;
+    width: 30%;
+  }
+
+  .mproduct-details-text {
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+    width: 70%;
+
+    [dir="rtl"] & {
+      padding-left: 0;
+      padding-right: 5px;
+    }
+  }
+
+  .mproduct-long-name {
+    border-bottom: 1px solid #0089cc;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 2px;
+    padding-bottom: 7px;
+  }
+
+  .mdescription {
+    display: flex;
+
+    :global(ul) {
+      display: flex;
+      flex-direction: column;
+      list-style: none;
+      margin: 2px 0;
+      padding: 0;
+
+      :global(li) {
+        align-items: flex-start;
+        color: #fff;
+        display: flex;
+        font-size: 12px;
+        font-weight: 700;
+        margin: 1.5px 0;
+        padding: 0;
+
+        :global(img) {
+          margin-right: 4px;
+
+          [dir="rtl"] & {
+            margin-left: 4px;
+            margin-right: 0;
+          }
+        }
+
+        :global(div) {
+          margin-top: 3px;
+        }
+      }
+    }
   }
 
   .step {
@@ -1141,8 +1437,26 @@
     font-size: 28px;
     padding: 20px 20px;
 
+    @media only screen and (max-width: 1000px) {
+      font-size: 24px;
+      padding: 15px 15px;
+    }
+
+    @media only screen and (max-width: 767px) {
+      font-size: 18px;
+    }
+
     img {
       margin-right: 12px;
+
+      [dir="rtl"] & {
+        margin-left: 12px;
+        margin-right: 0;
+      }
+
+      @media only screen and (max-width: 1000px) {
+        width: 40px;
+      }
     }
   }
 
@@ -1156,7 +1470,12 @@
     flex-direction: column;
   }
 
-  #installments {
+  #installments-field {
+    margin: 20px 20px;
+    width: auto;
+  }
+
+  #variant-field {
     margin: 20px 20px;
     width: auto;
   }
@@ -1185,6 +1504,10 @@
     &.sellout {
       cursor: default;
       opacity: .5;
+    }
+
+    @media only screen and (max-width: 1000px) {
+      padding: 15px 12px;
     }
   }
 
@@ -1225,6 +1548,7 @@
   .deal-left {
     align-items: center;
     display: flex;
+    flex-wrap: wrap;
   }
 
   .deal-right {
@@ -1232,6 +1556,11 @@
     display: flex;
     flex-direction: column;
     padding-right: 7px;
+
+    [dir="rtl"] & {
+      padding-left: 7px;
+      padding-right: 0;
+    }
   }
 
   .deal-bestseller, .deal-popular {
@@ -1242,8 +1571,25 @@
     font-weight: 700;
     height: 28px;
     margin-left: -18px;
-    padding: 0 35px 0 22px;
+    padding-left: 22px;
+    padding-right: 35px;
     position: relative;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: -18px;
+      padding-left: 35px;
+      padding-right: 22px;
+    }
+
+    @media only screen and (max-width: 1000px) {
+      margin-left: -12px;
+
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: -12px;
+      }
+    }
   }
 
   .deal-bestseller {
@@ -1264,8 +1610,20 @@
     top: 0;
     width: 0;
 
+    [dir="rtl"] & {
+      border-left: 14px solid #fff;
+      border-right: none;
+      left: 0;
+      right: auto;
+    }
+
     .deal.selected & {
+      border-left-color: #fff7b2;
       border-right-color: #fff7b2;
+
+      [dir="rtl"] & {
+
+      }
     }
   }
 
@@ -1276,6 +1634,11 @@
 
   .deal-radio {
     margin-right: 12px;
+
+    [dir="rtl"] & {
+      margin-left: 12px;
+      margin-right: 0;
+    }
   }
 
   .deal-label {
@@ -1283,6 +1646,15 @@
     display: flex;
     font-size: 17px;
     font-weight: 700;
+    height: 30px;
+
+    @media only screen and (max-width: 767px) {
+      font-size: 14px;
+    }
+  }
+
+  .deal-free {
+    white-space: nowrap;
   }
 
   .deal-discount {
@@ -1293,10 +1665,20 @@
     box-shadow: 1px 1px 4px #ddd;
     color: #0089cc;
     display: flex;
+    font-size: 17px;
     height: 30px;
     justify-content: center;
     margin-left: 12px;
     padding: 0 8px;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: 12px;
+    }
+
+    @media only screen and (max-width: 767px) {
+      font-size: 14px;
+    }
   }
 
   .deal-discount-o {
@@ -1304,6 +1686,11 @@
     font-size: 9px;
     margin-left: -3px;
     margin-right: 5px;
+
+    [dir="rtl"] & {
+      margin-left: 5px;
+      margin-right: -3px;
+    }
   }
 
   .deal-price-one {
@@ -1323,6 +1710,7 @@
   .deal-free-shipping {
     font-size: 12px;
     font-weight: 600;
+    white-space: nowrap;
   }
 
   .step2 {
@@ -1338,11 +1726,25 @@
 
   #first-name-field {
     width: 48%;
+
+    @media only screen and (max-width: 767px) {
+      width: 100%;
+    }
   }
 
   #last-name-field {
     margin-left: auto;
     width: 48%;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    @media only screen and (max-width: 767px) {
+      margin: 0;
+      width: 100%;
+    }
   }
 
   #card-date-field {
@@ -1393,6 +1795,11 @@
     font-weight: 700;
     margin-right: 18px;
     padding: 14px;
+
+    [dir="rtl"] & {
+      margin-left: 18px;
+      margin-right: 0;
+    }
   }
 
   .button-next {
@@ -1409,6 +1816,18 @@
     justify-content: center;
     height: 62px;
     position: relative;
+
+    &.multi {
+      @media only screen and (max-width: 1000px) {
+        font-size: 24px;
+        padding: 0 10px;
+        text-align: center;
+      }
+
+      @media only screen and (max-width: 767px) {
+        font-size: 18px;
+      }
+    }
 
     &.submitted {
       cursor: default;
@@ -1441,6 +1860,10 @@
     display: flex;
     justify-content: space-between;
     padding-bottom: 15px;
+
+    @media only screen and (max-width: 767px) {
+      display: none;
+    }
   }
 
   .details-left {
@@ -1463,6 +1886,10 @@
   .product-long-name {
     font-size: 18px;
     margin-top: 2px;
+
+    @media only screen and (max-width: 1000px) {
+      font-size: 16px;
+    }
   }
 
   .product-bestseller {
@@ -1476,6 +1903,10 @@
     margin-top: 5px;
     padding: 0 30px 0 10px;
     position: relative;
+
+    [dir="rtl"] & {
+      padding: 0 10px 0 30px;
+    }
   }
 
   .product-bestseller-triangle {
@@ -1487,6 +1918,13 @@
     right: 0;
     top: 0;
     width: 0;
+
+    [dir="rtl"] & {
+      border-left: 13px solid #fff;
+      border-right: none;
+      left: 0;
+      right: auto;
+    }
   }
 
   .product-5star {
@@ -1502,6 +1940,10 @@
     display: flex;
     margin-top: 10px;
 
+    @media only screen and (max-width: 767px) {
+      display: none;
+    }
+
     :global(ul) {
       display: flex;
       flex-direction: column;
@@ -1514,12 +1956,28 @@
         color: #393737;
         display: flex;
         font-size: 18px;
-        margin: 7px 0;
+        margin: 7.5px 0;
         padding: 0;
+
+        @media only screen and (max-width: 1000px) {
+          font-size: 17px;
+        }
 
         :global(img) {
           margin-right: 12px;
-          margin-top: 1px;
+
+          [dir="rtl"] & {
+            margin-left: 12px;
+            margin-right: 0;
+          }
+        }
+
+        :global(div) {
+          margin-top: -1px;
+
+          @media only screen and (max-width: 1000px) {
+            margin-top: 0;
+          }
         }
       }
     }
@@ -1534,11 +1992,29 @@
     margin-top: 80px;
     padding: 20px 20px;
     text-align: center;
+
+    @media only screen and (max-width: 1000px) {
+      margin-top: 70px;
+      padding: 10px 10px;
+    }
+
+    @media only screen and (max-width: 767px) {
+      margin: 90px 20px 20px;
+    }
   }
 
   .guarantee-image {
     margin-bottom: 15px;
     margin-top: -88px;
+
+    @media only screen and (max-width: 1000px) {
+      margin-top: -81px;
+      width: 120px;
+    }
+
+    @media only screen and (max-width: 767px) {
+       margin-top: -71px;
+    }
   }
 
   .guarantee-title {
@@ -1572,6 +2048,10 @@
     position: absolute;
     width: 140px;
     top: 15px;
+
+    @media only screen and (max-width: 767px) {
+      display: none;
+    }
   }
 
   .reviews-title-left {
@@ -1585,8 +2065,13 @@
   .reviews-block {
     align-items: center;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     margin: 60px 0 50px 0;
+
+    @media only screen and (max-width: 767px) {
+      margin: 30px 0;
+    }
   }
 
   .rate-box {
@@ -1595,6 +2080,10 @@
     display: flex;
     flex-direction: column;
     width: 115px;
+
+    @media only screen and (max-width: 767px) {
+      width: 30%;
+    }
   }
 
   .rate-box-value {
@@ -1604,6 +2093,10 @@
     font-weight: 600;
     height: 85px;
     justify-content: center;
+
+    @media only screen and (max-width: 767px) {
+      height: 75px;
+    }
   }
 
   .rate-box-outof {
@@ -1618,6 +2111,24 @@
 
   .stars-lines {
     margin: 0 32px;
+
+    @media only screen and (max-width: 1000px) {
+      margin: 0 0 0 30px;
+
+      [dir="rtl"] & {
+        margin: 0 30px 0 0;
+      }
+    }
+
+    @media only screen and (max-width: 767px) {
+      margin: 0 0 0 4%;
+      max-width: 200px;
+      width: 63%;
+
+      [dir="rtl"] & {
+        margin: 0 4% 0 0;
+      }
+    }
   }
 
   .reviews-overall {
@@ -1630,6 +2141,11 @@
     font-weight: 600;
     text-align: center;
     width: 150px;
+
+    @media only screen and (max-width: 767px) {
+      margin-top: 15px;
+      width: 100%;
+    }
 
     img {
       margin-top: 7px;
@@ -1645,6 +2161,15 @@
     margin: 0 25px;
     text-align: center;
     width: 170px;
+
+    @media only screen and (max-width: 1000px) {
+      margin: 0;
+    }
+
+    @media only screen and (max-width: 767px) {
+      margin-top: 15px;
+      width: 80%;
+    }
   }
 
   .reviews-percent-value {
@@ -1668,6 +2193,10 @@
     display: flex;
     flex-direction: column;
     padding: 20px 0;
+
+    @media only screen and (max-width: 767px) {
+      padding: 20px 10px;
+    }
   }
 
   .review-5star {
@@ -1753,7 +2282,8 @@
   .select.variant-1 {
     margin: 10px 0;
 
-    :global(.label) {
+    .step2 & :global(.label),
+    .step3 & :global(.label) {
       display: none;
     }
 

@@ -3,9 +3,13 @@
   <select-field
     v-if="visible"
     v-model="form.installments"
-    id="installments"
+    id="installments-field"
     :label="textTitle"
-    :list="list" />
+    theme="variant-1"
+    :list="list"
+    :tabindex="tabindex"
+    :order="order"
+    @input="input" />
 
 </template>
 
@@ -21,6 +25,8 @@
     props: [
       'extraFields',
       'form',
+      'tabindex',
+      'order',
     ],
 
 
@@ -40,6 +46,15 @@
 
       textTitle() {
         return this.$t('checkout.payment_form.installments.title');
+      },
+
+    },
+
+
+    methods: {
+
+      input(newValue, oldValue) {
+        this.$emit('input', newValue, oldValue);
       },
 
     },
