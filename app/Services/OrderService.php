@@ -270,7 +270,7 @@ class OrderService
                     continue;
                 } else {
                     $txns[$txn['hash']] = $txn['status'];
-                    if($txn['status'] ===  Txn::STATUS_FAILED) {
+                    if($txn['status'] !==  Txn::STATUS_APPROVED) {
                         $failed++;
                     }
                     $c++;
