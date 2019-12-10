@@ -665,7 +665,7 @@ class OdinOrder extends OdinModel
      * Get last order txns
      */
     public static function getLastTxns($limit = 20) {        
-        $orders = OdinOrder::where(['txns.hash' => ['$ne' => null]])->limit($limit)->orderBy('_id', 'desc')->get();        
+        $orders = OdinOrder::limit($limit)->orderBy('_id', 'desc')->get();        
         return $orders;
     }
 }
