@@ -259,10 +259,9 @@ class OrderService
      */
     public static function getLastOrdersTxnSuccessPercent($limit = 20)
     {
-        // get last 20 orders with a txns
-        $percent = 0;
+        // get last 20 orders with a txns        
         $orders = OdinOrder::getLastOrders($limit);        
-        $txns = []; $c = 0; $success_txns = 0; $fail = false; $successPercent = 0;
+        $success_txns = 0; $successPercent = 0;
         foreach ($orders as $order) {            
             $orderTxns = $order->txns;            
             foreach ($orderTxns as $txn) {
