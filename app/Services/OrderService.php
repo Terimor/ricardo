@@ -262,7 +262,7 @@ class OrderService
         // get last 20 orders with a txns
         $percent = 0;
         $orders = OdinOrder::getLastTxns($limit);        
-        $txns = []; $c = 0; $failed = 0; $fail = false; $failedPercent = 0;
+        $txns = []; $c = 0; $success_txns = 0; $fail = false; $successPercent = 0;
         foreach ($orders as $order) {            
             $orderTxns = $order->txns;
             foreach ($orderTxns as $txn) {
@@ -270,8 +270,8 @@ class OrderService
                     continue;
                 } else {
                     $txns[$txn['hash']] = $txn['status'];
-                    if($txn['status'] !==  Txn::STATUS_APPROVED) {
-                        $failed++;
+                    if($txn['status'] ===  Txn::STATUS_APPROVED) {
+                        $success_txns++;
                     }
                     $c++;
                     if ($c == $limit) {
@@ -281,10 +281,10 @@ class OrderService
             }
         }
 
-        if ($failed > 0) {
-            $failedPercent = $failed / $limit * 100;
+        if ($success_txns > 0) {
+            $successPercent = $success_txns / $limit * 100;
         }
 
-        return $failedPercent;
+        return $successPercent;
     }
 }
