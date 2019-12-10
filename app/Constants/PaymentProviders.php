@@ -647,7 +647,7 @@ class PaymentProviders
         self::MINTE => [
             'name'      => 'Mint-e',
             'is_active' => false,
-            'is_main'   => true,
+            'is_main'   => false,
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
