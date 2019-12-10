@@ -482,7 +482,6 @@ class PaymentService
 
             switch ($fallback_provider):
                 case PaymentProviders::BLUESNAP:
-                    logger()->info("Fallback order [{$order->number}], provider Bluesnap");
                     $bluesnap = new BluesnapService();
                     $payment = $bluesnap->payByCard(
                         $card,
