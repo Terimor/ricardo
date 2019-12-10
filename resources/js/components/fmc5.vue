@@ -497,7 +497,7 @@
         <div
           class="button-next"
           @click="nextBottomClick">
-          <div>Click here to buy now!</div>
+          <div>{{ textNextBottom }}</div>
         </div>
       </div>
 
@@ -855,6 +855,10 @@
 
       textReviewsVerified() {
         return this.$t('fmc5.reviews.verified');
+      },
+
+      textNextBottom() {
+        return this.$t('fmc5.next.bottom');
       },
 
     },
