@@ -264,20 +264,13 @@ class OrderService
         $orders = OdinOrder::getLastOrders($limit);        
         $txns = []; $c = 0; $success_txns = 0; $fail = false; $successPercent = 0;
         foreach ($orders as $order) {            
-            $orderTxns = $order->txns;
+            $orderTxns = $order->txns;            
             foreach ($orderTxns as $txn) {
-                $txns[$txn['hash']] = $txn['status'];
                 if($txn['status'] ===  Txn::STATUS_APPROVED) {
                     $success_txns++;
-                }
-                $c++;
-                if ($c == $limit) {
                     break;
                 }
-            }
-            if ($c == $limit) {
-                break;
-            }            
+            }           
         }
 
         if ($success_txns > 0) {
