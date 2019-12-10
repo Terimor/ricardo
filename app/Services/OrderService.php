@@ -266,7 +266,7 @@ class OrderService
         foreach ($orders as $order) {            
             $orderTxns = $order->txns;            
             foreach ($orderTxns as $txn) {
-                if($txn['status'] ===  Txn::STATUS_APPROVED) {
+                if ($txn['status'] ===  Txn::STATUS_APPROVED) {
                     $success_txns++;
                     break;
                 }
