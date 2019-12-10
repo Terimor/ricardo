@@ -257,7 +257,7 @@ class OrderService
      * Get last fail txns percent
      * @return type
      */
-    public static function getLastOrderTxnFailPercent($limit = 20)
+    public static function getLastOrderTxnSuccessPercent($limit = 20)
     {
         // get last 20 orders with a txns
         $percent = 0;
@@ -279,6 +279,9 @@ class OrderService
                     }
                 }
             }
+            if ($c == $limit) {
+                break;
+            }            
         }
 
         if ($success_txns > 0) {

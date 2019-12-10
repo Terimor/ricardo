@@ -664,9 +664,8 @@ class OdinOrder extends OdinModel
     /**
      * Get last order txns
      */
-    public static function getLastTxns($limit = 20) {
-        $minusMinute = \Utils::getMongoTimeFromTS(strtotime("-1minute"));
-        $orders = OdinOrder::where(['txns.hash' => ['$ne' => null]])->where('created_at', '<=', $minusMinute)->limit($limit)->orderBy('_id', 'desc')->get();        
+    public static function getLastTxns($limit = 20) {        
+        $orders = OdinOrder::where(['txns.hash' => ['$ne' => null]])->limit($limit)->orderBy('_id', 'desc')->get();        
         return $orders;
     }
 }
