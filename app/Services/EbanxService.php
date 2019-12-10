@@ -349,7 +349,7 @@ class EbanxService
                 $result['is_flagged']       = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING ? true : false;
                 $result['token']            = $res['payment']['token'] ?? null;
             } else {
-                if (in_array($res['status_code'], self::$fallback_codes)) {
+                if (!EbanxCodeMapper::getPhrase($res['status_code'])) {
                     $result['fallback'] = true;
                 }
                 $result['errors'] = [EbanxCodeMapper::toPhrase($res['status_code'])];
