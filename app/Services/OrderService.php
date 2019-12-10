@@ -266,17 +266,13 @@ class OrderService
         foreach ($orders as $order) {            
             $orderTxns = $order->txns;
             foreach ($orderTxns as $txn) {
-                if (isset($txns[$txn['hash']])) {
-                    continue;
-                } else {
-                    $txns[$txn['hash']] = $txn['status'];
-                    if($txn['status'] ===  Txn::STATUS_APPROVED) {
-                        $success_txns++;
-                    }
-                    $c++;
-                    if ($c == $limit) {
-                        break;
-                    }
+                $txns[$txn['hash']] = $txn['status'];
+                if($txn['status'] ===  Txn::STATUS_APPROVED) {
+                    $success_txns++;
+                }
+                $c++;
+                if ($c == $limit) {
+                    break;
                 }
             }
             if ($c == $limit) {
