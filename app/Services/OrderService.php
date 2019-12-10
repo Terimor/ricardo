@@ -261,7 +261,7 @@ class OrderService
     {
         // get last 20 orders with a txns
         $percent = 0;
-        $orders = OdinOrder::getLastTxns($limit);        
+        $orders = OdinOrder::getLastOrders($limit);        
         $txns = []; $c = 0; $success_txns = 0; $fail = false; $successPercent = 0;
         foreach ($orders as $order) {            
             $orderTxns = $order->txns;
