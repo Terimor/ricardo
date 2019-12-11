@@ -406,8 +406,8 @@ class SiteController extends Controller
         // get percent        
         $txns = OrderService::getLastOrdersTxnSuccessPercent();
         
-        if ($txns < 50) {
-            //$result = $bad;
+        if ($txns <= 20) {
+            $result = $bad;
         }
         $txns.= '%';
         return view('prober', compact('result', 'redis', 'txns'));
