@@ -99,6 +99,9 @@ function logError(errText, data) {
       error: errText,
       data,
     }),
+  })
+  .catch(err => {
+
   });
 
   console.error(errText);

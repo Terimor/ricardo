@@ -41,6 +41,9 @@ export function paypalCreateOrder ({
     }
 
     return res;
+  })
+  .catch(err => {
+
   });
 }
 
@@ -59,19 +62,22 @@ export function paypalOnApprove(data) {
       orderID: data.orderID
     })
   })
-    .then(function(res) {
-      if(res.ok) {
-        return res.json();
-      } else {
-        throw new Error(res.statusText);
-      }
-    })
-    .then(function() {
-      if (odin_order_id) {
-        localStorage.setItem('odin_order_created_at', new Date());
-        goTo('/thankyou');
-      }
-    });
+  .then(function(res) {
+    if(res.ok) {
+      return res.json();
+    } else {
+      throw new Error(res.statusText);
+    }
+  })
+  .then(function() {
+    if (odin_order_id) {
+      localStorage.setItem('odin_order_created_at', new Date());
+      goTo('/thankyou');
+    }
+  })
+  .catch(err => {
+
+  });
 }
 
 

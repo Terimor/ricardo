@@ -42,6 +42,9 @@
                     body: JSON.stringify({
                         orderID: data.orderID,
                     })
+                })
+                .catch(err => {
+
                 });
             });
         }

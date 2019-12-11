@@ -206,6 +206,9 @@ export function paypalCreateOrder ({
       }
 
       return res;
+    })
+    .catch(err => {
+
     });
 }
 
@@ -224,7 +227,8 @@ export function paypalOnApprove(data) {
     body: JSON.stringify({
       orderID: data.orderID
     })
-  }).then(function(res) {
+  })
+  .then(function(res) {
     if(res.ok) {
       return res.json();
     } else {
@@ -233,5 +237,8 @@ export function paypalOnApprove(data) {
   })
   .then(function(res) {
     goToThankYou(odin_order_id, order_currency);
+  })
+  .catch(err => {
+
   });
 }

@@ -59,10 +59,15 @@
                     offer: new URL(document.location.href).searchParams.get('offer'),
                     affiliate: new URL(document.location.href).searchParams.get('affiliate'),
                 })
-            }).then(function(res) {
+            })
+            .then(function(res) {
                 return res.json();
-            }).then(function(data) {
+            })
+            .then(function(data) {
                 return data.id;
+            })
+            .catch(err => {
+
             });
         },
         onApprove: function(data) {
@@ -77,10 +82,15 @@
                 body: JSON.stringify({
                     orderID: data.orderID
                 })
-            }).then(function(res) {
+            })
+            .then(function(res) {
                 return res.json();
-            }).then(function(details) {
+            })
+            .then(function(details) {
                 console.log(details);
+            })
+            .catch(err => {
+
             });
         }
     }).render('#paypal-button-container');

@@ -19,7 +19,10 @@ export const getTotalPrice = (data, total) => {
       }),
     })
     .then(res => res.json())
-    .then(res => res.value_text);
+    .then(res => res.value_text)
+    .catch(err => {
+
+    });
 };
 
 export const getUppSells = (product_id, quantity) => {
@@ -27,5 +30,8 @@ export const getUppSells = (product_id, quantity) => {
 
   return fetch(`/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`)
     .then(res => res.json())
-    .then(res => ({ data: res }));
+    .then(res => ({ data: res }))
+    .catch(err => {
+
+    });
 };
