@@ -24,7 +24,7 @@ export default {
     
     scrollToError() {
       this.$nextTick(() => {
-        const inputsArr = [...document.querySelectorAll('.scroll-when-error')];
+        const inputsArr = [].slice.call(document.querySelectorAll('.scroll-when-error'));
         const element = inputsArr.find((item) => item.classList.contains('invalid'));
         this.scrollTopElement(element);
       });

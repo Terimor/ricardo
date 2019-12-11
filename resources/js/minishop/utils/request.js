@@ -30,7 +30,7 @@ export default {
     },
 
     searchPopulatePageLinks() {
-      const elements = [...document.querySelectorAll('a[href]')];
+      const elements = [].slice.call(document.querySelectorAll('a[href]'));
 
       for (let element of elements) {
         const href = element.getAttribute('href');

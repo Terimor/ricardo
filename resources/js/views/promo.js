@@ -147,7 +147,7 @@ const promo = new Vue({
       () => !this.showPreloader,
       () => {
         this.$nextTick(() => {
-          this.slideFormSteps = [...document.querySelectorAll('.promo__step')];
+          this.slideFormSteps = [].slice.call(document.querySelectorAll('.promo__step'));
         });
       },
     );

@@ -61,7 +61,7 @@ const thankYou = new Vue({
         onClickSocialNetwork (type) {
             if (type) {
                 this.socialType = type;
-                [...document.querySelectorAll('#social-media-tabs li')].forEach(item => item.classList.remove('active'));
+                [].forEach.call(document.querySelectorAll('#social-media-tabs li'), item => item.classList.remove('active'));
                 document.querySelector('#' + type).classList.add('active');
             }
         },
