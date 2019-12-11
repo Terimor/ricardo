@@ -35,7 +35,7 @@
 
     data() {
       return {
-        oldValue: this.form[this.name],
+        oldValue: this.form[this.name] || '',
       };
     },
 

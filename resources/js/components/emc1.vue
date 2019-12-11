@@ -164,7 +164,8 @@
 </template>
 
 <script>
-  import emc1Validation from '../validation/emc1-validation'
+  import emc1Validation from '../validation/emc1-validation';
+  import scrollToError from '../mixins/formScrollToError';
   import notification from '../mixins/notification'
   import * as extraFields from '../mixins/extraFields';
   import queryToComponent from '../mixins/queryToComponent'
@@ -192,6 +193,7 @@
     name: 'emc1',
     mixins: [
       notification,
+      scrollToError,
       queryToComponent,
       extraFields.tplMixin,
       purchasMixin,
@@ -414,25 +416,7 @@
         this.isFormShown = true;
 
         setTimeout(() => {
-          const element = document.querySelector('.payment-form');
-
-          if (element) {
-            let position = element.getBoundingClientRect().top;
-            position += document.documentElement.scrollTop;
-
-            if (window.blackFridayEnabled) {
-              position -= this.$root.$refs.blackFriday.clientHeight;
-            }
-
-            if (window.christmasEnabled) {
-              position -= this.$root.$refs.christmas.clientHeight;
-            }
-
-            scrollTo({
-              top: position,
-              behavior: 'smooth',
-            });
-          }
+          this.scrollToSelector('.payment-form');
         }, 100);
       },
       paypalSubmit() {

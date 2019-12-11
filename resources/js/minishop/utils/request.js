@@ -1,12 +1,16 @@
 export default {
 
-  data: {
-    searchParams: new URL(location).searchParams,
+  mounted() {
+    this.searchPopulatePageLinks();
   },
 
 
-  mounted() {
-    this.searchPopulatePageLinks();
+  computed: {
+
+    searchParams() {
+      return new URL(location).searchParams;
+    },
+
   },
 
 
@@ -20,11 +24,13 @@ export default {
     searchPopulate(pathname, exclude = []) {
       let url = new URL(pathname, location);
 
-      this.searchParams.forEach((value, key) => {
-        if (!url.searchParams.has(key) && !exclude.includes(key)) {
-          url.searchParams.set(key, value);
-        }
-      });
+      if (this.searchParams) {
+        this.searchParams.forEach((value, key) => {
+          if (!url.searchParams.has(key) && !exclude.includes(key)) {
+            url.searchParams.set(key, value);
+          }
+        });
+      }
 
       return url.pathname + url.search + url.hash;
     },

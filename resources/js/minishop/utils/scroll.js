@@ -20,10 +20,12 @@ export default {
           }
         }
 
-        scrollTo({
-          top: position,
-          behavior: 'smooth',
-        });
+        if (window.scrollTo) {
+          scrollTo({
+            top: position,
+            behavior: 'smooth',
+          });
+        }
       }
     },
 

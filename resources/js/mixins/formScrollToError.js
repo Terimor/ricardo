@@ -2,7 +2,7 @@ export default {
 
   methods: {
 
-    scrollTopElement(element) {
+    scrollToElement(element) {
       if (element) {
         let position = element.getBoundingClientRect().top - 20;
         position += document.documentElement.scrollTop;
@@ -15,10 +15,12 @@ export default {
           position -= this.$root.$refs.christmas.clientHeight;
         }
 
-        scrollTo({
-          top: position,
-          behavior: 'smooth',
-        });
+        if (window.scrollTo) {
+          scrollTo({
+            top: position,
+            behavior: 'smooth',
+          });
+        }
       }
     },
     
@@ -26,14 +28,14 @@ export default {
       this.$nextTick(() => {
         const inputsArr = [].slice.call(document.querySelectorAll('.scroll-when-error'));
         const element = inputsArr.find((item) => item.classList.contains('invalid'));
-        this.scrollTopElement(element);
+        this.scrollToElement(element);
       });
     },
 
     scrollToSelector(selector) {
       this.$nextTick(() => {
         const element = document.querySelector(selector);
-        this.scrollTopElement(element);
+        this.scrollToElement(element);
       });
     },
 
