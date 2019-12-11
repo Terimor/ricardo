@@ -890,7 +890,7 @@ class UtilsService
     public static function generatePageTitle($domain, $product, ?string $copId = '', ?string $phraseText = ''): string
     {
         $title = '';
-        if (!empty($domain->is_multiproduct) && empty($copId)) {
+        if ((!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) && empty($copId)) {
             $title = $domain->getDisplayedName();
         } else {
             $title = $product->page_title ?? $product->product_name;
