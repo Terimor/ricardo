@@ -22,7 +22,7 @@
             placeholder="{{ t('minishop.home.products.search.input') }}" />
           <button
             type="submit"
-            class="btn btn-primary ml-2 px-4"
+            class="btn btn-primary text-nowrap ml-2 px-4"
             @click.prevent="search_click">{{ t('minishop.home.products.search.button') }}</button>
         </form>
       </div>

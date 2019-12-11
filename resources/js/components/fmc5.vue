@@ -70,6 +70,11 @@
                 :class="{ invalid: $v.form.deal.$invalid }">
 
                 <div
+                  v-if="$v.form.deal.$dirty && $v.form.deal.$invalid"
+                  class="deal-error error-container invalid"
+                  v-html="textDealError"></div>
+
+                <div
                   v-for="deal in deals"
                   class="deal"
                   :class="{
@@ -595,7 +600,7 @@
           address: false,
         },
         form: {
-          deal: 1,
+          deal: null,
           variant: null,
           isWarrantyChecked: false,
           paymentProvider: null,
@@ -781,6 +786,10 @@
 
       textStepPayment() {
         return this.$t('fmc5.steps.payment');
+      },
+
+      textDealError() {
+        return this.$t('checkout.main_deal.error');
       },
 
       textBestseller() {
@@ -1508,6 +1517,10 @@
   #variant-field {
     margin: 20px 20px;
     width: auto;
+  }
+
+  .deal-error {
+    margin: 20px 20px;
   }
 
   .deals {
