@@ -87,6 +87,7 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
         $website_name = $domain->getDisplayedName();
+        $is_catch_all = $domain->is_catch_all;
         $cdn_url = \Utils::getCdnUrl();
         $pagination = null;
         if (isset($products['total'])) {
@@ -94,7 +95,7 @@ class SiteController extends Controller
             $products = $products['products'];
             unset($pagination['products']);
         }
-        return view('minishop/pages/home', compact('products', 'page_title', 'website_name', 'cdn_url', 'pagination'));
+        return view('minishop/pages/home', compact('products', 'page_title', 'website_name', 'is_catch_all', 'cdn_url', 'pagination'));
     }
 
     /**

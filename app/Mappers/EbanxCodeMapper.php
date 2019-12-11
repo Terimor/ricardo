@@ -47,14 +47,24 @@ class EbanxCodeMapper
 
     /**
      * Map code to phrase
+     * @param  string|null $code
+     * @return string|null
+     */
+    public static function getPhrase(?string $code): ?string
+    {
+        if ($code && isset(static::$map[$code])) {
+            return static::$map[$code];
+        }
+        return null;
+    }
+
+    /**
+     * Map code to phrase
      * @param  string $code
      * @return string
      */
     public static function toPhrase(string $code = self::CODE_COMMON): string
     {
-        if (isset(static::$map[$code])) {
-            return static::$map[$code];
-        }
-        return static::$map[self::CODE_COMMON];
+        return static::getPhrase($code) ?? static::$map[self::CODE_COMMON];
     }
 }

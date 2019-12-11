@@ -51,6 +51,11 @@ class EbanxService
     ];
 
     /**
+     * @var array
+     */
+    private static $fallback_codes = ['BP-DR-83'];
+
+    /**
      * @var string
      */
     private $integration_key;
@@ -344,7 +349,10 @@ class EbanxService
                 $result['is_flagged']       = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING ? true : false;
                 $result['token']            = $res['payment']['token'] ?? null;
             } else {
-                $result['errors'] = [EbanxCodeMapper::toPhrase((string)$res['status_code'])];
+                if (!EbanxCodeMapper::getPhrase($res['status_code'])) {
+                    $result['fallback'] = true;
+                }
+                $result['errors'] = [EbanxCodeMapper::toPhrase($res['status_code'])];
                 logger()->warning("Ebanx pay", ['res' => $res]);
             }
         } catch (\Exception $ex) {
@@ -378,16 +386,16 @@ class EbanxService
 
         return $result;
     }
-    
+
     /**
      * Get address by zipcode
-     * @param  string $zipcode     
+     * @param  string $zipcode
      */
     public function getAddressByZip(string $zipcode): array
     {
-        $zipcode = preg_replace('/\D/', '', $zipcode);                      
+        $zipcode = preg_replace('/\D/', '', $zipcode);
         $client = new \GuzzleHttp\Client();
-        
+
         $url = $this->environment === static::ENV_LIVE ? EbanxClient::LIVE_URL : EbanxClient::SANDBOX_URL;
 
         $request = $client->request('POST', $url.'ws/zipcode', [
@@ -396,9 +404,9 @@ class EbanxService
                 'zipcode' => $zipcode,
             ]
         ]);
-        
+
         $response = $request->getBody()->getContents();
-        $response = json_decode($response, true);   
+        $response = json_decode($response, true);
         $returnedArray = [];
         if ($response && isset($response['status'])) {
             $returnedArray = [

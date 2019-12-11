@@ -1,16 +1,7 @@
 export default {
 
-  watch: {
-
-    'document.readyState': {
-      immediate: true,
-      handler() {
-        if (this.document.readyState === 'complete') {
-          this.support_toolbar_init();
-        }
-      },
-    },
-
+  mounted() {
+    this.support_toolbar_init();
   },
 
 
@@ -40,18 +31,20 @@ export default {
     },
 
     support_toolbar_show() {
-      const height = this.$refs.support_toolbar.clientHeight;
-
-      this.$refs.support_toolbar.style.height = 0;
-      this.$refs.support_toolbar.classList.remove('invisible');
-
       setTimeout(() => {
-        this.$refs.app.style['padding-top'] = height + 'px';
-        this.$refs.support_toolbar.style.height = height + 'px';
+        const height = this.$refs.support_toolbar.clientHeight;
+
+        this.$refs.support_toolbar.style.height = 0;
+        this.$refs.support_toolbar.classList.remove('invisible');
 
         setTimeout(() => {
-          this.$refs.support_toolbar.style.removeProperty('height');
-        }, 1000);
+          this.$refs.app.style['padding-top'] = height + 'px';
+          this.$refs.support_toolbar.style.height = height + 'px';
+
+          setTimeout(() => {
+            this.$refs.support_toolbar.style.removeProperty('height');
+          }, 1000);
+        }, 100);
       }, 100);
     },
 

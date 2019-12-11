@@ -13,8 +13,10 @@ class MinteCodeMapper
         self::CODE_COMMON => 'card.error.common',
         'I-204' => 'card.error.common',
         '05'    => 'card.error.not_functioning',
+        '51'    => 'card.error.funds_insufficient',
         '54'    => 'card.error.expired',
         '57'    => 'card.error.not_functioning',
+        '\'cvv\' has invalid format' => 'card.error.cvv_incorrect'
     ];
 
     /**

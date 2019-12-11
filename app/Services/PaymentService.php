@@ -473,23 +473,45 @@ class PaymentService
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
 
         // check is this fallback
-        $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
-        if (!empty($payment['fallback']) && $fallback_provider === PaymentProviders::BLUESNAP) {
+        $is_fallback_available = self::checkIsFallbackAvailable($provider, $ipqs, ['installments' => $installments]);
+        if (!empty($payment['fallback']) && $is_fallback_available) {
 
-            logger()->info("Bluesnap fallback order [{$order->number}]");
+            $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
 
-            $bluesnap = new BluesnapService();
-            $payment = $bluesnap->payByCard(
-                $card,
-                $contact,
-                [
-                    'amount'        => $order->total_price,
-                    'currency'      => $order->currency,
-                    'number'        => $order->number,
-                    'billing_descriptor'   => $order->billing_descriptor
-                ]
-            );
-            $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+            logger()->info("Fallback order [{$order->number}] provider {$fallback_provider}");
+
+            switch ($fallback_provider):
+                case PaymentProviders::BLUESNAP:
+                    $bluesnap = new BluesnapService();
+                    $payment = $bluesnap->payByCard(
+                        $card,
+                        $contact,
+                        [
+                            'amount'        => $order->total_price,
+                            'currency'      => $order->currency,
+                            'number'        => $order->number,
+                            'billing_descriptor'   => $order->billing_descriptor
+                        ]
+                    );
+                    $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+                    break;
+                case PaymentProviders::MINTE:
+                    $mint = new MinteService();
+                    $payment = $mint->payByCard($card, $contact, [
+                        '3ds'       => false,
+                        'amount'    => $order->total_price,
+                        'currency'  => $order->currency,
+                        'order_id'  => $order->getIdAttribute(),
+                        'order_number'  => $order->number,
+                        'product_id'    => $product->getIdAttribute(),
+                        'user_agent'    => $user_agent,
+                        'descriptor'    => $order->billing_descriptor
+                    ]);
+                    $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+                    break;
+                default:
+                    logger()->info("Fallback order [{$order->number}] provider not found");
+            endswitch;
         }
 
         // cache token
@@ -886,7 +908,6 @@ class PaymentService
             $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
             $refuse_limit = PaymentProviders::$list[$prv]['fraud_setting']['refuse_limit'];
             if ($fraud_chance > $refuse_limit || $is_bot || $is_valid_email === false) {
-                // logger()->warning('Payment refused', ['ipqs' => $ipqs]);
                 throw new PaymentException('Payment is refused', 'card.error.refused');
             }
         }
@@ -929,7 +950,7 @@ class PaymentService
                 $result[$providerId] = [];
 
                 //check every method of provider
-                foreach ($provider['methods'] as $methodId => $method) {
+                foreach ($provider['methods'][$is_main ? 'main' : 'fallback'] as $methodId => $method) {
                     if (PaymentMethods::$list[$methodId]['is_active']) {
                         //check 3DS settings
                         if (!empty($method['+3ds']) && static::checkIfMethodInCountries($country, $method['+3ds'])) {
@@ -1054,7 +1075,7 @@ class PaymentService
     private static function checkIs3dsNeeded(string $method, string $country, string $prv = PaymentProviders::MINTE, array $ipqs = []): bool
     {
         $result = true;
-        $setting = PaymentProviders::$list[$prv]['methods'][$method] ?? [];
+        $setting = PaymentProviders::$list[$prv]['methods']['main'][$method] ?? [];
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
         $fraud_chance_limit = PaymentProviders::$list[$prv]['fraud_setting']['3ds_limit'];
 
@@ -1064,6 +1085,27 @@ class PaymentService
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
                 $result = false;
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Check if fallback provider available
+     * @param  string $prv
+     * @param  array|null  $ipqs
+     * @param  array|null  $details
+     * @return bool
+     */
+    private static function checkIsFallbackAvailable(string $prv, ?array $ipqs = [], ?array $details = []): bool
+    {
+        $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
+        $fallback_limit = PaymentProviders::$list[$prv]['fraud_setting']['fallback_limit'];
+
+        $result = $fraud_chance < $fallback_limit;
+
+        if ($prv === PaymentProviders::EBANX) {
+            $result = !empty($details['installments']) && $details['installments'] <= EbanxService::INSTALLMENTS_MIN;
         }
 
         return $result;

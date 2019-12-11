@@ -47,11 +47,12 @@ class PaymentApi extends Model
 
     /**
      * Returns Model by provider
-     * @param  string $provider
+     * @param string $provider
+     * @param bool   $is_active default=true
      * @return Collection
      */
-    public static function getAllByProvider(string $provider): Collection
+    public static function getAllByProvider(string $provider, bool $is_active = true): Collection
     {
-        return self::where('payment_provider', $provider)->get();
+        return self::where(['payment_provider' => $provider, 'is_active' => $is_active])->get();
     }
 }

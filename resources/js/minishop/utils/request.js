@@ -12,16 +12,16 @@ export default {
 
   methods: {
 
-    goto(pathname) {
-      pathname = this.searchPopulate(pathname);
+    goto(pathname, exclude) {
+      pathname = this.searchPopulate(pathname, exclude);
       document.location = pathname;
     },
 
-    searchPopulate(pathname) {
+    searchPopulate(pathname, exclude = []) {
       let url = new URL(pathname, location);
 
       this.searchParams.forEach((value, key) => {
-        if (!url.searchParams.has(key)) {
+        if (!url.searchParams.has(key) && !exclude.includes(key)) {
           url.searchParams.set(key, value);
         }
       });
