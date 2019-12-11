@@ -1186,6 +1186,12 @@
     }
   }
 
+  .recently-bought {
+    @media only screen and (max-width: 767px) {
+      display: none!important;
+    }
+  }
+
 </style>
 
 
@@ -1393,7 +1399,8 @@
   }
 
   .mproduct-image {
-    border-radius: 50%;
+    background-color: #fff;
+    border-radius: 4px;
     width: 30%;
   }
 
@@ -2361,7 +2368,5 @@
       margin: 4px 16px;
     }
   }
-
-
 
 </style>
