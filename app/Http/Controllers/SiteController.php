@@ -232,7 +232,7 @@ class SiteController extends Controller
         if (request()->get('tpl') == 'vmp42') {
             $viewTemplate = 'vmp42';
         }
-
+        
         $isShowProductOffer = request()->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
