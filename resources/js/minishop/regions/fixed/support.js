@@ -8,11 +8,15 @@ export default {
   computed: {
 
     support_toolbar_chat_link() {
-      return this.$refs.support_toolbar.querySelector('.chat-link');
+      return this.$refs.support_toolbar
+        ? this.$refs.support_toolbar.querySelector('.chat-link')
+        : null;
     },
 
     support_toolbar_contact_link() {
-      return this.$refs.support_toolbar.querySelector('.contact-link');
+      return this.$refs.support_toolbar
+        ? this.$refs.support_toolbar.querySelector('.contact-link')
+        : null;
     },
 
   },

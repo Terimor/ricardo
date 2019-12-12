@@ -8,15 +8,21 @@ export default {
   computed: {
 
     welcome_chat_link() {
-      return this.$refs.welcome.querySelector('.chat-link');
+      return this.$refs.welcome
+        ? this.$refs.welcome.querySelector('.chat-link')
+        : null;
     },
 
     welcome_contact_link() {
-      return this.$refs.welcome.querySelector('.contact-link');
+      return this.$refs.welcome
+        ? this.$refs.welcome.querySelector('.contact-link')
+        : null;
     },
 
     welcome_scroll_link() {
-      return this.$refs.welcome.querySelector('.scroll-link');
+      return this.$refs.welcome
+        ? this.$refs.welcome.querySelector('.scroll-link')
+        : null;
     },
 
   },
