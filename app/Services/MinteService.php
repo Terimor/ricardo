@@ -41,7 +41,7 @@ class MinteService
     /**
      * @var array
      */
-    private static $fallback_codes = ['05', 'Amount by terminal exceeded'];
+    private static $fallback_codes = ['05', 'Amount by terminal exceeded', 'ERR-MPI'];
 
     /**
      * @var \Illuminate\Database\Eloquent\Collection
