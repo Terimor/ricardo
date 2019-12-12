@@ -934,7 +934,7 @@ class PaymentService
 
         $result = false;
         if ($reply['txn']['status'] === Txn::STATUS_APPROVED) {
-            $this->paymentService->approveOrder($reply['txn']);
+            $this->approveOrder($reply['txn']);
             $result = true;
         } else {
             $order = $this->rejectTxn($reply['txn']);
