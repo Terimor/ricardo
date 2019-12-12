@@ -9,7 +9,6 @@ use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\MinteCodeMapper;
 use Illuminate\Http\Request;
-use App\Http\Requests\PaymentCardMinte3dsRequest;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
@@ -27,8 +26,6 @@ class MinteService
     const STATUS_OK     = 'SUCCESS';
     const STATUS_3DS    = 'PENDING';
     const STATUS_FAIL   = 'FAILED';
-
-    const ENCRYPT_METHOD = 'AES-256-CBC';
 
     const DEFAULT_CURRENCY = 'USD';
 
@@ -84,42 +81,6 @@ class MinteService
     }
 
     /**
-     * Encrypts card data
-     * @param  string $plaintext
-     * @param  string $password
-     * @return string
-     */
-    public static function encrypt($plaintext, $password): string
-    {
-        $key = hash('sha256', $password, true);
-        $iv = openssl_random_pseudo_bytes(16);
-
-        $ciphertext = openssl_encrypt($plaintext, self::ENCRYPT_METHOD, $key, OPENSSL_RAW_DATA, $iv);
-        $hash = hash_hmac('sha256', $ciphertext . $iv, $key, true);
-
-        return base64_encode($iv . $hash . $ciphertext);
-    }
-
-    /**
-     * Decrypts card data
-     * @param  string $cipherblock
-     * @param  string $password
-     * @return string|null
-     */
-    public static function decrypt($cipherblock, $password): ?string
-    {
-        $iv_hash_ciphertext = base64_decode($cipherblock);
-        $iv = substr($iv_hash_ciphertext, 0, 16);
-        $hash = substr($iv_hash_ciphertext, 16, 32);
-        $ciphertext = substr($iv_hash_ciphertext, 48);
-        $key = hash('sha256', $password, true);
-
-        if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
-
-        return openssl_decrypt($ciphertext, self::ENCRYPT_METHOD, $key, OPENSSL_RAW_DATA, $iv);
-    }
-
-    /**
      * Returns available currency by country
      * @param  string $country
      * @param  string|null $currency
@@ -155,14 +116,13 @@ class MinteService
      */
     public function payByCard(array $card, array $contact, array $details): array
     {
+        $phone = $contact['phone'];
+        if (\gettype($contact['phone']) === 'array') {
+            $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
+        }
         $payment = $this->authorize(
             array_merge($card, ['year' => substr($card['year'], 2)]),
-            array_merge(
-                $contact,
-                [
-                    'phone' => $contact['phone']['country_code'] . $contact['phone']['number']
-                ]
-            ),
+            array_merge($contact, ['phone' => $phone]),
             $details
         );
         if ($payment['status'] === Txn::STATUS_CAPTURED) {
@@ -450,33 +410,40 @@ class MinteService
 
     /**
      * Captures payment after 3ds authorization
-     * @param PaymentCardMinte3dsRequest $req
-     * @param array $details ['order_id'=>string,'payment_api_id'=>string]
+     * @param array $params
+     * [
+     *   'errcode'   => ?string,
+     *   'errmsg'    => ?string,
+     *   'sign'      => string,
+     *   'hash'      => string,
+     *   'status'    => string,
+     *   'timestamp' => string,
+     *   'order_id'  => string,
+     *   'payment_api_id' => string
+     * ]
      * @return array
      */
-    public function captureAfterAuth3ds(PaymentCardMinte3dsRequest $req, array $details): array
+    public function captureMinte3ds(array $params): array
     {
-        $err_code   = $req->input('errorcode');
-        $sign       = $req->input('signature');
-        $txn_hash   = $req->input('transid');
-        $txn_status = $req->input('status');
-        $txn_ts     = $req->input('timestamp');
-
         $result = ['status' => false];
 
-        $api = $this->getPaymentApi($details);
+        $api = $this->getPaymentApi($params);
         if (empty($api)) {
-            logger()->error("Mint-e PaymentApi not found", ['payment_api_id' => $payment['payment_api_id']]);
+            logger()->error("PaymentApi not found", ['params' => $params]);
             return $result;
         }
 
-        if ($sign === hash('sha256', $txn_hash . $txn_ts . $api->key)) {
-            $result = ['status' => true, 'txn' => ['hash' => $txn_hash]];
-            if ($txn_status === self::STATUS_OK) {
-                $result['txn'] = $this->capture(['hash' => $txn_hash, 'payment_api_id' => $details['payment_api_id']]);
+        if ($params['sign'] === hash('sha256', $params['hash'] . $params['timestamp'] . $api->key)) {
+            $result = ['status' => true, 'txn' => ['hash' => $params['hash']]];
+            if ($params['status'] === self::STATUS_OK) {
+                $result['txn'] = $this->capture($params);
             } else {
+                $code = !empty($params['errcode']) ? $params['errcode'] : $params['errmsg'];
+                if (in_array($code, self::$fallback_codes)) {
+                    $result['txn']['fallback'] = true;
+                }
                 $result['txn']['status'] = Txn::STATUS_FAILED;
-                $result['txn']['errors'] = [MinteCodeMapper::toPhrase($err_code)];
+                $result['txn']['errors'] = [MinteCodeMapper::toPhrase($code)];
             }
         }
 

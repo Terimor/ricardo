@@ -2,12 +2,14 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
+use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use Illuminate\Http\Request;
 use App\Exceptions\CustomerUpdateException;
 use App\Exceptions\ProviderNotFoundException;
 use App\Exceptions\InvalidParamsException;
+use App\Exceptions\AuthException;
 use App\Exceptions\PaymentException;
 use App\Exceptions\OrderUpdateException;
 use App\Models\Txn;
@@ -473,45 +475,18 @@ class PaymentService
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
 
         // check is this fallback
-        $is_fallback_available = self::checkIsFallbackAvailable($provider, $ipqs, ['installments' => $installments]);
-        if (!empty($payment['fallback']) && $is_fallback_available) {
+        if (!empty($payment['fallback'])) {
 
-            $fallback_provider = self::getProviderByCountryAndMethod($contact['country'], $method, false);
+            $reply = $this->fallbackOrder($order, $card, [
+                'provider'   => $provider,
+                'product_id' => $product->getIdAttribute(),
+                'method'     => $method,
+                'useragent'  => $user_agent
+            ]);
 
-            logger()->info("Fallback order [{$order->number}] provider {$fallback_provider}");
-
-            switch ($fallback_provider):
-                case PaymentProviders::BLUESNAP:
-                    $bluesnap = new BluesnapService();
-                    $payment = $bluesnap->payByCard(
-                        $card,
-                        $contact,
-                        [
-                            'amount'        => $order->total_price,
-                            'currency'      => $order->currency,
-                            'number'        => $order->number,
-                            'billing_descriptor'   => $order->billing_descriptor
-                        ]
-                    );
-                    $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
-                    break;
-                case PaymentProviders::MINTE:
-                    $mint = new MinteService();
-                    $payment = $mint->payByCard($card, $contact, [
-                        '3ds'       => false,
-                        'amount'    => $order->total_price,
-                        'currency'  => $order->currency,
-                        'order_id'  => $order->getIdAttribute(),
-                        'order_number'  => $order->number,
-                        'product_id'    => $product->getIdAttribute(),
-                        'user_agent'    => $user_agent,
-                        'descriptor'    => $order->billing_descriptor
-                    ]);
-                    $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
-                    break;
-                default:
-                    logger()->info("Fallback order [{$order->number}] provider not found");
-            endswitch;
+            if ($reply['status']) {
+                $payment = $reply['payment'];
+            }
         }
 
         // cache token
@@ -755,6 +730,100 @@ class PaymentService
     }
 
     /**
+     * Invokes fallback provider
+     * @param  OdinOrder $order
+     * @param  array     $card
+     * @param  array     $details
+     * [
+     *   'provider'   => string,
+     *   'product_id' => ?string,
+     *   'payment_api_id' => ?string,
+     *   'method'     => string,
+     *   'useragent'  => ?string
+     * ]
+     * @return array
+     */
+    public function fallbackOrder(OdinOrder $order, array $card, array $details): array
+    {
+        $is_fallback_available = self::checkIsFallbackAvailable(
+            $details['provider'],
+            $order->ipqualityscore,
+            ['installments' => $order->installments]
+        );
+        $fallback_provider = self::getProviderByCountryAndMethod($order->shipping_country, $details['method'], false);
+
+        $result = ['status' => false, 'payment' => []];
+
+        if (!$is_fallback_available || !$fallback_provider) {
+            return $result;
+        }
+
+        logger()->info("Fallback order [{$order->number}] provider {$fallback_provider}");
+
+        switch ($fallback_provider):
+            case PaymentProviders::BLUESNAP:
+                $bluesnap = new BluesnapService();
+                $result['status']  = true;
+                $result['payment'] = $bluesnap->payByCard(
+                    $card,
+                    [
+                        'street'            => $order->shipping_street,
+                        'city'              => $order->shipping_city,
+                        'country'           => $order->shipping_country,
+                        'state'             => $order->shipping_state,
+                        'district'          => $order->shipping_street2,
+                        'zip'               => $order->shipping_zip,
+                        'email'             => $order->customer_email,
+                        'first_name'        => $order->customer_first_name,
+                        'last_name'         => $order->customer_last_name,
+                        'phone'             => $order->customer_phone
+                    ],
+                    [
+                        'amount'        => $order->total_price,
+                        'currency'      => $order->currency,
+                        'number'        => $order->number,
+                        'billing_descriptor'   => $order->billing_descriptor
+                    ]
+                );
+                break;
+            case PaymentProviders::MINTE:
+                $mint = new MinteService();
+                $result['status']  = true;
+                $result['payment'] = $mint->payByCard(
+                    $card,
+                    [
+                        'street'        => $order->shipping_street,
+                        'city'          => $order->shipping_city,
+                        'country'       => $order->shipping_country,
+                        'state'         => $order->shipping_state,
+                        'zip'           => $order->shipping_zip,
+                        'email'         => $order->customer_email,
+                        'first_name'    => $order->customer_first_name,
+                        'last_name'     => $order->customer_last_name,
+                        'phone'         => $order->customer_phone,
+                        'ip'            => $order->ip
+                    ],
+                    [
+                        '3ds'       => false,
+                        'amount'    => $order->total_price,
+                        'currency'  => $order->currency,
+                        'order_id'  => $order->getIdAttribute(),
+                        'order_number'  => $order->number,
+                        'descriptor'    => $order->billing_descriptor,
+                        'product_id'    => $details['product_id'] ?? null,
+                        'user_agent'    => $details['useragent'] ?? null,
+                        'payment_api_id' => $details['payment_api_id'] ?? null
+                    ]
+                );
+                break;
+            default:
+                logger()->info("Fallback order [{$order->number}] provider not found");
+        endswitch;
+
+        return $result;
+    }
+
+    /**
      * Approves order
      * @param array $data ['hash'=>string,'number'=>?string,'fee'=>?float,'value'=>?float,'status'=>string]
      * @return OdinOrder|null
@@ -825,6 +894,87 @@ class PaymentService
         }
 
         return $order;
+    }
+
+    /**
+     * Mint-e 3ds redirect
+     * @param  PaymentCardMinte3dsRequest $req
+     * @param string $order_id
+     * @return bool
+     */
+    public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id): bool
+    {
+        $errcode    = $req->input('errorcode');
+        $errmsg     = $req->input('errormessage');
+        $sign       = $req->input('signature');
+        $txn_hash   = $req->input('transid');
+        $txn_status = $req->input('status');
+        $txn_ts     = $req->input('timestamp');
+
+        $order = OdinOrder::getById($order_id); // throwable
+        $order_txn = $order->getTxnByHash($txn_hash); // throwable
+        $order_product = $order->getProductByTxnHash($txn_hash); // throwable
+
+        $mint = new MinteService();
+        $reply = $mint->captureMinte3ds([
+            'errcode'   => $errcode,
+            'errmsg'    => $errmsg,
+            'sign'      => $sign,
+            'hash'      => $txn_hash,
+            'status'    => $txn_status,
+            'timestamp' => $txn_ts,
+            'order_id'  => $order_id,
+            'payment_api_id' => $order_txn['payment_api_id']
+        ]);
+
+        if (!$reply['status']) {
+            logger()->error('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            throw new AuthException('Unauthorized');
+        }
+
+        $result = false;
+        if ($reply['txn']['status'] === Txn::STATUS_APPROVED) {
+            $this->paymentService->approveOrder($reply['txn']);
+            $result = true;
+        } else {
+            $order = $this->rejectTxn($reply['txn']);
+
+            PaymentService::cacheErrors(array_merge($reply['txn'], ['number' => $order->number]));
+
+            $cardtk = self::getCardToken($order->number, false);
+
+            if (!empty($reply['txn']['fallback']) && $cardtk) {
+                $cardjs = MinteService::decrypt($cardtk, $order_id);
+
+                $reply = $this->fallbackOrder($order, json_decode($cardjs, true), [
+                    'provider'   => PaymentProviders::MINTE,
+                    'payment_api_id' => $order_txn['payment_api_id'],
+                    'method'     => $order_txn['payment_method']
+                ]);
+
+                if ($reply['status']) {
+
+                    $result = true;
+                    $order_product['txn_hash'] = $reply['payment']['hash'];
+                    $order->addProduct($order_product, true);
+                    $order->is_flagged = $reply['payment']['is_flagged'];
+
+                    if (!$order->save()) {
+                        $validator = $order->validate();
+                        if ($validator->fails()) {
+                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
+                        }
+                    }
+
+                    if ($reply['payment']['status'] === Txn::STATUS_FAILED) {
+                        PaymentService::cacheErrors(array_merge($reply['payment'], ['number' => $order->number]));
+                        $reslt = false;
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**

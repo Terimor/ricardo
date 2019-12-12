@@ -76,7 +76,6 @@ class BluesnapService
     /**
      * Returns Card object
      * @param  array $card
-     * @param  array $contact
      * @return array
      */
     public static function createCardObj(array $card): array
@@ -132,7 +131,7 @@ class BluesnapService
         return $this->pay(
             [
                 'cardHolderInfo'    => self::createCardHolderObj($contact),
-                'creditCard'        => self::createCardObj($card, $contact),
+                'creditCard'        => self::createCardObj($card),
             ],
             $order_details
         );
@@ -247,10 +246,10 @@ class BluesnapService
                 'status' => true,
                 'txn' => [
                     'currency'  => $currency,
-                    'fee'       => $fee,
+                    'fee'       => preg_replace('/[^\d.]/', '', $fee),
                     'hash'      => $hash,
                     'status'    => $type === self::TYPE_WEBHOOK_CHARGE ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
-                    'value'     => $value
+                    'value'     => preg_replace('/[^\d.]/', '', $value)
                 ],
                 'result' => md5($authKey . 'ok' . $this->data_protection_key)
             ];
