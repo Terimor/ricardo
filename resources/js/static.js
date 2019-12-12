@@ -146,45 +146,12 @@ function bindStaticTopbarBlock() {
 }
 
 
-// bind returns address dropdown
-function bindReturnsAddressDropdown() {
-  if (location.pathname === '/returns') {
-    const element = document.querySelector('.returns-address');
-
-    if (element) {
-      const selector = element.querySelector('.selector');
-      const address = element.querySelector('.address');
-
-      selector.addEventListener('change', () => {
-        if (!address.innerHTML) {
-          address.classList.add('disable');
-          address.classList.add('fade');
-
-          setTimeout(() => {
-            address.innerHTML = selector.querySelector('[value="' + selector.value + '"]').dataset.value || '';
-            address.classList.remove('disable');
-            address.classList.remove('fade');
-          });
-        } else {
-          address.classList.add('fade');
-
-          setTimeout(() => {
-            address.innerHTML = selector.querySelector('[value="' + selector.value + '"]').dataset.value || '';
-            address.classList.remove('fade');
-          }, 300);
-        }
-      });
-    }
-  }
-}
-
 // document ready
 function documentReady() {
   document.documentElement.classList.remove('js-hidden');
   populateLinksWithGetParams();
   bindStaticTopbarBlock();
   initFreshChatWidget();
-  bindReturnsAddressDropdown();
 }
 
 if (document.readyState !== 'interactive' && document.readyState !== 'complete') {

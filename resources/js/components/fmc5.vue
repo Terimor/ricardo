@@ -2007,6 +2007,7 @@
         }
 
         :global(img) {
+          flex-shrink: 0;
           margin-right: 12px;
 
           [dir="rtl"] & {
