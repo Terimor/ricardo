@@ -781,11 +781,13 @@ class UtilsService
 
         if ($params) {
             foreach ($params as $param) {
-                $val = explode("=", $param);
-                if (isset($val[0]) && isset($val[1])) {
-                    $val[0] = preg_replace('/\W/', '_', $val[0]);
-                    if ($val[0]) {
-                        $paramsArray[$val[0]] = $val[1];
+                parse_str($param, $value);
+                if ($value) {
+                    foreach ($value as $key => $val) {
+                        $key = preg_replace('/\W/', '_', $key);
+                        if ($key && $val) {
+                            $paramsArray[$key] = $val;
+                        }
                     }
                 }
             }
