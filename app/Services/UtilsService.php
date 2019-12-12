@@ -783,7 +783,7 @@ class UtilsService
             foreach ($params as $param) {
                 $val = explode("=", $param);
                 if (isset($val[0]) && isset($val[1])) {
-                    $val[0] = preg_replace('/\W/', '', $val[0]);
+                    $val[0] = preg_replace('/\W/', '_', $val[0]);
                     if ($val[0]) {
                         $paramsArray[$val[0]] = $val[1];
                     }
