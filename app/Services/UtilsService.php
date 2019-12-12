@@ -782,7 +782,7 @@ class UtilsService
         if ($params) {
             foreach ($params as $param) {
                 parse_str($param, $value);
-                if ($value) {
+                if (is_array($value)) {
                     foreach ($value as $key => $val) {
                         $key = preg_replace('/\W/', '_', $key);
                         if ($key && $val) {
