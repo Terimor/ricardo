@@ -8,7 +8,7 @@ export default {
   computed: {
 
     searchParams() {
-      return new URL(location).searchParams;
+      return new URLSearchParams(location.href);
     },
 
   },
