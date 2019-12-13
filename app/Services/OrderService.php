@@ -275,7 +275,7 @@ class OrderService
         if ($success_txns > 0) {
             $successPercent = $success_txns / $limit * 100;
         }
-        $successPercent = round($successPercent, 2);
+        $successPercent = round($successPercent, 0);
 
         return $successPercent;
     }
