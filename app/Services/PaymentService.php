@@ -755,6 +755,7 @@ class PaymentService
         $result = ['status' => false, 'payment' => []];
 
         if (!$is_fallback_available || !$fallback_provider) {
+            logger()->info("Fallback is not available [{$order->number}] provider {$fallback_provider}");
             return $result;
         }
 
@@ -942,6 +943,8 @@ class PaymentService
             PaymentService::cacheErrors(array_merge($reply['txn'], ['number' => $order->number]));
 
             $cardtk = self::getCardToken($order->number, false);
+
+            logger()->info("Pre-Fallback [{$order->number}]", ['cardtk' => !!$cardtk, 'fallback' => !empty($reply['txn']['fallback'])]);
 
             if (!empty($reply['txn']['fallback']) && $cardtk) {
                 $cardjs = MinteService::decrypt($cardtk, $order_id);
