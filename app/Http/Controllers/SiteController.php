@@ -403,14 +403,15 @@ class SiteController extends Controller
             }
         }
         
-        // get percent        
-        $txns = OrderService::getLastOrdersTxnSuccessPercent(30);
+        // get percent
+        $limitTxns = 30;
+        $txns = OrderService::getLastOrdersTxnSuccessPercent($limitTxns);
         
         if ($txns <= 5) {
             $result = $bad;
         }
         $txns.= '%';
-        return view('prober', compact('result', 'redis', 'txns'));
+        return view('prober', compact('result', 'redis', 'txns', 'limitTxns'));
     }
 
     /**
