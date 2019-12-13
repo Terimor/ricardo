@@ -217,29 +217,7 @@ class PaymentsController extends Controller
         if (\App::environment() === 'production') {
             throw new AuthException('Unauthorized');
         }
-        $reply = $this->paymentService->createMinteOrder($req);
-
-        $result = [
-            'order_currency'    => $reply['order_currency'],
-            'order_number'      => $reply['order_number'],
-            'order_id'          => $reply['order_id'],
-            'id'                => $reply['id'],
-            'status'            => $reply['status']
-        ];
-
-        if (!empty($reply['errors'])) {
-            $result['errors'] = $reply['errors'];
-            PaymentService::cacheErrors([
-                'number'    => $reply['order_number'],
-                'errors'    => $reply['errors']
-            ]);
-        }
-
-        if (!empty($reply['redirect_url'])) {
-            $result['redirect_url'] = stripslashes($reply['redirect_url']);
-        }
-
-        return $result;
+        return 'ok';
     }
 
 }

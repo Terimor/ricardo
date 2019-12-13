@@ -341,7 +341,7 @@ class PaymentService
 
         if (empty($order)) {
             // check currency, if it's not supported switch to default currency
-            $product->currency = self::checkCurrency($contact['country'], CurrencyService::getCurrency()->code, $provider);
+            $product->currency = $this->checkCurrency($contact['country'], CurrencyService::getCurrency()->code, $provider);
 
             $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
 
@@ -357,6 +357,7 @@ class PaymentService
                 'currency'              => $price['currency'],
                 'exchange_rate'         => $price['usd_rate'],
                 'total_paid'            => 0,
+                'total_paid_usd'        => 0,
                 'total_price'           => $order_product['total_price'],
                 'total_price_usd'       => $order_product['total_price_usd'],
                 'txns_fee_usd'          => 0,
@@ -382,7 +383,7 @@ class PaymentService
                 'shipping_city'         => $contact['city'],
                 'shipping_street'       => $contact['street'],
                 'shipping_street2'      => $contact['district'] ?? null,
-                'shop_currency'         => $price['currency'],
+                'shop_currency'         => CurrencyService::getCurrency()->code,
                 'warehouse_id'          => $product->warehouse_id,
                 'products'              => [$order_product],
                 'page_checkout'         => $page_checkout,
@@ -474,6 +475,9 @@ class PaymentService
 
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
 
+        $order_product['txn_hash'] = $payment['hash'];
+        $order->addProduct($order_product, true);
+
         // check is this fallback
         if (!empty($payment['fallback'])) {
 
@@ -493,9 +497,6 @@ class PaymentService
         // cache token
         self::setCardToken($order->number, $payment['token'] ?? null);
 
-        // add Txn, update OdinOrder
-        $order_product['txn_hash'] = $payment['hash'];
-        $order->addProduct($order_product, true);
         $order->is_flagged = $payment['is_flagged'];
         if (!$order->save()) {
             $validator = $order->validate();
@@ -748,7 +749,7 @@ class PaymentService
      * ]
      * @return array
      */
-    public function fallbackOrder(OdinOrder $order, array $card, array $details): array
+    public function fallbackOrder(OdinOrder &$order, array $card, array $details): array
     {
         $is_fallback_available = self::checkIsFallbackAvailable(
             $details['provider'],
@@ -764,10 +765,11 @@ class PaymentService
             return $result;
         }
 
-        logger()->info("Fallback order [{$order->number}] provider {$fallback_provider}");
+        logger()->info("Fallback [{$order->number}] provider {$fallback_provider}");
 
         switch ($fallback_provider):
             case PaymentProviders::BLUESNAP:
+                $order = $this->checkOrderCurrency($order, PaymentProviders::BLUESNAP);
                 $bluesnap = new BluesnapService();
                 $result['status']  = true;
                 $result['payment'] = $bluesnap->payByCard(
@@ -791,8 +793,13 @@ class PaymentService
                         'billing_descriptor'   => $order->billing_descriptor
                     ]
                 );
+
+                $order_product = $order->getMainProduct(); // throwable
+                $order_product['txn_hash'] = $payment['hash'];
+                $order->addProduct($order_product, true);
                 break;
             case PaymentProviders::MINTE:
+                $order = $this->checkOrderCurrency($order, PaymentProviders::MINTE);
                 $mint = new MinteService();
                 $result['status']  = true;
                 $result['payment'] = $mint->payByCard(
@@ -821,9 +828,13 @@ class PaymentService
                         'payment_api_id' => $details['payment_api_id'] ?? null
                     ]
                 );
+
+                $order_product = $order->getMainProduct(); // throwable
+                $order_product['txn_hash'] = $payment['hash'];
+                $order->addProduct($order_product, true);
                 break;
             default:
-                logger()->info("Fallback order [{$order->number}] provider not found");
+                logger()->info("Fallback [{$order->number}] provider not found");
         endswitch;
 
         return $result;
@@ -903,6 +914,65 @@ class PaymentService
     }
 
     /**
+     * Returns supported currency
+     * @param  string $country
+     * @param  string $currency
+     * @param  string $prv default=minte
+     * @return string
+     */
+    public function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINTE): string
+    {
+        switch ($prv):
+            case PaymentProviders::EBANX:
+                return EbanxService::getCurrencyByCountry($country, $currency);
+            case PaymentProviders::MINTE:
+                return MinteService::getCurrencyByCountry($country, $currency);
+            default:
+                return $currency;
+        endswitch;
+    }
+
+    /**
+     * Checks(Changes) order currency
+     * @param  OdinOrder   $order
+     * @param  string      $prv
+     * @return OdinOrder
+     */
+    public function checkOrderCurrency(OdinOrder $order, string $prv = PaymentProviders::MINTE): OdinOrder
+    {
+        $order_product = $order->getMainProduct(); // throwable
+
+        $product = null;
+        if ($order_product['price_set']) {
+            $product = OdinProduct::getByCopId($order_product['price_set']);
+        }
+        if (!$product) {
+            $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
+        }
+
+        $product->currency = $this->checkCurrency($order->shipping_country, $order->currency, $prv);
+
+        if ($order->currency === $product->currency) {
+            return $order;
+        }
+
+        logger()->info("Fallback [{$order->number}] change currency {$order->currency} -> {$product->currency}");
+
+        $price = $this->getLocalizedPrice($product, $order_product['quantity']); // throwable
+
+        $order_product = $this->createOrderProduct($order_product['sku_code'], $price, ['is_warranty' => !!$order_product['warranty_price']]);
+
+        $order->currency        = $price['currency'];
+        $order->exchange_rate   = $price['usd_rate'];
+        $order->total_price     = $order_product['total_price'];
+        $order->total_price_usd = $order_product['total_price_usd'];
+        $order->warehouse_id    = $product->warehouse_id;
+        $order->addProduct($order_product, true);
+
+        return $order;
+    }
+
+    /**
      * Mint-e 3ds redirect
      * @param  PaymentCardMinte3dsRequest $req
      * @param string $order_id
@@ -919,7 +989,6 @@ class PaymentService
 
         $order = OdinOrder::getById($order_id); // throwable
         $order_txn = $order->getTxnByHash($txn_hash); // throwable
-        $order_product = $order->getProductByTxnHash($txn_hash); // throwable
 
         $mint = new MinteService();
         $reply = $mint->captureMinte3ds([
@@ -961,8 +1030,9 @@ class PaymentService
                 ]);
 
                 if ($reply['status']) {
-
                     $result = true;
+
+                    $order_product = $order->getMainProduct(); // throwable
                     $order_product['txn_hash'] = $reply['payment']['hash'];
                     $order->addProduct($order_product, true);
                     $this->addTxnToOrder($order, $reply['payment'], $order_txn['payment_method'], $order_txn['сard_type'] ?? null);
@@ -1031,25 +1101,6 @@ class PaymentService
             $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_ERRORS_TTL_MIN . "M"));
             Cache::put(self::CACHE_ERRORS_PREFIX . $order_number, \json_encode($errors), $dt);
         }
-    }
-
-    /**
-     * Returns supported currency
-     * @param  string $country
-     * @param  string $currency
-     * @param  string $prv default=minte
-     * @return string
-     */
-    public static function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINTE): string
-    {
-        switch ($prv):
-            case PaymentProviders::EBANX:
-                return EbanxService::getCurrencyByCountry($country, $currency);
-            case PaymentProviders::MINTE:
-                return MinteService::getCurrencyByCountry($country, $currency);
-            default:
-                return $currency;
-        endswitch;
     }
 
     /**
@@ -1270,158 +1321,4 @@ class PaymentService
         return $result;
     }
 
-    public function createMinteOrder(PaymentCardCreateOrderRequest $req)
-    {
-        ['sku' => $sku, 'qty' => $qty] = $req->get('product');
-        $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $contact = array_merge($req->get('contact'), $req->get('address'), ['ip' => $req->ip()]);
-        $page_checkout = $req->input('page_checkout', $req->header('Referer'));
-        $user_agent = $req->header('User-Agent');
-        $ipqs = $req->input('ipqs', null);
-        $card = $req->get('card');
-        $order_id = $req->get('order');
-        $installments = (int)$req->input('card.installments', 0);
-        $method = PaymentMethodMapper::toMethod($card['number']);
-
-        // find order for update
-        $order = null;
-        if (!empty($order_id)) {
-            $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
-        }
-
-        $product = null;
-        if ($req->get('cop_id')) {
-            $product = OdinProduct::getByCopId($req->get('cop_id'));
-        }
-        if (!$product) {
-            $product = OdinProduct::getBySku($sku); // throwable
-        }
-
-        // select provider by country
-        $provider = PaymentProviders::MINTE;
-        // refuse payment if  there is fraud
-        self::fraudCheck($ipqs); // throwable
-
-        $this->addCustomer($contact); // throwable
-
-        if (empty($order)) {
-            $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
-
-            $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
-
-            $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
-            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
-            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
-            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
-
-            $order = $this->addOrder([
-                'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
-                'currency'              => $price['currency'],
-                'exchange_rate'         => $price['usd_rate'],
-                'total_paid'            => 0,
-                'total_price'           => $order_product['total_price'],
-                'total_price_usd'       => $order_product['total_price_usd'],
-                'txns_fee_usd'          => 0,
-                'installments'          => $installments,
-                'is_reduced'            => false,
-                'is_invoice_sent'       => false,
-                'is_survey_sent'        => false,
-                'is_flagged'            => false,
-                'is_refunding'          => false,
-                'is_refunded'           => false,
-                'is_qc_passed'          => false,
-                'customer_email'        => $contact['email'],
-                'customer_first_name'   => $contact['first_name'],
-                'customer_last_name'    => $contact['last_name'],
-                'customer_phone'        => $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']),
-                'customer_doc_id'       => $contact['document_number'] ?? null,
-                'ip'                    => $contact['ip'],
-                'language'              => app()->getLocale(),
-                'txns'                  => [],
-                'shipping_country'      => $contact['country'],
-                'shipping_zip'          => $contact['zip'],
-                'shipping_state'        => $contact['state'],
-                'shipping_city'         => $contact['city'],
-                'shipping_street'       => $contact['street'],
-                'shipping_street2'      => $contact['district'] ?? null,
-                'shop_currency'         => $price['currency'],
-                'warehouse_id'          => $product->warehouse_id,
-                'products'              => [$order_product],
-                'page_checkout'         => $page_checkout,
-                'params'                => $params,
-                'offer'                 => $offerId,
-                'affiliate'             => $affId,
-                'txid'                  => $validTxid,
-                'ipqualityscore'        => $ipqs
-            ]);
-        } else {
-            $order_product = $order->getMainProduct(); // throwable
-            $order->customer_email      = $contact['email'];
-            $order->customer_first_name = $contact['first_name'];
-            $order->customer_last_name  = $contact['last_name'];
-            $order->customer_phone      = $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']);
-            $order->customer_doc_id     = $contact['document_number'] ?? null;
-            $order->shipping_country    = $contact['country'];
-            $order->shipping_zip        = $contact['zip'];
-            $order->shipping_state      = $contact['state'];
-            $order->shipping_city       = $contact['city'];
-            $order->shipping_street     = $contact['street'];
-            $order->shipping_street2    = $contact['district'] ?? null;
-            $order->installments        = $installments;
-        }
-        // select provider and create payment
-        $payment = [];
-        $mint = new MinteService();
-        $payment = $mint->payByCard($card, $contact, [
-            '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], $provider, (array)$ipqs),
-            'amount'    => $order->total_price,
-            'currency'  => $order->currency,
-            'order_id'  => $order->getIdAttribute(),
-            'order_number'  => $order->number,
-            'user_agent'    => $user_agent,
-            'descriptor'    => $order->billing_descriptor,
-            'product_id'    => $product->getIdAttribute()
-        ]);
-
-        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
-
-        // cache token
-        self::setCardToken($order->number, $payment['token'] ?? null);
-
-        // add Txn, update OdinOrder
-        $order_product['txn_hash'] = $payment['hash'];
-        $order->addProduct($order_product, true);
-        $order->is_flagged = $payment['is_flagged'];
-
-        if (!$order->save()) {
-            $validator = $order->validate();
-            if ($validator->fails()) {
-                throw new OrderUpdateException(json_encode($validator->errors()->all()));
-            }
-        }
-
-        // approve order if txn is approved
-        if ($payment['status'] === Txn::STATUS_APPROVED) {
-            $order = $this->approveOrder($payment);
-        }
-
-        // response
-        $result = [
-            'id'                => null,
-            'order_currency'    => $order->currency,
-            'order_number'      => $order->number,
-            'order_id'          => $order->getIdAttribute(),
-            'status'            => self::STATUS_FAIL
-        ];
-
-        if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['id'] = $payment['hash'];
-            $result['status'] = self::STATUS_OK;
-            $result['redirect_url'] = $payment['redirect_url'] ?? null;
-        } else {
-            $result['errors'] = $payment['errors'];
-        }
-
-        return $result;
-    }
 }
