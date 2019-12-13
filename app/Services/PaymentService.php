@@ -486,6 +486,7 @@ class PaymentService
 
             if ($reply['status']) {
                 $payment = $reply['payment'];
+                $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
             }
         }
 
@@ -551,9 +552,13 @@ class PaymentService
 
         $card_token = null;
         $is_upsells_possible = $this->orderService->checkIfUpsellsPossible($order);
-        if ($is_upsells_possible && $order_main_txn['payment_provider'] !== PaymentProviders::BLUESNAP) {
-            $card_token = self::getCardToken($order->number);
-            $is_upsells_possible = !!$card_token;
+        if ($is_upsells_possible) {
+            if ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
+                $is_upsells_possible = !!$order_main_txn['payer_id'];
+            } else {
+                $card_token = self::getCardToken($order->number);
+                $is_upsells_possible = !!$card_token;
+            }
         }
 
         if ($is_upsells_possible) {
@@ -827,9 +832,9 @@ class PaymentService
     /**
      * Approves order
      * @param array $data ['hash'=>string,'number'=>?string,'fee'=>?float,'value'=>?float,'status'=>string]
-     * @return OdinOrder|null
+     * @return OdinOrder
      */
-    public function approveOrder(array $data): ?OdinOrder
+    public function approveOrder(array $data): OdinOrder
     {
         $order = null;
         if (!empty($data['number'])) {
