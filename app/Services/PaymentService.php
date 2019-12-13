@@ -960,6 +960,7 @@ class PaymentService
                     $result = true;
                     $order_product['txn_hash'] = $reply['payment']['hash'];
                     $order->addProduct($order_product, true);
+                    $this->addTxnToOrder($order, $reply['payment'], $order_txn['payment_method'], $order_txn['сard_type']);
                     $order->is_flagged = $reply['payment']['is_flagged'];
 
                     if (!$order->save()) {
