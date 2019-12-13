@@ -16,10 +16,15 @@ export default {
         }
 
         if (window.scrollTo) {
-          scrollTo({
-            top: position,
-            behavior: 'smooth',
-          });
+          try {
+            scrollTo({
+              top: position,
+              behavior: 'smooth',
+            });
+          }
+          catch (err) {
+            scrollTo(0, position);
+          }
         }
       }
     },
