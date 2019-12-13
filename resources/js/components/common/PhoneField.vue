@@ -67,13 +67,18 @@
           setTimeout(() => {
             this.selector = document.querySelector(`#${this.id}`)
 
-            window.intlTelInput(this.selector, {
-              initialCountry: this.countryCode,
-              separateDialCode: true
-            })
+            if (window.intlTelInput) {
+              intlTelInput(this.selector, {
+                initialCountry: this.countryCode,
+                separateDialCode: true,
+              });
+            }
 
             this.selector.addEventListener('countrychange', () => {
-              this.$emit('onCountryChange', window.intlTelInputGlobals.getInstance(this.selector).getSelectedCountryData())
+              if (window.intlTelInputGlobals) {
+                this.$emit('onCountryChange', intlTelInputGlobals.getInstance(this.selector).getSelectedCountryData());
+              }
+
               this.checkPadding();
             });
 
