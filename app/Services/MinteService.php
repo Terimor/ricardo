@@ -120,11 +120,7 @@ class MinteService
         if (\gettype($contact['phone']) === 'array') {
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
-        $payment = $this->authorize(
-            array_merge($card, ['year' => substr($card['year'], 2)]),
-            array_merge($contact, ['phone' => $phone]),
-            $details
-        );
+        $payment = $this->authorize($card, array_merge($contact, ['phone' => $phone]), $details);
         if ($payment['status'] === Txn::STATUS_CAPTURED) {
             return $this->capture($payment);
         }
@@ -236,7 +232,7 @@ class MinteService
                     'nonce'     => $nonce,
                     'signature' => hash('sha256', $api->login . $nonce . $api->key),
                     'cvv'       => $card['cvv'],
-                    'expiry'    => $card['month'] . $card['year'],
+                    'expiry'    => $card['month'] . substr($card['year'], 2),
                     'customerip' => $contact['ip'],
                     'cardnumber' => $card['number'],
                     'descriptor' => $details['descriptor']
