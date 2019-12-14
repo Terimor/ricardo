@@ -214,8 +214,14 @@ class PaymentProviders
                             'CUIT'  => '^\d{2}-\d{8}-\d{1}$',
                             'CUIL'  => '^\d{2}-\d{8}-\d{1}$'
                         ],
+                        'schema' => [
+                            'DNI'   => ['\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d'],
+                            'CDI'   => ['\d', '\d', '-', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '-', '\d'],
+                            'CUIT'  => ['\d', '\d', '-', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '-', '\d'],
+                            'CUIL'  => ['\d', '\d', '-', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '-', '\d']
+                        ],
                         'placeholder' => [
-                            'DNI'   => 'xxxxxxx(x)',
+                            'DNI'   => 'xxxxxxxx',
                             'CDI'   => 'xx-xxxxxxxx-x',
                             'CUIT'  => 'xx-xxxxxxxx-x',
                             'CUIL'  => 'xx-xxxxxxxx-x'
@@ -270,6 +276,7 @@ class PaymentProviders
                     'document_number'   => [
                         'type'      => 'text',
                         'pattern'   => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$',
+                        'schema'    => array('\d', '\d', '\d', '\.', '\d', '\d', '\d', '\.', '\d', '\d', '\d', '-', '\d', '\d'),
                         'placeholder' => 'xxx.xxx.xxx-xx'
                     ],
                     'installments'  => [
@@ -336,10 +343,15 @@ class PaymentProviders
                             'CC'  => '^\d{2,10}$',
                             'CE'  => '^\d{1,6}$'
                         ],
+                        'schema' => [
+                            'NIT' => array('\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d'),
+                            'CC'  => array('\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\d'),
+                            'CE'  => array('\d', '\d', '\d', '\d', '\d', '\d')
+                        ],
                         'placeholder' => [
-                            'NIT' => 'xxxxxxxxx(x)',
-                            'CC'  => 'xx(xxxxxxxx)',
-                            'CE'  => 'x(xxxxx)'
+                            'NIT' => 'xxxxxxxxxx',
+                            'CC'  => 'xxxxxxxxxx',
+                            'CE'  => 'xxxxxx'
                         ]
                     ],
                     'installments'  => [

@@ -21,6 +21,9 @@
 
 <script>
 
+  import  { applyMaskForInput } from '../../../utils/checkout';
+
+
   export default {
 
     props: [
@@ -31,13 +34,6 @@
       'order',
       '$v',
     ],
-
-
-    data() {
-      return {
-        oldValue: this.form[this.name] || '',
-      };
-    },
 
 
     computed: {
@@ -72,31 +68,7 @@
     methods: {
 
       input() {
-        const format = 'xx/xx';
-        let value = this.form[this.name] || '';
-
-        for (let i = 0; i < value.length; i++) {
-          const symbol = format.substr(i, 1) || '';
-
-          if (symbol === 'x') {
-            if (Number.isNaN(+value.substr(i, 1))) {
-              value = value.substr(0, i);
-            }
-
-            continue;
-          }
-
-          if (symbol !== value.substr(i, 1)) {
-            value = value.substr(0, i);
-          }
-        }
-
-        if (value.length === 2 && this.oldValue.length !== 3) {
-          value += '/';
-        }
-
-        this.form[this.name] = value;
-        this.oldValue = value;
+        this.form[this.name] = applyMaskForInput(this.form[this.name], 'xx/xx', ['\\d', '\\d', '/', '\\d', '\\d']);
       },
 
     },
