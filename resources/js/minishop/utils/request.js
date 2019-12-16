@@ -8,7 +8,9 @@ export default {
   computed: {
 
     searchParams() {
-      return new URLSearchParams(location.search.substr(1));
+      return window.URLSearchParams
+        ? new URLSearchParams(location.search.substr(1))
+        : null;
     },
 
   },

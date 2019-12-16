@@ -19,8 +19,10 @@ export default {
     freshchat_init() {
       if (this.$refs.freshchat_image) {
         js_deps.wait(['freshchat'], () => {
-          fcWidget.on('widget:opened', this.freshchat_opened_event);
-          fcWidget.on('widget:closed', this.freshchat_closed_event);
+          if (window.fcWidget) {
+            fcWidget.on('widget:opened', this.freshchat_opened_event);
+            fcWidget.on('widget:closed', this.freshchat_closed_event);
+          }
         });
 
         addEventListener('mousewheel', this.freshchat_adjust);
@@ -52,7 +54,9 @@ export default {
     },
 
     freshchat_click() {
-      fcWidget.open();
+      if (window.fcWidget) {
+        fcWidget.open();
+      }
     },
 
   },

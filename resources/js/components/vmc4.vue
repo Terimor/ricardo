@@ -35,7 +35,7 @@
                             <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
                             <span class="checkmark"></span>
                           </label>
-                          <img :src="$root.cdnUrl + '/assets/images/best-saller.png'" alt="">
+                          <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
                           <i class="fa fa-arrow-left slide-left"></i>
                           <i class="fa fa-arrow-right slide-right"></i>
                         </button>

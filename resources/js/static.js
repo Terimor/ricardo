@@ -5,32 +5,6 @@ import wait from './utils/wait';
 const searchParams = new URL(location).searchParams;
 
 
-// init Sentry.io service
-wait(
-  () => !!window.Sentry && !!window.Sentry.init,
-  () => window.Sentry.init({
-    dsn: window.SentryDSN,
-  }),
-);
-
-
-// add js variables from GET params
-if (searchParams && searchParams.forEach) {
-  searchParams.forEach((value, key) => {
-    const propName = key + 'js';
-
-    if (window[propName] === undefined) {
-      window[propName] = value;
-    }
-  });
-}
-
-
-// affiliate variables
-window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || 0;
-window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || 0;
-
-
 // js and cookie variables for txid
 if (location.pathname === '/splash') {
   const txidFromGet = searchParams.get('txid') || '';
@@ -83,7 +57,7 @@ function initFreshChatWidget() {
         return;
       }
 
-      image.src = cdnUrl + '/assets/images/live_chat-full.png';
+      image.src = js_data.cdn_url + '/assets/images/live_chat-full.png';
       image.className = 'freshchat-image';
 
       image.addEventListener('load', () => {
@@ -148,7 +122,6 @@ function bindStaticTopbarBlock() {
 
 // document ready
 function documentReady() {
-  document.documentElement.classList.remove('js-hidden');
   populateLinksWithGetParams();
   bindStaticTopbarBlock();
   initFreshChatWidget();

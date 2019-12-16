@@ -2,11 +2,40 @@
 
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
-@section('styles')
-  <link rel="stylesheet" href="{{ mix_cdn('assets/css/promo.css') }}" media="none" onload="styleOnLoad.call(this)">
-  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/promo.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet" media="none" onload="styleOnLoad.call(this)">
+
+@section('js_deps')
+
+  <script type="text/javascript">
+    js_deps.show([
+      'awesome.css',
+      'element.css',
+      'bootstrap.css',
+      'intl_tel_input.css',
+      'layout-styles',
+      'page-styles',
+      'page-styles2',
+    ]);
+  </script>
+
 @endsection
+
+
+@section('styles')
+
+  <link
+    href="{{ mix_cdn('assets/js/views/promo.vue.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles')"
+    rel="stylesheet"
+    media="none" />
+
+  <link
+    href="{{ mix_cdn('assets/css/promo.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles2')"
+    rel="stylesheet"
+    media="none" />
+
+@endsection
+
 
 @section('script')
     <script>

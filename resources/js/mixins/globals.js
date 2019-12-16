@@ -5,8 +5,8 @@ export default {
 
   computed: {
 
-    cdnUrl() {
-      return cdnUrl;
+    cdn_url() {
+      return js_data.cdn_url;
     },
 
     isAffIDEmpty() {

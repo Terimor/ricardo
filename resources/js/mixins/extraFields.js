@@ -77,7 +77,7 @@ export const tplMixin = {
     paymentMethodURL() {
       return this.$root.paymentMethods && this.form.payment_method && this.$root.paymentMethods[this.form.payment_method]
         ? this.$root.paymentMethods[this.form.payment_method].logo
-        : window.cdnUrl + '/assets/images/cc-icons/iconcc.png';
+        : js_data.cdn_url + '/assets/images/cc-icons/iconcc.png';
     },
 
     installmentsVisible() {

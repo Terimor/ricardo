@@ -25,12 +25,12 @@
                 </li>
                 <li class="header__menu-item">
                     <a href="/contact-us" class="header__menu-link">
-                        {{ t('footer.contact') }}<img class="header__menu-icon" src="{{ $cdnUrl }}/assets/images/contact.png" />
+                        {{ t('footer.contact') }}<img class="header__menu-icon" src="{{ $cdn_url }}/assets/images/contact.png" />
                     </a>
                 </li>
                 <li class="header__menu-item">
                     <a class="header__menu-link">
-                        {{ t('footer.call') }}<img class="header__menu-icon" src="{{ $cdnUrl }}/assets/images/call.png" />
+                        {{ t('footer.call') }}<img class="header__menu-icon" src="{{ $cdn_url }}/assets/images/call.png" />
                     </a>
                     <ul class="header__submenu right">
                         <li class="header__submenu-item">

@@ -7,7 +7,12 @@
 @section('js_deps')
 
   <script type="text/javascript">
-    js_deps.show(['page-styles']);
+    js_deps.show([
+      'lato.css',
+      'awesome.css',
+      'bootstrap.css',
+      'page-styles',
+    ]);
   </script>
 
 @endsection

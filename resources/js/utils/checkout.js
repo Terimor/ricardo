@@ -153,17 +153,17 @@ export function preparePurchaseData({
 
 export function getCardUrl(cardType) {
   const cardMap = {
-    'american-express': window.cdnUrl + '/assets/images/cc-icons/american-express.png',
-    'aura': window.cdnUrl + '/assets/images/cc-icons/aura.png',
-    'diners-club': window.cdnUrl + '/assets/images/cc-icons/diners-club.png',
-    'discover': window.cdnUrl + '/assets/images/cc-icons/discover.png',
-    'elo': window.cdnUrl + '/assets/images/cc-icons/elo.png',
-    'hipercard': window.cdnUrl + '/assets/images/cc-icons/hipercard.png',
-    'iconcc': window.cdnUrl + '/assets/images/cc-icons/iconcc.png',
-    'jcb': window.cdnUrl + '/assets/images/cc-icons/jcb.png',
-    'maestro': window.cdnUrl + '/assets/images/cc-icons/maestro.png',
-    'mastercard': window.cdnUrl + '/assets/images/cc-icons/mastercard.png',
-    'visa': window.cdnUrl + '/assets/images/cc-icons/visa.png'
+    'american-express': js_data.cdn_url + '/assets/images/cc-icons/american-express.png',
+    'aura': js_data.cdn_url + '/assets/images/cc-icons/aura.png',
+    'diners-club': js_data.cdn_url + '/assets/images/cc-icons/diners-club.png',
+    'discover': js_data.cdn_url + '/assets/images/cc-icons/discover.png',
+    'elo': js_data.cdn_url + '/assets/images/cc-icons/elo.png',
+    'hipercard': js_data.cdn_url + '/assets/images/cc-icons/hipercard.png',
+    'iconcc': js_data.cdn_url + '/assets/images/cc-icons/iconcc.png',
+    'jcb': js_data.cdn_url + '/assets/images/cc-icons/jcb.png',
+    'maestro': js_data.cdn_url + '/assets/images/cc-icons/maestro.png',
+    'mastercard': js_data.cdn_url + '/assets/images/cc-icons/mastercard.png',
+    'visa': js_data.cdn_url + '/assets/images/cc-icons/visa.png'
   }
   return cardMap[cardType] || cardMap.iconcc
 }
@@ -186,6 +186,8 @@ export function sendCheckoutRequest(data) {
   if (localStorage.getItem('order_failed')) {
     reqURLSearchParams.set('order', localStorage.getItem('odin_order_id'));
   }
+
+  data.page_checkout = location.href;
 
   return Promise.resolve()
     .then(() => fetch('/pay-by-card?' + reqURLSearchParams.toString(), {
@@ -298,4 +300,47 @@ export function get3dsErrors() {
     .catch(err => {
       return t('checkout.payment_error');
     });
+}
+
+
+export function applyMaskForInput(value, mask, schema) {
+  let counter = 0;
+
+  value = value || '';
+
+  function traverse() {
+    for (let i = 0; i < value.length; i++) {
+      const regexp = new RegExp(schema[i] || '.');
+      const symbol = mask.substr(i, 1) || '';
+
+      if (!symbol) {
+        value = value.substr(0, i);
+        return;
+      }
+
+      if (symbol === 'x' && !regexp.test(value[i])) {
+        value = value.substr(0, i) + value.substr(i + 1);
+
+        if (counter++ < 100) {
+          traverse();
+        }
+
+        return;
+      }
+
+      if (symbol !== 'x' && value[i] !== symbol) {
+        value = value.substr(0, i) + symbol + value.substr(i);
+
+        if (counter++ < 100) {
+          traverse();
+        }
+
+        return;
+      }
+    }
+  }
+
+  traverse();
+
+  return value;
 }

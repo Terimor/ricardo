@@ -2,9 +2,30 @@
 
 @section('title', $page_title)
 
-@section('styles')
-    <link rel="stylesheet" href="{{ mix_cdn('assets/css/splash.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
+
+@section('js_deps')
+
+  <script type="text/javascript">
+    js_deps.show([
+      'bootstrap.css',
+      'layout-styles',
+      'page-styles',
+    ]);
+  </script>
+
 @endsection
+
+
+@section('styles')
+
+  <link
+    href="{{ mix_cdn('assets/css/splash.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles')"
+    rel="stylesheet"
+    media="none" />
+
+@endsection
+
 
 @section('script')
     <script defer>

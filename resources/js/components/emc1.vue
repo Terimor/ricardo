@@ -225,7 +225,7 @@
               key: 0,
               name: 'Echo Beat - Wireless 3D Sound white',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: window.cdnUrl + '/assets/images/headphones-white.png',
+              imageUrl: js_data.cdn_url + '/assets/images/headphones-white.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',
@@ -238,7 +238,7 @@
               key: 1,
               name: 'Echo Beat - Wireless 3D Sound gold',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: window.cdnUrl + '/assets/images/headphones-gold.png',
+              imageUrl: js_data.cdn_url + '/assets/images/headphones-gold.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',
@@ -251,7 +251,7 @@
               key: 2,
               name: 'Echo Beat - Wireless 3D Sound red',
               title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: window.cdnUrl + '/assets/images/headphones-red.png',
+              imageUrl: js_data.cdn_url + '/assets/images/headphones-red.png',
               advantageList: [
                 'High Sound',
                 'Portable Charging',

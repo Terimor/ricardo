@@ -7,19 +7,24 @@ export default {
         let position = element.getBoundingClientRect().top - 20;
         position += document.documentElement.scrollTop;
 
-        if (window.blackFridayEnabled) {
+        if (js_data.is_black_friday) {
           position -= this.$root.$refs.blackFriday.clientHeight;
         }
 
-        if (window.christmasEnabled) {
+        if (js_data.is_christmas) {
           position -= this.$root.$refs.christmas.clientHeight;
         }
 
         if (window.scrollTo) {
-          scrollTo({
-            top: position,
-            behavior: 'smooth',
-          });
+          try {
+            scrollTo({
+              top: position,
+              behavior: 'smooth',
+            });
+          }
+          catch (err) {
+            scrollTo(0, position);
+          }
         }
       }
     },

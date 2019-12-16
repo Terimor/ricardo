@@ -4,7 +4,7 @@ import wait from '../utils/wait';
 export default {
 
   mounted() {
-    if (!window.christmasEnabled) {
+    if (!js_data.is_christmas) {
       return;
     }
 

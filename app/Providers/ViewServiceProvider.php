@@ -41,10 +41,10 @@ class ViewServiceProvider extends ServiceProvider
                 'freshchat_token'
             ));
 
-            $view->with('cdnUrl', UtilsService::getCdnUrl());
-            $view->with('HasVueApp', Request::is('checkout') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking') || Route::is('checkout_price_set'));
+            $view->with('cdn_url', UtilsService::getCdnUrl());
+            $view->with('HasVueApp', Route::is('checkout') || Route::is('checkout_price_set') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
-            $view->with('SentryDsn', $settings['sentry_dsn']);
+            $view->with('sentry_dsn', $settings['sentry_dsn']);
             $view->with('FreshchatToken', $settings['freshchat_token']);
             $view->with('ga_id', optional(Domain::getByName())->ga_id);
             
@@ -53,10 +53,10 @@ class ViewServiceProvider extends ServiceProvider
             if ($affId) {                
                 $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
-            $view->with('htmlToApp', AffiliateService::getHtmlToApp(Request(), $affiliate));
+            $view->with('html_to_app', AffiliateService::getHtmlToApp(Request(), $affiliate));
 
-            $lang = substr(app()->getLocale(), 0, 2);
-            $view->with('direction', in_array($lang, ['he', 'ar']) ? 'rtl' : 'ltr');
+            $view->with('lang_locale', app()->getLocale());
+            $view->with('lang_direction', in_array(app()->getLocale(), ['he', 'ar']) ? 'rtl' : 'ltr');
         });
 
         View::composer('layouts.footer', function($view) {
@@ -70,7 +70,7 @@ class ViewServiceProvider extends ServiceProvider
         });
 
         View::composer('thankyou', function($view) {
-            $view->with('cdnUrl', UtilsService::getCdnUrl());
+            $view->with('cdn_url', UtilsService::getCdnUrl());
         });
 
         // run minishop boot
@@ -109,15 +109,12 @@ class ViewServiceProvider extends ServiceProvider
             $locale_affiliate = AffiliateSetting::getLocaleAffiliate($affiliate ?? null);
             $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;            
 
+            $view->with('is_minishop', true);
             $view->with('lang_locale', $lang);
             $view->with('lang_direction', $direction);
             $view->with('ga_id', optional($domain)->ga_id);
-            $view->with('show_deps', [
-                'lato.css',
-                'awesome.css',
-                'bootstrap.css',
-            ]);
             $view->with('html_to_app', $html_to_app);
+            $view->with('cdn_url', $cdn_url);
             $view->with('sentry_dsn', $settings['sentry_dsn']);
             $view->with('freshchat_token', $settings['freshchat_token']);
             $view->with('domain_logo', optional($domain)->logo ?? $cdn_url . MiniShopService::$headerLogoDefaultPath);

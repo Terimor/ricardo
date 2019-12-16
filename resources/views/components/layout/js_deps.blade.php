@@ -13,8 +13,6 @@
 
     deps: {},
 
-    show_deps: @json($show_deps),
-
     ready: function(name) {
       if (this.media === 'none') {
         this.media = 'all';
@@ -67,8 +65,6 @@
     },
 
     show(names) {
-      names = names.concat(js_deps.show_deps);
-
       js_deps.wait(names, function() {
         document.documentElement.classList.remove('hidden');
       });

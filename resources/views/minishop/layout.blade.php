@@ -10,33 +10,33 @@
     <title>@yield('title', config('app.name'))</title>
 
     <!-- Meta Tags -->
-    @include('minishop.layout.meta')
-    @include('minishop.layout.favicon')
+    @include('components.layout.meta')
+    @include('components.layout.favicon')
     @yield('meta')
 
     <!-- JS Data -->
-    @include('minishop.layout.js_data')
-    @include('minishop.layout.js_product')
+    @include('components.layout.js_data')
+    @include('components.layout.js_product')
     @yield('js_data')
 
     <!-- JS Deps -->
-    @include('minishop.layout.js_deps')
+    @include('components.layout.js_deps')
     @yield('js_deps')
 
     <!-- Async Fonts -->
-    @include('minishop.fonts.lato')
-    @include('minishop.fonts.awesome')
+    @include('components.fonts.lato')
+    @include('components.fonts.awesome5')
     @yield('fonts')
 
     <!-- Async Styles -->
-    @include('minishop.styles.bootstrap')
+    @include('components.styles.bootstrap')
     @yield('styles')
 
     <!-- Async Scripts -->
-    @include('minishop.scripts.gtags')
-    @include('minishop.scripts.analytics')
-    @include('minishop.scripts.sentry')
-    @include('minishop.scripts.vue')
+    @include('components.scripts.gtags')
+    @include('components.scripts.analytics')
+    @include('components.scripts.sentry')
+    @include('components.scripts.vue')
     @include('minishop.scripts.freshchat')
     @yield('scripts')
 
@@ -65,10 +65,10 @@
     </div>
 
     <!-- No Script -->
-    @include('minishop.scripts.gtags_ns')
+    @include('components.scripts.gtags_ns')
 
     <!-- Pixels -->
-    @include('minishop.scripts.pixels')
+    @include('components.scripts.pixels')
 
   </body>
 

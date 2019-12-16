@@ -77,21 +77,6 @@ if (location.pathname.startsWith('/checkout')) {
 }
 
 
-// js variables from GET params
-searchParams.forEach((value, key) => {
-  const propName = key + 'js';
-
-  if (window[propName] === undefined) {
-    window[propName] = value;
-  }
-});
-
-
-// js variables for affiliate
-window.aff_idjs = window.affidjs = window.aff_idjs || window.affidjs || 0;
-window.offer_idjs = window.offeridjs = window.offer_idjs || window.offeridjs || 0;
-
-
 if (searchParams.get('cur') === '{aff_currency}') {
   delete window.curjs;
 }
