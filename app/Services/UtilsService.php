@@ -688,7 +688,7 @@ class UtilsService
         $wifibostCdn = 'https://cdn.wifiboost.tech';
         $xdroneCdn = 'https://cdn.xdronehd.pro';
         $secucam360Cdn = 'https://cdn.secucam360.com';
-        $daysightsCdn = 'https://cdn.8xgb.com';
+        $daysightsCdn = 'https://cdn.daysights.pro';
         $host = request()->getHost();
         if (stripos(' '.$host, 'wifiboost.tech')) {
             return $wifibostCdn;
@@ -727,7 +727,7 @@ class UtilsService
         $wifibostCdn = 'cdn.wifiboost.tech';
         $xdroneCdn = 'cdn.xdronehd.pro';
         $secucam360Cdn = 'cdn.secucam360.com';
-        $daysightsCdn = 'cdn.8xgb.com';
+        $daysightsCdn = 'cdn.daysights.pro';
         $host = request()->getHost();
         if (stripos(' '.$host, 'wifiboost.tech')) {
             $urlReplace = $wifibostCdn;
