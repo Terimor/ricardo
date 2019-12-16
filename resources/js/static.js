@@ -5,15 +5,6 @@ import wait from './utils/wait';
 const searchParams = new URL(location).searchParams;
 
 
-// init Sentry.io service
-wait(
-  () => !!window.Sentry && !!window.Sentry.init,
-  () => window.Sentry.init({
-    dsn: window.SentryDSN,
-  }),
-);
-
-
 // add js variables from GET params
 if (searchParams && searchParams.forEach) {
   searchParams.forEach((value, key) => {
@@ -148,7 +139,6 @@ function bindStaticTopbarBlock() {
 
 // document ready
 function documentReady() {
-  document.documentElement.classList.remove('js-hidden');
   populateLinksWithGetParams();
   bindStaticTopbarBlock();
   initFreshChatWidget();

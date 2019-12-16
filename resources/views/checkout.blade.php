@@ -2,12 +2,33 @@
 
 @section('title', $page_title)
 
-@section('styles')
-  <link rel="stylesheet" href="{{ mix_cdn('assets/js/app.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
-  @if (request()->get('tpl') === 'fmc5')
-    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" onload="styleOnLoad.call(this)" rel="stylesheet" media="none" />
-  @endif
+
+@section('js_deps')
+
+  <script type="text/javascript">
+    js_deps.show([
+      'awesome.css',
+      'element.css',
+      'bootstrap.css',
+      'intl_tel_input.css',
+      'layout-styles',
+      'page-styles',
+    ]);
+  </script>
+
 @endsection
+
+
+@section('styles')
+
+  <link
+    href="{{ mix_cdn('assets/js/app.vue.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles')"
+    rel="stylesheet"
+    media="none" />
+
+@endsection
+
 
 @section('script')
 <script type="text/javascript">
@@ -31,8 +52,13 @@
     var loadedImages = @json($loadedImages);
 </script>
 
-<script src="{{ mix_cdn('assets/js/app.js') }}" defer></script>
+  <script
+    src="{{ mix_cdn('assets/js/app.js') }}"
+    onload="js_deps.ready('page-scripts')"
+    async></script>
+
 @endsection
+
 
 @section('content')
 

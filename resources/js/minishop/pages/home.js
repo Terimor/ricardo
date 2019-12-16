@@ -3,12 +3,7 @@ import welcome from './home/welcome';
 import products from './home/products';
 
 
-const deps = [
-  'vue',
-];
-
-
-js_deps.wait(deps, () => {
+js_deps.wait(['vue'], () => {
   new Vue({
 
     el: '#app',

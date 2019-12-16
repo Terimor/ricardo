@@ -2,16 +2,46 @@
 
 @section('title', $page_title)
 
-@section('styles')
-  <link rel="stylesheet" href="{{ mix_cdn('assets/css/thank-you.css') }}" media="none" onload="styleOnLoad.call(this)">
-  <link rel="stylesheet" href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
+
+@section('meta')
+  <meta property="og:title" content="{{ $product->long_name }}" />
+  <meta property="og:description" content="I just bought this awesome product. Thought I’d share this with you" />
+  <meta property="og:image" content="{{ $product->image[0] }}" />
 @endsection
 
-@section('head')
-    <meta property="og:title" content="{{ $product->long_name }}" />
-    <meta property="og:description" content="I just bought this awesome product. Thought I’d share this with you" />
-    <meta property="og:image" content="{{ $product->image[0] }}" />
+
+@section('js_deps')
+
+  <script type="text/javascript">
+    js_deps.show([
+      'awesome.css',
+      'element.css',
+      'bootstrap.css',
+      'layout-styles',
+      'page-styles',
+      'page-styles2',
+    ]);
+  </script>
+
 @endsection
+
+
+@section('styles')
+
+  <link
+    href="{{ mix_cdn('assets/js/views/thank-you.vue.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles')"
+    rel="stylesheet"
+    media="none" />
+
+  <link
+    href="{{ mix_cdn('assets/css/thank-you.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles2')"
+    rel="stylesheet"
+    media="none" />
+
+@endsection
+
 
 @section('script')
 <script>

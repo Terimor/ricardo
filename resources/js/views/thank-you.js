@@ -1,7 +1,4 @@
 import '../resourses/polyfills';
-
-require('../bootstrap');
-
 import queryToComponent from '../mixins/queryToComponent';
 import upsellsMixin from '../mixins/upsells';
 import globals from '../mixins/globals';
@@ -10,7 +7,11 @@ import ThankYouItem from '../components/common/ThankYouItem';
 import wait from '../utils/wait';
 import { t } from '../utils/i18n';
 
-const thankYou = new Vue({
+
+js_deps.wait(['vue', 'element'], () => {
+  require('../bootstrap');
+
+  const thankYou = new Vue({
     el: '#thank-you',
 
     components: {
@@ -135,9 +136,9 @@ const thankYou = new Vue({
     },
 
     mounted() {
-        document.documentElement.classList.remove('js-hidden');
-
         this.getTotal();
         this.saveOrderNumber();
     }
-})
+  });
+
+});

@@ -2,6 +2,31 @@
 
 @section('title', $product->page_title)
 
+
+@section('js_deps')
+
+  <script type="text/javascript">
+    js_deps.show([
+      'bootstrap.css',
+      'layout-styles',
+      'page-styles',
+    ]);
+  </script>
+
+@endsection
+
+
+@section('styles')
+
+  <link
+    href="{{ mix_cdn('assets/css/index.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles')"
+    rel="stylesheet"
+    media="none" />
+
+@endsection
+
+
 @section('script')
 <script type="text/javascript">
     const checkoutData = {
@@ -10,9 +35,6 @@
 </script>
 @endsection
 
-@section('styles')
-    <link rel="stylesheet" href="{{ mix_cdn('assets/css/index.css') }}" media="none" onload="styleOnLoad.call(this, 'css2-hidden')">
-@endsection
 
 @section('content')
 <div class="container">
