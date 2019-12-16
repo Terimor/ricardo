@@ -716,7 +716,7 @@
       productDescription() {
         return this.product.description.replace(
           /<li([^>]*)>(((?!(<\/li>)).)*)<\/li>/g,
-          '<li$1><img src="' + this.$root.cdnUrl + '/assets/images/fmc5-list-check.png" /><div>$2</div></li>',
+          '<li$1><img src="' + this.$root.cdn_url + '/assets/images/fmc5-list-check.png" /><div>$2</div></li>',
         );
       },
 
@@ -733,27 +733,27 @@
       },
 
       imageStep() {
-        return this.$root.cdnUrl + '/assets/images/fmc5-step' + this.step + '.png';
+        return this.$root.cdn_url + '/assets/images/fmc5-step' + this.step + '.png';
       },
 
       imageButtonBack() {
-        return this.$root.cdnUrl + '/assets/images/fmc5-back.png';
+        return this.$root.cdn_url + '/assets/images/fmc5-back.png';
       },
 
       image5star() {
-        return this.$root.cdnUrl + '/assets/images/fmc5-5star.svg';
+        return this.$root.cdn_url + '/assets/images/fmc5-5star.svg';
       },
 
       imageGuarantee() {
-        return this.$root.cdnUrl + '/assets/images/fmc5-guarantee.jpg';
+        return this.$root.cdn_url + '/assets/images/fmc5-guarantee.jpg';
       },
 
       imageStarsLines() {
-        return this.$root.cdnUrl + '/assets/images/fmc5-stars-lines.png';
+        return this.$root.cdn_url + '/assets/images/fmc5-stars-lines.png';
       },
 
       imageVerifiedCheck() {
-        return this.$root.cdnUrl + '/assets/images/fmc5-verified-check.svg';
+        return this.$root.cdn_url + '/assets/images/fmc5-verified-check.svg';
       },
 
       textStepsLineOrder() {

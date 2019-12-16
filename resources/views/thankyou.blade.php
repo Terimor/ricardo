@@ -149,13 +149,13 @@
             <ul id="social-media-tabs" class="nav nav-tabs">
                 <li @click="onClickSocialNetwork('facebook')" id="facebook" class="active">
                     <a href="#facebook" class="facebook-tab-header">
-                        <div class="social-icon fb-icon" style="background-image: url({{ $cdnUrl }}/assets/images/social/fb-icon.png);"></div>
+                        <div class="social-icon fb-icon" style="background-image: url({{ $cdn_url }}/assets/images/social/fb-icon.png);"></div>
                         Facebook
                     </a>
                 </li>
                 <li @click="onClickSocialNetwork('twitter')" id="twitter">
                     <a href="#twitter" class="twitter-tab-header">
-                        <div class="social-icon twitter-icon" style="background-image: url({{ $cdnUrl }}/assets/images/social/twitter-icon.png);"></div>
+                        <div class="social-icon twitter-icon" style="background-image: url({{ $cdn_url }}/assets/images/social/twitter-icon.png);"></div>
                         Twitter
                     </a>
                 </li>

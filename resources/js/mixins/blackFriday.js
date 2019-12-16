@@ -4,7 +4,7 @@ import wait from '../utils/wait';
 export default {
 
   mounted() {
-    if (!window.blackFridayEnabled) {
+    if (!js_data.is_black_friday) {
       return;
     }
 

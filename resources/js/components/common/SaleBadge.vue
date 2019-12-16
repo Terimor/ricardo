@@ -6,12 +6,12 @@
     <img
       v-if="isBlackFriday"
       class="black-friday"
-      :src="$root.cdnUrl + '/assets/images/BF_badge_V2.png'" />
+      :src="$root.cdn_url + '/assets/images/BF_badge_V2.png'" />
 
     <img
       v-else-if="isChristmas"
       class="christmas"
-      :src="$root.cdnUrl + '/assets/images/badge_christmas_V9.png'" />
+      :src="$root.cdn_url + '/assets/images/badge_christmas_V9.png'" />
 
     <template v-else>
       <div class="dynamic-sale-badge__background"></div>
@@ -46,11 +46,11 @@
       },
 
       isBlackFriday() {
-        return !!window.blackFridayEnabled;
+        return js_data.is_black_friday;
       },
 
       isChristmas() {
-        return !!window.christmasEnabled;
+        return js_data.is_christmas;
       },
 
       fontSizes() {

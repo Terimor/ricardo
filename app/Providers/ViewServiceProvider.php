@@ -41,7 +41,7 @@ class ViewServiceProvider extends ServiceProvider
                 'freshchat_token'
             ));
 
-            $view->with('cdnUrl', UtilsService::getCdnUrl());
+            $view->with('cdn_url', UtilsService::getCdnUrl());
             $view->with('HasVueApp', Route::is('checkout') || Route::is('checkout_price_set') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('sentry_dsn', $settings['sentry_dsn']);
@@ -70,7 +70,7 @@ class ViewServiceProvider extends ServiceProvider
         });
 
         View::composer('thankyou', function($view) {
-            $view->with('cdnUrl', UtilsService::getCdnUrl());
+            $view->with('cdn_url', UtilsService::getCdnUrl());
         });
 
         // run minishop boot
@@ -114,6 +114,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('lang_direction', $direction);
             $view->with('ga_id', optional($domain)->ga_id);
             $view->with('html_to_app', $html_to_app);
+            $view->with('cdn_url', $cdn_url);
             $view->with('sentry_dsn', $settings['sentry_dsn']);
             $view->with('freshchat_token', $settings['freshchat_token']);
             $view->with('domain_logo', optional($domain)->logo ?? $cdn_url . MiniShopService::$headerLogoDefaultPath);

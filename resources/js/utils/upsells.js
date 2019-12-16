@@ -82,6 +82,8 @@ export function paypalOnApprove(data) {
 
 
 export function send1ClickRequest(data, upsells) {
+  data.page_checkout = location.href;
+
   return Promise.resolve()
     .then(() => fetch('/pay-by-card-upsells', {
       method: 'post',
