@@ -490,6 +490,9 @@ class PaymentService
 
             if ($reply['status']) {
                 $payment = $reply['payment'];
+                $order_product = $order->getMainProduct(); // throwable
+                $order_product['txn_hash'] = $payment['hash'];
+                $order->addProduct($order_product, true);
                 $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
             }
         }
@@ -793,10 +796,6 @@ class PaymentService
                         'billing_descriptor'   => $order->billing_descriptor
                     ]
                 );
-
-                $order_product = $order->getMainProduct(); // throwable
-                $order_product['txn_hash'] = $payment['hash'];
-                $order->addProduct($order_product, true);
                 break;
             case PaymentProviders::MINTE:
                 $order = $this->checkOrderCurrency($order, PaymentProviders::MINTE);
@@ -828,10 +827,6 @@ class PaymentService
                         'payment_api_id' => $details['payment_api_id'] ?? null
                     ]
                 );
-
-                $order_product = $order->getMainProduct(); // throwable
-                $order_product['txn_hash'] = $payment['hash'];
-                $order->addProduct($order_product, true);
                 break;
             default:
                 logger()->info("Fallback [{$order->number}] provider not found");
