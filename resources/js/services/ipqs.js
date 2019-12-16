@@ -23,9 +23,7 @@ export function ipqsCheck(fields = {}) {
   return new Promise(resolve => {
     let attempt = 0;
 
-    const searchParams = new URL(location).searchParams;
-
-    if (searchParams.get('3ds') === 'failure') {
+    if (js_query_params['3ds'] === 'failure') {
       let result = null;
 
       try {
@@ -49,8 +47,8 @@ export function ipqsCheck(fields = {}) {
     const sendRequest = () => {
       attempt++;
 
-      for (let key of searchParams.keys()) {
-        Startup.Store(key, searchParams.get(key));
+      for (let key of Object.keys(js_query_params)) {
+        Startup.Store(key, js_query_params[key]);
       }
 
       for (let key of Object.keys(fields)) {

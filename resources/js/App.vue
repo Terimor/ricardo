@@ -37,14 +37,12 @@ import vmc4 from './components/vmc4'
 import fmc5 from './components/fmc5'
 import queryToComponent from './mixins/queryToComponent'
 
-const searchParams = new URL(location).searchParams;
-const preload = searchParams.get('preload');
 
 export default {
   name: 'app',
   data () {
     return {
-      showPreloader: preload === '{preload}' || +preload === 3,
+      showPreloader: js_query_params.preload === '{preload}' || +js_query_params.preload === 3,
       title: checkoutData.product.page_title,
       additionalTitle: ' ' + t('checkout.page_title'),
       waitTitle: t('checkout.page_title.wait'),

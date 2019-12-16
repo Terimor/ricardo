@@ -4,10 +4,6 @@ import creditCardType from 'credit-card-type';
 import * as dateFns from 'date-fns';
 
 
-const searchParams = new URL(location).searchParams;
-const tpl = searchParams.get('tpl') || 'emc1';
-
-
 export function getDealRules() {
   return {
     required,

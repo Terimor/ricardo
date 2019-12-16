@@ -19,9 +19,6 @@ import { queryParams } from  '../utils//queryParams';
 import globals from '../mixins/globals';
 import wait from '../utils/wait';
 
-const searchParams = new URL(location).searchParams;
-const preload = searchParams.get('preload');
-
 
 js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
   require('../bootstrap');
@@ -42,7 +39,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
 
     data() {
       return {
-        showPreloader: preload === '{preload}' || +preload === 3,
+        showPreloader: js_query_params.preload === '{preload}' || +js_query_params.preload === 3,
         isFormShown: false,
         selectedPlan: null,
         ipqsResult: null,
@@ -118,12 +115,12 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         }
       }
 
-      if (searchParams.get('tpl') === 'vmp41') {
+      if (js_query_params.tpl === 'vmp41') {
         document.body.classList.add('tpl-vmp41');
         this.slideForm = false;
       }
 
-      if (searchParams.get('tpl') === 'vmp42') {
+      if (js_query_params.tpl === 'vmp42') {
         document.body.classList.add('tpl-vmp42');
         this.setStickyFooter();
         this.slideForm = true;
@@ -159,7 +156,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       isShowVariant() {
-        return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
+        return this.variantList.length > 1 && (!js_query_params.variant || js_query_params.variant !== '0');
       },
 
       countriesList() {
@@ -285,11 +282,9 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       paypalCreateOrder () {
-        const searchParams = new URL(document.location.href).searchParams;
-
-        const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+        const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? checkoutData.product.prices.currency
-          : searchParams.get('cur');
+          : js_query_params.cur;
 
         this.setDataToLocalStorage({
           deal: this.form.deal,
@@ -329,8 +324,8 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
               is_warranty_checked: this.form.isWarrantyChecked,
               page_checkout: document.location.href,
               cur: currency,
-              offer: new URL(document.location.href).searchParams.get('offer'),
-              affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+              offer: js_query_params.offer || null,
+              affiliate: js_query_params.affiliate || null,
               ipqsResult: this.ipqsResult,
             });
           })

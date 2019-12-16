@@ -8,15 +8,18 @@
   };
 
   // GET params
-  var query_params = location.search
+  var js_query_params = location.search
     .substr(1).split('&').filter(item => !!item).map(item => item.split('='))
-    .reduce((acc, item) => { acc[item[0]] = item[1]; return acc; }, {});
+    .reduce((acc, item) => {
+      acc[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
+      return acc;
+    }, {});
 
 
   // GET params to JS variables
-  for (let key of Object.keys(query_params)) {
+  for (let key of Object.keys(js_query_params)) {
     if (window[key + 'js'] === undefined) {
-      window[key + 'js'] = query_params[key];
+      window[key + 'js'] = js_query_params[key];
     }
   }
 

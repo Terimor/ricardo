@@ -2,12 +2,9 @@ import * as cookies from './utils/cookies';
 import wait from './utils/wait';
 
 
-const searchParams = new URL(location).searchParams;
-
-
 // js and cookie variables for txid
 if (location.pathname === '/splash') {
-  const txidFromGet = searchParams.get('txid') || '';
+  const txidFromGet = js_query_params.txid || '';
   const txidFromCookie = cookies.getCookie('txid') || '';
 
   if (txidFromGet.length >= 20) {
@@ -22,25 +19,47 @@ if (location.pathname === '/splash') {
 }
 
 
+export function searchPopulate(pathname, exclude = []) {
+  const url = new URL(pathname, location);
+
+  let url_query_params = url.search
+    .substr(1).split('&').filter(item => !!item).map(item => item.split('='))
+    .reduce((acc, item) => {
+      acc[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
+      return acc;
+    }, {});
+
+  for (let name of Object.keys(js_query_params)) {
+    if (!url_query_params[name] && !exclude.includes(name)) {
+      url_query_params[name] = js_query_params[name];
+    }
+  }
+
+  let url_search = [];
+
+  for (let name of Object.keys(url_query_params)) {
+    url_search.push(encodeURIComponent(name) + '=' + encodeURIComponent(url_query_params[name] || ''));
+  }
+
+  url_search = url_search.length > 0
+    ? '?' + url_search.join('&')
+    : '';
+
+  return url.pathname + url_search;
+}
+
+
 // populate links with GET params
 function populateLinksWithGetParams() {
-  [].forEach.call(document.querySelectorAll('a[href]'), link => {
-    const href = link.getAttribute('href');
+  const elements = [].slice.call(document.querySelectorAll('a[href]'));
 
-    if (!href.match(/^https?:\/\//) && !link.href.match(/^mailto:/) && !link.href.match(/^tel:/)) {
-      const url = new URL(link.href);
+  for (let element of elements) {
+    const href = element.getAttribute('href');
 
-      if (searchParams && searchParams.forEach) {
-        searchParams.forEach((value, key) => {
-          if (!url.searchParams.has(key)) {
-            url.searchParams.set(key, value);
-          }
-        });
-      }
-
-      link.setAttribute('href', url.pathname + url.search + url.hash);
+    if (href && href.substr(0, 1) === '/') {
+      element.setAttribute('href', searchPopulate(element.href));
     }
-  });
+  }
 }
 
 

@@ -27,8 +27,6 @@ const ebanxMap = {
   'hipercard': 'hipercard',
 };
 
-const searchParams = new URL(location).searchParams;
-
 
 export const appMixin = {
 
@@ -166,7 +164,7 @@ export const tplMixin = {
     },
 
     getExtraFieldsFromLocalStorage() {
-      if (searchParams.get('3ds') === 'failure') {
+      if (js_query_params['3ds'] === 'failure') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 

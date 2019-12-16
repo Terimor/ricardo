@@ -645,10 +645,6 @@
         return this.checkoutData.product;
       },
 
-      searchParams() {
-        return new URL(location).searchParams;
-      },
-
       dealsAllowedQuantities() {
         return [
           1, 2, 3, 4, 5,
@@ -676,7 +672,7 @@
       },
 
       dealsSellout() {
-        return (this.searchParams.get('sellout') || '').split(',').map(quantity => +quantity);
+        return (js_query_params.sellout || '').split(',').map(quantity => +quantity);
       },
 
       deals() {
@@ -951,8 +947,8 @@
       },
 
       initDeal() {
-        if (this.searchParams.get('qty')) {
-          const deal = +this.searchParams.get('qty');
+        if (js_query_params.qty) {
+          const deal = +js_query_params.qty;
 
           if (this.dealsByValue[deal]) {
             this.form.deal = deal;
@@ -971,7 +967,7 @@
       },
 
       check3dsFailure() {
-        if (this.searchParams.get('3ds') === 'failure') {
+        if (js_query_params['3ds'] === 'failure') {
           try {
             const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
@@ -1009,9 +1005,9 @@
       },
 
       paypalCreateOrder() {
-        const currency = !this.searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+        const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? this.checkoutData.product.prices.currency
-          : this.searchParams.get('cur');
+          : js_query_params.cur;
 
         this.setDataToLocalStorage({
           deal: this.form.deal,
@@ -1047,8 +1043,8 @@
               sku_quantity: this.form.deal,
               is_warranty_checked: this.form.isWarrantyChecked,
               cur: currency,
-              offer: this.searchParams.get('offer'),
-              affiliate: this.searchParams.get('affiliate'),
+              offer: js_query_params.offer || null,
+              affiliate: js_query_params.affiliate || null,
               ipqsResult: this.ipqsResult,
             });
           })

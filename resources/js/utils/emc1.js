@@ -167,8 +167,8 @@ export function paypalCreateOrder ({
   order = '',
   page_checkout = document.location.href,
   cur,
-  offer = new URL(document.location.href).searchParams.get('offer'),
-  affiliate = new URL(document.location.href).searchParams.get('affiliate'),
+  offer = js_query_params.offer || null,
+  affiliate = js_query_params.affiliate || null,
   ipqsResult,
 }) {
   return Promise.resolve()

@@ -73,10 +73,10 @@ js_deps.wait(['vue', 'element'], () => {
         },
 
         getTotal() {
-            getOrderAmount(new URL(document.location.href).searchParams.get('order'))
-            .then(({ total_text }) => {
-                this.total = total_text;
-            });
+            getOrderAmount(js_query_params.order)
+                .then(({ total_text }) => {
+                    this.total = total_text;
+                });
         },
 
         getEntityPrice(index) {

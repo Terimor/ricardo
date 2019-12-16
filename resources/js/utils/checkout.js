@@ -170,27 +170,20 @@ export function getCardUrl(cardType) {
 
 
 export function sendCheckoutRequest(data) {
-  let reqURLSearchParams = new URLSearchParams();
-  const searchParams = new URL(location).searchParams;
+  localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
 
-  if (/^\/checkout\/.+/.test(location.pathname)) {
-    searchParams.set('cop_id', location.pathname.split('/')[2]);
-  }
-
-  localStorage.setItem('3ds_params', searchParams.toString());
-
-  reqURLSearchParams.set('cur', !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+  let url_search = '?cur=' + (!js_query_params.cur || js_query_params.cur === '{aff_currency}'
     ? checkoutData.product.prices.currency
-    : searchParams.get('cur'));
+    : js_query_params.cur);
 
   if (localStorage.getItem('order_failed')) {
-    reqURLSearchParams.set('order', localStorage.getItem('odin_order_id'));
+    url_search += '&order=' + localStorage.getItem('odin_order_id');
   }
 
   data.page_checkout = location.href;
 
   return Promise.resolve()
-    .then(() => fetch('/pay-by-card?' + reqURLSearchParams.toString(), {
+    .then(() => fetch('/pay-by-card' + url_search, {
       method: 'post',
       credentials: 'same-origin',
       headers: {
@@ -258,22 +251,19 @@ export function sendCheckoutRequest(data) {
 
 
 export function goToThankYou(order, cur) {
-  const pathname = checkoutData.product.upsells.length > 0
+  const url_pathname = checkoutData.product.upsells.length > 0
     ? '/thankyou-promos'
     : '/thankyou';
 
-  const searchParams = new URLSearchParams();
+  let url_search = '?order=' + order + '&cur=' + cur;
 
-  searchParams.set('order', order);
-  searchParams.set('cur', cur);
-
-  if (/^\/checkout\/.+/.test(location.pathname)) {
-    searchParams.set('cop_id', location.pathname.split('/')[2]);
+  if (js_query_params.cop_id) {
+    url_search += '&cop_id=' + encodeURIComponent(js_query_params.cop_id);
   }
 
   localStorage.setItem('odin_order_created_at', new Date());
 
-  goTo(pathname + '?' + searchParams.toString(), { exclude: ['3ds', '3ds_restore'] });
+  goTo(url_pathname + url_search, { exclude: ['3ds', '3ds_restore'] });
 }
 
 

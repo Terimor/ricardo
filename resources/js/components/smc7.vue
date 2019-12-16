@@ -228,7 +228,6 @@
   import Spinner from './common/preloaders/Spinner';
   import { queryParams } from  '../utils/queryParams';
 
-  const searchParams = new URL(location).searchParams;
 
   export default {
     name: 'smc7',
@@ -354,11 +353,11 @@
       imageSafePayment: () => timage('safe_payment'),
 
       isSMC7p() {
-        return searchParams.get('tpl') === 'smc7p';
+        return js_query_params.tpl === 'smc7p';
       },
 
       isShowVariant() {
-        return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
+        return this.variantList.length > 1 && (!js_query_params.variant || js_query_params.variant === '0');
       },
 
       checkoutData() {
@@ -593,9 +592,9 @@
         this.isOpenPromotionModal = val
       },
       paypalCreateOrder () {
-        const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+        const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? checkoutData.product.prices.currency
-          : searchParams.get('cur');
+          : js_query_params.cur;
 
         this.setDataToLocalStorage({
           deal: this.form.deal,
@@ -635,8 +634,8 @@
               is_warranty_checked: this.form.isWarrantyChecked,
               page_checkout: document.location.href,
               cur: currency,
-              offer: searchParams.get('offer'),
-              affiliate: searchParams.get('affiliate'),
+              offer: js_query_params.offer || null,
+              affiliate: js_query_params.affiliate || null,
               ipqsResult: this.ipqsResult,
             });
           })
@@ -685,7 +684,7 @@
 
         const skuVariant = skus.find(sku => variant === sku.code) || null;
 
-        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const productImage = checkoutData.product.image[+(js_query_params.image || null) - 1] || checkoutData.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;

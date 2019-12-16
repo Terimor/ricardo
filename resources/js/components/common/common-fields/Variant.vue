@@ -32,7 +32,7 @@
     computed: {
 
       visible() {
-        return this.list.length > 1;
+        return this.list.length > 1 && (!js_query_params.variant || js_query_params.variant === '0');
       },
 
       textLabel() {

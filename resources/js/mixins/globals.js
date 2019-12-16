@@ -1,6 +1,3 @@
-const searchParams = new URL(location).searchParams;
-
-
 export default {
 
   computed: {
@@ -10,8 +7,8 @@ export default {
     },
 
     isAffIDEmpty() {
-      return (!searchParams.get('aff_id') || searchParams.get('aff_id') === '0')
-        && (!searchParams.get('affid') || searchParams.get('affid') === '0');
+      return (!js_query_params.aff_id || js_query_params.aff_id === '0')
+        && (!js_query_params.affid || js_query_params.affid === '0');
     },
 
     sortedCountryList() {

@@ -5,17 +5,6 @@ export default {
   },
 
 
-  computed: {
-
-    searchParams() {
-      return window.URLSearchParams
-        ? new URLSearchParams(location.search.substr(1))
-        : null;
-    },
-
-  },
-
-
   methods: {
 
     goto(pathname, exclude) {
@@ -24,17 +13,32 @@ export default {
     },
 
     searchPopulate(pathname, exclude = []) {
-      let url = new URL(pathname, location);
+      const url = new URL(pathname, location);
 
-      if (this.searchParams) {
-        this.searchParams.forEach((value, key) => {
-          if (!url.searchParams.has(key) && !exclude.includes(key)) {
-            url.searchParams.set(key, value);
-          }
-        });
+      let url_query_params = url.search
+        .substr(1).split('&').filter(item => !!item).map(item => item.split('='))
+        .reduce((acc, item) => {
+          acc[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
+          return acc;
+        }, {});
+
+      for (let name of Object.keys(js_query_params)) {
+        if (!url_query_params[name] && !exclude.includes(name)) {
+          url_query_params[name] = js_query_params[name];
+        }
       }
 
-      return url.pathname + url.search + url.hash;
+      let url_search = [];
+
+      for (let name of Object.keys(url_query_params)) {
+        url_search.push(encodeURIComponent(name) + '=' + encodeURIComponent(url_query_params[name] || ''));
+      }
+
+      url_search = url_search.length > 0
+        ? '?' + url_search.join('&')
+        : '';
+
+      return url.pathname + url_search;
     },
 
     searchPopulatePageLinks() {

@@ -15,9 +15,7 @@ export default {
   methods: {
 
     search_init() {
-      this.search = this.searchParams
-        ? this.searchParams.get('search')
-        : null;
+      this.search = js_query_params.search || null;
 
       if (this.search) {
         setTimeout(() => this.scroll_to_ref('products'), 1000);

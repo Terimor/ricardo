@@ -1,7 +1,5 @@
 import * as cookies from '../utils/cookies';
 
-const searchParams = new URL(location).searchParams;
-
 
 // clear data if product changed
 if (location.pathname.startsWith('/checkout')) {
@@ -42,16 +40,13 @@ if (location.pathname.startsWith('/checkout')) {
 
 // direct linking logic
 if (location.pathname.startsWith('/checkout')) {
-  const txid = searchParams.get('txid') || '';
-  const offer_id = +searchParams.get('offer_id') || +searchParams.get('offerid');
-  const aff_id = +searchParams.get('aff_id') || +searchParams.get('affid');
-  const direct = +searchParams.get('direct');
+  const txid = js_query_params.txid || '';
+  const offer_id = +(js_query_params.offer_id || js_query_params.offerid || null);
+  const aff_id = +(js_query_params.aff_id || js_query_params.affid || null);
+  const direct = +(js_query_params.direct || null);
 
   if (offer_id > 0 && aff_id > 10 && direct === 1 && txid.length < 20) {
-    const iframeURL = new URL('https://track.8xgb.com/aff_c');
-
-    iframeURL.searchParams.set('offer_id', offer_id);
-    iframeURL.searchParams.set('aff_id', aff_id);
+    let iframeURL = 'https://track.8xgb.com/aff_c?offer_id=' + offer_id + '&aff_id=' + aff_id;
 
     const params = [
       'aff_sub1',
@@ -64,38 +59,40 @@ if (location.pathname.startsWith('/checkout')) {
     ];
 
     for (let param of params) {
-      if (searchParams.has(param)) {
-        iframeURL.searchParams.set(param, searchParams.get(param));
+      if (js_query_params[param]) {
+        iframeURL += '&' + param + '=' + encodeURIComponent(js_query_params[param]);
       }
     }
 
     const iframe = document.createElement('iframe');
-    iframe.src = iframeURL.toString();
+
+    iframe.src = iframeURL;
     iframe.style.display = 'none';
+
     document.body.append(iframe);
   }
 }
 
 
-if (searchParams.get('cur') === '{aff_currency}') {
+if (js_query_params.cur === '{aff_currency}') {
   delete window.curjs;
 }
 
-if (searchParams.get('lang') === '{lang}') {
+if (js_query_params.lang === '{lang}') {
   delete window.langjs;
 }
 
-if (searchParams.get('preload') === '{preload}') {
+if (js_query_params.preload === '{preload}') {
   window.preloadjs = 3;
 }
 
-if (searchParams.get('show_timer') === '{timer}') {
+if (js_query_params.show_timer === '{timer}') {
   window.show_timerjs = 1;
 }
 
 
 // js and cookie variables for txid
-const txidFromGet = searchParams.get('txid') || '';
+const txidFromGet = js_query_params.txid || '';
 const txidFromCookie = cookies.getCookie('txid') || '';
 
 if (txidFromGet.length >= 20) {
@@ -111,7 +108,7 @@ window.txid = window.txidjs = txidFromGet.length >= 20
 
 // add tpl body class for checkout
 if (location.pathname.startsWith('/checkout')) {
-  document.body.classList.add('tpl-' + (searchParams.has('tpl') && searchParams.get('tpl') !== '{tpl}'
-    ? searchParams.get('tpl')
+  document.body.classList.add('tpl-' + (js_query_params.tpl && js_query_params.tpl !== '{tpl}'
+    ? js_query_params.tpl
     : 'emc1'));
 }

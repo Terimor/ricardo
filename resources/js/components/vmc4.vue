@@ -78,7 +78,6 @@
   import {fade} from "../utils/common";
   import {getRadioHtml} from '../utils/vmc4';
 
-  const searchParams = new URL(location).searchParams;
 
 	export default {
 		name: 'vmc4',
@@ -190,7 +189,7 @@
 
         const skuVariant = skus.find(sku => variant === sku.code) || null;
 
-        const productImage = checkoutData.product.image[+searchParams.get('image') - 1] || checkoutData.product.image[0];
+        const productImage = checkoutData.product.image[+(js_query_params.image || null) - 1] || checkoutData.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;

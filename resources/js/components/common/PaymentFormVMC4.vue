@@ -237,7 +237,6 @@
   import DocumentType from './extra-fields/DocumentType';
   import DocumentNumber from './extra-fields/DocumentNumber';
 
-  const searchParams = new URL(location).searchParams;
 
 	export default {
 		name: "PaymentFormVMC4",
@@ -354,7 +353,7 @@
     },
 		computed: {
       isShowVariant() {
-        return this.variantList.length > 1 && (!searchParams.has('variant') || +searchParams.get('variant') !== 0);
+        return this.variantList.length > 1 && (!js_query_params.variant || js_query_params.variant === '0');
       },
       dialCode() {
         const allCountries = window.intlTelInputGlobals.getCountryData();
@@ -563,9 +562,9 @@
           });
       },
       paypalCreateOrder() {
-        const currency = !searchParams.get('cur') || searchParams.get('cur') === '{aff_currency}'
+        const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? checkoutData.product.prices.currency
-          : searchParams.get('cur');
+          : js_query_params.cur;
 
         this.setDataToLocalStorage({
           deal: this.vmc4Form.deal,
@@ -605,8 +604,8 @@
               is_warranty_checked: this.vmc4Form.isWarrantyChecked,
               page_checkout: document.location.href,
               cur: currency,
-              offer: searchParams.get('offer'),
-              affiliate: searchParams.get('affiliate'),
+              offer: js_query_params.offer || null,
+              affiliate: js_query_params.affiliate || null,
               ipqsResult: this.ipqsResult,
             });
           })

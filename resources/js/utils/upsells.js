@@ -7,9 +7,9 @@ export function paypalCreateOrder ({
   sku_quantity,
   is_warranty_checked,
   order = '',
-  page_checkout = document.location.href,
-  offer = new URL(document.location.href).searchParams.get('offer'),
-  affiliate = new URL(document.location.href).searchParams.get('affiliate'),
+  page_checkout = location.href,
+  offer = js_query_params.offer || null,
+  affiliate = js_query_params.affiliate || null,
   upsells
 }) {
   return fetch('/paypal-create-order', {

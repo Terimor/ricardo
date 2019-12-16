@@ -56,8 +56,8 @@
                     is_warranty_checked: document.getElementById('is_warranty_checked').checked,
                     order_id: document.getElementById('order_id').value,
                     page_checkout: document.location.href,
-                    offer: new URL(document.location.href).searchParams.get('offer'),
-                    affiliate: new URL(document.location.href).searchParams.get('affiliate'),
+                    offer: js_query_params.offer || null,
+                    affiliate: js_query_params.affiliate || null,
                 })
             })
             .then(function(res) {
