@@ -1,4 +1,4 @@
-@if (isset($is_minishop) || ((Route::is('checkout') || Route::is('checkout_price_set')) && request()->get('tpl') === 'fmc5'))
+@if (!empty($is_minishop) || ((Route::is('checkout') || Route::is('checkout_price_set')) && request()->get('tpl') === 'fmc5'))
 
   <link
     href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap"

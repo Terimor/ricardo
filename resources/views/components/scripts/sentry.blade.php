@@ -6,7 +6,7 @@
     crossorigin="anonymous"
     async></script>
 
-  @if (isset($is_minishop) || (isset($HasVueApp) && $HasVueApp))
+  @if (!empty($HasVueApp) || !empty($is_minishop))
     <script
       src="https://browser.sentry-cdn.com/5.6.3/vue.min.js"
       onload="js_deps.ready('sentry-vue')"
@@ -15,7 +15,7 @@
   @endif
 
   <script type="text/javascript">
-    @if (isset($is_minishop) || (isset($HasVueApp) && $HasVueApp))
+    @if (!empty($HasVueApp) || !empty($is_minishop))
       js_deps.wait(['vue', 'sentry', 'sentry-vue'], function() {
         Sentry.init({
           dsn: '{{ $sentry_dsn }}',
