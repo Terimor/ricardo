@@ -202,7 +202,7 @@ class OrderService
 
                  // if not flagged check fired logic
                 if (empty($order->is_flagged)) {
-                    // get first main product
+                    // get first main product                    
                     $productId = $order->getFirstProductId();
                     if ($order->is_reduced === null && $productId) {
                         // check in affiliate product list
@@ -210,7 +210,7 @@ class OrderService
                         $order->is_reduced = $isReduced;
                         $order->save();
                     }
-                    $events = $order->events ?? [];
+                    $events = $order->events ?? [];                    
                     // txid and postback logic
                     if ($order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_POSTBACK_SENT, $events))) {
                         // request queue if order has parameter txid and is_reduced and aff_id > 10
@@ -221,7 +221,7 @@ class OrderService
                         AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);
                         $events[] = OdinOrder::EVENT_AFF_POSTBACK_SENT;
                         $order->events = $events;
-                        $order->save();
+                        $order->save();                        
                     }
                 }
 

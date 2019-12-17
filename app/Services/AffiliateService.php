@@ -46,7 +46,7 @@ class AffiliateService
                 
                 $url = $postback->url;
                 // check and replace params
-                $params = $order->params;
+                $params = !empty($order->params) ? $order->params : [];
                 // if we have #TXID# in code check it then replace to txid
                 if (strpos($url, '#TXID#')) {                    
                     if (!empty($order->txid)) {
