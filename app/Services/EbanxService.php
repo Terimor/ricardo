@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Models\Currency;
 use App\Models\Txn;
 use App\Mappers\EbanxCodeMapper;
 use App\Constants\PaymentMethods;
@@ -14,7 +15,7 @@ use Ebanx\Benjamin\Models\Card;
 use Ebanx\Benjamin\Models\Configs\Config;
 use Ebanx\Benjamin\Models\Configs\CreditCardConfig;
 use Ebanx\Benjamin\Models\Country;
-use Ebanx\Benjamin\Models\Currency;
+use Ebanx\Benjamin\Models\Currency as EbanxCurrency;
 use Ebanx\Benjamin\Models\Payment;
 use Ebanx\Benjamin\Models\Person;
 use Ebanx\Benjamin\Models\Item;
@@ -40,14 +41,14 @@ class EbanxService
     const PAYMENT_STATUS_CANCELLED  = 'CA';
 
     const CUR_PER_COUNTRY = [
-        Country::ARGENTINA  => [Currency::ARS, Currency::USD],
-        Country::BRAZIL     => [Currency::BRL, Currency::USD, Currency::EUR],
-        Country::BOLIVIA    => [Currency::BOB, Currency::USD],
-        Country::CHILE      => [Currency::CLP, Currency::USD, Currency::EUR],
-        Country::COLOMBIA   => [Currency::COP, Currency::USD, Currency::EUR],
-        Country::ECUADOR    => [Currency::USD],
-        Country::MEXICO     => [Currency::MXN, Currency::USD],
-        Country::PERU       => [Currency::PEN, Currency::USD]
+        Country::ARGENTINA  => [EbanxCurrency::ARS, EbanxCurrency::USD],
+        Country::BRAZIL     => [EbanxCurrency::BRL, EbanxCurrency::USD, EbanxCurrency::EUR],
+        Country::BOLIVIA    => [EbanxCurrency::BOB, EbanxCurrency::USD],
+        Country::CHILE      => [EbanxCurrency::CLP, EbanxCurrency::USD, EbanxCurrency::EUR],
+        Country::COLOMBIA   => [EbanxCurrency::COP, EbanxCurrency::USD, EbanxCurrency::EUR],
+        Country::ECUADOR    => [EbanxCurrency::USD],
+        Country::MEXICO     => [EbanxCurrency::MXN, EbanxCurrency::USD],
+        Country::PERU       => [EbanxCurrency::PEN, EbanxCurrency::USD]
     ];
 
     /**
@@ -184,9 +185,9 @@ class EbanxService
             if ($currency && \in_array($currency, self::CUR_PER_COUNTRY[$country])) {
                 return $currency;
             }
-            return Currency::USD;
+            return Currency::DEF_CUR;
         }
-        return Currency::USD;
+        return Currency::DEF_CUR;
     }
 
     /**

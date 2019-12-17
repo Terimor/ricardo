@@ -160,29 +160,43 @@ class PaymentService
      * Returns localizaed price
      * @param  OdinProduct $product
      * @param  int         $qty
+     * @param  string      $country
+     * @param  string      $provider
      * @return array
      * @throws InvalidParamsException
      */
-    private function getLocalizedPrice(OdinProduct $product, int $qty): array
+    private function getLocalizedPrice(OdinProduct $product, int $qty, string $country, string $provider): array
     {
+        // NOTE: implicit definition currency
         $localized_product = $this->productService->localizeProduct($product);
         if (empty($localized_product->prices[$qty])) {
             throw new InvalidParamsException('Invalid parameter "qty"');
         }
 
-        $currency = CurrencyService::getCurrency($localized_product->prices['currency']);
+        // check currency, if it's not supported switch to default currency
+        $currency_code = $this->checkCurrency($country, $localized_product->prices['currency'], $provider);
 
+        $currency = CurrencyService::getCurrency($currency_code);
+
+        $price = $localized_product->prices[$qty]['value'];
         $price_usd = $localized_product->prices[$qty]['value'] / $currency->usd_rate;
+        $price_warranty = $localized_product->prices[$qty]['warranty_price'];
+        $price_warranty_usd = ($product->warranty_percent ?? 0) * $price_usd / 100;
+
+        if ($currency->code === Currency::DEF_CUR) {
+            $price = $price_uds;
+            $price_warranty = $price_warranty_usd;
+        }
 
         return [
             'currency'          => $currency->code,
             'price_set'         => $product->prices['price_set'] ?? '',
             'quantity'          => $qty,
             'usd_rate'          => $currency->usd_rate,
-            'value'             => $localized_product->prices[$qty]['value'],
+            'value'             => $price,
             'value_usd'         => $price_usd,
-            'warranty_value'    => $localized_product->prices[$qty]['warranty_price'],
-            'warranty_value_usd'    => ($product->warranty_percent ?? 0) * $price_usd / 100
+            'warranty_value'    => $price_warranty,
+            'warranty_value_usd'    => $price_warranty_usd
         ];
     }
 
@@ -200,7 +214,7 @@ class PaymentService
         $order_product = [
             'sku_code'              => $sku,
             'quantity'              => $price['quantity'],
-            'price'                 => $price['value'],
+            'price'                 => CurrencyService::roundValueByCurrencyRules($price['value'], $price['currency']),
             'price_usd'             => CurrencyService::roundValueByCurrencyRules($price['value_usd'], Currency::DEF_CUR),
             'price_set'             => $price['price_set'] ?? null,
             'is_main'               => $is_main,
@@ -211,13 +225,13 @@ class PaymentService
             'txn_hash'              => null,
             'warranty_price'        => 0,
             'warranty_price_usd'    => 0,
-            'total_price'           => $price['value'],
+            'total_price'           => CurrencyService::roundValueByCurrencyRules($price['value'], $price['currency']),
             'total_price_usd'       => CurrencyService::roundValueByCurrencyRules($price['value_usd'], Currency::DEF_CUR)
         ];
 
         $is_warranty = $details['is_warranty'] ?? false;
         if ($is_warranty) {
-            $order_product['warranty_price']        = $price['warranty_value'];
+            $order_product['warranty_price']        = CurrencyService::roundValueByCurrencyRules($price['warranty_value'], $price['currency']);
             $order_product['warranty_price_usd']    = CurrencyService::roundValueByCurrencyRules($price['warranty_value_usd'], Currency::DEF_CUR);
             $order_product['total_price']           = CurrencyService::roundValueByCurrencyRules($price['value'] + $price['warranty_value'], $price['currency']);
             $order_product['total_price_usd']       = CurrencyService::roundValueByCurrencyRules($order_product['total_price'] / $price['usd_rate'], Currency::DEF_CUR);
@@ -339,11 +353,8 @@ class PaymentService
 
         $this->addCustomer($contact); // throwable
 
-        if (empty($order)) {
-            // check currency, if it's not supported switch to default currency
-            $product->currency = $this->checkCurrency($contact['country'], CurrencyService::getCurrency()->code, $provider);
-
-            $price = $this->getLocalizedPrice($product, (int)$qty); // throwable
+        if (empty($order)) {;
+            $price = $this->getLocalizedPrice($product, (int)$qty, $contact['country'], $provider); // throwable
 
             $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
@@ -933,7 +944,7 @@ class PaymentService
      * @param  string      $prv
      * @return OdinOrder
      */
-    public function checkOrderCurrency(OdinOrder $order, string $prv = PaymentProviders::MINTE): OdinOrder
+    public function checkOrderCurrency(OdinOrder $order, string $provider = PaymentProviders::MINTE): OdinOrder
     {
         $order_product = $order->getMainProduct(); // throwable
 
@@ -945,15 +956,13 @@ class PaymentService
             $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
         }
 
-        $product->currency = $this->checkCurrency($order->shipping_country, $order->currency, $prv);
+        $price = $this->getLocalizedPrice($product, $order_product['quantity'], $order->shipping_country, $provider); // throwable
 
-        if ($order->currency === $product->currency) {
+        if ($order->currency === $price['currency']) {
             return $order;
         }
 
-        logger()->info("Fallback [{$order->number}] change currency {$order->currency} -> {$product->currency}");
-
-        $price = $this->getLocalizedPrice($product, $order_product['quantity']); // throwable
+        logger()->info("Fallback [{$order->number}] change currency {$order->currency} -> USD");
 
         $order_product = $this->createOrderProduct($order_product['sku_code'], $price, ['is_warranty' => !!$order_product['warranty_price']]);
 
@@ -961,7 +970,6 @@ class PaymentService
         $order->exchange_rate   = $price['usd_rate'];
         $order->total_price     = $order_product['total_price'];
         $order->total_price_usd = $order_product['total_price_usd'];
-        $order->warehouse_id    = $product->warehouse_id;
         $order->addProduct($order_product, true);
 
         return $order;

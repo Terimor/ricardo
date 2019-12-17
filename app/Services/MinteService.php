@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Models\Currency;
 use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Constants\PaymentMethods;
@@ -26,8 +27,6 @@ class MinteService
     const STATUS_OK     = 'SUCCESS';
     const STATUS_3DS    = 'PENDING';
     const STATUS_FAIL   = 'FAILED';
-
-    const DEFAULT_CURRENCY = 'USD';
 
     const COUNTRY_CURRENCY = [
         'us' => ['USD'],
@@ -89,11 +88,11 @@ class MinteService
     public static function getCurrencyByCountry(string $country, ?string $currency): ?string
     {
         if (isset(self::COUNTRY_CURRENCY[$country])) {
-            return in_array($currency, self::COUNTRY_CURRENCY[$country]) ? $currency : self::DEFAULT_CURRENCY;
+            return in_array($currency, self::COUNTRY_CURRENCY[$country]) ? $currency : Currency::DEF_CUR;
         } elseif (in_array($currency, self::COUNTRY_CURRENCY['*'])) {
             return $currency;
         } else {
-            return self::DEFAULT_CURRENCY;
+            return Currency::DEF_CUR;
         }
     }
 
