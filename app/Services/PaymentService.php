@@ -184,7 +184,7 @@ class PaymentService
         $price_warranty_usd = ($product->warranty_percent ?? 0) * $price_usd / 100;
 
         if ($currency->code === Currency::DEF_CUR) {
-            $price = $price_uds;
+            $price = $price_usd;
             $price_warranty = $price_warranty_usd;
         }
 
