@@ -48,11 +48,11 @@ class OrderController extends Controller
         $reduced = 0; $first_reduced = 0;
         foreach($orders as $order) {
             if (!empty($order->affiliate) && $order->total_paid_usd > 0 && $order->is_reduced === null) {
-                //$l = OrderService::getReducedData((string)$order->_id, $order->affiliate);
-                //if ($l->is_reduced) {
+                $l = OrderService::getReducedData((string)$order->_id, $order->affiliate);
+                if ($l->is_reduced) {
+                    echo $order->number.'<br>';
                     $reduced++;
-                //}
-                echo $order->number.'<br>';
+                }
             }
         }
         echo "<br><br>COUNT: $reduced<br>";        
