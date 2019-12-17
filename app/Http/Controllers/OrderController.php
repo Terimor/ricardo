@@ -44,7 +44,7 @@ class OrderController extends Controller
      */
     public function sendPostbacks()
     {
-        $orders = OdinOrder::limit(1000)->get();
+        $orders = OdinOrder::limit(1000)->orderBy('_id', 'desc')->get();
         $reduced = 0; $first_reduced = 0;
         foreach($orders as $order) {
             if (!empty($order->affiliate) && $order->total_paid_usd > 0 && $order->is_reduced === null) {
