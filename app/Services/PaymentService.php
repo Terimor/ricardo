@@ -587,6 +587,7 @@ class PaymentService
                     $upsell_product = $this->createOrderProduct(
                         $product->upsell_sku,
                         [
+                            'currency'  => $upsell_price['code'],
                             'quantity'  => (int)$item['qty'],
                             'value'     => $upsell_price['price'],
                             'value_usd' => $upsell_price['price'] / $upsell_price['exchange_rate']
