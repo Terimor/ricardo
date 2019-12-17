@@ -173,26 +173,28 @@ class PaymentService
             throw new InvalidParamsException('Invalid parameter "qty"');
         }
 
+        $currency = CurrencyService::getCurrency($localized_product->prices['currency']);
+
+        $price = $localized_product->prices[$qty]['value'];
+        $price_usd = $price / $currency->usd_rate;
+        $price_warranty = $localized_product->prices[$qty]['warranty_price'];
+        $price_warranty_usd = ($product->warranty_percent ?? 0) * $price_usd / 100;
+        $usd_rate = $currency->usd_rate;
+
         // check currency, if it's not supported switch to default currency
         $currency_code = $this->checkCurrency($country, $localized_product->prices['currency'], $provider);
 
-        $currency = CurrencyService::getCurrency($currency_code);
-
-        $price = $localized_product->prices[$qty]['value'];
-        $price_usd = $localized_product->prices[$qty]['value'] / $currency->usd_rate;
-        $price_warranty = $localized_product->prices[$qty]['warranty_price'];
-        $price_warranty_usd = ($product->warranty_percent ?? 0) * $price_usd / 100;
-
-        if ($currency->code === Currency::DEF_CUR) {
+        if ($currency_code === Currency::DEF_CUR) {
             $price = $price_usd;
             $price_warranty = $price_warranty_usd;
+            $usd_rate = 1;
         }
 
         return [
-            'currency'          => $currency->code,
+            'currency'          => $currency_code,
             'price_set'         => $product->prices['price_set'] ?? '',
             'quantity'          => $qty,
-            'usd_rate'          => $currency->usd_rate,
+            'usd_rate'          => $usd_rate,
             'value'             => $price,
             'value_usd'         => $price_usd,
             'warranty_value'    => $price_warranty,
