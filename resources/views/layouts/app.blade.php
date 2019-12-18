@@ -23,6 +23,9 @@
     @include('components.layout.js_deps')
     @yield('js_deps')
 
+    <!-- Redirects -->
+    @include('components.3ds_redirect')
+
     <!-- Async Fonts -->
     @include('components.fonts.lato')
     @include('components.fonts.awesome4')
@@ -48,9 +51,6 @@
     @include('components.scripts.element')
     @include('components.scripts.static')
     @yield('scripts')
-
-    <!-- Redirects -->
-    @include('components.3ds_redirect')
 
     {{--Do not remove this empty style tag--}}
     <style></style>

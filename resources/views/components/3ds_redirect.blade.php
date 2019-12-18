@@ -33,6 +33,7 @@
         }
 
         location.href = url.pathname + '?' + url_search.join('&');
+        window['3ds_redirect'] = true;
       })();
     </script>
   @endif
