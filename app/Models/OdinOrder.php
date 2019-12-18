@@ -93,7 +93,7 @@ class OdinOrder extends OdinModel
 //	    'hash' => null, // string, //link to Txn hash
 //	    'value' => null, float, //decreases after refund
 //	    'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
-//	    'fee' => null,// — float, //provider's txn fee
+//	    'fee_usd' => null,// — float, //provider's txn fee in USD
 //	    'payment_provider' => '', // — enum string,
 //	    'payment_method' => '', // — enum string,
 //	    'payer_id' => '', // — string, //payer ID in payment provider system

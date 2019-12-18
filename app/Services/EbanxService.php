@@ -240,8 +240,7 @@ class EbanxService
 
             if ($res['status'] === self::STATUS_OK) {
                 $result['number']   = $res['payment']['order_number'];
-                $result['currency'] = $res['payment']['currency_ext'];
-                $result['fee']      = $res['payment']['amount_iof'];
+                $result['currency'] = $res['payment']['currency_ext'];                
                 $result['value']    = $res['payment']['amount_ext'];
                 $result['status']   = self::mapPaymentStatus($res['payment']['status'], true);
             } else {
@@ -323,7 +322,7 @@ class EbanxService
         ]);
 
         $result = [
-            'fee'               => 0,
+            'fee_usd'           => 0,
             'is_flagged'        => false,
             'currency'          => $order_details['currency'],
             'value'             => $order_details['amount'],
@@ -344,8 +343,7 @@ class EbanxService
             if ($res['status'] === self::STATUS_OK) {
                 $result['hash']             = $res['payment']['hash'];
                 $result['currency']         = $res['payment']['currency_ext'];
-                $result['value']            = $res['payment']['amount_ext'];
-                $result['fee']              = $res['payment']['amount_iof'];
+                $result['value']            = $res['payment']['amount_ext'];                
                 $result['status']           = self::mapPaymentStatus($res['payment']['status']);
                 $result['is_flagged']       = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING ? true : false;
                 $result['token']            = $res['payment']['token'] ?? null;

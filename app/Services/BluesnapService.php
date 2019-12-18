@@ -168,7 +168,7 @@ class BluesnapService
         ]);
 
         $result = [
-            'fee'               => 0,
+            'fee_usd'           => 0,
             'is_flagged'        => false,
             'currency'          => $order_details['currency'],
             'value'             => $order_details['amount'],
@@ -246,7 +246,7 @@ class BluesnapService
                 'status' => true,
                 'txn' => [
                     'currency'  => $currency,
-                    'fee'       => preg_replace('/[^\d.]/', '', $fee),
+                    'fee_usd'   => 0,
                     'hash'      => $hash,
                     'status'    => $type === self::TYPE_WEBHOOK_CHARGE ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
                     'value'     => preg_replace('/[^\d.]/', '', $value)
