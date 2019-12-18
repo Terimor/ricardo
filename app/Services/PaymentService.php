@@ -489,7 +489,7 @@ class PaymentService
                 'descriptor'    => $order->billing_descriptor
             ]);
         }
-        $card_number = isset($card['number']) ? \Utils::prepareCardNumber($card['number']) : null;        
+        $card_number = isset($card['number']) ? \Utils::prepareCardNumber((string)$card['number']) : null;        
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
 
         $order_product['txn_hash'] = $payment['hash'];
