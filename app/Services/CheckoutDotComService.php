@@ -84,6 +84,7 @@ class CheckoutDotComService
         $this->env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
 
         $this->checkout = new CheckoutApi($this->api->key, $this->env === self::ENV_SANDBOX);
+        $this->checkout->configuration()->setPublicKey($this->api->login);
     }
 
     /**
