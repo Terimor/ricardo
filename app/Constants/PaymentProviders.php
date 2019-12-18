@@ -138,9 +138,9 @@ class PaymentProviders
             'methods'   => [
                 'main' => [
                     PaymentMethods::VISA => [
-                        '+3ds' => ['europe', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
+                        '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'by', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
@@ -504,7 +504,7 @@ class PaymentProviders
         self::BLUESNAP  => [
             'name'      => 'Bluesnap',
             'is_active' => true,
-            'is_main'   => true,
+            'is_main'   => false,
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
@@ -601,11 +601,7 @@ class PaymentProviders
                 ]
             ],
             'methods' => [
-                'main' => [
-                    PaymentMethods::VISA => [
-                        '-3ds' => ['by']
-                    ],
-                ],
+                'main' => [],
                 'fallback' => [
                     PaymentMethods::VISA => [
                         '-3ds' => ['*'],
