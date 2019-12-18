@@ -1114,11 +1114,14 @@
               billing_email: this.form.email,
               billing_phone: this.dialCode + phoneNumber,
               credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_hash: window.sha256(cardNumber),
               credit_card_expiration_month: this.form.cardDate.split('/')[0],
               credit_card_expiration_year: this.form.cardDate.split('/')[1],
               cvv_code: this.form.cvv,
             };
+
+            if (window.sha256) {
+              data.credit_card_hash = sha256(cardNumber);
+            }
 
             return ipqsCheck(data).then(ipqsResult => {
               this.ipqsResult = ipqsResult;

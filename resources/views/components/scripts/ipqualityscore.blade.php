@@ -1,4 +1,4 @@
-@if ((Route::is('checkout') || Route::is('checkout_price_set')) && str_replace('www.', '', Request::getHost()) !== 'daysights.pro')
+@if ((Route::is('checkout') || Route::is('checkout_price_set')) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
 
   <script type="text/javascript">
     var IPQ = {

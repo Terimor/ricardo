@@ -1,4 +1,4 @@
-@if (!empty($html_to_app['gtags']))
+@if (!empty($html_to_app['gtags']) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
   @foreach($html_to_app['gtags'] as $gtag)
 
     <script type="text/javascript">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ !empty($gtag['code']) ? $gtag['code'] : '' }}');</script>

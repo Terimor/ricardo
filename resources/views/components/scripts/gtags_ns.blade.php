@@ -1,4 +1,4 @@
-@if (!empty($html_to_app['gtags']))
+@if (!empty($html_to_app['gtags']) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
   @foreach($html_to_app['gtags'] as $gtag)
 
     <noscript>

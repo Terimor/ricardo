@@ -356,17 +356,14 @@
               billing_postcode: paymentForm.zipcode,
               billing_email: paymentForm.email,
               billing_phone: this.dialCode + phoneNumber,
+              credit_card_bin: cardNumber.substr(0, 6),
+              credit_card_expiration_month: paymentForm.cardDate.split('/')[0],
+              credit_card_expiration_year: paymentForm.cardDate.split('/')[1],
+              cvv_code: paymentForm.cvv,
             };
 
-            if (paymentForm.paymentProvider === 'credit-card') {
-              data = {
-                ...data,
-                credit_card_bin: cardNumber.substr(0, 6),
-                credit_card_hash: window.sha256(cardNumber),
-                credit_card_expiration_month: paymentForm.cardDate.split('/')[0],
-                credit_card_expiration_year: paymentForm.cardDate.split('/')[1],
-                cvv_code: paymentForm.cvv,
-              };
+            if (window.sha256) {
+              data.credit_card_hash = sha256(cardNumber);
             }
 
             return ipqsCheck(data);
