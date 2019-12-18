@@ -167,13 +167,14 @@ class PaymentsController extends Controller
     public function checkoutDotComFailedWebhook(Request $req): void
     {
         $order_number = $req->input('data.reference', '');
+        $hash = $req->input('data.id');
 
-        if (!$order_number) {
+        if (!$order_number || !$hash) {
             logger()->error('checkout.com malformed failed webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new \Exception('checkout.com malformed failed webhook');
         }
 
-        $checkout = $this->paymentService->getCheckoutService($order_number);
+        $checkout = $this->paymentService->getCheckoutService($order_number, $hash);
 
         $reply = $checkout->validateFailedWebhook($req);
 
