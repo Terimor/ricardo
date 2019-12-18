@@ -13,19 +13,26 @@
 
   // GET params
   var js_query_params = location.search
-    .substr(1).split('&').filter(item => !!item).map(item => item.split('='))
-    .reduce((acc, item) => {
+    .substr(1)
+    .split('&')
+    .filter(function(item) {
+      return !!item;
+    })
+    .map(function(item) {
+      return item.split('=');
+    })
+    .reduce(function(acc, item) {
       acc[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
       return acc;
     }, {});
 
 
   // GET params to JS variables
-  for (let key of Object.keys(js_query_params)) {
+  Object.keys(js_query_params).forEach(function(key) {
     if (window[key + 'js'] === undefined) {
       window[key + 'js'] = js_query_params[key];
     }
-  }
+  });
 
   // affiliate variables
   var aff_idjs = affidjs = window.aff_idjs || window.affidjs || 0;

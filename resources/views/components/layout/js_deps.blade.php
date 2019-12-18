@@ -64,7 +64,7 @@
       }
     },
 
-    show(names) {
+    show: function(names) {
       js_deps.wait(names, function() {
         document.documentElement.classList.remove('hidden');
       });
