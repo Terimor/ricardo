@@ -140,13 +140,14 @@ class PaymentsController extends Controller
     public function checkoutDotComCapturedWebhook(Request $req)
     {
         $order_number = $req->input('data.reference');
+        $hash = $req->input('data.id');
 
-        if (!$order_number) {
+        if (!$order_number || !$hash) {
             logger()->error('checkout.com malformed captured webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new \Exception('checkout.com malformed captured webhook');
         }
 
-        $checkout = $this->paymentService->getCheckoutService($order_number);
+        $checkout = $this->paymentService->getCheckoutService($order_number, $hash);
 
         $reply = $checkout->validateCapturedWebhook($req);
 

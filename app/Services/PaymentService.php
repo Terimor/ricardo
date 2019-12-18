@@ -1101,9 +1101,10 @@ class PaymentService
     /**
      * Returns CheckoutDotComService by order number
      * @param  string $number
+     * @param  string $hash
      * @return CheckoutDotComService
      */
-    public function getCheckoutService(string $number): CheckoutDotComService
+    public function getCheckoutService(string $number, string $hash): CheckoutDotComService
     {
         $order = OdinOrder::getByNumber($number); //throwable
         $txn = $order->getTxnByHash($hash, false);
