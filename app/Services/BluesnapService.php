@@ -166,14 +166,6 @@ class BluesnapService
      */
     private function pay(array $source, array $details): array
     {
-        $api = $this->getPaymentApi($details);
-
-        $client = new GuzzHttpCli([
-            'base_uri' => $this->endpoint,
-            'auth' => [$api->login, $api->password],
-            'headers' => ['Accept'  => 'application/json']
-        ]);
-
         $result = [
             'fee_usd'           => 0,
             'is_flagged'        => false,
@@ -182,10 +174,25 @@ class BluesnapService
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::BLUESNAP,
             'hash'              => "fail_" . UtilsService::randomString(16),
+            'payment_api_id'    => null,
             'payer_id'          => null,
             'provider_data'     => null,
             'errors'            => null
         ];
+
+        $api = $this->getPaymentApi($details);
+        if (empty($api)) {
+            logger()->error("Ebanx PaymentApi not found [{$details['number']}]");
+            return $result;
+        }
+
+        $result['payment_api_id'] = (string)$api->getIdAttribute();
+
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'auth' => [$api->login, $api->password],
+            'headers' => ['Accept'  => 'application/json']
+        ]);
 
         try {
             $res = $client->post('transactions', [

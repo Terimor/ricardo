@@ -58,6 +58,11 @@ class CheckoutDotComService
     private $env = self::ENV_LIVE;
 
     /**
+     * @var \App\Models\PaymentApi
+     */
+    private $api;
+
+    /**
      * @var CheckoutApi
      */
     private $checkout;
@@ -74,11 +79,11 @@ class CheckoutDotComService
             logger()->error("Checkoutcom configuration needs to check");
         }
 
-        $api = $this->getPaymentApi($details);
+        $this->api = $this->getPaymentApi($details);
 
         $this->env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
 
-        $this->checkout = new CheckoutApi($api->key, $this->env === self::ENV_SANDBOX);
+        $this->checkout = new CheckoutApi($this->api->key, $this->env === self::ENV_SANDBOX);
     }
 
     /**
@@ -300,6 +305,7 @@ class CheckoutDotComService
             'value'             => $order_details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::CHECKOUTCOM,
+            'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'hash'              => "fail_" . UtilsService::randomString(16),
             'payer_id'          => null,
             'provider_data'     => null,

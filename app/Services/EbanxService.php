@@ -329,6 +329,7 @@ class EbanxService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::EBANX,
+            'payment_api_id'    => null,
             'hash'              => "fail_" . UtilsService::randomString(16),
             'payer_id'          => null,
             'provider_data'     => null,
@@ -342,6 +343,8 @@ class EbanxService
             logger()->error("Ebanx PaymentApi not found [{$details['number']}]");
             return $result;
         }
+
+        $result['payment_api_id'] = (string)$api->getIdAttribute();
 
         $config = new Config([
             'integrationKey'        => $api->key,
