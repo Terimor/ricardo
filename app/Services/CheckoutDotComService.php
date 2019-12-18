@@ -125,7 +125,7 @@ class CheckoutDotComService
         try {
             $res = $client->request('GET', "payments/{$payment_id}", [
                 'headers' => [
-                    'Authorization' => $this->checkout->configuration->getSecretKey(),
+                    'Authorization' => $this->checkout->configuration()->getSecretKey(),
                     'Content-Type'  => 'application/json'
                 ]
             ]);
@@ -368,7 +368,7 @@ class CheckoutDotComService
      */
     private function validateWebhook($data): bool
     {
-        $sign = hash_hmac('sha256', $data['content'], $this->checkout->configuration->getSecretKey());
+        $sign = hash_hmac('sha256', $data['content'], $this->checkout->configuration()->getSecretKey());
         if ($data['sign'] === $sign) {
             return true;
         }
