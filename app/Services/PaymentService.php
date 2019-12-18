@@ -489,7 +489,7 @@ class PaymentService
                 'descriptor'    => $order->billing_descriptor
             ]);
         }
-        $card_number = isset($card['number']) ? \Utils::prepareCardNumber((string)$card['number']) : null;        
+        $card_number = isset($card['number']) ? \Utils::prepareCardNumber((string)$card['number']) : null;
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
 
         $order_product['txn_hash'] = $payment['hash'];
@@ -875,7 +875,7 @@ class PaymentService
 
         // check webhook reply
         if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
-            logger()->info("Webhook ignored, order status [{$order->status}]");
+            logger()->info("Webhook ignored, order [{$order->number}] status [{$order->status}]");
             return $order;
         }
 
