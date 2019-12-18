@@ -372,7 +372,7 @@ class OdinOrder extends OdinModel
             return $v['is_main'] === true;
         });
         if (empty($product) && $throwable) {
-            throw new ProductNotFoundException("Order main product not found, order [{$this->getIdAttribute()}]");
+            throw new ProductNotFoundException("Order main product not found, order [{$this->number}]");
         }
         return $product;
     }
@@ -389,7 +389,7 @@ class OdinOrder extends OdinModel
             return $v['txn_hash'] === $hash;
         });
         if (empty($product) && $throwable) {
-            throw new ProductNotFoundException("Order product [{$hash}] not found, order [{$this->getIdAttribute()}]");
+            throw new ProductNotFoundException("Order product [{$hash}] not found, order [{$this->number}]");
         }
         return $product;
     }
@@ -418,7 +418,7 @@ class OdinOrder extends OdinModel
             return $v['hash'] === $hash;
         });
         if (empty($txn) && $throwable) {
-            throw new TxnNotFoundException("Order txn [{$hash}] not found, order [{$this->getIdAttribute()}]");
+            throw new TxnNotFoundException("Order txn [{$hash}] not found, order [{$this->number}]");
         }
         return $txn;
     }

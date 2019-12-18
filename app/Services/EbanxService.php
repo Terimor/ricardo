@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Setting;
 use App\Models\Currency;
+use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Mappers\EbanxCodeMapper;
 use App\Constants\PaymentMethods;
@@ -28,6 +29,8 @@ use Ebanx\Benjamin\Services\Http\Client as EbanxClient;
  */
 class EbanxService
 {
+    use \App\Services\ProviderServiceTrait;
+
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
@@ -59,16 +62,6 @@ class EbanxService
     /**
      * @var string
      */
-    private $integration_key;
-
-    /**
-     * @var string
-     */
-    private $sandbox_integration_key;
-
-    /**
-     * @var string
-     */
     private $environment = self::ENV_LIVE;
 
     /**
@@ -76,17 +69,14 @@ class EbanxService
      */
     public function __construct()
     {
-        $integration_key = Setting::getValue('ebanx_integration_key');
-        $sandbox_integration_key = Setting::getValue('ebanx_sandbox_integration_key', null);
-        $environment = Setting::getValue('ebanx_api_environment', self::ENV_LIVE);
+        $keys = PaymentApi::getAllByProvider(PaymentProviders::EBANX);
 
-        if (!$integration_key) {
-            logger()->error("Ebanx integration_key not found");
+        if (empty($keys)) {
+            logger()->error("Ebanx configuration needs to check");
         }
 
-        $this->integration_key = $integration_key;
-        $this->sandbox_integration_key = $sandbox_integration_key;
-        $this->environment = $environment;
+        $this->keys = $keys;
+        $this->environment = Setting::getValue('ebanx_api_environment', self::ENV_LIVE);
     }
 
     /**
@@ -221,17 +211,24 @@ class EbanxService
     /**
      * Returns payment status info by hash
      * @param  string $hash
+     * @param  array  $details ['payment_api_id'=>string]
      * @return array|null
      */
-    public function requestStatusByHash(string $hash): ?array
+    public function requestStatusByHash(string $hash, array $details): ?array
     {
-        $config = new Config([
-            'integrationKey'        => $this->integration_key,
-            'sandboxIntegrationKey' => $this->sandbox_integration_key,
-            'isSandbox'             => $this->environment !== self::ENV_LIVE
-        ]);
+        $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
 
-        $result = null;
+        $api = $this->getPaymentApi($details);
+        if (empty($api)) {
+            logger()->error("Ebanx PaymentApi not found");
+            return $result;
+        }
+
+        $config = new Config([
+            'integrationKey'        => $api->key,
+            'sandboxIntegrationKey' => $this->environment !== self::ENV_LIVE ? $api->key : null,
+            'isSandbox'             => $this->environment !== self::ENV_LIVE,
+        ]);
 
         try {
             $res = EBANX($config)->paymentInfo()->findByHash($hash);
@@ -240,7 +237,7 @@ class EbanxService
 
             if ($res['status'] === self::STATUS_OK) {
                 $result['number']   = $res['payment']['order_number'];
-                $result['currency'] = $res['payment']['currency_ext'];                
+                $result['currency'] = $res['payment']['currency_ext'];
                 $result['value']    = $res['payment']['amount_ext'];
                 $result['status']   = self::mapPaymentStatus($res['payment']['status'], true);
             } else {
@@ -257,17 +254,25 @@ class EbanxService
      * @param  array   $card
      * @param  array   $contact
      * @param  array   $items
-     * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
+     * @param  array   $details
+     * [
+     *   'currency'=>string,
+     *   'amount'=>float,
+     *   'number'=>string,
+     *   'installments'=>int,
+     *   'payment_api_id'=>?string,
+     *   'product_id'=>?string
+     * ]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $items, array $order_details): array
+    public function payByCard(array $card, array $contact, array $items, array $details): array
     {
         return $this->pay(
             self::createCardSource($card, $contact),
             self::createAddress($contact),
             self::createPerson($contact),
             array_map(function($item) { return self::createItem($item); }, $items),
-            $order_details
+            $details
         );
     }
 
@@ -276,17 +281,25 @@ class EbanxService
      * @param  array   $token
      * @param  array   $contact
      * @param  array   $items
-     * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
+     * @param  array   $details
+     * [
+     *   'currency'=>string,
+     *   'amount'=>float,
+     *   'number'=>string,
+     *   'installments'=>int,
+     *   'payment_api_id'=>?string,
+     *   'product_id'=>?string
+     * ]
      * @return array
      */
-    public function payByToken(string $token, array $contact, array $items, array $order_details): array
+    public function payByToken(string $token, array $contact, array $items, array $details): array
     {
         return $this->pay(
             self::createTokenSource($token),
             self::createAddress($contact),
             self::createPerson($contact),
             array_map(function($item) { return self::createItem($item); }, $items),
-            $order_details
+            $details
         );
     }
 
@@ -296,36 +309,24 @@ class EbanxService
      * @param  Address $address
      * @param  Person  $person
      * @param  array   $items Item[]
-     * @param  array   $order_details ['currency'=>string,'amount'=>float,'number'=>string,'installments'=>int]
+     * @param  array   $details
+     * [
+     *   'currency'=>string,
+     *   'amount'=>float,
+     *   'number'=>string,
+     *   'installments'=>int,
+     *   'payment_api_id'=>?string,
+     *   'product_id'=>?string
+     * ]
      * @return array
      */
-    private function pay(Card $source, Address $address, Person $person, array $items, array $order_details): array
+    private function pay(Card $source, Address $address, Person $person, array $items, array $details): array
     {
-        $config = new Config([
-            'integrationKey'        => $this->integration_key,
-            'sandboxIntegrationKey' => $this->sandbox_integration_key,
-            'isSandbox'             => $this->environment !== self::ENV_LIVE,
-            'baseCurrency'          => $order_details['currency']
-        ]);
-
-        $installments = !empty($order_details['installments']) ? $order_details['installments'] : self::INSTALLMENTS_MIN;
-        $payment = new Payment([
-            'address'               => $address,
-            'amountTotal'           => $order_details['amount'],
-            'card'                  => $source,
-            'instalments'           => $installments,
-            'merchantPaymentCode'   => \uniqid(),
-            'orderNumber'           => $order_details['number'],
-            'person'                => $person,
-            'items'                 => $items,
-            'type'                  => PaymentMethods::CREDITCARD
-        ]);
-
         $result = [
             'fee_usd'           => 0,
             'is_flagged'        => false,
-            'currency'          => $order_details['currency'],
-            'value'             => $order_details['amount'],
+            'currency'          => $details['currency'],
+            'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::EBANX,
             'hash'              => "fail_" . UtilsService::randomString(16),
@@ -336,6 +337,32 @@ class EbanxService
             'token'             => null
         ];
 
+        $api = $this->getPaymentApi($details);
+        if (empty($api)) {
+            logger()->error("Ebanx PaymentApi not found [{$details['number']}]");
+            return $result;
+        }
+
+        $config = new Config([
+            'integrationKey'        => $api->key,
+            'sandboxIntegrationKey' => $this->environment !== self::ENV_LIVE ? $api->key : null,
+            'isSandbox'             => $this->environment !== self::ENV_LIVE,
+            'baseCurrency'          => $details['currency']
+        ]);
+
+        $installments = !empty($details['installments']) ? $details['installments'] : self::INSTALLMENTS_MIN;
+        $payment = new Payment([
+            'address'               => $address,
+            'amountTotal'           => $details['amount'],
+            'card'                  => $source,
+            'instalments'           => $installments,
+            'merchantPaymentCode'   => \uniqid(),
+            'orderNumber'           => $details['number'],
+            'person'                => $person,
+            'items'                 => $items,
+            'type'                  => PaymentMethods::CREDITCARD
+        ]);
+
         try {
             $res = EBANX($config, new CreditCardConfig())->create($payment);
 
@@ -343,7 +370,7 @@ class EbanxService
             if ($res['status'] === self::STATUS_OK) {
                 $result['hash']             = $res['payment']['hash'];
                 $result['currency']         = $res['payment']['currency_ext'];
-                $result['value']            = $res['payment']['amount_ext'];                
+                $result['value']            = $res['payment']['amount_ext'];
                 $result['status']           = self::mapPaymentStatus($res['payment']['status']);
                 $result['is_flagged']       = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING ? true : false;
                 $result['token']            = $res['payment']['token'] ?? null;
@@ -397,9 +424,15 @@ class EbanxService
 
         $url = $this->environment === static::ENV_LIVE ? EbanxClient::LIVE_URL : EbanxClient::SANDBOX_URL;
 
+        $api = $this->getPaymentApi([]);
+        if (empty($api)) {
+            logger()->error("Ebanx PaymentApi not found");
+            return [];
+        }
+
         $request = $client->request('POST', $url.'ws/zipcode', [
             'form_params' => [
-                'integration_key' => $this->integration_key,
+                'integration_key' => $api->key,
                 'zipcode' => $zipcode,
             ]
         ]);

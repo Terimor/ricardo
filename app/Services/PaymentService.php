@@ -255,8 +255,8 @@ class PaymentService
         $result = false;
         if ($txn['status'] === Txn::STATUS_AUTHORIZED) {
             if ($txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
-                $checkoutService = new CheckoutDotComService();
-                $result = $checkoutService->capture($txn_hash);
+                $checkout = new CheckoutDotComService($txn);
+                $result = $checkout->capture($txn_hash);
 
                 if ($result) {
                     $txn['status'] = Txn::STATUS_CAPTURED;
@@ -287,8 +287,8 @@ class PaymentService
         $result = false;
         if ($txn['status'] === Txn::STATUS_AUTHORIZED) {
             if ($txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
-                $checkoutService = new CheckoutDotComService();
-                $result = $checkoutService->void($txn_hash);
+                $checkout = new CheckoutDotComService($txn);
+                $result = $checkout->void($txn_hash);
 
                 if ($result) {
                     $txn['status'] = Txn::STATUS_FAILED;
@@ -442,12 +442,13 @@ class PaymentService
                     'amount'        => $order->total_price,
                     'currency'      => $order->currency,
                     'number'        => $order->number,
-                    'installments'  => $installments
+                    'installments'  => $installments,
+                    'product_id'    => $product->getIdAttribute()
                 ]
             );
         } elseif ($provider === PaymentProviders::CHECKOUTCOM) {
-            $checkoutService = new CheckoutDotComService();
-            $payment = $checkoutService->payByCard($card, $contact, [
+            $checkout = new CheckoutDotComService(['product_id' => $product->getIdAttribute()]);
+            $payment = $checkout->payByCard($card, $contact, [
                 'amount'    => $order->total_price,
                 'currency'  => $order->currency,
                 'id'        => $order->getIdAttribute(),
@@ -458,7 +459,7 @@ class PaymentService
                 'billing_descriptor'   => ['name' => $order->billing_descriptor, 'city' => 'Msida']
             ]);
             if ($payment['status'] !== Txn::STATUS_FAILED) {
-                $payment['token'] = $checkoutService->requestToken($card, $contact);
+                $payment['token'] = $checkout->requestToken($card, $contact);
             }
         } else if ($provider === PaymentProviders::BLUESNAP) {
             $bluesnap = new BluesnapService();
@@ -469,7 +470,8 @@ class PaymentService
                     'amount'        => $order->total_price,
                     'currency'      => $order->currency,
                     'number'        => $order->number,
-                    'billing_descriptor'   => $order->billing_descriptor
+                    'billing_descriptor'   => $order->billing_descriptor,
+                    'product_id'    => $product->getIdAttribute()
                 ]
             );
         } else if ($provider === PaymentProviders::MINTE) {
@@ -641,11 +643,12 @@ class PaymentService
                             'amount'        => $checkout_price,
                             'currency'      => $order->currency,
                             'number'        => $order->number,
-                            'installments'  => $order->installments
+                            'installments'  => $order->installments,
+                            'payment_api_id' => $order_main_txn['payment_api_id']
                         ]
                     );
                 } elseif ($order_main_txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
-                    $checkout = new CheckoutDotComService();
+                    $checkout = new CheckoutDotComService($order_main_txn);
                     $payment = $checkout->payByToken(
                         $card_token,
                         ['payer_id' => $order_main_txn['payer_id'], 'ip' => $order->ip],
@@ -695,7 +698,8 @@ class PaymentService
                         [
                             'amount'    => $checkout_price,
                             'currency'  => $order->currency,
-                            'billing_descriptor' => $order->billing_descriptor
+                            'billing_descriptor' => $order->billing_descriptor,
+                            'payment_api_id' => $order_main_txn['payment_api_id']
                         ]
                     );
                 }
@@ -807,7 +811,8 @@ class PaymentService
                         'amount'        => $order->total_price,
                         'currency'      => $order->currency,
                         'number'        => $order->number,
-                        'billing_descriptor'   => $order->billing_descriptor
+                        'billing_descriptor'   => $order->billing_descriptor,
+                        'payment_api_id' => $details['payment_api_id'] ?? null
                     ]
                 );
                 break;
@@ -898,7 +903,7 @@ class PaymentService
 
             $total = collect($order->txns)->reduce(function ($carry, $item) {
                 if ($item['status'] === Txn::STATUS_APPROVED) {
-                    $carry['value'] += $item['value'];                    
+                    $carry['value'] += $item['value'];
                 }
                 return $carry;
             }, ['value' => 0]);
@@ -1060,6 +1065,49 @@ class PaymentService
         }
 
         return $result;
+    }
+
+    /**
+     * Approves order by ebanx hashes
+     * @param  array  $hashes
+     * @return void
+     */
+    public function ebanxNotification(array $hashes): void
+    {
+        $ebanx = new EbanxService();
+        foreach ($hashes as $hash) {
+            $order = OdinOrder::getByTxnHash($hash, false);
+
+            if (!$order) {
+                logger()->warning('Order not found by hash', ['hash' => $hash]);
+                continue;
+            }
+
+            $txn = $order->getTxnByHash($hash, false);
+
+            $payment = $ebanx->requestStatusByHash($hash, $txn ?? []);
+
+            if (!empty($payment['number'])) {
+                $this->approveOrder($payment);
+
+
+
+            } else {
+                logger()->warning('Ebanx payment not found', ['hash' => $hash]);
+            }
+        }
+    }
+
+    /**
+     * Returns CheckoutDotComService by order number
+     * @param  string $number
+     * @return CheckoutDotComService
+     */
+    public function getCheckoutService(string $number): CheckoutDotComService
+    {
+        $order = OdinOrder::getByNumber($number); //throwable
+        $txn = $order->getTxnByHash($hash, false);
+        return new CheckoutDotComService($txn ?? []);
     }
 
     /**

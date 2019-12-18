@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Services\PaymentService;
 use App\Mappers\CheckoutDotComCodeMapper;
@@ -29,6 +30,8 @@ use GuzzleHttp\Exception\RequestException as GuzzReqException;
  */
 class CheckoutDotComService
 {
+    use \App\Services\ProviderServiceTrait;
+
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
@@ -42,29 +45,12 @@ class CheckoutDotComService
     const SUCCESS_CODE          = '10000';
     const SUCCESS_FLAGGED_CODE  = '10100';
 
-    const TYPE_WEBHOOK_CAPTURED = 'payment_captured';
-
     const REPORTING_API_URL = 'https://api.checkout.com/reporting/';
 
     /**
      * @var array
      */
     private static $fallback_codes = ['20005','20024','20031','20046','200N0','200T3','20105'];
-
-    /**
-     * @var string
-     */
-    private $secret_key;
-
-    /**
-     * @var string
-     */
-    private $webhook_secret_keys = [];
-
-    /**
-     * @var string
-     */
-    private $public_key;
 
     /**
      * @var string
@@ -78,34 +64,21 @@ class CheckoutDotComService
 
     /**
      * CheckoutDotComService constructor
+     * @param array $details ['product_id'=>?string,'payment_api_id'=>?string]
      */
-    public function __construct()
+    public function __construct(array $details = [])
     {
-        $this->secret_key = Setting::getValue('checkout_dot_com_secret_key');
+        $this->keys = PaymentApi::getAllByProvider(PaymentProviders::CHECKOUTCOM);
 
-        if (!$this->secret_key) {
-            logger()->error("Checkout.com secret_key not found");
+        if (empty($this->keys)) {
+            logger()->error("Checkoutcom configuration needs to check");
         }
 
-        $this->public_key = Setting::getValue('checkout_dot_com_public_key');
+        $api = $this->getPaymentApi($details);
 
-        if (!$this->public_key) {
-            logger()->error("Checkout.com public_key not found");
-        }
+        $this->env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
 
-        $webhook_secret_key = Setting::getValue('cdc_webhook_secret');
-        $this->webhook_secret_keys[self::TYPE_WEBHOOK_CAPTURED] = $webhook_secret_key;
-
-        if (!$webhook_secret_key) {
-            logger()->error("cdc_webhook_secret not found");
-        }
-
-        $env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
-
-        $this->env = $env;
-
-        $this->checkout = new CheckoutApi($this->secret_key, $env === self::ENV_SANDBOX);
-        $this->checkout->configuration()->setPublicKey($this->public_key);
+        $this->checkout = new CheckoutApi($api->key, $this->env === self::ENV_SANDBOX);
     }
 
     /**
@@ -152,7 +125,7 @@ class CheckoutDotComService
         try {
             $res = $client->request('GET', "payments/{$payment_id}", [
                 'headers' => [
-                    'Authorization' => $this->secret_key,
+                    'Authorization' => $this->checkout->configuration->getSecretKey(),
                     'Content-Type'  => 'application/json'
                 ]
             ]);
@@ -391,19 +364,11 @@ class CheckoutDotComService
     /**
      * Validates webhook
      * @param array $data =['secret' => string, 'sign' => string, 'content' => string]
-     * @param string $type
      * @return boolean
      */
-    private function validateWebhook($data, $type = null): bool
+    private function validateWebhook($data): bool
     {
-        if ($type) {
-            $webhook_secret_key = $this->webhook_secret_keys[$type] ?? '';
-            if ($data['secret'] !== $webhook_secret_key) {
-                return false;
-            }
-        }
-
-        $sign = hash_hmac('sha256', $data['content'], $this->secret_key);
+        $sign = hash_hmac('sha256', $data['content'], $this->checkout->configuration->getSecretKey());
         if ($data['sign'] === $sign) {
             return true;
         }
@@ -420,12 +385,11 @@ class CheckoutDotComService
         $secret = $req->header('authorization');
         $sign = $req->header('cko-signature');
         $content = $req->getContent();
-        $type = $req->get('type') ?? self::TYPE_WEBHOOK_CAPTURED;
         $data = $req->get('data') ?? [];
 
         $result = ['status' => false];
 
-        $is_valid = $this->validateWebhook(['secret' => $secret, 'sign' => $sign, 'content' => $content], $type);
+        $is_valid = $this->validateWebhook(['secret' => $secret, 'sign' => $sign, 'content' => $content]);
 
         if ($is_valid && !empty($data)) {
             $result = [

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\BluesnapService;
-use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
@@ -112,7 +111,8 @@ class PaymentsController extends Controller
      */
     public function bluesnapWebhook(Request $req): string
     {
-        $type = $req->input('transactionType');
+        $authKey = $req->input('authKey', '');
+        $type    = $req->input('transactionType');
 
         if (!in_array($type, [BluesnapService::TYPE_WEBHOOK_CHARGE, BluesnapService::TYPE_WEBHOOK_DECLINE])) {
             logger()->info('Bluesnap unprocessed webhook', ['content' => $req->getContent()]);
@@ -126,9 +126,10 @@ class PaymentsController extends Controller
             throw new AuthException('Unauthorized');
         }
 
-        $this->paymentService->approveOrder($reply['txn']);
+        $order = $this->paymentService->approveOrder($reply['txn']);
+        $order_txn = $order->getTxnByHash($reply['txn']['hash']);
 
-        return $reply['result'];
+        return md5($authKey . 'ok' . $bluesnap->getDataProtectionKey($order_txn));
     }
 
     /**
@@ -138,8 +139,16 @@ class PaymentsController extends Controller
      */
     public function checkoutDotComCapturedWebhook(Request $req)
     {
-        $checkoutService = new CheckoutDotComService();
-        $reply = $checkoutService->validateCapturedWebhook($req);
+        $order_number = $req->input('data.reference');
+
+        if (!$order_number) {
+            logger()->error('checkout.com malformed captured webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            throw new \Exception('checkout.com malformed captured webhook');
+        }
+
+        $checkout = $this->paymentService->getCheckoutService($order_number);
+
+        $reply = $checkout->validateCapturedWebhook($req);
 
         if (!$reply['status']) {
             logger()->error('checkout.com unauthorized captured webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
@@ -156,12 +165,20 @@ class PaymentsController extends Controller
      */
     public function checkoutDotComFailedWebhook(Request $req): void
     {
-        $checkoutService = new CheckoutDotComService();
-        $reply = $checkoutService->validateFailedWebhook($req);
+        $order_number = $req->input('data.reference', '');
+
+        if (!$order_number) {
+            logger()->error('checkout.com malformed failed webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            throw new \Exception('checkout.com malformed failed webhook');
+        }
+
+        $checkout = $this->paymentService->getCheckoutService($order_number);
+
+        $reply = $checkout->validateFailedWebhook($req);
 
         if (!$reply['status']) {
             logger()->error('checkout.com unauthorized failed webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
-            throw new AuthException('checkout.com captured webhook unauthorized');
+            throw new AuthException('checkout.com failed webhook unauthorized');
         }
 
         $this->paymentService->rejectTxn($reply['txn']);
@@ -184,14 +201,7 @@ class PaymentsController extends Controller
             throw new AuthException('Notification unauthorized');
         }
 
-        foreach ($reply['hashes'] as $hash) {
-            $payment = $ebanxService->requestStatusByHash($hash);
-            if (!empty($payment['number'])) {
-                $this->paymentService->approveOrder($payment);
-            } else {
-                logger()->warning('Ebanx payment not found', ['hash' => $hash]);
-            }
-        }
+        $this->paymentService->ebanxNotification($reply['hashes']);
     }
 
     /**

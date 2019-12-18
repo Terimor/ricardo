@@ -7,11 +7,16 @@ use App\Models\PaymentApi;
 trait ProviderServiceTrait {
 
     /**
+     * @var \Illuminate\Database\Eloquent\Collection
+     */
+    private $keys = [];
+
+    /**
      * Setup PaymentApi
      * @param  array $attrs ['product_id'=>string,'payment_api_id'=>string]
      * @return PaymentApi|null
      */
-    public function getPaymentApi(array $attrs): ?PaymentApi
+    public function getPaymentApi(array $attrs = []): ?PaymentApi
     {
         $default = collect($this->keys)->first(function($v, $k) {
             return empty($v->product_ids);
