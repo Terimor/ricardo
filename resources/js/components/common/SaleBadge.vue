@@ -41,7 +41,7 @@
 
       styleFontSize() {
         return {
-          'font-size': (this.fontSizes[checkoutData.langCode] || 12) + 'px',
+          'font-size': (this.fontSizes[js_data.lang_code] || 12) + 'px',
         };
       },
 

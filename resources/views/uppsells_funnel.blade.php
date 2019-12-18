@@ -10,6 +10,18 @@
 @endsection
 
 
+@section('js_data')
+
+  <script type="text/javascript">
+    js_data.i18n.phrases = @json($loadedPhrases);
+    js_data.country_code = @json($countryCode);
+    js_data.order_customer = @json($orderCustomer);
+    js_data.product = @json($product);
+  </script>
+
+@endsection
+
+
 @section('js_deps')
 
   <script type="text/javascript">
@@ -50,19 +62,14 @@
 @endsection
 
 
-@section('script')
-<script>
-    var upsellsData = {
-      product: @json($product),
-      orderCustomer: @json($orderCustomer),
-      countryCode: '{{ $countryCode }}'
-    }
+@section('scripts')
 
-    var loadedPhrases = @json($loadedPhrases);
-</script>
+  <script
+    src="{{ mix_cdn('assets/js/app.js') }}"
+    defer></script>
 
-<script src="{{ mix_cdn('assets/js/app.js') }}" defer></script>
 @endsection
+
 
 @section('content')
     <div class="container upsells">

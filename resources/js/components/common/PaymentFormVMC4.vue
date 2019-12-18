@@ -302,14 +302,14 @@
 						cardNumber: null,
 						cardDate: null,
 						cvv: null,
-						country: checkoutData.countryCode,
+						country: js_data.country_code,
 						city: null,
 						state: null,
 						zipCode: null,
             terms: null,
 					},
-					countryCodePhoneField: checkoutData.countryCode,
-          country: checkoutData.countryCode,
+					countryCodePhoneField: js_data.country_code,
+          country: js_data.country_code,
 					paymentProvider: null,
 				},
 			}
@@ -440,7 +440,7 @@
               return this.ipqsResult;
             }
 
-            const data = {
+            let data = {
               order_amount: this.getOrderAmount(this.vmc4Form.deal, this.vmc4Form.isWarrantyChecked),
               billing_first_name: this.form.stepTwo.fname,
               billing_last_name: this.form.stepTwo.lname,
@@ -451,11 +451,14 @@
               billing_email: this.form.stepTwo.email,
               billing_phone: this.dialCode + phoneNumber,
               credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_hash: window.sha256(cardNumber),
               credit_card_expiration_month: this.form.stepThree.cardDate.split('/')[0],
               credit_card_expiration_year: this.form.stepThree.cardDate.split('/')[1],
               cvv_code: this.form.stepThree.cvv,
             };
+
+            if (window.sha256) {
+              data.credit_card_hash = sha256(cardNumber);
+            }
 
             return ipqsCheck(data);
           })
@@ -563,7 +566,7 @@
       },
       paypalCreateOrder() {
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
-          ? checkoutData.product.prices.currency
+          ? js_data.product.prices.currency
           : js_query_params.cur;
 
         this.setDataToLocalStorage({

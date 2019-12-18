@@ -14,10 +14,7 @@
         computed: {
 
             product() {
-                return (window.checkoutData && checkoutData.product) ||
-                    (window.upsellsData && upsellsData.product) ||
-                    (window.upsells && upsells.product) ||
-                    null;
+                return js_data.product || null;
             },
 
             productImage() {

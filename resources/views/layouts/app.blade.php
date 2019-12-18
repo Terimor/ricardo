@@ -23,6 +23,9 @@
     @include('components.layout.js_deps')
     @yield('js_deps')
 
+    <!-- Redirects -->
+    @include('components.3ds_redirect')
+
     <!-- Async Fonts -->
     @include('components.fonts.lato')
     @include('components.fonts.awesome4')
@@ -47,10 +50,7 @@
     @include('components.scripts.vue', ['defer' => true])
     @include('components.scripts.element')
     @include('components.scripts.static')
-    @yield('script')
-
-    <!-- Redirects -->
-    @include('components.3ds_redirect')
+    @yield('scripts')
 
     {{--Do not remove this empty style tag--}}
     <style></style>

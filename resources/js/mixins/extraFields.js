@@ -32,8 +32,8 @@ export const appMixin = {
 
   data() {
     return {
-      paymentMethods: window.checkoutData && checkoutData.paymentMethods
-        ? JSON.parse(JSON.stringify(checkoutData.paymentMethods))
+      paymentMethods: js_data.payment_methods
+        ? JSON.parse(JSON.stringify(js_data.payment_methods))
         : {},
     };
   },

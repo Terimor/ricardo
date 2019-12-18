@@ -13,7 +13,7 @@
                             </div>
                             <p class="main__deal__text" v-html="textMainDealText"></p>
                         </div>
-                        <h2><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
+                        <h2 class="step1-title"><span v-html="textStep"></span> 1: <span v-html="textChooseDeal"></span></h2>
 
                         <Installments
                           popperClass="emc1-popover-variant"
@@ -265,9 +265,9 @@
         cart: {},
         form: {
           isWarrantyChecked: false,
-          countryCodePhoneField: checkoutData.countryCode,
+          countryCodePhoneField: js_data.country_code,
           deal: null,
-          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
+          variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
           paymentProvider: null,
           fname: null,
           lname: null,
@@ -277,7 +277,7 @@
           city: null,
           state: null,
           zipcode: null,
-          country: checkoutData.countryCode,
+          country: js_data.country_code,
           cardHolder: null,
           cardNumber: null,
           cardDate: null,
@@ -325,7 +325,7 @@
         return this.variantList.length > 1 && (!js_query_params.variant || js_query_params.variant === '0');
       },
       productData () {
-        return checkoutData.product
+        return js_data.product
       },
       isEmptyCart () {
         return Object.values(this.cart).every(it => it === 0)
@@ -348,10 +348,10 @@
         }))
       },
       productImagesList() {
-        const variant = this.form.variant || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const variant = this.form.variant || (js_data.product.skus[0] && js_data.product.skus[0].code) || null;
 
-        const skus = Array.isArray(checkoutData.product.skus)
-          ? checkoutData.product.skus
+        const skus = Array.isArray(js_data.product.skus)
+          ? js_data.product.skus
           : [];
 
         const product = skus.find(sku => variant === sku.code);
@@ -376,7 +376,7 @@
           imageUrl: it.quantity_image[1],
         }));
       },
-      textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + checkoutData.countryCode) }),
+      textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + js_data.country_code) }),
       textStep: () => t('checkout.step'),
       textChooseDeal: () => t('checkout.choose_deal'),
       textArtcile: () => t('checkout.article'),
@@ -431,7 +431,7 @@
       },
       paypalCreateOrder () {
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
-          ? checkoutData.product.prices.currency
+          ? js_data.product.prices.currency
           : js_query_params.cur;
 
         this.setDataToLocalStorage({
@@ -505,17 +505,17 @@
 
         switch(this.form.installments) {
           case 3:
-            oldValueText = checkoutData.product.prices[1].installments3_old_value_text;
-            valueText = checkoutData.product.prices[1].installments3_value_text;
+            oldValueText = js_data.product.prices[1].installments3_old_value_text;
+            valueText = js_data.product.prices[1].installments3_value_text;
             break;
           case 6:
-            oldValueText = checkoutData.product.prices[1].installments6_old_value_text;
-            valueText = checkoutData.product.prices[1].installments6_value_text;
+            oldValueText = js_data.product.prices[1].installments6_old_value_text;
+            valueText = js_data.product.prices[1].installments6_value_text;
             break;
           case 1:
           default:
-            oldValueText = checkoutData.product.prices[1].old_value_text;
-            valueText = checkoutData.product.prices[1].value_text;
+            oldValueText = js_data.product.prices[1].old_value_text;
+            valueText = js_data.product.prices[1].value_text;
             break;
         }
 
@@ -533,15 +533,15 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const variant = (this.form && this.form.variant) || (js_data.product.skus[0] && js_data.product.skus[0].code) || null;
 
-        const skus = Array.isArray(checkoutData.product.skus)
-          ? checkoutData.product.skus
+        const skus = Array.isArray(js_data.product.skus)
+          ? js_data.product.skus
           : [];
 
         const skuVariant = skus.find(sku => variant === sku.code) || null;
 
-        const productImage = checkoutData.product.image[+(js_query_params.image || null) - 1] || checkoutData.product.image[0];
+        const productImage = js_data.product.image[+(js_query_params.image || null) - 1] || js_data.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;
@@ -648,6 +648,10 @@
 
       .offer {
         text-align: center;
+      }
+
+      .step1-title {
+        margin-top: 20px;
       }
 
       .step1-titles {

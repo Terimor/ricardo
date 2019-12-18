@@ -39,9 +39,9 @@ js_deps.wait(['vue', 'element'], () => {
         return {
             subOrder,
             selectedProductData,
-            productData: upsells.product,
+            productData: js_data.product,
             socialType: 'facebook',
-            orderCustomer: upsells.orderCustomer,
+            orderCustomer: js_data.order_customer,
             total: 0,
             sharingLinkList: {
                 facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,
@@ -80,15 +80,14 @@ js_deps.wait(['vue', 'element'], () => {
         },
 
         getEntityPrice(index) {
-            return upsells
-            && upsells.orderCustomer
-            && upsells.orderCustomer.productsText
-            && upsells.orderCustomer.productsText[index]
-            && upsells.orderCustomer.productsText[index].price_text;
+          return js_data.order_customer
+            && js_data.order_customer.productsText
+            && js_data.order_customer.productsText[index]
+            && js_data.order_customer.productsText[index].price_text;
         },
 
         saveOrderNumber() {
-            localStorage.setItem('order_number', upsells.orderCustomer.number)
+            localStorage.setItem('order_number', js_data.order_customer.number)
         }
     },
 
@@ -117,7 +116,7 @@ js_deps.wait(['vue', 'element'], () => {
                 shipping_state,
                 shipping_country,
                 shipping_zip,
-            } = upsells.orderCustomer;
+            } = js_data.order_customer;
 
             const data = {
                 shipping_city,

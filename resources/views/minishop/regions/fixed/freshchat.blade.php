@@ -1,4 +1,4 @@
-@if (isset($freshchat_token))
+@if (!empty($freshchat_token) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
 
   <img
     ref="freshchat_image"

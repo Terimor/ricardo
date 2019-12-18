@@ -1,4 +1,4 @@
-@if (isset($freshchat_token))
+@if (isset($freshchat_token) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
 
   <script
     src="https://wchat.freshchat.com/js/widget.js"

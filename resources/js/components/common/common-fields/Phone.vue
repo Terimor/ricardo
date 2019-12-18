@@ -50,7 +50,7 @@
       },
 
       countryCode() {
-        return checkoutData.countryCode;
+        return js_data.country_code;
       },
 
     },

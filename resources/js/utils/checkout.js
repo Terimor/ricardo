@@ -173,7 +173,7 @@ export function sendCheckoutRequest(data) {
   localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
 
   let url_search = '?cur=' + (!js_query_params.cur || js_query_params.cur === '{aff_currency}'
-    ? checkoutData.product.prices.currency
+    ? js_data.product.prices.currency
     : js_query_params.cur);
 
   if (localStorage.getItem('order_failed')) {
@@ -251,7 +251,7 @@ export function sendCheckoutRequest(data) {
 
 
 export function goToThankYou(order, cur) {
-  const url_pathname = checkoutData.product.upsells.length > 0
+  const url_pathname = js_data.product.upsells.length > 0
     ? '/thankyou-promos'
     : '/thankyou';
 

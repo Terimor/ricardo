@@ -187,7 +187,7 @@ class PayPalService
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
                 'status' =>  Txn::STATUS_CAPTURED,                
-                'fee' => null,
+                'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
                 'payer_id' => $txn_response['txn']->payer_id,
@@ -356,7 +356,7 @@ class PayPalService
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
                 'status' =>  Txn::STATUS_CAPTURED,                
-                'fee' => null,
+                'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
                 'payer_id' => $txn_response['txn']->payer_id,
@@ -433,7 +433,7 @@ class PayPalService
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
                 'status' => Txn::STATUS_CAPTURED,                
-                'fee' => null,
+                'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
                 'payer_id' => $txn_response['txn']->payer_id,
@@ -534,7 +534,7 @@ class PayPalService
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
                     'status' => Txn::STATUS_APPROVED,                    
-                    'fee' => (float)$fee,
+                    'fee_usd' => 0,
                     'payment_provider' => $txn_response['txn']->payment_provider,
                     'payment_method' => $txn_response['txn']->payment_method,
                     'payer_id' => $txn_response['txn']->payer_id,
@@ -563,11 +563,10 @@ class PayPalService
 
                 $total = collect($order->txns)->reduce(function ($carry, $item) {
                     if ($item['status'] === Txn::STATUS_APPROVED) {
-                        $carry['value'] += $item['value'];
-                        $carry['fee']   += $item['fee'];
+                        $carry['value'] += $item['value'];                        
                     }
                     return $carry;
-                }, ['value' => 0, 'fee' => 0]);
+                }, ['value' => 0]);
 
                 $order->total_paid = CurrencyService::roundValueByCurrencyRules($total['value'], $paypal_order_currency);
 
@@ -579,7 +578,8 @@ class PayPalService
                 }
 
                 $currency = CurrencyService::getCurrency($order->currency);
-                $order->txns_fee_usd += CurrencyService::roundValueByCurrencyRules($total['fee'] / $currency->usd_rate, self::DEFAULT_CURRENCY);
+                //$order->txns_fee_usd += CurrencyService::roundValueByCurrencyRules($total['fee_usd'] / $currency->usd_rate, self::DEFAULT_CURRENCY);
+                $order->txns_fee_usd = 0;
 
                 $order->status = $this->getOrderStatus($order);
                 $order->is_invoice_sent = false;
@@ -616,7 +616,8 @@ class PayPalService
             }
         }
         $currency = CurrencyService::getCurrency($order->currency);
-        $order->txns_fee_usd = CurrencyService::roundValueByCurrencyRules($total_fee / $currency->usd_rate, self::DEFAULT_CURRENCY);
+        //$order->txns_fee_usd = CurrencyService::roundValueByCurrencyRules($total_fee / $currency->usd_rate, self::DEFAULT_CURRENCY);
+        $order->txns_fee_usd = 0;
     }
 
     /**

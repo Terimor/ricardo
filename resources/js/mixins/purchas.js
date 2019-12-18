@@ -1,31 +1,31 @@
 export default {
   methods: {
     setDataToLocalStorage(data) {
-      const skus = Array.isArray(checkoutData.product.skus)
-          ? checkoutData.product.skus
+      const skus = Array.isArray(js_data.product.skus)
+          ? js_data.product.skus
           : [];
 
       const selectedProductData = {
         ...data,
         quantity: data.deal,
-        upsells: checkoutData.product.upsells,
-        prices: checkoutData.product.prices[data.deal],
-        product_name: checkoutData.product.product_name,
+        upsells: js_data.product.upsells,
+        prices: js_data.product.prices[data.deal],
+        product_name: js_data.product.product_name,
         image: skus.find(it => it.code === data.variant).quantity_image[1],
       };
 
       localStorage.setItem('selectedProductData', JSON.stringify(selectedProductData));
     },
     getOrderAmount(deal, isWarrantyChecked) {
-      if (!deal || !checkoutData.product.prices[deal]) {
+      if (!deal || !js_data.product.prices[deal]) {
         return 0;
       }
 
-      const price = checkoutData.product.prices[deal].value || 0;
-      const exchange_rate = checkoutData.product.prices.exchange_rate || 1;
+      const price = js_data.product.prices[deal].value || 0;
+      const exchange_rate = js_data.product.prices.exchange_rate || 1;
 
       const warranty = isWarrantyChecked
-        ? checkoutData.product.prices[deal].warranty_price || 0
+        ? js_data.product.prices[deal].warranty_price || 0
         : 0;
 
       let result = ((price + warranty) / exchange_rate) || 0;
@@ -51,7 +51,7 @@ export default {
       }
 
 
-      if (selectedProductData.product_name === checkoutData.product.product_name) {
+      if (selectedProductData.product_name === js_data.product.product_name) {
         const now = new Date()
         const then = odin_order_created_at
         const diffinMilliseconds = Date.parse(now) - Date.parse(then);

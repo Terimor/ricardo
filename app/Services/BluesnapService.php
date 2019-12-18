@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PaymentApi;
 use App\Models\Setting;
 use App\Models\Txn;
 use App\Constants\PaymentMethods;
@@ -17,6 +18,8 @@ use GuzzleHttp\Exception\RequestException as GuzzReqException;
  */
 class BluesnapService
 {
+    use ProviderServiceTrait;
+
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
@@ -37,39 +40,22 @@ class BluesnapService
     private $ips;
 
     /**
-     * @var string
-     */
-    private $login;
-
-    /**
-     * @var string
-     */
-    private $password;
-
-    /**
-     * @var string
-     */
-    private $data_protection_key;
-
-    /**
      * BluesnapService constructor
      */
     public function __construct()
     {
-        $login       = Setting::getValue('bluesnap_login');
-        $password    = Setting::getValue('bluesnap_password');
-        $protect_key = Setting::getValue('bluesnap_data_protection_key');
-        $environment = Setting::getValue('bluesnap_environment', self::ENV_LIVE);
-        $ips_str     = Setting::getValue('bluesnap_ips', '');
+        $keys = PaymentApi::getAllByProvider(PaymentProviders::BLUESNAP);
 
-        if (!$login || !$password || !$protect_key) {
+        if (empty($keys)) {
             logger()->error("Bluesnap configuration needs to check");
         }
 
+        $this->keys = $keys;
+
+        $environment = Setting::getValue('bluesnap_environment', self::ENV_LIVE);
+        $ips_str     = Setting::getValue('bluesnap_ips', '');
+
         $this->ips = \explode(',', $ips_str);
-        $this->login = $login;
-        $this->password = $password;
-        $this->data_protection_key = $protect_key;
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'ws' : 'sandbox') . '.bluesnap.com/services/2/';
     }
 
@@ -120,74 +106,102 @@ class BluesnapService
     }
 
     /**
+     * Returns data protection key
+     * @param  array  $data ['product_id'=>?string, 'payment_api_id'=>?string]
+     * @return string|null
+     */
+    public function getDataProtectionKey(array $data): ?string
+    {
+        $api = $this->getPaymentApi($details);
+        return optional($api)->key;
+    }
+
+    /**
      * Provides payment by card
      * @param  array   $card
      * @param  array   $contact
-     * @param  array   $order_details ['currency'=>string,'amount'=>float,'billing_descriptor'=>string]
+     * @param  array   $details
+     * [
+     *   'currency'=>string,
+     *   'amount'=>float,
+     *   'product_id'=>string,
+     *   'billing_descriptor'=>string
+     * ]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $order_details): array
+    public function payByCard(array $card, array $contact, array $details): array
     {
         return $this->pay(
             [
                 'cardHolderInfo'    => self::createCardHolderObj($contact),
                 'creditCard'        => self::createCardObj($card),
             ],
-            $order_details
+            $details
         );
     }
 
     /**
      * Provides payment by vaulted shopper id
      * @param  array   $shooper_id
-     * @param  array   $order_details ['currency'=>string,'amount'=>float,'billing_descriptor'=>string]
+     * @param  array   $details ['currency'=>string,'amount'=>float,'billing_descriptor'=>string]
      * @return array
      */
-    public function payByVaultedShopperId(string $shopper_id, array $order_details): array
+    public function payByVaultedShopperId(string $shopper_id, array $details): array
     {
-        return $this->pay(['vaultedShopperId' => $shopper_id], $order_details);
+        return $this->pay(['vaultedShopperId' => $shopper_id], $details);
     }
 
     /**
      * Provides payment
      * @param  array   $source
-     * @param  array   $order_details
+     * @param  array   $details
      * [
      *  'currency'=>string,
      *  'amount'=>float,
+     *  'product_id'=>?string,
+     *  'payment_api_id'=>?string,
      *  'billing_descriptor'=>string,
      * ]
      * @return array
      */
-    private function pay(array $source, array $order_details): array
+    private function pay(array $source, array $details): array
     {
-        $client = new GuzzHttpCli([
-            'base_uri' => $this->endpoint,
-            'auth' => [$this->login, $this->password],
-            'headers' => ['Accept'  => 'application/json']
-        ]);
-
         $result = [
-            'fee'               => 0,
+            'fee_usd'           => 0,
             'is_flagged'        => false,
-            'currency'          => $order_details['currency'],
-            'value'             => $order_details['amount'],
+            'currency'          => $details['currency'],
+            'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::BLUESNAP,
             'hash'              => "fail_" . UtilsService::randomString(16),
+            'payment_api_id'    => null,
             'payer_id'          => null,
             'provider_data'     => null,
             'errors'            => null
         ];
 
+        $api = $this->getPaymentApi($details);
+        if (empty($api)) {
+            logger()->error("Ebanx PaymentApi not found [{$details['number']}]");
+            return $result;
+        }
+
+        $result['payment_api_id'] = (string)$api->getIdAttribute();
+
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'auth' => [$api->login, $api->password],
+            'headers' => ['Accept'  => 'application/json']
+        ]);
+
         try {
             $res = $client->post('transactions', [
                 'json' => \array_merge(
                     [
-                        'amount'        => $order_details['amount'],
-                        'currency'      => $order_details['currency'],
+                        'amount'        => $details['amount'],
+                        'currency'      => $details['currency'],
                         'cardTransactionType'   => 'AUTH_CAPTURE',
-                        'softDescriptor'    =>  $order_details['billing_descriptor'],
+                        'softDescriptor'    =>  $details['billing_descriptor'],
                         'storeCard'     => true
                     ],
                     $source
@@ -233,7 +247,6 @@ class BluesnapService
      */
     public function validateWebhook(Request $req)
     {
-        $authKey    = $req->input('authKey', '');
         $currency   = $req->input('invoiceChargeCurrency');
         $fee        = $req->input('bluesnapManualFee', 0);
         $hash       = $req->input('referenceNumber');
@@ -246,12 +259,11 @@ class BluesnapService
                 'status' => true,
                 'txn' => [
                     'currency'  => $currency,
-                    'fee'       => preg_replace('/[^\d.]/', '', $fee),
+                    'fee_usd'   => 0,
                     'hash'      => $hash,
                     'status'    => $type === self::TYPE_WEBHOOK_CHARGE ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
                     'value'     => preg_replace('/[^\d.]/', '', $value)
-                ],
-                'result' => md5($authKey . 'ok' . $this->data_protection_key)
+                ]
             ];
         }
 

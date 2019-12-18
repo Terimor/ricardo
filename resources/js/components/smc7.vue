@@ -12,7 +12,7 @@
                     </div>
                     <div
                             class="col-md-5 advantages"
-                            v-html="checkoutData.product.description"
+                            v-html="product.description"
                     >
                     </div>
                 </div>
@@ -117,8 +117,8 @@
                     <div class="paper">
                         <div class="d-flex">
                             <div class="smc7__step-4__product">
-                                <h2>{{ checkoutData.product.long_name }}</h2>
-                                <p>{{ textGet }} {{ checkoutData.product.prices['1'].discount_percent }}% {{ textOffTodayFreeShipping }}</p>
+                                <h2>{{ product.long_name }}</h2>
+                                <p>{{ textGet }} {{ product.prices['1'].discount_percent }}% {{ textOffTodayFreeShipping }}</p>
                             </div>
                             <img id="product-image-body" :src="productImage" alt="Product image">
                         </div>
@@ -262,14 +262,14 @@
         paypalPaymentError: '',
         form: {
           isWarrantyChecked: false,
-          countryCodePhoneField: checkoutData.countryCode,
+          countryCodePhoneField: js_data.country_code,
           deal: null,
           fname: null,
           lname: null,
           email: null,
           phone: null,
-          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
-          country: checkoutData.countryCode,
+          variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
+          country: js_data.country_code,
           streetAndNumber: null,
           city: null,
           state: null,
@@ -360,11 +360,11 @@
         return this.variantList.length > 1 && (!js_query_params.variant || js_query_params.variant === '0');
       },
 
-      checkoutData() {
-        return checkoutData;
+      product() {
+        return js_data.product;
       },
       productData() {
-        return checkoutData.product;
+        return js_data.product;
       },
 
       radioIdx() {
@@ -426,17 +426,17 @@
 
         switch(this.form.installments) {
           case 3:
-            oldValueText = checkoutData.product.prices[1].installments3_old_value_text;
-            valueText = checkoutData.product.prices[1].installments3_value_text;
+            oldValueText = js_data.product.prices[1].installments3_old_value_text;
+            valueText = js_data.product.prices[1].installments3_value_text;
             break;
           case 6:
-            oldValueText = checkoutData.product.prices[1].installments6_old_value_text;
-            valueText = checkoutData.product.prices[1].installments6_value_text;
+            oldValueText = js_data.product.prices[1].installments6_old_value_text;
+            valueText = js_data.product.prices[1].installments6_value_text;
             break;
           case 1:
           default:
-            oldValueText = checkoutData.product.prices[1].old_value_text;
-            valueText = checkoutData.product.prices[1].value_text;
+            oldValueText = js_data.product.prices[1].old_value_text;
+            valueText = js_data.product.prices[1].value_text;
             break;
         }
 
@@ -509,7 +509,7 @@
               return this.ipqsResult;
             }
 
-            const data = {
+            let data = {
               order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
               billing_first_name: this.form.fname,
               billing_last_name: this.form.lname,
@@ -521,11 +521,14 @@
               billing_email: this.form.email,
               billing_phone: this.dialCode + phoneNumber,
               credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_hash: window.sha256(cardNumber),
               credit_card_expiration_month: this.form.cardDate.split('/')[0],
               credit_card_expiration_year: this.form.cardDate.split('/')[1],
               cvv_code: this.form.cvv,
             };
+
+            if (window.sha256) {
+              data.credit_card_hash = sha256(cardNumber);
+            }
 
             return ipqsCheck(data);
           })
@@ -593,7 +596,7 @@
       },
       paypalCreateOrder () {
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
-          ? checkoutData.product.prices.currency
+          ? js_data.product.prices.currency
           : js_query_params.cur;
 
         this.setDataToLocalStorage({
@@ -676,15 +679,15 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const variant = (this.form && this.form.variant) || (js_data.product.skus[0] && js_data.product.skus[0].code) || null;
 
-        const skus = Array.isArray(checkoutData.product.skus)
-          ? checkoutData.product.skus
+        const skus = Array.isArray(js_data.product.skus)
+          ? js_data.product.skus
           : [];
 
         const skuVariant = skus.find(sku => variant === sku.code) || null;
 
-        const productImage = checkoutData.product.image[+(js_query_params.image || null) - 1] || checkoutData.product.image[0];
+        const productImage = js_data.product.image[+(js_query_params.image || null) - 1] || js_data.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;

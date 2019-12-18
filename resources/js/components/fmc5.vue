@@ -608,12 +608,12 @@
           lname: null,
           email: null,
           phone: null,
-          countryCodePhoneField: checkoutData.countryCode,
+          countryCodePhoneField: js_data.country_code,
           street: null,
           city: null,
           state: null,
           zipcode: null,
-          country: checkoutData.countryCode,
+          country: js_data.country_code,
           cardHolder: null,
           cardNumber: null,
           cardDate: null,
@@ -637,12 +637,8 @@
 
     computed: {
 
-      checkoutData() {
-        return checkoutData;
-      },
-
       product() {
-        return this.checkoutData.product;
+        return js_data.product;
       },
 
       dealsAllowedQuantities() {
@@ -1006,7 +1002,7 @@
 
       paypalCreateOrder() {
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
-          ? this.checkoutData.product.prices.currency
+          ? this.product.prices.currency
           : js_query_params.cur;
 
         this.setDataToLocalStorage({
@@ -1118,11 +1114,14 @@
               billing_email: this.form.email,
               billing_phone: this.dialCode + phoneNumber,
               credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_hash: window.sha256(cardNumber),
               credit_card_expiration_month: this.form.cardDate.split('/')[0],
               credit_card_expiration_year: this.form.cardDate.split('/')[1],
               cvv_code: this.form.cvv,
             };
+
+            if (window.sha256) {
+              data.credit_card_hash = sha256(cardNumber);
+            }
 
             return ipqsCheck(data).then(ipqsResult => {
               this.ipqsResult = ipqsResult;

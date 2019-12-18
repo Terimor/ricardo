@@ -3,6 +3,15 @@
 @section('title', $product->page_title)
 
 
+@section('js_data')
+
+  <script type="text/javascript">
+    js_data.product = @json($product);
+  </script>
+
+@endsection
+
+
 @section('js_deps')
 
   <script type="text/javascript">
@@ -24,15 +33,6 @@
     rel="stylesheet"
     media="none" />
 
-@endsection
-
-
-@section('script')
-<script type="text/javascript">
-    const checkoutData = {
-      product: @json($product),
-    }
-</script>
 @endsection
 
 

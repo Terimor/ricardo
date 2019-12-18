@@ -43,24 +43,10 @@ class MinteService
     private static $fallback_codes = ['05', 'Amount by terminal exceeded', 'ERR-MPI'];
 
     /**
-     * @var \Illuminate\Database\Eloquent\Collection
-     */
-    private $keys = [];
-
-    /**
      * @var string
      */
     private $endpoint;
 
-    /**
-     * @var string
-     */
-    private $api_key = 'xxx';
-
-    /**
-     * @var string
-     */
-    private $mid = '10000';
 
     /**
      * MinteService constructor
@@ -259,7 +245,7 @@ class MinteService
                 if (in_array($code, self::$fallback_codes)) {
                     $result['fallback'] = true;
                 }
-                $result['errors'] = [MinteCodeMapper::toPhrase($code)];
+                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
                 logger()->error("Mint-e auth", ['body' => $body_decoded]);
             }
             $result['provider_data'] = $body_decoded;
@@ -315,7 +301,7 @@ class MinteService
                 $payment['status']   = Txn::STATUS_APPROVED;
             } else {
                 $payment['status']   = Txn::STATUS_FAILED;
-                $payment['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'])];
+                $payment['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
                 logger()->error("Mint-e capture", ['body' => $body_decoded]);
             }
             $payment['provider_data'] = $body_decoded;
@@ -372,7 +358,7 @@ class MinteService
                     'currency'  => $details['currency'],
                     'token'     => $token,
                     'nonce'     => $nonce,
-                    'signature' => hash('sha256', $api->login . $nonce . $api->api_key),
+                    'signature' => hash('sha256', $api->login . $nonce . $api->key),
                     'descriptor' => $details['descriptor']
                 ]
             ]);
@@ -385,7 +371,7 @@ class MinteService
                 $result['hash'] = $body_decoded['midtransid'];
                 $result['status'] = Txn::STATUS_APPROVED;
             } else {
-                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'])];
+                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
                 logger()->error("Mint-e pay", ['body' => $body_decoded]);
             }
             $result['provider_data'] = $body_decoded;
@@ -438,7 +424,7 @@ class MinteService
                     $result['txn']['fallback'] = true;
                 }
                 $result['txn']['status'] = Txn::STATUS_FAILED;
-                $result['txn']['errors'] = [MinteCodeMapper::toPhrase($code)];
+                $result['txn']['errors'] = [MinteCodeMapper::toPhrase($params['errcode'], $params['errmsg'])];
             }
         }
 

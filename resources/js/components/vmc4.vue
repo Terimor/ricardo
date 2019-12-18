@@ -98,7 +98,7 @@
 				form: {
           deal: null,
           isWarrantyChecked: false,
-          variant: checkoutData.product.skus[0] && checkoutData.product.skus[0].code || null,
+          variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
         },
 			};
     },
@@ -115,10 +115,10 @@
     },
 		computed: {
 			productData() {
-				return checkoutData.product;
+				return js_data.product;
 			},
       billing_descriptor() {
-        return checkoutData.product.billing_descriptor;
+        return js_data.product.billing_descriptor;
       },
       purchase() {
         const currentVariant = this.skusList.find(it => it.code === this.form.variant);
@@ -153,7 +153,7 @@
         }));
       },
       warrantyPriceText() {
-        const prices = checkoutData.product.prices;
+        const prices = js_data.product.prices;
 
         if (!this.form.deal) {
           return 0;
@@ -181,15 +181,15 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = (this.form && this.form.variant) || (checkoutData.product.skus[0] && checkoutData.product.skus[0].code) || null;
+        const variant = (this.form && this.form.variant) || (js_data.product.skus[0] && js_data.product.skus[0].code) || null;
 
-        const skus = Array.isArray(checkoutData.product.skus)
-          ? checkoutData.product.skus
+        const skus = Array.isArray(js_data.product.skus)
+          ? js_data.product.skus
           : [];
 
         const skuVariant = skus.find(sku => variant === sku.code) || null;
 
-        const productImage = checkoutData.product.image[+(js_query_params.image || null) - 1] || checkoutData.product.image[0];
+        const productImage = js_data.product.image[+(js_query_params.image || null) - 1] || js_data.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
 
         return isInitial ? productImage : skuImage;

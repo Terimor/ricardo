@@ -90,15 +90,15 @@ class OdinOrder extends OdinModel
          */
         'products' => [],
         'txns' => [ // — array of objects,
-//	    'hash' => null, // string, //link to Txn hash
-//	    'value' => null, float, //decreases after refund
-//	    'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
-//	    'fee' => null,// — float, //provider's txn fee
-//	    'payment_provider' => '', // — enum string,
-//	    'payment_method' => '', // — enum string,
-//	    'card_type' => '', // enum, ['debit', 'credit']
-//	    'card_number' => '', // string, Card number partially, first 6 digits and last 4 digits, other digits are replaced with × symbol
-//	    'payer_id' => '', // — string, //payer ID in payment provider system
+//	        'hash' => null, // string, //link to Txn hash
+//	        'value' => null, float, //decreases after refund
+//	        'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
+//	        'fee_usd' => null,// — float, //provider's txn fee in USD
+//	        'payment_provider' => '', // — enum string,
+//	        'payment_method' => '', // — enum string,
+//	        'payer_id' => '', // — string, //payer ID in payment provider system
+//	        'card_type' => '', // — enum string,
+//	        'payment_api_id' => '', // —string,
         ],
         'ipqualityscore' => null, // object
         'page_checkout' => null, // string full checkout page address with parameters
@@ -374,7 +374,7 @@ class OdinOrder extends OdinModel
             return $v['is_main'] === true;
         });
         if (empty($product) && $throwable) {
-            throw new ProductNotFoundException("Order main product not found, order [{$this->getIdAttribute()}]");
+            throw new ProductNotFoundException("Order main product not found, order [{$this->number}]");
         }
         return $product;
     }
@@ -391,7 +391,7 @@ class OdinOrder extends OdinModel
             return $v['txn_hash'] === $hash;
         });
         if (empty($product) && $throwable) {
-            throw new ProductNotFoundException("Order product [{$hash}] not found, order [{$this->getIdAttribute()}]");
+            throw new ProductNotFoundException("Order product [{$hash}] not found, order [{$this->number}]");
         }
         return $product;
     }
@@ -420,7 +420,7 @@ class OdinOrder extends OdinModel
             return $v['hash'] === $hash;
         });
         if (empty($txn) && $throwable) {
-            throw new TxnNotFoundException("Order txn [{$hash}] not found, order [{$this->getIdAttribute()}]");
+            throw new TxnNotFoundException("Order txn [{$hash}] not found, order [{$this->number}]");
         }
         return $txn;
     }
@@ -662,12 +662,12 @@ class OdinOrder extends OdinModel
     {
         return $this->shipping_city ? mb_convert_case(mb_strtolower($this->shipping_city), MB_CASE_TITLE) : null;
     }
-    
+
     /**
      * Get last order txns
      */
-    public static function getLastOrders($limit = 20) {        
-        $orders = OdinOrder::limit($limit)->orderBy('_id', 'desc')->get();        
+    public static function getLastOrders($limit = 20) {
+        $orders = OdinOrder::limit($limit)->orderBy('_id', 'desc')->get();
         return $orders;
     }
 }
