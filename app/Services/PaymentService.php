@@ -128,9 +128,10 @@ class PaymentService
      * @param  array        $data
      * @param  string       $payment_method
      * @param  string|null  $card_type
+     * @param  string|null  $card_number
      * @return void
      */
-    private function addTxnToOrder(OdinOrder &$order, array $data, string $payment_method, ?string $card_type): void
+    private function addTxnToOrder(OdinOrder &$order, array $data, string $payment_method, ?string $card_type, ?string $card_number = null): void
     {
         // log txn
         (new OrderService())->addTxn([
@@ -149,6 +150,7 @@ class PaymentService
             'status'            => $data['status'],
             'fee'               => $data['fee'] ?? 0,
             'card_type'         => $card_type,
+            'card_number'       => $card_number,
             'payment_method'    => $payment_method,
             'payment_provider'  => $data['payment_provider'],
             'payment_api_id'    => $data['payment_api_id'] ?? null,
@@ -485,8 +487,8 @@ class PaymentService
                 'descriptor'    => $order->billing_descriptor
             ]);
         }
-echo '<pre>'; var_dump($card); echo '</pre>'; exit;
-        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+        $card_number = isset($card['number']) ? \Utils::prepareCardNumber($card['number']) : null;        
+        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
 
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
@@ -506,7 +508,7 @@ echo '<pre>'; var_dump($card); echo '</pre>'; exit;
                 $order_product = $order->getMainProduct(); // throwable
                 $order_product['txn_hash'] = $payment['hash'];
                 $order->addProduct($order_product, true);
-                $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
+                $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
             }
         }
 
@@ -717,7 +719,7 @@ echo '<pre>'; var_dump($card); echo '</pre>'; exit;
                     $order->addProduct($item);
                 }
 
-                $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method'], $order_main_txn['card_type']);
+                $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method'], $order_main_txn['card_type'], $order_main_txn['card_number'] ?? null);
 
                 if ($order->status === OdinOrder::STATUS_PAID) {
                     $order->status = OdinOrder::STATUS_HALFPAID;
@@ -1041,7 +1043,7 @@ echo '<pre>'; var_dump($card); echo '</pre>'; exit;
                     $order_product = $order->getMainProduct(); // throwable
                     $order_product['txn_hash'] = $reply['payment']['hash'];
                     $order->addProduct($order_product, true);
-                    $this->addTxnToOrder($order, $reply['payment'], $order_txn['payment_method'], $order_txn['сard_type'] ?? null);
+                    $this->addTxnToOrder($order, $reply['payment'], $order_txn['payment_method'], $order_txn['сard_type'] ?? null, $order_txn['сard_number'] ?? null);
                     $order->is_flagged = $reply['payment']['is_flagged'];
 
                     if (!$order->save()) {
