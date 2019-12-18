@@ -772,10 +772,10 @@ class PaymentProviders
                 ],
                 'fallback' => [
                     PaymentMethods::VISA => [
-                        '-3ds' => ['co', 'mx']
+                        '-3ds' => ['ar', 'co', 'mx']
                     ],
                     PaymentMethods::MASTERCARD => [
-                        '-3ds' => ['co', 'mx']
+                        '-3ds' => ['ar', 'co', 'mx']
                     ]
                 ],
             ]
