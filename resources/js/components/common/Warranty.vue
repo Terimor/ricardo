@@ -46,7 +46,7 @@
       },
 
       warrantyPriceText() {
-        const prices = checkoutData.product.prices;
+        const prices = js_data.product.prices;
 
         if (!this.form.deal) {
           return 0;

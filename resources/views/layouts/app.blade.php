@@ -47,7 +47,7 @@
     @include('components.scripts.vue', ['defer' => true])
     @include('components.scripts.element')
     @include('components.scripts.static')
-    @yield('script')
+    @yield('scripts')
 
     <!-- Redirects -->
     @include('components.3ds_redirect')

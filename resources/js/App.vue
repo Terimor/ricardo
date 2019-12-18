@@ -20,7 +20,7 @@
       v-else />
     <preloader-3
       v-if="showPreloader"
-      :countryCode="checkoutData.countryCode"
+      :countryCode="countryCode"
       :show-preloader.sync="showPreloader"/>
     <leave-modal
       v-if="+queryParams.exit === 1"
@@ -43,7 +43,7 @@ export default {
   data () {
     return {
       showPreloader: js_query_params.preload === '{preload}' || +js_query_params.preload === 3,
-      title: checkoutData.product.page_title,
+      title: js_data.product.page_title,
       additionalTitle: ' ' + t('checkout.page_title'),
       waitTitle: t('checkout.page_title.wait'),
     }
@@ -63,11 +63,11 @@ export default {
     },
   },
   computed: {
-    checkoutData() {
-      return checkoutData
+    countryCode() {
+      return js_data.country_code;
     },
     skusList() {
-      return checkoutData.product.skus
+      return js_data.product.skus
     },
   },
   mounted () {

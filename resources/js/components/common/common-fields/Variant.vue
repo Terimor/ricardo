@@ -40,7 +40,7 @@
       },
 
       list() {
-        return checkoutData.product.skus.map(variant => ({
+        return js_data.product.skus.map(variant => ({
           label: variant.name,
           text: `<div><img src="${variant.quantity_image[1]}" alt=""><span>${variant.name}</span></div>`,
           value: variant.code,

@@ -3,6 +3,22 @@
 @section('title', $product->page_title . ' ' . t('checkout.page_title'))
 
 
+@section('js_data')
+
+  <script type="text/javascript">
+    js_data.recently_bought_names = @json($recentlyBoughtNames);
+    js_data.recently_bought_cities = @json($recentlyBoughtCities);
+    js_data.i18n.phrases = @json($loadedPhrases);
+    js_data.lang_code = @json($langCode);
+    js_data.country_code = @json($countryCode);
+    js_data.countries = @json($countries);
+    js_data.payment_methods = @json($setting['payment_methods']);
+    js_data.product = @json($product);
+  </script>
+
+@endsection
+
+
 @section('js_deps')
 
   <script type="text/javascript">
@@ -37,25 +53,14 @@
 @endsection
 
 
-@section('script')
-    <script>
-        var checkoutData = {
-            langCode: '{{ $langCode }}',
-            countryCode: '{{ $countryCode }}',
-            product: @json($product),
-            countries: @json($countries),
-            productImage: '{{$product->logo_image}}',
-            paymentMethods: @json($setting['payment_methods']),
-        };
+@section('scripts')
 
-        var recentlyBoughtNames = @json($recentlyBoughtNames);
-        var recentlyBoughtCities = @json($recentlyBoughtCities)
+  <script
+    src="{{ mix_cdn('assets/js/views/promo.js') }}"
+    defer></script>
 
-        var loadedPhrases = @json($loadedPhrases);
-    </script>
-
-    <script src="{{ mix_cdn('assets/js/views/promo.js') }}" defer></script>
 @endsection
+
 
 @section('content')
 

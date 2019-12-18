@@ -34,6 +34,7 @@ mix
   .js('resources/js/views/thank-you.js', 'public/assets/js/views')
   .js('resources/js/views/order-tracking.js', 'public/assets/js/views')
   .js('resources/js/minishop/pages/home.js', 'public/assets/js/minishop')
+  .js('resources/js/pages/checkout/vmp44.js', 'public/assets/js/pages/checkout')
   .sass('resources/sass/app.scss', 'public/assets/css')
   .sass('resources/sass/views/promo.scss', 'public/assets/css')
   .sass('resources/sass/views/contact-us.scss', 'public/assets/css')
@@ -44,6 +45,7 @@ mix
   .sass('resources/sass/views/returns.scss', 'public/assets/css')
   .sass('resources/sass/views/order-tracking.scss', 'public/assets/css')
   .sass('resources/sass/views/index.scss', 'public/assets/css')
+  .sass('resources/sass/pages/checkout/vmp44.scss', 'public/assets/css/pages/checkout')
   .sass('resources/sass/minishop/pages/home.scss', 'public/assets/css/minishop')
   .copyDirectory('resources/images', 'public/assets/images')
   .copy('resources/scripts/bioep.min.js', 'public/assets/scripts');

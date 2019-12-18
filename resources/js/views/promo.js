@@ -44,14 +44,14 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         selectedPlan: null,
         ipqsResult: null,
         paypalPaymentError: '',
-        stateList: (stateList[checkoutData.countryCode] || []).map((it) => ({
+        stateList: (stateList[js_data.country_code] || []).map((it) => ({
           value: it,
           text: it,
           label: it,
         })),
         form: {
           isWarrantyChecked: false,
-          countryCodePhoneField: checkoutData.countryCode,
+          countryCodePhoneField: js_data.country_code,
           deal: null,
           variant: null,
           paymentProvider: null,
@@ -64,7 +64,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
           city: null,
           state: null,
           zipcode: null,
-          country: checkoutData.countryCode,
+          country: js_data.country_code,
           cardHolder: null,
           cardNumber: null,
           cardDate: null,
@@ -160,7 +160,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       countriesList() {
-        return checkoutData.countries
+        return js_data.countries
           .map(name => {
             const label = t('country.' + name);
 
@@ -200,11 +200,11 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       productImages() {
-        return checkoutData.product.skus && checkoutData.product.skus[0] && checkoutData.product.skus[0].quantity_image || {};
+        return js_data.product.skus && js_data.product.skus[0] && js_data.product.skus[0].quantity_image || {};
       },
 
       promoPriceText() {
-        const prices = checkoutData.product.prices;
+        const prices = js_data.product.prices;
 
         switch (this.form.installments) {
           case 1:
@@ -219,7 +219,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       promoOldPrice() {
-        const prices = checkoutData.product.prices;
+        const prices = js_data.product.prices;
 
         switch (this.form.installments) {
           case 1:
@@ -234,7 +234,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       warrantyPriceText() {
-        const prices = checkoutData.product.prices;
+        const prices = js_data.product.prices;
         const quantity = this.form.deal || 1;
 
         switch (this.form.installments) {
@@ -254,11 +254,11 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       productData () {
-        return checkoutData.product
+        return js_data.product
       },
 
       skusList () {
-        return checkoutData.product.skus;
+        return js_data.product.skus;
       },
 
       hasTimer() {
@@ -266,7 +266,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       textPromoDiscount() {
-        const discount = checkoutData.product.prices[1].discount_percent;
+        const discount = js_data.product.prices[1].discount_percent;
         return t('checkout.promo.buy_now', { amount: discount });
       },
 
@@ -283,7 +283,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
 
       paypalCreateOrder () {
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
-          ? checkoutData.product.prices.currency
+          ? js_data.product.prices.currency
           : js_query_params.cur;
 
         this.setDataToLocalStorage({

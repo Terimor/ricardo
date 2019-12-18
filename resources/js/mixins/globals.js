@@ -12,7 +12,7 @@ export default {
     },
 
     sortedCountryList() {
-      return checkoutData.countries
+      return js_data.countries
         .map(name => {
           const label = this.$t('country.' + name);
 

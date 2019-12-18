@@ -10,6 +10,20 @@
 @endsection
 
 
+@section('js_data')
+
+  <script type="text/javascript">
+    js_data.i18n.phrases = @json($loadedPhrases);
+    js_data.country_code = @json($countryCode);
+    js_data.order_customer = @json($orderCustomer);
+    js_data.payment_method = @json($payment_method);
+    js_data.product = @json($product);
+    js_data.setting = @json($setting);
+  </script>
+
+@endsection
+
+
 @section('js_deps')
 
   <script type="text/javascript">
@@ -43,20 +57,14 @@
 @endsection
 
 
-@section('script')
-<script>
-    var upsells = {
-        countryCode: '{{ $countryCode }}',
-        setting: @json($setting),
-        payment_method: @json($payment_method),
-        product: @json($product),
-        orderCustomer: @json($orderCustomer),
-    }
+@section('scripts')
 
-    var loadedPhrases = @json($loadedPhrases);
-</script>
-<script src="{{ mix_cdn('assets/js/views/thank-you.js') }}" defer></script>
+  <script
+    src="{{ mix_cdn('assets/js/views/thank-you.js') }}"
+    defer></script>
+
 @endsection
+
 
 @section('content')
     <div class="container thank-you" id="thank-you">

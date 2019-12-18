@@ -138,9 +138,9 @@
         activeTab: 'second',
         accessoryStep: 0,
         accessoryList: [],
-        product: upsellsData.product,
-        upsellsObj: upsellsData.product.upsells,
-        orderCustomer: upsellsData.orderCustomer,
+        product: js_data.product,
+        upsellsObj: js_data.product.upsells,
+        orderCustomer: js_data.order_customer,
         upsellsAsProdsList: [],
         paymentError: '',
         isSubmitted: false,
@@ -151,7 +151,7 @@
     beforeCreate() {
       localStorage.removeItem('subOrder');
 
-      if (performance.navigation.type == 1 || upsellsData.product.upsells.length === 0) {
+      if (performance.navigation.type == 1 || js_data.product.upsells.length === 0) {
         return goTo('/thankyou');
       }
 

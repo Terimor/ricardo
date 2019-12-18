@@ -150,7 +150,6 @@
 </template>
 
 <script>
-  import apiUrlList from '../../constants/api-url'
   import { ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'

@@ -22,7 +22,7 @@ if (location.pathname.startsWith('/checkout')) {
     '3ds_ipqs',
   ];
 
-  if (product_id !== checkoutData.product.id) {
+  if (product_id !== js_data.product.id) {
     if (product_id) {
       for (let fieldName of cookieFields) {
         cookies.deleteCookie(fieldName);
@@ -33,7 +33,7 @@ if (location.pathname.startsWith('/checkout')) {
       }
     }
 
-    localStorage.setItem('product_id', checkoutData.product.id);
+    localStorage.setItem('product_id', js_data.product.id);
   }
 }
 

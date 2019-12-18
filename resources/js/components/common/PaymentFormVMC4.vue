@@ -302,14 +302,14 @@
 						cardNumber: null,
 						cardDate: null,
 						cvv: null,
-						country: checkoutData.countryCode,
+						country: js_data.country_code,
 						city: null,
 						state: null,
 						zipCode: null,
             terms: null,
 					},
-					countryCodePhoneField: checkoutData.countryCode,
-          country: checkoutData.countryCode,
+					countryCodePhoneField: js_data.country_code,
+          country: js_data.country_code,
 					paymentProvider: null,
 				},
 			}
@@ -563,7 +563,7 @@
       },
       paypalCreateOrder() {
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
-          ? checkoutData.product.prices.currency
+          ? js_data.product.prices.currency
           : js_query_params.cur;
 
         this.setDataToLocalStorage({

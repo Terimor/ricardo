@@ -18,8 +18,8 @@ export default {
   ],
 
   data: () => ({
-    users: recentlyBoughtNames,
-    cities: recentlyBoughtCities,
+    users: js_data.recently_bought_names,
+    cities: js_data.recently_bought_cities,
     usersActive: getRandomInt(33, 44),
     bestsellerText: t('checkout.notification.bestseller'),
   }),

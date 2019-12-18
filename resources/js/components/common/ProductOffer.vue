@@ -24,7 +24,7 @@
         name: 'ProductOffer',
         computed: {
             product() {
-                return checkoutData.product;
+                return js_data.product;
             },
             speсialOffer: () => t('checkout.header_banner.prefix'),
             price: () => t('checkout.header_banner.price'),

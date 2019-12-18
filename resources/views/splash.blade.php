@@ -3,6 +3,15 @@
 @section('title', $page_title)
 
 
+@section('js_data')
+
+  <script type="text/javascript">
+    js_data.product = @json($product);
+  </script>
+
+@endsection
+
+
 @section('js_deps')
 
   <script type="text/javascript">
@@ -26,14 +35,6 @@
 
 @endsection
 
-
-@section('script')
-    <script defer>
-      const checkoutData = {
-        product: @json($product)
-      };
-    </script>
-@endsection
 
 @section('content')
     <div class="splash">

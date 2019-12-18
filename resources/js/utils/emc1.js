@@ -136,10 +136,10 @@ export function * getNotice ({
         if(users[index] && cities[index]) {
             yield `<div class="recently-notice">
               <div class="recently-notice__left">
-                <img src="${checkoutData.product.image[0]}" alt="">
+                <img src="${js_data.product.image[0]}" alt="">
               </div>
               <div class="recently-notice__right">
-                <p>${t('checkout.notification.just_bought', { first_name: users[index], city: cities[index] || cities[0], count: quantity, product: checkoutData.product.product_name })}</p>
+                <p>${t('checkout.notification.just_bought', { first_name: users[index], city: cities[index] || cities[0], count: quantity, product: js_data.product.product_name })}</p>
               </div>
             </div>
             `

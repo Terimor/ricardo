@@ -20,20 +20,18 @@ const specials = {
 export function t(phrase, args = {}, options = {}) {
   let translated = '';
 
-  const loadedPhrases = window.loadedPhrases || {};
-
-  if (loadedPhrases[phrase]) {
-    translated = loadedPhrases[phrase];
+  if (js_data.i18n.phrases[phrase]) {
+    translated = js_data.i18n.phrases[phrase];
 
     if (specials[phrase]) {
-      const lang = options.lang || (window.checkoutData && checkoutData.langCode) || 'en';
-      const country = options.country || (window.checkoutData && checkoutData.countryCode) || 'us';
+      const lang = options.lang || js_data.lang_code || 'en';
+      const country = options.country || js_data.country_code || 'us';
 
       translated = specials[phrase](lang, country, translated);
     }
   } else {
     logError('`' + phrase + '` not found in translations. Arguments: ' + JSON.stringify(args), {
-      loaded_phrases: window.loadedPhrases,
+      loaded_phrases: js_data.i18n.phrases,
     });
   }
 
@@ -43,7 +41,7 @@ export function t(phrase, args = {}, options = {}) {
 
     if (args[key] === undefined || args[key] === null) {
       logError('Null of undefined placeholder for `' + phrase + '`: ' + placeholder + '. Arguments: ' + JSON.stringify(args), {
-        loaded_phrases: window.loadedPhrases,
+        loaded_phrases: js_data.i18n.phrases,
       });
     }
   }
@@ -52,7 +50,7 @@ export function t(phrase, args = {}, options = {}) {
 
   if (nonTranslated.length > 0) {
     logError('Non-translated placeholders for `' + phrase + '`: ' + nonTranslated.join(', ') + '. Arguments: ' + JSON.stringify(args), {
-      loaded_phrases: window.loadedPhrases,
+      loaded_phrases: js_data.i18n.phrases,
     });
   }
 
@@ -69,13 +67,11 @@ export function timage(name) {
     url: '',
   };
 
-  const loadedImages = window.loadedImages || {};
-
-  if (loadedImages[name] && loadedImages[name].url) {
-    translated = loadedImages[name];
+  if (js_data.i18n.images[name] && js_data.i18n.images[name].url) {
+    translated = js_data.i18n.images[name];
   } else {
     logError('`' + name + '` is in use, but no such key or empty url.', {
-      loaded_images: window.loadedImages,
+      loaded_images: js_data.i18n.images,
     });
   }
 

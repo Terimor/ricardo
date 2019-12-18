@@ -3,6 +3,16 @@
 @section('title', $page_title )
 
 
+@section('js_data')
+
+  <script type="text/javascript">
+    js_data.i18n.phrases = @json($loadedPhrases);
+    js_data.product = @json($product);
+  </script>
+
+@endsection
+
+
 @section('js_deps')
 
   <script type="text/javascript">
@@ -36,15 +46,12 @@
 @endsection
 
 
-@section('script')
-    <script>
-      var checkoutData = {
-        product: @json($product),
-      };
-      var loadedPhrases = @json($loadedPhrases);
-    </script>
+@section('scripts')
 
-    <script src="{{ mix_cdn('assets/js/views/order-tracking.js') }}" defer></script>
+  <script
+    src="{{ mix_cdn('assets/js/views/order-tracking.js') }}"
+    defer></script>
+
 @endsection
 
 
