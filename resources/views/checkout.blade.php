@@ -6,6 +6,7 @@
 @section('js_data')
 
   <script type="text/javascript">
+    js_data.ipqualityscore_api_hash = @json($setting['ipqualityscore_api_hash']);
     js_data.recently_bought_names = @json($recentlyBoughtNames);
     js_data.recently_bought_cities = @json($recentlyBoughtCities);
     js_data.i18n.phrases = @json($loadedPhrases);

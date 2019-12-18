@@ -1,50 +1,25 @@
-import { queryParams } from '../utils/queryParams';
-import wait from '../utils/wait';
+window.IPQ = {
 
-
-wait(
-  () => !!window.Startup,
-  () => {
-    Startup.success = () => {};
-    Startup.failure = () => {};
-
+  Callback() {
     Startup.AfterResult(result => {
-      Startup.success(result);
+      IPQ.success(result);
     });
 
     Startup.AfterFailure(result => {
-      Startup.failure(result);
+      IPQ.failure(result);
     });
+
+    IPQ.sendRequest();
   },
-);
+
+};
 
 
 export function ipqsCheck(fields = {}) {
   return new Promise(resolve => {
     let attempt = 0;
 
-    if (js_query_params['3ds'] === 'failure') {
-      let result = null;
-
-      try {
-        result = JSON.parse(localStorage.getItem('3ds_ipqs'));
-      }
-      catch (err) {
-        
-      }
-
-      if (result) {
-        resolve(result);
-        return;
-      }
-    }
-
-    if (!window.Startup) {
-      resolve(null);
-      return;
-    }
-
-    const sendRequest = () => {
+    IPQ.sendRequest = () => {
       attempt++;
 
       for (let key of Object.keys(js_query_params)) {
@@ -55,22 +30,43 @@ export function ipqsCheck(fields = {}) {
         Startup.FieldStore(key, fields[key]);
       }
 
-      Startup.success = result => {
-        localStorage.setItem('3ds_ipqs', JSON.stringify(result));
-        resolve(result);
-      };
-
-      Startup.failure = result => {
-        if (attempt < 3) {
-          setTimeout(sendRequest, 1000);
-        } else {
-          resolve(null);
-        }
-      };
-
       Startup.Init();
     };
 
-    sendRequest();
+    IPQ.success = result => {
+      localStorage.setItem('3ds_ipqs', JSON.stringify(result));
+      resolve(result);
+    };
+
+    IPQ.failure = result => {
+      if (attempt < 3) {
+        setTimeout(IPQ.sendRequest, 1000);
+      } else {
+        resolve(null);
+      }
+    };
+
+    if (js_query_params['3ds'] === 'failure') {
+      let result = null;
+
+      try {
+        result = JSON.parse(localStorage.getItem('3ds_ipqs'));
+      }
+      catch (err) {
+
+      }
+
+      if (result) {
+        return resolve(result);
+      }
+    }
+
+    if (!window.Startup) {
+      let script = document.createElement('script');
+      script.src = 'https://www.clkscore.com/api/*/' + js_data.ipqualityscore_api_hash + '/learn.js';
+      document.body.append(script);
+    } else {
+      IPQ.sendRequest();
+    }
   });
 }

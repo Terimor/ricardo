@@ -43,7 +43,6 @@
     @include('components.scripts.sentry')
     @include('components.scripts.intl_tel_input')
     @include('components.scripts.paypal')
-    @include('components.scripts.ipqualityscore')
     @include('components.scripts.libphonenumber')
     @include('components.scripts.sha256')
     @include('components.scripts.bioep')
@@ -81,7 +80,6 @@
 
     <!-- No Script -->
     @include('components.scripts.gtags_ns')
-    @include('components.scripts.ipqualityscore_ns')
 
     <!-- Pixels -->
     @include('components.scripts.pixels')

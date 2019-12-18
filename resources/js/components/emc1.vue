@@ -376,7 +376,7 @@
           imageUrl: it.quantity_image[1],
         }));
       },
-      textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + js_data.country_code) }),
+      textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + js_data.country_code) || '' }),
       textStep: () => t('checkout.step'),
       textChooseDeal: () => t('checkout.choose_deal'),
       textArtcile: () => t('checkout.article'),
