@@ -485,7 +485,7 @@ class PaymentService
                 'descriptor'    => $order->billing_descriptor
             ]);
         }
-
+echo '<pre>'; var_dump($card); echo '</pre>'; exit;
         $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null);
 
         $order_product['txn_hash'] = $payment['hash'];

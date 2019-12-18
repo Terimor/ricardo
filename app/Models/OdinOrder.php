@@ -96,6 +96,8 @@ class OdinOrder extends OdinModel
 //	    'fee' => null,// — float, //provider's txn fee
 //	    'payment_provider' => '', // — enum string,
 //	    'payment_method' => '', // — enum string,
+//	    'card_type' => '', // enum, ['debit', 'credit']
+//	    'card_number' => '', // string, Card number partially, first 6 digits and last 4 digits, other digits are replaced with × symbol
 //	    'payer_id' => '', // — string, //payer ID in payment provider system
         ],
         'ipqualityscore' => null, // object
