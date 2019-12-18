@@ -1,4 +1,4 @@
-@if (Route::is('checkout') || Route::is('checkout_price_set'))
+@if ((Route::is('checkout') || Route::is('checkout_price_set')) && str_replace('www.', '', Request::getHost()) !== 'daysights.pro')
 
   <script type="text/javascript">
     var IPQ = {
