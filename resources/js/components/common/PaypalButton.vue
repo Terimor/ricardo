@@ -1,5 +1,5 @@
 <template>
-  <div class="paypal-button-container">
+  <div class="paypal-button-container" v-if="0">
     <div id="paypal-button"></div>
     <div class="paypal-shim" :class="{ 'active': !isSubmitted }">
       <div v-if="isSubmitted" class="disabled"></div>
