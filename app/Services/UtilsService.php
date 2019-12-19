@@ -543,6 +543,16 @@ class UtilsService
         'zm' => 'Zambia',
         'zw' => 'Zimbabwe'
     ];
+    
+    /**
+     * EU countries
+     */
+    public static $countries_EU = [	
+	    //EU
+	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk',
+	    //other Europe
+	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va'	
+    ];
 
     public static $unsetGet = [
         'cur' => '{aff_currency}',
@@ -635,13 +645,29 @@ class UtilsService
      * @param bool $code_only
      * @return array
      */
-    public static function getCountries(bool $code_only = false)
+    public static function getCountries(bool $code_only = false, ?bool $is_europe_only = false): array
     {
+        $countries = [];
         if ($code_only) {
-            return array_keys(self::$countryCodes);
+            if ($is_europe_only) {
+                $countries = self::$countries_EU;
+                $countries[] = 'ru';
+            } else {
+                $countries = array_keys(self::$countryCodes);
+            }
         } else {
-            return self::$countryCodes;
+            if ($is_europe_only) {
+                $countries_keys = self::$countries_EU;
+                $countries_keys[] = 'ru';
+                foreach ($countries_keys as $key) {
+                    $countries[$key] = self::$countryCodes[$key];
+                }
+            } else {
+                $countries = self::$countryCodes;
+            }
         }
+        
+        return $countries;
     }
 
     /**
