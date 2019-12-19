@@ -18,7 +18,7 @@ class PaymentProviders
     public static $list = [
         self::PAYPAL => [
             'name'      => 'PayPal',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,

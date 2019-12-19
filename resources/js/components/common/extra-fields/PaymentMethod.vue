@@ -47,7 +47,7 @@
           .filter(name => name !== 'instant_transfer');
 
         if (this.form.installments === 1) {
-          values.push('instant_transfer');
+          //values.push('instant_transfer');
         }
 
         return values.map(value => ({

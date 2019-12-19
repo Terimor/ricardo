@@ -40,7 +40,7 @@
           .filter(name => name !== 'instant_transfer');
 
         if (this.withPaypal) {
-          paymentMethodNames.push('instant_transfer');
+          //paymentMethodNames.push('instant_transfer');
         }
 
         return paymentMethodNames;

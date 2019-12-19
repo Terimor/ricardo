@@ -188,7 +188,7 @@
           .filter(name => name !== 'instant_transfer');
 
         if (this.paymentForm.installments === 1) {
-          values.push('instant_transfer');
+          //values.push('instant_transfer');
         }
 
         return values.map(value => ({
