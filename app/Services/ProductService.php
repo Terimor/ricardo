@@ -273,6 +273,7 @@ class ProductService
         $lp->gads_retarget_id = $product->gads_retarget_id;
         $lp->gads_conversion_id = $product->gads_conversion_id;
         $lp->gads_conversion_label = $product->gads_conversion_label;
+        $lp->is_europe_only = $product->is_europe_only ?? false;
 
         return $lp;
     }

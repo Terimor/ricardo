@@ -674,12 +674,12 @@
       deals() {
         return Object.keys(this.product.prices)
           .filter(value => {
-            return this.dealsAllowedQuantities.includes(+value);
+            return this.dealsAllowedQuantities.indexOf(+value) !== -1;
           })
           .map(value => {
             return {
               ...this.product.prices[value],
-              sellout: this.dealsSellout.includes(+value),
+              sellout: this.dealsSellout.indexOf(+value) !== -1,
               quantity: +value,
             };
           })

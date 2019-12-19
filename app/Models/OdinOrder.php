@@ -44,6 +44,7 @@ class OdinOrder extends OdinModel
         'total_chargeback' => 0, // total chargeback amount in local currency
         'total_chargeback_usd' => 0, // total chargeback amount in USD
         'txns_fee_usd' => 0, //float, total amount of all txns' fee in USD
+        'shipping_cost_usd' => 0, // float, Total shipping cost in USD
         'shop_currency' => null, // enum string, //currency was used to display prices
         //'payment_provider' => null, // enum string
         //'payment_method' => null, // enum string

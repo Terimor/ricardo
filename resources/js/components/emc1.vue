@@ -338,7 +338,7 @@
         return this.purchase.map((it, idx) => ({
           value: it.totalQuantity,
           quantity: it.totalQuantity,
-          isOutOfStock: isSellOutArray.includes(String(it.totalQuantity)),
+          isOutOfStock: isSellOutArray.indexOf(String(it.totalQuantity)) !== -1,
           isLabeled: !!it.discountName,
           label: getRadioHtml({
             ...it,

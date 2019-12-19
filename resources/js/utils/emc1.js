@@ -23,7 +23,7 @@ export const getRadioHtml = ({
     ? queryParams().sellout.split(',')
     : [];
 
-  const isSoldOut = isSellOutArray.includes(String(totalQuantity));
+  const isSoldOut = isSellOutArray.indexOf(String(totalQuantity)) !== -1;
 
   const formattedPrice = discountName ? `${pricePerUnit[installments]}/${t('checkout.unit')}` : pricePerUnit[installments];
 

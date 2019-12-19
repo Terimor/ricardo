@@ -146,7 +146,7 @@ export function getCardNumberRules() {
       const commonRule = value.length > 12 && value.length <= 19;
 
       return creditCardTypeList.length > 0
-        ? creditCardTypeList[0].lengths.includes(value.length) || commonRule
+        ? creditCardTypeList[0].lengths.indexOf(value.length) !== -1 || commonRule
         : false;
     },
   };

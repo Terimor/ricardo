@@ -69,7 +69,7 @@ export function preparePurchaseData({
   isOutOfStock = false
 }) {
   const data = Object.keys(purchaseList)
-    .filter((key) => quantityToShow.includes(+key))
+    .filter((key) => quantityToShow.indexOf(+key) !== -1)
     .map((key, idx) => {
       const it = purchaseList[key];
       const discountPercent = it.discount_percent;
@@ -140,7 +140,7 @@ export function preparePurchaseData({
             installments,
           }),
         totalQuantity: +key,
-        isOutOfStock: isSellOutArray.includes(String(idx + 1)),
+        isOutOfStock: isSellOutArray.indexOf(String(idx + 1) !== -1),
         isBestseller: it.is_bestseller,
         isPopular: it.is_popular
       }
