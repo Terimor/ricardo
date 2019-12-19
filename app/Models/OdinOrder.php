@@ -178,7 +178,7 @@ class OdinOrder extends OdinModel
                 $ip = $model->ip;
                 if ($ip) {
                     $location = \Location::get($ip);
-                    $model->country = $location['countryCode'];
+                    $model->country = isset($location->countryCode) ? strtolower($location->countryCode) : null;
                     
                     if (!$model->country) {
                         logger()->error("Cant find country by IP {$ip} for order {$model->number}");
