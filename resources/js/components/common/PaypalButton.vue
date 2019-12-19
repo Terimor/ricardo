@@ -56,7 +56,7 @@
         const { createOrder, onApprove } = this;
         const that = this;
 
-        paypal.Buttons({
+        /*paypal.Buttons({
           onInit(data, actions) {
             that.action = actions;
 
@@ -96,7 +96,7 @@
           style: {
             height: 55,
           }
-        }).render('#paypal-button');
+        }).render('#paypal-button'); */
       }
     },
   };
