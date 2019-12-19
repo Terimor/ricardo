@@ -546,12 +546,13 @@ class UtilsService
     
     /**
      * EU countries
+     * Linked from Odin: GeoConstants::$countries_eu
      */
-    public static $countries_EU = [	
+    public static $countries_eu = [	
 	    //EU
 	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk',
 	    //other Europe
-	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va', 'ru'
+	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va', 'ru', 'ua'
     ];
 
     public static $unsetGet = [
@@ -650,13 +651,13 @@ class UtilsService
         $countries = [];
         if ($code_only) {
             if ($is_europe_only) {
-                $countries = self::$countries_EU;
+                $countries = self::$countries_eu;
             } else {
                 $countries = array_keys(self::$countryCodes);
             }
         } else {
             if ($is_europe_only) {
-                $countries_keys = self::$countries_EU;                
+                $countries_keys = self::$countries_eu;                
                 foreach ($countries_keys as $key) {
                     $countries[$key] = self::$countryCodes[$key];
                 }
