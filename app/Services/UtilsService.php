@@ -546,7 +546,7 @@ class UtilsService
     
     /**
      * EU countries
-     * Linked from Odin: GeoConstants::$countries_eu
+     * Linked from Saga: GeoConstants::$countries_eu
      */
     public static $countries_eu = [	
 	    //EU
