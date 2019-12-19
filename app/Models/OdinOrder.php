@@ -55,6 +55,7 @@ class OdinOrder extends OdinModel
         'customer_doc_id' => null, // * string, document number like passport
         'language' => null, // enum string
         'ip' => null, // string
+        'country' => null, // string
         'shipping_country' => null, // enum string
         'shipping_zip' => null, // string
         'shipping_state' => null, // string
@@ -169,6 +170,19 @@ class OdinOrder extends OdinModel
             }
             if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $model->currency;
+            }
+            
+            // fill country by ip
+            if (!isset($model->country) || !$model->country) {
+                $ip = $model->ip;
+                if ($ip) {
+                    $location = \Location::get($ip);
+                    $model->country = $location['countryCode'];
+                    
+                    if (!$model->country) {
+                        logger()->error("Cant find country by IP {$ip} for order $model->number");
+                    }
+                }
             }
         });
 
