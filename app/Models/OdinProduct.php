@@ -609,7 +609,7 @@ class OdinProduct extends Model
         if ($ids) {
             $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
             if ($hide_catch_all) {
-                ->where(['is_catch_all_hidden' => ['$ne' => true]])
+                $productsQuery->where(['is_catch_all_hidden' => ['$ne' => true]]);
             }
             if ($search) {
                 $productsQuery->where(function ($query) use($search) {
