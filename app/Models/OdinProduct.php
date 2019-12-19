@@ -31,7 +31,7 @@ class OdinProduct extends Model
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
         'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'currency',
-        'image_ids', 'splash_description', 'reduce_percent', 'is_europe_only'
+        'image_ids', 'splash_description', 'reduce_percent', 'is_europe_only', 'is_catch_all_hidden'
     ];
 
     protected $hidden = [
@@ -607,7 +607,7 @@ class OdinProduct extends Model
     public static function getActiveByIds(?array $ids, $search = '') {
         $products = null;
         if ($ids) {
-            $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
+            $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true)->where(['is_catch_all_hidden' => ['$ne' => true]]);
             if ($search) {
                 $productsQuery->where(function ($query) use($search) {
                         $descriptionField = 'description.'.app()->getLocale();
