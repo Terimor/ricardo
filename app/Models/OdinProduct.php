@@ -604,10 +604,13 @@ class OdinProduct extends Model
      * Get products by ids
      * @param type $ids
      */
-    public static function getActiveByIds(?array $ids, $search = '') {
+    public static function getActiveByIds(?array $ids, $search = '', $hide_catch_all = false) {
         $products = null;
         if ($ids) {
-            $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true)->where(['is_catch_all_hidden' => ['$ne' => true]]);
+            $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
+            if ($hide_catch_all) {
+                ->where(['is_catch_all_hidden' => ['$ne' => true]])
+            }
             if ($search) {
                 $productsQuery->where(function ($query) use($search) {
                         $descriptionField = 'description.'.app()->getLocale();

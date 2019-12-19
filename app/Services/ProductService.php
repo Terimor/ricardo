@@ -512,7 +512,7 @@ class ProductService
             $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);          
         }
         $productIds = array_keys($allSoldProducts);
-        $products = OdinProduct::getActiveByIds($productIds, $search);         
+        $products = OdinProduct::getActiveByIds($productIds, $search, true);         
         
         if ($search) {
             $totalCount = count($products);
