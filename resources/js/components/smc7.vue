@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="smc7__step-1">
-                            <h2><span>{{textStep}}</span> 1: <span>{{textChooseDeal}}</span></h2>
+                            <h2 class="step1-title"><span>{{textStep}}</span> 1: <span>{{textChooseDeal}}</span></h2>
 
                             <Installments
                               popperClass="emc1-popover-variant"
@@ -834,6 +834,9 @@
         }
 
         &__step-1 {
+            .step1-title {
+              margin-top: 20px;
+            }
             .bestseller {
                 display: none;
             }
