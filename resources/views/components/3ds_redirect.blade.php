@@ -3,15 +3,7 @@
   @if (Request::get('3ds') && !Request::get('3ds_restore'))
     <script type="text/javascript">
       (() => {
-        const url = new URL(location);
-
-        let url_query_params = url.search
-          .substr(1).split('&').filter(item => !!item).map(item => item.split('='))
-          .reduce((acc, item) => {
-            acc[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
-            return acc;
-          }, {});
-
+        let url_query_params = Object.assign({}, js_query_params);
         let stored_query_params = localStorage.getItem('3ds_params') || '{}';
 
         try {
@@ -32,7 +24,7 @@
           url_search.push(encodeURIComponent(name) + '=' + encodeURIComponent(url_query_params[name] || ''));
         }
 
-        location.href = url.pathname + '?' + url_search.join('&');
+        location.href = location.pathname + '?' + url_search.join('&');
         window['3ds_redirect'] = true;
       })();
     </script>
@@ -41,18 +33,10 @@
   @if (Request::get('3ds') === 'success' && Request::get('3ds_restore'))
     <script type="text/javascript">
       (() => {
-        const url = new URL(location);
-
-        let url_query_params = url.search
-          .substr(1).split('&').filter(item => !!item).map(item => item.split('='))
-          .reduce((acc, item) => {
-            acc[decodeURIComponent(item[0])] = decodeURIComponent(item[1]);
-            return acc;
-          }, {});
+        let url_query_params = Object.assign({}, js_query_params);
+        let url_pathname = '{{ count($product->upsells) > 0 ? '/thankyou-promos' : '/thankyou' }}';
 
         localStorage.setItem('odin_order_created_at', new Date());
-        url.pathname = '{{ count($product->upsells) > 0 ? '/thankyou-promos' : '/thankyou' }}';
-
         url_query_params.order = localStorage.getItem('odin_order_id');
         url_query_params.cur = localStorage.getItem('order_currency');
         delete url_query_params['3ds_restore'];
@@ -64,7 +48,7 @@
           url_search.push(encodeURIComponent(name) + '=' + encodeURIComponent(url_query_params[name] || ''));
         }
 
-        location.href = url.pathname + '?' + url_search.join('&');
+        location.href = url_pathname + '?' + url_search.join('&');
       })();
     </script>
   @endif

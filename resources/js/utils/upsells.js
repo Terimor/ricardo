@@ -142,7 +142,7 @@ export function send1ClickRequest(data, upsells) {
     })
     .catch(err => {
       return {
-        paymentError: t('checkout.payment_error'),
+        paymentError: t('upsells.step_3.payment_error'),
       };
     });
 }

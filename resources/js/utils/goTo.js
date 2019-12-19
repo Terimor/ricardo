@@ -1,4 +1,4 @@
-import { searchPopulate } from '../services/queryParams';
+import searchPopulate from './searchPopulate';
 
 
 export const goTo = (pathname, exclude) => {
