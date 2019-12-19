@@ -140,7 +140,7 @@ export function preparePurchaseData({
             installments,
           }),
         totalQuantity: +key,
-        isOutOfStock: isSellOutArray.indexOf(String(idx + 1) !== -1),
+        isOutOfStock: isSellOutArray.indexOf(String(idx + 1)) !== -1,
         isBestseller: it.is_bestseller,
         isPopular: it.is_popular
       }
