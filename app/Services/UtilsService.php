@@ -551,7 +551,7 @@ class UtilsService
 	    //EU
 	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk',
 	    //other Europe
-	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va'	
+	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va', 'ru'
     ];
 
     public static $unsetGet = [
@@ -651,14 +651,12 @@ class UtilsService
         if ($code_only) {
             if ($is_europe_only) {
                 $countries = self::$countries_EU;
-                $countries[] = 'ru';
             } else {
                 $countries = array_keys(self::$countryCodes);
             }
         } else {
             if ($is_europe_only) {
-                $countries_keys = self::$countries_EU;
-                $countries_keys[] = 'ru';
+                $countries_keys = self::$countries_EU;                
                 foreach ($countries_keys as $key) {
                     $countries[$key] = self::$countryCodes[$key];
                 }
