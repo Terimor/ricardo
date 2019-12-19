@@ -112,7 +112,7 @@ class BluesnapService
      */
     public function getDataProtectionKey(array $data): ?string
     {
-        $api = $this->getPaymentApi($details);
+        $api = $this->getPaymentApi($data);
         return optional($api)->key;
     }
 
