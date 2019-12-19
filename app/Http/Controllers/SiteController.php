@@ -242,7 +242,7 @@ class SiteController extends Controller
             'ipqualityscore_api_hash'
         ));
 
-        $countries =  \Utils::getCountries(false, $product->is_europe_only);
+        $countries =  \Utils::getCountries(true, $product->is_europe_only);
         
 		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 
