@@ -1,7 +1,7 @@
 export default {
   computed: {
     isMobile () {
-      return ['s', 'xs'].includes(this.$mq)
+      return ['s', 'xs'].indexOf(this.$mq) !== -1;
     }
   }
 }
