@@ -30,7 +30,7 @@ class PaymentMethods
         self::INSTANT_TRANSFER => [
             'name'      => 'PayPal',
             'logo'      => '/static/images/payPal.png',
-            'is_active' => false
+            'is_active' => true
         ],
         self::MASTERCARD => [
             'name'      => 'MasterCard',
