@@ -109,25 +109,53 @@ class AppmaxService
      * [
      *   'currency'=>string,
      *   'amount'=>float,
-     *   'order_id'=>string,
-     *   'installments' => int,
-     *   'document_number' => string
+     *   'order_id'=>?string,
+     *   'installments'=>int,
+     *   'document_number'=>string
      * ]
      * @return array
      */
     public function payByCard(array $card, array $contacts, array $items, array $details): array
     {
         $customer_id = $this->requestCustomerId($contacts);
-        return $this->pay(
+        $reply = $this->pay(
             self::createCardObj($card, $contacts, $details),
             array_merge(
                 $details,
                 [
                     'customer_id' => $this->requestCustomerId($contacts),
-                    'provider_order_id' => $this->requestOrderId($items, $contacts, array_merge($details, ['customer_id' => $customer_id]))
+                    'order_id' => $this->requestOrderId($items, $contacts, array_merge($details, ['customer_id' => $customer_id]))
                 ]
             )
         );
+
+        if ($reply['status'] === Txn::STATUS_CAPTURED && !empty($details['order_id'])) {
+            $reply['token'] = self::encrypt(json_encode($card), $details['order_id']);
+        }
+
+        return $reply;
+    }
+
+    /**
+     * Provides payment by card
+     * @param  string   $token
+     * @param  array   $contacts
+     * @param  array   $items
+     * @param  array   $details
+     * [
+     *   'currency'=>string,
+     *   'amount'=>float,
+     *   'order_id'=>string,
+     *   'installments' => int,
+     *   'document_number' => string
+     * ]
+     * @return array
+     */
+    public function payByToken(string $token, array $contacts, array $items, array $details): array
+    {
+        $cardjs = self::decrypt($token, $details['order_id']);
+        $details['order_id'] = null;
+        return $this->payByCard(json_decode($cardjs, true), $contacts, $items, $details);
     }
 
     /**
@@ -238,8 +266,7 @@ class AppmaxService
      *  'currency'=>string,
      *  'amount'=>float,
      *  'customer_id'=>string,
-     *  'order_id'=>string,
-     *  'provider_order_id'=>string
+     *  'order_id'=>string
      * ]
      * @return array
      */
@@ -252,7 +279,7 @@ class AppmaxService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::APPMAX,
-            'hash'              => $details['provider_order_id'] ?? "fail_" . UtilsService::randomString(16),
+            'hash'              => $details['order_id'] ?? "fail_" . UtilsService::randomString(16),
             'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'payer_id'          => $details['customer_id'] ?? null,
             'provider_data'     => null,
@@ -260,7 +287,7 @@ class AppmaxService
             'errors'            => null
         ];
 
-        if (!$details['provider_order_id'] || !$details['customer_id']) {
+        if (!$details['order_id'] || !$details['customer_id']) {
             $result['errors'] = [AppmaxCodeMapper::toPhrase()];
             return $result;
         }
@@ -274,7 +301,7 @@ class AppmaxService
             $res = $client->post('payment/credit-card', [
                 'json' => [
                     'access-token' => $this->api->secret,
-                    'cart' => ['order_id' => $details['provider_order_id']],
+                    'cart' => ['order_id' => $details['order_id']],
                     'customer' => ['customer_id' => $details['customer_id']],
                     'payment' => ['CreditCard' => $source]
                 ]
@@ -284,7 +311,6 @@ class AppmaxService
 
             if ($body['success']) {
                 $result['status'] = Txn::STATUS_CAPTURED;
-                $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
             } else {
                 logger()->info("Appmax order", ['res' => $res->getBody()]);
             }

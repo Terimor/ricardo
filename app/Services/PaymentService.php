@@ -614,7 +614,42 @@ class PaymentService
 
             if ($checkout_price >= OdinProduct::MIN_PRICE) {
                 // select provider by main txn
-                if ($order_main_txn['payment_provider'] === PaymentProviders::EBANX) {
+                if ($order_main_txn['payment_provider'] === PaymentProviders::APPMAX) {
+                    $appmax = new AppmaxService($order_main_txn);
+                    $payment = $appmax->payByToken(
+                        $card_token,
+                        [
+                            'street'            => $order->shipping_street,
+                            'city'              => $order->shipping_city,
+                            'country'           => $order->shipping_country,
+                            'state'             => $order->shipping_state,
+                            'district'          => $order->shipping_street2,
+                            'zip'               => $order->shipping_zip,
+                            'email'             => $order->customer_email,
+                            'first_name'        => $order->customer_first_name,
+                            'last_name'         => $order->customer_last_name,
+                            'phone'             => $order->customer_phone,
+                            'ip'                => $req->ip()
+                        ],
+                        array_map(function($item) use($products) {
+                            return [
+                                'sku'   => $item['sku_code'],
+                                'qty'   => $item['quantity'],
+                                'name'  => $products[$item['sku_code']]->product_name,
+                                'desc'  => $products[$item['sku_code']]->long_name,
+                                'image'  => $products[$item['sku_code']]->logo_image,
+                                'amount' => $item['price']
+                            ];
+                        }, $upsell_products),
+                        [
+                            'amount'        => $checkout_price,
+                            'order_id'      => $order->getIdAttribute(),
+                            'currency'      => $order->currency,
+                            'installments'  => $order->installments,
+                            'document_number' => $order->customer_doc_id
+                        ]
+                    );
+                } elseif ($order_main_txn['payment_provider'] === PaymentProviders::EBANX) {
                     $ebanx = new EbanxService();
                     $payment = $ebanx->payByToken(
                         $card_token,
