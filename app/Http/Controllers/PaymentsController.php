@@ -11,6 +11,7 @@ use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\GetPaymentMethodsByCountryRequest;
+use App\Constants\PaymentProviders;
 use Illuminate\Http\Request;
 
 class PaymentsController extends Controller
@@ -126,7 +127,7 @@ class PaymentsController extends Controller
             throw new AuthException('Unauthorized');
         }
 
-        $order = $this->paymentService->approveOrder($reply['txn']);
+        $order = $this->paymentService->approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
         $order_txn = $order->getTxnByHash($reply['txn']['hash']);
 
         return md5($authKey . 'ok' . $bluesnap->getDataProtectionKey($order_txn));
@@ -147,7 +148,7 @@ class PaymentsController extends Controller
             throw new \Exception('checkout.com malformed captured webhook');
         }
 
-        $checkout = $this->paymentService->getCheckoutService($order_number, $hash);
+        $checkout = PaymentService::getCheckoutService($order_number, $hash);
 
         $reply = $checkout->validateCapturedWebhook($req);
 
@@ -156,7 +157,7 @@ class PaymentsController extends Controller
             throw new AuthException('checkout.com captured webhook unauthorized');
         }
 
-        $this->paymentService->approveOrder($reply['txn']);
+        $this->paymentService->approveOrder($reply['txn'], PaymentProviders::CHECKOUTCOM);
     }
 
     /**
@@ -174,7 +175,7 @@ class PaymentsController extends Controller
             throw new \Exception('checkout.com malformed failed webhook');
         }
 
-        $checkout = $this->paymentService->getCheckoutService($order_number, $hash);
+        $checkout = PaymentService::getCheckoutService($order_number, $hash);
 
         $reply = $checkout->validateFailedWebhook($req);
 
@@ -183,7 +184,7 @@ class PaymentsController extends Controller
             throw new AuthException('checkout.com failed webhook unauthorized');
         }
 
-        $this->paymentService->rejectTxn($reply['txn']);
+        $this->paymentService->rejectTxn($reply['txn'], PaymentProviders::CHECKOUTCOM);
 
         PaymentService::cacheErrors($reply['txn']);
     }
@@ -207,6 +208,26 @@ class PaymentsController extends Controller
     }
 
     /**
+     * Appmax webhook
+     * @param  Request $req
+     * @return void
+     */
+    public function appmaxWebhook(Request $req): void
+    {
+        $event  = $req->input('event');
+        $data   = $req->input('data');
+
+        logger()->info('Appmax webhook debug', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+
+        if (!$event || empty($data)) {
+            logger()->error('Appmax malformed webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            throw new \Exception('malformed webhook data');
+        }
+
+        $this->paymentService->appmaxWebhook($event, $data);
+    }
+
+    /**
      * Mint-e redirect after 3ds
      * @param PaymentCardMinte3dsRequest $req
      * @param string $order_id
@@ -214,8 +235,6 @@ class PaymentsController extends Controller
      */
     public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
     {
-        logger()->info('Mint-e 3ds redirect debug', ['ip' => $req->ip(), 'body' => $req->getContent()]);
-
         $query = [
             'order' => $order_id,
             '3ds'   => $this->paymentService->minte3ds($req, $order_id) ? 'success' : 'failure'
@@ -224,12 +243,26 @@ class PaymentsController extends Controller
         return redirect('/checkout?' . $qs = http_build_query($query));
     }
 
-    public function test(PaymentCardCreateOrderRequest $req)
+    public function test(Request $req)
     {
         if (\App::environment() === 'production') {
             throw new AuthException('Unauthorized');
         }
-        return 'ok';
+        $reply = $this->paymentService->test($req);
+
+        $result = [
+            'order_currency'    => $reply['order_currency'],
+            'order_number'      => $reply['order_number'],
+            'order_id'          => $reply['order_id'],
+            'id'                => $reply['id'],
+            'status'            => $reply['status']
+        ];
+
+        if (!empty($reply['errors'])) {
+            $result['errors'] = $reply['errors'];
+        }
+
+        return $result;
     }
 
 }

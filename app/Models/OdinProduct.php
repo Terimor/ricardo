@@ -48,7 +48,7 @@ class OdinProduct extends Model
     protected $appends = ['image'];
 
     protected $attributes = ['image'];
-    
+
     /**
      * Default reviews array
      */
@@ -57,22 +57,22 @@ class OdinProduct extends Model
             'name' => 'Claude',
             'text' => 'It was even better than I expected. The #PRODUCTNAME# is indeed extremely convenient! Really portable and the built quality is really good too.',
             'rate' => 5,
-            'image' => '/assets/images/review-user.jpg',            
+            'image' => '/assets/images/review-user.jpg',
         ],
         [
             'name' => 'Claude',
             'text' => 'I had a small issue during my purchase proccess, but their livechat helped me out within only 3 minutes. #PRODUCTNAME# arrived swiftly and nicely packaged. I simply love it!',
             'rate' => 5,
-            'image' => '/assets/images/review-user.jpg',            
+            'image' => '/assets/images/review-user.jpg',
         ],
         [
             'name' => 'Claude',
             'text' => 'was a bit unsure at first. Could it really live up to its promises? But honestly, #PRODUCTNAME# has entirely surpassed my expectations! I can only say: 10/10!',
             'rate' => 5,
-            'image' => '/assets/images/review-user.jpg',            
-        ],    
+            'image' => '/assets/images/review-user.jpg',
+        ],
     ];
-    
+
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -159,7 +159,7 @@ class OdinProduct extends Model
 
         return $value;
     }
-    
+
     /**
      * Getter reviews
      */
@@ -178,7 +178,7 @@ class OdinProduct extends Model
         }
 
         return $value;
-    }    
+    }
 
     /**
      * Getter prices
@@ -307,13 +307,13 @@ class OdinProduct extends Model
                 }
             }
         }
-        
+
         if (!empty($this->attributes['reviews'])) {
             foreach ($this->attributes['reviews'] as $review) {
                 $ids[$review['image_id']] = $review['image_id'];
             }
         }
-        
+
         if ($ids) {
             $this->images = [];
             $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
@@ -322,7 +322,7 @@ class OdinProduct extends Model
             }
         }
     }
-    
+
     /**
      * Get local images ids
      */
@@ -340,7 +340,7 @@ class OdinProduct extends Model
                 // get only 0 element
                 break;
             }
-        }            
+        }
         return $ids;
     }
 
@@ -377,31 +377,31 @@ class OdinProduct extends Model
      * Getter billing descriptor
      * @param type $value
      */
-        public function getBillingDescriptorAttribute($value)
+    public function getBillingDescriptorAttribute($value)
     {
         $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
         $host = str_replace('www.', '', request()->getHost());
-        $value = "/{$host}/{$value}";        
+        $value = "/{$host}/{$value}";
         $value = $billingDescriptorPrefix ? "/{$billingDescriptorPrefix}/{$value}" : $value;
         $value = str_replace('//', '/', $value);
         if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
             $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
-        }        
+        }
         return $value;
     }
-    
+
     /**
      * Return payment billing descriptor
      * @param type $countryCode
      * @return string
      */
     public function getPaymentBillingDescriptor($countryCode = null)
-    {                        
+    {
         if ($countryCode && in_array(strtolower($countryCode), PaymentService::BILLING_DESCRIPTOR_COUNTRIES)) {
             $value = $this->getOriginal()['billing_descriptor'];
             $value =  '/'.PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.'/'.$value;
         } else {
-            $value = $this->billing_descriptor;            
+            $value = $this->billing_descriptor;
         }
         if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
             $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
@@ -544,22 +544,22 @@ class OdinProduct extends Model
         }
         return $product;
     }
-    
+
     /**
      * Get by cop_id
      */
     public static function getByCopId(string $copId)
     {
-        return OdinProduct::where('prices.price_set', $copId)->first(); 
+        return OdinProduct::where('prices.price_set', $copId)->first();
     }
-    
+
     /**
      * Get by cop_id
      */
     public static function getById(string $productId)
     {
-        return OdinProduct::where('_id', $productId)->first(); 
-    }    
+        return OdinProduct::where('_id', $productId)->first();
+    }
 
     /**
      * Retuen array skus -> product
@@ -568,7 +568,7 @@ class OdinProduct extends Model
     public static function getCacheSkusProduct()
     {
         $skus = Cache::get('SkuProduct');
-        
+
         //disabled because should be generated in Saga daemons
         if (\App::environment() == 'development') {
             if (!$skus) {
@@ -599,7 +599,7 @@ class OdinProduct extends Model
     {
         return $this->getFieldLocalText($value);
     }
-    
+
     /**
      * Get products by ids
      * @param type $ids
@@ -624,7 +624,7 @@ class OdinProduct extends Model
         }
         return $products;
     }
-    
+
     /**
      * Get default product review
      * return array $reviewArray

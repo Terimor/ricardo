@@ -11,6 +11,7 @@ class PaymentProviders
     const NOVALNET         = 'novalnet';
     const MINTE            = 'minte';
     const PAYPAL_HK        = 'paypal_hk';
+    const APPMAX           = 'appmax';
 
     /**
      * Payment providers
@@ -56,7 +57,7 @@ class PaymentProviders
                 ],
                 'fallback' => []
             ]
-        ],        
+        ],
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
             'is_active' => true,
@@ -799,6 +800,97 @@ class PaymentProviders
                         '-3ds' => ['ar', 'co', 'mx']
                     ]
                 ],
+            ]
+        ],
+        self::APPMAX => [
+            'name'      => 'Appmax',
+            'is_active' => false,
+            'is_main'   => true,
+            'is_fallback' => false,
+            'in_prod'   => false,
+            'fraud_setting' => [
+                '3ds_limit' => 101,
+                'fallback_limit' => 70,
+                'refuse_limit' => 99
+            ],
+            'extra_fields'  => [
+                'br' => [
+                    'district' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ],
+                    'document_number'   => [
+                        'type'      => 'text',
+                        'pattern'   => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$',
+                        'schema'    => array('\d', '\d', '\d', '\.', '\d', '\d', '\d', '\.', '\d', '\d', '\d', '-', '\d', '\d'),
+                        'placeholder' => 'xxx.xxx.xxx-xx'
+                    ],
+                    'installments'  => [
+                        'type'  => 'dropdown',
+                        'items' => [
+                            ['value' => 1, 'phrase' => 'checkout.payment_form.installments.full_amount'],
+                            ['value' => 3, 'phrase' => 'checkout.payment_form.installments.pay_3'],
+                            ['value' => 6, 'phrase' => 'checkout.payment_form.installments.pay_6'],
+                        ],
+                        'default' => 3
+                    ],
+                    'state' => [
+                        'type'  => 'dropdown',
+                        'items' => [
+                            ['value' => 'DF', 'label' => 'Distrito Federal'],
+                            ['value' => 'AC', 'label' => 'Acre'],
+                            ['value' => 'AL', 'label' => 'Alagoas'],
+                            ['value' => 'AP', 'label' => 'Amapá'],
+                            ['value' => 'AM', 'label' => 'Amazonas'],
+                            ['value' => 'BA', 'label' => 'Bahia'],
+                            ['value' => 'CE', 'label' => 'Ceará'],
+                            ['value' => 'ES', 'label' => 'Espírito Santo'],
+                            ['value' => 'GO', 'label' => 'Goiás'],
+                            ['value' => 'MA', 'label' => 'Maranhão'],
+                            ['value' => 'MT', 'label' => 'Mato Grosso'],
+                            ['value' => 'MS', 'label' => 'Mato Grosso do Sul'],
+                            ['value' => 'MG', 'label' => 'Minas Gerais'],
+                            ['value' => 'PA', 'label' => 'Pará'],
+                            ['value' => 'PB', 'label' => 'Paraíba'],
+                            ['value' => 'PR', 'label' => 'Paraná'],
+                            ['value' => 'PE', 'label' => 'Pernambuco'],
+                            ['value' => 'PI', 'label' => 'Piauí'],
+                            ['value' => 'RJ', 'label' => 'Rio de Janeiro'],
+                            ['value' => 'RN', 'label' => 'Rio Grande do Norte'],
+                            ['value' => 'RS', 'label' => 'Rio Grande do Sul'],
+                            ['value' => 'RO', 'label' => 'Rondônia'],
+                            ['value' => 'RR', 'label' => 'Roraima'],
+                            ['value' => 'SC', 'label' => 'Santa Catarina'],
+                            ['value' => 'SP', 'label' => 'São Paulo'],
+                            ['value' => 'SE', 'label' => 'Sergipe'],
+                            ['value' => 'TO', 'label' => 'Tocantins']
+                        ],
+                        'default' => 'DF'
+                    ]
+                ]
+            ],
+            'methods'   => [
+                'main' => [
+                    PaymentMethods::MASTERCARD => [
+                        '-3ds' => ['br']
+                    ],
+                    PaymentMethods::VISA => [
+                        '-3ds' => ['br']
+                    ],
+                    PaymentMethods::AMEX => [
+                        '-3ds' => ['br']
+                    ],
+                    PaymentMethods::DINERSCLUB => [
+                        '-3ds' => ['br']
+                    ],
+                    PaymentMethods::HIPERCARD => [
+                        '-3ds' => ['br']
+                    ],
+                    PaymentMethods::ELO => [
+                        '-3ds' => ['br']
+                    ]
+                ],
+                'fallback' => []
             ]
         ]
     ];
