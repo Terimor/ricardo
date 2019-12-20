@@ -912,9 +912,8 @@ class PaymentService
         $order = null;
         if (!empty($data['number'])) {
             $order = OdinOrder::getByNumber($data['number']); // throwable
-        } elseif (!empty($data['hash'])) {
-            logger()->info("Approve get order", ['hash' => $data['hash']]);
-            $order = OdinOrder::getByTxnHash($data['hash']); // throwable
+        } elseif (!empty($data['hash']) && $provider) {
+            $order = OdinOrder::getByTxnHash($data['hash'], $provider); // throwable
         } else {
             logger()->error('Order approve failed', $data);
             return $order;
