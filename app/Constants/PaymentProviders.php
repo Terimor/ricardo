@@ -27,7 +27,7 @@ class PaymentProviders
             'fraud_setting' => [
                 '3ds_limit' => 85,
                 'fallback_limit' => 0,
-                'refuse_limit' => 99
+                'refuse_limit' => 80
             ],
             'methods'   => [
                 'main' => [
@@ -40,14 +40,14 @@ class PaymentProviders
         ],
         self::PAYPAL_HK => [
             'name'      => 'PayPal HK',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,
             'fraud_setting' => [
                 '3ds_limit' => 85,
                 'fallback_limit' => 0,
-                'refuse_limit' => 99
+                'refuse_limit' => 80
             ],
             'methods'   => [
                 'main' => [
