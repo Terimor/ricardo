@@ -111,7 +111,8 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('contact_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo'));
+        $company_address = str_replace(' - ', '<br>', \Utils::getCompanyAddress($request));
+        return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo', 'company_address'));
     }
 
     /**
@@ -177,7 +178,8 @@ class SiteController extends Controller
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('terms_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
-        return view('terms', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name'));
+        $company_address = str_replace(' - ', '<br>', \Utils::getCompanyAddress($request));
+        return view('terms', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name', 'company_address'));
     }
 
      /**
@@ -261,11 +263,16 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('checkout.page_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+
+        $company_address = \Utils::getCompanyAddress($request);
+        $company_descriptor_prefix = \Utils::getCompanyDescriptorPrefix($request);
+
         return view(
             $viewTemplate,
             compact(
                 'langCode', 'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
-                'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo'
+                'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo',
+                'company_address', 'company_descriptor_prefix'
             )
         );
     }

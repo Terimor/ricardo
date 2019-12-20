@@ -67,6 +67,7 @@ class ViewServiceProvider extends ServiceProvider
             }
             $view->with('aff', AffiliateSetting::getLocaleAffiliate($affiliate));
             $view->with('is_aff_id_empty', AffiliateService::isAffiliateRequestEmpty(Request()));
+            $view->with('company_address', UtilsService::getCompanyAddress(Request()));
         });
 
         View::composer('thankyou', function($view) {
@@ -107,7 +108,7 @@ class ViewServiceProvider extends ServiceProvider
             $is_aff_id_empty = AffiliateService::isAffiliateRequestEmpty($req);
 
             $locale_affiliate = AffiliateSetting::getLocaleAffiliate($affiliate ?? null);
-            $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;            
+            $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
 
             $view->with('is_minishop', true);
             $view->with('lang_locale', $lang);
@@ -121,6 +122,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('header_menu', MiniShopService::$headerMenu);
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
+            $view->with('company_address', UtilsService::getCompanyAddress($req));
         });
     }
 }

@@ -169,8 +169,8 @@
                               :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
                                 <p><i class="fa fa-lock"></i>{{ textSafeSSLEncryption }}</p>
-                                <p>{{ textCreditCardInvoiced }}<br/>"{{ $root.isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ productData.billing_descriptor }}"</p>
-                                <p v-if="$root.isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
+                                <p>{{ textCreditCardInvoiced }}<br/>"{{ companyDescriptorPrefix }}{{ productData.billing_descriptor }}"</p>
+                                <p v-if="$root.isAffIDEmpty" v-html="companyAddress"></p>
                             </div>
                         </div>
                     </div>
@@ -330,6 +330,13 @@
       }, 1000);
     },
     computed: {
+      companyAddress() {
+        return js_data.company_address.replace(' - ', '<br>');
+      },
+      companyDescriptorPrefix() {
+        return this.$root.isAffIDEmpty ? js_data.company_descriptor_prefix : '';
+      },
+
       discount: () => t('checkout.header_banner.discount'),
       textStep: () => t('checkout.step'),
       textChooseDeal: () => t('checkout.choose_deal'),

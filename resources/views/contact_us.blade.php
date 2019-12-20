@@ -31,7 +31,7 @@
 <div class="contacts">
     <div class="container">
         <div class="contacts__wrapper">
-            {!! t('contacts.content') !!}
+            {!! t('contacts.content', ['address' => $company_address]) !!}
             @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>

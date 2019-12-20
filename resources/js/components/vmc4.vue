@@ -55,8 +55,8 @@
                     <img alt="" src="//static.saratrkr.com/images/lock.png">
                     <span v-html="textSafeSSLEncryption"></span>
                   </p>
-                  <p><span v-html="textCreditCardInvoiced"></span><br/>"{{ $root.isAffIDEmpty ? 'MDE/Hal-Balzan' : ''}}{{ billing_descriptor }}"</p>
-                  <p v-if="$root.isAffIDEmpty">MDE Commerce Ltd.<br/>29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</p>
+                  <p><span v-html="textCreditCardInvoiced"></span><br/>"{{ companyDescriptorPrefix }}{{ billing_descriptor }}"</p>
+                  <p v-if="$root.isAffIDEmpty" v-html="companyAddress"></p>
                 </div>
               </div>
             </div>
@@ -114,6 +114,12 @@
       }
     },
 		computed: {
+      companyAddress() {
+        return js_data.company_address.replace(' - ', '<br>');
+      },
+      companyDescriptorPrefix() {
+        return this.$root.isAffIDEmpty ? js_data.company_descriptor_prefix : '';
+      },
 			productData() {
 				return js_data.product;
 			},
