@@ -26,7 +26,7 @@ class PaymentProviders
             'fraud_setting' => [
                 '3ds_limit' => 85,
                 'fallback_limit' => 0,
-                'refuse_limit' => 80
+                'refuse_limit' => 60
             ],
             'methods'   => [
                 'main' => [
@@ -46,7 +46,7 @@ class PaymentProviders
             'fraud_setting' => [
                 '3ds_limit' => 85,
                 'fallback_limit' => 0,
-                'refuse_limit' => 80
+                'refuse_limit' => 60
             ],
             'methods'   => [
                 'main' => [
