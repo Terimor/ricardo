@@ -19,6 +19,7 @@ use App\Models\OdinProduct;
 use App\Services\BluesnapService;
 use App\Services\CurrencyService;
 use App\Services\CustomerService;
+use App\Services\AppmaxService;
 use App\Services\CheckoutDotComService;
 use App\Services\EbanxService;
 use App\Services\MinteService;
@@ -537,7 +538,7 @@ class PaymentService
 
         // approve order if txn is approved
         if ($payment['status'] === Txn::STATUS_APPROVED) {
-            $order = $this->approveOrder($payment);
+            $order = $this->approveOrder($payment, $payment['payment_provider']);
         }
 
         // response
@@ -753,7 +754,7 @@ class PaymentService
 
                 // approve order if txn is approved
                 if ($payment['status'] === Txn::STATUS_APPROVED) {
-                    $order = $this->approveOrder($payment);
+                    $order = $this->approveOrder($payment, $payment['payment_provider']);
                 }
             }
         }
@@ -871,14 +872,13 @@ class PaymentService
      * @param array $data ['hash'=>string,'number'=>?string,'fee_usd'=>?float,'value'=>?float,'status'=>string]
      * @return OdinOrder
      */
-    public function approveOrder(array $data): OdinOrder
+    public function approveOrder(array $data, ?string $provider = null): OdinOrder
     {
         $order = null;
         if (!empty($data['number'])) {
             $order = OdinOrder::getByNumber($data['number']); // throwable
-        } elseif (!empty($data['hash'])) {
-            logger()->info("Approve get order", ['hash' => $data['hash']]);
-            $order = OdinOrder::getByTxnHash($data['hash']); // throwable
+        } elseif (!empty($data['hash']) && $provider) {
+            $order = OdinOrder::getByTxnHash($data['hash'], $provider); // throwable
         } else {
             logger()->error('Order approve failed', $data);
             return $order;
@@ -1034,10 +1034,10 @@ class PaymentService
 
         $result = false;
         if ($reply['txn']['status'] === Txn::STATUS_APPROVED) {
-            $this->approveOrder($reply['txn']);
+            $this->approveOrder($reply['txn'], PaymentProviders::MINTE);
             $result = true;
         } else {
-            $order = $this->rejectTxn($reply['txn']);
+            $order = $this->rejectTxn($reply['txn'], PaymentProviders::MINTE);
 
             PaymentService::cacheErrors(array_merge($reply['txn'], ['number' => $order->number]));
 
@@ -1091,7 +1091,7 @@ class PaymentService
     {
         $ebanx = new EbanxService();
         foreach ($hashes as $hash) {
-            $order = OdinOrder::getByTxnHash($hash, false);
+            $order = OdinOrder::getByTxnHash($hash, PaymentProviders::EBANX, false);
 
             if (!$order) {
                 logger()->warning('Order not found by hash', ['hash' => $hash]);
@@ -1103,10 +1103,7 @@ class PaymentService
             $payment = $ebanx->requestStatusByHash($hash, $txn ?? []);
 
             if (!empty($payment['number'])) {
-                $this->approveOrder($payment);
-
-
-
+                $this->approveOrder($payment, PaymentProviders::EBANX);
             } else {
                 logger()->warning('Ebanx payment not found', ['hash' => $hash]);
             }
@@ -1114,16 +1111,18 @@ class PaymentService
     }
 
     /**
-     * Returns CheckoutDotComService by order number
-     * @param  string $number
-     * @param  string $hash
-     * @return CheckoutDotComService
+     * Handles Appmax webhook
+     * @param string $event
+     * @param array  $data
+     * @return void
      */
-    public function getCheckoutService(string $number, string $hash): CheckoutDotComService
+    public function appmaxWebhook(string $event, array $data): void
     {
-        $order = OdinOrder::getByNumber($number); //throwable
-        $txn = $order->getTxnByHash($hash, false);
-        return new CheckoutDotComService($txn ?? []);
+        $order = OdinOrder::getByTxnHash($data['id'], PaymentProviders::APPMAX); //throwable
+        $txn = $order->getTxnByHash($data['id'], false);
+
+        $appmax = new AppmaxService($txn);
+        $this->approveOrder($appmax->validateWebhook($event, $data), PaymentProviders::APPMAX);
     }
 
     /**
@@ -1131,13 +1130,13 @@ class PaymentService
      * @param array $data
      * @return OdinOrder|null
      */
-    public function rejectTxn(array $data): ?OdinOrder
+    public function rejectTxn(array $data, ?string $provider = null): ?OdinOrder
     {
         $order = null;
         if (!empty($data['number'])) {
             $order = OdinOrder::getByNumber($data['number']); // throwable
-        } elseif (!empty($data['hash'])) {
-            $order = OdinOrder::getByTxnHash($data['hash']); // throwable
+        } elseif (!empty($data['hash']) && $provider) {
+            $order = OdinOrder::getByTxnHash($data['hash'], $provider); // throwable
         } else {
             logger()->error('Order txn reject failed', $data);
             return $order;
@@ -1304,6 +1303,32 @@ class PaymentService
     }
 
     /**
+     * Returns CheckoutDotComService by order number
+     * @param  string $number
+     * @param  string $hash
+     * @return CheckoutDotComService
+     */
+    public static function getCheckoutService(string $number, string $hash): CheckoutDotComService
+    {
+        $order = OdinOrder::getByNumber($number); //throwable
+        $txn = $order->getTxnByHash($hash, false);
+        return new CheckoutDotComService($txn ?? []);
+    }
+
+    /**
+     * Returns CheckoutDotComService by order number
+     * @param  string $number
+     * @param  string $hash
+     * @return CheckoutDotComService
+     */
+    public static function getAppmaxService(string $hash): AppmaxService
+    {
+        $order = OdinOrder::getByNumber($number); //throwable
+        $txn = $order->getTxnByHash($hash, false);
+        return new CheckoutDotComService($txn ?? []);
+    }
+
+    /**
      * Puts card token to cache
      * @param string $order_number
      * @param string|null $token
@@ -1386,6 +1411,175 @@ class PaymentService
 
         if ($prv === PaymentProviders::EBANX) {
             $result = !empty($details['installments']) && $details['installments'] <= EbanxService::INSTALLMENTS_MIN;
+        }
+
+        return $result;
+    }
+
+
+    public function test(Request $req)
+    {
+        ['sku' => $sku, 'qty' => $qty] = $req->get('product');
+        $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
+        $page_checkout = $req->input('page_checkout', $req->header('Referer'));
+        $user_agent = $req->header('User-Agent');
+        $ipqs = $req->input('ipqs', null);
+        $card = $req->get('card');
+        $order_id = $req->get('order');
+        $installments = (int)$req->input('card.installments', 0);
+        $contact = array_merge(
+            $req->get('contact'),
+            $req->get('address'),
+            ['ip' => $req->ip(), 'email' => strtolower($req->input('contact.email'))]
+        );
+        $method = PaymentMethodMapper::toMethod($card['number']);
+
+        // find order for update
+        $order = null;
+        if (!empty($order_id)) {
+            $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
+        }
+
+        $product = null;
+        if ($req->get('cop_id')) {
+            $product = OdinProduct::getByCopId($req->get('cop_id'));
+        }
+        if (!$product) {
+            $product = OdinProduct::getBySku($sku); // throwable
+        }
+
+        // select provider by country
+        $provider = PaymentProviders::APPMAX;
+
+        self::fraudCheck($ipqs, $provider); // throwable
+
+        $this->addCustomer($contact); // throwable
+
+        if (empty($order)) {;
+            $price = $this->getLocalizedPrice($product, (int)$qty, $contact['country'], $provider); // throwable
+
+            $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
+
+            $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
+            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
+            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
+
+            $order = $this->addOrder([
+                'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
+                'currency'              => $price['currency'],
+                'exchange_rate'         => $price['usd_rate'],
+                'total_paid'            => 0,
+                'total_paid_usd'        => 0,
+                'total_price'           => $order_product['total_price'],
+                'total_price_usd'       => $order_product['total_price_usd'],
+                'txns_fee_usd'          => 0,
+                'installments'          => $installments,
+                'is_reduced'            => false,
+                'is_invoice_sent'       => false,
+                'is_survey_sent'        => false,
+                'is_flagged'            => false,
+                'is_refunding'          => false,
+                'is_refunded'           => false,
+                'is_qc_passed'          => false,
+                'customer_email'        => $contact['email'],
+                'customer_first_name'   => $contact['first_name'],
+                'customer_last_name'    => $contact['last_name'],
+                'customer_phone'        => $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']),
+                'customer_doc_id'       => $contact['document_number'] ?? null,
+                'ip'                    => $contact['ip'],
+                'language'              => app()->getLocale(),
+                'txns'                  => [],
+                'shipping_country'      => $contact['country'],
+                'shipping_zip'          => $contact['zip'],
+                'shipping_state'        => $contact['state'],
+                'shipping_city'         => $contact['city'],
+                'shipping_street'       => $contact['street'],
+                'shipping_street2'      => $contact['district'] ?? null,
+                'shop_currency'         => CurrencyService::getCurrency()->code,
+                'warehouse_id'          => $product->warehouse_id,
+                'products'              => [$order_product],
+                'page_checkout'         => $page_checkout,
+                'params'                => $params,
+                'offer'                 => $offerId,
+                'affiliate'             => $affId,
+                'txid'                  => $validTxid,
+                'ipqualityscore'        => $ipqs
+            ]);
+        } else {
+            $order_product = $order->getMainProduct(); // throwable
+            $order->customer_email      = $contact['email'];
+            $order->customer_first_name = $contact['first_name'];
+            $order->customer_last_name  = $contact['last_name'];
+            $order->customer_phone      = $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']);
+            $order->customer_doc_id     = $contact['document_number'] ?? null;
+            $order->shipping_country    = $contact['country'];
+            $order->shipping_zip        = $contact['zip'];
+            $order->shipping_state      = $contact['state'];
+            $order->shipping_city       = $contact['city'];
+            $order->shipping_street     = $contact['street'];
+            $order->shipping_street2    = $contact['district'] ?? null;
+            $order->installments        = $installments;
+        }
+
+        $appmax = new AppmaxService(['product_id' => $product->getIdAttribute()]);
+        $payment = $appmax->payByCard(
+            $card,
+            $contact,
+            [
+                'sku'   => $sku,
+                'qty'   => $qty,
+                'name'  => $product->product_name,
+                'desc'  => $product->long_name,
+                'image' => $product->logo_image,
+                'amount'    => $order->total_price,
+            ],
+            [
+                'amount'        => $order->total_price,
+                'order_id'      => $order->getIdAttribute(),
+                'currency'      => $order->currency,
+                'installments'  => $installments,
+                'document_number' => $order->customer_doc_id
+            ]
+        );
+
+        $card_number = isset($card['number']) ? \Utils::prepareCardNumber((string)$card['number']) : null;
+        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
+
+        $order_product['txn_hash'] = $payment['hash'];
+        $order->addProduct($order_product, true);
+
+        // cache token
+        self::setCardToken($order->number, $payment['token'] ?? null);
+
+        $order->is_flagged = $payment['is_flagged'];
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
+            }
+        }
+
+        // approve order if txn is approved
+        if ($payment['status'] === Txn::STATUS_APPROVED) {
+            $order = $this->approveOrder($payment, $payment['payment_provider']);
+        }
+
+        // response
+        $result = [
+            'id'                => null,
+            'order_currency'    => $order->currency,
+            'order_number'      => $order->number,
+            'order_id'          => $order->getIdAttribute(),
+            'status'            => self::STATUS_FAIL
+        ];
+
+        if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $result['id'] = $payment['hash'];
+            $result['status'] = self::STATUS_OK;
+            $result['redirect_url'] = $payment['redirect_url'] ?? null;
+        } else {
+            $result['errors'] = $payment['errors'];
         }
 
         return $result;

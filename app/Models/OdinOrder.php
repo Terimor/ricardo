@@ -236,16 +236,24 @@ class OdinOrder extends OdinModel
     }
 
     /**
-     * Returns OdinOrder by Txn ID
-     * @param  string    $txn_id
+     * Returns OdinOrder by Txn hash
+     * @param  string    $hash
+     * @param  string|null $provider
      * @param  boolean   $throwable default=true
      * @return OdinOrder|null
      */
-    public static function getByTxnHash(string $txn_hash, bool $throwable = true): ?OdinOrder
+    public static function getByTxnHash(string $hash, ?string $provider = null, bool $throwable = true): ?OdinOrder
     {
-        $order = OdinOrder::where('txns.hash', $txn_hash)->first();
+        $query = OdinOrder::where(['txns.hash', $hash]);
+
+        if ($provider) {
+            $query->where('payment_provider', $provider);
+        }
+
+        $order = $query->first();
+
         if (!$order && $throwable) {
-            throw new OrderNotFoundException("Order by Txn [{$txn_hash}] not found");
+            throw new OrderNotFoundException("Order by Txn [{$hash}] not found");
         }
         return $order;
     }
