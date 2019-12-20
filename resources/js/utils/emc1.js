@@ -78,7 +78,7 @@ export function * getNotice ({
 }) {
   let index = 0
   const messageMap = {
-    /*paypal: `<div class="recently-notice recently-notice_paypal">
+    paypal: `<div class="recently-notice recently-notice_paypal">
         <div class="recently-notice__left">
           <img src="${js_data.cdn_url}/assets/images/paypal232.png" alt="PayPal">
         </div>
@@ -87,7 +87,7 @@ export function * getNotice ({
           <img src="${js_data.cdn_url}/assets/images/paypal-highq.png" alt="PayPal">
         </div>
       </div>
-    `,*/
+    `,
     usersActive: `
       <div class="recently-notice recently-notice_user-active">
         <div class="recently-notice__left">

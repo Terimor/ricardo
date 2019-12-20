@@ -62,6 +62,7 @@
                           v-model="form.paymentProvider"
                           @input="activateForm" />
                         <paypal-button
+                          v-if="$root.paypalEnabled"
                           :createOrder="paypalCreateOrder"
                           :onApprove="paypalOnApprove"
                           v-show="form.installments === 1"
@@ -211,7 +212,7 @@
     props: ['showPreloader', 'skusList'],
     data () {
       return {
-        isFormShown: true,
+        isFormShown: false,
         ipqsResult: null,
         paypalPaymentError: '',
         selectedProductData: {
@@ -268,7 +269,7 @@
           countryCodePhoneField: js_data.country_code,
           deal: null,
           variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
-          paymentProvider: 'credit-card',
+          paymentProvider: null,
           fname: null,
           lname: null,
           email: null,
@@ -291,9 +292,11 @@
       }
     },
     created() {
-      if (+js_query_params.closeform === 1) {
-        this.form.paymentProvider = null;
-        this.isFormShown = false;
+      const openForm = +js_query_params.openform;
+
+      if (openForm !== 0 && (!this.$root.paypalEnabled || openForm === 1)) {
+        this.form.paymentProvider = 'credit-card';
+        this.isFormShown = true;
       }
 
       if (this.queryParams['3ds'] === 'failure') {

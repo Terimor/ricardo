@@ -60,7 +60,7 @@ export default {
             content: getNoticeHtml()
           });
 
-          /*const targetNotice = document.querySelector('.recently-notice_paypal');
+          const targetNotice = document.querySelector('.recently-notice_paypal');
           const targetButton = document.querySelector('#paypal-button');
 
           if(targetNotice) {
@@ -69,7 +69,7 @@ export default {
                       targetButton.scrollIntoView();
                   }
               });
-          };*/
+          };
         }, 6000)
       }, 9000)
     }

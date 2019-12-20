@@ -1,5 +1,5 @@
 <template>
-  <div class="paypal-button-container" v-if="0">
+  <div class="paypal-button-container">
     <div id="paypal-button"></div>
     <div class="paypal-shim" :class="{ 'active': !isSubmitted }">
       <div v-if="isSubmitted" class="disabled"></div>
@@ -55,49 +55,48 @@
       initButton () {
         const { createOrder, onApprove } = this;
         const that = this;
-        if (0) {
-            paypal.Buttons({
-              onInit(data, actions) {
-                that.action = actions;
 
-                if (!that.isValid()) {
-                  actions.disable();
-                }
-              },
+        paypal.Buttons({
+          onInit(data, actions) {
+            that.action = actions;
 
-              createOrder(data, actions) {
-                that.isSubmitted = true;
+            if (!that.isValid()) {
+              actions.disable();
+            }
+          },
 
-                return createOrder()
-                  .then(res => {
-                    return res && res.id || null;
-                  });
-              },
+          createOrder(data, actions) {
+            that.isSubmitted = true;
 
-              onClick () {
-                that.$emit('click', true);
-              },
+            return createOrder()
+              .then(res => {
+                return res && res.id || null;
+              });
+          },
 
-              onApprove (data, actions) {
-                return onApprove(data)
-                  .then(() => {
-                    setTimeout(() => that.isSubmitted = false, 1000);
-                  });
-              },
+          onClick () {
+            that.$emit('click', true);
+          },
 
-              onError(err) {
-                that.isSubmitted = false;
-              },
+          onApprove (data, actions) {
+            return onApprove(data)
+              .then(() => {
+                setTimeout(() => that.isSubmitted = false, 1000);
+              });
+          },
 
-              onCancel(data, actions) {
-                that.isSubmitted = false;
-              },
+          onError(err) {
+            that.isSubmitted = false;
+          },
 
-              style: {
-                height: 55,
-              }
-            }).render('#paypal-button');
-        }
+          onCancel(data, actions) {
+            that.isSubmitted = false;
+          },
+
+          style: {
+            height: 55,
+          }
+        }).render('#paypal-button');
       }
     },
   };
