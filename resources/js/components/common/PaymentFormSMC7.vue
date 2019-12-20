@@ -187,8 +187,8 @@
         const values = Object.keys(this.$root.paymentMethods || [])
           .filter(name => name !== 'instant_transfer');
 
-        if (this.paymentForm.installments === 1) {
-          //values.push('instant_transfer');
+        if (this.paymentForm.installments === 1 && this.$root.paypalEnabled) {
+          values.push('instant_transfer');
         }
 
         return values.map(value => ({

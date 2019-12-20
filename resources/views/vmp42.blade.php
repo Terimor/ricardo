@@ -232,6 +232,7 @@
                         <div class="promo__step-title">{{ t('checkout.step') }} 1: {{ t('checkout.pay_securely') }}</div>
                         <div class="promo__paypal-button-wrapper">
                             <paypal-button
+                                v-if="$root.paypalEnabled"
                                 v-show="form.installments === 1"
                                 :style="{ 'max-width': '400px' }"
                                 :create-order="paypalCreateOrder"

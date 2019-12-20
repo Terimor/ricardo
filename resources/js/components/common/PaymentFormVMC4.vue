@@ -58,6 +58,7 @@
             v-model="form.paymentProvider"
             @input="activateForm" />
           <paypal-button
+            v-if="$root.paypalEnabled"
             v-show="vmc4Form.installments === 1"
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"

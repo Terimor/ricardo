@@ -153,6 +153,7 @@
                               <span class="purchase-button-text" :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }">{{textSubmitButton}}</span>
                             </button>
                             <paypal-button
+                              v-if="$root.paypalEnabled"
                               v-show="form.paymentProvider === 'paypal'"
                               :createOrder="paypalCreateOrder"
                               :onApprove="paypalOnApprove"

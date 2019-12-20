@@ -6,6 +6,10 @@ export default {
       return js_data.cdn_url;
     },
 
+    paypalEnabled() {
+      return !!document.querySelector('#paypal-script');
+    },
+
     isAffIDEmpty() {
       return (!js_query_params.aff_id || js_query_params.aff_id === '0')
         && (!js_query_params.affid || js_query_params.affid === '0');

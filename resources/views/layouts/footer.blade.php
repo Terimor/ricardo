@@ -36,6 +36,6 @@
         </li>
     </ul>
     @if ($is_aff_id_empty)
-        <div class="company-address">MDE Commerce Ltd. - 29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta</div>
+        <div class="company-address">{{ $company_address }}</div>
     @endif
 </footer>

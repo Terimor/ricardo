@@ -285,6 +285,7 @@
                 @input="onCreditCardSelect" />
 
               <paypal-button
+                v-if="$root.paypalEnabled"
                 v-show="form.installments === 1"
                 :createOrder="paypalCreateOrder"
                 :onApprove="paypalOnApprove"

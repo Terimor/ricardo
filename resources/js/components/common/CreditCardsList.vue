@@ -39,8 +39,8 @@
         let paymentMethodNames = Object.keys(this.$root.paymentMethods || [])
           .filter(name => name !== 'instant_transfer');
 
-        if (this.withPaypal) {
-          //paymentMethodNames.push('instant_transfer');
+        if (this.withPaypal && this.$root.paypalEnabled) {
+          paymentMethodNames.push('instant_transfer');
         }
 
         return paymentMethodNames;
