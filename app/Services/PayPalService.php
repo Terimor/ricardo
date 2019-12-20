@@ -177,7 +177,7 @@ class PayPalService
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => PaymentProviders::PAYPAL,
+                'payment_provider' => PaymentProviders::PAYPAL_HK,
                 'payer_id' => '',
             ], true);
 
@@ -236,7 +236,7 @@ class PayPalService
         $ipqs = $request->input('ipqs', null);
 
         // refuse payment if  there is fraud
-        PaymentService::fraudCheck($ipqs, PaymentProviders::PAYPAL);
+        PaymentService::fraudCheck($ipqs, PaymentProviders::PAYPAL_HK);
 
         $order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
         if ($order) {
@@ -329,7 +329,7 @@ class PayPalService
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => PaymentProviders::PAYPAL,
+                'payment_provider' => PaymentProviders::PAYPAL_HK,
                 'payer_id' => '',
             ], true);
             abort_if(!$txn_response['success'], 404);
@@ -421,7 +421,7 @@ class PayPalService
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => PaymentProviders::PAYPAL,
+                'payment_provider' => PaymentProviders::PAYPAL_HK,
                 'payer_id' => optional($paypal_order->payer)->payer_id,
             ], true);
 
@@ -522,7 +522,7 @@ class PayPalService
                     'currency' => $paypal_order_currency,
                     'provider_data' => $paypal_order,
                     'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                    'payment_provider' => PaymentProviders::PAYPAL,
+                    'payment_provider' => PaymentProviders::PAYPAL_HK,
                     'payer_id' => optional($paypal_order->payer)->payer_id,
                 ], true);
 
