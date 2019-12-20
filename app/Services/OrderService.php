@@ -289,8 +289,8 @@ class OrderService
     {
         $orders = OdinOrder::getLastAffiliateOrders($limit);
         $firing = 0; $firingPercent = 0;
-        foreach ($orders as $order) {
-            if (!empty($order->is_reduce)) {
+        foreach ($orders as $order) {            
+            if ($order->is_reduced === true) {
                 $firing++;
             }
         }
