@@ -392,6 +392,13 @@ class SiteController extends Controller
         $fail = 'FAIL';
         $result = $bad;
         $redis = $fail;
+        
+        $setting = Setting::getValue([
+            'prober_firing_percent',
+            'prober_firing_orders',
+            'prober_txns_percent',
+            'prober_txns_orders'
+        ]);        
 
         //check Redis
         $redisContent = Cache::get('SkuProduct');        
@@ -402,16 +409,21 @@ class SiteController extends Controller
                 $result = $good;
             }
         }
+                
+        $txns = OrderService::getLastOrdersTxnSuccessPercent((int)$setting['prober_txns_orders']);
         
-        // get percent
-        $limitTxns = 30;
-        $txns = OrderService::getLastOrdersTxnSuccessPercent($limitTxns);
-        
-        if ($txns <= 5) {
+        if ($txns <= (float)$setting['prober_txns_percent']) {
             $result = $bad;
         }
         $txns.= '%';
-        return view('prober', compact('result', 'redis', 'txns', 'limitTxns'));
+        
+        $firing = OrderService::getLastOrdersFiringPercent((int)$setting['prober_firing_orders']);
+        
+        if ($firing <= (float)$setting['prober_firing_percent']) {
+            $result = $bad;
+        }
+        $firing.= '%';
+        return view('prober', compact('result', 'redis', 'txns', 'firing', 'setting'));
     }
 
     /**

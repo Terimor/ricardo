@@ -680,9 +680,21 @@ class OdinOrder extends OdinModel
 
     /**
      * Get last order txns
+     * @return $orders
      */
-    public static function getLastOrders($limit = 20) {
+    public static function getLastOrders($limit = 20)
+    {
         $orders = OdinOrder::limit($limit)->orderBy('_id', 'desc')->get();
+        return $orders;
+    }
+    
+    /**
+     * Get last orders with affiliate parameter
+     * @return $orders
+     */
+    public static function getLastAffiliateOrders($limit = 100)
+    {
+        $orders = OdinOrder::limit($limit)->where(['affiliate' => ['$ne' => null]])->orderBy('_id', 'desc')->get();
         return $orders;
     }
 }

@@ -257,7 +257,7 @@ class OrderService
      * Get last fail txns percent
      * @return type
      */
-    public static function getLastOrdersTxnSuccessPercent($limit = 20)
+    public static function getLastOrdersTxnSuccessPercent($limit = 20): float
     {
         // get last 20 orders with a txns
         $orders = OdinOrder::getLastOrders($limit);
@@ -278,5 +278,24 @@ class OrderService
         $successPercent = round($successPercent, 0);
 
         return $successPercent;
+    }
+    
+    /**
+     * Get last affiliate orders firing percent
+     * @param type $limit
+     * @return float
+     */
+    public static function getLastOrdersFiringPercent($limit = 100): float
+    {
+        $orders = OdinOrder::getLastAffiliateOrders($limit);
+        $firing = 0; $firingPercent = 0;
+        foreach ($orders as $order) {
+            if (!empty($order->is_reduce)) {
+                $firing++;
+            }
+        }
+        
+        $firingPercent = round($firing / $limit * 100, 2);
+        return $firingPercent;
     }
 }
