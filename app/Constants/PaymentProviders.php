@@ -10,6 +10,7 @@ class PaymentProviders
     const BLUESNAP         = 'bluesnap';
     const NOVALNET         = 'novalnet';
     const MINTE            = 'minte';
+    const PAYPAL_HK        = 'paypal_hk';
 
     /**
      * Payment providers
@@ -36,6 +37,26 @@ class PaymentProviders
                 'fallback' => []
             ]
         ],
+        self::PAYPAL_HK => [
+            'name'      => 'PayPal HK',
+            'is_active' => false,
+            'is_main'   => true,
+            'is_fallback' => false,
+            'in_prod'   => true,
+            'fraud_setting' => [
+                '3ds_limit' => 85,
+                'fallback_limit' => 0,
+                'refuse_limit' => 99
+            ],
+            'methods'   => [
+                'main' => [
+                    PaymentMethods::INSTANT_TRANSFER => [
+                        '-3ds' => ['*']
+                    ]
+                ],
+                'fallback' => []
+            ]
+        ],        
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
             'is_active' => true,

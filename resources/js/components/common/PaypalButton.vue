@@ -55,48 +55,49 @@
       initButton () {
         const { createOrder, onApprove } = this;
         const that = this;
+        if (0) {
+            paypal.Buttons({
+              onInit(data, actions) {
+                that.action = actions;
 
-        /*paypal.Buttons({
-          onInit(data, actions) {
-            that.action = actions;
+                if (!that.isValid()) {
+                  actions.disable();
+                }
+              },
 
-            if (!that.isValid()) {
-              actions.disable();
-            }
-          },
+              createOrder(data, actions) {
+                that.isSubmitted = true;
 
-          createOrder(data, actions) {
-            that.isSubmitted = true;
+                return createOrder()
+                  .then(res => {
+                    return res && res.id || null;
+                  });
+              },
 
-            return createOrder()
-              .then(res => {
-                return res && res.id || null;
-              });
-          },
+              onClick () {
+                that.$emit('click', true);
+              },
 
-          onClick () {
-            that.$emit('click', true);
-          },
+              onApprove (data, actions) {
+                return onApprove(data)
+                  .then(() => {
+                    setTimeout(() => that.isSubmitted = false, 1000);
+                  });
+              },
 
-          onApprove (data, actions) {
-            return onApprove(data)
-              .then(() => {
-                setTimeout(() => that.isSubmitted = false, 1000);
-              });
-          },
+              onError(err) {
+                that.isSubmitted = false;
+              },
 
-          onError(err) {
-            that.isSubmitted = false;
-          },
+              onCancel(data, actions) {
+                that.isSubmitted = false;
+              },
 
-          onCancel(data, actions) {
-            that.isSubmitted = false;
-          },
-
-          style: {
-            height: 55,
-          }
-        }).render('#paypal-button'); */
+              style: {
+                height: 55,
+              }
+            }).render('#paypal-button');
+        }
       }
     },
   };
