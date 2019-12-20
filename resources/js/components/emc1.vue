@@ -211,7 +211,7 @@
     props: ['showPreloader', 'skusList'],
     data () {
       return {
-        isFormShown: false,
+        isFormShown: true,
         ipqsResult: null,
         paypalPaymentError: '',
         selectedProductData: {
@@ -268,7 +268,7 @@
           countryCodePhoneField: js_data.country_code,
           deal: null,
           variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
-          paymentProvider: null,
+          paymentProvider: 'credit-card',
           fname: null,
           lname: null,
           email: null,
@@ -291,9 +291,9 @@
       }
     },
     created() {
-      if (+js_query_params.openform === 1) {
-        this.form.paymentProvider = 'credit-card';
-        this.isFormShown = true;
+      if (+js_query_params.closeform === 1) {
+        this.form.paymentProvider = null;
+        this.isFormShown = false;
       }
 
       if (this.queryParams['3ds'] === 'failure') {
