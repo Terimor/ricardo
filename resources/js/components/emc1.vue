@@ -291,6 +291,11 @@
       }
     },
     created() {
+      if (+js_query_params.openform === 1) {
+        this.form.paymentProvider = 'credit-card';
+        this.isFormShown = true;
+      }
+
       if (this.queryParams['3ds'] === 'failure') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
