@@ -40,7 +40,7 @@ class PaymentProviders
         ],
         self::PAYPAL_HK => [
             'name'      => 'PayPal HK',
-            'is_active' => false,
+            'is_active' => true,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,
