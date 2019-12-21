@@ -127,12 +127,10 @@ class PaymentService
      * Adds txn data to Order
      * @param  OdinOrder    &$order
      * @param  array        $data
-     * @param  string       $payment_method
-     * @param  string|null  $card_type
-     * @param  string|null  $card_number
+     * @param  array        $details
      * @return void
      */
-    private function addTxnToOrder(OdinOrder &$order, array $data, string $payment_method, ?string $card_type, ?string $card_number = null): void
+    private function addTxnToOrder(OdinOrder &$order, array $data, array $details): void
     {
         // log txn
         (new OrderService())->addTxn([
@@ -140,7 +138,7 @@ class PaymentService
             'value'             => $data['value'],
             'currency'          => $data['currency'],
             'provider_data'     => $data['provider_data'],
-            'payment_method'    => $payment_method,
+            'payment_method'    => $details['payment_method'],
             'payment_provider'  => $data['payment_provider'],
             'payer_id'          => $data['payer_id'] ?? null
         ]);
@@ -150,9 +148,9 @@ class PaymentService
             'value'             => $data['value'],
             'status'            => $data['status'],
             'fee_usd'           => $data['fee_usd'] ?? 0,
-            'card_type'         => $card_type,
-            'card_number'       => $card_number,
-            'payment_method'    => $payment_method,
+            'card_type'         => $details['card_type'] ?? null,
+            'card_number'       => $details['card_number'],
+            'payment_method'    => $details['payment_method'],
             'payment_provider'  => $data['payment_provider'],
             'payment_api_id'    => $data['payment_api_id'] ?? null,
             'payer_id'          => $data['payer_id'] ?? null
@@ -349,7 +347,11 @@ class PaymentService
         if (!$provider) {
             logger()->warning(
                 'Provider not found',
-                ['country' => $contact['country'], 'method' => $method, 'card' => substr_replace($card['number'], '********', 4, 8)]
+                [
+                    'country' => $contact['country'],
+                    'method' => $method,
+                    'card' => UtilsService::prepareCardNumber($card['number'])
+                ]
             );
             throw new ProviderNotFoundException('Provider not found');
         }
@@ -490,8 +492,12 @@ class PaymentService
                 'descriptor'    => $order->billing_descriptor
             ]);
         }
-        $card_number = isset($card['number']) ? \Utils::prepareCardNumber((string)$card['number']) : null;
-        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
+
+        $this->addTxnToOrder($order, $payment, [
+            'payment_method' => $method,
+            'card_number' => UtilsService::prepareCardNumber($card['number']),
+            'card_type' => $card['type'] ?? null
+        ]);
 
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
@@ -511,7 +517,11 @@ class PaymentService
                 $order_product = $order->getMainProduct(); // throwable
                 $order_product['txn_hash'] = $payment['hash'];
                 $order->addProduct($order_product, true);
-                $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
+                $this->addTxnToOrder($order, $payment, [
+                    'payment_method' => $method,
+                    'card_number' => UtilsService::prepareCardNumber($card['number']),
+                    'card_type' => $card['type'] ?? null
+                ]);
             }
         }
 
@@ -759,7 +769,7 @@ class PaymentService
                     $order->addProduct($item);
                 }
 
-                $this->addTxnToOrder($order, $payment, $order_main_txn['payment_method'], $order_main_txn['card_type'], $order_main_txn['card_number'] ?? null);
+                $this->addTxnToOrder($order, $payment, $order_main_txn);
 
                 if ($order->status === OdinOrder::STATUS_PAID) {
                     $order->status = OdinOrder::STATUS_HALFPAID;
@@ -902,8 +912,9 @@ class PaymentService
         $order = null;
         if (!empty($data['number'])) {
             $order = OdinOrder::getByNumber($data['number']); // throwable
-        } elseif (!empty($data['hash']) && $provider) {
-            $order = OdinOrder::getByTxnHash($data['hash'], $provider); // throwable
+        } elseif (!empty($data['hash'])) {
+            logger()->info("Approve get order", ['hash' => $data['hash']]);
+            $order = OdinOrder::getByTxnHash($data['hash']); // throwable
         } else {
             logger()->error('Order approve failed', $data);
             return $order;
@@ -911,7 +922,7 @@ class PaymentService
 
         // check webhook reply
         if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
-            logger()->info("Webhook ignored, order [{$order->number}] status [{$order->status}]");
+            logger()->info("Webhook ignored, order [{$order->number}] status [{$order->status}]", ['data' => $data]);
             return $order;
         }
 
@@ -955,6 +966,7 @@ class PaymentService
             $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
         }
 
+        logger()->info("Approve order saving", ['hash' => $data['hash']]);
         if (!$order->save()) {
             $validator = $order->validate();
             if ($validator->fails()) {
@@ -1084,9 +1096,10 @@ class PaymentService
                     $order_product = $order->getMainProduct(); // throwable
                     $order_product['txn_hash'] = $reply['payment']['hash'];
                     $order->addProduct($order_product, true);
-                    $this->addTxnToOrder($order, $reply['payment'], $order_txn['payment_method'], $order_txn['сard_type'] ?? null, $order_txn['сard_number'] ?? null);
+                    $this->addTxnToOrder($order, $reply['payment'], $order_txn);
                     $order->is_flagged = $reply['payment']['is_flagged'];
 
+                    logger()->info("Minte 3ds order saving", ['hash' => $reply['payment']['hash']]);
                     if (!$order->save()) {
                         $validator = $order->validate();
                         if ($validator->fails()) {
