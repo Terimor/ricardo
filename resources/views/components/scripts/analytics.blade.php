@@ -6,7 +6,8 @@
     async></script>
 
   <script type="text/javascript">
-    window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ $ga_id }}');
+    window.jsanalytics = @json($ga_id);
+    window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',@json($ga_id));
   </script>
 
 @endif
