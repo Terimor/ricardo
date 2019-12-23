@@ -91,8 +91,8 @@ class AppmaxService
             // 'address_street_complement' => '',
             // 'address_street_district' => 'Centro',
             'email'     => $contacts['email'],
-            'firstName' => $contacts['first_name'],
-            'lastName'  => $contacts['last_name'],
+            'firstname' => $contacts['first_name'],
+            'lastname'  => $contacts['last_name'],
             'postcode'  => $contacts['zip'],
             'telephone' => $phone
         ];
@@ -123,7 +123,7 @@ class AppmaxService
             array_merge(
                 $details,
                 [
-                    'customer_id' => $this->requestCustomerId($contacts),
+                    'customer_id' => $customer_id,
                     'order_id' => $this->requestOrderId($items, $contacts, array_merge($details, ['customer_id' => $customer_id]))
                 ]
             )
@@ -270,7 +270,7 @@ class AppmaxService
      * ]
      * @return array
      */
-    private function pay(string $source, array $details): array
+    private function pay(array $source, array $details): array
     {
         $result = [
             'fee_usd'           => 0,
