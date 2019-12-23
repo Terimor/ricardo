@@ -1158,7 +1158,11 @@ class PaymentService
         $txn = $order->getTxnByHash((string)$data['id'], false);
 
         $appmax = new AppmaxService($txn);
-        $this->approveOrder($appmax->validateWebhook($event, $data), PaymentProviders::APPMAX);
+        $reply = $appmax->validateWebhook($event, $data);
+
+        if ($reply['status']) {
+            $this->approveOrder($reply['txn'], PaymentProviders::APPMAX);
+        }
     }
 
     /**
