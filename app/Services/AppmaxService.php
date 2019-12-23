@@ -26,6 +26,8 @@ class AppmaxService
 
     const WEBHOOK_EVENT_ORDER_PAID = 'OrderPaid';
 
+    const INSTALLMENTS_MIN = 1;
+
     /**
      * @var string
      */
@@ -64,13 +66,15 @@ class AppmaxService
      */
     public static function createCardObj(array $card, array $contacts, array $details = []): array
     {
-        return array_merge([
+        return [
             'name'      => $contacts['first_name'] . ' ' . $contacts['last_name'],
             'month'     => $card['month'],
-            'year'      => $card['year'],
+            'year'      => substr($card['year'], 2),
             'cvv'       => $card['cvv'],
-            'number'    => $card['number']
-        ], $details);
+            'number'    => $card['number'],
+            'installments' => !empty($details['installments']) ? $details['installments'] : self::INSTALLMENTS_MIN,
+            'document_number' => $details['document_number']
+        ];
     }
 
     /**

@@ -172,14 +172,14 @@ class OdinOrder extends OdinModel
             if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $model->currency;
             }
-            
+
             // fill country by ip
             if (!isset($model->country) || !$model->country) {
                 $ip = $model->ip;
                 if ($ip) {
                     $location = \Location::get($ip);
                     $model->country = isset($location->countryCode) ? strtolower($location->countryCode) : null;
-                    
+
                     if (!$model->country) {
                         logger()->error("Cant find country by IP {$ip} for order {$model->number}");
                     }
@@ -244,7 +244,7 @@ class OdinOrder extends OdinModel
      */
     public static function getByTxnHash(string $hash, ?string $provider = null, bool $throwable = true): ?OdinOrder
     {
-        $query = OdinOrder::where(['txns.hash', $hash]);
+        $query = OdinOrder::where('txns.hash', $hash);
 
         if ($provider) {
             $query->where('payment_provider', $provider);
@@ -695,7 +695,7 @@ class OdinOrder extends OdinModel
         $orders = OdinOrder::limit($limit)->orderBy('_id', 'desc')->get();
         return $orders;
     }
-    
+
     /**
      * Get last orders with affiliate parameter
      * @return $orders
