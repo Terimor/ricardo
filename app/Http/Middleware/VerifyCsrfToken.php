@@ -24,6 +24,7 @@ class VerifyCsrfToken extends Middleware
         'checkoutdotcom-captured-webhook',
         'checkoutdotcom-failed-webhook',
         'bluesnap-webhook',
+        'appmax-webhook',
         'ebanx-webhook',
         'paypal-webhooks',
         'minte-3ds/*',

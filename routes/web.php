@@ -30,7 +30,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     //$router->get('/minishop/products', 'MiniShopController@products')->name('minishop.products');
 
-    //$router->get('/products', 'SiteController@products')->name('products');    
+    //$router->get('/products', 'SiteController@products')->name('products');
     //$router->get('/product', 'ProductController@view')->name('product');
     $router->get('/product/local-price', 'ProductController@getLocalPrice');
     $router->get('/test-bluesnap', 'PaymentsController@testBluesnap');
@@ -42,6 +42,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/checkoutdotcom-failed-webhook', 'PaymentsController@checkoutDotComFailedWebhook');
     $router->post('/ebanx-webhook', 'PaymentsController@ebanxWebhook');
     $router->post('/bluesnap-webhook', 'PaymentsController@bluesnapWebhook');
+    $router->post('/appmax-webhook', 'PaymentsController@appmaxWebhook');
     $router->post('/minte-3ds/{orderId}', 'PaymentsController@minte3ds');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
@@ -65,10 +66,10 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     /* test routes */
     $router->post('/test-payments', 'PaymentsController@test');
     $router->get('/test-postbacks', 'SiteController@logPostback');
-    
+
     // sitemap
     $router->get('/sitemap.xml', 'SiteController@sitemap');
-    
+
 });
 
 /*Route::get('/debug-sentry', function () {

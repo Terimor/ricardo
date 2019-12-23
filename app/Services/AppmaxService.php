@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PaymentApi;
+use App\Models\Txn;
 use App\Models\Setting;
 use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
