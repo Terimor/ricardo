@@ -247,7 +247,7 @@ class OdinOrder extends OdinModel
         $query = OdinOrder::where('txns.hash', $hash);
 
         if ($provider) {
-            $query->where('payment_provider', $provider);
+            $query->where('txns.payment_provider', $provider);
         }
 
         $order = $query->first();
