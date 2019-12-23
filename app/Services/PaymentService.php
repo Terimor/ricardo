@@ -1581,8 +1581,11 @@ class PaymentService
             ]
         );
 
-        $card_number = isset($card['number']) ? \Utils::prepareCardNumber((string)$card['number']) : null;
-        $this->addTxnToOrder($order, $payment, $method, $card['type'] ?? null, $card_number);
+        $this->addTxnToOrder($order, $payment, [
+            'payment_method' => $method,
+            'card_number' => UtilsService::prepareCardNumber($card['number']),
+            'card_type' => $card['type'] ?? null
+        ]);
 
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
