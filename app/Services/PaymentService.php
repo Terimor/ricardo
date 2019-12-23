@@ -479,6 +479,7 @@ class PaymentService
                     'product_id'    => $product->getIdAttribute()
                 ]
             );
+            logger()->info("Bluesnap card data", ['order' => $order->number, 'card' => $card]);
         } else if ($provider === PaymentProviders::MINTE) {
             $mint = new MinteService();
             $payment = $mint->payByCard($card, $contact, [
