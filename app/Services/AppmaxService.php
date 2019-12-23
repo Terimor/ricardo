@@ -319,7 +319,7 @@ class AppmaxService
             } else {
                 logger()->info("Appmax order", ['res' => $res->getBody()]);
             }
-            $result['provider_data'] = (string)$res->getBody;
+            $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res ? $res->getBody() : null];
