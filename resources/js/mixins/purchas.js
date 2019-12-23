@@ -11,7 +11,9 @@ export default {
         upsells: js_data.product.upsells,
         prices: js_data.product.prices[data.deal],
         product_name: js_data.product.product_name,
-        image: skus.find(it => it.code === data.variant).quantity_image[1],
+        image: data.variant
+          ? skus.find(it => it.code === data.variant).quantity_image[1]
+          : null,
       };
 
       localStorage.setItem('selectedProductData', JSON.stringify(selectedProductData));
