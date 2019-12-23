@@ -708,24 +708,30 @@ class UtilsService
     public static function getCdnUrl($set_production = false) {
         $env = \App::environment();
 
-        // hardcode: temporary replace cdn urls for two domains
-        // Remove after check
-        $wifibostCdn = 'https://cdn.wifiboost.tech';
-        $xdroneCdn = 'https://cdn.xdronehd.pro';
-        $secucam360Cdn = 'https://cdn.secucam360.com';
-        $daysightsCdn = 'https://cdn.daysights.pro';
-        $smartbellCdn = 'https://cdn.smartbell.pro';
-        $host = request()->getHost();
-        if (stripos(' '.$host, 'wifiboost.tech')) {
-            return $wifibostCdn;
-        } else if (stripos(' '.$host, 'xdronehd.pro')) {
-            return $xdroneCdn;
-        } else if (stripos(' '.$host, 'secucam360.com')) {
-            return $secucam360Cdn;
-        } else if (stripos(' '.$host, 'daysights.pro')) {
-            return $daysightsCdn;
-        } else if (stripos(' '.$host, 'smartbell.pro')) {
-            return $smartbellCdn;
+        $domain = Domain::getByName();
+        if ($domain && $domain->is_own_cdn) {
+            $url = 'https://cdn.'.str_replace('www.','', request()->getHost());
+            return $url;
+        } else {
+            // hardcode: temporary replace cdn urls for two domains
+            // Remove after check
+            $wifibostCdn = 'https://cdn.wifiboost.tech';
+            $xdroneCdn = 'https://cdn.xdronehd.pro';
+            $secucam360Cdn = 'https://cdn.secucam360.com';
+            $daysightsCdn = 'https://cdn.daysights.pro';
+            $smartbellCdn = 'https://cdn.smartbell.pro';
+            $host = request()->getHost();
+            if (stripos(' '.$host, 'wifiboost.tech')) {
+                return $wifibostCdn;
+            } else if (stripos(' '.$host, 'xdronehd.pro')) {
+                return $xdroneCdn;
+            } else if (stripos(' '.$host, 'secucam360.com')) {
+                return $secucam360Cdn;
+            } else if (stripos(' '.$host, 'daysights.pro')) {
+                return $daysightsCdn;
+            } else if (stripos(' '.$host, 'smartbell.pro')) {
+                return $smartbellCdn;
+            }
         }
         
         return ($env === 'production' || $set_production
@@ -750,24 +756,29 @@ class UtilsService
             $s3Url = self::S3_URL_STAGING;
         }
         
-        // hardcode: temporary replace cdn urls for two domains
-        // Remove after check
-        $wifibostCdn = 'cdn.wifiboost.tech';
-        $xdroneCdn = 'cdn.xdronehd.pro';
-        $secucam360Cdn = 'cdn.secucam360.com';
-        $daysightsCdn = 'cdn.daysights.pro';
-        $smartbellCdn = 'cdn.smartbell.pro';
-        $host = request()->getHost();
-        if (stripos(' '.$host, 'wifiboost.tech')) {
-            $urlReplace = $wifibostCdn;
-        } else if (stripos(' '.$host, 'xdronehd.pro')) {
-            $urlReplace = $xdroneCdn;
-        } else if (stripos(' '.$host, 'secucam360.com')) {
-            $urlReplace = $secucam360Cdn;
-        } else if (stripos(' '.$host, 'daysights.pro')) {
-            $urlReplace = $daysightsCdn;
-        } else if (stripos(' '.$host, 'smartbell.pro')) {
-            $urlReplace = $smartbellCdn;
+        $domain = Domain::getByName();
+        if ($domain && $domain->is_own_cdn) {
+            $urlReplace = 'cdn.'.str_replace('www.','', request()->getHost());
+        } else {
+            // hardcode: temporary replace cdn urls for two domains
+            // Remove after check
+            $wifibostCdn = 'cdn.wifiboost.tech';
+            $xdroneCdn = 'cdn.xdronehd.pro';
+            $secucam360Cdn = 'cdn.secucam360.com';
+            $daysightsCdn = 'cdn.daysights.pro';
+            $smartbellCdn = 'cdn.smartbell.pro';
+            $host = request()->getHost();
+            if (stripos(' '.$host, 'wifiboost.tech')) {
+                $urlReplace = $wifibostCdn;
+            } else if (stripos(' '.$host, 'xdronehd.pro')) {
+                $urlReplace = $xdroneCdn;
+            } else if (stripos(' '.$host, 'secucam360.com')) {
+                $urlReplace = $secucam360Cdn;
+            } else if (stripos(' '.$host, 'daysights.pro')) {
+                $urlReplace = $daysightsCdn;
+            } else if (stripos(' '.$host, 'smartbell.pro')) {
+                $urlReplace = $smartbellCdn;
+            }
         }
 
         $url = str_replace($s3Url, $urlReplace, $url);

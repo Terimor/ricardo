@@ -10,6 +10,8 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class Domain extends Model
 {
+    public static $cached_current_domain;
+    
     /**
      * @var string
      */
@@ -42,13 +44,18 @@ class Domain extends Model
      */
      public static function getByName($name = null)
      {
-         $host = str_replace('www.', '', request()->getHost());
-         $name = $name ?? $host;
-         $domain = Domain::where('name', $name)->first();
-         if (!$domain) {
-             logger()->error("Can't find a domain", ['host' => request()->getHost()]);
-             $domain = Domain::first();
-         }                     
+         if (static::$cached_current_domain && !$name) {             
+            $domain = static::$cached_current_domain;            
+         } else {             
+            $host = str_replace('www.', '', request()->getHost());
+            $name = $name ?? $host;
+            $domain = Domain::where('name', $name)->first();
+            if (!$domain) {
+                logger()->error("Can't find a domain", ['host' => request()->getHost()]);
+                $domain = Domain::first();
+            }
+            static::$cached_current_domain = $domain;
+         }         
          return $domain;
      }
      
