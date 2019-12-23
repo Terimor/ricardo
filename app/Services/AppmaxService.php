@@ -345,7 +345,7 @@ class AppmaxService
                 'status' => true,
                 'txn' => [
                     'fee_usd'   => 0,
-                    'hash'      => $data['id'],
+                    'hash'      => (string)$data['id'],
                     'status'    => $data['status'] === self::STATUS_APPROVED ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
                     'value'     => preg_replace('/[^\d.]/', '', $data['total'])
                 ]

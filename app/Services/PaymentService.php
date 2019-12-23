@@ -144,7 +144,7 @@ class PaymentService
         ]);
 
         $order->addTxn([
-            'hash'              => $data['hash'],
+            'hash'              => (string)$data['hash'],
             'value'             => $data['value'],
             'status'            => $data['status'],
             'fee_usd'           => $data['fee_usd'] ?? 0,
@@ -906,9 +906,9 @@ class PaymentService
     /**
      * Approves order
      * @param array $data ['hash'=>string,'number'=>?string,'fee_usd'=>?float,'value'=>?float,'status'=>string]
-     * @return OdinOrder
+     * @return OdinOrder|null
      */
-    public function approveOrder(array $data, ?string $provider = null): OdinOrder
+    public function approveOrder(array $data, ?string $provider = null): ?OdinOrder
     {
         $order = null;
         if (!empty($data['number'])) {
@@ -1155,7 +1155,7 @@ class PaymentService
     public function appmaxWebhook(string $event, array $data): void
     {
         $order = OdinOrder::getByTxnHash($data['id'], PaymentProviders::APPMAX); //throwable
-        $txn = $order->getTxnByHash($data['id'], false);
+        $txn = $order->getTxnByHash((string)$data['id'], false);
 
         $appmax = new AppmaxService($txn);
         $this->approveOrder($appmax->validateWebhook($event, $data), PaymentProviders::APPMAX);
