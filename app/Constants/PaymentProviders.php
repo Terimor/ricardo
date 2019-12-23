@@ -490,22 +490,22 @@ class PaymentProviders
             'methods'   => [
                 'main' => [
                     PaymentMethods::MASTERCARD => [
-                        '-3ds' => ['ar', 'br', 'mx', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'mx', 'co']
                     ],
                     PaymentMethods::VISA => [
-                        '-3ds' => ['ar', 'br', 'mx', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'mx', 'co']
                     ],
                     PaymentMethods::AMEX => [
-                        '-3ds' => ['ar', 'br', 'mx', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'mx', 'co']
                     ],
                     PaymentMethods::DINERSCLUB => [
-                        '-3ds' => ['ar', 'br', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'co']
                     ],
                     PaymentMethods::HIPERCARD => [
-                        '-3ds' => ['br']
+                        '-3ds' => [/*'br'*/]
                     ],
                     PaymentMethods::ELO => [
-                        '-3ds' => ['br']
+                        '-3ds' => [/*'br'*/]
                     ],
                     PaymentMethods::NARANJA => [
                         '-3ds' => ['ar']
@@ -804,13 +804,13 @@ class PaymentProviders
         ],
         self::APPMAX => [
             'name'      => 'Appmax',
-            'is_active' => false,
+            'is_active' => true,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => false,
             'fraud_setting' => [
                 '3ds_limit' => 101,
-                'fallback_limit' => 70,
+                'fallback_limit' => 0,
                 'refuse_limit' => 99
             ],
             'extra_fields'  => [

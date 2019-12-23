@@ -428,9 +428,32 @@ class PaymentService
         }
         // select provider and create payment
         $payment = [];
-        if ($provider === PaymentProviders::EBANX) {
-            $ebanxService = new EbanxService();
-            $payment = $ebanxService->payByCard(
+        if ($provider === PaymentProviders::APPMAX) {
+            $appmax = new AppmaxService(['product_id' => $product->getIdAttribute()]);
+            $payment = $appmax->payByCard(
+                $card,
+                $contact,
+                [
+                    [
+                        'sku'   => $sku,
+                        'qty'   => $qty,
+                        'name'  => $product->product_name,
+                        'desc'  => $product->long_name,
+                        'image' => $product->logo_image,
+                        'amount'    => $order->total_price,
+                    ]
+                ],
+                [
+                    'amount'        => $order->total_price,
+                    'order_id'      => $order->getIdAttribute(),
+                    'currency'      => $order->currency,
+                    'installments'  => $installments,
+                    'document_number' => $order->customer_doc_id
+                ]
+            );
+        } elseif ($provider === PaymentProviders::EBANX) {
+            $ebanx = new EbanxService();
+            $payment = $ebanx->payByCard(
                 $card,
                 $contact,
                 [
