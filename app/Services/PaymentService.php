@@ -1563,12 +1563,14 @@ class PaymentService
             $card,
             $contact,
             [
-                'sku'   => $sku,
-                'qty'   => $qty,
-                'name'  => $product->product_name,
-                'desc'  => $product->long_name,
-                'image' => $product->logo_image,
-                'amount'    => $order->total_price,
+                [
+                    'sku'   => $sku,
+                    'qty'   => $qty,
+                    'name'  => $product->product_name,
+                    'desc'  => $product->long_name,
+                    'image' => $product->logo_image,
+                    'amount'    => $order->total_price,
+                ]
             ],
             [
                 'amount'        => $order->total_price,
