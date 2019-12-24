@@ -237,7 +237,10 @@ class AppmaxService
                 logger()->info("Appmax customer", ['res' => $res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
-            logger()->error("Appmax customer", ['req' => Psr7\str($ex->getRequest()), 'res' => Psr7\str($ex->getResponse())]);
+            logger()->error("Appmax customer", [
+                'req' => Psr7\str($ex->getRequest()),
+                'res' => $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null
+            ]);
         }
 
         return $result;
@@ -281,7 +284,10 @@ class AppmaxService
                 logger()->info("Appmax order", ['res' => $res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
-            logger()->error("Appmax order", ['req' => Psr7\str($ex->getRequest()), 'res' => Psr7\str($ex->getResponse())]);
+            logger()->error("Appmax order", [
+                'req' => Psr7\str($ex->getRequest()),
+                'res' => $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null
+            ]);
         }
 
         return $result;
@@ -347,7 +353,8 @@ class AppmaxService
             }
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
-            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => Psr7\str($ex->getResponse())];
+            $res = $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null;
+            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res];
             logger()->error("Appmax pay", ['req' => Psr7\str($ex->getRequest()), 'res' => $result['provider_data']]);
         }
         return $result;
