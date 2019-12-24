@@ -237,10 +237,7 @@ class AppmaxService
                 logger()->info("Appmax customer", ['res' => $res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
-            logger()->error("Appmax customer", [
-                'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $ex->hasResponse() ? $ex->getResponse()->getBody() : null
-            ]);
+            logger()->error("Appmax customer", ['req' => Psr7\str($ex->getRequest()), 'res' => Psr7\str($ex->getResponse())]);
         }
 
         return $result;
@@ -284,10 +281,7 @@ class AppmaxService
                 logger()->info("Appmax order", ['res' => $res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
-            logger()->error("Appmax order", [
-                'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $ex->hasResponse() ? $ex->getResponse()->getBody() : null
-            ]);
+            logger()->error("Appmax order", ['req' => Psr7\str($ex->getRequest()), 'res' => Psr7\str($ex->getResponse())]);
         }
 
         return $result;
@@ -349,16 +343,12 @@ class AppmaxService
             } else {
                 $result['fallback'] = true;
                 $result['errors'] = [AppmaxCodeMapper::toPhrase()];
-                logger()->info("Appmax pay failed", ['res' => $res->getBody()]);
+                logger()->info("Appmax pay", ['res' => $res->getBody()]);
             }
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
-            $res = $ex->hasResponse() ? $ex->getResponse() : null;
-            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res ? $res->getBody() : null];
-            logger()->error("Appmax pay req failed", [
-                'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $res
-            ]);
+            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => Psr7\str($ex->getResponse())];
+            logger()->error("Appmax pay", ['req' => Psr7\str($ex->getRequest()), 'res' => $result['provider_data']]);
         }
         return $result;
     }
