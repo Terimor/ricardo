@@ -716,8 +716,7 @@ class UtilsService
             // hardcode: temporary replace cdn urls for two domains
             // Remove after check
             $wifibostCdn = 'https://cdn.wifiboost.tech';
-            $xdroneCdn = 'https://cdn.xdronehd.pro';
-            $secucam360Cdn = 'https://cdn.secucam360.com';
+            $xdroneCdn = 'https://cdn.xdronehd.pro';            
             $daysightsCdn = 'https://cdn.daysights.pro';
             $smartbellCdn = 'https://cdn.smartbell.pro';
             $host = request()->getHost();
@@ -725,8 +724,6 @@ class UtilsService
                 return $wifibostCdn;
             } else if (stripos(' '.$host, 'xdronehd.pro')) {
                 return $xdroneCdn;
-            } else if (stripos(' '.$host, 'secucam360.com')) {
-                return $secucam360Cdn;
             } else if (stripos(' '.$host, 'daysights.pro')) {
                 return $daysightsCdn;
             } else if (stripos(' '.$host, 'smartbell.pro')) {
@@ -763,8 +760,7 @@ class UtilsService
             // hardcode: temporary replace cdn urls for two domains
             // Remove after check
             $wifibostCdn = 'cdn.wifiboost.tech';
-            $xdroneCdn = 'cdn.xdronehd.pro';
-            $secucam360Cdn = 'cdn.secucam360.com';
+            $xdroneCdn = 'cdn.xdronehd.pro';            
             $daysightsCdn = 'cdn.daysights.pro';
             $smartbellCdn = 'cdn.smartbell.pro';
             $host = request()->getHost();
@@ -772,8 +768,6 @@ class UtilsService
                 $urlReplace = $wifibostCdn;
             } else if (stripos(' '.$host, 'xdronehd.pro')) {
                 $urlReplace = $xdroneCdn;
-            } else if (stripos(' '.$host, 'secucam360.com')) {
-                $urlReplace = $secucam360Cdn;
             } else if (stripos(' '.$host, 'daysights.pro')) {
                 $urlReplace = $daysightsCdn;
             } else if (stripos(' '.$host, 'smartbell.pro')) {
