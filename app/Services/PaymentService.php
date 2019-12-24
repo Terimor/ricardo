@@ -918,6 +918,45 @@ class PaymentService
                     ]
                 );
                 break;
+            case PaymentProviders::EBANX:
+                $order_product = $order->getMainProduct(); // throwable
+                $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
+                $appmax = new EbanxService();
+                $payment = $ebanx->payByCard(
+                    $card,
+                    [
+                        'street'            => $order->shipping_street,
+                        'city'              => $order->shipping_city,
+                        'country'           => $order->shipping_country,
+                        'state'             => $order->shipping_state,
+                        'district'          => $order->shipping_street2,
+                        'zip'               => $order->shipping_zip,
+                        'document_number'   => $order->customer_doc_id,
+                        'email'             => $order->customer_email,
+                        'first_name'        => $order->customer_first_name,
+                        'last_name'         => $order->customer_last_name,
+                        'phone'             => $order->customer_phone,
+                        'ip'                => $order->ip
+                    ],
+                    [
+                        [
+                            'sku'   => $order_product['sku_code'],
+                            'qty'   => $order_product['quantity'],
+                            'name'  => $product->product_name,
+                            'desc'  => $product->description,
+                            'amount'    => $order_product['price'],
+                            'is_main'   => true
+                        ]
+                    ],
+                    [
+                        'amount'        => $order->total_price,
+                        'currency'      => $order->currency,
+                        'number'        => $order->number,
+                        'installments'  => $order->installments,
+                        'product_id'    => $product->getIdAttribute()
+                    ]
+                );
+                break;
             default:
                 logger()->info("Fallback [{$order->number}] provider not found");
         endswitch;
@@ -1012,6 +1051,8 @@ class PaymentService
                 return EbanxService::getCurrencyByCountry($country, $currency);
             case PaymentProviders::MINTE:
                 return MinteService::getCurrencyByCountry($country, $currency);
+            case PaymentProviders::APPMAX:
+                return AppmaxService::getCurrencyByCountry($country, $currency);
             default:
                 return $currency;
         endswitch;
@@ -1338,6 +1379,10 @@ class PaymentService
 
         if (!EbanxService::isCountrySupported($country)) {
             $excl[] = PaymentProviders::EBANX;
+        }
+
+        if (!AppmaxService::isCountrySupported($country)) {
+            $excl[] = PaymentProviders::APPMAX;
         }
 
         $available_providers = [];

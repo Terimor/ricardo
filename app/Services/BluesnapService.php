@@ -9,7 +9,6 @@ use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\BluesnapCodeMapper;
 use Illuminate\Http\Request;
-use GuzzleHttp\Psr7;
 use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
@@ -232,10 +231,7 @@ class BluesnapService
                 }
                 $result['provider_data']['res'] = $body_decoded;
             }
-            logger()->error("Bluesnap pay", [
-                'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $result['provider_data']
-            ]);
+            logger()->error("Bluesnap pay", ['res'  => $result['provider_data']]);
         }
         return $result;
     }

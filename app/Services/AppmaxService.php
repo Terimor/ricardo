@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Models\Setting;
+use App\Models\Currency;
 use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\AppmaxCodeMapper;
@@ -27,6 +28,10 @@ class AppmaxService
     const WEBHOOK_EVENT_ORDER_PAID = 'OrderPaid';
 
     const INSTALLMENTS_MIN = 1;
+
+    const COUNTRY_CURRENCY = [
+        'br' => ['BRL']
+    ];
 
     /**
      * @var string
@@ -103,6 +108,31 @@ class AppmaxService
         ];
 
         return $result;
+    }
+
+    /**
+     * Returns available currency for country
+     * @param  string $country_code
+     * @param  string|null $currency
+     * @return string
+     */
+    public static function getCurrencyByCountry(string $country_code, ?string $currency): ?string
+    {
+        if (isset(self::COUNTRY_CURRENCY[$country_code])) {
+            return in_array($currency, self::COUNTRY_CURRENCY[$country_code]) ? $currency : Currency::DEF_CUR;;
+        } else {
+            return Currency::DEF_CUR;
+        }
+    }
+
+    /**
+     * Checks if the country is supported
+     * @param  string $country_code
+     * @return bool
+     */
+    public static function isCountrySupported(string $country_code): bool
+    {
+        return isset(self::COUNTRY_CURRENCY[$country_code]);
     }
 
     /**
@@ -317,13 +347,15 @@ class AppmaxService
             if ($body['success']) {
                 $result['status'] = Txn::STATUS_CAPTURED;
             } else {
-                logger()->info("Appmax order", ['res' => $res->getBody()]);
+                $result['fallback'] = true;
+                $result['errors'] = [AppmaxCodeMapper::toPhrase()];
+                logger()->info("Appmax pay failed", ['res' => $res->getBody()]);
             }
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res ? $res->getBody() : null];
-            logger()->error("Appmax pay", [
+            logger()->error("Appmax pay req failed", [
                 'request'   => Psr7\str($ex->getRequest()),
                 'response'  => $res
             ]);

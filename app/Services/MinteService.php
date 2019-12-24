@@ -10,7 +10,6 @@ use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\MinteCodeMapper;
 use Illuminate\Http\Request;
-use GuzzleHttp\Psr7;
 use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
@@ -255,7 +254,7 @@ class MinteService
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
 
-            logger()->error("Mint-e auth", ['response'  => $result['provider_data']]);
+            logger()->error("Mint-e auth", ['res'  => $result['provider_data']]);
         }
         return $result;
     }
@@ -312,10 +311,7 @@ class MinteService
             $payment['errors'] = [MinteCodeMapper::toPhrase()];
             $payment['status']   = Txn::STATUS_FAILED;
 
-            logger()->error("Mint-e capture", [
-                'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $payment['provider_data']
-            ]);
+            logger()->error("Mint-e capture", ['res'  => $payment['provider_data']]);
         }
         return $payment;
     }
@@ -381,10 +377,7 @@ class MinteService
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
 
-            logger()->error("Mint-e pay", [
-                'request'   => Psr7\str($ex->getRequest()),
-                'response'  => $result['provider_data']
-            ]);
+            logger()->error("Mint-e pay", ['res'  => $result['provider_data']]);
         }
         return $result;
     }
