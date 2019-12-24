@@ -502,7 +502,6 @@ class PaymentService
                     'product_id'    => $product->getIdAttribute()
                 ]
             );
-            logger()->info("Bluesnap card data", ['order' => $order->number, 'card' => $card]);
         } else if ($provider === PaymentProviders::MINTE) {
             $mint = new MinteService();
             $payment = $mint->payByCard($card, $contact, [
@@ -989,7 +988,6 @@ class PaymentService
             $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
         }
 
-        logger()->info("Approve order saving", ['hash' => $data['hash']]);
         if (!$order->save()) {
             $validator = $order->validate();
             if ($validator->fails()) {
