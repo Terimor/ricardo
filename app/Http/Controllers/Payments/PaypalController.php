@@ -45,12 +45,12 @@ class PaypalController extends Controller
         $currency = !empty($response['order_currency']) ? $response['order_currency'] : '';
         $order_number = $response['order_number'];
 
-        $response = json_encode($braintree_response->result);
+        $response = isset($braintree_response->result) ? json_encode($braintree_response->result) : null;
         unset($braintree_response->headers['Set-Cookie']);
         $braintree_response->headers['Content-Length'] = strlen($response);
 
         return [
-            'id' => optional($braintree_response->result)->id,
+            'id' => isset($braintree_response->result) ? optional($braintree_response->result)->id : null,
             'odin_order_id' => $odin_order_id,
             'order_currency' => $currency,
             'order_number' => $order_number,

@@ -158,7 +158,7 @@ class PayPalService
             'intent' => 'CAPTURE',
             'purchase_units' => [$pp_purchase_unit]
         ];
-
+        $response = null;
         try {
             $response = $this->payPalHttpClient->execute($pp_request);
         } catch (HttpException $e) {
@@ -167,7 +167,7 @@ class PayPalService
         }
 
         // If success create new txn and update order
-        if ($response->statusCode === 201) {
+        if (isset($response->statusCode) && $response->statusCode === 201) {
             $paypal_order = $response->result;
 
             // Creating a capture transaction
@@ -313,14 +313,14 @@ class PayPalService
             'intent' => 'CAPTURE',
             'purchase_units' => [$unit]
         ];
-
+        $response = null;
         try {
-            $response = $this->payPalHttpClient->execute($pp_request);
+            $response = $this->payPalHttpClient->execute($pp_request);            
         } catch (HttpException $e) {
             $this->handlePPBraintreeException($e, $shop_currency);
         }
 
-        if ($response->statusCode === 201) {
+        if (isset($response->statusCode) && $response->statusCode === 201) {
             $paypal_order = $response->result;
 
             $txn_response = $this->orderService->addTxn([
