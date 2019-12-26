@@ -186,7 +186,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' =>  Txn::STATUS_CAPTURED,                
+                'status' =>  Txn::STATUS_CAPTURED,
                 'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
@@ -315,7 +315,7 @@ class PayPalService
         ];
         $response = null;
         try {
-            $response = $this->payPalHttpClient->execute($pp_request);            
+            $response = $this->payPalHttpClient->execute($pp_request);
         } catch (HttpException $e) {
             $this->handlePPBraintreeException($e, $shop_currency);
         }
@@ -355,7 +355,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' =>  Txn::STATUS_CAPTURED,                
+                'status' =>  Txn::STATUS_CAPTURED,
                 'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
@@ -371,6 +371,7 @@ class PayPalService
                 'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
                 'total_paid' => 0,
                 'total_paid_usd' => 0,
+                'txns_fee_usd' => 0,
                 'total_price' => !$is_currency_supported ? $total_price_usd : $total_local_price,
                 'total_price_usd' => $total_price_usd,
                 'customer_phone' => null,
@@ -432,7 +433,7 @@ class PayPalService
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'value' => $txn_response['txn']->value,
-                'status' => Txn::STATUS_CAPTURED,                
+                'status' => Txn::STATUS_CAPTURED,
                 'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
@@ -483,11 +484,6 @@ class PayPalService
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
             })->first();
-            $fee = $request->resource['seller_receivable_breakdown']['paypal_fee']['value'] ?? 0;
-
-            if (!$fee) {
-                //logger()->error("Wrong PayPal fee: " . json_encode($request->resource));
-            }
 
             $paypal_order_id = preg_split('/orders\//', $link['href'])[1];
 
@@ -533,7 +529,7 @@ class PayPalService
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
                     'value' => $txn_response['txn']->value,
-                    'status' => Txn::STATUS_APPROVED,                    
+                    'status' => Txn::STATUS_APPROVED,
                     'fee_usd' => 0,
                     'payment_provider' => $txn_response['txn']->payment_provider,
                     'payment_method' => $txn_response['txn']->payment_method,
@@ -563,7 +559,7 @@ class PayPalService
 
                 $total = collect($order->txns)->reduce(function ($carry, $item) {
                     if ($item['status'] === Txn::STATUS_APPROVED) {
-                        $carry['value'] += $item['value'];                        
+                        $carry['value'] += $item['value'];
                     }
                     return $carry;
                 }, ['value' => 0]);
@@ -576,10 +572,6 @@ class PayPalService
                     $pp_order_currency_rate = CurrencyService::getCurrency($paypal_order_currency)->usd_rate;
                     $order->total_paid_usd = CurrencyService::roundValueByCurrencyRules($total['value'] / $pp_order_currency_rate, self::DEFAULT_CURRENCY);
                 }
-
-                $currency = CurrencyService::getCurrency($order->currency);
-                //$order->txns_fee_usd += CurrencyService::roundValueByCurrencyRules($total['fee_usd'] / $currency->usd_rate, self::DEFAULT_CURRENCY);
-                $order->txns_fee_usd = 0;
 
                 $order->status = $this->getOrderStatus($order);
                 $order->is_invoice_sent = false;
@@ -602,22 +594,6 @@ class PayPalService
             }
         }
         $order->total_paid = $total_pad;
-    }
-
-    /**
-     * @param OdinOrder $order
-     */
-    public function calculateTotalFee(OdinOrder $order)
-    {
-        $total_fee = 0;
-        foreach ($order->products as $product) {
-            if ($product['is_txn_approved']) {
-                $total_fee += $product['txn_fee'];
-            }
-        }
-        $currency = CurrencyService::getCurrency($order->currency);
-        //$order->txns_fee_usd = CurrencyService::roundValueByCurrencyRules($total_fee / $currency->usd_rate, self::DEFAULT_CURRENCY);
-        $order->txns_fee_usd = 0;
     }
 
     /**
