@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\PaymentException;
 use App\Exceptions\PPCurrencyNotSupportedException;
 use App\Http\Requests\PayPalCrateOrderRequest;
 use App\Http\Requests\PayPalVerfifyOrderRequest;
@@ -409,7 +410,14 @@ class PayPalService
      */
     public function verifyOrder(PayPalVerfifyOrderRequest $request)
     {
-        $response = $this->payPalHttpClient->execute(new OrdersCaptureRequest($request->orderID));
+        $response = null;
+        try {
+            $response = $this->payPalHttpClient->execute(new OrdersCaptureRequest($request->orderID));
+        } catch (HttpException $e) {
+            logger()->error('Verify PayPal', ['error' => $e->getMessage()]);
+            throw new PaymentException();
+        }
+
         if ($response->statusCode < 300) {
             $paypal_order = $response->result;
 
