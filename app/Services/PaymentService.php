@@ -1161,7 +1161,6 @@ class PaymentService
                     $this->addTxnToOrder($order, $reply['payment'], $order_txn);
                     $order->is_flagged = $reply['payment']['is_flagged'];
 
-                    logger()->info("Minte 3ds order saving", ['hash' => $reply['payment']['hash']]);
                     if (!$order->save()) {
                         $validator = $order->validate();
                         if ($validator->fails()) {

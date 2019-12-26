@@ -155,6 +155,162 @@ class PaymentProviders
                         ],
                         'default' => 'DC'
                     ]
+                ],
+                'gb' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'au' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cn' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'de' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'be' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'nl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'dk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'tr' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'id' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'jo' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'in' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'kh' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'et' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'pe' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cu' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'bo' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'es' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'bd' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'pk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'ng' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'jp' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'at' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'ph' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'vn' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cr' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
                 ]
             ],
             'methods'   => [
