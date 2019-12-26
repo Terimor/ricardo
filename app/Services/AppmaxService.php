@@ -305,7 +305,7 @@ class AppmaxService
     private function pay(array $source, array $details): array
     {
         $result = [
-            'fee_usd'           => 0,
+            // 'fee_usd'           => 0,
             'is_flagged'        => false,
             'currency'          => $details['currency'],
             'value'             => $details['amount'],
@@ -373,7 +373,7 @@ class AppmaxService
             $result = [
                 'status' => true,
                 'txn' => [
-                    'fee_usd'   => 0,
+                    // 'fee_usd'   => 0,
                     'hash'      => (string)$data['id'],
                     'status'    => $data['status'] === self::STATUS_APPROVED ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
                     'value'     => preg_replace('/[^\d.]/', '', $data['total'])

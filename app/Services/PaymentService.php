@@ -147,7 +147,8 @@ class PaymentService
             'hash'              => (string)$data['hash'],
             'value'             => $data['value'],
             'status'            => $data['status'],
-            'fee_usd'           => $data['fee_usd'] ?? 0,
+            // 'fee_usd'           => $data['fee_usd'] ?? 0,
+            'fee_usd'           => 0,
             'card_type'         => $details['card_type'] ?? null,
             'card_number'       => $details['card_number'],
             'payment_method'    => $details['payment_method'],
@@ -966,7 +967,7 @@ class PaymentService
 
     /**
      * Approves order
-     * @param array $data ['hash'=>string,'number'=>?string,'fee_usd'=>?float,'value'=>?float,'status'=>string]
+     * @param array $data ['hash'=>string,'number'=>?string,'value'=>?float,'status'=>string]
      * @return OdinOrder|null
      */
     public function approveOrder(array $data, ?string $provider = null): ?OdinOrder
@@ -989,9 +990,9 @@ class PaymentService
 
         $txn = $order->getTxnByHash($data['hash'], false);
         if ($txn) {
-            if (isset($data['fee_usd'])) {
-                $txn['fee_usd'] = $data['fee_usd'];
-            }
+            // if (isset($data['fee_usd'])) {
+            //     $txn['fee_usd'] = $data['fee_usd'];
+            // }
             if (isset($data['value'])) {
                 $txn['value'] = $data['value'];
             }
@@ -1021,7 +1022,7 @@ class PaymentService
             $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total['value'], $currency->code);
             $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total['value'] / $currency->usd_rate, Currency::DEF_CUR);
             //$order->txns_fee_usd    = CurrencyService::roundValueByCurrencyRules($total['fee_usd'] / $currency->usd_rate, Currency::DEF_CUR);
-            $order->txns_fee_usd = 0;
+            // $order->txns_fee_usd = 0;
 
             $price_paid_diff    = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
             $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
