@@ -9,7 +9,6 @@ use App\Models\Currency;
 use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\AppmaxCodeMapper;
-use GuzzleHttp\Psr7;
 use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
@@ -238,7 +237,6 @@ class AppmaxService
             }
         } catch (GuzzReqException $ex) {
             logger()->error("Appmax customer", [
-                'req' => Psr7\str($ex->getRequest()),
                 'res' => $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null
             ]);
         }
@@ -285,7 +283,6 @@ class AppmaxService
             }
         } catch (GuzzReqException $ex) {
             logger()->error("Appmax order", [
-                'req' => Psr7\str($ex->getRequest()),
                 'res' => $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null
             ]);
         }
@@ -358,7 +355,7 @@ class AppmaxService
             $result['fallback'] = true;
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res];
 
-            logger()->error("Appmax pay", ['req' => Psr7\str($ex->getRequest()), 'res' => $result['provider_data']]);
+            logger()->error("Appmax pay", ['res' => $result['provider_data']]);
         }
         return $result;
     }
