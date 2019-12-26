@@ -166,7 +166,6 @@ class BluesnapService
     private function pay(array $source, array $details): array
     {
         $result = [
-            // 'fee_usd'           => 0,
             'is_flagged'        => false,
             'currency'          => $details['currency'],
             'value'             => $details['amount'],
@@ -244,7 +243,6 @@ class BluesnapService
     public function validateWebhook(Request $req)
     {
         $currency   = $req->input('invoiceChargeCurrency');
-        // $fee        = $req->input('bluesnapManualFee', 0);
         $hash       = $req->input('referenceNumber');
         $type       = $req->input('transactionType');
         $value      = $req->input('invoiceChargeAmount', 0);
@@ -255,7 +253,6 @@ class BluesnapService
                 'status' => true,
                 'txn' => [
                     'currency'  => $currency,
-                    // 'fee_usd'   => 0,
                     'hash'      => $hash,
                     'status'    => $type === self::TYPE_WEBHOOK_CHARGE ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
                     'value'     => preg_replace('/[^\d.]/', '', $value)

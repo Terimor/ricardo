@@ -299,7 +299,6 @@ class CheckoutDotComService
         }
 
         $result = [
-            // 'fee_usd'           => 0,
             'fallback'          => false,
             'is_flagged'        => false,
             'currency'          => $order_details['currency'],
@@ -403,7 +402,6 @@ class CheckoutDotComService
                 'status'    => true,
                 'txn' => [
                     'status'    => Txn::STATUS_APPROVED,
-                    // 'fee_usd'   => 0,
                     'hash'      => $data['id'],
                     'number'    => $data['reference'],
                     'value'     => CheckoutDotComAmountMapper::fromProvider((int)$data['amount'], $data['currency']),

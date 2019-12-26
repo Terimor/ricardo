@@ -323,7 +323,6 @@ class EbanxService
     private function pay(Card $source, Address $address, Person $person, array $items, array $details): array
     {
         $result = [
-            // 'fee_usd'           => 0,
             'is_flagged'        => false,
             'currency'          => $details['currency'],
             'value'             => $details['amount'],
