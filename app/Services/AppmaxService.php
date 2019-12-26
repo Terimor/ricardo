@@ -354,7 +354,10 @@ class AppmaxService
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null;
+
+            $result['fallback'] = true;
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res];
+
             logger()->error("Appmax pay", ['req' => Psr7\str($ex->getRequest()), 'res' => $result['provider_data']]);
         }
         return $result;
