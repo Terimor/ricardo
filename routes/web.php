@@ -58,6 +58,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/validate-email', 'EmailController@validateEmail');
     $router->get('/address-by-zip', 'SiteController@getEbanxAddressByZip');
     //$router->get('/send-postbacks', 'OrderController@sendPostbacks');
+    $router->post('apply-discount', 'StatisticsController@fingerprintClick');
 
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
     $router->post('/paypal-verify-order', 'Payments\PaypalController@verifyOrder');
