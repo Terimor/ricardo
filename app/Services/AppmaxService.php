@@ -58,7 +58,7 @@ class AppmaxService
 
         $env = Setting::getValue('appmax_environment', self::ENV_LIVE);
 
-        $this->endpoint = 'https://' . ($env === self::ENV_LIVE ? 'prod' : 'sandbox') . '.appmax.com.br/api/v3/';
+        $this->endpoint = 'https://' . ($env === self::ENV_LIVE ? 'admin' : 'sandbox') . '.appmax.com.br/api/v3/';
     }
 
     /**
