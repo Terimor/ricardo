@@ -1,3 +1,4 @@
+import fingerprint from '../services/fingerprintjs2';
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
@@ -183,6 +184,8 @@ export function sendCheckoutRequest(data) {
   data.page_checkout = location.href;
 
   return Promise.resolve()
+    .then(fingerprint)
+    .then(result => data.f = result)
     .then(() => fetch('/pay-by-card' + url_search, {
       method: 'post',
       credentials: 'same-origin',

@@ -12,6 +12,7 @@
     "dependencies": {
         "credit-card-type": "^8.3.0",
         "date-fns": "^2.4.1",
+        "fingerprintjs2": "^2.1.0",
         "postcode-validator": "^2.0.0",
         "rimraf": "^3.0.0",
         "vue-mq": "^1.0.1",

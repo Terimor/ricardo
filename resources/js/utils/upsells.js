@@ -1,3 +1,4 @@
+import fingerprint from '../services/fingerprintjs2';
 import { goTo } from './goTo';
 import { t } from './i18n';
 
@@ -12,39 +13,45 @@ export function paypalCreateOrder ({
   affiliate = js_query_params.affiliate || null,
   upsells
 }) {
-  return fetch('/paypal-create-order', {
-    method: 'post',
-    credentials: 'same-origin',
-    headers: {
-      'X-CSRF-TOKEN': xsrfToken,
-      'content-type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    },
-    body: JSON.stringify({
-      sku_code,
-      sku_quantity,
-      is_warranty_checked,
-      order,
-      page_checkout,
-      offer,
-      affiliate,
-      upsells
+  let f = null;
+
+  return Promise.resolve()
+    .then(fingerprint)
+    .then(result => f = result)
+    .then(() => fetch('/paypal-create-order', {
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'X-CSRF-TOKEN': xsrfToken,
+        'content-type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({
+        sku_code,
+        sku_quantity,
+        is_warranty_checked,
+        order,
+        page_checkout,
+        offer,
+        affiliate,
+        upsells,
+        f,
+      })
+    }))
+    .then(res => res.json())
+    .then(res => {
+      if (res.odin_order_id) {
+        localStorage.setItem('odin_order_id', res.odin_order_id);
+        localStorage.setItem('order_currency', res.order_currency);
+        localStorage.setItem('order_number', res.order_number);
+        localStorage.setItem('order_id', res.id);
+      }
+
+      return res;
     })
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.odin_order_id) {
-      localStorage.setItem('odin_order_id', res.odin_order_id);
-      localStorage.setItem('order_currency', res.order_currency);
-      localStorage.setItem('order_number', res.order_number);
-      localStorage.setItem('order_id', res.id);
-    }
+    .catch(err => {
 
-    return res;
-  })
-  .catch(err => {
-
-  });
+    });
 }
 
 export function paypalOnApprove(data) {
@@ -85,6 +92,8 @@ export function send1ClickRequest(data, upsells) {
   data.page_checkout = location.href;
 
   return Promise.resolve()
+    .then(fingerprint)
+    .then(result => data.f = result)
     .then(() => fetch('/pay-by-card-upsells', {
       method: 'post',
       credentials: 'same-origin',

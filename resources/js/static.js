@@ -1,5 +1,6 @@
-import searchPopulate from './utils/searchPopulate';
 import * as cookies from './utils/cookies';
+import './services/queryParams';
+import './services/fingerprintjs2';
 import wait from './utils/wait';
 
 
@@ -17,20 +18,6 @@ if (location.pathname === '/splash') {
     : txidFromCookie.length >= 20
       ? txidFromCookie
       : undefined;
-}
-
-
-// populate links with GET params
-function populateLinksWithGetParams() {
-  const elements = [].slice.call(document.querySelectorAll('a[href]'));
-
-  elements.forEach(element => {
-    const href = element.getAttribute('href');
-
-    if (href && href.substr(0, 1) === '/') {
-      element.setAttribute('href', searchPopulate(element.href));
-    }
-  });
 }
 
 
@@ -145,7 +132,6 @@ function bindReturnsAddressDropdown() {
 
 // document ready
 function documentReady() {
-  populateLinksWithGetParams();
   bindStaticTopbarBlock();
   initFreshChatWidget();
   bindReturnsAddressDropdown();

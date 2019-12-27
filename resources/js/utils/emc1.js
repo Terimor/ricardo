@@ -1,3 +1,4 @@
+import fingerprint from '../services/fingerprintjs2';
 import { getCountOfInstallments } from './installments';
 import { goTo } from './goTo';
 import { t } from './i18n';
@@ -171,7 +172,11 @@ export function paypalCreateOrder ({
   affiliate = js_query_params.affiliate || null,
   ipqsResult,
 }) {
+  let f = null;
+
   return Promise.resolve()
+    .then(fingerprint)
+    .then(result => f = result)
     .then(() => fetch('/paypal-create-order', {
       method: 'post',
       credentials: 'same-origin',
@@ -190,6 +195,7 @@ export function paypalCreateOrder ({
         offer,
         affiliate,
         ipqs: ipqsResult,
+        f,
       }),
     }))
     .then(res => res.json())

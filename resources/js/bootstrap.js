@@ -2,6 +2,7 @@ import VueMq from 'vue-mq'
 import { t, timage } from './utils/i18n';
 import './services/queryParams';
 import './services/ipqs';
+import './services/fingerprintjs2';
 import './UIsettings';
 
 
