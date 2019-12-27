@@ -176,7 +176,7 @@ export function paypalCreateOrder ({
 
   return Promise.resolve()
     .then(fingerprint)
-    .then(result => f = result)
+    .then(hash => f = hash)
     .then(() => fetch('/paypal-create-order', {
       method: 'post',
       credentials: 'same-origin',
