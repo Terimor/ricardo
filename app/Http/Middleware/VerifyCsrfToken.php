@@ -32,6 +32,7 @@ class VerifyCsrfToken extends Middleware
         'paypal-verify-order',
 		'calculate-upsells-total',
         'log-data',
+        'apply-discount',
         /* test routes */
         'test-payments'
     ];
