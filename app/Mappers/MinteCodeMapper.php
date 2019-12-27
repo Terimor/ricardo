@@ -13,7 +13,8 @@ class MinteCodeMapper
         '05'    => 'card.error.not_functioning',
         '51'    => 'card.error.funds_insufficient',
         '54'    => 'card.error.expired',
-        '57'    => 'card.error.not_functioning'
+        '57'    => 'card.error.not_functioning',
+        '620'   => 'card.error.funds_insufficient'
     ];
 
     /**
