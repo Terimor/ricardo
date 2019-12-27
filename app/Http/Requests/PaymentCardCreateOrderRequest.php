@@ -48,7 +48,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
             'product.is_warranty_checked'   => ['boolean'],
             'order'                         => ['string', 'size:24'],
             'ipqs'                          => ['nullable'],
-            'f'                             => ['string', 'between:1,255']
+            'f'                             => ['string', 'between:32,32']
         ];
     }
 }
