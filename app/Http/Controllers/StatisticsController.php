@@ -7,9 +7,6 @@ use App\Services\StatisticsService;
 use StdClass;
 
 
-/*use com\checkout;
-use com\checkout\ApiServices;*/
-
 class StatisticsController extends Controller
 {
     
