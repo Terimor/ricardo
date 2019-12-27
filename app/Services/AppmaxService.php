@@ -233,7 +233,7 @@ class AppmaxService
             if ($body['success']) {
                 $result = (string)$body['data']['id'];
             } else {
-                logger()->info("Appmax customer", ['res' => $res->getBody()]);
+                logger()->info("Appmax customer", ['res' => (string)$res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
             logger()->error("Appmax customer", [
@@ -279,7 +279,7 @@ class AppmaxService
             if ($body['success']) {
                 $result = (string)$body['data']['id'];
             } else {
-                logger()->info("Appmax order", ['res' => $res->getBody()]);
+                logger()->info("Appmax order", ['res' => (string)$res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
             logger()->error("Appmax order", [
