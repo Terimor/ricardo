@@ -349,7 +349,7 @@ class AffiliateService
     public static function getAffIdFromRequest(Request $request)
     {        
         return $request->get('aff_id') ? $request->get('aff_id') : ($request->get('affid') && $request->get('affid') > AffiliateSetting::OWN_AFFILIATE_MAX ? $request->get('affid') : null);
-    }
+    }   
     
     /**
      * returns affiliate id from request

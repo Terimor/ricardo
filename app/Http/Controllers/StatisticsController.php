@@ -22,6 +22,10 @@ class StatisticsController extends Controller
         $this->statisticsService = $statisticsService;
     }
     
+    /**
+     * For fingerpring js
+     * @param Request $request
+     */
     public function fingerprintClick(Request $request)
     {
         $this->statisticsService->fingerprintClick($request);
