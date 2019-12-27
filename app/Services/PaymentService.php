@@ -319,6 +319,7 @@ class PaymentService
         $user_agent = $req->header('User-Agent');
         $ipqs = $req->input('ipqs', null);
         $card = $req->get('card');
+        $fingerprint = $req->get('f', null);
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
         $contact = array_merge(
@@ -374,6 +375,7 @@ class PaymentService
                 'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
                 'currency'              => $price['currency'],
                 'exchange_rate'         => $price['usd_rate'],
+                'fingerprint'           => $fingerprint,
                 'total_paid'            => 0,
                 'total_paid_usd'        => 0,
                 'total_price'           => $order_product['total_price'],

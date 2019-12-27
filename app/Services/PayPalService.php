@@ -235,6 +235,7 @@ class PayPalService
     public function createOrder(PayPalCrateOrderRequest $request): array
     {
         $ipqs = $request->input('ipqs', null);
+        $fingerprint = $request->get('f', null);
 
         // refuse payment if  there is fraud
         PaymentService::fraudCheck($ipqs, PaymentProviders::PAYPAL_HK);
@@ -368,6 +369,7 @@ class PayPalService
             $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
             $order_reponse = $this->orderService->addOdinOrder([
+                'fingerprint' => $fingerprint,
                 'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
                 'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
                 'total_paid' => 0,

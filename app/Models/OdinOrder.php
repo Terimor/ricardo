@@ -37,6 +37,7 @@ class OdinOrder extends OdinModel
         'status' => self::STATUS_NEW, // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled', 'error']
         'currency' => null, // * enum string
         'exchange_rate' => null, // * float
+        'fingerprint' => null,
         'total_paid' => null, // * float amount totally paid in local currency; decreases after refund
         'total_paid_usd' => null, // Full USD paid amount (with warranty); calculated from local paid amount using exchange rate; recalculated after refund.
         'total_price' => null, // * float full price in local currency (with warranty)
@@ -150,8 +151,8 @@ class OdinOrder extends OdinModel
         'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'shop_currency',
         'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip',
         'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'exported', 'warehouse_id',
-        'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txid', 'billing_descriptor', 'is_refunding', 'is_refunded', 'qc_passed',
-        'installments', 'txns', 'params', 'is_invoice_sent', 'events', 'pixels', 'postbacks'
+        'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate', 'txid', 'billing_descriptor', 'is_refunding',
+        'is_refunded', 'qc_passed', 'installments', 'txns', 'params', 'is_invoice_sent', 'events', 'pixels', 'postbacks', 'fingerprint'
 
     ];
 
