@@ -547,8 +547,10 @@ class OdinProduct extends Model
 
     /**
      * Get by cop_id
+     * @param string $copId - prices.price_set
+     * @param bool $isExists - if true check in database else get a model
      */
-    public static function getByCopId(string $copId, $isExists = false)
+    public static function getByCopId(string $copId, bool $isExists = false)
     {
         $model = null;
         if ($isExists) {

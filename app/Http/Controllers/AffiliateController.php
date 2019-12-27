@@ -3,23 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\StatisticsService;
+use App\Services\AffiliateService;
 use StdClass;
 
 
-class StatisticsController extends Controller
+class AffiliateController extends Controller
 {
     
-    protected $statisticsService;
+    protected $affiliateService;
     
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(StatisticsService $statisticsService)
+    public function __construct(AffiliateService $affiliateService)
     {
-        $this->statisticsService = $statisticsService;
+        $this->affiliateService = $affiliateService;
     }
     
     /**
@@ -28,7 +28,7 @@ class StatisticsController extends Controller
      */
     public function fingerprintClick(Request $request)
     {
-        $this->statisticsService->fingerprintClick($request);
+        $this->affiliateService->fingerprintClick($request);
     }
 
     

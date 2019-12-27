@@ -156,5 +156,23 @@ class Domain extends Model
         }
         
         return $websiteName;
-    }    
+    }   
+    
+    /**
+     * Get price_set by domain
+     * return ?string $priceSet
+     */
+    public static function getPriceSet(): ?string
+    {
+        $domain = Domain::getByName();
+        $priceSet = null;
+        if ($domain && !empty($domain->product)) {
+            $product =  $domain->product;
+            if ($product) {
+                $prices = $product['prices'];
+                $priceSet = $prices['price_set'] ?? $price_set;
+            }
+        }
+        return $priceSet;
+    }
 }

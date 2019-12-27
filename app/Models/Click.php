@@ -63,5 +63,20 @@ class Click extends Model
         $model->fill($data);
         $model->save();
     }
+    
+    /**
+     * Get page by url path
+     * @param string $path
+     * @return string
+     */
+    public static function getPageByPath(string $path): ?string
+    {
+        $page = null;      
+        $path = explode('/', $path);
+        if (isset(Click::$pages[strtolower($path[1])])) {
+           $page = $path[1];
+        }
+        return $page;
+    }
 
 }
