@@ -17,7 +17,7 @@ export function paypalCreateOrder ({
 
   return Promise.resolve()
     .then(fingerprint)
-    .then(result => f = result)
+    .then(hash => f = hash)
     .then(() => fetch('/paypal-create-order', {
       method: 'post',
       credentials: 'same-origin',
@@ -93,7 +93,7 @@ export function send1ClickRequest(data, upsells) {
 
   return Promise.resolve()
     .then(fingerprint)
-    .then(result => data.f = result)
+    .then(hash => data.f = hash)
     .then(() => fetch('/pay-by-card-upsells', {
       method: 'post',
       credentials: 'same-origin',

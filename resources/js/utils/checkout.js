@@ -185,7 +185,7 @@ export function sendCheckoutRequest(data) {
 
   return Promise.resolve()
     .then(fingerprint)
-    .then(result => data.f = result)
+    .then(hash => data.f = hash)
     .then(() => fetch('/pay-by-card' + url_search, {
       method: 'post',
       credentials: 'same-origin',

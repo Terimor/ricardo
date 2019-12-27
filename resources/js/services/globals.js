@@ -108,7 +108,11 @@ window.txid = window.txidjs = txidFromGet.length >= 20
 
 // add tpl body class for checkout
 if (location.pathname.startsWith('/checkout')) {
-  document.body.classList.add('tpl-' + (js_query_params.tpl && js_query_params.tpl !== '{tpl}'
+  const allowed_templates = ['emc1', 'emc1b', 'vmc4', 'smc7', 'smc7p', 'fmc5', 'vmp41', 'vmp42'];
+
+  const tpl = allowed_templates.indexOf(js_query_params.tpl) !== -1
     ? js_query_params.tpl
-    : 'emc1'));
+    : 'emc1';
+
+  document.body.classList.add('tpl-' + tpl);
 }
