@@ -73,7 +73,7 @@ class Click extends Model
     {
         $page = null;      
         $path = explode('/', $path);
-        if (isset(Click::$pages[strtolower($path[1])])) {
+        if (!empty($path[1]) && isset(Click::$pages[strtolower($path[1])])) {
            $page = $path[1];
         }
         return $page;
