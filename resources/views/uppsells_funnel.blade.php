@@ -17,6 +17,12 @@
     js_data.country_code = @json($countryCode);
     js_data.order_customer = @json($orderCustomer);
     js_data.product = @json($product);
+
+    window.amountjs = Math.round((js_data.order_customer.products.reduce((acc, product) => acc + product.price_usd + product.warranty_price_usd, 0)) * 100) / 100;
+    window.localamountjs = Math.round((js_data.order_customer.products.reduce((acc, product) => acc + product.price + product.warranty_price, 0)) * 100) / 100;
+    window.mainsku = js_data.order_customer.products.filter(product => product.is_main)[0].sku_code;
+    window.localcurrency = js_data.order_customer.currency;
+    window.orderid = js_data.order_customer._id;
   </script>
 
 @endsection
