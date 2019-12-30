@@ -228,8 +228,8 @@ class BluesnapService
                 if (!empty($body_decoded['message'])) {
                     $result['errors'] = array_map(function($v) {
                         $phrase = BluesnapCodeMapper::getPhrase($v['errorName']);
-                        if (!$pharse && isset($v['invalidProperty'])) {
-                            $pharse = BluesnapCodeMapper::toPhrase($v['invalidProperty']);
+                        if (!$phrase && isset($v['invalidProperty'])) {
+                            $phrase = BluesnapCodeMapper::toPhrase($v['invalidProperty']);
                         }
                         return $phrase;
                     }, $body_decoded['message']);
