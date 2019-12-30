@@ -417,7 +417,7 @@ class PayPalService
             $response = $this->payPalHttpClient->execute(new OrdersCaptureRequest($request->orderID));
         } catch (HttpException $e) {
             logger()->error('Verify PayPal', ['error' => $e->getMessage()]);
-            throw new PaymentException();
+            throw new PaymentException('PayPal order verification error');
         }
 
         if ($response->statusCode < 300) {
