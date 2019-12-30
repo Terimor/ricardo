@@ -10,6 +10,8 @@ use App\Models\OdinProduct;
 use App\Models\RequestQueue;
 use App\Models\Pixel;
 use App\Models\GoogleTag;
+use App\Models\Click;
+use App\Models\Domain;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
@@ -349,7 +351,7 @@ class AffiliateService
     public static function getAffIdFromRequest(Request $request)
     {        
         return $request->get('aff_id') ? $request->get('aff_id') : ($request->get('affid') && $request->get('affid') > AffiliateSetting::OWN_AFFILIATE_MAX ? $request->get('affid') : null);
-    }
+    }   
     
     /**
      * returns affiliate id from request
@@ -371,4 +373,63 @@ class AffiliateService
     {
         return $param1 ? $param1 : ($param2 && $param2 > AffiliateSetting::OWN_AFFILIATE_MAX ? $param2 : null);
     }
+    
+    /**
+     * Prepare data to save to click collection
+     * @param Request $request
+     */
+    public function fingerprintClick(Request $request)
+    {
+        $url = $request->get('url');
+        $parsedUrl = parse_url($url);
+
+        $page = null;
+        if (isset($parsedUrl['path'])) {
+            $page = Click::getPageByPath($parsedUrl['path']);
+        }
+      
+        if ($page && $request->get('f')) {
+        $priceSet = null;
+        // check exists by cop_id parameter
+        if ($request->get('cop_id')) {
+            $exists = OdinProduct::getByCopId($request->get('cop_id'), true);
+            if ($exists) {
+                $priceSet = $request->get('cop_id');
+            }
+        }
+        // check by product parameter
+        if (!$priceSet && $request->get('product')) {
+          $product = OdinProduct::getBySku($request->get('product'), false);
+          if ($product) {
+              $prices = $product['prices'];
+              $priceSet = $prices['price_set'] ?? $price_set;
+          }            
+        }
+
+        // check by domain
+        if (!$priceSet) {
+          $priceSet = Domain::getPriceSet();          
+        }     
+     
+        $ip = $request->ip();
+        $location = \Location::get($ip);
+        
+        $data = [
+            'affiliate' => AffiliateService::getAttributeByPriority($request->get('aff_id'), $request->get('affid')),
+            'offer' => $request->get('offer_id') ? $request->get('offer_id') : ($request->get('offerid') ? $request->get('offerid') : null),
+            'url' => $url,
+            'page' => $page,
+            'fingerprint' => $request->get('f'),
+            'price_set' => $priceSet,
+            'ip' => $ip,
+            'country' => isset($location['countryCode']) ? strtolower($location['countryCode']) : null
+            
+        ];
+      
+        Click::saveByData($data);
+        
+      } else {
+          logger()->warning('FingerprintWrongData', ['request' => $request->all()]);
+      }
+  }    
 }

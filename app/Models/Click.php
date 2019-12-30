@@ -12,6 +12,14 @@ class Click extends Model
     
     public $timestamps = false;
     
+    const PAGE_CHECKOUT = 'checkout';
+    const PAGE_SPLASH = 'splash';
+    
+    public static $pages = [
+        self::PAGE_CHECKOUT => 'Checkout',
+        self::PAGE_SPLASH => 'Splash'
+    ];
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -43,6 +51,32 @@ class Click extends Model
         static::creating(function ($model) {
             $model->created_at = $model->freshTimestamp();
         });
-    }    
+    }
+    
+    /**
+     * Save by array data
+     * @param array $data
+     */
+    public static function saveByData(array $data)
+    {
+        $model = new Click();
+        $model->fill($data);
+        $model->save();
+    }
+    
+    /**
+     * Get page by url path
+     * @param string $path
+     * @return string
+     */
+    public static function getPageByPath(string $path): ?string
+    {
+        $page = null;      
+        $path = explode('/', $path);
+        if (isset(Click::$pages[strtolower($path[1])])) {
+           $page = $path[1];
+        }
+        return $page;
+    }
 
 }

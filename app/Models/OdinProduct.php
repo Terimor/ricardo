@@ -547,10 +547,18 @@ class OdinProduct extends Model
 
     /**
      * Get by cop_id
+     * @param string $copId - prices.price_set
+     * @param bool $isExists - if true check in database else get a model
      */
-    public static function getByCopId(string $copId)
+    public static function getByCopId(string $copId, bool $isExists = false)
     {
-        return OdinProduct::where('prices.price_set', $copId)->first();
+        $model = null;
+        if ($isExists) {
+            $model = OdinProduct::where('prices.price_set', $copId)->exists();
+        } else {
+            $model = OdinProduct::where('prices.price_set', $copId)->first();
+        }
+        return $model;
     }
 
     /**
