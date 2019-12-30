@@ -239,19 +239,10 @@
                   name="city" />
 
                 <State
-                  v-if="!extraFields.state"
-                  :$v="$v.form.state"
-                  :isLoading="isLoading"
                   :country="form.country"
+                  :stateExtraField="stateExtraField"
+                  :isLoading="isLoading"
                   :placeholder="true"
-                  :form="form"
-                  name="state" />
-
-                <EState
-                  v-else
-                  :country="form.country"
-                  :extraFields="extraFields"
-                  :isLoading="isLoading"
                   :form="form"
                   :$v="$v" />
 
@@ -530,7 +521,6 @@
   import Phone from './common/common-fields/Phone';
   import Street from './common/common-fields/Street';
   import City from './common/common-fields/City';
-  import State from './common/common-fields/State';
   import ZipCode from './common/common-fields/ZipCode';
   import Country from './common/common-fields/Country';
   import CardHolder from './common/common-fields/CardHolder';
@@ -538,7 +528,7 @@
   import CardDate from './common/common-fields/CardDate';
   import CVV from './common/common-fields/CVV';
   import Terms from './common/common-fields/Terms';
-  import EState from './common/extra-fields/State';
+  import State from './common/extra-fields/State';
   import District from './common/extra-fields/District';
   import CardType from './common/extra-fields/CardType';
   import DocumentType from './common/extra-fields/DocumentType';
@@ -574,7 +564,6 @@
       Phone,
       Street,
       City,
-      State,
       ZipCode,
       Country,
       CardHolder,
@@ -582,7 +571,7 @@
       CardDate,
       CVV,
       Terms,
-      EState,
+      State,
       District,
       CardType,
       DocumentType,
@@ -612,7 +601,6 @@
           countryCodePhoneField: js_data.country_code,
           street: null,
           city: null,
-          state: null,
           zipcode: null,
           country: js_data.country_code,
           cardHolder: null,
@@ -979,7 +967,6 @@
             this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
             this.form.street = selectedProductData.street || this.form.street;
             this.form.city = selectedProductData.city || this.form.city;
-            this.form.state = selectedProductData.state || this.form.state;
             this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
             this.form.country = selectedProductData.country || this.form.country;
 
@@ -1089,7 +1076,6 @@
           countryCodePhoneField: this.form.countryCodePhoneField,
           street: this.form.street,
           city: this.form.city,
-          state: this.form.state,
           zipcode: this.form.zipcode,
           country: this.form.country,
         };
@@ -1110,7 +1096,9 @@
               billing_country: this.form.country,
               billing_address_1: this.form.street,
               billing_city: this.form.city,
-              billing_region: this.form.state,
+              billing_region: this.extraFields.state
+                ? this.form.state
+                : '',
               billing_postcode: this.form.zipcode,
               billing_email: this.form.email,
               billing_phone: this.dialCode + phoneNumber,

@@ -330,6 +330,7 @@
                         :quantity-of-installments="countOfInstallments"
                         :warranty-price-text="warrantyPriceText"
                         :extra-fields="extraFields"
+                        :state-extra-field="stateExtraField"
                         :payment-method-u-r-l="paymentMethodURL"
                         @set-payment-method-by-cardnumber="setPaymentMethodByCardNumber"
                     />

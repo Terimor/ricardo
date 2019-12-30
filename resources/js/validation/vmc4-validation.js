@@ -17,7 +17,6 @@ export default function() {
     },
     stepThree: {
       city: validators.getCityRules(),
-      state: validators.getStateRules(),
       zipCode: validators.getZipCodeRules(),
       country: validators.getCountryRules(),
       cardNumber: validators.getCardNumberRules(),

@@ -125,6 +125,7 @@
                         <h2 class="step-title"><span>{{textStep}}</span> {{ !isShowVariant ? 3 : 4  }}: <span>{{textContactInformation}}</span></h2>
                         <payment-form-smc7
                           :extraFields="extraFields"
+                          :stateExtraField="stateExtraField"
                           :paymentMethodURL="paymentMethodURL"
                           @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
                           :paymentForm="form"
@@ -273,7 +274,6 @@
           country: js_data.country_code,
           streetAndNumber: null,
           city: null,
-          state: null,
           zipCode: null,
           paymentProvider: null,
           cardHolder: null,
@@ -305,7 +305,6 @@
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
           this.form.streetAndNumber = selectedProductData.streetAndNumber || this.form.streetAndNumber;
           this.form.city = selectedProductData.city || this.form.city;
-          this.form.state = selectedProductData.state || this.form.state;
           this.form.zipCode = selectedProductData.zipcode || this.form.zipCode;
           this.form.country = selectedProductData.country || this.form.country;
         }
@@ -503,7 +502,6 @@
           countryCodePhoneField: this.form.countryCodePhoneField,
           streetAndNumber: this.form.streetAndNumber,
           city: this.form.city,
-          state: this.form.state,
           zipcode: this.form.zipCode,
           country: this.form.country,
         };
@@ -524,7 +522,9 @@
               billing_country: this.form.country,
               billing_address_1: this.form.streetAndNumber,
               billing_city: this.form.city,
-              billing_region: this.form.state,
+              billing_region: this.extraFields.state
+                ? this.form.state
+                : '',
               billing_postcode: this.form.zipCode,
               billing_email: this.form.email,
               billing_phone: this.dialCode + phoneNumber,
@@ -572,7 +572,6 @@
                 city: this.form.city,
                 country: this.form.country,
                 zip: this.form.zipCode,
-                state: this.form.state,
                 street: this.form.streetAndNumber,
               },
               card: {

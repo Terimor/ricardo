@@ -80,6 +80,7 @@
                               :$v="$v"
                               :paymentForm="form"
                               :extraFields="extraFields"
+                              :stateExtraField="stateExtraField"
                               :paymentMethodURL="paymentMethodURL"
                               @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
                               @setPromotionalModal="setPromotionalModal" />
@@ -276,7 +277,6 @@
           phone: null,
           street: null,
           city: null,
-          state: null,
           zipcode: null,
           country: js_data.country_code,
           cardHolder: null,
@@ -314,7 +314,6 @@
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
           this.form.street = selectedProductData.street || this.form.street;
           this.form.city = selectedProductData.city || this.form.city;
-          this.form.state = selectedProductData.state || this.form.state;
           this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
           this.form.country = selectedProductData.country || this.form.country;
           this.isFormShown = true;

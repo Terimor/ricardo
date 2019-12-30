@@ -50,16 +50,8 @@
               :form="paymentForm"
               name="city" />
             <State
-              v-if="!extraFields.state"
-              :$v="$v.form.state"
-              :isLoading="isLoading"
               :country="paymentForm.country"
-              :form="paymentForm"
-              name="state" />
-            <EState
-              v-else
-              :country="paymentForm.country"
-              :extraFields="extraFields"
+              :stateExtraField="stateExtraField"
               :isLoading="isLoading"
               :form="paymentForm"
               :$v="$v" />
@@ -164,7 +156,6 @@
   import Phone from './common-fields/Phone';
   import Street from './common-fields/Street';
   import City from './common-fields/City';
-  import State from './common-fields/State';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
@@ -172,7 +163,7 @@
   import CardDate from './common-fields/CardDate';
   import CVV from './common-fields/CVV';
   import Terms from './common-fields/Terms';
-  import EState from './extra-fields/State';
+  import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -191,6 +182,7 @@
       'quantityOfInstallments',
       'warrantyPriceText',
       'extraFields',
+      'stateExtraField',
       'paymentMethodURL',
     ],
     mixins: [
@@ -206,7 +198,6 @@
       Phone,
       Street,
       City,
-      State,
       ZipCode,
       Country,
       CardHolder,
@@ -214,7 +205,7 @@
       CardDate,
       CVV,
       Terms,
-      EState,
+      State,
       District,
       CardType,
       DocumentType,
@@ -265,7 +256,6 @@
         }
       },
 
-      textStateRequired: () => t('checkout.payment_form.state.required'),
       textWarranty: () => t('checkout.warranty'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       textPaymentError: () => t('checkout.payment_error'),
@@ -331,7 +321,6 @@
           countryCodePhoneField: paymentForm.countryCodePhoneField,
           street: paymentForm.street,
           city: paymentForm.city,
-          state: paymentForm.state,
           zipcode: paymentForm.zipcode,
           country: paymentForm.country,
         };
@@ -352,7 +341,9 @@
               billing_country: paymentForm.country,
               billing_address_1: paymentForm.street,
               billing_city: paymentForm.city,
-              billing_region: paymentForm.state,
+              billing_region: this.extraFields.state
+                ? paymentForm.state
+                : '',
               billing_postcode: paymentForm.zipcode,
               billing_email: paymentForm.email,
               billing_phone: this.dialCode + phoneNumber,
@@ -407,7 +398,6 @@
                   city: paymentForm.city,
                   country: paymentForm.country,
                   zip: paymentForm.zipcode,
-                  state: paymentForm.state,
                   street: paymentForm.street,
                 },
                 card: {

@@ -11,7 +11,6 @@ export default function() {
     phone: validators.getPhoneRules(),
     street: validators.getStreetRules(),
     city: validators.getCityRules(),
-    state: validators.getStateRules(),
     zipcode: validators.getZipCodeRules(),
     country: validators.getCountryRules(),
     cardNumber: validators.getCardNumberRules(),

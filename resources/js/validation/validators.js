@@ -74,7 +74,11 @@ export function getDistrictRules() {
   return {
     required,
     isValid(value) {
-      return new RegExp(this.extraFields.district.pattern || '/.+/').test(value);
+      if (this.extraFields.district.pattern) {
+        return new RegExp(this.extraFields.district.pattern).test(value);
+      }
+
+      return true;
     },
   };
 }
@@ -88,6 +92,13 @@ export function getCityRules() {
 export function getStateRules() {
   return {
     required,
+    isValid(value) {
+      if (this.extraFields.state.pattern) {
+        return new RegExp(this.extraFields.state.pattern).test(value);
+      }
+
+      return true;
+    },
   };
 }
 
