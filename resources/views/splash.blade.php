@@ -89,7 +89,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="testimonials">
-                        <h2 class="testimonials-title">What Others are Saying...</h2>
+                        <h2 class="testimonials-title">{{ t('splash.testimonials.title') }}</h2>
                         <ul class="testimonials-list">
                             @foreach ($product->reviews as $review)
                                 <li class="testimonial">
