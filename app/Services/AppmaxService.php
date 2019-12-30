@@ -95,7 +95,7 @@ class AppmaxService
         $result = [
             'address_street'    => $contacts['street'],
             'address_city'      => $contacts['city'],
-            'address_state'     => $contacts['state'],
+            'address_state'     => $contacts['state'] ?? '',
             'address_street_number' => $contacts['district'] ?? '',
             // 'address_street_complement' => '',
             // 'address_street_district' => 'Centro',

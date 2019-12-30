@@ -208,7 +208,7 @@ class MinteService
                     'city'      => $contact['city'],
                     'zip'       => $contact['zip'],
                     'country'   => $contact['country'],
-                    'state'     => $contact['state'],
+                    'state'     => $contact['state'] ?? '',
                     'email'     => $contact['email'],
                     'phone'     => $contact['phone'],
                     'amount'    => $details['amount'],

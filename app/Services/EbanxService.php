@@ -90,7 +90,7 @@ class EbanxService
             'address'   => $contact['street'],
             'city'      => $contact['city'],
             'country'   => Country::fromIso($contact['country']),
-            'state'     => $contact['state'],
+            'state'     => $contact['state'] ?? '',
             'zipcode'   => $contact['zip'],
             'streetNumber' => $contact['district'] ?? '' // maybe undefined
         ]);

@@ -92,9 +92,11 @@ class BluesnapService
             'firstName' => $contact['first_name'],
             'lastName'  => $contact['last_name'],
             'phone'     => $phone,
-            'state'     => $contact['state'],
             'zip'       => $contact['zip']
         ];
+        if (!empty($contact['state'])) {
+            $result['state'] = $contact['state'];
+        }
         if (!empty($contact['district'])) {
             $result['address2'] = $contact['district'];
         }

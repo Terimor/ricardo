@@ -282,7 +282,7 @@ class CheckoutDotComService
                     'address_line1' => $contact['street'],
                     'city' => $contact['city'],
                     'country' => $contact['country'],
-                    'state' => $contact['state'],
+                    'state' => $contact['state'] ?? '',
                     'zip' => $contact['zip']
                 ],
                 'phone' => (object)[$contact['phone']]
