@@ -399,7 +399,7 @@ class PaymentService
                 'txns'                  => [],
                 'shipping_country'      => $contact['country'],
                 'shipping_zip'          => $contact['zip'],
-                'shipping_state'        => $contact['state'],
+                'shipping_state'        => $contact['state'] ?? null,
                 'shipping_city'         => $contact['city'],
                 'shipping_street'       => $contact['street'],
                 'shipping_street2'      => $contact['district'] ?? null,
@@ -422,7 +422,7 @@ class PaymentService
             $order->customer_doc_id     = $contact['document_number'] ?? null;
             $order->shipping_country    = $contact['country'];
             $order->shipping_zip        = $contact['zip'];
-            $order->shipping_state      = $contact['state'];
+            $order->shipping_state      = $contact['state'] ?? null;
             $order->shipping_city       = $contact['city'];
             $order->shipping_street     = $contact['street'];
             $order->shipping_street2    = $contact['district'] ?? null;

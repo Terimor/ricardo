@@ -27,7 +27,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
         return [
             'address.city'                  => ['required', 'string'],
             'address.country'               => ['required', 'regex:/^[a-z]{2}$/'],
-            'address.state'                 => ['required', 'string'],
+            'address.state'                 => ['string', 'between:1,30'],
             'address.street'                => ['required', 'string'],
             'address.district'              => ['string', 'between:1,30'],
             'address.zip'                   => ['required', 'string'],
