@@ -422,7 +422,7 @@ class AffiliateService
             'fingerprint' => $request->get('f'),
             'price_set' => $priceSet,
             'ip' => $ip,
-            'country' => isset($location['countryCode']) ? strtolower($location['countryCode']) : null
+            'country' => isset($location->countryCode) ? strtolower($location->countryCode) : null
             
         ];
       
