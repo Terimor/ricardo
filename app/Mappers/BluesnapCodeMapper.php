@@ -17,8 +17,23 @@ class BluesnapCodeMapper
         'INSUFFICIENT_FUNDS'    => 'card.error.funds_insufficient',
         'NVALID_CARD_NUMBER'    => 'card.error.number_incorrect',
         'EXPIRED_CARD'          => 'card.error.expired',
-        'LIMIT_EXCEEDED'        => 'card.error.month_limit'
+        'LIMIT_EXCEEDED'        => 'card.error.month_limit',
+        'securityCode'          => 'card.error.cvv_incorrect'
     ];
+
+
+    /**
+     * Returns a phrase by code if one exists
+     * @param  string|null $code
+     * @return string|null
+     */
+    public static function getPhrase(?string $code = null): ?string
+    {
+        if ($code && isset(static::$map[$code])) {
+            return static::$map[$code];
+        }
+        return null;
+    }
 
     /**
      * Map code to phrase

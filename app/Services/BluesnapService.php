@@ -225,7 +225,11 @@ class BluesnapService
                 $body_decoded = \json_decode($res->getBody(), true);
                 if (!empty($body_decoded['message'])) {
                     $result['errors'] = array_map(function($v) {
-                        return BluesnapCodeMapper::toPhrase($v['errorName']);
+                        $phrase = BluesnapCodeMapper::getPhrase($v['errorName']);
+                        if (!$pharse && isset($v['invalidProperty'])) {
+                            $pharse = BluesnapCodeMapper::toPhrase($v['invalidProperty']);
+                        }
+                        return $phrase;
                     }, $body_decoded['message']);
                 }
                 $result['provider_data']['res'] = $body_decoded;

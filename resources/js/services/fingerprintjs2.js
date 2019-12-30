@@ -36,7 +36,7 @@ function applyDiscount() {
           },
           body: JSON.stringify({
             f: hash,
-            page: location.href,
+            url: location.href,
           }),
         }))
         .catch(err => {

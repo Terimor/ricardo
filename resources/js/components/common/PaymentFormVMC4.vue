@@ -128,19 +128,11 @@
                 :form="form.stepThree"
                 name="city" />
               <State
-                v-if="!extraFields.state"
-                :$v="$v.form.stepThree.state"
-                :placeholder="true"
-                :isLoading="isLoading"
-                :country="form.stepThree.country"
-                :form="form.stepThree"
-                name="state" />
-              <EState
-                v-else
                 class="input-container"
                 :country="form.stepThree.country"
-                :extraFields="extraFields"
+                :stateExtraField="stateExtraField"
                 :isLoading="isLoading"
+                :placeholder="true"
                 :form="vmc4Form"
                 :$v="$v" />
               <ZipCode
@@ -224,7 +216,6 @@
   import Email from './common-fields/Email';
   import Phone from './common-fields/Phone';
   import City from './common-fields/City';
-  import State from './common-fields/State';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
@@ -232,7 +223,7 @@
   import CardDate from './common-fields/CardDate';
   import CVV from './common-fields/CVV';
   import Terms from './common-fields/Terms';
-  import EState from './extra-fields/State';
+  import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -255,7 +246,6 @@
       Email,
       Phone,
       City,
-      State,
       ZipCode,
       Country,
       CardHolder,
@@ -263,7 +253,7 @@
       CardDate,
       CVV,
       Terms,
-      EState,
+      State,
       District,
       CardType,
       DocumentType,
@@ -275,6 +265,7 @@
 			'dealList',
 			'variantList',
       'extraFields',
+      'stateExtraField',
       'paymentMethodURL',
       'vmc4Form',
 		],
@@ -305,7 +296,6 @@
 						cvv: null,
 						country: js_data.country_code,
 						city: null,
-						state: null,
 						zipCode: null,
             terms: null,
 					},
@@ -331,7 +321,6 @@
           this.form.stepTwo.phone = selectedProductData.phone || this.form.stepTwo.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
           this.form.stepThree.city = selectedProductData.city || this.form.stepThree.city;
-          this.form.stepThree.state = selectedProductData.state || this.form.stepThree.state;
           this.form.stepThree.zipCode = selectedProductData.zipcode || this.form.stepThree.zipCode;
           this.form.stepThree.country = selectedProductData.country || this.form.stepThree.country;
         }
@@ -388,7 +377,7 @@
       },
       setBrazilAddress(res) {
         this.form.stepThree.city = res.city;
-        this.form.stepThree.state = res.state;
+        this.vmc4Form.state = res.state;
       },
 			submit() {
 				this.$v.form.$touch();
@@ -427,7 +416,6 @@
           phone: this.form.stepTwo.phone,
           countryCodePhoneField: this.form.countryCodePhoneField,
           city: this.form.stepThree.city,
-          state: this.form.stepThree.state,
           zipcode: this.form.stepThree.zipCode,
           country: this.form.stepThree.country,
         };
@@ -447,7 +435,9 @@
               billing_last_name: this.form.stepTwo.lname,
               billing_country: this.form.stepThree.country,
               billing_city: this.form.stepThree.city,
-              billing_region: this.form.stepThree.state,
+              billing_region: this.extraFields.state
+                ? this.vmc4Form.state
+                : '',
               billing_postcode: this.form.stepThree.zipCode,
               billing_email: this.form.stepTwo.email,
               billing_phone: this.dialCode + phoneNumber,
@@ -501,7 +491,6 @@
                   city: this.form.stepThree.city,
                   country: this.form.stepThree.country,
                   zip: this.form.stepThree.zipCode,
-                  state: this.form.stepThree.state,
                   street: 'none',
                 },
                 card: {

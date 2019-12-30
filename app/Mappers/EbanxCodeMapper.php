@@ -46,7 +46,7 @@ class EbanxCodeMapper
     ];
 
     /**
-     * Map code to phrase
+     * Returns a phrase by code if one exists
      * @param  string|null $code
      * @return string|null
      */

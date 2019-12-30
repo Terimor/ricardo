@@ -31,18 +31,10 @@
       :form="paymentForm"
       name="city" />
     <State
-      v-if="!extraFields.state"
-      :$v="$v.form.state"
+      :country="paymentForm.country"
+      :stateExtraField="stateExtraField"
+      :isLoading="isLoading"
       :placeholder="true"
-      :isLoading="isLoading"
-      :country="paymentForm.country"
-      :form="paymentForm"
-      name="state" />
-    <EState
-      v-else
-      :country="paymentForm.country"
-      :extraFields="extraFields"
-      :isLoading="isLoading"
       :form="paymentForm"
       :$v="$v" />
     <ZipCode
@@ -128,14 +120,13 @@
   import PaymentMethod from './extra-fields/PaymentMethod';
   import Street from './common-fields/Street';
   import City from './common-fields/City';
-  import State from './common-fields/State';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
   import CardHolder from './common-fields/CardHolder';
   import CardNumber from './common-fields/CardNumber';
   import CardDate from './common-fields/CardDate';
   import CVV from './common-fields/CVV';
-  import EState from './extra-fields/State';
+  import State from './extra-fields/State';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -153,14 +144,13 @@
       PaymentMethod,
       Street,
       City,
-      State,
       ZipCode,
       Country,
       CardHolder,
       CardNumber,
       CardDate,
       CVV,
-      EState,
+      State,
       District,
       CardType,
       DocumentType,
@@ -170,6 +160,7 @@
       '$v',
       'paymentForm',
       'extraFields',
+      'stateExtraField',
       'paymentMethodURL',
     ],
 		data() {

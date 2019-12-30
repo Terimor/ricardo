@@ -1,10 +1,30 @@
 <template>
-  
+
+  <text-field
+    id="state-field"
+    v-if="stateExtraField && stateExtraField.type === 'text'"
+    v-model="form.state"
+    :validation="$v.form.state"
+    :validationMessage="textRequired"
+    v-loading="isLoading.address"
+    element-loading-spinner="el-icon-loading"
+    :label="textTitle"
+    :rest="{
+      placeholder: placeholder
+        ? textTitle
+        : null,
+      autocomplete: 'shipping region',
+      name: 'ship-state',
+    }"
+    theme="variant-1"
+    :tabindex="tabindex"
+    :order="order" />
+
   <select-field
     :standart="true"
-    v-if="extraFields.state"
+    v-else-if="stateExtraField && stateExtraField.type === 'dropdown'"
     v-model="form.state"
-    :list="extraFields.state.items"
+    :list="stateExtraField.items"
     :validation="$v.form.state"
     :validationMessage="textRequired"
     v-loading="isLoading.address"
@@ -24,9 +44,10 @@
     name: 'State',
 
     props: [
-      'extraFields',
       'isLoading',
       'country',
+      'stateExtraField',
+      'placeholder',
       'tabindex',
       'order',
       'form',

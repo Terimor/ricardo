@@ -72,6 +72,13 @@ export const tplMixin = {
         : {};
     },
 
+    stateExtraField() {
+      return Object.keys(this.$root.paymentMethods)
+        .reduce((acc, name) => {
+          return acc || (this.$root.paymentMethods[name].extra_fields && this.$root.paymentMethods[name].extra_fields.state);
+        }, null);
+    },
+
     paymentMethodURL() {
       return this.$root.paymentMethods && this.form.payment_method && this.$root.paymentMethods[this.form.payment_method]
         ? this.$root.paymentMethods[this.form.payment_method].logo
@@ -138,19 +145,19 @@ export const tplMixin = {
     },
 
     setDefaultExtraValues() {
-      this.form.installments = this.extraFields.installments
+      this.form.installments = this.extraFields.installments && this.extraFields.installments.default !== undefined
         ? this.extraFields.installments.default
         : 1;
 
-      this.form.state = this.extraFields.state
+      this.form.state = this.extraFields.state && this.extraFields.state.default !== undefined
         ? this.extraFields.state.default
         : this.form.state;
 
-      this.form.card_type = this.extraFields.card_type
+      this.form.card_type = this.extraFields.card_type && this.extraFields.card_type.default !== undefined
         ? this.extraFields.card_type.default
         : null;
 
-      this.form.document_type = this.extraFields.document_type
+      this.form.document_type = this.extraFields.document_type && this.extraFields.document_type.default !== undefined
         ? this.extraFields.document_type.default
         : null;
     },

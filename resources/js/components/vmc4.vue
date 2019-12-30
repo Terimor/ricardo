@@ -25,6 +25,7 @@
                     :dealList="dealList"
                     :variantList="variantList"
                     :extraFields="extraFields"
+                    :stateExtraField="stateExtraField"
                     :paymentMethodURL="paymentMethodURL"
                     @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber">
                     <template slot="warranty">

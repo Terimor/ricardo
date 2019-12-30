@@ -58,7 +58,7 @@ class AppmaxService
 
         $env = Setting::getValue('appmax_environment', self::ENV_LIVE);
 
-        $this->endpoint = 'https://' . ($env === self::ENV_LIVE ? 'prod' : 'sandbox') . '.appmax.com.br/api/v3/';
+        $this->endpoint = 'https://' . ($env === self::ENV_LIVE ? 'admin' : 'sandbox') . '.appmax.com.br/api/v3/';
     }
 
     /**
@@ -233,7 +233,7 @@ class AppmaxService
             if ($body['success']) {
                 $result = (string)$body['data']['id'];
             } else {
-                logger()->info("Appmax customer", ['res' => $res->getBody()]);
+                logger()->info("Appmax customer", ['res' => (string)$res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
             logger()->error("Appmax customer", [
@@ -279,7 +279,7 @@ class AppmaxService
             if ($body['success']) {
                 $result = (string)$body['data']['id'];
             } else {
-                logger()->info("Appmax order", ['res' => $res->getBody()]);
+                logger()->info("Appmax order", ['res' => (string)$res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
             logger()->error("Appmax order", [
