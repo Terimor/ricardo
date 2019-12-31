@@ -16,6 +16,7 @@ export default function() {
       phone: validators.getPhoneRules(),
     },
     stepThree: {
+      street: validators.getStreetRules(),
       city: validators.getCityRules(),
       zipCode: validators.getZipCodeRules(),
       country: validators.getCountryRules(),
