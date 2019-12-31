@@ -44,7 +44,6 @@ class OrderController extends Controller
      */
     public function sendPostbacks()
     {
-        exit;
         $orders = OdinOrder::limit(1000)->orderBy('_id', 'desc')->get();
         $reduced = 0; $first_reduced = 0;
         foreach($orders as $order) {
