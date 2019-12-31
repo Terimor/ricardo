@@ -41,17 +41,15 @@
               :form="paymentForm"
               name="street" />
             <Building
-              v-if="paymentForm.country === 'br'"
-              :$v="$v.form.building"
               :isLoading="isLoading"
+              :extraFields="extraFields"
               :form="paymentForm"
-              name="building" />
-            <Apartment
-              v-if="paymentForm.country === 'br'"
-              :$v="$v.form.apartment"
+              :$v="$v" />
+            <Complement
               :isLoading="isLoading"
+              :extraFields="extraFields"
               :form="paymentForm"
-              name="apartment" />
+              :$v="$v" />
             <District
               :extraFields="extraFields"
               :form="paymentForm"
@@ -167,8 +165,6 @@
   import Email from './common-fields/Email';
   import Phone from './common-fields/Phone';
   import Street from './common-fields/Street';
-  import Building from './common-fields/Building';
-  import Apartment from './common-fields/Apartment';
   import City from './common-fields/City';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
@@ -178,6 +174,8 @@
   import CVV from './common-fields/CVV';
   import Terms from './common-fields/Terms';
   import State from './extra-fields/State';
+  import Building from './extra-fields/Building';
+  import Complement from './extra-fields/Complement';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -211,8 +209,6 @@
       Email,
       Phone,
       Street,
-      Building,
-      Apartment,
       City,
       ZipCode,
       Country,
@@ -222,6 +218,8 @@
       CVV,
       Terms,
       State,
+      Building,
+      Complement,
       District,
       CardType,
       DocumentType,
@@ -336,8 +334,6 @@
           phone: paymentForm.phone,
           countryCodePhoneField: paymentForm.countryCodePhoneField,
           street: paymentForm.street,
-          building: paymentForm.building,
-          apartment: paymentForm.apartment,
           city: paymentForm.city,
           zipcode: paymentForm.zipcode,
           country: paymentForm.country,
@@ -427,11 +423,6 @@
                 ipqs: this.ipqsResult,
               };
 
-              if (paymentForm.country === 'br') {
-                data.address.building = paymentForm.building;
-                data.address.apartment = paymentForm.apartment;
-              }
-
               if (this.$root.isAffIDEmpty) {
                 data.card.holder = paymentForm.cardHolder;
               }
@@ -515,7 +506,7 @@
           }
         }
 
-        #apartment-field {
+        #complement-field {
           width: 50%;
         }
 

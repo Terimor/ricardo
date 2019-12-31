@@ -70,11 +70,35 @@ export function getStreetRules() {
   };
 }
 
+export function getBuildingRules() {
+  return {
+    isValid(value) {
+      if (value && this.extraFields.building.pattern) {
+        return new RegExp(this.extraFields.building.pattern).test(value);
+      }
+
+      return true;
+    },
+  };
+}
+
+export function getComplementRules() {
+  return {
+    isValid(value) {
+      if (value && this.extraFields.complement.pattern) {
+        return new RegExp(this.extraFields.complement.pattern).test(value);
+      }
+
+      return true;
+    },
+  };
+}
+
 export function getDistrictRules() {
   return {
     required,
     isValid(value) {
-      if (this.extraFields.district.pattern) {
+      if (value && this.extraFields.district.pattern) {
         return new RegExp(this.extraFields.district.pattern).test(value);
       }
 

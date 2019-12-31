@@ -123,19 +123,17 @@
                 :placeholder="true"
                 name="street" />
               <Building
-                v-if="form.stepThree.country === 'br'"
-                :$v="$v.form.stepThree.building"
                 :isLoading="isLoading"
-                :form="form.stepThree"
+                :extraFields="extraFields"
                 :placeholder="true"
-                name="building" />
-              <Apartment
-                v-if="form.stepThree.country === 'br'"
-                :$v="$v.form.stepThree.apartment"
+                :form="vmc4Form"
+                :$v="$v" />
+              <Complement
                 :isLoading="isLoading"
-                :form="form.stepThree"
+                :extraFields="extraFields"
                 :placeholder="true"
-                name="apartment" />
+                :form="vmc4Form"
+                :$v="$v" />
               <District
                 :extraFields="extraFields"
                 :placeholder="true"
@@ -236,8 +234,6 @@
   import Email from './common-fields/Email';
   import Phone from './common-fields/Phone';
   import Street from './common-fields/Street';
-  import Building from './common-fields/Building';
-  import Apartment from './common-fields/Apartment';
   import City from './common-fields/City';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
@@ -247,6 +243,8 @@
   import CVV from './common-fields/CVV';
   import Terms from './common-fields/Terms';
   import State from './extra-fields/State';
+  import Building from './extra-fields/Building';
+  import Complement from './extra-fields/Complement';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -269,8 +267,6 @@
       Email,
       Phone,
       Street,
-      Building,
-      Apartment,
       City,
       ZipCode,
       Country,
@@ -280,6 +276,8 @@
       CVV,
       Terms,
       State,
+      Building,
+      Complement,
       District,
       CardType,
       DocumentType,
@@ -322,8 +320,6 @@
 						cvv: null,
 						country: js_data.country_code,
             street: null,
-            building: null,
-            apartment: null,
 						city: null,
 						zipCode: null,
             terms: null,
@@ -350,8 +346,6 @@
           this.form.stepTwo.phone = selectedProductData.phone || this.form.stepTwo.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
           this.form.stepThree.street = selectedProductData.street || this.form.stepThree.street;
-          this.form.stepThree.building = selectedProductData.building || this.form.stepThree.building;
-          this.form.stepThree.apartment = selectedProductData.apartment || this.form.stepThree.apartment;
           this.form.stepThree.city = selectedProductData.city || this.form.stepThree.city;
           this.form.stepThree.zipCode = selectedProductData.zipcode || this.form.stepThree.zipCode;
           this.form.stepThree.country = selectedProductData.country || this.form.stepThree.country;
@@ -449,8 +443,6 @@
           phone: this.form.stepTwo.phone,
           countryCodePhoneField: this.form.countryCodePhoneField,
           street: this.form.stepThree.street,
-          building: this.form.stepThree.building,
-          apartment: this.form.stepThree.apartment,
           city: this.form.stepThree.city,
           zipcode: this.form.stepThree.zipCode,
           country: this.form.stepThree.country,
@@ -538,11 +530,6 @@
                 },
                 ipqs: this.ipqsResult,
               };
-
-              if (this.form.stepThree.country === 'br') {
-                data.address.building = this.form.stepThree.building;
-                data.address.apartment = this.form.stepThree.apartment;
-              }
 
               if (this.$root.isAffIDEmpty) {
                 data.card.holder = this.form.stepThree.cardHolder;
@@ -813,7 +800,7 @@
         }
       }
 
-      #apartment-field {
+      #complement-field {
         width: 50%;
       }
 
