@@ -441,14 +441,14 @@ class AffiliateService
      */
     public static function validateAffiliateID(?string $id): bool
     {
-        $valid = false;
+        $valid = false;        
         if ($id) {
             $id = trim($id);
             if (in_array($id, AffiliateSetting::$approvedNames)) {
                 $valid = true;
             }
 
-            if ((int)$id == $id && strlen($id) > 0 && strlen($id) <= AffiliateSetting::AFFILIATE_ID_LENGTH){
+            if (is_numeric($id) && (int)$id == $id && strlen($id) > 0 && strlen($id) <= AffiliateSetting::AFFILIATE_ID_LENGTH) {                
                 $valid = true;
             }
         }
