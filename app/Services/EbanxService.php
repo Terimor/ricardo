@@ -92,7 +92,8 @@ class EbanxService
             'country'   => Country::fromIso($contact['country']),
             'state'     => $contact['state'] ?? '',
             'zipcode'   => $contact['zip'],
-            'streetNumber' => $contact['district'] ?? '' // maybe undefined
+            'streetNumber' => $contact['building'] ?? '',
+            'streetComplement' => !empty($contact['complement']) ? substr($contact['complement'], 0, 100) : ''
         ]);
     }
 

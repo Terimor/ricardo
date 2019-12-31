@@ -404,6 +404,8 @@ class PaymentService
                 'shipping_city'         => $contact['city'],
                 'shipping_street'       => $contact['street'],
                 'shipping_street2'      => $contact['district'] ?? null,
+                'shipping_building'     => $contact['building'] ?? null,
+                'shipping_apt'          => $contact['complement'] ?? null,
                 'shop_currency'         => CurrencyService::getCurrency()->code,
                 'warehouse_id'          => $product->warehouse_id,
                 'products'              => [$order_product],
@@ -427,6 +429,8 @@ class PaymentService
             $order->shipping_city       = $contact['city'];
             $order->shipping_street     = $contact['street'];
             $order->shipping_street2    = $contact['district'] ?? null;
+            $order->shipping_building   = $contact['building'] ?? null;
+            $order->shipping_apt        = $contact['complement'] ?? null;
             $order->installments        = $installments;
         }
         // select provider and create payment
@@ -660,6 +664,8 @@ class PaymentService
                             'country'           => $order->shipping_country,
                             'state'             => $order->shipping_state,
                             'district'          => $order->shipping_street2,
+                            'building'          => $order->shipping_building,
+                            'complement'        => $order->shipping_apt,
                             'zip'               => $order->shipping_zip,
                             'email'             => $order->customer_email,
                             'first_name'        => $order->customer_first_name,
@@ -694,7 +700,8 @@ class PaymentService
                             'city'              => $order->shipping_city,
                             'country'           => $order->shipping_country,
                             'state'             => $order->shipping_state,
-                            'district'          => $order->shipping_street2,
+                            'building'          => $order->shipping_building,
+                            'complement'        => $order->shipping_apt,
                             'zip'               => $order->shipping_zip,
                             'document_number'   => $order->customer_doc_id,
                             'email'             => $order->customer_email,
@@ -874,12 +881,14 @@ class PaymentService
                         'city'              => $order->shipping_city,
                         'country'           => $order->shipping_country,
                         'state'             => $order->shipping_state,
-                        'district'          => $order->shipping_street2,
+                        'building'          => $order->shipping_building,
+                        'complement'        => $order->shipping_apt,
                         'zip'               => $order->shipping_zip,
                         'email'             => $order->customer_email,
                         'first_name'        => $order->customer_first_name,
                         'last_name'         => $order->customer_last_name,
-                        'phone'             => $order->customer_phone
+                        'phone'             => $order->customer_phone,
+                        'document_number'   => $order->customer_doc_id
                     ],
                     [
                         'amount'        => $order->total_price,
@@ -932,7 +941,8 @@ class PaymentService
                         'city'              => $order->shipping_city,
                         'country'           => $order->shipping_country,
                         'state'             => $order->shipping_state,
-                        'district'          => $order->shipping_street2,
+                        'building'          => $order->shipping_building,
+                        'complement'        => $order->shipping_apt,
                         'zip'               => $order->shipping_zip,
                         'document_number'   => $order->customer_doc_id,
                         'email'             => $order->customer_email,
