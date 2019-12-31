@@ -276,6 +276,8 @@
           email: null,
           phone: null,
           street: null,
+          building: null,
+          apartment: null,
           city: null,
           zipcode: null,
           country: js_data.country_code,
@@ -313,6 +315,8 @@
           this.form.phone = selectedProductData.phone || this.form.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
           this.form.street = selectedProductData.street || this.form.street;
+          this.form.building = selectedProductData.building || this.form.building;
+          this.form.apartment = selectedProductData.apartment || this.form.apartment;
           this.form.city = selectedProductData.city || this.form.city;
           this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
           this.form.country = selectedProductData.country || this.form.country;

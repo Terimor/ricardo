@@ -370,9 +370,13 @@ class PaymentProviders
                         ],
                         'default'   => 'credit'
                     ],
-                    'district' => [
+                    'complement' => [
                         'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
+                        'pattern'   => '^.{0,100}$'
+                    ],
+                    'building' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,9}$'
                     ],
                     'document_type' => [
                         'type'  => 'dropdown',
@@ -447,9 +451,13 @@ class PaymentProviders
                     ]
                 ],
                 'br' => [
-                    'district' => [
+                    'complement' => [
                         'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
+                        'pattern'   => '^.{0,100}$'
+                    ],
+                    'building' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,9}$'
                     ],
                     'document_number'   => [
                         'type'      => 'text',
@@ -501,9 +509,13 @@ class PaymentProviders
                     ]
                 ],
                 'co' => [
-                    'district' => [
+                    'complement' => [
                         'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
+                        'pattern'   => '^.{0,100}$'
+                    ],
+                    'building' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,9}$'
                     ],
                     'document_type' => [
                         'type'  => 'dropdown',
@@ -589,9 +601,13 @@ class PaymentProviders
                         ],
                         'default'   => 'credit'
                     ],
-                    'district' => [
+                    'complement' => [
                         'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
+                        'pattern'   => '^.{0,100}$'
+                    ],
+                    'building' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,9}$'
                     ],
                     'state' => [
                         'type'  => 'dropdown',
@@ -646,23 +662,23 @@ class PaymentProviders
             'methods'   => [
                 'main' => [
                     PaymentMethods::MASTERCARD => [
-                        '-3ds' => ['ar', 'br', 'mx', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'mx', 'co']
                     ],
                     PaymentMethods::VISA => [
-                        '-3ds' => ['ar', 'br', 'mx', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'mx', 'co']
                     ],
                     PaymentMethods::AMEX => [
-                        '-3ds' => ['ar', 'br', 'mx', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'mx', 'co']
                     ],
                     PaymentMethods::DINERSCLUB => [
-                        '-3ds' => ['ar', 'br', 'co']
+                        '-3ds' => ['ar', /*'br',*/ 'co']
                     ],
-                    PaymentMethods::HIPERCARD => [
-                        '-3ds' => ['br']
-                    ],
-                    PaymentMethods::ELO => [
-                        '-3ds' => ['br']
-                    ],
+                    // PaymentMethods::HIPERCARD => [
+                    //     '-3ds' => ['br']
+                    // ],
+                    // PaymentMethods::ELO => [
+                    //     '-3ds' => ['br']
+                    // ],
                     PaymentMethods::NARANJA => [
                         '-3ds' => ['ar']
                     ],
@@ -979,7 +995,7 @@ class PaymentProviders
         ],
         self::APPMAX => [
             'name'      => 'Appmax',
-            'is_active' => false,
+            'is_active' => true,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,
@@ -990,14 +1006,22 @@ class PaymentProviders
             ],
             'extra_fields'  => [
                 'br' => [
+                    'complement' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{0,255}$'
+                    ],
                     'district' => [
                         'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
+                        'pattern'   => '^.{1,255}$'
+                    ],
+                    'building' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,9}$'
                     ],
                     'document_number'   => [
                         'type'      => 'text',
                         'pattern'   => '^\d{3}\.\d{3}\.\d{3}\-\d{2}$',
-                        'schema'    => array('\d', '\d', '\d', '\.', '\d', '\d', '\d', '\.', '\d', '\d', '\d', '-', '\d', '\d'),
+                        'schema'    => ['\d', '\d', '\d', '\.', '\d', '\d', '\d', '\.', '\d', '\d', '\d', '-', '\d', '\d'],
                         'placeholder' => 'xxx.xxx.xxx-xx'
                     ],
                     'installments'  => [

@@ -106,7 +106,7 @@
                 :form="vmc4Form"
                 :$v="$v" />
             </div>
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-wrap">
               <ZipCode
                 v-if="form.stepThree.country === 'br'"
                 :$v="$v.form.stepThree.zipCode"
@@ -116,6 +116,26 @@
                 :form="form.stepThree"
                 :placeholder="true"
                 name="zipCode" />
+              <Street
+                :$v="$v.form.stepThree.street"
+                :isLoading="isLoading"
+                :form="form.stepThree"
+                :placeholder="true"
+                name="street" />
+              <Building
+                v-if="form.stepThree.country === 'br'"
+                :$v="$v.form.stepThree.building"
+                :isLoading="isLoading"
+                :form="form.stepThree"
+                :placeholder="true"
+                name="building" />
+              <Apartment
+                v-if="form.stepThree.country === 'br'"
+                :$v="$v.form.stepThree.apartment"
+                :isLoading="isLoading"
+                :form="form.stepThree"
+                :placeholder="true"
+                name="apartment" />
               <District
                 :extraFields="extraFields"
                 :placeholder="true"
@@ -215,6 +235,9 @@
   import LastName from './common-fields/LastName';
   import Email from './common-fields/Email';
   import Phone from './common-fields/Phone';
+  import Street from './common-fields/Street';
+  import Building from './common-fields/Building';
+  import Apartment from './common-fields/Apartment';
   import City from './common-fields/City';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
@@ -245,6 +268,9 @@
       LastName,
       Email,
       Phone,
+      Street,
+      Building,
+      Apartment,
       City,
       ZipCode,
       Country,
@@ -295,6 +321,9 @@
 						cardDate: null,
 						cvv: null,
 						country: js_data.country_code,
+            street: null,
+            building: null,
+            apartment: null,
 						city: null,
 						zipCode: null,
             terms: null,
@@ -320,6 +349,9 @@
           this.form.stepTwo.email = selectedProductData.email || this.form.stepTwo.email;
           this.form.stepTwo.phone = selectedProductData.phone || this.form.stepTwo.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
+          this.form.stepThree.street = selectedProductData.street || this.form.stepThree.street;
+          this.form.stepThree.building = selectedProductData.building || this.form.stepThree.building;
+          this.form.stepThree.apartment = selectedProductData.apartment || this.form.stepThree.apartment;
           this.form.stepThree.city = selectedProductData.city || this.form.stepThree.city;
           this.form.stepThree.zipCode = selectedProductData.zipcode || this.form.stepThree.zipCode;
           this.form.stepThree.country = selectedProductData.country || this.form.stepThree.country;
@@ -376,6 +408,7 @@
         this.isFormShown = true;
       },
       setBrazilAddress(res) {
+        this.form.stepThree.street = res.address;
         this.form.stepThree.city = res.city;
         this.vmc4Form.state = res.state;
       },
@@ -415,6 +448,9 @@
           email: this.form.stepTwo.email,
           phone: this.form.stepTwo.phone,
           countryCodePhoneField: this.form.countryCodePhoneField,
+          street: this.form.stepThree.street,
+          building: this.form.stepThree.building,
+          apartment: this.form.stepThree.apartment,
           city: this.form.stepThree.city,
           zipcode: this.form.stepThree.zipCode,
           country: this.form.stepThree.country,
@@ -434,6 +470,7 @@
               billing_first_name: this.form.stepTwo.fname,
               billing_last_name: this.form.stepTwo.lname,
               billing_country: this.form.stepThree.country,
+              billing_address_1: this.form.stepThree.street,
               billing_city: this.form.stepThree.city,
               billing_region: this.extraFields.state
                 ? this.vmc4Form.state
@@ -491,7 +528,7 @@
                   city: this.form.stepThree.city,
                   country: this.form.stepThree.country,
                   zip: this.form.stepThree.zipCode,
-                  street: 'none',
+                  street: this.form.stepThree.street,
                 },
                 card: {
                   number: cardNumber,
@@ -501,6 +538,11 @@
                 },
                 ipqs: this.ipqsResult,
               };
+
+              if (this.form.stepThree.country === 'br') {
+                data.address.building = this.form.stepThree.building;
+                data.address.apartment = this.form.stepThree.apartment;
+              }
 
               if (this.$root.isAffIDEmpty) {
                 data.card.holder = this.form.stepThree.cardHolder;
@@ -759,6 +801,20 @@
           margin-left: 0;
           margin-right: 10px;
         }
+      }
+
+      #building-field {
+        padding-right: 10px;
+        width: 50%;
+
+        [dir="rtl"] & {
+          padding-left: 10px;
+          padding-right: 0;
+        }
+      }
+
+      #apartment-field {
+        width: 50%;
       }
 
       .el-input {

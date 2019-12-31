@@ -85,7 +85,7 @@ class BluesnapService
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
         $result = [
-            'address'   => $contact['street'],
+            'address'   => $contact['street'] . !empty($contact['building']) ? ", {$contact['building']}" : '',
             'city'      => $contact['city'],
             'country'   => $contact['country'],
             'email'     => $contact['email'],
@@ -97,11 +97,13 @@ class BluesnapService
         if (!empty($contact['state'])) {
             $result['state'] = $contact['state'];
         }
-        if (!empty($contact['district'])) {
-            $result['address2'] = $contact['district'];
+
+        if (!empty($contact['complement'])) {
+            $result['address2'] = $contact['complement'];
         }
+
         if (!empty($contact['document_number'])) {
-            $result['personalIdentificationNumber'] = $contact['district'];
+            $result['personalIdentificationNumber'] = $contact['document_number'];
         }
         return $result;
     }

@@ -40,6 +40,18 @@
               :isLoading="isLoading"
               :form="paymentForm"
               name="street" />
+            <Building
+              v-if="paymentForm.country === 'br'"
+              :$v="$v.form.building"
+              :isLoading="isLoading"
+              :form="paymentForm"
+              name="building" />
+            <Apartment
+              v-if="paymentForm.country === 'br'"
+              :$v="$v.form.apartment"
+              :isLoading="isLoading"
+              :form="paymentForm"
+              name="apartment" />
             <District
               :extraFields="extraFields"
               :form="paymentForm"
@@ -155,6 +167,8 @@
   import Email from './common-fields/Email';
   import Phone from './common-fields/Phone';
   import Street from './common-fields/Street';
+  import Building from './common-fields/Building';
+  import Apartment from './common-fields/Apartment';
   import City from './common-fields/City';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
@@ -197,6 +211,8 @@
       Email,
       Phone,
       Street,
+      Building,
+      Apartment,
       City,
       ZipCode,
       Country,
@@ -320,6 +336,8 @@
           phone: paymentForm.phone,
           countryCodePhoneField: paymentForm.countryCodePhoneField,
           street: paymentForm.street,
+          building: paymentForm.building,
+          apartment: paymentForm.apartment,
           city: paymentForm.city,
           zipcode: paymentForm.zipcode,
           country: paymentForm.country,
@@ -409,6 +427,11 @@
                 ipqs: this.ipqsResult,
               };
 
+              if (paymentForm.country === 'br') {
+                data.address.building = paymentForm.building;
+                data.address.apartment = paymentForm.apartment;
+              }
+
               if (this.$root.isAffIDEmpty) {
                 data.card.holder = paymentForm.cardHolder;
               }
@@ -480,6 +503,20 @@
 
         #last-name-field {
           width: 60%;
+        }
+
+        #building-field {
+          padding-right: 10px;
+          width: 50%;
+
+          [dir="rtl"] & {
+            padding-left: 10px;
+            padding-right: 0;
+          }
+        }
+
+        #apartment-field {
+          width: 50%;
         }
 
         #card-date-field {
