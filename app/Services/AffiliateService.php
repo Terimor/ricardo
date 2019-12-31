@@ -448,7 +448,7 @@ class AffiliateService
                 $valid = true;
             }
 
-            if (is_numeric($id) && (int)$id == $id && strlen($id) > 0 && strlen($id) <= AffiliateSetting::AFFILIATE_ID_LENGTH) {                
+            if ((string)(int)$id == $id && strlen($id) > 0 && strlen($id) <= AffiliateSetting::AFFILIATE_ID_LENGTH) {                
                 $valid = true;
             }
         }

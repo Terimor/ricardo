@@ -129,7 +129,7 @@ class AffiliateSetting extends Model
     {
         $affiliate = null;
         if (AffiliateService::validateAffiliateID($hasOfferId)) {          
-            $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hasOfferId]);             
+            $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hasOfferId]);
         }
         return $affiliate;
     }    
