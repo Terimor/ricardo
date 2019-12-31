@@ -225,6 +225,22 @@
                   :form="form"
                   name="street" />
 
+                <Building
+                  v-if="form.country === 'br'"
+                  :$v="$v.form.building"
+                  :isLoading="isLoading"
+                  :placeholder="true"
+                  :form="form"
+                  name="building" />
+
+                <Apartment
+                  v-if="form.country === 'br'"
+                  :$v="$v.form.apartment"
+                  :isLoading="isLoading"
+                  :placeholder="true"
+                  :form="form"
+                  name="apartment" />
+
                 <District
                   :extraFields="extraFields"
                   :placeholder="true"
@@ -520,6 +536,8 @@
   import Email from './common/common-fields/Email';
   import Phone from './common/common-fields/Phone';
   import Street from './common/common-fields/Street';
+  import Building from './common/common-fields/Building';
+  import Apartment from './common/common-fields/Apartment';
   import City from './common/common-fields/City';
   import ZipCode from './common/common-fields/ZipCode';
   import Country from './common/common-fields/Country';
@@ -563,6 +581,8 @@
       Email,
       Phone,
       Street,
+      Building,
+      Apartment,
       City,
       ZipCode,
       Country,
@@ -966,6 +986,8 @@
             this.form.phone = selectedProductData.phone || this.form.phone;
             this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
             this.form.street = selectedProductData.street || this.form.street;
+            this.form.building = selectedProductData.building || this.form.building;
+            this.form.apartment = selectedProductData.apartment || this.form.apartment;
             this.form.city = selectedProductData.city || this.form.city;
             this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
             this.form.country = selectedProductData.country || this.form.country;
@@ -1075,6 +1097,8 @@
           phone: this.form.phone,
           countryCodePhoneField: this.form.countryCodePhoneField,
           street: this.form.street,
+          building:  this.form.building,
+          apartment:  this.form.apartment,
           city: this.form.city,
           zipcode: this.form.zipcode,
           country: this.form.country,
@@ -1147,6 +1171,11 @@
               },
               ipqs: this.ipqsResult,
             };
+
+            if (this.form.country === 'br') {
+              data.address.building = this.form.building;
+              data.address.apartment = this.form.apartment;
+            }
 
             if (this.$root.isAffIDEmpty) {
               data.card.holder = this.form.cardHolder;
@@ -1760,6 +1789,29 @@
   }
 
   #last-name-field {
+    margin-left: auto;
+    width: 48%;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    @media only screen and (max-width: 767px) {
+      margin: 0;
+      width: 100%;
+    }
+  }
+
+  #building-field {
+    width: 48%;
+
+    @media only screen and (max-width: 767px) {
+      width: 100%;
+    }
+  }
+
+  #apartment-field {
     margin-left: auto;
     width: 48%;
 

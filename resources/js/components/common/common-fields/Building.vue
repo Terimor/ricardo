@@ -1,11 +1,12 @@
 <template>
-  
+
   <text-field
-    id="district-field"
-    v-if="extraFields.district"
-    v-model="form.district"
-    :validation="$v.form.district"
+    id="building-field"
+    v-model="form[name]"
+    :validation="$v"
     :validationMessage="textRequired"
+    v-loading="isLoading.address"
+    element-loading-spinner="el-icon-loading"
     :label="textLabel"
     :rest="{
       placeholder: placeholder
@@ -20,17 +21,16 @@
 
 
 <script>
-  
+
   export default {
 
-    name: 'District',
-
     props: [
+      'form',
+      'name',
+      'isLoading',
       'placeholder',
-      'extraFields',
       'tabindex',
       'order',
-      'form',
       '$v',
     ],
 
@@ -38,11 +38,11 @@
     computed: {
 
       textLabel() {
-        return this.$t('checkout.payment_form.complemento');
+        return this.$t('checkout.payment_form.building');
       },
 
       textRequired() {
-        return this.$t('checkout.payment_form.complemento.required');
+        return this.$t('checkout.payment_form.building.required');
       },
 
     },
@@ -52,6 +52,6 @@
 </script>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
   
 </style>

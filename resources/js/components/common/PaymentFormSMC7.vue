@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$v" class="flex-wrap payment-form-smc7">
+  <div v-if="$v" class="d-flex flex-wrap payment-form-smc7">
     <Country
       :$v="$v.form.country"
       :form="paymentForm"
@@ -19,6 +19,20 @@
       :isLoading="isLoading"
       :form="paymentForm"
       name="streetAndNumber" />
+    <Building
+      v-if="paymentForm.country === 'br'"
+      :$v="$v.form.building"
+      :isLoading="isLoading"
+      :placeholder="true"
+      :form="paymentForm"
+      name="building" />
+    <Apartment
+      v-if="paymentForm.country === 'br'"
+      :$v="$v.form.apartment"
+      :isLoading="isLoading"
+      :placeholder="true"
+      :form="paymentForm"
+      name="apartment" />
     <District
       :extraFields="extraFields"
       :placeholder="true"
@@ -119,6 +133,8 @@
 	import PayMethodItem from "./PayMethodItem";
   import PaymentMethod from './extra-fields/PaymentMethod';
   import Street from './common-fields/Street';
+  import Building from './common-fields/Building';
+  import Apartment from './common-fields/Apartment';
   import City from './common-fields/City';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
@@ -143,6 +159,8 @@
       PayMethodItem,
       PaymentMethod,
       Street,
+      Building,
+      Apartment,
       City,
       ZipCode,
       Country,
@@ -223,6 +241,20 @@
 
     .fa.fa-question-circle {
       cursor: pointer;
+    }
+
+    #building-field {
+      padding-right: 10px;
+      width: 50%;
+
+      [dir="rtl"] & {
+        padding-left: 10px;
+        padding-right: 0;
+      }
+    }
+
+    #apartment-field {
+      width: 50%;
     }
 
     #card-date-field {
