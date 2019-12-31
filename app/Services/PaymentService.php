@@ -368,6 +368,7 @@ class PaymentService
 
             $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
             $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+            $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
             $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
             $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
@@ -1564,6 +1565,7 @@ class PaymentService
 
             $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
             $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+            $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
             $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
             $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 

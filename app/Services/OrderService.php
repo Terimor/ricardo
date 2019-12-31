@@ -198,10 +198,10 @@ class OrderService
             // check if order has the same affiliate and txn status captured, approved
             if ($order->affiliate == $hoAffiliateId && $order->isTxnForReduce()) {
                 // check or create affiliate
-                $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hoAffiliateId]);
+                $affiliate = AffiliateSetting::getByHasOfferId($hoAffiliateId);
 
                  // if not flagged check fired logic
-                if (empty($order->is_flagged)) {
+                if ($affiliate && empty($order->is_flagged)) {
                     // get first main product                    
                     $productId = $order->getFirstProductId();
                     if ($order->is_reduced === null && $productId) {

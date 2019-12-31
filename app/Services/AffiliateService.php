@@ -413,9 +413,10 @@ class AffiliateService
      
         $ip = $request->ip();
         $location = \Location::get($ip);
-        
+        $affId = AffiliateService::getAttributeByPriority($request->get('aff_id'), $request->get('affid'));
+        $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
         $data = [
-            'affiliate' => AffiliateService::getAttributeByPriority($request->get('aff_id'), $request->get('affid')),
+            'affiliate' => $affId,
             'offer' => $request->get('offer_id') ? $request->get('offer_id') : ($request->get('offerid') ? $request->get('offerid') : null),
             'url' => $url,
             'page' => $page,
@@ -431,5 +432,27 @@ class AffiliateService
       } else {
           logger()->warning('FingerprintWrongData', ['request' => $request->all()]);
       }
-  }    
+  }
+  
+    /**
+     * Validate affiliate ID
+     * @param string $id
+     * @return bool
+     */
+    public static function validateAffiliateID(?string $id): bool
+    {
+        $valid = false;
+        if ($id) {
+            $id = trim($id);
+            if (in_array($id, AffiliateSetting::$approvedNames)) {
+                $valid = true;
+            }
+
+            if (is_numeric($id) && mb_strlen($id) > 0 && mb_strlen($id) <= AffiliateSetting::AFFILIATE_ID_LENGTH){
+                $valid = true;
+            }
+        }
+        
+        return $valid;
+    }  
 }

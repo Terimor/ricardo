@@ -365,6 +365,7 @@ class PayPalService
             ];
             $params = !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null;
             $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+            $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
             $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
             $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
