@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Models\Localize;
+use App\Services\AffiliateService;
 
 class AffiliateSetting extends Model
 {
@@ -11,7 +12,7 @@ class AffiliateSetting extends Model
     
     protected $dates = ['created_at', 'updated_at'];
     
-    public $timestamps = true;    
+    public $timestamps = true;
     /**
      * The attributes that are mass assignable.
      *
@@ -48,6 +49,9 @@ class AffiliateSetting extends Model
     const TXID_LENGTH = 20;
     const ALL_INCLUDE_INTERNAL_OPTION = '0';
     const ALL_EXCLUDE_INTERNAL_OPTION = '-1';
+    
+    public static $approvedNames = ['{aff_id}'];
+    const AFFILIATE_ID_LENGTH = 5;
     
     /**
      * [Percent] = [sales count]
@@ -109,14 +113,26 @@ class AffiliateSetting extends Model
     ];
     
     /**
+     * @param $value
+     */
+    public function setHoAffiliateIdAttribute($value)
+    {
+        $this->attributes['ho_affiliate_id'] = trim($value);
+    }    
+    
+    /**
      * Get affiliate by HasOffer ID
      * @param type $hasOfferId
      * @return type
      */
     public static function getByHasOfferId(string $hasOfferId)
-    {        
-        return AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hasOfferId]);
-    }
+    {
+        $affiliate = null;
+        if (AffiliateService::validateAffiliateID($hasOfferId)) {          
+            $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hasOfferId]);             
+        }
+        return $affiliate;
+    }    
     
     /**
      * Calculate is fire
