@@ -115,7 +115,7 @@ class AffiliateSetting extends Model
     /**
      * @param $value
      */
-    public function sethoAffiliateIdAttribute($value)
+    public function setHoAffiliateIdAttribute($value)
     {
         $this->attributes['ho_affiliate_id'] = trim($value);
     }    
