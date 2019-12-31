@@ -15,9 +15,10 @@ class BluesnapCodeMapper
         'FRAUD_DETECTED'        => 'card.error.not_functioning',
         'CVV_ERROR'             => 'card.error.cvv_incorrect',
         'INSUFFICIENT_FUNDS'    => 'card.error.funds_insufficient',
-        'NVALID_CARD_NUMBER'    => 'card.error.number_incorrect',
+        'INVALID_CARD_NUMBER'   => 'card.error.number_incorrect',
         'EXPIRED_CARD'          => 'card.error.expired',
         'LIMIT_EXCEEDED'        => 'card.error.month_limit',
+        'GENERAL_PAYMENT_PROCESSING_ERROR' => 'card.error.not_functioning',
         'securityCode'          => 'card.error.cvv_incorrect'
     ];
 
