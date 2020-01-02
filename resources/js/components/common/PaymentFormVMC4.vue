@@ -123,7 +123,6 @@
                 :placeholder="true"
                 name="street" />
               <Building
-                :isLoading="isLoading"
                 :extraFields="extraFields"
                 :placeholder="true"
                 :form="vmc4Form"
@@ -135,6 +134,7 @@
                 :form="vmc4Form"
                 :$v="$v" />
               <District
+                :isLoading="isLoading"
                 :extraFields="extraFields"
                 :placeholder="true"
                 :form="vmc4Form"

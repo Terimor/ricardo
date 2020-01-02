@@ -79,7 +79,7 @@ export default {
     pleaseChooseText: () => t('upsells.choose'),
 
     selectList() {
-      const data = Array(Number(this.selectedProductData.quantity || 0)).fill('').map((item, index) => {
+      const data = Array(Number(this.selectedProductData.quantity || this.selectedProductData.deal || 1)).fill('').map((item, index) => {
         const value = index + 1
 
         return item = {
@@ -112,7 +112,7 @@ export default {
 
   mounted() {
     this.isLoading = true;
-    getUppSells(this.id, this.selectedProductData.quantity || 0).then(({ data }) => {
+    getUppSells(this.id, this.selectedProductData.quantity || this.selectedProductData.deal || 1).then(({ data }) => {
         this.name = data.upsell.long_name;
         this.description = data.upsell.description;
         this.upsellPrices = data.upsell.upsellPrices;

@@ -47,11 +47,11 @@
                   :image-url="product.image[0]"
                   :name="product.long_name"
                   :subtotal="orderCustomer.productsText[0].price_text"
-                  :warranty="getOriginalOrder.isWarrantyChecked
+                  :warranty="getOriginalOrder.isWarrantyChecked || getOriginalOrder.warranty
                     ? orderCustomer.productsText[0].warranty_price_text
                     : null"
                   :benefitList="[
-                    `${textQuantity}: ${getOriginalOrder.quantity}`,
+                    `${textQuantity}: ${getOriginalOrder.quantity || getOriginalOrder.deal}`,
                   ]"
                 />
                 <template v-if="accessoryList.length">
@@ -240,7 +240,8 @@
       },
 
       getOriginalOrderPrice() {
-        return this.getOriginalOrder.prices && this.getOriginalOrder.prices.value;
+        const deal = this.getOriginalOrder.quantity || this.getOriginalOrder.deal || 1;
+        return js_data.product.prices[deal].value;
       },
 
       getOriginalOrderId() {
@@ -254,7 +255,7 @@
       },
 
       paymentProvider() {
-        return this.getOriginalOrder.paymentProvider;
+        return this.getOriginalOrder.paymentProvider || this.getOriginalOrder.payment_provider;
       },
     },
 
@@ -288,7 +289,7 @@
         return paypalCreateOrder({
           xsrfToken: document.head.querySelector('meta[name="csrf-token"]').content,
           sku_code: this.getOriginalOrder.variant,
-          sku_quantity: this.getOriginalOrder.quantity,
+          sku_quantity: this.getOriginalOrder.quantity || this.getOriginalOrder.deal,
           is_warranty_checked: false,
           order: this.getOriginalOrderId,
           page_checkout: document.location.href,

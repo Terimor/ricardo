@@ -226,7 +226,6 @@
                   name="street" />
 
                 <Building
-                  :isLoading="isLoading"
                   :extraFields="extraFields"
                   :placeholder="true"
                   :form="form"
@@ -240,6 +239,7 @@
                   :$v="$v" />
 
                 <District
+                  :isLoading="isLoading"
                   :extraFields="extraFields"
                   :placeholder="true"
                   :form="form"
@@ -1197,11 +1197,15 @@
     main.pt-4 {
       padding: 0!important;
     }
-  }
 
-  .recently-bought {
-    @media only screen and (max-width: 767px) {
-      display: none!important;
+    .recently-bought {
+      @media only screen and (max-width: 767px) {
+        display: none!important;
+      }
+    }
+
+    .el-loading-mask {
+      background-color: rgba(255,255,255,.5);
     }
   }
 

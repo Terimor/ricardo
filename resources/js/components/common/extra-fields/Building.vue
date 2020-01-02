@@ -6,8 +6,6 @@
     v-model="form.building"
     :validation="$v.form.building"
     :validationMessage="textRequired"
-    v-loading="isLoading.address"
-    element-loading-spinner="el-icon-loading"
     :label="textLabel"
     :rest="{
       placeholder: placeholder
@@ -28,7 +26,6 @@
     name: 'Building',
 
     props: [
-      'isLoading',
       'placeholder',
       'extraFields',
       'tabindex',

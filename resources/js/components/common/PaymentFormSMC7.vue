@@ -20,7 +20,6 @@
       :form="paymentForm"
       name="streetAndNumber" />
     <Building
-      :isLoading="isLoading"
       :extraFields="extraFields"
       :placeholder="true"
       :form="paymentForm"
@@ -32,6 +31,7 @@
       :form="paymentForm"
       :$v="$v" />
     <District
+      :isLoading="isLoading"
       :extraFields="extraFields"
       :placeholder="true"
       :form="paymentForm"
