@@ -39,11 +39,11 @@ export function ipqsCheck(fields = {}) {
     };
 
     IPQ.failure = result => {
-      if (attempt < 3) {
-        setTimeout(IPQ.sendRequest, 1000);
-      } else {
+      //if (attempt < 3) {
+        //setTimeout(IPQ.sendRequest, 1000);
+      //} else {
         resolve(null);
-      }
+      //}
     };
 
     if (js_query_params['3ds'] === 'failure') {
