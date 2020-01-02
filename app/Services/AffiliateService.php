@@ -382,6 +382,7 @@ class AffiliateService
     {
         $url = $request->get('url');
         if (!$url) {
+            logger()->warning('FingerprintWrongDataUrl', ['request' => $request->all()]);
             $url = $request->get('page');
         }
         $parsedUrl = parse_url($url);
