@@ -6,6 +6,8 @@ const formFields = {
   payment_method: null,
   installments: 1,
   state: null,
+  building: null,
+  complement: null,
   district: null,
   card_type: null,
   document_type: null,
@@ -194,6 +196,14 @@ export const tplMixin = {
         rules.state = validators.getStateRules();
       }
 
+      if (this.extraFields.building) {
+        rules.building = validators.getBuildingRules();
+      }
+
+      if (this.extraFields.complement) {
+        rules.complement = validators.getComplementRules();
+      }
+
       if (this.extraFields.district) {
         rules.district = validators.getDistrictRules();
       }
@@ -218,6 +228,14 @@ export const tplMixin = {
 
       if (this.extraFields.state) {
         data.address.state = this.form.state;
+      }
+
+      if (this.extraFields.building) {
+        data.address.building = this.form.building;
+      }
+
+      if (this.extraFields.complement) {
+        data.address.complement = this.form.complement;
       }
 
       if (this.extraFields.district) {

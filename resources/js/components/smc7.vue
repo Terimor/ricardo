@@ -273,8 +273,6 @@
           variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
           country: js_data.country_code,
           streetAndNumber: null,
-          building: null,
-          apartment: null,
           city: null,
           zipCode: null,
           paymentProvider: null,
@@ -306,8 +304,6 @@
           this.form.phone = selectedProductData.phone || this.form.phone;
           this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
           this.form.streetAndNumber = selectedProductData.streetAndNumber || this.form.streetAndNumber;
-          this.form.building = selectedProductData.building || this.form.building;
-          this.form.apartment = selectedProductData.apartment || this.form.apartment;
           this.form.city = selectedProductData.city || this.form.city;
           this.form.zipCode = selectedProductData.zipcode || this.form.zipCode;
           this.form.country = selectedProductData.country || this.form.country;
@@ -505,8 +501,6 @@
           phone: this.form.phone,
           countryCodePhoneField: this.form.countryCodePhoneField,
           streetAndNumber: this.form.streetAndNumber,
-          building:  this.form.building,
-          apartment:  this.form.apartment,
           city: this.form.city,
           zipcode: this.form.zipCode,
           country: this.form.country,
@@ -588,11 +582,6 @@
               },
               ipqs: this.ipqsResult,
             };
-
-            if (this.form.country === 'br') {
-              data.address.building = this.form.building;
-              data.address.apartment = this.form.apartment;
-            }
 
             if (this.$root.isAffIDEmpty) {
               data.card.holder = this.form.cardHolder;

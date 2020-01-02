@@ -1,9 +1,10 @@
 <template>
 
   <text-field
-    id="apartment-field"
-    v-model="form[name]"
-    :validation="$v"
+    id="building-field"
+    v-if="extraFields.building"
+    v-model="form.building"
+    :validation="$v.form.building"
     :validationMessage="textRequired"
     v-loading="isLoading.address"
     element-loading-spinner="el-icon-loading"
@@ -24,25 +25,32 @@
 
   export default {
 
+    name: 'Building',
+
     props: [
-      'form',
-      'name',
       'isLoading',
       'placeholder',
+      'extraFields',
       'tabindex',
       'order',
+      'form',
       '$v',
     ],
+
+
+    created() {
+      console.log(this.form)
+    },
 
 
     computed: {
 
       textLabel() {
-        return this.$t('checkout.payment_form.apartment');
+        return this.$t('checkout.payment_form.building');
       },
 
       textRequired() {
-        return this.$t('checkout.payment_form.apartment.required');
+        return this.$t('checkout.payment_form.building.required');
       },
 
     },

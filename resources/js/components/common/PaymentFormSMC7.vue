@@ -20,19 +20,17 @@
       :form="paymentForm"
       name="streetAndNumber" />
     <Building
-      v-if="paymentForm.country === 'br'"
-      :$v="$v.form.building"
       :isLoading="isLoading"
+      :extraFields="extraFields"
       :placeholder="true"
       :form="paymentForm"
-      name="building" />
-    <Apartment
-      v-if="paymentForm.country === 'br'"
-      :$v="$v.form.apartment"
+      :$v="$v" />
+    <Complement
       :isLoading="isLoading"
+      :extraFields="extraFields"
       :placeholder="true"
       :form="paymentForm"
-      name="apartment" />
+      :$v="$v" />
     <District
       :extraFields="extraFields"
       :placeholder="true"
@@ -133,8 +131,6 @@
 	import PayMethodItem from "./PayMethodItem";
   import PaymentMethod from './extra-fields/PaymentMethod';
   import Street from './common-fields/Street';
-  import Building from './common-fields/Building';
-  import Apartment from './common-fields/Apartment';
   import City from './common-fields/City';
   import ZipCode from './common-fields/ZipCode';
   import Country from './common-fields/Country';
@@ -143,6 +139,8 @@
   import CardDate from './common-fields/CardDate';
   import CVV from './common-fields/CVV';
   import State from './extra-fields/State';
+  import Building from './extra-fields/Building';
+  import Complement from './extra-fields/Complement';
   import District from './extra-fields/District';
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
@@ -159,8 +157,6 @@
       PayMethodItem,
       PaymentMethod,
       Street,
-      Building,
-      Apartment,
       City,
       ZipCode,
       Country,
@@ -169,6 +165,8 @@
       CardDate,
       CVV,
       State,
+      Building,
+      Complement,
       District,
       CardType,
       DocumentType,
@@ -253,7 +251,7 @@
       }
     }
 
-    #apartment-field {
+    #complement-field {
       width: 50%;
     }
 

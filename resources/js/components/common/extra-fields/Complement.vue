@@ -1,9 +1,10 @@
 <template>
 
   <text-field
-    id="building-field"
-    v-model="form[name]"
-    :validation="$v"
+    id="complement-field"
+    v-if="extraFields.complement"
+    v-model="form.complement"
+    :validation="$v.form.complement"
     :validationMessage="textRequired"
     v-loading="isLoading.address"
     element-loading-spinner="el-icon-loading"
@@ -24,13 +25,15 @@
 
   export default {
 
+    name: 'Complement',
+
     props: [
-      'form',
-      'name',
       'isLoading',
       'placeholder',
+      'extraFields',
       'tabindex',
       'order',
+      'form',
       '$v',
     ],
 
@@ -38,11 +41,11 @@
     computed: {
 
       textLabel() {
-        return this.$t('checkout.payment_form.building');
+        return this.$t('checkout.payment_form.complement');
       },
 
       textRequired() {
-        return this.$t('checkout.payment_form.building.required');
+        return this.$t('checkout.payment_form.complement.required');
       },
 
     },

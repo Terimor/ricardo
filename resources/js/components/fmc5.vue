@@ -226,20 +226,18 @@
                   name="street" />
 
                 <Building
-                  v-if="form.country === 'br'"
-                  :$v="$v.form.building"
                   :isLoading="isLoading"
+                  :extraFields="extraFields"
                   :placeholder="true"
                   :form="form"
-                  name="building" />
+                  :$v="$v" />
 
-                <Apartment
-                  v-if="form.country === 'br'"
-                  :$v="$v.form.apartment"
+                <Complement
                   :isLoading="isLoading"
+                  :extraFields="extraFields"
                   :placeholder="true"
                   :form="form"
-                  name="apartment" />
+                  :$v="$v" />
 
                 <District
                   :extraFields="extraFields"
@@ -536,8 +534,6 @@
   import Email from './common/common-fields/Email';
   import Phone from './common/common-fields/Phone';
   import Street from './common/common-fields/Street';
-  import Building from './common/common-fields/Building';
-  import Apartment from './common/common-fields/Apartment';
   import City from './common/common-fields/City';
   import ZipCode from './common/common-fields/ZipCode';
   import Country from './common/common-fields/Country';
@@ -547,6 +543,8 @@
   import CVV from './common/common-fields/CVV';
   import Terms from './common/common-fields/Terms';
   import State from './common/extra-fields/State';
+  import Building from './common/extra-fields/Building';
+  import Complement from './common/extra-fields/Complement';
   import District from './common/extra-fields/District';
   import CardType from './common/extra-fields/CardType';
   import DocumentType from './common/extra-fields/DocumentType';
@@ -581,8 +579,6 @@
       Email,
       Phone,
       Street,
-      Building,
-      Apartment,
       City,
       ZipCode,
       Country,
@@ -592,6 +588,8 @@
       CVV,
       Terms,
       State,
+      Building,
+      Complement,
       District,
       CardType,
       DocumentType,
@@ -986,8 +984,6 @@
             this.form.phone = selectedProductData.phone || this.form.phone;
             this.form.countryCodePhoneField = selectedProductData.countryCodePhoneField || this.form.countryCodePhoneField;
             this.form.street = selectedProductData.street || this.form.street;
-            this.form.building = selectedProductData.building || this.form.building;
-            this.form.apartment = selectedProductData.apartment || this.form.apartment;
             this.form.city = selectedProductData.city || this.form.city;
             this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
             this.form.country = selectedProductData.country || this.form.country;
@@ -1097,8 +1093,6 @@
           phone: this.form.phone,
           countryCodePhoneField: this.form.countryCodePhoneField,
           street: this.form.street,
-          building:  this.form.building,
-          apartment:  this.form.apartment,
           city: this.form.city,
           zipcode: this.form.zipcode,
           country: this.form.country,
@@ -1171,11 +1165,6 @@
               },
               ipqs: this.ipqsResult,
             };
-
-            if (this.form.country === 'br') {
-              data.address.building = this.form.building;
-              data.address.apartment = this.form.apartment;
-            }
 
             if (this.$root.isAffIDEmpty) {
               data.card.holder = this.form.cardHolder;
@@ -1811,7 +1800,7 @@
     }
   }
 
-  #apartment-field {
+  #complement-field {
     margin-left: auto;
     width: 48%;
 
