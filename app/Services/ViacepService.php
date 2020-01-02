@@ -50,6 +50,6 @@ class ViacepService
             ]);
         }
 
-        return $result;
+        return array_filter($result);
     }
 }
