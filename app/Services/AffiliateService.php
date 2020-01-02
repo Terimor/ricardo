@@ -381,6 +381,9 @@ class AffiliateService
     public function fingerprintClick(Request $request)
     {
         $url = $request->get('url');
+        if (!$url) {
+            $url = $request->get('page');
+        }
         $parsedUrl = parse_url($url);
 
         $page = null;
@@ -389,49 +392,49 @@ class AffiliateService
         }
       
         if ($page && $request->get('f')) {
-        $priceSet = null;
-        // check exists by cop_id parameter
-        if ($request->get('cop_id')) {
-            $exists = OdinProduct::getByCopId($request->get('cop_id'), true);
-            if ($exists) {
-                $priceSet = $request->get('cop_id');
+            $priceSet = null;
+            // check exists by cop_id parameter
+            if ($request->get('cop_id')) {
+                $exists = OdinProduct::getByCopId($request->get('cop_id'), true);
+                if ($exists) {
+                    $priceSet = $request->get('cop_id');
+                }
             }
-        }
-        // check by product parameter
-        if (!$priceSet && $request->get('product')) {
-          $product = OdinProduct::getBySku($request->get('product'), false);
-          if ($product) {
-              $prices = $product['prices'];
-              $priceSet = $prices['price_set'] ?? $price_set;
-          }            
-        }
+            // check by product parameter
+            if (!$priceSet && $request->get('product')) {
+              $product = OdinProduct::getBySku($request->get('product'), false);
+              if ($product) {
+                  $prices = $product['prices'];
+                  $priceSet = $prices['price_set'] ?? $price_set;
+              }            
+            }
 
-        // check by domain
-        if (!$priceSet) {
-          $priceSet = Domain::getPriceSet();          
-        }     
-     
-        $ip = $request->ip();
-        $location = \Location::get($ip);
-        $affId = AffiliateService::getAttributeByPriority($request->get('aff_id'), $request->get('affid'));
-        $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
-        $data = [
-            'affiliate' => $affId,
-            'offer' => $request->get('offer_id') ? $request->get('offer_id') : ($request->get('offerid') ? $request->get('offerid') : null),
-            'url' => $url,
-            'page' => $page,
-            'fingerprint' => $request->get('f'),
-            'price_set' => $priceSet,
-            'ip' => $ip,
-            'country' => isset($location->countryCode) ? strtolower($location->countryCode) : null
-            
-        ];
-      
-        Click::saveByData($data);
+            // check by domain
+            if (!$priceSet) {
+              $priceSet = Domain::getPriceSet();          
+            }     
+
+            $ip = $request->ip();
+            $location = \Location::get($ip);
+            $affId = AffiliateService::getAttributeByPriority($request->get('aff_id'), $request->get('affid'));
+            $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
+            $data = [
+                'affiliate' => $affId,
+                'offer' => $request->get('offer_id') ? $request->get('offer_id') : ($request->get('offerid') ? $request->get('offerid') : null),
+                'url' => $url,
+                'page' => $page,
+                'fingerprint' => $request->get('f'),
+                'price_set' => $priceSet,
+                'ip' => $ip,
+                'country' => isset($location->countryCode) ? strtolower($location->countryCode) : null
+
+            ];
+
+            Click::saveByData($data);
         
-      } else {
-          logger()->warning('FingerprintWrongData', ['request' => $request->all()]);
-      }
+        } else {
+            logger()->warning('FingerprintWrongData', ['request' => $request->all()]);
+        }
   }
   
     /**
@@ -448,7 +451,7 @@ class AffiliateService
                 $valid = true;
             }
 
-            if ((string)(int)$id == $id && strlen($id) > 0 && strlen($id) <= AffiliateSetting::AFFILIATE_ID_LENGTH) {                
+            if ((string)(int)$id === (string)$id && strlen($id) > 0 && strlen($id) <= AffiliateSetting::AFFILIATE_ID_LENGTH) {                
                 $valid = true;
             }
         }
