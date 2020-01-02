@@ -72,8 +72,15 @@ export function getStreetRules() {
 
 export function getBuildingRules() {
   return {
+    required(value) {
+      if (this.extraFields.building.pattern && !new RegExp(this.extraFields.building.pattern).test('')) {
+        return !!value;
+      }
+
+      return true;
+    },
     isValid(value) {
-      if (value && this.extraFields.building.pattern) {
+      if (this.extraFields.building.pattern) {
         return new RegExp(this.extraFields.building.pattern).test(value);
       }
 
@@ -84,8 +91,15 @@ export function getBuildingRules() {
 
 export function getComplementRules() {
   return {
+    required(value) {
+      if (this.extraFields.complement.pattern && !new RegExp(this.extraFields.complement.pattern).test('')) {
+        return !!value;
+      }
+
+      return true;
+    },
     isValid(value) {
-      if (value && this.extraFields.complement.pattern) {
+      if (this.extraFields.complement.pattern) {
         return new RegExp(this.extraFields.complement.pattern).test(value);
       }
 
@@ -96,9 +110,15 @@ export function getComplementRules() {
 
 export function getDistrictRules() {
   return {
-    required,
+    required(value) {
+      if (this.extraFields.district.pattern && !new RegExp(this.extraFields.district.pattern).test('')) {
+        return !!value;
+      }
+
+      return true;
+    },
     isValid(value) {
-      if (value && this.extraFields.district.pattern) {
+      if (this.extraFields.district.pattern) {
         return new RegExp(this.extraFields.district.pattern).test(value);
       }
 
@@ -115,7 +135,13 @@ export function getCityRules() {
 
 export function getStateRules() {
   return {
-    required,
+    required(value) {
+      if (this.extraFields.state.pattern && !new RegExp(this.extraFields.state.pattern).test('')) {
+        return !!value;
+      }
+
+      return true;
+    },
     isValid(value) {
       if (this.extraFields.state.pattern) {
         return new RegExp(this.extraFields.state.pattern).test(value);
@@ -230,16 +256,33 @@ export function getDocumentTypeRules() {
 
 export function getDocumentNumberRules() {
   return {
-    required,
-    isValid(value) {
-      const pattern = this.extraFields.document_number.pattern
-        ? typeof this.extraFields.document_number.pattern === 'object'
-          ? this.extraFields.document_number.pattern[this.form.document_type] || ''
-          : this.extraFields.document_number.pattern
-        : '/.+/';
+    required(value) {
+      if (this.extraFields.document_number.pattern) {
+        if (typeof this.extraFields.document_number.pattern === 'object') {
+          if (this.extraFields.document_number.pattern[this.form.document_type] && !new RegExp(this.extraFields.document_number.pattern[this.form.document_type]).test('')) {
+            return !!value;
+          }
+        } else if (!new RegExp(this.extraFields.document_number.pattern).test('')) {
+          return !!value;
+        }
+      }
 
-      return new RegExp(pattern).test(value);
+      return true;
     },
+    isValid(value) {
+      if (this.extraFields.document_number.pattern) {
+        if (typeof this.extraFields.document_number.pattern === 'object') {
+          if (this.extraFields.document_number.pattern[this.form.document_type]) {
+            return new RegExp(this.extraFields.document_number.pattern[this.form.document_type]).test(value);
+          }
+        } else {
+          return new RegExp(this.extraFields.document_number.pattern).test(value);
+        }
+      }
+
+      return true;
+    },
+
   };
 }
 

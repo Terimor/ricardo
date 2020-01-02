@@ -38,11 +38,6 @@
     ],
 
 
-    created() {
-      console.log(this.form)
-    },
-
-
     computed: {
 
       textLabel() {
