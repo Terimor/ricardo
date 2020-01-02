@@ -340,7 +340,6 @@ class PaymentProviders
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::DISCOVER => [
-                        // US/CA/AU/NZ/JP/IL/SE/DK/NO
                         '+3ds' => [
                             'europe', 'au', 'by', 'ca', 'dk', 'gb', 'gy', 'jp', 'id', 'il', 'in', 'is', 'kr', 'lk', 'my', 'no', 'ro',
                             'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi'
@@ -350,14 +349,14 @@ class PaymentProviders
                     ],
                     PaymentMethods::DINERSCLUB => [
                         '+3ds' => [
-                            'europe', 'au', 'by', 'ca', 'dk', 'gb', 'gy', 'jp', 'id', 'il', 'in', 'is', 'kr', 'lk', 'my', 'no', 'nz', 'ro',
+                            'europe', 'au', 'by', 'ca', 'dk', 'gb', 'gy', 'jp', 'id', 'il', 'in', 'is', 'kr', 'lk', 'my', 'no', 'ro',
                             'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi'
                         ],
                         '-3ds' => ['*'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::JCB => [
-                        '+3ds' => ['bd', 'cn', 'hk', 'id', 'jp', 'kr', 'la', 'mm', 'mn', 'ph', 'th', 'tw', 'vn'],
+                        '+3ds' => ['bd', 'ca', 'cn', 'hk', 'id', 'jp', 'kr', 'la', 'mm', 'mn', 'ph', 'se', 'th', 'tw', 'us', 'vn'],
                         '-3ds' => ['sg'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]
@@ -381,8 +380,8 @@ class PaymentProviders
                     'card_type' => [
                         'type'  => 'dropdown',
                         'items' => [
-                            ['value' => 'debit', 'phrase'    => 'checkout.payment_form.card_type.debit'],
-                            ['value' => 'credit', 'phrase'   => 'checkout.payment_form.card_type.credit']
+                            ['value' => 'debit', 'phrase'   => 'checkout.payment_form.card_type.debit'],
+                            ['value' => 'credit', 'phrase'  => 'checkout.payment_form.card_type.credit']
                         ],
                         'default'   => 'credit'
                     ],
