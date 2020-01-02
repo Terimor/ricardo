@@ -31,7 +31,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
             'address.street'                => ['required', 'string'],
             'address.district'              => ['string', 'between:1,255'],
             'address.building'              => ['string', 'between:1,9'],
-            'address.complement'            => ['string', 'between:0,255'],
+            'address.complement'            => ['nullable', 'string', 'between:0,255'],
             'address.zip'                   => ['required', 'string'],
             'contact.email'                 => ['required', 'email:rfc'],
             'contact.first_name'            => ['required', 'string'],
