@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use GuzzleHttp\Psr7;
 use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
