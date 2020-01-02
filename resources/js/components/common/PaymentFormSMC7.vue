@@ -211,9 +211,11 @@
 
 		methods: {
       setBrazilAddress(res) {
-        this.paymentForm.streetAndNumber = res.address;
-        this.paymentForm.city = res.city;
-        this.paymentForm.state = res.state;
+        this.paymentForm.streetAndNumber = res.address || this.paymentForm.streetAndNumber;
+        this.paymentForm.city = res.city || this.paymentForm.city;
+        this.paymentForm.state = res.state || this.paymentForm.state;
+        this.paymentForm.district = res.district || this.paymentForm.district;
+        this.paymentForm.complement = res.complement || this.paymentForm.complement;
       },
 		}
 	}

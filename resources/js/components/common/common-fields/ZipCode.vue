@@ -89,9 +89,7 @@
       },
 
       apply(res) {
-        if (res.address || res.city || res.state) {
-          this.$emit('setBrazilAddress', res);
-        }
+        this.$emit('setBrazilAddress', res);
       },
 
     },

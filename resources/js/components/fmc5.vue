@@ -900,9 +900,11 @@
       },
 
       setBrazilAddress(res) {
-        this.form.street = res.address;
-        this.form.city = res.city;
-        this.form.state = res.state;
+        this.form.street = res.address || this.form.street;
+        this.form.city = res.city || this.form.city;
+        this.form.state = res.state || this.form.state;
+        this.form.district = res.district || this.form.district;
+        this.form.complement = res.complement || this.form.complement;
       },
 
       checkFieldsValid(names) {

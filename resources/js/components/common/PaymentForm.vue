@@ -281,9 +281,11 @@
         this.$emit('set-payment-method-by-cardnumber', value);
       },
       setBrazilAddress(res) {
-        this.paymentForm.street = res.address;
-        this.paymentForm.city = res.city;
-        this.paymentForm.state = res.state;
+        this.paymentForm.street = res.address || this.paymentForm.street;
+        this.paymentForm.city = res.city || this.paymentForm.city;
+        this.paymentForm.state = res.state || this.paymentForm.state;
+        this.paymentForm.district = res.district || this.paymentForm.district;
+        this.paymentForm.complement = res.complement || this.paymentForm.complement;
       },
       submit () {
         const { paymentForm, exp } = this;
@@ -471,7 +473,7 @@
             width: 100%;
 
             .el-loading-mask {
-                top: 26px;
+                top: 30px;
                 background-color: rgba(255, 255, 255, .5);
 
                 .el-loading-spinner {

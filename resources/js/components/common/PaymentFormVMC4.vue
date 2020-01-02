@@ -402,9 +402,11 @@
         this.isFormShown = true;
       },
       setBrazilAddress(res) {
-        this.form.stepThree.street = res.address;
-        this.form.stepThree.city = res.city;
-        this.vmc4Form.state = res.state;
+        this.form.stepThree.street = res.address || this.form.stepThree.street;
+        this.form.stepThree.city = res.city || this.form.stepThree.city;
+        this.vmc4Form.state = res.state || this.vmc4Form.state;
+        this.vmc4Form.district = res.district || this.vmc4Form.district;
+        this.vmc4Form.complement = res.complement || this.vmc4Form.complement;
       },
 			submit() {
 				this.$v.form.$touch();
