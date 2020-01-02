@@ -353,7 +353,7 @@ class PaymentProviders
             'name'      => 'EBANX',
             'is_active' => true,
             'is_main'   => true,
-            'is_fallback' => false,
+            'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
                 '3ds_limit' => 101,

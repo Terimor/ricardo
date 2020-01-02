@@ -10,15 +10,15 @@ use App\Services\AffiliateService;
 use App\Models\Setting;
 use App\Services\I18nService;
 use App\Services\OrderService;
+use App\Services\ViacepService;
 use App\Constants\PaymentMethods;
 use Cache;
 use App\Models\OdinOrder;
 use App\Models\Domain;
 use App\Http\Requests\ZipcodeRequest;
-use App\Services\EbanxService;
 
 class SiteController extends Controller
-{        
+{
     /**
      * Create a new controller instance.
      *
@@ -39,25 +39,25 @@ class SiteController extends Controller
         //get domain and check views logic
         $domain = Domain::getByName();
         $isMultiproduct = false;
-        if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {        
+        if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {
             if (!empty($domain->is_catch_all)) {
-                $products = $productService->getAllSoldDomainsProducts($request->get('page'), $request->get('search'));  
+                $products = $productService->getAllSoldDomainsProducts($request->get('page'), $request->get('search'));
                 $isMultiproduct = true;
             } else {
                 $products = ProductService::getDomainProducts($domain);
                 if ($products && count($products) > 0) {
                     $isMultiproduct = true;
-                }                
+                }
             }
         }
-        
-        if (!$isMultiproduct) {            
+
+        if (!$isMultiproduct) {
             return $this->indexSite($request, $productService, $domain);
         } else {
             return $this->indexMiniShop($request, $productService, $domain, $products);
         }
     }
-    
+
     /**
      * index for site logic
      * @param Request $request
@@ -72,7 +72,7 @@ class SiteController extends Controller
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
         return view('index', compact('product', 'loadedPhrases', 'page_title'));
     }
-    
+
     /**
      * Index for minishop logic
      * @param Request $request
@@ -82,8 +82,8 @@ class SiteController extends Controller
      * @return type
      */
     private function indexMinishop(Request $request, ProductService $productService, $domain, array $products)
-    {                        
-        (new I18nService())->loadPhrases('minishop_page');        
+    {
+        (new I18nService())->loadPhrases('minishop_page');
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
         $website_name = $domain->getDisplayedName();
@@ -173,7 +173,7 @@ class SiteController extends Controller
     public function terms(Request $request, ProductService $productService)
     {
         $loadedPhrases = (new I18nService())->loadPhrases('terms_page');
-        $product = $productService->resolveProduct($request, true);  
+        $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('terms_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
@@ -221,9 +221,9 @@ class SiteController extends Controller
      * @return type
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
-    {        
+    {
 		$viewTemplate = 'checkout';
-        
+
         if (!empty($priceSet)) {
             $request->merge(['cop_id' => $priceSet]);
         }
@@ -245,8 +245,8 @@ class SiteController extends Controller
         ]);
 
         $countries =  \Utils::getCountries(true, $product->is_europe_only);
-        
-		$loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 
         $langCode = substr(app()->getLocale(), 0, 2);
         $countryCode = \Utils::getLocationCountryCode();
@@ -259,7 +259,7 @@ class SiteController extends Controller
 
         $imagesNames = ['safe_payment'];
         $loadedImages = \Utils::getLocalizedImages($imagesNames);
-        
+
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('checkout.page_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
@@ -399,33 +399,33 @@ class SiteController extends Controller
         $fail = 'FAIL';
         $result = $bad;
         $redis = $fail;
-        
+
         $setting = Setting::getValue([
             'prober_firing_percent',
             'prober_firing_orders',
             'prober_txns_percent',
             'prober_txns_orders'
-        ]);        
+        ]);
 
         //check Redis
-        $redisContent = Cache::get('SkuProduct');        
-        if ($redisContent) {            
+        $redisContent = Cache::get('SkuProduct');
+        if ($redisContent) {
             $redisValidation = current($redisContent)['name']['en'] ?? null;
-            if (!empty($redisValidation)) {                               
+            if (!empty($redisValidation)) {
                 $redis = $ok;
                 $result = $good;
             }
         }
-                
+
         $txns = OrderService::getLastOrdersTxnSuccessPercent((int)$setting['prober_txns_orders']);
-        
+
         if ($txns <= (float)$setting['prober_txns_percent']) {
             $result = $bad;
         }
         $txns.= '%';
-        
+
         $firing = OrderService::getLastOrdersFiringPercent((int)$setting['prober_firing_orders']);
-        
+
         if ($firing <= (float)$setting['prober_firing_percent']) {
             $result = $bad;
         }
@@ -442,39 +442,39 @@ class SiteController extends Controller
         file_put_contents(storage_path("log_postbacks.txt"), json_encode($request->all())."\n", FILE_APPEND);
         return response('Ok', 200);
     }
-    
+
     /**
-     * Get address by zip code using Ebanx
+     * Get Brazillian address by zip code
      * @param Request $request
-     * @param EbanxService $ebanxService
      * @return type
      */
-    public function getEbanxAddressByZip(ZipcodeRequest $request, EbanxService $ebanxService)
-    {                
-        return response()->json($ebanxService->getAddressByZip($request->get('zipcode')));
+    public function getBrazilAddressByZip(ZipcodeRequest $request)
+    {
+        $zipcode = $request->get('zipcode');
+        return response()->json(ViacepService::findByZip($zipcode));
     }
-    
+
     /**
      * Generate sitemap
      */
     public function sitemap()
-    {                
+    {
         return response()->view('sitemap')->header('Content-Type', 'text/xml');
     }
-    
+
     /**
      * Logger
      * @param Request $request
      */
     public function logData(Request $request)
-    {   
+    {
         $type = $request->get('logger-type');
-        
+
         if ($type == 'error') {
             logger()->error($request->all());
         } else if ($type == 'warning') {
             logger()->warning($request->all());
-        } else {        
+        } else {
             logger()->info($request->all());
         }
     }

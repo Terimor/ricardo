@@ -56,7 +56,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     $router->get('/product-price', 'ProductController@getProductPrice');
     $router->get('/validate-email', 'EmailController@validateEmail');
-    $router->get('/address-by-zip', 'SiteController@getEbanxAddressByZip');
+    $router->get('/address-by-zip', 'SiteController@getBrazilAddressByZip');
     //$router->get('/send-postbacks', 'OrderController@sendPostbacks');
     $router->post('apply-discount', 'AffiliateController@fingerprintClick');
 
