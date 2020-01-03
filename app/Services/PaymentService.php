@@ -934,7 +934,8 @@ class PaymentService
                 $order_product = $order->getMainProduct(); // throwable
                 $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
                 $ebanx = new EbanxService();
-                $payment = $ebanx->payByCard(
+                $result['status']  = true;
+                $result['payment'] = $ebanx->payByCard(
                     $card,
                     [
                         'street'            => $order->shipping_street,
