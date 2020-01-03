@@ -382,8 +382,10 @@ class AppmaxService
             switch ($data['status']):
                 case self::STATUS_APPROVED:
                     $result['txn']['status'] = Txn::STATUS_APPROVED;
+                    break;
                 case self::STATUS_AUTHORIZED:
                     $result['txn']['status'] = Txn::STATUS_AUTHORIZED;
+                    break;
             endswitch;
         } else {
             logger()->info("Unprocessed webhook [{$event}]", ['data' => $data]);
