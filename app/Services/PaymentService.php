@@ -1208,6 +1208,9 @@ class PaymentService
             $payment = $ebanx->requestStatusByHash($hash, $txn ?? []);
 
             if (!empty($payment['number'])) {
+                // prevention of race condition
+                usleep(mt_rand(0, 2000) * 1000);
+
                 $this->approveOrder($payment, PaymentProviders::EBANX);
             } else {
                 logger()->warning('Ebanx payment not found', ['hash' => $hash]);
