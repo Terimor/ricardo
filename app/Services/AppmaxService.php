@@ -166,6 +166,8 @@ class AppmaxService
 
         if ($reply['status'] === Txn::STATUS_CAPTURED && !empty($details['order_id'])) {
             $reply['token'] = self::encrypt(json_encode($card), $details['order_id']);
+        } else {
+            $reply['fallback'] = true;
         }
 
         return $reply;
@@ -307,6 +309,7 @@ class AppmaxService
     {
         $result = [
             'is_flagged'        => false,
+            'fallback'          => false,
             'currency'          => $details['currency'],
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
@@ -344,7 +347,6 @@ class AppmaxService
             if ($body['success']) {
                 $result['status'] = Txn::STATUS_CAPTURED;
             } else {
-                $result['fallback'] = true;
                 $result['errors'] = [AppmaxCodeMapper::toPhrase()];
                 logger()->info("Appmax pay", ['res' => $res->getBody()]);
             }
@@ -352,7 +354,6 @@ class AppmaxService
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null;
 
-            $result['fallback'] = true;
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res];
 
             logger()->error("Appmax pay", ['res' => $result['provider_data']]);
