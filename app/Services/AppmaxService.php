@@ -22,7 +22,8 @@ class AppmaxService
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
-    const STATUS_APPROVED = 'aprovado';
+    const STATUS_APPROVED   = 'aprovado';
+    const STATUS_AUTHORIZED = 'autorizado';
 
     const WEBHOOK_EVENT_ORDER_PAID = 'OrderPaid';
 
@@ -373,10 +374,16 @@ class AppmaxService
                 'status' => true,
                 'txn' => [
                     'hash'      => (string)$data['id'],
-                    'status'    => $data['status'] === self::STATUS_APPROVED ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
+                    'status'    => Txn::STATUS_FAILED,
                     'value'     => preg_replace('/[^\d.]/', '', $data['total'])
                 ]
             ];
+            switch ($data['status']):
+                case self::STATUS_APPROVED:
+                    $result['txn']['status'] = Txn::STATUS_APPROVED;
+                case self::STATUS_AUTHORIZED:
+                    $result['txn']['status'] = Txn::STATUS_AUTHORIZED;
+            endswitch;
         } else {
             logger()->info("Unprocessed webhook [{$event}]", ['data' => $data]);
         }
