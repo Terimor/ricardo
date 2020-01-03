@@ -933,7 +933,7 @@ class PaymentService
             case PaymentProviders::EBANX:
                 $order_product = $order->getMainProduct(); // throwable
                 $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
-                $appmax = new EbanxService();
+                $ebanx = new EbanxService();
                 $payment = $ebanx->payByCard(
                     $card,
                     [
