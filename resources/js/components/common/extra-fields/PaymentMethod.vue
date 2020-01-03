@@ -2,7 +2,7 @@
   
   <select-field
     v-model="form.payment_method"
-    :validation="$v.form.payment_method"
+    :validation="$v.payment_method"
     :validationMessage="textRequired"
     :list="paymentMethods"
     :rest="{

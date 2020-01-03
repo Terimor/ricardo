@@ -229,21 +229,21 @@
                   :extraFields="extraFields"
                   :placeholder="true"
                   :form="form"
-                  :$v="$v" />
+                  :$v="$v.form" />
 
                 <Complement
                   :isLoading="isLoading"
                   :extraFields="extraFields"
                   :placeholder="true"
                   :form="form"
-                  :$v="$v" />
+                  :$v="$v.form" />
 
                 <District
                   :isLoading="isLoading"
                   :extraFields="extraFields"
                   :placeholder="true"
                   :form="form"
-                  :$v="$v" />
+                  :$v="$v.form" />
 
                 <City
                   :$v="$v.form.city"
@@ -258,7 +258,7 @@
                   :isLoading="isLoading"
                   :placeholder="true"
                   :form="form"
-                  :$v="$v" />
+                  :$v="$v.form" />
 
                 <ZipCode
                   v-if="form.country !== 'br'"
@@ -319,7 +319,7 @@
                   <CardType
                     :extraFields="extraFields"
                     :form="form"
-                    :$v="$v" />
+                    :$v="$v.form" />
 
                   <CardNumber
                     :$v="$v.form.cardNumber"
@@ -343,12 +343,12 @@
                   <DocumentType
                     :extraFields="extraFields"
                     :form="form"
-                    :$v="$v" />
+                    :$v="$v.form" />
 
                   <DocumentNumber
                     :extraFields="extraFields"
                     :form="form"
-                    :$v="$v" />
+                    :$v="$v.form" />
 
                   <Terms
                     v-if="$root.isAffIDEmpty && form.paymentProvider === 'credit-card'"
@@ -552,6 +552,7 @@
   import Installments from './common/extra-fields/Installments';
   import Spinner from './common/preloaders/Spinner';
   import Warranty from './common/Warranty';
+  import logger from '../mixins/logger';
 
 
   export default {
@@ -570,6 +571,7 @@
       purchasMixin,
       blackFriday,
       christmas,
+      logger,
     ],
 
 
@@ -934,7 +936,16 @@
       },
 
       step2Submit() {
-        if (!this.checkFieldsValid(['fname', 'lname', 'email', 'phone', 'street', 'district', 'city', 'state', 'zipcode', 'country'])) {
+        if (!this.checkFieldsValid(['fname', 'lname', 'email', 'phone', 'street', 'building', 'complement', 'district', 'city', 'state', 'zipcode', 'country'])) {
+          if (this.$v.form.$invalid && this.form.country === 'br') {
+            this.log_data('BRAZIL: FMC5 - Credit Card - form validation', {
+              invalid: ['fname', 'lname', 'email', 'phone', 'street', 'building', 'complement', 'district', 'city', 'state', 'zipcode', 'country']
+                .filter(name => this.$v.form[name] && !!this.$v.form[name].$invalid)
+                .reduce((acc, name) => { acc[name] = this.$v.form.$model[name]; return acc; }, {}),
+              form: { ...this.$v.form.$model, cardNumber: undefined },
+            });
+          }
+
           return this.scrollToError();
         }
 
@@ -945,6 +956,15 @@
 
       step3Submit() {
         if (!this.checkFieldsValid(['cardHolder', 'card_type', 'cardNumber', 'cardDate', 'cvv', 'document_type', 'document_number', 'terms'])) {
+          if (this.$v.form.$invalid && this.form.country === 'br') {
+            this.log_data('BRAZIL: FMC5 - Credit Card - validation', {
+              invalid: ['cardHolder', 'card_type', 'cardDate', 'cvv', 'document_type', 'document_number', 'terms']
+                .filter(name => this.$v.form[name] && !!this.$v.form[name].$invalid)
+                .reduce((acc, name) => { acc[name] = this.$v.form.$model[name]; return acc; }, {}),
+              form: { ...this.$v.form.$model, cardNumber: undefined },
+            });
+          }
+
           return this.scrollToError();
         }
 
@@ -993,6 +1013,18 @@
             get3dsErrors()
               .then(paymentError => {
                 this.paymentError = paymentError;
+
+                if (this.form.country === 'br') {
+                  let ipqs = null; try { ipqs = JSON.parse(localStorage.getItem('3ds_ipqs')); } catch (err) {};
+
+                  this.log_data('BRAZIL: FMC5 - Credit Card - 3ds failure', {
+                    error: paymentError,
+                    form: { ...this.$v.form.$model, cardNumber: undefined },
+                    fraud_chance: ipqs ? ipqs.fraud_chance : null,
+                    ipqs,
+                  });
+                }
+
                 setTimeout(() => this.scrollToSelector('#payment-error'), 1000);
               });
 
@@ -1039,6 +1071,13 @@
           })
           .then(() => {
             if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+              if (this.form.country === 'br') {
+                this.log_data('BRAZIL: FMC5 - PayPal - IPQS - recent_abuse', {
+                  fraud_chance: this.ipqsResult.fraud_chance,
+                  ipqs: this.ipqsResult,
+                });
+              }
+
               return setTimeout(() => this.paypalPaymentError = this.$t('checkout.abuse_error'), 1000);
             }
 
@@ -1053,6 +1092,15 @@
             });
           })
           .then(res => {
+            if (res.error && this.form.country === 'br') {
+              this.log_data('BRAZIL: FMC5 - PayPal - response', {
+                error: res.paypalPaymentError,
+                res: { ...res, paypalPaymentError: undefined },
+                fraud_chance: this.ipqsResult.fraud_chance,
+                ipqs: this.ipqsResult,
+              });
+            }
+
             if (res.paypalPaymentError) {
               this.paypalPaymentError = res.paypalPaymentError;
             }
@@ -1078,6 +1126,13 @@
         const cardNumber = this.form.cardNumber.replace(/[^0-9]/g, '');
 
         if (this.form.emailForceInvalid) {
+          if (this.form.country === 'br') {
+            this.log_data('BRAZIL: FMC5 - Credit Card - email blocked', {
+              email: this.form.email,
+              form: { ...this.$v.form.$model, cardNumber: undefined },
+            });
+          }
+
           return setTimeout(() => {
             this.paymentError = this.$t('checkout.abuse_error');
             this.isSubmitted = false;
@@ -1176,6 +1231,16 @@
 
             return sendCheckoutRequest(data)
               .then(res => {
+                if (res.status !== 'ok' && this.form.country === 'br') {
+                  this.log_data('BRAZIL: FMC5 - Credit Card - response', {
+                    error: res.paymentError,
+                    res: { ...res, paymentError: undefined },
+                    form: { ...this.$v.form.$model, cardNumber: undefined },
+                    fraud_chance: this.ipqsResult.fraud_chance,
+                    ipqs: this.ipqsResult,
+                  });
+                }
+
                 if (res.paymentError) {
                   this.paymentError = res.paymentError;
                   this.isSubmitted = false;

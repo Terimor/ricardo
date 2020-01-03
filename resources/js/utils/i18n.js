@@ -6,6 +6,8 @@
  * @returns {String} Translated phrase
  *
  */
+import logger from '../mixins/logger';
+
 
 const textarea = document.createElement('textarea');
 
@@ -84,21 +86,7 @@ function logError(errText, data) {
     Sentry.captureMessage(errText);
   }
 
-  fetch('/log-data', {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-    },
-    body: JSON.stringify({
-      'logger-type': 'error',
-      error: errText,
-      data,
-    }),
-  })
-  .catch(err => {
-
-  });
+  logger.methods.log_data(errText, data);
 
   console.error(errText);
 }

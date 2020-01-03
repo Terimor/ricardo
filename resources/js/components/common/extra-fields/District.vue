@@ -4,7 +4,7 @@
     id="district-field"
     v-if="extraFields.district"
     v-model="form.district"
-    :validation="$v.form.district"
+    :validation="$v.district"
     :validationMessage="textRequired"
     v-loading="isLoading.address"
     element-loading-spinner="el-icon-loading"

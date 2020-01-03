@@ -3,7 +3,7 @@
   <text-field-with-placeholder
     v-if="extraFields.document_number"
     v-model="form.document_number"
-    :validation="$v.form.document_number"
+    :validation="$v.document_number"
     :validationMessage="textRequired"
     :placeholder="placeholder"
     :label="textTitle"

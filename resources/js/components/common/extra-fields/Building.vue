@@ -4,7 +4,7 @@
     id="building-field"
     v-if="extraFields.building"
     v-model="form.building"
-    :validation="$v.form.building"
+    :validation="$v.building"
     :validationMessage="textRequired"
     :label="textLabel"
     :rest="{

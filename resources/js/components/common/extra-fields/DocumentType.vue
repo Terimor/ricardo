@@ -4,7 +4,7 @@
     :standart="true"
     v-if="extraFields.document_type"
     v-model="form.document_type"
-    :validation="$v.form.document_type"
+    :validation="$v.document_type"
     :list="documentTypeList"
     :validationMessage="textRequired"
     :label="textTitle"

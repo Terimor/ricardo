@@ -188,6 +188,7 @@
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { ipqsCheck } from '../services/ipqs';
   import { queryParams } from  '../utils/queryParams';
+  import logger from '../mixins/logger';
 
 
   export default {
@@ -200,6 +201,7 @@
       purchasMixin,
       blackFriday,
       christmas,
+      logger,
     ],
     components: {
       SaleBadge,
@@ -473,6 +475,13 @@
           })
           .then(() => {
             if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+              if (this.form.country === 'br') {
+                this.log_data('BRAZIL: EMC1 - PayPal - IPQS - recent_abuse', {
+                  fraud_chance: this.ipqsResult.fraud_chance,
+                  ipqs: this.ipqsResult,
+                });
+              }
+
               return setTimeout(() => {
                 this.paypalPaymentError = t('checkout.abuse_error');
               }, 1000);
@@ -491,6 +500,15 @@
             });
           })
           .then(res => {
+            if (res.error && this.form.country === 'br') {
+              this.log_data('BRAZIL: EMC1 - PayPal - response', {
+                error: res.paypalPaymentError,
+                res: { ...res, paypalPaymentError: undefined },
+                fraud_chance: this.ipqsResult.fraud_chance,
+                ipqs: this.ipqsResult,
+              });
+            }
+
             if (res.paypalPaymentError) {
               this.paypalPaymentError = res.paypalPaymentError;
             }

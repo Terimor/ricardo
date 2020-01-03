@@ -79,7 +79,7 @@
                 class="input-container"
                 :extraFields="extraFields"
                 :form="vmc4Form"
-                :$v="$v" />
+                :$v="$v.vmc4Form" />
               <CardNumber
                 :$v="$v.form.stepThree.cardNumber"
                 :placeholder="true"
@@ -100,11 +100,11 @@
                 class="input-container"
                 :extraFields="extraFields"
                 :form="vmc4Form"
-                :$v="$v" />
+                :$v="$v.vmc4Form" />
               <DocumentNumber
                 :extraFields="extraFields"
                 :form="vmc4Form"
-                :$v="$v" />
+                :$v="$v.vmc4Form" />
             </div>
             <div class="d-flex flex-wrap">
               <ZipCode
@@ -126,19 +126,19 @@
                 :extraFields="extraFields"
                 :placeholder="true"
                 :form="vmc4Form"
-                :$v="$v" />
+                :$v="$v.vmc4Form" />
               <Complement
                 :isLoading="isLoading"
                 :extraFields="extraFields"
                 :placeholder="true"
                 :form="vmc4Form"
-                :$v="$v" />
+                :$v="$v.vmc4Form" />
               <District
                 :isLoading="isLoading"
                 :extraFields="extraFields"
                 :placeholder="true"
                 :form="vmc4Form"
-                :$v="$v" />
+                :$v="$v.vmc4Form" />
               <City
                 :$v="$v.form.stepThree.city"
                 :placeholder="true"
@@ -152,7 +152,7 @@
                 :isLoading="isLoading"
                 :placeholder="true"
                 :form="vmc4Form"
-                :$v="$v" />
+                :$v="$v.vmc4Form" />
               <ZipCode
                 v-if="form.stepThree.country !== 'br'"
                 :$v="$v.form.stepThree.zipCode"
@@ -249,6 +249,7 @@
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
   import DocumentNumber from './extra-fields/DocumentNumber';
+  import logger from '../../mixins/logger';
 
 
 	export default {
@@ -256,6 +257,7 @@
     mixins: [
       queryToComponent,
       purchasMixin,
+      logger,
     ],
 		components: {
       PayMethodItem,
@@ -357,6 +359,17 @@
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
 
+          if (this.form.stepThree.country === 'br') {
+            let ipqs = null; try { ipqs = JSON.parse(localStorage.getItem('3ds_ipqs')); } catch (err) {};
+
+            this.log_data('BRAZIL: VMC4 - Credit Card - 3ds failure', {
+              error: paymentError,
+              form: { ...this.$v.form.$model, ...this.$v.vmc4Form.$model, stepThree: { ...this.$v.form.stepThree.$model, cardNumber: undefined } },
+              fraud_chance: ipqs ? ipqs.fraud_chance : null,
+              ipqs,
+            });
+          }
+
           setTimeout(() => {
             const element = document.querySelector('#payment-error');
 
@@ -412,6 +425,20 @@
 				this.$v.form.$touch();
         this.$v.vmc4Form.$touch();
 
+        if ((this.$v.form.$invalid || this.$v.vmc4Form.$invalid) && this.form.stepThree.country === 'br') {
+          this.log_data('BRAZIL: VMC4 - Credit Card - form validation', {
+            invalid: {
+              ...Object.keys(this.$v.form.stepThree)
+                .filter(name => name !== 'cardNumber' && !!this.$v.form.stepThree[name].$invalid)
+                .reduce((acc, name) => { acc[name] = this.$v.form.stepThree.$model[name]; return acc; }, {}),
+              ...Object.keys(this.$v.vmc4Form)
+                .filter(name => !!this.$v.vmc4Form[name].$invalid)
+                .reduce((acc, name) => { acc[name] = this.$v.vmc4Form.$model[name]; return acc; }, {}),
+            },
+            form: { ...this.$v.form.$model, ...this.$v.vmc4Form.$model, stepThree: { ...this.$v.form.stepThree.$model, cardNumber: undefined } },
+          });
+        }
+
         if (this.$v.form.$vmc4Form || this.$v.form.$invalid) {
           return;
         }
@@ -427,6 +454,13 @@
         const cardNumber = this.form.stepThree.cardNumber.replace(/[^0-9]/g, '');
 
         if (this.form.stepTwo.emailForceInvalid) {
+          if (this.form.stepThree.country === 'br') {
+            this.log_data('BRAZIL: VMC4 - Credit Card - email blocked', {
+              email: this.form.stepTwo.email,
+              form: { ...this.$v.form.$model, ...this.$v.vmc4Form.$model, stepThree: { ...this.$v.form.stepThree.$model, cardNumber: undefined } },
+            });
+          }
+
           return setTimeout(() => {
             this.paymentError = t('checkout.abuse_error');
             this.isSubmitted = false;
@@ -541,6 +575,16 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
+                  if (res.status !== 'ok' && this.form.stepThree.country === 'br') {
+                    this.log_data('BRAZIL: VMC4 - Credit Card - response', {
+                      error: res.paymentError,
+                      res: { ...res, paymentError: undefined },
+                      form: { ...this.$v.form.$model, ...this.$v.vmc4Form.$model, stepThree: { ...this.$v.form.stepThree.$model, cardNumber: undefined } },
+                      fraud_chance: this.ipqsResult.fraud_chance,
+                      ipqs: this.ipqsResult,
+                    });
+                  }
+
                   if (res.paymentError) {
                     this.paymentError = res.paymentError;
                     this.isSubmitted = false;
@@ -616,6 +660,13 @@
           })
           .then(() => {
             if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+              if (this.form.stepThree.country === 'br') {
+                this.log_data('BRAZIL: VMC4 - PayPal - IPQS - recent_abuse', {
+                  fraud_chance: this.ipqsResult.fraud_chance,
+                  ipqs: this.ipqsResult,
+                });
+              }
+
               return setTimeout(() => {
                 this.paypalPaymentError = t('checkout.abuse_error');
               }, 1000);
@@ -634,6 +685,15 @@
             });
           })
           .then(res => {
+            if (res.error && this.form.stepThree.country === 'br') {
+              this.log_data('BRAZIL: VMC4 - PayPal - response', {
+                error: res.paypalPaymentError,
+                res: { ...res, paypalPaymentError: undefined },
+                fraud_chance: this.ipqsResult.fraud_chance,
+                ipqs: this.ipqsResult,
+              });
+            }
+
             if (res.paypalPaymentError) {
               this.paypalPaymentError = res.paypalPaymentError;
             }

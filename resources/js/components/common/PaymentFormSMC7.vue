@@ -23,19 +23,19 @@
       :extraFields="extraFields"
       :placeholder="true"
       :form="paymentForm"
-      :$v="$v" />
+      :$v="$v.form" />
     <Complement
       :isLoading="isLoading"
       :extraFields="extraFields"
       :placeholder="true"
       :form="paymentForm"
-      :$v="$v" />
+      :$v="$v.form" />
     <District
       :isLoading="isLoading"
       :extraFields="extraFields"
       :placeholder="true"
       :form="paymentForm"
-      :$v="$v" />
+      :$v="$v.form" />
     <City
       :$v="$v.form.city"
       :placeholder="true"
@@ -48,7 +48,7 @@
       :isLoading="isLoading"
       :placeholder="true"
       :form="paymentForm"
-      :$v="$v" />
+      :$v="$v.form" />
     <ZipCode
       v-if="paymentForm.country !== 'br'"
       :$v="$v.form.zipCode"
@@ -78,7 +78,7 @@
     <PaymentMethod
       :extraFields="extraFields"
       :form="paymentForm"
-      :$v="$v" />
+      :$v="$v.form" />
 
     <form id="payment-data-form" v-if="paymentForm.paymentProvider !== 'paypal'">
 
@@ -92,7 +92,7 @@
       <CardType
         :extraFields="extraFields"
         :form="paymentForm"
-        :$v="$v" />
+        :$v="$v.form" />
 
       <CardNumber
         :$v="$v.form.cardNumber"
@@ -116,12 +116,12 @@
       <DocumentType
         :extraFields="extraFields"
         :form="paymentForm"
-        :$v="$v" />
+        :$v="$v.form" />
 
       <DocumentNumber
         :extraFields="extraFields"
         :form="paymentForm"
-        :$v="$v" />
+        :$v="$v.form" />
 
     </form>
 

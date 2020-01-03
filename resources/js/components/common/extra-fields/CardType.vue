@@ -4,7 +4,7 @@
     :standart="true"
     v-if="extraFields.card_type"
     v-model="form.card_type"
-    :validation="$v.form.card_type"
+    :validation="$v.card_type"
     :validationMessage="textRequired"
     :list="cardTypeList"
     :label="textTitle"

@@ -43,17 +43,17 @@
             <Building
               :extraFields="extraFields"
               :form="paymentForm"
-              :$v="$v" />
+              :$v="$v.form" />
             <Complement
               :isLoading="isLoading"
               :extraFields="extraFields"
               :form="paymentForm"
-              :$v="$v" />
+              :$v="$v.form" />
             <District
               :isLoading="isLoading"
               :extraFields="extraFields"
               :form="paymentForm"
-              :$v="$v" />
+              :$v="$v.form" />
             <City
               :$v="$v.form.city"
               :isLoading="isLoading"
@@ -64,7 +64,7 @@
               :stateExtraField="stateExtraField"
               :isLoading="isLoading"
               :form="paymentForm"
-              :$v="$v" />
+              :$v="$v.form" />
             <ZipCode
               v-if="paymentForm.country !== 'br'"
               :$v="$v.form.zipcode"
@@ -91,7 +91,7 @@
               <CardType
                 :extraFields="extraFields"
                 :form="paymentForm"
-                :$v="$v" />
+                :$v="$v.form" />
               <div id="payment-data-form">
                 <CardNumber
                   :$v="$v.form.cardNumber"
@@ -111,11 +111,11 @@
               <DocumentType
                 :extraFields="extraFields"
                 :form="paymentForm"
-                :$v="$v" />
+                :$v="$v.form" />
               <DocumentNumber
                 :extraFields="extraFields"
                 :form="paymentForm"
-                :$v="$v" />
+                :$v="$v.form" />
             </div>
         </template>
         <!-- vmp41/42 block -->
@@ -180,6 +180,8 @@
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
   import DocumentNumber from './extra-fields/DocumentNumber';
+  import logger from '../../mixins/logger';
+
 
   export default {
     name: 'PaymentForm',
@@ -201,6 +203,7 @@
       queryToComponent,
       purchasMixin,
       scrollToError,
+      logger,
     ],
     components: {
       Spinner,
@@ -240,6 +243,18 @@
       if (this.queryParams['3ds'] === 'failure') {
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
+
+          if (this.paymentForm.country === 'br') {
+            let ipqs = null; try { ipqs = JSON.parse(localStorage.getItem('3ds_ipqs')); } catch (err) {};
+
+            this.log_data('BRAZIL: EMC1 - Credit Card - 3ds failure', {
+              error: paymentError,
+              form: { ...this.$v.form.$model, cardNumber: undefined },
+              fraud_chance: ipqs ? ipqs.fraud_chance : null,
+              ipqs,
+            });
+          }
+
           setTimeout(() => {
             const element = document.querySelector('#payment-error');
 
@@ -292,6 +307,15 @@
 
         this.$v.form.$touch();
 
+        if (this.$v.form.$invalid && this.paymentForm.country === 'br') {
+          this.log_data('BRAZIL: EMC1 - Credit Card - form validation', {
+            invalid: Object.keys(this.$v.form)
+              .filter(name => name !== 'cardNumber' && !!this.$v.form[name].$invalid)
+              .reduce((acc, name) => { acc[name] = this.$v.form.$model[name]; return acc; }, {}),
+            form: { ...this.$v.form.$model, cardNumber: undefined },
+          });
+        }
+
         if (this.$v.form.deal.$invalid) {
           const element = document.querySelector('.main__deal');
 
@@ -319,6 +343,13 @@
         const cardNumber = paymentForm.cardNumber.replace(/[^0-9]/g, '');
 
         if (paymentForm.emailForceInvalid) {
+          if (this.paymentForm.country === 'br') {
+            this.log_data('BRAZIL: EMC1 - Credit Card - email blocked', {
+              email: this.paymentForm.email,
+              form: { ...this.$v.form.$model, cardNumber: undefined },
+            });
+          }
+
           return setTimeout(() => {
             this.paymentError = t('checkout.abuse_error');
             this.isSubmitted = false;
@@ -433,6 +464,16 @@
 
               sendCheckoutRequest(data)
                 .then(res => {
+                  if (res.status !== 'ok' && this.paymentForm.country === 'br') {
+                    this.log_data('BRAZIL: EMC1 - Credit Card - response', {
+                      error: res.paymentError,
+                      res: { ...res, paymentError: undefined },
+                      form: { ...this.$v.form.$model, cardNumber: undefined },
+                      fraud_chance: this.ipqsResult.fraud_chance,
+                      ipqs: this.ipqsResult,
+                    });
+                  }
+
                   if (res.paymentError) {
                     this.paymentError = res.paymentError;
                     this.isSubmitted = false;

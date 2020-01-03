@@ -4,7 +4,7 @@
     id="complement-field"
     v-if="extraFields.complement"
     v-model="form.complement"
-    :validation="$v.form.complement"
+    :validation="$v.complement"
     :validationMessage="textRequired"
     v-loading="isLoading.address"
     element-loading-spinner="el-icon-loading"
