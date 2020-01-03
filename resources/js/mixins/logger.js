@@ -3,6 +3,11 @@ export default {
   methods: {
 
     log_data(text, data, type = 'error') {
+      data = {
+        url: location.href,
+        user_agent: navigator.userAgent,
+        ...data,
+      },
       fetch('/log-data', {
         method: 'post',
         headers: {

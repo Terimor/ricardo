@@ -248,7 +248,6 @@
             let ipqs = null; try { ipqs = JSON.parse(localStorage.getItem('3ds_ipqs')); } catch (err) {};
 
             this.log_data('BRAZIL: EMC1 - Credit Card - 3ds failure', {
-              url: location.href,
               error: paymentError,
               form: { ...this.$v.form.$model, cardNumber: undefined },
               fraud_chance: ipqs ? ipqs.fraud_chance : null,
@@ -310,7 +309,6 @@
 
         if (this.$v.form.$invalid && this.paymentForm.country === 'br') {
           this.log_data('BRAZIL: EMC1 - Credit Card - form validation', {
-            url: location.href,
             invalid: Object.keys(this.$v.form)
               .filter(name => name !== 'cardNumber' && !!this.$v.form[name].$invalid)
               .reduce((acc, name) => { acc[name] = this.$v.form.$model[name]; return acc; }, {}),
@@ -347,7 +345,6 @@
         if (paymentForm.emailForceInvalid) {
           if (this.paymentForm.country === 'br') {
             this.log_data('BRAZIL: EMC1 - Credit Card - email blocked', {
-              url: location.href,
               email: this.paymentForm.email,
               form: { ...this.$v.form.$model, cardNumber: undefined },
             });
@@ -469,7 +466,6 @@
                 .then(res => {
                   if (res.status !== 'ok' && this.paymentForm.country === 'br') {
                     this.log_data('BRAZIL: EMC1 - Credit Card - response', {
-                      url: location.href,
                       error: res.paymentError,
                       res: { ...res, paymentError: undefined },
                       form: { ...this.$v.form.$model, cardNumber: undefined },
