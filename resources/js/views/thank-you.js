@@ -74,8 +74,8 @@ js_deps.wait(['vue', 'element'], () => {
 
         getTotal() {
             getOrderAmount(js_query_params.order)
-                .then(({ total_text }) => {
-                    this.total = total_text;
+                .then(res => {
+                    this.total = res ? res.total_text : 0;
                 });
         },
 

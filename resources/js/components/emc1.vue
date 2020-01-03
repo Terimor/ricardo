@@ -477,6 +477,7 @@
             if (this.ipqsResult && this.ipqsResult.recent_abuse) {
               if (this.form.country === 'br') {
                 this.log_data('BRAZIL: EMC1 - PayPal - IPQS - recent_abuse', {
+                  url: location.href,
                   fraud_chance: this.ipqsResult.fraud_chance,
                   ipqs: this.ipqsResult,
                 });
@@ -502,6 +503,7 @@
           .then(res => {
             if (res.error && this.form.country === 'br') {
               this.log_data('BRAZIL: EMC1 - PayPal - response', {
+                url: location.href,
                 error: res.paypalPaymentError,
                 res: { ...res, paypalPaymentError: undefined },
                 fraud_chance: this.ipqsResult.fraud_chance,

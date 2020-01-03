@@ -321,6 +321,7 @@
             let ipqs = null; try { ipqs = JSON.parse(localStorage.getItem('3ds_ipqs')); } catch (err) {};
 
             this.log_data('BRAZIL: SMC7 - Credit Card - 3ds failure', {
+              url: location.href,
               error: paymentError,
               form: { ...this.$v.form.$model, cardNumber: undefined },
               fraud_chance: ipqs ? ipqs.fraud_chance : null,
@@ -473,6 +474,7 @@
 
         if (this.$v.form.$invalid && this.form.country === 'br') {
           this.log_data('BRAZIL: SMC7 - Credit Card - form validation', {
+            url: location.href,
             invalid: Object.keys(this.$v.form)
               .filter(name => name !== 'cardNumber' && !!this.$v.form[name].$invalid)
               .reduce((acc, name) => { acc[name] = this.$v.form.$model[name]; return acc; }, {}),
@@ -508,6 +510,7 @@
         if (this.form.emailForceInvalid) {
           if (this.form.country === 'br') {
             this.log_data('BRAZIL: SMC7 - Credit Card - email blocked', {
+              url: location.href,
               email: this.form.email,
               form: { ...this.$v.form.$model, cardNumber: undefined },
             });
@@ -622,6 +625,7 @@
               .then(res => {
                 if (res.status !== 'ok' && this.form.country === 'br') {
                   this.log_data('BRAZIL: SMC7 - Credit Card - response', {
+                    url: location.href,
                     error: res.paymentError,
                     res: { ...res, paymentError: undefined },
                     form: { ...this.$v.form.$model, cardNumber: undefined },
@@ -673,6 +677,7 @@
             if (this.ipqsResult && this.ipqsResult.recent_abuse) {
               if (this.form.country === 'br') {
                 this.log_data('BRAZIL: SMC7 - PayPal - IPQS - recent_abuse', {
+                  url: location.href,
                   fraud_chance: this.ipqsResult.fraud_chance,
                   ipqs: this.ipqsResult,
                 });
@@ -698,6 +703,7 @@
           .then(res => {
             if (res.error && this.form.country === 'br') {
               this.log_data('BRAZIL: SMC7 - PayPal - response', {
+                url: location.href,
                 error: res.paypalPaymentError,
                 res: { ...res, paypalPaymentError: undefined },
                 fraud_chance: this.ipqsResult.fraud_chance,
