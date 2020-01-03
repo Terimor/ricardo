@@ -89,9 +89,11 @@ class AppmaxService
      */
     public static function createCustomerObj(array $contacts): array
     {
-        $phone = $contacts['phone'];
-        if (\gettype($contacts['phone']) === 'array') {
-            $phone = $contacts['phone']['country_code'] . $contacts['phone']['number'];
+        $phone = '';
+        if (gettype($contacts['phone']) === 'array') {
+            $phone = $contacts['phone']['number'];
+        } else {
+            $phone = substr($contacts['phone'], 2, 11);
         }
         $result = [
             'address_street'    => $contacts['street'],
