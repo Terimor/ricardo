@@ -105,7 +105,7 @@ class AppmaxService
             'email'     => $contacts['email'],
             'firstname' => $contacts['first_name'],
             'lastname'  => $contacts['last_name'],
-            'postcode'  => $contacts['zip'],
+            'postcode'  => preg_replace('/\W/','', $contacts['zip']),
             'telephone' => $phone
         ];
 
