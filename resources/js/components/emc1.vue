@@ -417,6 +417,12 @@
       imageSafePayment: () => timage('safe_payment'),
     },
     watch: {
+      'form.deal'() {
+        window.selectedOffer = 1;
+      },
+      'form.paymentProvider'() {
+        window.selectedPayment = this.form.paymentProvider;
+      },
       purchase() {
         this.refreshTopBlock();
       },
@@ -445,6 +451,8 @@
         }
       },
       paypalCreateOrder () {
+        this.form.paymentProvider = 'paypal';
+
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? js_data.product.prices.currency
           : js_query_params.cur;
@@ -517,7 +525,6 @@
           });
       },
       paypalOnApprove(data) {
-        this.form.paymentProvider = 'paypal';
         return paypalOnApprove(data);
       },
       setCart (cart) {

@@ -146,14 +146,20 @@ ul, ol {
     margin: 30px 0;
   }
 }
-.bunner-text_md {
-  font-size: 27px;
-}
-.bunner-text_lg {
-  font-size: 37px;
-}
-.bunner-text_xl {
-  font-size: 100px;
+.bunner-text {
+  font-size: 24px;
+
+  li:nth-child(1) {
+    font-size: 27px;
+  }
+
+  li:nth-child(2) {
+    font-size: 100px;
+  }
+
+  li:nth-child(3) {
+    font-size: 37px;
+  }
 }
 .bunner-list {
   margin: 0;

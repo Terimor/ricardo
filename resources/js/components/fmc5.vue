@@ -640,7 +640,21 @@
     created() {
       this.initDeal();
       this.initVariant();
+      this.initPaymentProvider();
       this.check3dsFailure();
+    },
+
+
+    watch: {
+
+      'form.deal'() {
+        window.selectedOffer = 1;
+      },
+
+      'form.paymentProvider'() {
+        window.selectedPayment = this.form.paymentProvider;
+      },
+
     },
 
 
@@ -987,6 +1001,12 @@
           : null;
       },
 
+      initPaymentProvider() {
+        if (!this.$root.paypalEnabled) {
+          this.form.paymentProvider = 'credit-card';
+        }
+      },
+
       onCreditCardSelect() {
         setTimeout(() => this.scrollToSelector('.form'), 100);
       },
@@ -1041,6 +1061,8 @@
       },
 
       paypalCreateOrder() {
+        this.form.paymentProvider = 'paypal';
+
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? this.product.prices.currency
           : js_query_params.cur;
@@ -1110,7 +1132,6 @@
       },
 
       paypalOnApprove(data) {
-        this.form.paymentProvider = 'paypal';
         return paypalOnApprove(data);
       },
 
@@ -1956,8 +1977,9 @@
     flex-grow: 1;
     font-size: 28px;
     font-weight: 700;
-    justify-content: center;
     height: 62px;
+    justify-content: center;
+    line-height: 1;
     padding: 0 10px;
     position: relative;
     text-align: center;

@@ -1,6 +1,12 @@
 import * as cookies from '../utils/cookies';
 
 
+if (location.pathname.startsWith('/checkout')) {
+  window.selectedOffer = 0;
+  window.selectedPayment = 0;
+}
+
+
 // clear data if product changed
 if (location.pathname.startsWith('/checkout')) {
   const product_id = localStorage.getItem('product_id');
