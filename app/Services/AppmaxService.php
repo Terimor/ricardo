@@ -344,7 +344,7 @@ class AppmaxService
                 ]
             ]);
 
-            $body = \json_decode($res->getBody(), true);
+            $body = json_decode($res->getBody(), true);
 
             if ($body['success']) {
                 $result['status'] = Txn::STATUS_CAPTURED;
@@ -356,7 +356,15 @@ class AppmaxService
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null;
 
+            $result['errors'] = [AppmaxCodeMapper::toPhrase()];
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => $res];
+
+            if ($res) {
+                $body = json_decode($res, true);
+                if (!empty($body)) {
+                    $result['errors'] = [AppmaxCodeMapper::toPhrase($body['text'] ?? null)];
+                }
+            }
 
             logger()->error("Appmax pay", ['res' => $result['provider_data']]);
         }
