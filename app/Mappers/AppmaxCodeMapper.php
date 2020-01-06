@@ -14,6 +14,13 @@ class AppmaxCodeMapper
     ];
 
     /**
+     * @var array $message_map
+     */
+    private static $message_map = [
+        'Transação não autorizada, motivo: Cartão inválido'  => 'card.error.number_incorrect'
+    ];
+
+    /**
      * Map code to phrase
      * @param  string $code
      * @return string
