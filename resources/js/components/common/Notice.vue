@@ -49,6 +49,7 @@ export default {
         cities,
         usersActive,
         bestsellerText,
+        paypal: !!this.$root.paypalEnabled,
       });
 
       const getNoticeHtml = () => notice.next().value;
