@@ -162,7 +162,7 @@
         <footer class="splash-footer">
             <div class="splash-footer-title">
                 <div class="container">
-                    {!! t('splash_page.footer_text', ['amount' => $product->prices['1']['discount_percent'] . '%']) !!}
+                    {!! t('splash_page.footer_text', ['amount' => $product->prices['1']['discount_percent'] . '%', 'product' => $product->product_name]) !!}
                 </div>
             </div>
             <div class="splash-footer-container">
