@@ -124,6 +124,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
             $view->with('company_address', UtilsService::getCompanyAddress($req));
+            $view->with('is_new_engine', Request::is('checkout', 'checkout/..') && Request::get('tpl') === 'fmc5x');
         });
     }
 }
