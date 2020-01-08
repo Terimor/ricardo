@@ -1,0 +1,111 @@
+@import '../../checkout';
+@import './fmc5/steps-line';
+@import './fmc5/content';
+@import './fmc5/reviews';
+@import './fmc5/bottom';
+
+
+.fmc5 {
+  align-items: center;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: Lato, "Noto Sans", sans-serif;
+  position: relative;
+}
+
+.gray-back {
+  background-color: #f1eff0;
+  height: 365px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.fmc5 > .inside {
+  display: flex;
+  flex-direction: column;
+  margin: 40px 0;
+  position: relative;
+  width: 970px;
+
+  @media only screen and (max-width: 1000px) {
+    width: 750px;
+  }
+
+  @media only screen and (max-width: 767px) {
+    margin: 15px 0;
+    max-width: 600px;
+    padding: 0 10px;
+    width: 100%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(.9);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(.9);
+  }
+}
+
+.fade-enter-active {
+  transition: opacity ease .5s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+.input-container.variant-1,
+.phone-input-container.variant-1,
+.select.variant-1 {
+  margin: 10px 0;
+
+  .step2 & .label,
+  .step3 & .label {
+    display: none;
+  }
+
+  input,
+  select {
+    animation: none!important;
+    background-color: #fff;
+    border-color: #bbb;
+    border-radius: 3px;
+    color: #000;
+    font-family: Lato, "Noto Sans", sans-serif;
+    font-size: 18px;
+    height: 44px;
+    padding: 0 15px;
+
+    &:focus {
+      border-color: #bbb;
+      box-shadow: none;
+    }
+  }
+
+  .date-picker-manual__input {
+    height: 44px;
+
+    .placeholder {
+      color: gray;
+      font-size: 18px;
+    }
+  }
+
+  .el-loading-spinner {
+    margin-top: -12px;
+  }
+
+  .error {
+    font-size: 12px;
+    color: #dc3545;
+    margin: 4px 16px;
+  }
+}

@@ -1,0 +1,202 @@
+.input {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+  position: relative;
+  width: 100%;
+}
+
+.input-field-label {
+  font-size: 17px;
+  margin-bottom: 6px;
+
+  .input.invalid & {
+    color: #e74c3c;
+  }
+}
+
+.input-field-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.input-field-loading {
+  align-items: center;
+  background-color: rgba(255,255,255,.5);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+
+  .spinner {
+    transform: scale(.4);
+  }
+}
+
+.input-field-prefix {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 46px;
+  z-index: 1;
+
+  [dir="rtl"] & {
+    left: auto;
+    right: 0;
+  }
+
+  &.clickable {
+    cursor: pointer;
+  }
+}
+
+.input-field-suffix {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 46px;
+  z-index: 1;
+
+  [dir="rtl"] & {
+    left: 0;
+    right: auto;
+  }
+
+  &.clickable {
+    cursor: pointer;
+  }
+}
+
+.input-field-mask {
+  align-items: center;
+  border: 1px solid transparent;
+  bottom: 0;
+  color: #808080;
+  display: flex;
+  font-family: monospace;
+  font-size: 17px;
+  left: 0;
+  padding: 2px 15px 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  user-select: none;
+  z-index: 1;
+}
+
+.input-field-input {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  color: #555;
+  font-size: 17px;
+  height: 40px;
+  outline: none;
+  padding: 0 15px;
+  width: 100%;
+
+  &:focus {
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    border-color: #409eff;
+  }
+
+  &.monospace {
+    font-family: monospace;
+  }
+
+  .input.invalid & {
+    animation: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error;
+  }
+
+  .input.with-prefix & {
+    padding-left: 46px;
+
+    [dir="rtl"] & {
+      padding-left: 15px;
+      padding-right: 46px!important;
+    }
+  }
+
+  .input.with-suffix & {
+    padding-right: 46px;
+
+    [dir="rtl"] & {
+      padding-left: 46px!important;
+      padding-right: 15px;
+    }
+  }
+}
+
+.input-field-errors {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-field-error {
+  color: #2196f3;
+  display: none;
+  font-size: 17px;
+
+  &:first-child {
+    display: inline;
+  }
+
+  .input.invalid & {
+    color: #c0392b;
+  }
+
+  * {
+    display: inline;
+  }
+}
+
+@keyframes shadow-drop-center-error {
+  0% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  to {
+    box-shadow: 0 0 6px 0 rgba(192, 57, 43, 1);
+  }
+}
+
+.iti {
+  width: 100%;
+}
+
+.iti__country {
+  display: flex;
+  align-items: center;
+}
+
+.iti__selected-flag {
+  outline: none;
+}
+
+[dir="rtl"] .iti__selected-dial-code,
+[dir="rtl"] .iti__arrow {
+  margin-left: 0;
+  margin-right: 6px;
+}
+
+[dir="rtl"] .iti__flag-box,
+[dir="rtl"] .iti__country-name {
+  margin-left: 6px;
+  margin-right: 0;
+}
+
+[dir="rtl"] .iti__flag-container {
+  left: auto;
+}

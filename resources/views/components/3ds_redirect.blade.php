@@ -1,4 +1,4 @@
-@if (Route::is('checkout') || Route::is('checkout_price_set'))
+@if ((Route::is('checkout') || Route::is('checkout_price_set')) && !$is_new_engine)
 
   @if (Request::get('3ds') && !Request::get('3ds_restore'))
     <script type="text/javascript">

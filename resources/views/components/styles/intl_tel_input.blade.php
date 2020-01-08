@@ -1,4 +1,4 @@
-@if (Route::is('checkout') || Route::is('checkout_price_set'))
+@if ($HasVueApp && !$is_new_engine)
 
   <link
     id="intlTelInputCss"

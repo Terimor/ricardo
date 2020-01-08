@@ -64,6 +64,18 @@
       }
     },
 
+    wait_for: function(condition, callback, timeout) {
+      function iteration() {
+        if (condition()) {
+          clearInterval(interval);
+          callback();
+        }
+      }
+
+      var interval = setInterval(iteration, timeout || 100);
+      iteration();
+    },
+
     show: function(names) {
       js_deps.wait(names, function() {
         document.documentElement.classList.remove('hidden');

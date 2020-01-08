@@ -1,0 +1,13 @@
+.bottom {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+
+  .button-next {
+    max-width: 400px;
+
+    @media only screen and (max-width: 767px) {
+      font-size: 24px;
+    }
+  }
+}

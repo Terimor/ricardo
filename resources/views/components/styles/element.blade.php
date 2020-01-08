@@ -1,4 +1,4 @@
-@if ($HasVueApp)
+@if ($HasVueApp && !$is_new_engine)
 
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.11.1/theme-chalk/index.css"

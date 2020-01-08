@@ -1,0 +1,99 @@
+.variant-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.variant-field-label {
+  margin-bottom: 6px;
+}
+
+.variant-field > .inside {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.variant-field-input {
+  align-items: center;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  height: 44px;
+  padding: 0 15px;
+
+  .variant-field.opened & {
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    border-color: #409eff;
+  }
+
+  i {
+    color: #c0c4cc;
+    font-size: 18px;
+    transition: transform .3s;
+
+    .variant-field.opened & {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.variant-field-backdrop {
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 5;
+}
+
+.variant-field-dropdown {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+
+  .variant-field.opened & {
+    border: 1px solid #e4e7ed;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    padding: 6px 0;
+  }
+}
+
+.variant-field-item {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-size: 16px;
+  height: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  transition: height .3s;
+
+  .variant-field.opened & {
+    height: 80px;
+  }
+
+  &:hover {
+    background-color: #f5f7fa;
+  }
+
+  &.active {
+    color: #409eff;
+    font-weight: 700;
+  }
+
+  img {
+    height: 80px;
+    margin: 0 10px;
+  }
+}

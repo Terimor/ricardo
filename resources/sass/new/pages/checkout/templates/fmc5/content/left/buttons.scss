@@ -1,0 +1,80 @@
+.buttons {
+  align-items: center;
+  display: flex;
+  margin: 20px 20px 0;
+}
+
+.button-back {
+  background-color: #fff;
+  border: 1px solid #00c749;
+  border-radius: 7px;
+  color: #00c749;
+  cursor: pointer;
+  font-size: 28px;
+  font-weight: 700;
+  margin-right: 18px;
+  padding: 14px;
+
+  [dir="rtl"] & {
+    margin-left: 18px;
+    margin-right: 0;
+  }
+}
+
+.button-next {
+  align-items: center;
+  animation: 1.5s pulse infinite;
+  background-color: #00c749;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-grow: 1;
+  font-size: 28px;
+  font-weight: 700;
+  height: 62px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 10px;
+  position: relative;
+  text-align: center;
+
+  &.multi {
+    @media only screen and (max-width: 1000px) {
+      font-size: 24px;
+    }
+
+    @media only screen and (max-width: 767px) {
+      font-size: 18px;
+    }
+  }
+
+  &.submitted {
+    cursor: default;
+  }
+
+  .button-next-disabled {
+    align-items: center;
+    background-color: rgba(255,255,255,.5);
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+
+    .spinner {
+      transform: scale(.6);
+
+      div:after {
+        background-color: #fff;
+      }
+    }
+  }
+
+  .hidden {
+    visibility: hidden;
+  }
+}

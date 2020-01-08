@@ -19,12 +19,13 @@
     @include('components.layout.js_product')
     @yield('js_data')
 
+    <!-- JS Prerender -->
+    @include('components.3ds_redirect')
+    @yield('js_prerender')
+
     <!-- JS Deps -->
     @include('components.layout.js_deps')
     @yield('js_deps')
-
-    <!-- Redirects -->
-    @include('components.3ds_redirect')
 
     <!-- Async Fonts -->
     @include('components.fonts.lato')
@@ -60,19 +61,33 @@
   <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
 
     <div id="app">
-        @include('components.black_friday')
-        @include('components.christmas')
+        {{--@include('components.black_friday')--}}
+        {{--@include('components.christmas')--}}
+        @if (!$is_new_engine)
+            @if (Request::is('splash'))
+                @include('layouts.header_splash', ['product' => $product])
+            @elseif (Request::is('orderTracking'))
+            @else
+                @include('layouts.header', ['product' => $product])
+            @endif
 
-        @if (Request::is('splash'))
-            @include('layouts.header_splash', ['product' => $product])
-        @elseif (Request::is('orderTracking'))
+            <main class="pt-4">
+                @yield('content')
+            </main>
         @else
-            @include('layouts.header', ['product' => $product])
-        @endif
+            <template>
 
-        <main class="pt-4">
-            @yield('content')
-        </main>
+                <!-- Header Region -->
+                @include('new.regions.header')
+
+                <!-- Content Region -->
+                @include('new.regions.content')
+
+                <!-- Footer Region -->
+                @include('new.regions.footer')
+
+            </template>
+        @endif
     </div>
 
     @include('components.static_topbar')

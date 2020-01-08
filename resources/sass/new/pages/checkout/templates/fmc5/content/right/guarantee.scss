@@ -1,0 +1,45 @@
+.guarantee {
+  background-color: #f7f7f7;
+  border: 1px solid #dadada;
+  border-radius: 7px;
+  color: #393737;
+  font-size: 15px;
+  margin-top: 80px;
+  padding: 20px 20px;
+  text-align: center;
+
+  @media only screen and (max-width: 1000px) {
+    margin-top: 70px;
+    padding: 10px 10px;
+  }
+
+  @media only screen and (max-width: 767px) {
+    margin: 90px 20px 20px;
+  }
+}
+
+.guarantee-image {
+  margin-bottom: 15px;
+  margin-top: -88px;
+
+  @media only screen and (max-width: 1000px) {
+    margin-top: -81px;
+    width: 120px;
+  }
+
+  @media only screen and (max-width: 767px) {
+     margin-top: -71px;
+  }
+}
+
+.guarantee-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.guarantee-text {
+  font-size: 15px;
+  line-height: 1.5rem;
+  margin: 5px 0;
+}

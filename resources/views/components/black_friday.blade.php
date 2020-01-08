@@ -1,7 +1,7 @@
 @if (Route::is('checkout') || Route::is('checkout_price_set'))
 
   <div
-    ref="blackFriday"
+    ref="black_friday"
     class="black-friday-toolbar hidden">
 
     <div class="inside">

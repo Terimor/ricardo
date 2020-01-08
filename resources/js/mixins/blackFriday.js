@@ -19,13 +19,13 @@ export default {
 
     blackFridayResize() {
       setTimeout(() => {
-        const blackFriday = this.$root.$refs.blackFriday;
+        const blackFriday = this.$root.$refs.black_friday;
         document.body.style['padding-top'] = blackFriday.clientHeight + 'px';
       }, 100);
     },
 
     blackFridayBindClick() {
-      const blackFriday = this.$root.$refs.blackFriday;
+      const blackFriday = this.$root.$refs.black_friday;
       const link = blackFriday.querySelector('.link');
 
       if (link) {
@@ -34,7 +34,7 @@ export default {
     },
 
     blackFridayShow() {
-      const blackFriday = this.$root.$refs.blackFriday;
+      const blackFriday = this.$root.$refs.black_friday;
 
       wait(
         () => blackFriday.clientHeight > 0,
@@ -57,7 +57,7 @@ export default {
     },
 
     blackFridayHide() {
-      const blackFriday = this.$root.$refs.blackFriday;
+      const blackFriday = this.$root.$refs.black_friday;
       blackFriday.style['height'] = blackFriday.clientHeight + 'px';
 
       setTimeout(() => {

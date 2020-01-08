@@ -1,0 +1,18 @@
+.radio {
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 50%;
+  display: flex;
+  flex-shrink: 0;
+  height: 18px;
+  justify-content: center;
+  width: 18px;
+
+  div {
+    background-color: #000;
+    border-radius: 50%;
+    height: 12px;
+    width: 12px;
+  }
+}

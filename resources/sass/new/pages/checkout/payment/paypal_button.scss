@@ -1,0 +1,95 @@
+.paypal-button {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.paypal-button-original {
+  height: 55px;
+  overflow: hidden;
+}
+
+.paypal-button-shim {
+  align-items: center;
+  background-color: #ffc438;
+  background-image: linear-gradient(#fff0a8,#f9b421);
+  border: 1px solid #feae01;
+  border-radius: 5px;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1000;
+
+  &.active {
+    pointer-events: none;
+
+    .paypal-button:hover & {
+      background-image: linear-gradient(#f9b421,#fff0a8);
+    }
+  }
+}
+
+.paypal-button-arrow {
+  align-items: center;
+  background-color: rgba(255,255,255,.3);
+  border-radius: 0 50% 50% 0;
+  bottom: 0;
+  color: #000;
+  display: flex;
+  font-size: 18px;
+  justify-content: center;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  transition: all .2s linear;
+  width: 0;
+
+  [dir="rtl"] & {
+    border-radius: 50% 0 0 50%;
+    left: auto;
+    right: 0;
+  }
+
+  .paypal-button:hover .paypal-button-shim.active & {
+    opacity: 1;
+    width: 30px;
+  }
+}
+
+.paypal-button-disabled {
+  background-color: #fff;
+  bottom: 0;
+  left: 0;
+  opacity: .5;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.paypal-button-label {
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.paypal-button-image {
+  margin-left: 10px;
+  margin-top: -2px;
+  max-width: 90px;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: 10px;
+  }
+}
+
+

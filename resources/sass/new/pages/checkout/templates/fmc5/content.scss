@@ -1,0 +1,81 @@
+@import './content/mproduct';
+@import './content/left';
+@import './content/right';
+
+
+.content {
+  align-items: flex-start;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 7px 2px #d6d6d6;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding: 30px 30px 50px;
+
+  @media only screen and (max-width: 1000px) {
+    padding: 20px 20px;
+  }
+
+  @media only screen and (max-width: 767px) {
+    align-items: stretch;
+    flex-direction: column;
+    margin-top: 20px;
+    padding: 0;
+  }
+}
+
+.content-left {
+  box-shadow: 0 0 2px 1px #e3e3e3;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 25px;
+  width: 59%;
+
+  @media only screen and (max-width: 767px) {
+    box-shadow: none;
+    padding-bottom: 0;
+    width: auto;
+  }
+}
+
+.content-right {
+  display: flex;
+  flex-direction: column;
+  width: 36%;
+
+  @media only screen and (max-width: 1000px) {
+    width: 38%;
+  }
+
+  @media only screen and (max-width: 767px) {
+    width: auto;
+  }
+}
+
+.input-field-label,
+.phone-field-label,
+.select-field-label {
+  display: none;
+}
+
+.input-field-mask {
+  font-size: 18px;
+}
+
+.input-field-input,
+.phone-field-input,
+.select-field-input {
+  border: 1px solid #bbb;
+  color: #000;
+  height: 44px;
+  font-size: 18px;
+}
+
+.input-field-error,
+.phone-field-error,
+.select-field-error {
+  color: #dc3545;
+  font-size: 12px;
+  margin: 4px 16px;
+}

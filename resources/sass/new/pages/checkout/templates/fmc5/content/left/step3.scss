@@ -1,0 +1,40 @@
+.step3 {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 20px 0;
+
+  .form {
+    margin-bottom: 12px;
+  }
+}
+
+.credit-cards {
+  margin-bottom: 10px;
+}
+
+.paypal-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+
+.paypal-payment-error {
+  margin-top: 10px;
+}
+
+.warranty-field {
+  margin-bottom: 10px;
+}
+
+.card_date-field {
+  width: 120px;
+}
+
+.card_cvv-field {
+  margin-left: 10px;
+  width: 120px;
+}
+
+.payment-error {
+  width: 100%;
+}

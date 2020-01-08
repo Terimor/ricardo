@@ -1,0 +1,36 @@
+.header-region {
+  align-items: center;
+  background: #fff;
+  box-shadow: 1px 1px 1px 1px rgba(214,214,214,.4);
+  display: flex;
+  height: 87px;
+  padding: 3px;
+  
+  @media screen and ($s-down) {
+    height: auto;
+  }
+}
+
+.header-region > .container {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+
+  @media screen and ($s-down) {
+    justify-content: center;
+  }
+}
+
+.header-logo-link {
+  display: flex;
+  margin: 10px 0;
+}
+
+.header-logo {
+  height: 47px;
+
+  @media screen and ($s-down) {
+    height: 25px;
+  }
+}
