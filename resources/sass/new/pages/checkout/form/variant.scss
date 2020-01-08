@@ -52,20 +52,25 @@
 
 .variant-field-dropdown {
   background-color: #fff;
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   display: flex;
   flex-direction: column;
   left: 0;
-  padding: 0;
+  padding: 6px 0;
   position: absolute;
   right: 0;
   top: 100%;
+  transition: all .3s ease;
   z-index: 10;
 
-  .variant-field.opened & {
-    border: 1px solid #e4e7ed;
-    border-radius: 4px;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-    padding: 6px 0;
+  &.slide-down-enter, &.slide-down-leave-to {
+    padding: 0;
+
+    .variant-field-item {
+      height: 0;
+    }
   }
 }
 
@@ -74,14 +79,10 @@
   cursor: pointer;
   display: flex;
   font-size: 16px;
-  height: 0;
+  height: 80px;
   overflow: hidden;
   padding: 0 20px;
-  transition: height .3s;
-
-  .variant-field.opened & {
-    height: 80px;
-  }
+  transition: all .3s ease;
 
   &:hover {
     background-color: #f5f7fa;

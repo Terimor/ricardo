@@ -29,6 +29,10 @@ export default {
 
   computed: {
 
+    variants_by_index() {
+      return js_data.product.skus;
+    },
+
     variants_by_code() {
       return js_data.product.skus.reduce((acc, sku) => {
         acc[sku.code] = sku;
