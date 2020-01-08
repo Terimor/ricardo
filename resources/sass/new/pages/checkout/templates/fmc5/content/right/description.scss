@@ -1,0 +1,47 @@
+.description {
+  display: flex;
+  margin-top: 10px;
+
+  @media only screen and (max-width: 767px) {
+    display: none;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      align-items: flex-start;
+      color: #393737;
+      display: flex;
+      font-size: 18px;
+      margin: 7.5px 0;
+      padding: 0;
+
+      @media only screen and (max-width: 1000px) {
+        font-size: 17px;
+      }
+
+      img {
+        flex-shrink: 0;
+        margin-right: 12px;
+
+        [dir="rtl"] & {
+          margin-left: 12px;
+          margin-right: 0;
+        }
+      }
+
+      div {
+        margin-top: -1px;
+
+        @media only screen and (max-width: 1000px) {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}

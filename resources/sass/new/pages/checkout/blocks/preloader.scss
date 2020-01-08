@@ -1,0 +1,145 @@
+.preloader {
+  align-items: center;
+  background-color: #f3f3f3;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1000;
+}
+
+.preloader > .inside {
+  background-color: #fff;
+  border: 1px solid gray;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 460px;
+  margin: auto 15px;
+  max-width: 100%;
+  padding: 40px 40px;
+  width: 680px;
+}
+
+.preloader-title {
+  font-size: 24px;
+  color: #333;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.preloader-country-image {
+  margin: auto;
+  max-height: 128px;
+  max-width: 128px;
+  width: 100%;
+}
+
+.preloader-svg-box {
+  display: block;
+  margin: 0 auto;
+  position: relative;
+  width: 150px;
+
+  svg {
+    max-width: 100%;
+    stroke: #7cb342;
+  }
+
+  circle {
+    animation: .7s preloader-draw-circle ease-out;
+    opacity: .4;
+    stroke-dasharray: 330;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+  }
+}
+
+.preloader-checkmark {
+  height: 40px;
+  left: 49px;
+  stroke-width: 6.25;
+  stroke-linecap: round;
+  position: absolute;
+  top: 56px;
+  width: 52px;
+}
+
+.preloader-checkmark-check {
+  animation: 1s preloader-draw-check ease-out;
+}
+
+@keyframes preloader-draw-check {
+  0% {
+    stroke-dasharray: 49, 80;
+    stroke-dashoffset: 48;
+    opacity: 0;
+  }
+  50% {
+    stroke-dasharray: 49, 80;
+    stroke-dashoffset: 48;
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 130, 80;
+    stroke-dashoffset: 48;
+  }
+}
+
+@keyframes preloader-draw-circle {
+  0% {
+    stroke-dasharray: 0, 330;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  80% {
+    stroke-dasharray: 330, 330;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    opacity: .4;
+  }
+}
+
+.preloader-progress {
+  background-color: #ebeef5;
+  border-radius: 100px;
+  height: 26px;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle;
+}
+
+.preloader-progress-value {
+  align-items: center;
+  animation: preloader-progress-stripes 2s linear infinite;
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+  background-color: #337ab7;
+  border-radius: 100px;
+  color: #fff;
+  display: flex;
+  font-weight: bold;
+  font-size: 16px;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: width 0.08s ease;
+  white-space: nowrap;
+}
+
+@keyframes preloader-progress-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}

@@ -76,6 +76,7 @@ export function * getNotice ({
   cities,
   usersActive,
   bestsellerText,
+  paypal,
 }) {
   let index = 0
   const messageMap = {
@@ -112,15 +113,17 @@ export function * getNotice ({
     paypalNotice: `<b>paypalNotice</b>`
   }
 
-  const keyQueue = [
+  let keyQueue = [
     'recentlyBought',
     'recentlyBought',
     'usersActive',
-    'paypal',
+    paypal ? 'paypal' : null,
     'recentlyBought',
     'recentlyBought',
     'bestsellerText'
   ]
+
+  keyQueue = keyQueue.filter(name => !!name);
 
   let lastIndex = 0
 

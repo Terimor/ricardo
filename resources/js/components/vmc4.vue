@@ -217,6 +217,9 @@
       },
 		},
     watch: {
+      'form.deal'() {
+        window.selectedOffer = 1;
+      },
       'form.variant'() {
         this.animateProductImage();
       },

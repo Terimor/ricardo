@@ -1,0 +1,87 @@
+.credit-cards {
+  align-items: center;
+  background-image: linear-gradient(#0f9b0f,#0d840d);
+  border-radius: 3px;
+  box-shadow: 2px 2px 2px 0 #b4b5b5;
+  cursor: pointer;
+  display: flex;
+  padding: 15px 15px;
+  position: relative;
+
+  &:hover {
+    background-image: linear-gradient(180deg,#6d4 0,#3d6c04);
+  }
+}
+
+.credit-cards-arrow {
+  align-items: center;
+  background-color: rgba(255,255,255,.3);
+  border-radius: 0 50% 50% 0;
+  bottom: 0;
+  color: #fff;
+  display: flex;
+  font-size: 18px;
+  justify-content: center;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  transition: all .2s linear;
+  width: 0;
+
+  [dir="rtl"] & {
+    border-radius: 50% 0 0 50%;
+    left: auto;
+    right: 0;
+  }
+
+  .credit-cards:hover & {
+    opacity: 1;
+    width: 30px;
+  }
+}
+
+.credit-cards-radio {
+  background-color: transparent;
+  border-color: #fff;
+
+  div {
+    background-color: #fff;
+  }
+}
+
+.credit-cards > .inside {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: 12px;
+  }
+}
+
+.credit-cards-label {
+  color: #fff;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-shadow: rgba(0,0,0,.3) -1px -1px 0;
+  text-transform: capitalize;
+}
+
+.credit-cards-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 8px -4px 0;
+}
+
+.credit-card-item {
+  display: flex;
+  flex-direction: column;
+  margin: 4px;
+
+  img {
+    max-width: 56px;
+  }
+}

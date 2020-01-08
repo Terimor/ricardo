@@ -51,34 +51,19 @@
                             <div class="bunner-logo for-img">
                                 <img src="{{ $product->logo_image }}" alt="{{ $product->product_name }}">
                             </div>
-                            <p class="bunner-text_md">{{ t('splash_page.discount') }}</p>
-                            <p class="bunner-text_xl">{{ $product->prices['1']['discount_percent'] }}%</p>
-                            <p class="bunner-text_lg">{{ t('splash_page.last_chance') }}</p>
+                            <ul class="bunner-text">
+                                {!! t('splash_page.bunner_text', ['amount' => $product->prices['1']['discount_percent'] . '%']) !!}
+                            </ul>
                             <div class="mobile-bunner-img for-img mt-3">
                                 <img src="{{ $product->image[0] }}" alt="">
                             </div>
                             <a href="/checkout" class="red-btn">
                                 <span>
-                                    {{ t('splash_page.get') }}
-                                    {{ $product->product_name }}
-                                    {{ t('splash_page.now') }}
-                                    {{ t('splash_page.with') }}
-                                    {{ $product->prices['1']['discount_percent'] }}%
-                                    {{ t('splash_page.discount') }} >>
+                                    {!! t('splash_page.red_button_top', ['product' => $product->product_name, 'amount' => $product->prices['1']['discount_percent']. '%']) !!} >>
                                 </span>
                             </a>
                             <ul class="bunner-list">
-                                <li class="bunner-item">
-                                    {{ t('splash_page.only') }}
-                                    {{ $product->prices['1']['value_text'] }}
-                                    {{ t('splash_page.vs') }}
-                                    {{ $product->prices['1']['old_value_text'] }}
-                                    ({{ t('splash_page.retail') }}) -
-                                    {{ t('splash_page.available_online-only') }}
-                                </li>
-                                <li class="bunner-item">
-                                    {{ t('splash_page.while_supplies_last') }}
-                                </li>
+                                {!! t('splash_page.bunner_list', ['count' =>$product->prices['1']['value_text'], 'amount' => $product->prices['1']['old_value_text']]) !!}
                             </ul>
                         </div>
                     </div>
@@ -139,9 +124,7 @@
                         </div>
                         @if (!empty($product->vimeo_id))
                         <h3>
-                            {{ t('splash_page.video_of') }}
-                            {{ $product->long_name }}
-                            {{ t('splash_page.in_action') }}:</h3>
+                            {!! t('splash_page.video_action', ['product' => $product->long_name]) !!}
                             <div class="iframe-wrap">
                                 <iframe src="https://player.vimeo.com/video/{{ $product->vimeo_id }}"
                                         frameborder="0"
@@ -152,10 +135,7 @@
                         @endif
                         <div class="text-center">
                             <a href="/checkout" class="green-btn">
-                                {{ t('splash_page.add_to_cart') }}
-                                {{ t('splash_page.with') }}
-                                {{ $product->prices['1']['discount_percent'] }}%
-                                {{ t('splash_page.discount') }}
+                                {!! t('splash_page.green_button', ['amount' => $product->prices['1']['discount_percent'] . '%']) !!}
                             </a>
                         </div>
                         <h3>{!! $product->description !!}</h3>
@@ -170,10 +150,7 @@
                                 <div class="wrapper">
                                     <img src="https://enence.com/theme/instant-translator/landing3/ex4.png" />
                                     <span>
-                                        {{ t('splash_page.add_to_cart') }}
-                                        {{ t('splash_page.with') }}
-                                        {{ $product->prices['1']['discount_percent'] }}%
-                                        {{ t('splash_page.discount') }} >>
+                                        {!! t('splash_page.green_button', ['amount' => $product->prices['1']['discount_percent'] . '%']) !!} >>
                                     </span>
                                 </div>
                             </a>
@@ -184,13 +161,19 @@
         </div>
         <footer class="splash-footer">
             <div class="splash-footer-title">
-                <div class="container">{{ t('splash_page.limited_time_promo') }}: {{ $product->prices['1']['discount_percent'] }}% {{ t('splash_page.off') }} {{ $product->product_name }}!</div>
+                <div class="container">
+                    {!! t('splash_page.footer_text', ['amount' => $product->prices['1']['discount_percent'] . '%', 'product' => $product->product_name]) !!}
+                </div>
             </div>
             <div class="splash-footer-container">
-                <a class="red-btn" href="#">{{ t('splash_page.claim_your') }} {{ $product->prices['1']['discount_percent'] }}% {{ t('splash_page.discount_code_now') }}!</a>
+                <a class="red-btn" href="#">
+                    {!! t('splash_page.red_button_bottom', ['amount' => $product->prices['1']['discount_percent'] . '%']) !!}
+                </a>
             </div>
             <div class="splash-footer-subtitle">
-                <div class="container">{{ t('splash_page.secure_your') }} {{ $product->product_name }} {{ t('splash_page.now_before_this_promotion_ends') }}</div>
+                <div class="container">
+                    {!! t('splash_page.footer_text2', ['product' => $product->product_name]) !!}
+                </div>
             </div>
             <div class="splash-footer-copy">
                 &copy; 2019 {{ t('splash_page.all_rights_reserved') }}.

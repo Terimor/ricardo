@@ -1,0 +1,132 @@
+.warranty-field {
+  background-color: rgba(216,216,216,.71);
+  border: 1px solid rgba(0,0,0,.4);
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  padding: 16px 70px;
+  position: relative;
+
+  &:hover {
+    background-color: rgba(191,191,191,.71);
+    background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
+  }
+
+  &.small {
+    padding: 16px 20px 16px 45px;
+
+    [dir="rtl"] & {
+      padding: 16px 45px 16px 20px;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    & {
+      padding: 16px 40px 16px 50px;
+
+      [dir="rtl"] & {
+        padding: 16px 50px 16px 40px;
+      }
+    }
+  }
+}
+
+.warrant-arrow-left {
+  animation: warrant-arrow-left .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+  color: #dc003a;
+  display: none;
+  font-size: 18px;
+  position: absolute;
+  right: 10px;
+  top: 20px;
+
+  [dir="rtl"] & {
+    display: block;
+  }
+}
+
+@keyframes warrant-arrow-left {
+  0% {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-10px);
+  }
+}
+
+.warrant-arrow-right {
+  animation: warrant-arrow-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+  color: #dc003a;
+  font-size: 18px;
+  left: 10px;
+  position: absolute;
+  top: 20px;
+
+  [dir="rtl"] & {
+    display: none;
+  }
+}
+
+@keyframes warrant-arrow-right {
+  0% {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(10px);
+  }
+}
+
+.warranty-field-image {
+  height: auto;
+  position: absolute;
+  right: -7px;
+  top: -7px;
+  width: 30px;
+
+  [dir="rtl"] & {
+    left: -7px;
+    right: auto;
+    transform: rotate(-24deg);
+  }
+}
+
+.warranty-field-check {
+  margin-right: 10px;
+  margin-top: 4px;
+
+  [dir="rtl"] & {
+    margin-left: 10px;
+    margin-right: 0;
+  }
+
+  .small & {
+    margin-top: 3px;
+  }
+
+  @media screen and (max-width: 767px) {
+    & {
+      margin-top: 3px;
+    }
+  }
+}
+
+.warranty-field-label {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.8;
+
+  .warranty-field.small & {
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 767px) {
+    & {
+      font-size: 14px;
+    }
+
+    .warranty-field.small & {
+      font-size: 14px;
+    }
+  }
+}

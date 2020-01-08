@@ -57,9 +57,10 @@ class ViewServiceProvider extends ServiceProvider
 
             $view->with('lang_locale', app()->getLocale());
             $view->with('lang_direction', in_array(app()->getLocale(), ['he', 'ar']) ? 'rtl' : 'ltr');
+            $view->with('is_new_engine', Request::is('checkout', 'checkout/..') && Request::get('tpl') === 'fmc5x');
         });
 
-        View::composer('layouts.footer', function($view) {
+        View::composer(['layouts.footer', 'new.regions.footer'], function($view) {
             $affiliate = null;
             $affId = AffiliateService::getAffIdFromRequest(Request());            
             if ($affId) {                
@@ -123,6 +124,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
             $view->with('company_address', UtilsService::getCompanyAddress($req));
+            $view->with('is_new_engine', Request::is('checkout', 'checkout/..') && Request::get('tpl') === 'fmc5x');
         });
     }
 }

@@ -270,12 +270,65 @@ class SiteController extends Controller
         $company_address = \Utils::getCompanyAddress($request);
         $company_descriptor_prefix = \Utils::getCompanyDescriptorPrefix($request);
 
+        $cdn_url = \Utils::getCdnUrl();
+
+        $deals_shortlist = false;
+        $deals_to_display = [1, 3, 5];
+        $deals_main_quantities = [1 => 1, 2 => 2, 3 => 2, 4 => 4, 5 => 3];
+        $deals_free_quantities = [1 => 0, 2 => 0, 3 => 1, 4 => 0, 5 => 2];
+        $deals_sellout = array_map('intval', explode(',', request()->get('sellout') ?? ''));
+        $deal_bestseller_index = -1;
+        $deal_popular_index = -1;
+
+        if (request()->get('tpl') == 'fmc5x') {
+            $viewTemplate = 'new.pages.checkout.templates.fmc5';
+            $deals_to_display = [1, 2, 3, 4, 5];
+            $deals_shortlist = true;
+        }
+
+        $deals = [];
+
+        foreach ($product->prices as $value => $deal) {
+            $value = intval($value);
+            if (in_array($value, $deals_to_display)) {
+                $deal['quantity'] = $value;
+                $deal['sellout'] = in_array($value, $deals_sellout);
+                $deals[] = $deal;
+            }
+        }
+
+        foreach ($deals as $index => $deal) {
+            if ($deal['is_bestseller']) {
+                $deal_bestseller_index = $index;
+            }
+            if ($deal['is_popular']) {
+                $deal_popular_index = $index;
+            }
+        }
+
+        $deal_promo = $deal_bestseller_index !== -1
+            ? $deals[$deal_bestseller_index]
+            : ($deal_popular_index !== -1
+                ? $deals[$deal_popular_index]
+                : $deals[0]);
+
+        usort($deals, function($a, $b) use ($deals_shortlist) {
+            if ($deals_shortlist) {
+                if ($a['is_bestseller'] || ($a['is_popular'] && !$b['is_bestseller'])) return -1;
+                if ($b['is_bestseller'] || $b['is_popular']) return 1;
+            }
+            if ($a['quantity'] > $b['quantity']) return 1;
+            if ($a['quantity'] < $b['quantity']) return -1;
+            return 0;
+        });
+
         return view(
             $viewTemplate,
             compact(
                 'langCode', 'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
                 'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo',
-                'company_address', 'company_descriptor_prefix'
+                'company_address', 'company_descriptor_prefix', 'deals', 'deals_main_quantities', 'deals_free_quantities',
+                'cdn_url', 'deal_promo'
             )
         );
     }

@@ -1,0 +1,37 @@
+.terms-field {
+  cursor: pointer;
+  display: flex;
+  margin: 10px 0;
+}
+
+.terms-field-input {
+  height: 0;
+  width: 0;
+}
+
+.terms-field-check {
+  margin-right: 8px;
+  margin-top: 2px;
+
+  [dir="rtl"] & {
+    margin-left: 8px;
+    margin-right: 0;
+  }
+}
+
+.terms-field-label {
+  font-size: 16px;
+  line-height: 1.5;
+
+  .terms-field.invalid & {
+    color: #e74c3c;
+  }
+
+  a {
+    color: #333;
+
+    .terms-field.invalid & {
+      color: #e74c3c;
+    }
+  }
+}

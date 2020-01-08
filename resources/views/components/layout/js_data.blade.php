@@ -38,4 +38,12 @@
   var aff_idjs = affidjs = window.aff_idjs || window.affidjs || 0;
   var offer_idjs = offeridjs = window.offer_idjs || window.offeridjs || 0;
 
+  if (js_query_params.cur === '{aff_currency}') {
+    delete window.curjs;
+  }
+
+  if (js_query_params.lang === '{lang}') {
+    delete window.langjs;
+  }
+
 </script>

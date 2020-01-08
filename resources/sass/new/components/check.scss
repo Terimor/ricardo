@@ -1,0 +1,34 @@
+.check {
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #000;
+  display: flex;
+  flex-shrink: 0;
+  height: 20px;
+  justify-content: center;
+  width: 20px;
+
+  .invalid > & {
+    animation: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1 normal both running shadow-drop-center-error;
+  }
+
+  input:focus + & {
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+    border-color: #409eff;
+  }
+
+  div {
+    border: solid #000;
+    border-width: 0 3px 3px 0;
+    height: 10px;
+    margin-left: 1px;
+    margin-top: -2px;
+    transform: rotate(45deg);
+    width: 5px;
+
+    [dir="rtl"] & {
+      margin-left: -1px;
+      transform: rotate(-45deg) scaleX(-1);
+    }
+  }
+}

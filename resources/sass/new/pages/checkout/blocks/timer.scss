@@ -1,0 +1,99 @@
+.timer-mobile {
+  background-color: #22ab9f;
+  color: #fff;
+  display: none;
+  flex-direction: column;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 15px 0;
+  text-align: center;
+
+  @media screen and ($s-down) {
+    display: flex;
+  }
+}
+
+.timer-mobile > .inside {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.timer-mobile-label {
+  margin-right: 5px;
+}
+
+.timer-desktop {
+  flex-grow: 1;
+
+  @media screen and ($s-down) {
+    display: none;
+  }
+}
+
+.timer-desktop > .inside {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+
+  > * {
+    padding: 7px 0;
+  }
+}
+
+.timer-label {
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+  width: 50%;
+}
+
+.timer-time {
+  display: flex;
+  line-height: 1.25;
+}
+
+.timer-minutes, .timer-seconds {
+  display: flex;
+
+  > div {
+    background-color: #333;
+    border-radius: 6px;
+    color: #ccc;
+    font-size: 54px;
+    font-weight: 700;
+    margin-right: 5px;
+    padding: 0px 2px;
+    position: relative;
+    text-align: center;
+    text-shadow: 0 1px 2px #000;
+  }
+}
+
+.timer-line {
+  background-color: #000;
+  height: 1px;
+  left: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+}
+
+.timer-dots {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  justify-content: space-between;
+  margin-right: 5px;
+  padding: 18px 0;
+
+  > div {
+    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    background: #323434;
+    border-radius: 50%;
+    display: block;
+    height: 7px;
+    width: 7px;
+  }
+}

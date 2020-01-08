@@ -4,25 +4,25 @@ namespace App\Mappers;
 
 class AppmaxCodeMapper
 {
-    private const CODE_COMMON = '*';
+    private const COMMON_PHRASE = 'card.error.common';
 
     /**
      * @var array $map
      */
     private static $map = [
-        self::CODE_COMMON   => 'card.error.common'
+        'Transação não autorizada, motivo: Cartão inválido'  => 'card.error.number_incorrect'
     ];
 
     /**
      * Map code to phrase
-     * @param  string $code
+     * @param  string|null $msg
      * @return string
      */
-    public static function toPhrase(string $code = self::CODE_COMMON): string
+    public static function toPhrase(?string $msg = null): string
     {
-        if (isset(static::$map[$code])) {
-            return static::$map[$code];
+        if (!empty($msg) && isset(static::$map[$msg])) {
+            return static::$map[$msg];
         }
-        return static::$map[self::CODE_COMMON];
+        return self::COMMON_PHRASE;
     }
 }

@@ -418,6 +418,7 @@ class PaymentService
             ]);
         } else {
             $order_product = $order->getMainProduct(); // throwable
+            $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contact['country']);
             $order->customer_email      = $contact['email'];
             $order->customer_first_name = $contact['first_name'];
             $order->customer_last_name  = $contact['last_name'];

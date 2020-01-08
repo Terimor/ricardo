@@ -1,0 +1,56 @@
+.step2 {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 20px 0;
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.first_name-field {
+  width: 48%;
+
+  @media only screen and (max-width: 767px) {
+    width: 100%;
+  }
+}
+
+.last_name-field {
+  margin-left: auto;
+  width: 48%;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  @media only screen and (max-width: 767px) {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.building-field {
+  width: 48%;
+
+  @media only screen and (max-width: 767px) {
+    width: 100%;
+  }
+}
+
+.complement-field {
+  margin-left: auto;
+  width: 48%;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  @media only screen and (max-width: 767px) {
+    margin: 0;
+    width: 100%;
+  }
+}

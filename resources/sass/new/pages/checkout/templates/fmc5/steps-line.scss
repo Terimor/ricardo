@@ -1,0 +1,91 @@
+.steps-line {
+  align-self: center;
+  background-color: #0089cc;
+  display: flex;
+  width: 74%;
+
+  @media only screen and (max-width: 767px) {
+    align-self: stretch;
+    width: auto;
+  }
+}
+
+.step-line {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  justify-content: center;
+  height: 38px;
+  position: relative;
+  white-space: nowrap;
+  width: 33.33%;
+
+  &:nth-child(2) {
+    background-color: #026190;
+  }
+
+  &:nth-child(3) {
+    background-color: #001326;
+  }
+
+  @media only screen and (max-width: 767px) {
+    font-size: 15px;
+    width: 30%;
+
+    &:nth-child(1) {
+      padding-left: 10px;
+
+      [dir="rtl"] & {
+        padding-left: 0;
+        padding-right: 10px;
+      }
+    }
+
+    &:nth-child(2) {
+      padding-left: 20px;
+
+      [dir="rtl"] & {
+        padding-left: 0;
+        padding-right: 20px;
+      }
+    }
+
+    &:nth-child(3) {
+      padding-left: 15px;
+      width: 40%;
+
+      [dir="rtl"] & {
+        padding-left: 0;
+        padding-right: 15px;
+      }
+    }
+  }
+}
+
+.step-line-triangle {
+  border-bottom: 19px solid transparent;
+  border-left: 19px solid #0089cc;
+  border-top: 19px solid transparent;
+  position: absolute;
+  right: -19px;
+  top: 0;
+  z-index: 1;
+
+  [dir="rtl"] & {
+    border-left: none;
+    border-right: 19px solid #0089cc;
+    left: -19px;
+    right: auto;
+  }
+
+  .step-line:nth-child(2) & {
+    border-left-color: #026190;
+    border-right-color: #026190;
+  }
+
+  .step-line:nth-child(3) & {
+    display: none;
+  }
+}

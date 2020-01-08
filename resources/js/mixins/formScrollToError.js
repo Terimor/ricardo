@@ -8,7 +8,7 @@ export default {
         position += document.documentElement.scrollTop;
 
         if (js_data.is_black_friday) {
-          position -= this.$root.$refs.blackFriday.clientHeight;
+          position -= this.$root.$refs.black_friday.clientHeight;
         }
 
         if (js_data.is_christmas) {

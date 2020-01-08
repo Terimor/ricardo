@@ -1,0 +1,68 @@
+$xxs-down: 'max-width: 320px';
+$xs-down: 'max-width: 374px';
+$s-down: 'max-width: 767px';
+$m-down: 'max-width: 959px';
+$l-down: 'max-width: 1119px';
+$xl-down: 'max-width: 1279px';
+$xxl-down: 'max-width: 1439px';
+
+@import './regions/header';
+@import './regions/footer';
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+[dir="rtl"] {
+  text-align: right;
+}
+
+body {
+  box-sizing: border-box;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  margin: 0;
+  min-height: 100vh;
+  text-align: left;
+  transition: padding-top .3s ease;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+
+  @media (min-width: 576px) {
+    max-width: 540px;
+  }
+  @media (min-width: 768px) {
+    max-width: 720px;
+  }
+  @media (min-width: 992px) {
+    max-width: 960px;
+  }
+  @media (min-width: 1200px) {
+    max-width: 1140px;
+  }
+}

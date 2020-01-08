@@ -274,6 +274,7 @@ class ProductService
         $lp->gads_conversion_id = $product->gads_conversion_id;
         $lp->gads_conversion_label = $product->gads_conversion_label;
         $lp->is_europe_only = $product->is_europe_only ?? false;
+        $lp->is_paypal_hidden = $product->is_paypal_hidden ?? false;
 
         return $lp;
     }

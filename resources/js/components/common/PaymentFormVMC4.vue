@@ -333,6 +333,11 @@
 			}
     },
     created() {
+      if (!this.$root.paypalEnabled) {
+        this.form.paymentProvider = 'credit-card';
+        this.isFormShown = true;
+      }
+
       if (this.queryParams['3ds'] === 'failure') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
@@ -405,6 +410,9 @@
       textBack: () => t('checkout.back'),
 		},
     watch: {
+      'form.paymentProvider'() {
+        window.selectedPayment = this.form.paymentProvider;
+      },
       'form.stepThree.country'(country) {
         this.form.country = this.form.stepThree.country;
         this.$parent.reloadPaymentMethods(country);
@@ -630,6 +638,8 @@
           });
       },
       paypalCreateOrder() {
+        this.form.paymentProvider = 'paypal';
+
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? js_data.product.prices.currency
           : js_query_params.cur;
@@ -702,7 +712,6 @@
           });
       },
       paypalOnApprove(data) {
-        this.form.paymentProvider = 'paypal';
         return paypalOnApprove(data);
       },
 		},
