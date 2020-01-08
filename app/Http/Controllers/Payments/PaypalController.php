@@ -6,7 +6,6 @@ use App\Http\Requests\PayPalCrateOrderRequest;
 use App\Http\Requests\PayPalVerfifyOrderRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
-use App\Models\PaymentApi;
 use App\Services\PayPalService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -75,10 +74,9 @@ class PaypalController extends Controller
      */
     public function checkout()
     {
-        $payment_api = PaymentApi::getActivePaypal();
         return view('test-checkout')->with([
             'product' => resolve(ProductService::class)->resolveProduct(request()),
-            'paypal_client' => $payment_api->key
+            'paypal_client' => Setting::getValue('instant_payment_paypal_client_id')
         ]);
     }
 
