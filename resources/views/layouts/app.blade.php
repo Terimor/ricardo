@@ -14,6 +14,9 @@
     @include('components.layout.favicon')
     @yield('meta')
 
+    <!-- CSS Inline -->
+    @yield('css_inline')
+
     <!-- JS Data -->
     @include('components.layout.js_data')
     @include('components.layout.js_product')

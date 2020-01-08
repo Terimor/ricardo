@@ -8,6 +8,7 @@ if (mix.inProduction()) {
 
 mix.options({
   extractVueStyles: 'public[name].vue.css',
+  processCssUrls: false,
 });
 
 mix.webpackConfig({

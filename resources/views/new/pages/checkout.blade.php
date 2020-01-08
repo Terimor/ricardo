@@ -3,6 +3,11 @@
 @section('title', $page_title)
 
 
+@section('css_inline')
+  @include('new.styles.intl_tel_input')
+@endsection
+
+
 @section('js_data')
   <script type="text/javascript">
     js_data.ipqualityscore_api_hash = @json($setting['ipqualityscore_api_hash']);
@@ -47,7 +52,7 @@
   <script type="text/javascript">
     js_deps.show([
       'page-styles',
-    ]);
+    ])
   </script>
 @endsection
 
