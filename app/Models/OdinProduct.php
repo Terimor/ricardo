@@ -646,7 +646,7 @@ class OdinProduct extends Model
                 'name' => $review['name'],
                 'text' => $text,
                 'rate' => $review['rate'],
-                'image' => $review['image'],
+                'image' => \Utils::getCdnUrl().$review['image'],
                 'date' => date('M d, Y', strtotime("-{$c} day"))
             ];
             $c++;
