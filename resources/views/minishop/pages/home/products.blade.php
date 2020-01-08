@@ -51,9 +51,10 @@
             <i class="fas fa-cart-plus"></i>{{ t('minishop.home.products.add_to_cart') }}
           </div>
 
-          <p class="text-center font-weight-bold">
-            <span class="old-price">{{ $product->prices[1]['old_value_text'] ?? '' }}</span>{{ $product->prices[1]['value_text'] ?? '' }}
-          </p>
+          <div class="price d-flex flex-column text-center font-weight-bold">
+            <div class="old-price">{{ $product->prices[1]['old_value_text'] ?? '' }}</div>
+            <div class="new-price">{{ $product->prices[1]['value_text'] ?? '' }}</div>
+          </div>
 
         </a>
       </div>

@@ -24,14 +24,6 @@
       h3 {
         font-size: 25px;
       }
-
-      p {
-        font-size: 25px;
-        color: $orange;
-        padding: 15px 0;
-        position: relative;
-        margin-bottom: 0;
-      }
     }
 
     .images-holder {
@@ -49,13 +41,20 @@
       }
     }
 
+    .price {
+      font-size: 25px;
+      color: $orange;
+      padding: 5px 0 10px;
+    }
+
     .old-price {
       color: #181818;
       font-size: 18px;
-      position: absolute;
       text-decoration: line-through;
-      transform: translateX(-100%);
-      padding: 0 10px;
+    }
+
+    .new-price {
+      margin-top: -5px;
     }
 
     .show-more {

@@ -39,6 +39,15 @@
 @endsection
 
 
+@section('fonts')
+
+  @if (request()->get('tpl') === 'fmc5')
+    @include('components.fonts.lato')
+  @endif
+
+@endsection
+
+
 @section('styles')
 
   <link

@@ -52,8 +52,13 @@
   <script type="text/javascript">
     js_deps.show([
       'page-styles',
-    ])
+    ]);
   </script>
+@endsection
+
+
+@section('fonts')
+  @yield('fonts_checkout')
 @endsection
 
 

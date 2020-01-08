@@ -1,6 +1,11 @@
 @extends('new.pages.checkout')
 
 
+@section('fonts_checkout')
+  @include('components.fonts.lato')
+@endsection
+
+
 @section('styles_checkout')
   <link
     href="{{ mix_cdn('assets/css/new/pages/checkout/templates/fmc5.css') }}"

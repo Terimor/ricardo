@@ -31,8 +31,8 @@
     @yield('js_deps')
 
     <!-- Async Fonts -->
-    @include('components.fonts.lato')
     @include('components.fonts.awesome4')
+    @yield('fonts')
 
     <!-- Async Styles -->
     @include('components.styles.bootstrap')
