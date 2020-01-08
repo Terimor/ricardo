@@ -206,7 +206,7 @@ class SiteController extends Controller
     public function orderTracking(Request $request, ProductService $productService)
     {
         $payment_api = PaymentApi::getActivePaypal();
-        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
 
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
         $product = $productService->resolveProduct($request, true);
@@ -245,7 +245,7 @@ class SiteController extends Controller
             'ipqualityscore_api_hash'
         ]);
         $payment_api = PaymentApi::getActivePaypal();
-        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
 
         $countries =  \Utils::getCountries(true, $product->is_europe_only);
 
@@ -344,7 +344,7 @@ class SiteController extends Controller
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
-        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
 
 		$orderCustomer = null;
 		if ($request->get('order')) {
@@ -385,7 +385,7 @@ class SiteController extends Controller
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
-        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
 
 		$orderCustomer = null;
 		if ($request->get('order')) {

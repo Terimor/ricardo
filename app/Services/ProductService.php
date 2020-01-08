@@ -6,6 +6,7 @@ use App\Models\OdinProduct;
 use App\Models\Domain;
 use App\Models\Currency;
 use App\Models\AwsImage;
+use App\Models\PaymentApi;
 use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
@@ -268,13 +269,18 @@ class ProductService
         $lp->upsells = $product->upsells;
         $lp->image = $product->image;
 
+        $payment_api = PaymentApi::getActivePaypal();
         //FB and GA
         $lp->fb_pixel_id = $product->fb_pixel_id;
         $lp->gads_retarget_id = $product->gads_retarget_id;
         $lp->gads_conversion_id = $product->gads_conversion_id;
         $lp->gads_conversion_label = $product->gads_conversion_label;
         $lp->is_europe_only = $product->is_europe_only ?? false;
-        $lp->is_paypal_hidden = $product->is_paypal_hidden ?? false;
+        if ($payment_api) {
+            $lp->is_paypal_hidden = $product->is_paypal_hidden ?? false;
+        } else {
+            $lp->is_paypal_hidden = true;
+        }
 
         return $lp;
     }
