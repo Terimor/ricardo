@@ -10,6 +10,7 @@ use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Models\Txn;
+use App\Models\PaymentApi;
 use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use BraintreeHttp\HttpException;
@@ -73,6 +74,8 @@ class PayPalService
         if (!$upsell_order) {
             abort(404);
         }
+        
+        $payment_api = PaymentApi::getActivePaypal();
 
         // If no upsells selected
         if(!$request->get('upsells')) {
@@ -178,7 +181,7 @@ class PayPalService
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => PaymentProviders::PAYPAL_HK,
+                'payment_provider' => $payment_api->payment_provider,                
                 'payer_id' => '',
             ], true);
 
@@ -191,6 +194,7 @@ class PayPalService
                 'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
+                'payment_api_id' => (string)$payment_api->_id,
                 'payer_id' => $txn_response['txn']->payer_id,
             ];
 
@@ -236,9 +240,10 @@ class PayPalService
     {
         $ipqs = $request->input('ipqs', null);
         $fingerprint = $request->get('f', null);
-
+        $payment_api = PaymentApi::getActivePaypal();
+        
         // refuse payment if  there is fraud
-        PaymentService::fraudCheck($ipqs, PaymentProviders::PAYPAL_HK);
+        PaymentService::fraudCheck($ipqs, $payment_api->payment_provider);
 
         $order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
         if ($order) {
@@ -331,7 +336,7 @@ class PayPalService
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => PaymentProviders::PAYPAL_HK,
+                'payment_provider' => $payment_api->payment_provider,                
                 'payer_id' => '',
             ], true);
             abort_if(!$txn_response['success'], 404);
@@ -361,6 +366,7 @@ class PayPalService
                 'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
+                'payment_api_id' => (string)$payment_api->_id,
                 'payer_id' => $txn_response['txn']->payer_id,
             ];
             $params = !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null;
@@ -422,6 +428,7 @@ class PayPalService
         }
 
         if ($response->statusCode < 300) {
+            $payment_api = PaymentApi::getActivePaypal();
             $paypal_order = $response->result;
 
             $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
@@ -433,7 +440,7 @@ class PayPalService
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => PaymentProviders::PAYPAL_HK,
+                'payment_provider' => $payment_api->payment_provider,                
                 'payer_id' => optional($paypal_order->payer)->payer_id,
             ], true);
 
@@ -448,6 +455,7 @@ class PayPalService
                 'fee_usd' => 0,
                 'payment_provider' => $txn_response['txn']->payment_provider,
                 'payment_method' => $txn_response['txn']->payment_method,
+                'payment_api_id' => (string)$payment_api->_id,
                 'payer_id' => $txn_response['txn']->payer_id,
             ];
 
@@ -492,6 +500,7 @@ class PayPalService
     public function webhooks(Request $request)
     {
         if ($request->input('event_type', '') === 'PAYMENT.CAPTURE.COMPLETED') {
+            $payment_api = PaymentApi::getActivePaypal();
             $link = collect($request->input('resource.links'))->filter(function ($link) {
                 return Str::contains($link['href'], '/orders/');
             })->first();
@@ -529,7 +538,7 @@ class PayPalService
                     'currency' => $paypal_order_currency,
                     'provider_data' => $paypal_order,
                     'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                    'payment_provider' => PaymentProviders::PAYPAL_HK,
+                    'payment_provider' => $payment_api->payment_provider,                    
                     'payer_id' => optional($paypal_order->payer)->payer_id,
                 ], true);
 
@@ -544,6 +553,7 @@ class PayPalService
                     'fee_usd' => 0,
                     'payment_provider' => $txn_response['txn']->payment_provider,
                     'payment_method' => $txn_response['txn']->payment_method,
+                    'payment_api_id' => (string)$payment_api->_id,
                     'payer_id' => $txn_response['txn']->payer_id,
                 ];
 

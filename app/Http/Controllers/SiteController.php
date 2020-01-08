@@ -8,6 +8,7 @@ use App\Services\ProductService;
 use App\Services\PaymentService;
 use App\Services\AffiliateService;
 use App\Models\Setting;
+use App\Models\PaymentApi;
 use App\Services\I18nService;
 use App\Services\OrderService;
 use App\Services\ViacepService;
@@ -204,7 +205,8 @@ class SiteController extends Controller
      */
     public function orderTracking(Request $request, ProductService $productService)
     {
-        $setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
+        $payment_api = PaymentApi::getActivePaypal();
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
 
         $loadedPhrases = (new I18nService())->loadPhrases('order_tracking_page');
         $product = $productService->resolveProduct($request, true);
@@ -239,10 +241,11 @@ class SiteController extends Controller
 
         $product = $productService->resolveProduct($request, true);
 
-        $setting = Setting::getValue([
-            'instant_payment_paypal_client_id',
+        $setting = Setting::getValue([            
             'ipqualityscore_api_hash'
         ]);
+        $payment_api = PaymentApi::getActivePaypal();
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
 
         $countries =  \Utils::getCountries(true, $product->is_europe_only);
 
@@ -287,7 +290,8 @@ class SiteController extends Controller
     {
 		$product = $productService->resolveProduct($request, true);
 
-		$setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
+        $payment_api = PaymentApi::getActivePaypal();
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
 
 		$orderCustomer = null;
 		if ($request->get('order')) {
@@ -327,7 +331,8 @@ class SiteController extends Controller
     {
 		$product = $productService->resolveProduct($request, true);
 
-		$setting['instant_payment_paypal_client_id'] = Setting::getValue('instant_payment_paypal_client_id');
+        $payment_api = PaymentApi::getActivePaypal();
+        $setting['instant_payment_paypal_client_id'] = $payment_api->key;
 
 		$orderCustomer = null;
 		if ($request->get('order')) {

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Models\PaymentApi;
 use Illuminate\Support\ServiceProvider;
 use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Core\ProductionEnvironment;
@@ -32,13 +33,12 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->bind(PayPalHttpClient::class, function () {
-            $credentials = Setting::getValue([
-                    'instant_payment_paypal_client_id',
-                    'instant_payment_paypal_secret',
+            $payment_api = PaymentApi::getActivePaypal();
+            $credentials = Setting::getValue([                                        
                     'instant_payment_paypal_mode',
             ]);
-            $client_id = $credentials['instant_payment_paypal_client_id'];
-            $secret = $credentials['instant_payment_paypal_secret'];
+            $client_id = $payment_api->key;
+            $secret = $payment_api->secret;
             $mode = $credentials['instant_payment_paypal_mode'];
             if($mode === 'sandbox') {
                 $env = new SandboxEnvironment($client_id, $secret);

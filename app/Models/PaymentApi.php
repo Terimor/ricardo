@@ -6,6 +6,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Http\Discovery\NotFoundException;
+use App\Constants\PaymentProviders;
 
 /**
  * This is the model class for collection "payment_api".
@@ -54,5 +55,18 @@ class PaymentApi extends Model
     public static function getAllByProvider(string $provider, bool $is_active = true): Collection
     {
         return self::where(['payment_provider' => $provider, 'is_active' => $is_active])->get();
+    }
+    
+    /**
+     * Returns active PayPal account
+     * @return type
+     */
+    public static function getActivePaypal()
+    {
+        $provider = self::whereIn('payment_provider', [PaymentProviders::PAYPAL, PaymentProviders::PAYPAL_HK])->where(['is_active' => true])->first();
+        if (!$provider) {
+            throw new ModelNotFoundException("PaymentApi PayPal not active");
+        }
+        return $provider;
     }
 }
