@@ -1232,7 +1232,6 @@
                 city: this.form.city,
                 country: this.form.country,
                 zip: this.form.zipcode,
-                state: this.form.state,
                 street: this.form.street,
               },
               card: {

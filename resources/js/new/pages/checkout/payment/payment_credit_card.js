@@ -27,8 +27,15 @@ export default {
         }, 1000);
       }
 
-      localStorage.setItem('selectedProductData', JSON.stringify(this.form));
       localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
+      localStorage.setItem('selectedProductData', JSON.stringify({
+        ...this.form,
+        card_holder: undefined,
+        card_number: undefined,
+        card_type: undefined,
+        card_date: undefined,
+        card_cvv: undefined,
+      }));
 
       const phone = this.form.phone.replace(/[^0-9]/g, '');
       const card_number = this.form.card_number.replace(/[^0-9]/g, '');

@@ -7,7 +7,7 @@ if (mix.inProduction()) {
 }
 
 mix.options({
-  extractVueStyles: 'public[name].vue.css',
+  extractVueStyles: '[name].vue.css',
 });
 
 mix.webpackConfig({
@@ -28,6 +28,8 @@ mix.webpackConfig({
  */
 
 mix
+  .setResourceRoot('/assets/')
+  .setPublicPath('public/assets')
   .js('resources/js/app.js', 'public/assets/js')
   .js('resources/js/static.js', 'public/assets/js')
   .js('resources/js/views/promo.js', 'public/assets/js/views')
