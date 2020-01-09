@@ -11,7 +11,7 @@ use App\Services\AffiliateService;
 use App\Services\I18nService;
 use App\Services\MiniShopService;
 use App\Http\Controllers\MiniShopController;
-use App\Constants\TemplateConstants;
+use App\Services\TemplateService;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Request;
@@ -37,10 +37,10 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
     {       
         View::composer('layouts.app', function($view) {
-            $settings = Setting::getValue(array(
+            $settings = Setting::getValue([
                 'sentry_dsn',
                 'freshchat_token'
-            ));
+            ]);
 
             $view->with('cdn_url', UtilsService::getCdnUrl());
             $view->with('HasVueApp', Route::is('checkout') || Route::is('checkout_price_set') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking'));
@@ -70,7 +70,7 @@ class ViewServiceProvider extends ServiceProvider
             $domain = Domain::getByName();
             $view->with('aff', AffiliateSetting::getLocaleAffiliate($affiliate));
             $view->with('is_aff_id_empty', AffiliateService::isAffiliateRequestEmpty(Request()));
-            $view->with('company_address', TemplateConstants::getCompanyAddress($domain));
+            $view->with('company_address', TemplateService::getCompanyAddress(Setting::getValue('support_address'), $domain));
         });
 
         View::composer('thankyou', function($view) {
@@ -90,7 +90,7 @@ class ViewServiceProvider extends ServiceProvider
     {        
         // Layout
         View::composer('minishop.layout', function($view) {            
-            $settings = Setting::getValue(['sentry_dsn', 'freshchat_token']);
+            $settings = Setting::getValue(['sentry_dsn', 'freshchat_token', 'support_address']);
 
             $lang = app()->getLocale();
             $domain = Domain::getByName();
@@ -125,7 +125,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('header_menu', MiniShopService::$headerMenu);
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
-            $view->with('company_address', TemplateConstants::getCompanyAddress($domain));
+            $view->with('company_address', TemplateService::getCompanyAddress($settings['support_address'], $domain));
             $view->with('is_new_engine', Request::is('checkout', 'checkout/..') && Request::get('tpl') === 'fmc5x');
         });
     }

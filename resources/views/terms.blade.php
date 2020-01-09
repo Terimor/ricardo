@@ -31,7 +31,8 @@
 <div class="static">
     <div class="container">
         <div class="static__wrapper">
-            {!! t('terms.content', ['websitename' => $website_name, 'address' => $company_address]) !!}
+            {!! t('terms.content', ['websitename' => $website_name, 'address' => $placeholders['address'], 'email' => $placeholders['email'],
+            'phone' => $placeholders['phone'], 'number' => $placeholders['number']]) !!}
             @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>
