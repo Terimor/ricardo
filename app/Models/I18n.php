@@ -112,6 +112,8 @@ class I18n extends Model
         '#PRODUCTS#',
         '#SURVEY_LINK#',
         '#DATE#',
+        '#NUMBER#',
+        '#PHONE#'
       ];
 
     /**
