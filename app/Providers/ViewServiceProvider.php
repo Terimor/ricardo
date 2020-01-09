@@ -11,6 +11,7 @@ use App\Services\AffiliateService;
 use App\Services\I18nService;
 use App\Services\MiniShopService;
 use App\Http\Controllers\MiniShopController;
+use App\Constants\TemplateConstants;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Request;
@@ -66,9 +67,10 @@ class ViewServiceProvider extends ServiceProvider
             if ($affId) {                
                 $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
+            $domain = Domain::getByName();
             $view->with('aff', AffiliateSetting::getLocaleAffiliate($affiliate));
             $view->with('is_aff_id_empty', AffiliateService::isAffiliateRequestEmpty(Request()));
-            $view->with('company_address', UtilsService::getCompanyAddress(Request()));
+            $view->with('company_address', TemplateConstants::getCompanyAddress($domain));
         });
 
         View::composer('thankyou', function($view) {
@@ -123,7 +125,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('header_menu', MiniShopService::$headerMenu);
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
-            $view->with('company_address', UtilsService::getCompanyAddress($req));
+            $view->with('company_address', TemplateConstants::getCompanyAddress($domain));
             $view->with('is_new_engine', Request::is('checkout', 'checkout/..') && Request::get('tpl') === 'fmc5x');
         });
     }

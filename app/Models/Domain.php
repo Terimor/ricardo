@@ -25,7 +25,7 @@ class Domain extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'sold_products', 'is_multiproduct', 'is_catch_all'
+        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'email', 'phone', 'phone_us', 'address', 'sold_products', 'is_multiproduct', 'is_catch_all'
     ];
 
     /**

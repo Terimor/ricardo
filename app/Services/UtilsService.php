@@ -974,21 +974,6 @@ class UtilsService
      * Get company address
      * @param Request $request
      */
-    public static function getCompanyAddress(Request $request)
-    {
-        $address = 'MDE Commerce Ltd. - 29, Triq il-Kbira - Hal-Balzan - BZN 1259 - Malta';
-
-        if (str_replace('www.', '', $request->getHost()) === 'gizmoshop.net') {
-            $address = 'BX Trading Ltd. - 8 Floor Kongling Building - 100 Jervois Street, Sheung Wan - Central District - Hong Kong';
-        }
-
-        return $address;
-    }
-
-    /**
-     * Get company address
-     * @param Request $request
-     */
     public static function getCompanyDescriptorPrefix(Request $request)
     {
         $address = 'MDE/Hal-Balzan';
