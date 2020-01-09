@@ -70,7 +70,7 @@ class TemplateService
             'address' => TemplateService::getCompanyAddress($setting['support_address'], $domain, true),
             'phone' => TemplateService::getCompanyPhone($setting['support_phone'], $domain),
             'number' => TemplateService::getCompanyNumber($setting['support_phone_us'], $domain),
-            'email' => TemplateService::getCompanyEmail($setting['support_email'], $domain)
+            'email' => TemplateService::getCompanyEmail($setting['support_email'], $domain, true)
         ]; 
         return $data;
     }
