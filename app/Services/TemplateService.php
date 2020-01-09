@@ -17,7 +17,7 @@ class TemplateService
     {
         $address = !empty($domain->address) ? $domain->address : $settingValue;
         $address = $line_break ? str_replace("\n", '<br>', $address) : str_replace("\n", ' - ', $address);        
-        return $address;
+        return $address ?? '';
     }
     
     /**
@@ -28,7 +28,7 @@ class TemplateService
     public static function getCompanyEmail(?string $settingValue, ?Domain $domain = null): string 
     {
         $email = !empty($domain->email) ? $domain->email : $settingValue;          
-        return $email;
+        return $email ?? '';
     }
     
     /**
@@ -39,7 +39,7 @@ class TemplateService
     public static function getCompanyNumber(?string $settingValue, ?Domain $domain = null): string 
     {
         $phone = !empty($domain->phone_us) ? $domain->phone_us : $settingValue;          
-        return $phone;
+        return $phone ?? '';
     }
 
     /**
@@ -50,7 +50,7 @@ class TemplateService
     public static function getCompanyPhone(?string $settingValue, ?Domain $domain = null): string 
     {
         $phone = !empty($domain->phone) ? $domain->phone : $settingValue;          
-        return $phone;
+        return $phone ?? '';
     }
     
     /**
