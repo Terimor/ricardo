@@ -58,7 +58,7 @@ class ViewServiceProvider extends ServiceProvider
 
             $view->with('lang_locale', app()->getLocale());
             $view->with('lang_direction', in_array(app()->getLocale(), ['he', 'ar']) ? 'rtl' : 'ltr');
-            $view->with('is_new_engine', Request::is('checkout', 'checkout/..') && Request::get('tpl') === 'fmc5x');
+            $view->with('is_new_engine', ((Route::is('checkout') || Route::is('checkout_price_set')) && Request::get('tpl') === 'fmc5x') || Route::is('checkout_vrtl'));
         });
 
         View::composer(['layouts.footer', 'new.regions.footer'], function($view) {
@@ -126,7 +126,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
             $view->with('company_address', TemplateService::getCompanyAddress($settings['support_address'], $domain));
-            $view->with('is_new_engine', Request::is('checkout', 'checkout/..') && Request::get('tpl') === 'fmc5x');
+            $view->with('is_new_engine', ((Route::is('checkout') || Route::is('checkout_price_set')) && Request::get('tpl') === 'fmc5x') || Route::is('checkout_vrtl'));
         });
     }
 }

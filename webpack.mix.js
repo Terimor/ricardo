@@ -37,6 +37,8 @@ mix
   .js('resources/js/minishop/pages/home.js', 'public/assets/js/minishop')
   .js('resources/js/new/pages/checkout/templates/fmc5.js', 'public/assets/js/new/pages/checkout/templates')
   .js('resources/js/new/pages/checkout/templates/vmp44.js', 'public/assets/js/new/pages/checkout/templates')
+  .js('resources/js/new/pages/checkout/templates/vc1.js', 'public/assets/js/new/pages/checkout/templates')
+  .js('resources/js/new/pages/checkout/templates/vc2.js', 'public/assets/js/new/pages/checkout/templates')
   .sass('resources/sass/app.scss', 'public/assets/css')
   .sass('resources/sass/views/promo.scss', 'public/assets/css')
   .sass('resources/sass/views/contact-us.scss', 'public/assets/css')
@@ -49,6 +51,8 @@ mix
   .sass('resources/sass/views/index.scss', 'public/assets/css')
   .sass('resources/sass/new/pages/checkout/templates/fmc5.scss', 'public/assets/css/new/pages/checkout/templates')
   .sass('resources/sass/new/pages/checkout/templates/vmp44.scss', 'public/assets/css/new/pages/checkout/templates')
+  .sass('resources/sass/new/pages/checkout/templates/vc1.scss', 'public/assets/css/new/pages/checkout/templates')
+  .sass('resources/sass/new/pages/checkout/templates/vc2.scss', 'public/assets/css/new/pages/checkout/templates')
   .sass('resources/sass/minishop/pages/home.scss', 'public/assets/css/minishop')
   .copyDirectory('resources/images', 'public/assets/images')
   .copy('resources/scripts/bioep.min.js', 'public/assets/scripts');

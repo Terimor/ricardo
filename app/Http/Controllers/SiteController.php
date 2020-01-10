@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Services\ProductService;
 use App\Services\PaymentService;
 use App\Services\AffiliateService;
@@ -226,20 +227,31 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
-		$viewTemplate = 'checkout';
+        $is_virtual_product = Route::is('checkout_vrtl');
+		$viewTemplate = !$is_virtual_product ? 'checkout' : 'new.pages.checkout.templates.vc1';
 
         if (!empty($priceSet)) {
             $request->merge(['cop_id' => $priceSet]);
         }
 
-		if ($request->get('tpl') == 'vmp41') {
-			$viewTemplate = 'vmp41';
-		}
-        if ($request->get('tpl') == 'vmp42') {
-            $viewTemplate = 'vmp42';
+        if (!$is_virtual_product) {
+    		if ($request->get('tpl') == 'vmp41') {
+    			$viewTemplate = 'vmp41';
+    		}
+            if ($request->get('tpl') == 'vmp42') {
+                $viewTemplate = 'vmp42';
+            }
+            if ($request->get('tpl') == 'fmc5x') {
+                $viewTemplate = 'new.pages.checkout.templates.fmc5';
+            }
+        } else {
+            if ($request->get('tpl') == 'vc1') {
+                $viewTemplate = 'new.pages.checkout.templates.vc1';
+            }
+            if ($request->get('tpl') == 'vc2') {
+                $viewTemplate = 'new.pages.checkout.templates.vc2';
+            }
         }
-
-        $isShowProductOffer = $request->get('tpl') === 'emc1';
 
         $product = $productService->resolveProduct($request, true);
 
@@ -280,11 +292,8 @@ class SiteController extends Controller
         $deals_main_quantities = [];
         $deals_free_quantities = [];
 
-        $is_new_engine = $request->is('checkout', 'checkout/..') && $request->get('tpl') === 'fmc5x';
-        if ($is_new_engine) {
-            if ($request->get('tpl') == 'fmc5x') {
-                $viewTemplate = 'new.pages.checkout.templates.fmc5';
-            }
+        $is_new_engine = ((Route::is('checkout') || Route::is('checkout_price_set')) && $request->get('tpl') === 'fmc5x') || $is_virtual_product;
+        if ($is_new_engine && !$is_virtual_product) {
             $data_deals = TemplateService::getDealsData($product, $request);
             $deals = $data_deals['deals'];
             $deal_promo = $data_deals['deal_promo'];
@@ -295,7 +304,7 @@ class SiteController extends Controller
         return view(
             $viewTemplate,
             compact(
-                'langCode', 'countryCode', 'product', 'isShowProductOffer', 'setting', 'countries', 'loadedPhrases',
+                'langCode', 'countryCode', 'product', 'setting', 'countries', 'loadedPhrases',
                 'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo',
                 'company_address', 'company_descriptor_prefix', 'cdn_url',
                 'deals', 'deal_promo', 'deals_main_quantities', 'deals_free_quantities'

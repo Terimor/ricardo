@@ -21,6 +21,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/splash', 'SiteController@splash')->name('splash');
     $router->get('/checkout', 'SiteController@checkout')->name('checkout');
     $router->get('/checkout/{priceSet}', 'SiteController@checkout')->name('checkout_price_set');
+    $router->get('/vrtl', 'SiteController@checkout')->name('checkout_vrtl');
     $router->get('/thankyou-promos', 'SiteController@upsells')->name('upsells');
     //$router->get('/promo', 'SiteController@promo')->name('promo');
     $router->get('/thankyou', 'SiteController@thankyou')->name('thankyou');
