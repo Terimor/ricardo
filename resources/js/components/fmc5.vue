@@ -31,16 +31,15 @@
 
           <div class="mproduct-details">
 
+            <div class="mproduct-long-name">{{ product.long_name }}</div>
+
             <img
               :src="product.image[0]"
               class="mproduct-image" />
 
-            <div class="mproduct-details-text">
-              <div class="mproduct-long-name">{{ product.long_name }}</div>
-              <div
-                class="mdescription"
-                v-html="mproductDescription"></div>
-            </div>
+            <div
+              class="mdescription"
+              v-html="mproductDescription"></div>
 
           </div>
 
@@ -647,12 +646,14 @@
 
     watch: {
 
-      'form.deal'() {
-        window.selectedOffer = 1;
+      'form.deal'(value) {
+        window.selectedOffer = value ? 1 : 0;
+        history.pushState({}, '', '');
       },
 
-      'form.paymentProvider'() {
-        window.selectedPayment = this.form.paymentProvider;
+      'form.paymentProvider'(value) {
+        window.selectedPayment = value;
+        history.pushState({}, '', '');
       },
 
     },
@@ -1494,47 +1495,35 @@
   }
 
   .mproduct-details {
-    align-items: center;
     background-color: #026190;
     display: flex;
+    flex-direction: column;
     padding: 5px 5px;
   }
 
-  .mproduct-image {
-    background-color: #fff;
-    border-radius: 4px;
-    width: 30%;
-  }
-
-  .mproduct-details-text {
-    display: flex;
-    flex-direction: column;
-    padding-left: 5px;
-    width: 70%;
-
-    [dir="rtl"] & {
-      padding-left: 0;
-      padding-right: 5px;
-    }
-  }
-
   .mproduct-long-name {
-    border-bottom: 1px solid #0089cc;
     color: #fff;
     font-size: 16px;
     font-weight: 700;
-    margin-top: 2px;
-    padding-bottom: 7px;
+    margin: 16px 24px;
+  }
+
+  .mproduct-image {
+    align-self: center;
+    background-color: #fff;
+    border-radius: 4px;
+    max-width: 100%;
   }
 
   .mdescription {
     display: flex;
+    margin: 16px 24px;
 
     :global(ul) {
       display: flex;
       flex-direction: column;
       list-style: none;
-      margin: 2px 0;
+      margin: 0;
       padding: 0;
 
       :global(li) {
@@ -1556,7 +1545,7 @@
         }
 
         :global(div) {
-          margin-top: 3px;
+          margin-top: 2px;
         }
       }
     }

@@ -29,6 +29,7 @@ export default {
   watch: {
     'form.payment_provider'(value) {
       window.selectedPayment = value;
+      history.pushState({}, '', '');
     },
   },
 

@@ -217,8 +217,9 @@
       },
 		},
     watch: {
-      'form.deal'() {
-        window.selectedOffer = 1;
+      'form.deal'(value) {
+        window.selectedOffer = value ? 1 : 0;
+        history.pushState({}, '', '');
       },
       'form.variant'() {
         this.animateProductImage();

@@ -7,8 +7,8 @@
       phrases: {},
       images: {},
     },
-    is_black_friday: new Date().getTime() > new Date(2019, 10, 25).getTime() && new Date().getTime() < new Date(2019, 11, 3).getTime(),
-    is_christmas: new Date().getTime() > new Date(2019, 11, 3).getTime() && new Date().getTime() < new Date(2019, 11, 25).getTime(),
+    is_black_friday: false,//new Date().getTime() > new Date(2019, 10, 25).getTime() && new Date().getTime() < new Date(2019, 11, 3).getTime(),
+    is_christmas: false,//new Date().getTime() > new Date(2019, 11, 3).getTime() && new Date().getTime() < new Date(2019, 11, 25).getTime(),
   };
 
   // GET params

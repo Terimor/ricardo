@@ -426,11 +426,13 @@
       this.refreshTopBlock();
     },
     watch: {
-      'form.deal'() {
-        window.selectedOffer = 1;
+      'form.deal'(value) {
+        window.selectedOffer = value ? 1 : 0;
+        history.pushState({}, '', '');
       },
-      'form.paymentProvider'() {
-        window.selectedPayment = this.form.paymentProvider;
+      'form.paymentProvider'(value) {
+        window.selectedPayment = value;
+        history.pushState({}, '', '');
       },
       purchase() {
         this.refreshTopBlock();

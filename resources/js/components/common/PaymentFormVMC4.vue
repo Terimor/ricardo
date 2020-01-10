@@ -410,8 +410,9 @@
       textBack: () => t('checkout.back'),
 		},
     watch: {
-      'form.paymentProvider'() {
-        window.selectedPayment = this.form.paymentProvider;
+      'form.paymentProvider'(value) {
+        window.selectedPayment = value;
+        history.pushState({}, '', '');
       },
       'form.stepThree.country'(country) {
         this.form.country = this.form.stepThree.country;
