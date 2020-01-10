@@ -18,7 +18,13 @@ export const getTotalPrice = (data, total) => {
         total,
       }),
     })
-    .then(res => res.json())
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    })
     .then(res => res.value_text)
     .catch(err => {
 
@@ -29,7 +35,13 @@ export const getUppSells = (product_id, quantity) => {
   const cur = localStorage.getItem('order_currency');
 
   return fetch(`/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`)
-    .then(res => res.json())
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    })
     .then(res => ({ data: res }))
     .catch(err => {
 

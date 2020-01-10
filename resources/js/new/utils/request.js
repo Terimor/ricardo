@@ -72,6 +72,14 @@ export default {
       return pathname + new_search;
     },
 
+    fetch_json(resp) {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    },
+
     fetch_get(url, headers = {}, options = {}) {
       url = this.search_populate(url);
 

@@ -119,7 +119,13 @@ export const tplMixin = {
 
     reloadPaymentMethods(country) {
       return fetch('/payment-methods-by-country?country=' + country)
-        .then(res => res.json())
+        .then(resp => {
+          if (!resp.ok) {
+            throw new Error(resp.statusText);
+          }
+
+          return resp.json();
+        })
         .then(res => {
           this.$root.paymentMethods = res;
           this.setDefaultExtraValues();

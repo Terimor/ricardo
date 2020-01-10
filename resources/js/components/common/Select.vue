@@ -1,5 +1,5 @@
 <template>
-  <div class="select scroll-when-error" :class="theme" :style="{ order: order || null }">
+  <div class="select scroll-when-error" :class="{ [theme]: theme }" :style="{ order: order || null }">
     <span v-if="label" class="label">{{label}}</span>
     <el-select
       v-if="!standart"

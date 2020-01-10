@@ -141,10 +141,10 @@ export default {
   methods: {
 
     payment_methods_reload() {
-      return fetch('/payment-methods-by-country?country=' + this.form.country)
-        .then(res => res.json())
-        .then(res => {
-          this.payment_methods = res;
+      return this.fetch_get('/payment-methods-by-country?country=' + this.form.country)
+        .then(this.fetch_json)
+        .then(body => {
+          this.payment_methods = body;
         })
         .catch(err => {
 
@@ -177,18 +177,12 @@ export default {
               const order_id = localStorage.getItem('odin_order_id');
               return fetch_get('/pay-by-card-errors?order=' + order_id);
             })
-            .then(resp => {
-              if (!resp.ok) {
-                throw new Error(resp.statusText);
-              }
-
-              return resp.json();
-            })
-            .then(res => {
+            .then(this.fetch_json)
+            .then(body => {
               this.payment_error = this.t('checkout.payment_error');
 
-              if (res.errors && res.errors.length > 0) {
-                this.payment_error = this.t(res.errors[0]);
+              if (body.errors && body.errors.length > 0) {
+                this.payment_error = this.t(body.errors[0]);
               }
             })
             .catch(err => {

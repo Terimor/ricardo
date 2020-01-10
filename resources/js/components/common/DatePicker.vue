@@ -7,7 +7,7 @@
         v-bind="rest"
         :picker-options="pickerOptions"
         :value="value"
-        :class="theme"
+        :class="{ [theme]: theme }"
         type="date"/>
   </div>
 </template>

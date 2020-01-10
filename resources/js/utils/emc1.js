@@ -201,7 +201,13 @@ export function paypalCreateOrder ({
         f,
       }),
     }))
-    .then(res => res.json())
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    })
     .then(res => {
       if (res.error) {
         if (res.error.code === 10008) {
@@ -237,12 +243,12 @@ export function paypalOnApprove(data) {
       orderID: data.orderID
     })
   })
-  .then(function(res) {
-    if(res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.statusText);
+  .then(resp => {
+    if (!resp.ok) {
+      throw new Error(resp.statusText);
     }
+
+    return resp.json();
   })
   .then(function(res) {
     goToThankYou(odin_order_id, order_currency);

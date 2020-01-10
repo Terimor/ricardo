@@ -67,7 +67,9 @@ export default {
       return js_data.country_code;
     },
     skusList() {
-      return js_data.product.skus
+      return Array.isArray(js_data.product.skus)
+        ? js_data.product.skus
+        : [];
     },
   },
   mounted () {

@@ -158,13 +158,7 @@ export default {
 
           return this.fetch_post(url, data);
         })
-        .then(resp => {
-          if (!resp.ok) {
-            throw new Error(resp.statusText);
-          }
-
-          return resp.json();
-        })
+        .then(this.fetch_json)
         .then(body => {
           if (body.order_id) {
             localStorage.setItem('odin_order_id', body.order_id);
