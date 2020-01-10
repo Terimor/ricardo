@@ -79,7 +79,13 @@ class TemplateService
         return $data;
     }
 
-    public static function getDealsData($product, $request)
+    /**
+     * Get deals data for template
+     * @param $product
+     * @param $request
+     * @return array
+     */
+    public static function getDealsData($product, $request): array
     {
         $deals = [];
         $deals_shortlist = false;
