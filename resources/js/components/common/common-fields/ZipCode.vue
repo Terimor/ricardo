@@ -77,7 +77,13 @@
         this.isLoading.address = true;
 
         fetch('/address-by-zip?zipcode=' + zipcode)
-          .then(res => res.json())
+          .then(resp => {
+            if (!resp.ok) {
+              throw new Error(resp.statusText);
+            }
+
+            return resp.json();
+          })
           .then(res => {
             this.isLoading.address = false;
             cache[zipcode] = res;

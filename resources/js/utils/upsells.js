@@ -38,7 +38,13 @@ export function paypalCreateOrder ({
         f,
       })
     }))
-    .then(res => res.json())
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    })
     .then(res => {
       if (res.odin_order_id) {
         localStorage.setItem('odin_order_id', res.odin_order_id);
@@ -69,12 +75,12 @@ export function paypalOnApprove(data) {
       orderID: data.orderID
     })
   })
-  .then(function(res) {
-    if(res.ok) {
-      return res.json();
-    } else {
-      throw new Error(res.statusText);
+  .then(resp => {
+    if (!resp.ok) {
+      throw new Error(resp.statusText);
     }
+
+    return resp.json();
   })
   .then(function() {
     if (odin_order_id) {
@@ -104,7 +110,13 @@ export function send1ClickRequest(data, upsells) {
       },
       body: JSON.stringify(data),
     }))
-    .then(res => res.json())
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    })
     .then(res => {
       if (res.order_id) {
         localStorage.setItem('odin_order_id', res.order_id);

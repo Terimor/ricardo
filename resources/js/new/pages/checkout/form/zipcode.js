@@ -88,11 +88,11 @@ export default {
 
         this.is_loading.address = true;
 
-        fetch('/address-by-zip?zipcode=' + value)
-          .then(res => res.json())
-          .then(res => {
-            cache[value] = res;
-            this.zipcode_address = res;
+        this.fetch_get('/address-by-zip?zipcode=' + value)
+          .then(this.fetch_json)
+          .then(body => {
+            cache[value] = body;
+            this.zipcode_address = body;
             this.is_loading.address = false;
           })
           .catch(err => {

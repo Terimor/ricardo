@@ -196,7 +196,13 @@ export function sendCheckoutRequest(data) {
       },
       body: JSON.stringify(data),
     }))
-    .then(res => res.json())
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    })
     .then(res => {
       if (res.order_id) {
         localStorage.setItem('odin_order_id', res.order_id);
@@ -280,7 +286,13 @@ export function get3dsErrors() {
         'X-Requested-With': 'XMLHttpRequest',
       },
     }))
-    .then(res => res.json())
+    .then(resp => {
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+
+      return resp.json();
+    })
     .then(res => {
       let paymentError = t('checkout.payment_error');
 

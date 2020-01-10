@@ -26,7 +26,7 @@
     computed: {
       preparedPlaceholder () {
         const length = this.value && this.value.length || 0;
-        return '&nbsp;'.repeat(length) + this.placeholder.slice(length)
+        return '&nbsp;'.repeat(length) + (this.placeholder || '').slice(length)
       },
       invalid () {
         return this.validation && this.validation.$dirty && !this.validation.$pending && this.validation.$invalid;

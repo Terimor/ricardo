@@ -257,8 +257,10 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         return js_data.product
       },
 
-      skusList () {
-        return js_data.product.skus;
+      skusList() {
+        return Array.isArray(js_data.product.skus)
+          ? js_data.product.skus
+          : [];
       },
 
       hasTimer() {

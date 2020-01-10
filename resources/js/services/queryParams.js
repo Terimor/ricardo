@@ -63,5 +63,9 @@ window.fetch = function(url, options = {}) {
     }
   }
 
+  if (!fetch) {
+    return Promise.reject(new Error('fetch method is not supported'));
+  }
+
   return fetch.call(this, url, options);
 };

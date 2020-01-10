@@ -121,7 +121,13 @@
         }
 
         fetch('/validate-email?email=' + value)
-          .then(res => res.json())
+          .then(resp => {
+            if (!resp.ok) {
+              throw new Error(resp.statusText);
+            }
+
+            return resp.json();
+          })
           .then(res => {
             cache[value] = res;
             this.apply(res);

@@ -82,11 +82,11 @@ export default {
         return
       }
 
-      fetch('/validate-email?email=' + value)
-        .then(res => res.json())
-        .then(res => {
-          cache[value] = res;
-          this.email_validation = res;
+      this.fetch_get('/validate-email?email=' + value)
+        .then(this.fetch_json)
+        .then(body => {
+          cache[value] = body;
+          this.email_validation = body;
         })
         .catch(err => {
 

@@ -56,13 +56,7 @@ export default {
 
           return this.fetch_post('/paypal-create-order', data);
         })
-        .then(resp => {
-          if (!resp.ok) {
-            throw new Error(resp.statusText);
-          }
-
-          return resp.json();
-        })
+        .then(this.fetch_json)
         .then(body => {
           if (body.error) {
             if (body.error.code === 10008) {
@@ -92,13 +86,7 @@ export default {
 
           return this.fetch_post('/paypal-verify-order', data);
         })
-        .then(resp => {
-          if (!resp.ok) {
-            throw new Error(resp.statusText);
-          }
-
-          return resp.json();
-        })
+        .then(this.fetch_json)
         .then(res => {
           const odin_order_id = localStorage.getItem('odin_order_id');
           const order_currency = localStorage.getItem('order_currency');
