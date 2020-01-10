@@ -21,7 +21,7 @@ class Setting extends Model
 
 	/**
 	* Returns value
-	* @param string $key
+	* @param mixed $key
 	* @param object $default
 	* @return object
 	*/

@@ -70,17 +70,6 @@ class PaypalController extends Controller
     }
 
     /**
-     * @return $this
-     */
-    public function checkout()
-    {
-        return view('test-checkout')->with([
-            'product' => resolve(ProductService::class)->resolveProduct(request()),
-            'paypal_client' => Setting::getValue('instant_payment_paypal_client_id')
-        ]);
-    }
-
-    /**
      * @param Request $request
      */
     public function webhooks(Request $request)
