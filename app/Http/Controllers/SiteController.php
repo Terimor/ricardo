@@ -293,7 +293,7 @@ class SiteController extends Controller
         $deals_free_quantities = [];
 
         $is_new_engine = ((Route::is('checkout') || Route::is('checkout_price_set')) && $request->get('tpl') === 'fmc5x') || $is_virtual_product;
-        if ($is_new_engine && !$is_virtual_product) {
+        if ($is_new_engine) {
             $data_deals = TemplateService::getDealsData($product, $request);
             $deals = $data_deals['deals'];
             $deal_promo = $data_deals['deal_promo'];

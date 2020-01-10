@@ -1,23 +1,23 @@
 .footer-region {
   background-color: #f3f3f3;
-  justify-content: space-between;
-  align-items: center;
-  padding: 27px 0;
   color: white;
+  display: flex;
+  flex-direction: column;
   font-size: 16px;
   font-weight: 300;
+  padding: 27px 0;
 }
 
 .footer__row {
-  max-width: 1000px;
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin: auto;
-  text-align: center;
   list-style: none;
+  margin: auto;
+  max-width: 1000px;
   padding-left: 0;
   padding-right: 0;
+  text-align: center;
 
   @media screen and ($s-down) {
     flex-wrap: wrap;
@@ -38,9 +38,9 @@
   }
 
   & + &:before {
-    content: '\007c';
     color: #6c6c6c;
-    padding: 5px;
+    content: '\007c';
+    padding: 5px 5px;
 
     @media screen and ($s-down) {
       display: none;
@@ -50,14 +50,14 @@
 
 .footer__link {
   color: #337ab7;
-  text-decoration: none;
   font-size: 13px;
   font-weight: 500;
+  text-decoration: none;
 }
 
 .footer-company-address {
+  color: #333;
+  font-size: 13px;
   padding: 10px 24px;
   text-align: center;
-  font-size: 13px;
-  color: #333;
 }

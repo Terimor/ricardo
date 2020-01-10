@@ -1,3 +1,37 @@
+@import '../../checkout';
+
+
 .vc1 {
-  font-size: 12px;
+  
+}
+
+.header-region {
+  display: none;
+}
+
+.footer-region {
+  background-color: #d54803;
+  height: 160px;
+  padding: 30px 30px;
+}
+
+.footer__row {
+  width: 925px;
+}
+
+.footer__row-item {
+  margin: 0 10px;
+
+  &:before {
+    display: none;
+  }
+}
+
+.footer__link {
+  color: #fff;
+  font-family: Lato,Noto Sans,sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 30px;
+  text-decoration: underline;
 }

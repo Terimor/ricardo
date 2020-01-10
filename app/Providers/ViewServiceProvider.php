@@ -43,7 +43,7 @@ class ViewServiceProvider extends ServiceProvider
             ]);
 
             $view->with('cdn_url', UtilsService::getCdnUrl());
-            $view->with('HasVueApp', Route::is('checkout') || Route::is('checkout_price_set') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking'));
+            $view->with('HasVueApp', Route::is('checkout') || Route::is('checkout_price_set') || Route::is('checkout_vrtl') || Route::is('upsells') || Route::is('thankyou') || Route::is('order-tracking'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('sentry_dsn', $settings['sentry_dsn']);
             $view->with('FreshchatToken', $settings['freshchat_token']);
