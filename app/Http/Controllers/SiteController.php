@@ -284,13 +284,12 @@ class SiteController extends Controller
         if ($is_new_engine) {
             if ($request->get('tpl') == 'fmc5x') {
                 $viewTemplate = 'new.pages.checkout.templates.fmc5';
-                $data_deals = TemplateService::getDealsData($product, $request);
-                $deals = $data_deals['deals'];
-                $deal_promo = $data_deals['deal_promo'];
-                $deals_main_quantities = $data_deals['deals_main_quantities'];
-                $deals_free_quantities = $data_deals['deals_free_quantities'];
             }
-
+            $data_deals = TemplateService::getDealsData($product, $request);
+            $deals = $data_deals['deals'];
+            $deal_promo = $data_deals['deal_promo'];
+            $deals_main_quantities = $data_deals['deals_main_quantities'];
+            $deals_free_quantities = $data_deals['deals_free_quantities'];
         }
 
         return view(
