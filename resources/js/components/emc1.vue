@@ -76,7 +76,6 @@
                               :secondTitle="`${textStep} ${getStepOrder(5)}: ${textDeliveryAddress}`"
                               :thirdTitle="`${textStep} ${getStepOrder(6)}: ${textPaymentDetails}`"
                               v-if="form.paymentProvider && isFormShown"
-                              @showCart="isOpenSpecialOfferModal = true"
                               :$v="$v"
                               :paymentForm="form"
                               :extraFields="extraFields"
@@ -120,48 +119,6 @@
                 </button>
             </div>
         </el-dialog>
-
-        <el-dialog
-                @click="isOpenSpecialOfferModal = false"
-                class="common-popup special-offer-popup"
-                :title="textSpecialOfferPopupTitle"
-                :visible.sync="isOpenSpecialOfferModal">
-            <div class="common-popup__content accessories-modal">
-                <p v-html="textSpecialOfferPopupMessage"></p>
-                <Cart
-                        @setCart="setCart"
-                        :productList="mockData.productList"
-                        :cart="cart"/>
-                <div class="accessories-modal__list">
-                    <ProductItem
-                            v-for="item in mockData.productList"
-                            @setCart="setCart"
-                            :key="item.key"
-                            :keyProp="item.key"
-                            :value="cart[item.key]"
-                            :imageUrl="item.imageUrl"
-                            :title="item.title"
-                            :advantageList="item.advantageList"
-                            :regularPrice="item.regularPrice"
-                            :newPrice="item.newPrice"
-                            :maxQuantity="3"
-                    />
-                </div>
-                <div class="accessories-modal__bottom">
-                    <button
-                            style="height: auto;"
-                            type="button"
-                            class="green-button-animated">
-                        <span class="purchase-button-text" v-html="textSpecialOfferPopupButtonPurchase"></span>
-                    </button>
-                    <button
-                            v-if="isEmptyCart"
-                            v-html="textSpecialOfferPopupButtonEmpty"
-                            @click="isOpenSpecialOfferModal = false"
-                            class="thanks"></button>
-                </div>
-            </div>
-        </el-dialog>
     </div>
 </template>
 
@@ -177,7 +134,6 @@
   import { getNotice, getRadioHtml } from '../utils/emc1';
   import ProductItem from './common/ProductItem';
   import Warranty from './common/Warranty';
-  import Cart from './common/Cart';
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
@@ -206,7 +162,6 @@
     components: {
       SaleBadge,
       ProductItem,
-      Cart,
       Warranty,
       ProductOffer,
       PurchasAlreadyExists,
@@ -222,51 +177,6 @@
           prices: null,
           quantity: null,
         },
-        mockData: {
-          productList: [
-            {
-              key: 0,
-              name: 'Echo Beat - Wireless 3D Sound white',
-              title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: js_data.cdn_url + '/assets/images/headphones-white.png',
-              advantageList: [
-                'High Sound',
-                'Portable Charging',
-                'Ergonomic Design',
-                'iOs & Android',
-              ],
-              regularPrice: 69.98,
-              newPrice: 34.99,
-            }, {
-              key: 1,
-              name: 'Echo Beat - Wireless 3D Sound gold',
-              title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: js_data.cdn_url + '/assets/images/headphones-gold.png',
-              advantageList: [
-                'High Sound',
-                'Portable Charging',
-                'Ergonomic Design',
-                'iOs & Android',
-              ],
-              regularPrice: 69.98,
-              newPrice: 34.99,
-            }, {
-              key: 2,
-              name: 'Echo Beat - Wireless 3D Sound red',
-              title: '+1 Echo Beat - Wireless 3D Sound - 50% discount per unit',
-              imageUrl: js_data.cdn_url + '/assets/images/headphones-red.png',
-              advantageList: [
-                'High Sound',
-                'Portable Charging',
-                'Ergonomic Design',
-                'iOs & Android',
-              ],
-              regularPrice: 69.98,
-              newPrice: 34.99,
-            }
-          ],
-        },
-        cart: {},
         form: {
           isWarrantyChecked: false,
           countryCodePhoneField: js_data.country_code,
@@ -288,7 +198,6 @@
           terms: null,
         },
         isOpenPromotionModal: false,
-        isOpenSpecialOfferModal: false,
         productImage: this.getProductImage(),
         disableAnimation: true,
       }
@@ -341,9 +250,6 @@
       },
       productData () {
         return js_data.product
-      },
-      isEmptyCart () {
-        return Object.values(this.cart).every(it => it === 0)
       },
       dealList () {
         const isSellOutArray = queryParams().sellout
@@ -529,12 +435,6 @@
       paypalOnApprove(data) {
         return paypalOnApprove(data);
       },
-      setCart (cart) {
-        this.cart = {
-          ...this.cart,
-          ...cart,
-        }
-      },
       setPromotionalModal (val) {
         this.isOpenPromotionModal = val
       },
@@ -573,13 +473,13 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = (this.form && this.form.variant) || (js_data.product.skus[0] && js_data.product.skus[0].code) || null;
 
         const skus = Array.isArray(js_data.product.skus)
           ? js_data.product.skus
           : [];
 
-        const skuVariant = skus.find(sku => variant === sku.code) || null;
+        const variant = (this.form && this.form.variant) || (skus[0] && skus[0].code) || null;
+        const skuVariant = skus.find && skus.find(sku => variant === sku.code) || null;
 
         const productImage = js_data.product.image[+(js_query_params.image || null) - 1] || js_data.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
@@ -606,12 +506,6 @@
       },
     },
     mounted () {
-      this.setCart(this.mockData.productList.reduce((acc, { key }) => {
-        acc[key] = 0
-
-        return acc
-      }, {}))
-
       const qty = +this.queryParams.qty;
       const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
 

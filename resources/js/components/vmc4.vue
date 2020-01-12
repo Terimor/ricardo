@@ -188,13 +188,13 @@
       getProductImage() {
         const isInitial = !this.productImage;
         const quantity = /*this.form && +this.form.deal || */1;
-        const variant = (this.form && this.form.variant) || (js_data.product.skus[0] && js_data.product.skus[0].code) || null;
 
         const skus = Array.isArray(js_data.product.skus)
           ? js_data.product.skus
           : [];
 
-        const skuVariant = skus.find(sku => variant === sku.code) || null;
+        const variant = (this.form && this.form.variant) || (skus[0] && skus[0].code) || null;
+        const skuVariant = skus.find && skus.find(sku => variant === sku.code) || null;
 
         const productImage = js_data.product.image[+(js_query_params.image || null) - 1] || js_data.product.image[0];
         const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;

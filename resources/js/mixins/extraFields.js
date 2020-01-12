@@ -153,6 +153,10 @@ export const tplMixin = {
     },
 
     setDefaultExtraValues() {
+      if (!this.form) {
+        return;
+      }
+
       this.form.installments = this.extraFields.installments && this.extraFields.installments.default !== undefined
         ? this.extraFields.installments.default
         : 1;
@@ -194,6 +198,10 @@ export const tplMixin = {
     },
 
     setExtraFieldsValidationRules(rules) {
+      if (!rules) {
+        return;
+      }
+
       if (this.extraFields.installments) {
         rules.installments = validators.getInstallmentsRules();
       }
