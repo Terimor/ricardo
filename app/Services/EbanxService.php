@@ -66,16 +66,11 @@ class EbanxService
 
     /**
      * EbanxService constructor
+     * @param PaymentApi $api
      */
-    public function __construct()
+    public function __construct(PaymentApi $api)
     {
-        $keys = PaymentApi::getAllByProvider(PaymentProviders::EBANX);
-
-        if (empty($keys)) {
-            logger()->error("Ebanx configuration needs to check");
-        }
-
-        $this->keys = $keys;
+        $this->api = $api;
         $this->environment = Setting::getValue('ebanx_api_environment', self::ENV_LIVE);
     }
 
@@ -210,24 +205,41 @@ class EbanxService
     }
 
     /**
+     * Validates webhook
+     * @param  Request $req
+     * @return array
+     */
+    public static function validateWebhook(Request $req)
+    {
+        $sign = $req->header('x-signature-content');
+        $content = $req->getContent();
+        $notification = new Notification($req->get('operation'), $req->get('notification_type'), explode(',', $req->get('hash_codes')));
+
+        $result = ['status' => false];
+
+        $cert = File::get(\config_path("cert/ebanx-notifications-public.pem"));
+
+        $is_sign_valid = \openssl_verify($content, \base64_decode($sign), $cert);
+
+        if ($is_sign_valid && EbanxUtils::isValidNotification($notification)) {
+            $result = ['status' => true, 'hashes' => $notification->getHashCodes()];
+        }
+
+        return $result;
+    }
+
+    /**
      * Returns payment status info by hash
      * @param  string $hash
-     * @param  array  $details ['payment_api_id'=>string]
      * @return array|null
      */
-    public function requestStatusByHash(string $hash, array $details): ?array
+    public function requestStatusByHash(string $hash): ?array
     {
         $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
 
-        $api = $this->getPaymentApi($details);
-        if (empty($api)) {
-            logger()->error("Ebanx PaymentApi not found");
-            return $result;
-        }
-
         $config = new Config([
-            'integrationKey'        => $api->key,
-            'sandboxIntegrationKey' => $this->environment !== self::ENV_LIVE ? $api->key : null,
+            'integrationKey'        => $this->api->key,
+            'sandboxIntegrationKey' => $this->environment !== self::ENV_LIVE ? $this->api->key : null,
             'isSandbox'             => $this->environment !== self::ENV_LIVE,
         ]);
 
@@ -261,8 +273,6 @@ class EbanxService
      *   'amount'=>float,
      *   'number'=>string,
      *   'installments'=>int,
-     *   'payment_api_id'=>?string,
-     *   'product_id'=>?string
      * ]
      * @return array
      */
@@ -287,9 +297,7 @@ class EbanxService
      *   'currency'=>string,
      *   'amount'=>float,
      *   'number'=>string,
-     *   'installments'=>int,
-     *   'payment_api_id'=>?string,
-     *   'product_id'=>?string
+     *   'installments'=>int
      * ]
      * @return array
      */
@@ -315,9 +323,7 @@ class EbanxService
      *   'currency'=>string,
      *   'amount'=>float,
      *   'number'=>string,
-     *   'installments'=>int,
-     *   'payment_api_id'=>?string,
-     *   'product_id'=>?string
+     *   'installments'=>int
      * ]
      * @return array
      */
@@ -329,7 +335,7 @@ class EbanxService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::EBANX,
-            'payment_api_id'    => null,
+            'payment_api_id'    => (string)$this->$api->getIdAttribute(),
             'hash'              => "fail_" . UtilsService::randomString(16),
             'payer_id'          => null,
             'provider_data'     => null,
@@ -338,17 +344,9 @@ class EbanxService
             'token'             => null
         ];
 
-        $api = $this->getPaymentApi($details);
-        if (empty($api)) {
-            logger()->error("Ebanx PaymentApi not found [{$details['number']}]");
-            return $result;
-        }
-
-        $result['payment_api_id'] = (string)$api->getIdAttribute();
-
         $config = new Config([
-            'integrationKey'        => $api->key,
-            'sandboxIntegrationKey' => $this->environment !== self::ENV_LIVE ? $api->key : null,
+            'integrationKey'        => $this->api->key,
+            'sandboxIntegrationKey' => $this->environment !== self::ENV_LIVE ? $this->api->key : null,
             'isSandbox'             => $this->environment !== self::ENV_LIVE,
             'baseCurrency'          => $details['currency']
         ]);
@@ -393,30 +391,6 @@ class EbanxService
     }
 
     /**
-     * Validates webhook
-     * @param  Request $req
-     * @return array
-     */
-    public function validateWebhook(Request $req)
-    {
-        $sign = $req->header('x-signature-content');
-        $content = $req->getContent();
-        $notification = new Notification($req->get('operation'), $req->get('notification_type'), explode(',', $req->get('hash_codes')));
-
-        $result = ['status' => false];
-
-        $cert = File::get(\config_path("cert/ebanx-notifications-public.pem"));
-
-        $is_sign_valid = \openssl_verify($content, \base64_decode($sign), $cert);
-
-        if ($is_sign_valid && EbanxUtils::isValidNotification($notification)) {
-            $result = ['status' => true, 'hashes' => $notification->getHashCodes()];
-        }
-
-        return $result;
-    }
-
-    /**
      * Get address by zipcode
      * @param  string $zipcode
      */
@@ -427,15 +401,9 @@ class EbanxService
 
         $url = $this->environment === static::ENV_LIVE ? EbanxClient::LIVE_URL : EbanxClient::SANDBOX_URL;
 
-        $api = $this->getPaymentApi([]);
-        if (empty($api)) {
-            logger()->error("Ebanx PaymentApi not found");
-            return [];
-        }
-
         $request = $client->request('POST', $url.'ws/zipcode', [
             'form_params' => [
-                'integration_key' => $api->key,
+                'integration_key' => $this->api->key,
                 'zipcode' => $zipcode,
             ]
         ]);
