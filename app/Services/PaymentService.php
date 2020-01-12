@@ -1039,7 +1039,7 @@ class PaymentService
             PaymentApiService::usePaymentLimit(
                 $txn['payment_api_id'],
                 $order->currency,
-                CurrencyService::roundValueByCurrencyRules($data['value'] / $currency->usd_rate, Currency::DEF_CUR)
+                CurrencyService::roundValueByCurrencyRules($txn['value'] / $currency->usd_rate, Currency::DEF_CUR)
             );
 
             $total = collect($order->txns)->reduce(function ($carry, $item) {
