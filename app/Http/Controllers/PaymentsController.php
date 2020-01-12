@@ -119,8 +119,7 @@ class PaymentsController extends Controller
             logger()->info('Bluesnap unprocessed webhook', ['content' => $req->getContent()]);
         }
 
-        $bluesnap = new BluesnapService();
-        $reply = $bluesnap->validateWebhook($req);
+        $reply = BluesnapService::validateWebhook($req);
 
         if (!$reply['status']) {
             logger()->error('Bluesnap unauthorized webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
@@ -128,9 +127,10 @@ class PaymentsController extends Controller
         }
 
         $order = $this->paymentService->approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
-        $order_txn = $order->getTxnByHash($reply['txn']['hash']);
 
-        return md5($authKey . 'ok' . $bluesnap->getDataProtectionKey($order_txn));
+        $bs = PaymentService::getBluesnapService($order->number, $$reply['txn']['hash']);
+
+        return md5($authKey . 'ok' . $bs->getDataProtectionKey());
     }
 
     /**
@@ -196,8 +196,7 @@ class PaymentsController extends Controller
      */
     public function ebanxWebhook(Request $req)
     {
-        $ebanxService = new EbanxService();
-        $reply = $ebanxService->validateWebhook($req);
+        $reply = EbanxService::validateWebhook($req);
 
         if (!$reply['status']) {
             logger()->error('Ebanx unauthorized webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
@@ -248,21 +247,8 @@ class PaymentsController extends Controller
         if (\App::environment() === 'production') {
             throw new AuthException('Unauthorized');
         }
-        $reply = $this->paymentService->test($req);
 
-        $result = [
-            'order_currency'    => $reply['order_currency'],
-            'order_number'      => $reply['order_number'],
-            'order_id'          => $reply['order_id'],
-            'id'                => $reply['id'],
-            'status'            => $reply['status']
-        ];
-
-        if (!empty($reply['errors'])) {
-            $result['errors'] = $reply['errors'];
-        }
-
-        return $result;
+        return $this->paymentService->test($req);
     }
 
 }

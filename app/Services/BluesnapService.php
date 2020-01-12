@@ -34,27 +34,14 @@ class BluesnapService
     private $endpoint;
 
     /**
-     * @var array
-     */
-    private $ips;
-
-    /**
      * BluesnapService constructor
+     * @param PaymentApi $api
      */
-    public function __construct()
+    public function __construct(PaymentApi $api)
     {
-        $keys = PaymentApi::getAllByProvider(PaymentProviders::BLUESNAP);
-
-        if (empty($keys)) {
-            logger()->error("Bluesnap configuration needs to check");
-        }
-
-        $this->keys = $keys;
+        $this->api = $api;
 
         $environment = Setting::getValue('bluesnap_environment', self::ENV_LIVE);
-        $ips_str     = Setting::getValue('bluesnap_ips', '');
-
-        $this->ips = \explode(',', $ips_str);
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'ws' : 'sandbox') . '.bluesnap.com/services/2/';
     }
 
@@ -110,13 +97,11 @@ class BluesnapService
 
     /**
      * Returns data protection key
-     * @param  array  $data ['product_id'=>?string, 'payment_api_id'=>?string]
-     * @return string|null
+     * @return string
      */
-    public function getDataProtectionKey(array $data): ?string
+    public function getDataProtectionKey(): string
     {
-        $api = $this->getPaymentApi($data);
-        return optional($api)->key;
+        return $this->api->key;
     }
 
     /**
@@ -127,7 +112,6 @@ class BluesnapService
      * [
      *   'currency'=>string,
      *   'amount'=>float,
-     *   'product_id'=>string,
      *   'billing_descriptor'=>string
      * ]
      * @return array
@@ -161,8 +145,6 @@ class BluesnapService
      * [
      *  'currency'=>string,
      *  'amount'=>float,
-     *  'product_id'=>?string,
-     *  'payment_api_id'=>?string,
      *  'billing_descriptor'=>string,
      * ]
      * @return array
@@ -176,23 +158,15 @@ class BluesnapService
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::BLUESNAP,
             'hash'              => "fail_" . UtilsService::randomString(16),
-            'payment_api_id'    => null,
+            'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'payer_id'          => null,
             'provider_data'     => null,
             'errors'            => null
         ];
 
-        $api = $this->getPaymentApi($details);
-        if (empty($api)) {
-            logger()->error("Ebanx PaymentApi not found [{$details['number']}]");
-            return $result;
-        }
-
-        $result['payment_api_id'] = (string)$api->getIdAttribute();
-
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
-            'auth' => [$api->login, $api->password],
+            'auth' => [$this->api->login, $this->api->password],
             'headers' => ['Accept'  => 'application/json']
         ]);
 
@@ -249,7 +223,7 @@ class BluesnapService
      * @param  Request $req
      * @return array
      */
-    public function validateWebhook(Request $req)
+    public static function validateWebhook(Request $req)
     {
         $currency   = $req->input('invoiceChargeCurrency');
         $hash       = $req->input('referenceNumber');
@@ -257,7 +231,10 @@ class BluesnapService
         $value      = $req->input('invoiceChargeAmount', 0);
 
         $result = ['status' => false];
-        if (in_array($req->ip(), $this->ips)) {
+
+        $ips = explode(',', Setting::getValue('bluesnap_ips', ''));
+
+        if (in_array($req->ip(), $ips)) {
             $result = [
                 'status' => true,
                 'txn' => [

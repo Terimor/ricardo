@@ -39,26 +39,13 @@ class AppmaxService
     private $endpoint;
 
     /**
-     * @var \App\Models\PaymentApi
-     */
-    private $api;
-
-    /**
      * AppmaxService constructor
-     * @param array $details ['product_id'=>?string,'payment_api_id'=>?string]
+     * @param PaymentApi $api
      */
-    public function __construct(array $details = [])
+    public function __construct(PaymentApi $api)
     {
-        $this->keys = PaymentApi::getAllByProvider(PaymentProviders::APPMAX);
-
-        if (empty($this->keys)) {
-            logger()->error("Appmax configuration needs to check");
-        }
-
-        $this->api = $this->getPaymentApi($details);
-
+        $this->api = $api;
         $env = Setting::getValue('appmax_environment', self::ENV_LIVE);
-
         $this->endpoint = 'https://' . ($env === self::ENV_LIVE ? 'admin' : 'sandbox') . '.appmax.com.br/api/v3/';
     }
 

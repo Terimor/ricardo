@@ -58,31 +58,18 @@ class CheckoutDotComService
     private $env = self::ENV_LIVE;
 
     /**
-     * @var \App\Models\PaymentApi
-     */
-    private $api;
-
-    /**
      * @var CheckoutApi
      */
     private $checkout;
 
     /**
      * CheckoutDotComService constructor
-     * @param array $details ['product_id'=>?string,'payment_api_id'=>?string]
+     * @param PaymentApi $api
      */
-    public function __construct(array $details = [])
+     public function __construct(PaymentApi $api)
     {
-        $this->keys = PaymentApi::getAllByProvider(PaymentProviders::CHECKOUTCOM);
-
-        if (empty($this->keys)) {
-            logger()->error("Checkoutcom configuration needs to check");
-        }
-
-        $this->api = $this->getPaymentApi($details);
-
         $this->env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
-
+        $this->api = $api;
         $this->checkout = new CheckoutApi($this->api->secret, $this->env === self::ENV_SANDBOX);
         $this->checkout->configuration()->setPublicKey($this->api->key);
     }

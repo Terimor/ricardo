@@ -50,17 +50,11 @@ class MinteService
 
     /**
      * MinteService constructor
+     * @param PaymentApi $api
      */
-    public function __construct()
+    public function __construct(PaymentApi $api)
     {
-        $keys = PaymentApi::getAllByProvider(PaymentProviders::MINTE);
-
-        if (empty($keys)) {
-            logger()->error("Mint-e configuration needs to check");
-        }
-
-        $this->keys = $keys;
-
+        $this->api = $api;
         $environment = Setting::getValue('mint_environment', self::ENV_LIVE);
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'prod' : 'test') . '.mint-e.com/process/v1.0/';
     }
@@ -93,7 +87,6 @@ class MinteService
      *  'amount'=>float,
      *  'order_id'=>string,
      *  'order_number'=>string,
-     *  'product_id'=>string,
      *  'user_agent'=>string,
      *  'descriptor'=>string
      * ]
@@ -124,7 +117,6 @@ class MinteService
      *  'order_number'=>string,
      *  'user_agent'=>string,
      *  'descriptor'=>string
-     *  'payment_api_id'=>string
      * ]
      * @return array
      */
@@ -152,7 +144,6 @@ class MinteService
      *  'amount'=>float,
      *  'order_id'=>string,
      *  'order_number'=>string,
-     *  'product_id'=>stirng,
      *  'user_agent'=>string,
      *  'descriptor'=>string
      * ]
@@ -171,20 +162,12 @@ class MinteService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::MINTE,
-            'payment_api_id'    => null,
+            'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'hash'              => "fail_" . UtilsService::randomString(16),
             'provider_data'     => null,
             'errors'            => null,
             'token'             => null
         ];
-
-        $api = $this->getPaymentApi($details);
-        if (empty($api)) {
-            logger()->error("Mint-e PaymentApi not found", ['product_id' => $details['product_id']]);
-            return $result;
-        }
-
-        $result['payment_api_id'] = (string)$api->getIdAttribute();
 
         try {
             $route_path = 'authorize';
@@ -202,7 +185,7 @@ class MinteService
             $nonce = UtilsService::millitime();
             $body = array_merge(
                 [
-                    'mid'       => $api->login,
+                    'mid'       => $this->api->login,
                     'name'      => $contact['first_name'] . ' ' . $contact['last_name'],
                     'address'   => $contact['street'],
                     'city'      => $contact['city'],
@@ -215,7 +198,7 @@ class MinteService
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
                     'nonce'     => $nonce,
-                    'signature' => hash('sha256', $api->login . $nonce . $api->key),
+                    'signature' => hash('sha256', $this->api->login . $nonce . $this->api->key),
                     'cvv'       => $card['cvv'],
                     'expiry'    => $card['month'] . substr($card['year'], 2),
                     'customerip' => $contact['ip'],
@@ -262,7 +245,7 @@ class MinteService
 
     /**
      * Captures payment
-     * @param  array   $payment ['hash'=>string,'payment_api_id'=>string]
+     * @param  array   $payment ['hash'=>string]
      * @return array
      */
     private function capture(array $payment): array
@@ -272,18 +255,12 @@ class MinteService
             'headers' => ['Accept'  => 'application/json']
         ]);
 
-        $api = $this->getPaymentApi($payment);
-        if (empty($api)) {
-            logger()->error("Mint-e PaymentApi not found", ['payment_api_id' => $payment['payment_api_id']]);
-            return $payment;
-        }
-
         try {
             $nonce = UtilsService::millitime();
             $body = [
-                'mid'       => $api->login,
+                'mid'       => $this->api->login,
                 'nonce'     => $nonce,
-                'signature' => hash('sha256', $api->login . $nonce . $api->key),
+                'signature' => hash('sha256', $this->api->login . $nonce . $this->api->key),
                 'referenceid' => $payment['hash']
             ];
 
@@ -320,7 +297,7 @@ class MinteService
     /**
      * Provides recurring payment
      * @param  string   $token
-     * @param  array    $details ['currency'=>string,'amount'=>float,'descriptor'=>string,'payment_api_id'=>string]
+     * @param  array    $details ['currency'=>string,'amount'=>float,'descriptor'=>string,]
      * @return array
      */
     private function recurring(string $token, array $details): array
@@ -340,22 +317,16 @@ class MinteService
             'errors'            => null
         ];
 
-        $api = $this->getPaymentApi($details);
-        if (empty($api)) {
-            logger()->error("Mint-e PaymentApi not found", ['payment_api_id' => $details['payment_api_id']]);
-            return $result;
-        }
-
         $nonce = UtilsService::millitime();
         try {
             $res = $client->put('sale/recurring', [
                 'json' => [
-                    'mid'       => $api->login,
+                    'mid'       => $this->api->login,
                     'amount'    => $details['amount'],
                     'currency'  => $details['currency'],
                     'token'     => $token,
                     'nonce'     => $nonce,
-                    'signature' => hash('sha256', $api->login . $nonce . $api->key),
+                    'signature' => hash('sha256', $this->api->login . $nonce . $this->api->key),
                     'descriptor' => $details['descriptor']
                 ]
             ]);
@@ -394,7 +365,6 @@ class MinteService
      *   'status'    => string,
      *   'timestamp' => string,
      *   'order_id'  => string,
-     *   'payment_api_id' => string
      * ]
      * @return array
      */
@@ -402,13 +372,7 @@ class MinteService
     {
         $result = ['status' => false];
 
-        $api = $this->getPaymentApi($params);
-        if (empty($api)) {
-            logger()->error("PaymentApi not found", ['params' => $params]);
-            return $result;
-        }
-
-        if ($params['sign'] === hash('sha256', $params['hash'] . $params['timestamp'] . $api->key)) {
+        if ($params['sign'] === hash('sha256', $params['hash'] . $params['timestamp'] . $this->api->key)) {
             $result = ['status' => true, 'txn' => ['hash' => $params['hash']]];
             if ($params['status'] === self::STATUS_OK) {
                 $result['txn'] = $this->capture($params);
