@@ -262,7 +262,7 @@ class SiteController extends Controller
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
 
-        $countries =  \Utils::getCountries(true, $product->is_europe_only);
+        $countries =  \Utils::getShippingCountries(true, $product->is_europe_only, $product->countries);
 
         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 

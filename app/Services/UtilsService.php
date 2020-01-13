@@ -543,12 +543,12 @@ class UtilsService
         'zm' => 'Zambia',
         'zw' => 'Zimbabwe'
     ];
-    
+
     /**
      * EU countries
      * Linked from Saga: GeoConstants::$countries_eu
      */
-    public static $countries_eu = [	
+    public static $countries_eu = [
 	    //EU
 	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk',
 	    //other Europe
@@ -642,22 +642,32 @@ class UtilsService
     }
 
     /**
-     * Get list of countries
+     * Get list of shipping countries
      * @param bool $code_only
+     * @param bool|null $is_europe_only
+     * @param array|null $countries_codes
      * @return array
      */
-    public static function getCountries(bool $code_only = false, ?bool $is_europe_only = false): array
+    public static function getShippingCountries(bool $code_only = false, ?bool $is_europe_only = false, ?array $countries_codes = []): array
     {
         $countries = [];
         if ($code_only) {
-            if ($is_europe_only) {
-                $countries = self::$countries_eu;
+            if (!$countries_codes) {
+                if ($is_europe_only) {
+                    $countries = self::$countries_eu;
+                } else {
+                    $countries = array_keys(self::$countryCodes);
+                }
             } else {
-                $countries = array_keys(self::$countryCodes);
+                $countries = $countries_codes;
             }
         } else {
-            if ($is_europe_only) {
-                $countries_keys = self::$countries_eu;                
+            if ($countries_codes) {
+                foreach ($countries_codes as $key) {
+                    $countries[$key] = self::$countryCodes[$key];
+                }
+            } elseif ($is_europe_only) {
+                $countries_keys = self::$countries_eu;
                 foreach ($countries_keys as $key) {
                     $countries[$key] = self::$countryCodes[$key];
                 }
@@ -665,7 +675,7 @@ class UtilsService
                 $countries = self::$countryCodes;
             }
         }
-        
+
         return $countries;
     }
 
@@ -716,7 +726,7 @@ class UtilsService
             // hardcode: temporary replace cdn urls for two domains
             // Remove after check
             $wifibostCdn = 'https://cdn.wifiboost.tech';
-            $xdroneCdn = 'https://cdn.xdronehd.pro';            
+            $xdroneCdn = 'https://cdn.xdronehd.pro';
             $daysightsCdn = 'https://cdn.daysights.pro';
             $smartbellCdn = 'https://cdn.smartbell.pro';
             $host = request()->getHost();
@@ -730,7 +740,7 @@ class UtilsService
                 return $smartbellCdn;
             }
         }
-        
+
         return ($env === 'production' || $set_production
             ? 'https://' . self::CDN_HOST_PRODUCTION
             : ($env === 'staging'
@@ -752,7 +762,7 @@ class UtilsService
             $urlReplace = self::CDN_HOST_STAGING;
             $s3Url = self::S3_URL_STAGING;
         }
-        
+
         $domain = Domain::getByName();
         if ($domain && $domain->is_own_cdn) {
             $urlReplace = 'cdn.'.str_replace('www.','', request()->getHost());
@@ -760,7 +770,7 @@ class UtilsService
             // hardcode: temporary replace cdn urls for two domains
             // Remove after check
             $wifibostCdn = 'cdn.wifiboost.tech';
-            $xdroneCdn = 'cdn.xdronehd.pro';            
+            $xdroneCdn = 'cdn.xdronehd.pro';
             $daysightsCdn = 'cdn.daysights.pro';
             $smartbellCdn = 'cdn.smartbell.pro';
             $host = request()->getHost();
@@ -932,7 +942,7 @@ class UtilsService
         $phone = strval(intval($phone));
         return $phone;
     }
-    
+
     /**
      * Generate page title by domain multiproduct logic
      * @param \App\Services\Domain $domain
@@ -948,14 +958,14 @@ class UtilsService
         } else {
             $title = $product->page_title ?? $product->product_name;
         }
-        
+
         if ($phraseText) {
             $title .= ' - '.$phraseText;
         }
-        
+
         return trim($title);
     }
-    
+
     /**
      * Prepare card number to format `first 6 digits and last 4 digits, other digits are replaced with × symbol`
      * @param string $number
@@ -963,10 +973,10 @@ class UtilsService
      * @return string
      */
     public static function prepareCardNumber(string $number, $replaceSymbol = '×'): string
-    {        
+    {
         if (strlen($number) > 10) {
             $number = substr($number, 0, 6) . str_repeat($replaceSymbol, strlen($number) - 8) . substr($number, -4);
-        }        
+        }
         return $number;
     }
 
