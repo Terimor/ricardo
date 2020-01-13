@@ -1553,12 +1553,7 @@ class PaymentService
 
     public function test(Request $req)
     {
-        PaymentApiService::usePaymentLimit('5dee1edf4b5be0ba1310ca9a', 'CAD', 4.99);
-        return PaymentApiService::getByProductId(
-            "5d5fa82b6962ed719c42beb4",
-            PaymentService::getProvidersForPay('ca', PaymentMethods::VISA, true),
-            'CAD'
-        );
+        return false;
     }
 
 }
