@@ -281,6 +281,7 @@ class ProductService
         } else {
             $lp->is_paypal_hidden = true;
         }
+        $lp->countries = $product->countries ?? [];
 
         return $lp;
     }
