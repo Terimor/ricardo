@@ -39,7 +39,7 @@ class ProductService
 
         // Domain resolve logic
         $domain = Domain::getByName();
-        if (!$product) {
+        if (!$product) {            
             if ($domain && !empty($domain->product)) {
                 $product =  $domain->product;
             }
@@ -61,8 +61,8 @@ class ProductService
 
         if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {
             $product->hide_cop_id_log = true;
-        }
-
+        }        
+        
         $localizedProduct = $this->localizeProduct($product);
         $localizedProduct->id = $product->id;
 
@@ -239,7 +239,7 @@ class ProductService
             ];
         }
         $lp->skus = $skus;
-
+        
         $reviews = [];
         $reviewsOld = $product->reviews;
         $c = 1;
@@ -256,12 +256,12 @@ class ProductService
                 $c ++;
             }
         }
-
+        
         if (!$reviews) {
             $reviews = $product->getDefaultReviews();
         }
-
-        $lp->reviews = $reviews;
+        
+        $lp->reviews = $reviews;      
 
         $lp->page_title = $product->page_title;
         $lp->upsell_plusone_text = $product->upsell_plusone_text;
@@ -372,10 +372,10 @@ class ProductService
                 $productIds = array_keys($soldProducts);
 
                 $products = OdinProduct::getActiveByIds($productIds);
-
-                // get all images
+                
+                // get all images                
                 $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
-
+                
                 $currency = CurrencyService::getCurrency();
                 foreach ($products as $product) {
                     $product->currencyObject = $currency;
@@ -404,7 +404,7 @@ class ProductService
      * @param OdinProduct $product
      * @return Localize
      */
-    public static function getDataForMiniShop(OdinProduct $product, array $images) {
+    public static function getDataForMiniShop(OdinProduct $product, array $images) {        
 
         $lp = new Localize();
         $lp->id = $product->_id;
@@ -424,11 +424,11 @@ class ProductService
                 'code' => $sku['code'],
                 'name' => $sku['name'],
                 'brief' => $sku['brief'],
-                'has_battery' => $sku['has_battery'],
+                'has_battery' => $sku['has_battery'],                
             ];
         }
         $lp->skus = $skus;
-
+        
         $prices = [];
         $pricesOld = $product->prices;
 
@@ -450,7 +450,7 @@ class ProductService
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
         $prices['exchange_rate'] = $pricesOld['exchange_rate'];
         $lp->prices = $prices;
-
+        
         $image_ids = $product->image_ids;
         $imagesArray = [];
         if (is_array($image_ids)) {
@@ -460,7 +460,7 @@ class ProductService
                 break;
             }
         }
-
+        
         $lp->image = $imagesArray;
 
         return $lp;
@@ -501,11 +501,11 @@ class ProductService
             }
 
             // sort
-            arsort($allSoldProducts);
+            arsort($allSoldProducts);            
 
             Cache::put('DomainSoldProductsData', $allSoldProducts);
         }
-
+        
         if (!$search) {
             // calculate data for pagination
             $totalCount = count($allSoldProducts);
@@ -515,12 +515,12 @@ class ProductService
             $offset = ($page - 1) * $limit;
             if ($offset < 0 ) {
                 $offset = 0;
-            }
-            $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);
+            }            
+            $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);          
         }
         $productIds = array_keys($allSoldProducts);
-        $products = OdinProduct::getActiveByIds($productIds, $search, true);
-
+        $products = OdinProduct::getActiveByIds($productIds, $search, true);         
+        
         if ($search) {
             $totalCount = count($products);
             $totalPages = ceil($totalCount / $limit);
@@ -529,10 +529,10 @@ class ProductService
             $offset = ($page - 1) * $limit;
             if ($offset < 0 ) {
                 $offset = 0;
-            }
+            }                                     
         }
-
-        // get all images
+        
+        // get all images                
         $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
         $currency = CurrencyService::getCurrency();
         $productsLocale = [];
@@ -544,7 +544,7 @@ class ProductService
 
         // sort products by sold qty
         $productsLocaleSorted = [];
-        if ($productsLocale) {
+        if ($productsLocale) {            
             foreach ($allSoldProducts as $productId => $sp) {
                 foreach ($productsLocale as $localeProduct) {
                     if ($localeProduct->id == $productId) {
@@ -553,7 +553,7 @@ class ProductService
                 }
             }
         }
-
+        
         if ($search) {
             $productsLocaleSorted = array_slice($productsLocaleSorted, $offset, $limit);
         }
@@ -566,15 +566,15 @@ class ProductService
             'per_page' => $limit
         ];
     }
-
+    
     /**
      * Return images array for minishop
      * @param $products
      * return array $imagesArray
      */
     public static function getProductsImagesIdsForMinishop($products): array
-    {
-        // get all images
+    {        
+        // get all images                
         $imagesArray = [];
         $imagesIdsArray = [];
         foreach ($products as $product) {
@@ -587,7 +587,7 @@ class ProductService
             foreach ($images as $image) {
                 $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
             }
-        }
+        }                
         return $imagesArray;
     }
 
