@@ -11,7 +11,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 class Domain extends Model
 {
     public static $cached_current_domain;
-    
+
     /**
      * @var string
      */
@@ -25,7 +25,7 @@ class Domain extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'email', 'phone', 'phone_us', 'address', 'sold_products', 'is_multiproduct', 'is_catch_all'
+        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'email', 'phone', 'phone_us', 'address', 'product_category_id', 'sold_products', 'is_multiproduct', 'is_catch_all'
     ];
 
     /**
@@ -44,9 +44,9 @@ class Domain extends Model
      */
      public static function getByName($name = null)
      {
-         if (static::$cached_current_domain && !$name) {             
-            $domain = static::$cached_current_domain;            
-         } else {             
+         if (static::$cached_current_domain && !$name) {
+            $domain = static::$cached_current_domain;
+         } else {
             $host = str_replace('www.', '', request()->getHost());
             $name = $name ?? $host;
             $domain = Domain::where('name', $name)->first();
@@ -55,10 +55,10 @@ class Domain extends Model
                 $domain = Domain::first();
             }
             static::$cached_current_domain = $domain;
-         }         
+         }
          return $domain;
      }
-     
+
     /**
      * Returns domain by product id
      * @param string id
@@ -67,14 +67,14 @@ class Domain extends Model
      public static function getByProductId($id): ?Domain {
          return Domain::where('odin_product_id', (string)$id)->first();
      }
-     
+
     /**
      * Returns domain by request parameters
      * @param array $request
      * @return Domain|null
      */
      public static function getByParams($copId = null, $sku = null): ?Domain
-     {         
+     {
          $domain = null;
          // check by cop_id
          if ($copId) {
@@ -83,7 +83,7 @@ class Domain extends Model
                  $domain = static::getByProductId($product->_id);
              }
          }
-         
+
          // check by sku
          if (!$domain && $sku) {
              $product = OdinProduct::getBySku($sku);
@@ -91,16 +91,16 @@ class Domain extends Model
                  $domain = static::getByProductId($product->_id);
              }
          }
-         
+
          if (!$domain) {
             $domain = Domain::getByName();
          }
 
          return $domain;
      }
-    
+
     /**
-     * Returns displayed name     
+     * Returns displayed name
      * @param array $value
      * @return string
      */
@@ -108,17 +108,17 @@ class Domain extends Model
     {
         return !empty($this->display_name) ? $this->display_name : $this->name;
     }
-    
+
     /**
      * Getter logo image
      */
     public function getLogoAttribute($value)
     {
-        $images = AwsImage::where('_id', $value)->get();        
+        $images = AwsImage::where('_id', $value)->get();
         $lang = app()->getLocale();
         return isset($images[0]->urls[$lang]) ? \Utils::replaceUrlForCdn($images[0]->urls[$lang]) : (isset($images[0]->urls['en']) ? \Utils::replaceUrlForCdn($images[0]->urls['en']) : null);
-    }    
-    
+    }
+
     /**
      * Get main logo
      * @param $product
@@ -126,19 +126,19 @@ class Domain extends Model
      */
     public function getMainLogo($product, $copId)
     {
-        
+
         $logo = null;
-        if ((!empty($this->is_multiproduct) || !empty($this->is_catch_all)) && empty($copId)) {            
+        if ((!empty($this->is_multiproduct) || !empty($this->is_catch_all)) && empty($copId)) {
             $logo = $this->logo;
         }
-        
-        if (!$logo) {             
-            $logo = $product->logo_image;        
+
+        if (!$logo) {
+            $logo = $product->logo_image;
         }
-        
+
         return $logo;
     }
-    
+
     /**
      * Get website name
      * @param $product
@@ -150,14 +150,14 @@ class Domain extends Model
     {
         $websiteName = '';
         if ($copId || $sku) {
-            $websiteName = $product->product_name;            
+            $websiteName = $product->product_name;
         } else {
             $websiteName = $this->getDisplayedName();
         }
-        
+
         return $websiteName;
-    }   
-    
+    }
+
     /**
      * Get price_set by domain
      * return ?string $priceSet
