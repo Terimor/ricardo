@@ -51,7 +51,11 @@ class PaymentLimit extends Model
     {
         $collection = self::whereIn('payment_api_id', $payment_api_ids)->where('currency', $currency)->get();
         return $collection->filter(function($model) use ($pct) {
-            return $model->paid_usd < $model->limit_usd * $pct / 100;
+            $is_available = $model->paid_usd < $model->limit_usd * $pct / 100;
+            if ($is_available && $model->is_splitting) {
+                $is_available = !mt_rand(0, 1);
+            }
+            return $is_available;
         })->all();
     }
 
