@@ -1036,12 +1036,6 @@ class PaymentService
 
             $currency = CurrencyService::getCurrency($order->currency);
 
-            PaymentApiService::usePaymentLimit(
-                $txn['payment_api_id'],
-                $order->currency,
-                CurrencyService::roundValueByCurrencyRules($txn['value'] / $currency->usd_rate, Currency::DEF_CUR)
-            );
-
             $total = collect($order->txns)->reduce(function ($carry, $item) {
                 if ($item['status'] === Txn::STATUS_APPROVED) {
                     $carry['value'] += $item['value'];
