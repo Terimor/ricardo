@@ -57,7 +57,7 @@ class PaymentLimit extends Model
             });
             if (!empty($limit)) {
                 $is_available = $limit->paid_usd < $limit->limit_usd * $pct / 100;
-                if ($is_available && $model->is_splitting) {
+                if ($is_available && $limit->is_splitting) {
                     $is_available = !mt_rand(0, 1);
                 }
                 return $is_available;
