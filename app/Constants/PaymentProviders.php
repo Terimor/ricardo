@@ -65,7 +65,7 @@ class PaymentProviders
             'is_fallback' => false,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 65,
+                '3ds_limit' => 1,
                 'fallback_limit' => 65,
                 'refuse_limit' => 85
             ],
