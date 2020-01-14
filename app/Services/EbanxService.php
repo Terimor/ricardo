@@ -335,7 +335,7 @@ class EbanxService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::EBANX,
-            'payment_api_id'    => (string)$this->$api->getIdAttribute(),
+            'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'hash'              => "fail_" . UtilsService::randomString(16),
             'payer_id'          => null,
             'provider_data'     => null,
