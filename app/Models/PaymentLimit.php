@@ -47,15 +47,22 @@ class PaymentLimit extends Model
      * @param int    $pct
      * @return array
      */
-    public static function getAvailable(array $payment_api_ids, string $currency, int $pct): array
+    public static function getAvailable(array $apis, string $currency, int $pct): array
     {
-        $collection = self::whereIn('payment_api_id', $payment_api_ids)->where('currency', $currency)->get();
-        return $collection->filter(function($model) use ($pct) {
-            $is_available = $model->paid_usd < $model->limit_usd * $pct / 100;
-            if ($is_available && $model->is_splitting) {
-                $is_available = !mt_rand(0, 1);
+        $api_ids = collect($apis)->map(function($v) { return (string)$v->getIdAttribute(); })->toArray();
+        $limits = self::whereIn('payment_api_id', $api_ids)->where('currency', $currency)->get();
+        return collect($apis)->filter(function($v) use ($limits, $pct) {
+            $limit = $limits->first(function($vv) use ($v) {
+                return $v->getIdAttribute() === $vv->payment_api_id;
+            });
+            if (!empty($limit)) {
+                $is_available = $limit->paid_usd < $limit->limit_usd * $pct / 100;
+                if ($is_available && $model->is_splitting) {
+                    $is_available = !mt_rand(0, 1);
+                }
+                return $is_available;
             }
-            return $is_available;
+            return true;
         })->all();
     }
 

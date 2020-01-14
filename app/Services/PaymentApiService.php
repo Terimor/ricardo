@@ -37,12 +37,12 @@ class PaymentApiService
         }
 
         if ($currency) {
-            $api_ids = collect($keys)->map(function($v) { return (string)$v->getIdAttribute(); })->toArray();
-            $limits = PaymentLimit::getAvailable($api_ids, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
-            if (!empty($limits)) {
-                $api_id = $limits[0]->payment_api_id;
-                return collect($keys)->first(function($v) use ($api_id) { return $api_id === (string)$v->getIdAttribute();  });
-            }
+            // $api_ids = collect($keys)->map(function($v) { return (string)$v->getIdAttribute(); })->toArray();
+            $keys = PaymentLimit::getAvailable($keys, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
+            // if (!empty($limits)) {
+            //     $api_id = $limits[0]->payment_api_id;
+            //     return collect($keys)->first(function($v) use ($api_id) { return $api_id === (string)$v->getIdAttribute();  });
+            // }
         }
 
         // if ($pref) {
