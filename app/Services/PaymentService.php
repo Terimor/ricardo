@@ -940,9 +940,7 @@ class PaymentService
                         'order_id'  => $order->getIdAttribute(),
                         'order_number'  => $order->number,
                         'descriptor'    => $order->billing_descriptor,
-                        // 'product_id'    => $details['product_id'] ?? null,
-                        'user_agent'    => $details['useragent'] ?? null,
-                        // 'payment_api_id' => $details['payment_api_id'] ?? null
+                        'user_agent'    => $details['useragent'] ?? null
                     ]
                 );
                 break;

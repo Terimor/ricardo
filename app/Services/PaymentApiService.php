@@ -53,12 +53,4 @@ class PaymentApiService
         return PaymentApi::getById($api_id, false);
     }
 
-    public static function usePaymentLimit(string $api_id, string $currency, float $amount_usd): void
-    {
-        $api = PaymentLimit::getOneByPaymentApiId($api_id, $currency);
-        if ($api) {
-            $api->paid_usd += $amount_usd;
-            $api->save();
-        }
-    }
 }
