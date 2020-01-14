@@ -37,17 +37,8 @@ class PaymentApiService
         }
 
         if ($currency) {
-            // $api_ids = collect($keys)->map(function($v) { return (string)$v->getIdAttribute(); })->toArray();
             $keys = PaymentLimit::getAvailable($keys, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
-            // if (!empty($limits)) {
-            //     $api_id = $limits[0]->payment_api_id;
-            //     return collect($keys)->first(function($v) use ($api_id) { return $api_id === (string)$v->getIdAttribute();  });
-            // }
         }
-
-        // if ($pref) {
-        //     return collect($keys)->first(function($v) use ($pref) { return $v->payment_provider === $pref;  });
-        // }
 
         return array_pop($keys);
     }
