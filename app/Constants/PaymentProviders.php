@@ -321,7 +321,7 @@ class PaymentProviders
                             'lk', 'my', 'no', 'nz', 'pe', 'ph', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
                         ],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', /*'ca',*/ 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '+3ds' => [
