@@ -50,6 +50,14 @@ export default {
 
   computed: {
 
+    document_number_label() {
+      return !this.extra_fields.document_type || !this.form.document_type
+        ? this.form.country !== 'br'
+          ? this.$t('checkout.payment_form.document_number.title')
+          : 'CPF'
+        : this.form.document_type;
+    },
+
     document_number_mask() {
       const mask = typeof this.extra_fields.document_number.placeholder === 'object'
         ? this.extra_fields.document_number.placeholder[this.form.document_type] || ''

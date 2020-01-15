@@ -4,7 +4,7 @@
     'name' => 'document_number',
     'model' => 'form.document_number',
     'validation' => '$v.form.document_number',
-    'label' => t('checkout.payment_form.document_number.title'),
+    'label_code' => 'document_number_label',
     'validation_labels' => [
       'required' => t('checkout.payment_form.document_number.required'),
       'valid' => t('checkout.payment_form.document_number.required'),

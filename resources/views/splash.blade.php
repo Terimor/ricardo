@@ -43,7 +43,8 @@
                 <div class="bunner-inner">
                     <div class="bunner-left">
                         <div class="bunner-img for-img">
-                            <img src="{{ $product->image[0] }}" alt="">
+                            @php $image = Request::get('image') ? (int)Request::get('image') - 1 : 0; @endphp
+                            <img src="{{ $product->image[$image] ?? $product->image[0] }}" alt="">
                         </div>
                     </div>
                     <div class="bunner-right">

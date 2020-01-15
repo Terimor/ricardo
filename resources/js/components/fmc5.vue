@@ -1906,6 +1906,12 @@
     width: 120px;
   }
 
+  #document-number-field {
+    :global(.label) {
+      display: block;
+    }
+  }
+
   .step3 {
     display: flex;
     flex-direction: column;

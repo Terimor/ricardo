@@ -1,6 +1,7 @@
 <template>
   
   <text-field-with-placeholder
+    id="document-number-field"
     v-if="extraFields.document_number"
     v-model="form.document_number"
     :validation="$v.document_number"
@@ -40,7 +41,9 @@
     computed: {
 
       textTitle() {
-        return this.$t('checkout.payment_form.document_number.title');
+        return this.extraFields.document_type
+          ? this.form.document_type
+          : 'CPF';
       },
 
       textRequired() {

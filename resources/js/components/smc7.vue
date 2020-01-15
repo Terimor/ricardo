@@ -108,6 +108,7 @@
                               :$v="$v.form.phone"
                               :ccform="form"
                               ccname="countryCodePhoneField"
+                              :placeholder="true"
                               :form="form"
                               name="phone" />
                         </div>

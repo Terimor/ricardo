@@ -35,6 +35,12 @@
   width: 120px;
 }
 
+.document_number-field {
+  .input-field-label {
+    display: block;
+  }
+}
+
 .payment-error {
   width: 100%;
 }

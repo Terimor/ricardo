@@ -160,7 +160,11 @@ header {
 
   .el-notification__content {
     margin: 0;
-    text-align: initial;
+    text-align: left;
+
+    [dir="rtl"] & {
+      text-align: right;
+    }
   }
 
   .el-notification__closeBtn.el-icon-close {
