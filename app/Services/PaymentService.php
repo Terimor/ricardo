@@ -1214,11 +1214,16 @@ class PaymentService
             $order = OdinOrder::getByTxnHash($hash, PaymentProviders::EBANX, false);
 
             if (!$order) {
-                logger()->warning('Order not found by hash', ['hash' => $hash]);
+                logger()->warning('Ebanx: order not found', ['hash' => $hash]);
                 continue;
             }
 
             $txn = $order->getTxnByHash($hash, false);
+
+            if (empty($txn['payment_api_id'])) {
+                logger()->warning('Ebanx: payment_api_id not found', ['order' => $order->number, 'hash' => $hash]);
+                continue;
+            }
 
             $ebanx = new EbanxService(PaymentApiService::getById($txn['payment_api_id']));
 
@@ -1230,7 +1235,7 @@ class PaymentService
 
                 $this->approveOrder($payment, PaymentProviders::EBANX);
             } else {
-                logger()->warning('Ebanx payment not found', ['hash' => $hash]);
+                logger()->warning('Ebanx: payment not found', ['hash' => $hash]);
             }
         }
     }

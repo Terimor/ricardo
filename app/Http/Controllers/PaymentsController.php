@@ -128,7 +128,7 @@ class PaymentsController extends Controller
 
         $order = $this->paymentService->approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
 
-        $bs = PaymentService::getBluesnapService($order->number, $$reply['txn']['hash']);
+        $bs = PaymentService::getBluesnapService($order->number, $reply['txn']['hash']);
 
         return md5($authKey . 'ok' . $bs->getDataProtectionKey());
     }
