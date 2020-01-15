@@ -1,5 +1,7 @@
 @if (isset($sentry_dsn) && config('app.env') !== 'local' && config('app.env') !== 'development' && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
 
+  <!--[if IE]><script type="text/javascript">if (!Object.assign) { Object.assign = function(o, o1) { Object.keys(o1).forEach(function(n) { o[n] = o1[n]; }); return o; }; }</script><![endif]-->
+
   <script
     src="https://browser.sentry-cdn.com/5.6.3/bundle.min.js"
     onload="js_deps.ready('sentry')"
