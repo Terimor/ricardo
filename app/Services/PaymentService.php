@@ -822,7 +822,6 @@ class PaymentService
                 $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
                 $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
                 $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($order->total_price / $order->exchange_rate, Currency::DEF_CUR);
-                $order->is_invoice_sent = false;
 
                 if (!$order->save()) {
                     $validator = $order->validate();
@@ -834,6 +833,7 @@ class PaymentService
                 // approve order if txn is approved
                 if ($payment['status'] === Txn::STATUS_APPROVED) {
                     $order = $this->approveOrder($payment, $payment['payment_provider']);
+                    $order->is_invoice_sent = false;
                 }
             }
         }
