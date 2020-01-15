@@ -76,7 +76,7 @@ class EmailService
         if ($email) {
             $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}?timeout=".static::TIMEOUT_IPQS;
             $timeOut = stream_context_create(
-                ['http'=> ['timeout' => 3]]
+                ['http'=> ['timeout' => 5]]
             );
             for ($i=1; $i<=3; $i++) {
                 try {
