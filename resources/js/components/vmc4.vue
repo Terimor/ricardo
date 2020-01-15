@@ -30,12 +30,14 @@
                     @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber">
                     <template slot="warranty">
                       <transition name="el-zoom-in-top">
-                        <button v-show="warrantyPriceText" id="warranty-field-button">
-                          <label for="warranty-field" class="label-container-checkbox">
+                        <button
+                          v-show="warrantyPriceText"
+                          id="warranty-field-button"
+                          @click="warrantyToggle">
+                          <div class="label-container-checkbox">
                             <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
-                            <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
-                            <span class="checkmark"></span>
-                          </label>
+                            <span class="checkmark" :class="{ active: form.isWarrantyChecked }"></span>
+                          </div>
                           <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
                           <i class="fa fa-arrow-left slide-left"></i>
                           <i class="fa fa-arrow-right slide-right"></i>
@@ -215,11 +217,14 @@
             });
         }
       },
+      warrantyToggle() {
+        this.form.isWarrantyChecked = !this.form.isWarrantyChecked;
+      },
 		},
     watch: {
       'form.deal'(value) {
         window.selectedOffer = value ? 1 : 0;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
       'form.variant'() {
         this.animateProductImage();
@@ -366,7 +371,7 @@
           background-image: linear-gradient(to bottom, #e6e6e6 0, #ccc 100%);
         }
 
-        label[for=warranty-field] {
+        .label-container-checkbox {
           margin: 0;
           padding: 17px 70px 30px;
           text-align: left;

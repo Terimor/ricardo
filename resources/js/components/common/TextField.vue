@@ -106,6 +106,7 @@ export default {
 
   .prefix {
     position: absolute;
+    top: 0;
     bottom: 0;
     left: 3px;
     height: 40px;
@@ -123,6 +124,7 @@ export default {
 
   .postfix {
     position: absolute;
+    top: 0;
     bottom: 0;
     right: 3px;
     height: 40px;

@@ -1,3 +1,4 @@
+import './resourses/polyfills';
 import * as cookies from './utils/cookies';
 import './services/queryParams';
 import './services/fingerprintjs2';

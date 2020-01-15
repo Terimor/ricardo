@@ -36,13 +36,12 @@ export default {
         }
 
         if (window.scrollTo) {
-          try {
+          if (document.documentElement.style.scrollBehavior !== undefined) {
             scrollTo({
               top: position,
               behavior: 'smooth',
             });
-          }
-          catch (err) {
+          } else {
             scrollTo(0, position);
           }
         }

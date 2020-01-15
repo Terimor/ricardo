@@ -31,7 +31,7 @@
           iframe.src = iframe_url;
           iframe.style.display = 'none';
 
-          document.body.append(iframe);
+          document.body.appendChild(iframe);
         }
       });
     }

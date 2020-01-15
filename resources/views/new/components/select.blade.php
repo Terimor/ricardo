@@ -38,7 +38,8 @@
         :key="item.value"
         v-for="item in {{ $items }}"
         :value="item.value"
-        v-html="item.label" />
+        v-html="item.label">
+      </option>
 
     </select>
 

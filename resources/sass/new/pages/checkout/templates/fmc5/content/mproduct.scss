@@ -31,11 +31,13 @@
   align-self: center;
   background-color: #fff;
   border-radius: 4px;
+  flex-shrink: 0;
   max-width: 100%;
 }
 
 .mdescription {
   display: flex;
+  flex-direction: column;
   margin: 16px 24px;
 
   ul {

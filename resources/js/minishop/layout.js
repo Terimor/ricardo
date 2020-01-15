@@ -1,3 +1,4 @@
+import '../resourses/polyfills';
 import document from './utils/document';
 import request from './utils/request';
 import scroll from './utils/scroll';

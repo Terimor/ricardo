@@ -325,11 +325,11 @@
     watch: {
       'form.deal'(value) {
         window.selectedOffer = value ? 1 : 0;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
       'form.paymentProvider'(value) {
         window.selectedPayment = value;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
       purchase() {
         this.refreshTopBlock();
@@ -567,8 +567,6 @@
 
       @media (max-width: 700px) {
         .container > .row {
-          flex-direction: column;
-
           > .col-md-7, .col-md-5 {
             flex: 0 0 100%;
             max-width: 100%;
@@ -811,7 +809,9 @@
             }
 
             img {
-                width: 100%;
+                align-self: center;
+                flex-shrink: 0;
+                max-width: 100%;
                 height: auto;
             }
         }

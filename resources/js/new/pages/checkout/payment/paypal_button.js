@@ -26,6 +26,12 @@ export default {
       return !!this.form.deal;
     },
 
+    paypal_button_class_list() {
+      return {
+        ['fa-chevron-' + (!this.is_rtl ? 'right' : 'left')]: true,
+      };
+    },
+
   },
 
 

@@ -412,7 +412,7 @@
     watch: {
       'form.paymentProvider'(value) {
         window.selectedPayment = value;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
       'form.stepThree.country'(country) {
         this.form.country = this.form.stepThree.country;
@@ -785,13 +785,13 @@
 
       .main-row {
         display: flex;
-        justify-content: space-between;
         position: relative;
       }
       .discount {
         margin-left: 4px;
       }
       .prices {
+        margin-left: auto;
         margin-right: 50px;
       }
       .red {

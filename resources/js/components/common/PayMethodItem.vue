@@ -29,7 +29,7 @@
     },
     methods: {
       onInput(e) {
-        if (window.navigator && navigator.userAgent && /Edge/.test(navigator.userAgent) && this.$parent.onInput) {
+        if (window.navigator && navigator.userAgent && /Edge|Trident/.test(navigator.userAgent) && this.$parent.onInput) {
           this.$parent.onInput(e);
         }
       },
@@ -40,6 +40,7 @@
   .pay-method-item {
     cursor: pointer;
     img {
+      pointer-events: none;
       max-height: 30px;
     }
 

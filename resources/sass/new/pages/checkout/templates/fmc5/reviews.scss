@@ -117,6 +117,7 @@
   }
 
   img {
+    flex-shrink: 0;
     margin-top: 7px;
     width: 100px;
   }
@@ -149,6 +150,7 @@
 .reviews-percent-text {
   font-size: 14px;
   font-weight: 600;
+  max-width: 100%;
 }
 
 .reviews-items {
@@ -175,6 +177,7 @@
   overflow: hidden;
 
   img {
+    flex-shrink: 0;
     width: 100px;
   }
 }

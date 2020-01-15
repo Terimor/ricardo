@@ -12,7 +12,8 @@
 
     <div
       class="paypal-button-arrow fa"
-      :class="{ ['fa-chevron-' + (!is_rtl ? 'right' : 'left')]: true }"></div>
+      :class="paypal_button_class_list">
+    </div>
 
     <div
       v-if="is_submitted"

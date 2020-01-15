@@ -4,7 +4,8 @@
 
   <div
     class="credit-cards-arrow fa"
-    :class="{ ['fa-chevron-' + (!is_rtl ? 'right' : 'left')]: true }"></div>
+    :class="credit_cards_class_list">
+  </div>
 
   @include('new.components.radio', [
     'active' => 'form.payment_provider === \'credit-card\'',

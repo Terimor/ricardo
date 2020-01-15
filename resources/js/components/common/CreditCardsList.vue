@@ -66,6 +66,7 @@
       margin: 4px 4px;
 
       img {
+        pointer-events: none;
         max-width: 56px;
       }
     }

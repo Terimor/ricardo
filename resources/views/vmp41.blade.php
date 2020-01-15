@@ -123,10 +123,11 @@
                 </div>
             </div>
             <div class="promo__installments">
-                <Installments
+                <installments
                   popperClass="emc1-popover-variant"
                   :extra-fields="extraFields"
-                  :form="form" />
+                  :form="form">
+                </installments>
             </div>
             <h2 class="promo__title j-header-products">{{ t('checkout.secure_deal') }}</h2>
             <div
@@ -273,9 +274,8 @@
                                         <img
                                             class="promo__variant-icon"
                                             :src="variantItem.imageUrl"
-                                            :alt="variantItem.label">
+                                            :alt="variantItem.label" />
                                     </div>
-                                </div>
                                 </div>
                             </div>
                             <div class="variant-name">@{{ variantItem.label }}</div>
@@ -312,8 +312,8 @@
                     <payment-provider-radio-list
                         class="promo__credit-card-switcher"
                         v-model="form.paymentProvider"
-                        @input="activateForm"
-                    />
+                        @input="activateForm">
+                    </payment-provider-radio-list>
                 </div>
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form
@@ -332,8 +332,8 @@
                         :extra-fields="extraFields"
                         :state-extra-field="stateExtraField"
                         :payment-method-u-r-l="paymentMethodURL"
-                        @set-payment-method-by-cardnumber="setPaymentMethodByCardNumber"
-                    />
+                        @set-payment-method-by-cardnumber="setPaymentMethodByCardNumber">
+                    </payment-form>
                 </div>
             </div>
         </section>
@@ -358,7 +358,8 @@
 
     <leave-modal
         v-if="+queryParams.exit === 1"
-        :show-preloader="showPreloader" />
+        :show-preloader="showPreloader">
+    </leave-modal>
 </div>
 
 @include('layouts.footer')

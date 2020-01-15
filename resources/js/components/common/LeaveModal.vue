@@ -77,7 +77,12 @@
         },
 
         mounted() {
-            window.closeLeaveModal = () => document.querySelector('#bio_ep_close').dispatchEvent(new CustomEvent('click'))
+            window.closeLeaveModal = () => {
+                var event = document.createEvent('Events');
+                event.initEvent('click', true, false);
+
+                document.querySelector('#bio_ep_close').dispatchEvent(event);
+            }
             window.agreeLeaveModal = () => {
                 window.closeLeaveModal()
 
@@ -123,6 +128,7 @@ div#bio_ep {
             width: 80%;
             height: auto;
             margin: 0 auto 20px;
+            flex-shrink: 0;
         }
 
         p {

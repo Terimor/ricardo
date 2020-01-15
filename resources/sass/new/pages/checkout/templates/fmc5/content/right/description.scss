@@ -1,5 +1,6 @@
 .description {
   display: flex;
+  flex-direction: column;
   margin-top: 10px;
 
   @media only screen and (max-width: 767px) {

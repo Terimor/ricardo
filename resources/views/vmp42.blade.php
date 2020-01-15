@@ -124,10 +124,11 @@
                             <!-- promo__installments -->
                             <div class="container">
                                 <div class="promo__installments">
-                                    <Installments
+                                    <installments
                                       popperClass="emc1-popover-variant"
                                       :extra-fields="extraFields"
-                                      :form="form" />
+                                      :form="form">
+                                    </installments>
                                 </div>
                             </div>
                             <!-- promo__installments end -->
@@ -212,7 +213,7 @@
                                                 <img
                                                         class="promo__variant-icon"
                                                         :src="variantItem.imageUrl"
-                                                        :alt="variantItem.label">
+                                                        :alt="variantItem.label" />
                                             </div>
                                         </div>
                                     </div>
@@ -249,8 +250,8 @@
                             <payment-provider-radio-list
                                 class="promo__credit-card-switcher"
                                 v-model="form.paymentProvider"
-                                @input="activateForm"
-                            />
+                                @input="activateForm">
+                            </payment-provider-radio-list>
                         </div>
 
                         <button @click="prevStep()" class="promo__back-btn"> < {{ t('checkout.payment_form.back_to_selection') }}</button>
@@ -272,8 +273,8 @@
                                 :extra-fields="extraFields"
                                 :state-extra-field="stateExtraField"
                                 :payment-method-u-r-l="paymentMethodURL"
-                                @set-payment-method-by-cardnumber="setPaymentMethodByCardNumber"
-                            />
+                                @set-payment-method-by-cardnumber="setPaymentMethodByCardNumber">
+                            </payment-form>
                         </div>
                     </div>
                 </section>
@@ -362,7 +363,8 @@
 
         <leave-modal
             v-if="+queryParams.exit === 1"
-            :show-preloader="showPreloader"/>
+            :show-preloader="showPreloader">
+        </leave-modal>
     </div>
 
     <div class="sticky-footer">

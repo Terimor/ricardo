@@ -69,8 +69,12 @@ header {
   }
 
   &__discount-image {
+    flex-shrink: 0;
     max-width: 100%;
     margin: auto 0;
+    @media all and (-ms-high-contrast:none) {
+      max-height: 300px;
+    }
     @media screen and ($s-down) {
       max-width: 30%;
       margin-top: 30px;
@@ -300,14 +304,18 @@ header {
 
     .wrapper {
       display: flex;
+      flex-direction: column;
       overflow: hidden;
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
+      height: 100%;
 
       img {
         border-radius: 50%;
         object-fit: cover;
         overflow: hidden;
+        flex-shrink: 0;
+        width: 100%;
+        height: 100%;
       }
     }
   }
@@ -374,9 +382,9 @@ header {
   }
 
   &__carousel-img {
-    width: 100%;
-    height: 75px;
-    object-fit: contain;
+    max-height: 100%;
+    max-width: 100%;
+    width: auto!important;
   }
 
   &__carousel {
@@ -646,7 +654,14 @@ header {
   }
 }
 
-.tpl-vmp41 .owl-carousel .owl-item {
+.tpl-vmp41 .owl-carousel .owl-item,
+.tpl-vmp42 .owl-carousel .owl-item {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 75px;
+  justify-content: center;
+
   [dir="rtl"] & {
     float: right;
   }

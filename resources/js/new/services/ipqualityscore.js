@@ -73,7 +73,7 @@ export default {
         if (!window.Startup) {
           let script = document.createElement('script');
           script.src = 'https://www.clkscore.com/api/*/' + js_data.ipqualityscore_api_hash + '/learn.js';
-          document.body.append(script);
+          document.body.appendChild(script);
         } else {
           IPQ.send_request();
         }

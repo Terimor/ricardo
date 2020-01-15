@@ -5,13 +5,13 @@
 
     <button
       v-show="warrantyPriceText"
-      id="warranty-field-button">
+      id="warranty-field-button"
+      @click="toggle">
 
-      <label for="warranty-field" class="label-container-checkbox">
+      <div class="label-container-checkbox">
         <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
-        <input id="warranty-field" type="checkbox" v-model="form.isWarrantyChecked">
-        <span class="checkmark"></span>
-      </label>
+        <span class="checkmark" :class="{ active: form.isWarrantyChecked }"></span>
+      </div>
 
       <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
 
@@ -70,6 +70,15 @@
 
     },
 
+
+    methods: {
+
+      toggle() {
+        this.form.isWarrantyChecked = !this.form.isWarrantyChecked;
+      },
+
+    },
+
   };
 
 </script>
@@ -95,7 +104,8 @@
     }
   }
 
-  label[for=warranty-field] {
+  .label-container-checkbox {
+    position: relative;
     font-weight: bold;
     line-height: 1.8;
     text-align: left;
@@ -137,12 +147,6 @@
         }
       }
     }
-  }
-
-  input[type=checkbox] {
-    position: absolute;
-    top: 23px;
-    left: 45px;
   }
 
   .checkmark {

@@ -110,6 +110,10 @@
       color: rgb(85, 85, 85);
     }
 
+    .iti {
+      display: flex;
+    }
+
     .iti__selected-flag {
       outline: none;
     }

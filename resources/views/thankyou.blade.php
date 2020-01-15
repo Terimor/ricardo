@@ -20,9 +20,9 @@
     js_data.product = @json($product);
     js_data.setting = @json($setting);
 
-    window.amountjs = Math.round((js_data.order_customer.products.reduce((acc, product) => acc + product.price_usd + product.warranty_price_usd, 0)) * 100) / 100;
-    window.localamountjs = Math.round((js_data.order_customer.products.reduce((acc, product) => acc + product.price + product.warranty_price, 0)) * 100) / 100;
-    window.mainsku = js_data.order_customer.products.filter(product => product.is_main)[0].sku_code;
+    window.amountjs = Math.round((js_data.order_customer.products.reduce(function(acc, product) { return acc + product.price_usd + product.warranty_price_usd }, 0)) * 100) / 100;
+    window.localamountjs = Math.round((js_data.order_customer.products.reduce(function(acc, product) { return acc + product.price + product.warranty_price }, 0)) * 100) / 100;
+    window.mainsku = js_data.order_customer.products.filter(function(product) { return product.is_main })[0].sku_code;
     window.localcurrency = js_data.order_customer.currency;
     window.orderid = js_data.order_customer._id;
   </script>
@@ -83,7 +83,7 @@
                     width="100%"
                     height="300"
                     id="gmap_canvas"
-                    :src=`https://maps.google.com/maps?q=${getShippingAddress}&amp;t=&amp;z=17&amp;ie=UTF8&amp;iwloc=&amp;output=embed`
+                    :src="'https://maps.google.com/maps?q=' + getShippingAddress + '&amp;t=&amp;z=17&amp;ie=UTF8&amp;iwloc=&amp;output=embed'"
                     frameborder="0"
                     scrolling="no"
                     marginheight="0"

@@ -75,7 +75,7 @@ if (location.pathname.startsWith('/checkout')) {
     iframe.src = iframeURL;
     iframe.style.display = 'none';
 
-    document.body.append(iframe);
+    document.body.appendChild(iframe);
   }
 }
 
@@ -111,14 +111,21 @@ window.txid = window.txidjs = txidFromGet.length >= 20
     ? txidFromCookie
     : undefined;
 
+function documentReady() {
+  // add tpl body class for checkout
+  if (location.pathname.startsWith('/checkout')) {
+    const allowed_templates = ['emc1', 'emc1b', 'vmc4', 'smc7', 'smc7p', 'fmc5', 'vmp41', 'vmp42'];
 
-// add tpl body class for checkout
-if (location.pathname.startsWith('/checkout')) {
-  const allowed_templates = ['emc1', 'emc1b', 'vmc4', 'smc7', 'smc7p', 'fmc5', 'vmp41', 'vmp42'];
+    const tpl = allowed_templates.indexOf(js_query_params.tpl) !== -1
+      ? js_query_params.tpl
+      : 'emc1';
 
-  const tpl = allowed_templates.indexOf(js_query_params.tpl) !== -1
-    ? js_query_params.tpl
-    : 'emc1';
+    document.body.classList.add('tpl-' + tpl);
+  }
+}
 
-  document.body.classList.add('tpl-' + tpl);
+if (document.readyState !== 'interactive' && document.readyState !== 'complete') {
+  document.addEventListener('DOMContentLoaded', documentReady);
+} else {
+  documentReady();
 }

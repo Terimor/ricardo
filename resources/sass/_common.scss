@@ -85,6 +85,10 @@ header {
     background-size: 100%;
 }
 
+.el-scrollbar__wrap {
+  overflow-y: scroll;
+}
+
 .green-button {
     outline: none;
     border: 1px solid #0f9b0f;
@@ -235,7 +239,8 @@ header {
 
   &_paypal {
     cursor: pointer;
-    img {
+
+    .recently-notice__right img {
       width: 120px;
     }
   }
@@ -407,6 +412,10 @@ h3 {
   [dir="rtl"] & {
     transform: rotate(-45deg) scaleX(-1);
   }
+}
+
+.label-container-checkbox .checkmark.active:after {
+  display: block;
 }
 
 /* inputs end */

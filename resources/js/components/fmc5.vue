@@ -648,12 +648,12 @@
 
       'form.deal'(value) {
         window.selectedOffer = value ? 1 : 0;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
 
       'form.paymentProvider'(value) {
         window.selectedPayment = value;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
 
     },
@@ -1512,11 +1512,13 @@
     align-self: center;
     background-color: #fff;
     border-radius: 4px;
+    flex-shrink: 0;
     max-width: 100%;
   }
 
   .mdescription {
     display: flex;
+    flex-direction: column;
     margin: 16px 24px;
 
     :global(ul) {
@@ -2027,8 +2029,11 @@
   }
 
   .product-image {
-    height: auto;
     width: 34%;
+
+    @media all and (-ms-high-contrast:none) {
+      max-height: 120px;
+    }
   }
 
   .product-name {
@@ -2081,12 +2086,14 @@
   }
 
   .product-5star {
+    flex-shrink: 0;
     margin-top: 6px;
     width: 80px;
   }
 
   .description {
     display: flex;
+    flex-direction: column;
     margin-top: 10px;
 
     @media only screen and (max-width: 767px) {
@@ -2298,6 +2305,7 @@
     }
 
     img {
+      flex-shrink: 0;
       margin-top: 7px;
       width: 100px;
     }
@@ -2330,6 +2338,7 @@
   .reviews-percent-text {
     font-size: 14px;
     font-weight: 600;
+    max-width: 100%;
   }
 
   .reviews-items {
@@ -2356,6 +2365,7 @@
     overflow: hidden;
 
     img {
+      flex-shrink: 0;
       width: 100px;
     }
   }

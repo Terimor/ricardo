@@ -9,7 +9,10 @@
 
       }
 
-      var url_query_params = Object.assign({}, stored_query_params, js_query_params);
+      var url_query_params = [].concat(Object.keys(stored_query_params)).concat(Object.keys(js_query_params)).reduce(function(acc, name) {
+        acc[name] = js_query_params[name] !== undefined ? js_query_params[name] : stored_query_params[name];
+        return acc;
+      });
 
       var url_search = ['3ds_restore=1']
         .concat(
@@ -24,7 +27,7 @@
     @endif
 
     @if (Request::get('3ds_restore') && Request::get('3ds') === 'success')
-      var url_query_params = Object.assign({}, js_query_params);
+      var url_query_params = JSON.parse(JSON.stringify(js_query_params));
 
       var url_pathname = js_data.product.upsells.length > 0
         ? '/thankyou-promos'

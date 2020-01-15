@@ -29,7 +29,7 @@ export default {
   watch: {
     'form.deal'(value) {
       window.selectedOffer = value ? 1 : 0;
-      history.pushState({}, '', '');
+      history.pushState({}, '', location.href);
     },
   },
 

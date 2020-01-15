@@ -18,8 +18,11 @@
 }
 
 .product-image {
-  height: auto;
   width: 34%;
+
+  @media all and (-ms-high-contrast:none) {
+    max-height: 120px;
+  }
 }
 
 .product-name {
@@ -72,6 +75,7 @@
 }
 
 .product-5star {
+  flex-shrink: 0;
   margin-top: 6px;
   width: 80px;
 }

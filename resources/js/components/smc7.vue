@@ -31,7 +31,7 @@
                             <div class="smc7__sale">
                                 <SaleBadge />
                             </div>
-                            <div class="d-flex flex-column smc7__deal__text">
+                            <div class="smc7__deal__text">
                                 <p v-html="freeShippingToday" />
                             </div>
 
@@ -428,11 +428,11 @@
     watch: {
       'form.deal'(value) {
         window.selectedOffer = value ? 1 : 0;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
       'form.paymentProvider'(value) {
         window.selectedPayment = value;
-        history.pushState({}, '', '');
+        history.pushState({}, '', location.href);
       },
       purchase() {
         this.refreshTopBlock();
@@ -1197,6 +1197,7 @@
             img {
                 width: 80%;
                 margin: 0 auto;
+                flex-shrink: 0;
             }
 
             &__safe {

@@ -143,6 +143,8 @@ export default {
 
     .el-progress-bar {
       &__inner {
+        align-items: center;
+        justify-content: center;
         display: flex;
         background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
         background-size: 40px 40px;
@@ -151,7 +153,6 @@ export default {
         animation: progress-bar-stripes 2s linear infinite;
 
         &Text {
-          margin: auto;
           font-weight: bold;
           font-size: 16px;
         }

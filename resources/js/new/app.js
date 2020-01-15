@@ -1,4 +1,5 @@
 import Vuelidate from 'vuelidate';
+import polyfills from './utils/polyfills';
 import mdocument from './utils/document';
 import i18n from './utils/i18n';
 import request from './utils/request';
