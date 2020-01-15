@@ -321,7 +321,7 @@ class PaymentProviders
                             'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
                         ],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '+3ds' => [
@@ -329,7 +329,7 @@ class PaymentProviders
                             'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
                         ],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'ca', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'ca', 'bz', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
                     ],
                     PaymentMethods::AMEX => [
                         '+3ds' => [
@@ -988,13 +988,13 @@ class PaymentProviders
                     PaymentMethods::VISA => [
                         // '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                         // '-3ds' => ['*'],
-                        '-3ds' => ['ca', 'us'],
+                        '-3ds' => ['ca', 'gb', 'us'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         // '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
                         // '-3ds' => ['*'],
-                        '-3ds' => ['ca', 'us'],
+                        '-3ds' => ['ca', 'gb', 'us'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]
                 ],

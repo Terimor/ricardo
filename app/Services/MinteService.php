@@ -30,6 +30,7 @@ class MinteService
     const COUNTRY_CURRENCY = [
         'us' => ['USD'],
         'ca' => ['CAD', 'USD'],
+        'gb' => ['GBP', 'USD'],
         '*'  => [
             'CAD', 'EUR', 'GBP', 'USD'
             // 'CAD', 'USD', 'EUR', 'GBP','CHF', 'SEK', 'DKK', 'NOK', 'JPY', 'KRW', 'AUD', 'NZD', 'ZAR', 'AED', 'PLN', 'CZK', 'HUF',
