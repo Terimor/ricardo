@@ -408,7 +408,7 @@ class AffiliateService
               $product = OdinProduct::getBySku($request->get('product'), false);
               if ($product) {
                   $prices = $product['prices'];
-                  $priceSet = $prices['price_set'] ?? $priceSet;
+                  $priceSet = $prices['price_set'] ?? null;
               } else {
                   logger()->warning("CantFindProductApply", ['url' => $url]);
               }
