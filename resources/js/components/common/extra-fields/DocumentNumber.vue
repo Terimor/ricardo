@@ -41,9 +41,7 @@
     computed: {
 
       textTitle() {
-        return this.extraFields.document_type
-          ? this.form.document_type
-          : 'CPF';
+        return this.$t('checkout.payment_form.document_number.title');
       },
 
       textRequired() {
