@@ -44,13 +44,14 @@
     <input
       type="text"
       class="input-field-input{{ !empty($monospace) ? ' monospace' : '' }}"
+      @input.touch="input_touch({{ $validation }})"
       @if (!empty($label_code) && !empty($placeholder)) :placeholder="{{ $label_code }}" @endif
       @if (!empty($label) && !empty($placeholder)) placeholder="{{ $label }}" @endif
       @if (!empty($model)) v-model="{{ $model }}" @endif
       @if (!empty($input)) @input="{{ $input }}" @endif
       @if (!empty($focus)) @focus="{{ $focus }}" @endif
       @if (!empty($blur)) @blur="{{ $blur }}" @endif
-      @input.touch="{{ $validation }}.$touch" />
+    />
 
   </div>
 

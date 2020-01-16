@@ -21,9 +21,10 @@
 
     <select
       class="select-field-input"
+      @input.touch="input_touch({{ $validation }})"
       @if (!empty($model)) v-model="{{ $model }}" @endif
       @if (!empty($change)) @change="{{ $change }}" @endif
-      @change.touch="{{ $validation }}.$touch">
+    >
 
       @if (!empty($placeholder))
         <option

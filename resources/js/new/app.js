@@ -30,6 +30,10 @@ export default {
       return !!document.querySelector('html[dir="rtl"]');
     },
 
+    is_ie11() {
+      return window.navigator && navigator.userAgent && /Trident/.test(navigator.userAgent) || false;
+    },
+
     is_affid_empty() {
       return (!js_query_params.aff_id || js_query_params.aff_id === '0')
         && (!js_query_params.affid || js_query_params.affid === '0');

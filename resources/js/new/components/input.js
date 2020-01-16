@@ -2,6 +2,12 @@ export default {
 
   methods: {
 
+    input_touch($v) {
+      if (!$v.$dirty && (!this.is_ie11 || $v.$model !== '')) {
+        $v.$touch();
+      }
+    },
+
     input_cut_mask(mask, value) {
       value = value || '';
       return '&nbsp;'.repeat(value.length) + mask.substr(value.length);

@@ -34,6 +34,9 @@
     },
     methods: {
       input (e) {
+        if (window.navigator && navigator.userAgent && /Trident/.test(navigator.userAgent) && e.target.value === '' && this.validation && !this.validation.$dirty) {
+          return;
+        }
         this.$emit('input', e.target.value)
         if (this.validation) {
           this.validation.$touch()
