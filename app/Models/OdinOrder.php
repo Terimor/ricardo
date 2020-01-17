@@ -29,6 +29,7 @@ class OdinOrder extends OdinModel
     const DEVICE_TABLET = 'tablet';
     const DEVICE_TV = 'tv';
     const DEVICE_CONSOLE = 'console';
+    const DEVICE_PHABLET = 'phablet'; // not in use, replace to tablet
 
     public static $devices = [
         self::DEVICE_DESKTOP => 'PC',
