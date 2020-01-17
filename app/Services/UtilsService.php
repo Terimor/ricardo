@@ -1009,24 +1009,20 @@ class UtilsService
     public static function getUserAgentParseData(): array
     {
         $userAgent = request()->header('user-agent');
+        $ip = request()->ip();
+        $deviceType = null;
         try {
             $data = new DeviceDetector($userAgent);
             $data->parse();
             $deviceType = $data->getDeviceName();
-
             $browser = $data->getClient();
             $browser = $browser['name'] ?? null;
-
-            if (!in_array($deviceType, OdinOrder::$devices)) {
-                $ip = request()->ip();
-                throw new BaseOdinException([
-                    'device_type' => $deviceType,
-                    'ip' => $ip
-                ], "Wrong device type {$deviceType} - {$ip}");
-            }
-
         } catch (\Exception $ex) {
+            logger()->error($ex->getMessage(), ['ip' => $ip]);
+        }
 
+        if (!in_array($deviceType, OdinOrder::$devices)) {
+            logger()->error(str_repeat('*', 50)." Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType]);
         }
 
         return [
