@@ -24,6 +24,20 @@ class OdinOrder extends OdinModel
     const EVENT_AFF_PIXEL_SHOWN = 'aff_pixel_shown';
     const EVENT_GTM_SHOWN = 'aff_gtm_shown';
 
+    const DEVICE_DESKTOP = 'desktop';
+    const DEVICE_SMARTPHONE = 'smartphone';
+    const DEVICE_TABLET = 'tablet';
+    const DEVICE_TV = 'tv';
+    const DEVICE_CONSOLE = 'console';
+
+    public static $devices = [
+        self::DEVICE_DESKTOP => 'PC',
+        self::DEVICE_SMARTPHONE => 'Mobile',
+        self::DEVICE_TABLET => 'Tablet',
+        self::DEVICE_CONSOLE => 'Console',
+        self::DEVICE_TV => 'TV'
+    ];
+
     public static $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];
     public static $acceptedTxnFlaggedStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED];
 
@@ -38,6 +52,9 @@ class OdinOrder extends OdinModel
         'currency' => null, // * enum string
         'exchange_rate' => null, // * float
         'fingerprint' => null,
+        'device_type' => null, // enum ['dekstop', 'smartphone', 'tablet', 'console', 'tv']
+        'browser' => null, // user browser
+        'user_agent' => null, // user agent
         'total_paid' => null, // * float amount totally paid in local currency; decreases after refund
         'total_paid_usd' => null, // Full USD paid amount (with warranty); calculated from local paid amount using exchange rate; recalculated after refund.
         'total_price' => null, // * float full price in local currency (with warranty)
@@ -188,6 +205,13 @@ class OdinOrder extends OdinModel
                     }
                 }
             }
+
+            // set device, browser, user agent
+            $userAgentData = \Utils::getUserAgentParseData();
+            $model->user_agent = $userAgentData['user_agent'] ?? null;
+            $model->device_type = $userAgentData['device_type'] ?? null;
+            $model->browser = $userAgentData['browser'] ?? null;
+
         });
 
         self::updated(function($model) {

@@ -5,9 +5,11 @@ use App\Models\Setting;
 use App\Models\Pixel;
 use App\Models\AwsImage;
 use App\Models\Domain;
+use App\Models\OdinOrder;
 use MongoDB\BSON\UTCDateTime;
 use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
+use DeviceDetector\DeviceDetector;
 
 /**
  * Utils Service class
@@ -995,5 +997,31 @@ class UtilsService
         }
 
         return $address;
+    }
+
+    /**
+     * Get user data from user agent
+     * https://github.com/matomo-org/device-detector
+     * @return array
+     */
+    public static function getUserAgentParseData(): array
+    {
+        $userAgent = request()->header('user-agent');
+        $data = new DeviceDetector($userAgent);
+        $data->parse();
+        $deviceType = $data->getDeviceName();
+
+        if (!in_array($deviceType, OdinOrder::$devices)) {
+            logger()->warning('WrongDeviceType', [$deviceType]);
+        }
+
+        $browser = $data->getClient();
+        $browser = $browser['name'] ?? null;
+
+        return [
+            'user_agent' => $userAgent,
+            'device_type' => $deviceType,
+            'browser' => $browser
+        ];
     }
 }

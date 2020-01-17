@@ -32,6 +32,7 @@
         "mongodb/mongodb": "1.4.3",
         "ocramius/package-versions": "^1.5",
         "paypal/paypal-checkout-sdk": "^1.0",
+        "piwik/device-detector": "^3.12",
         "predis/predis": "^1.1",
         "sentry/sentry-laravel": "^1.2",
         "srmklive/paypal": "^1.6",
