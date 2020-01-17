@@ -259,7 +259,7 @@ class EbanxService
                 $result['value']    = $res['payment']['amount_ext'];
                 $result['status']   = self::mapPaymentStatus($res['payment']['status'], true);
             } else {
-                logger()->warning("Ebanx cancelled", ['reply' => \json_encode($res)]);
+                logger()->warning("Ebanx cancelled", ['reply' => json_encode($res)]);
             }
         } catch (\Exception $ex) {
             logger()->warning("Ebanx info", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);

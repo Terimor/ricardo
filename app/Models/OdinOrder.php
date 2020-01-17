@@ -555,6 +555,7 @@ class OdinOrder extends OdinModel
      * @param string $hash
      * @param bool $throwable default=true
      * @return array|null
+     * @throws ProductNotFoundException
      */
     public function getProductByTxnHash(string $hash, bool $throwable = true): ?array
     {

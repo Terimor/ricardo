@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\PaymentException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\PaymentCardMinte3dsRequest;
@@ -31,6 +32,26 @@ class CardService {
     const CACHE_TOKEN_TTL_MIN   = 15;
 
     /**
+     * @param OdinOrder $order
+     * @param string $provider
+     * @param string|null $cc_tkn
+     * @param string|null $payer_id
+     * @return bool
+     */
+    private static function isUpsellsAvailable(OdinOrder $order, string $provider, ?string $cc_tkn, ?string $payer_id): bool
+    {
+        $is_upsells_possible = (new OrderService())->checkIfUpsellsPossible($order);
+        if ($is_upsells_possible) {
+            if (!in_array($provider, [PaymentProviders::BLUESNAP, PaymentProviders::STRIPE])) {
+                $is_upsells_possible = !!$cc_tkn;
+            } else {
+                $is_upsells_possible = !!$payer_id;
+            }
+        }
+        return $is_upsells_possible;
+    }
+
+    /**
      * Creates a new order
      * @param PaymentCardCreateOrderRequest $req
      * @return array
@@ -42,6 +63,7 @@ class CardService {
      * @throws \App\Exceptions\PaymentException
      * @throws \App\Exceptions\ProductNotFoundException
      * @throws \App\Exceptions\TxnNotFoundException
+     * @throws \Exception
      */
     public static function createOrder(PaymentCardCreateOrderRequest $req): array
     {
@@ -247,6 +269,24 @@ class CardService {
                     $payment['capture_hash'] = $capture['hash'];
                 }
                 break;
+            case PaymentProviders::STRIPE:
+                $handle = new StripeService($api);
+                $payment = $handle->payByCard($card, $contact, [
+                    '3ds' => PaymentService::checkIs3dsNeeded(
+                        $method,
+                        $contact['country'],
+                        PaymentProviders::MINTE,
+                        $order->affiliate,
+                        (array)$ipqs
+                    ),
+                    'amount' => $order->total_price,
+                    'currency' => $order->currency,
+                    'order_id' => $order->getIdAttribute(),
+                    'order_number' => $order->number,
+                    'installments' => $installments,
+                    'billing_descriptor' => $order->billing_descriptor
+                ]);
+                break;
         endswitch;
 
         PaymentService::addTxnToOrder($order, $payment, [
@@ -324,24 +364,10 @@ class CardService {
         $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
         $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
 
-        // prepare upsells result
-        $upsells = array_map(function($v) {
-            $v['status'] = PaymentService::STATUS_FAIL;
-            return $v;
-        }, $upsells);
+        $card_token = self::getCardToken($order->number);
 
-        $card_token = null;
-        $is_upsells_possible = (new OrderService())->checkIfUpsellsPossible($order);
-        if ($is_upsells_possible) {
-            if ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
-                $is_upsells_possible = !!$order_main_txn['payer_id'];
-            } else {
-                $card_token = self::getCardToken($order->number);
-                $is_upsells_possible = !!$card_token;
-            }
-        }
-
-        if ($is_upsells_possible) {
+        $payment = ['status' => Txn::STATUS_FAILED];
+        if (self::isUpsellsAvailable($order, $order_main_txn['payment_provider'], $card_token, $order_main_txn['payer_id'])) {
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
@@ -373,46 +399,48 @@ class CardService {
             $api = PaymentApiService::getById($order_main_txn['payment_api_id']);
             if ($checkout_price >= OdinProduct::MIN_PRICE && $api) {
                 $checkout_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
-                if ($api->payment_provider === PaymentProviders::APPMAX) {
-                    $appmax = new AppmaxService($api);
-                    $payment = $appmax->payByToken(
-                        $card_token,
-                        [
-                            'street'            => $order->shipping_street,
-                            'city'              => $order->shipping_city,
-                            'country'           => $order->shipping_country,
-                            'state'             => $order->shipping_state,
-                            'district'          => $order->shipping_street2,
-                            'building'          => $order->shipping_building,
-                            'complement'        => $order->shipping_apt,
-                            'zip'               => $order->shipping_zip,
-                            'email'             => $order->customer_email,
-                            'first_name'        => $order->customer_first_name,
-                            'last_name'         => $order->customer_last_name,
-                            'phone'             => $order->customer_phone,
-                            'ip'                => $req->ip()
-                        ],
-                        array_map(function($item) use($products) {
-                            return [
-                                'sku'   => $item['sku_code'],
-                                'qty'   => $item['quantity'],
-                                'name'  => $products[$item['sku_code']]->product_name,
-                                'desc'  => $products[$item['sku_code']]->long_name,
-                                'image'  => $products[$item['sku_code']]->logo_image,
-                                'amount' => $item['price']
-                            ];
-                        }, $upsell_products),
-                        [
-                            'amount'        => $checkout_price,
-                            'order_id'      => $order->getIdAttribute(),
-                            'currency'      => $order->currency,
-                            'installments'  => $order->installments,
-                            'document_number' => $order->customer_doc_id
-                        ]
-                    );
-                } elseif ($api->payment_provider === PaymentProviders::EBANX) {
-                    $ebanx = new EbanxService($api);
-                    $payment = $ebanx->payByToken(
+                switch ($api->payment_provider):
+                    case PaymentProviders::APPMAX:
+                        $handler = new AppmaxService($api);
+                        $payment = $handler->payByToken(
+                            $card_token,
+                            [
+                                'street'            => $order->shipping_street,
+                                'city'              => $order->shipping_city,
+                                'country'           => $order->shipping_country,
+                                'state'             => $order->shipping_state,
+                                'district'          => $order->shipping_street2,
+                                'building'          => $order->shipping_building,
+                                'complement'        => $order->shipping_apt,
+                                'zip'               => $order->shipping_zip,
+                                'email'             => $order->customer_email,
+                                'first_name'        => $order->customer_first_name,
+                                'last_name'         => $order->customer_last_name,
+                                'phone'             => $order->customer_phone,
+                                'ip'                => $req->ip()
+                            ],
+                            array_map(function($item) use($products) {
+                                return [
+                                    'sku'   => $item['sku_code'],
+                                    'qty'   => $item['quantity'],
+                                    'name'  => $products[$item['sku_code']]->product_name,
+                                    'desc'  => $products[$item['sku_code']]->long_name,
+                                    'image'  => $products[$item['sku_code']]->logo_image,
+                                    'amount' => $item['price']
+                                ];
+                            }, $upsell_products),
+                            [
+                                'amount'        => $checkout_price,
+                                'order_id'      => $order->getIdAttribute(),
+                                'currency'      => $order->currency,
+                                'installments'  => $order->installments,
+                                'document_number' => $order->customer_doc_id
+                            ]
+                        );
+                        break;
+                    case PaymentProviders::EBANX:
+                        $handler = new EbanxService($api);
+                        $payment = $handler->payByToken(
                         $card_token,
                         [
                             'street'            => $order->shipping_street,
@@ -447,77 +475,84 @@ class CardService {
                             'payment_api_id' => $order_main_txn['payment_api_id']
                         ]
                     );
-                } elseif ($api->payment_provider === PaymentProviders::CHECKOUTCOM) {
-                    $checkout = new CheckoutDotComService($api);
-                    $payment = $checkout->payByToken(
-                        $card_token,
-                        ['payer_id' => $order_main_txn['payer_id'], 'ip' => $order->ip],
-                        [
-                            'amount'    => $checkout_price,
-                            'currency'  => $order->currency,
-                            'id'        => $order->getIdAttribute(),
-                            'number'    => $order->number,
-                            'description' => implode(', ', array_column($products, 'product_name')),
-                            // TODO: remove city hardcode
-                            'billing_descriptor' => [
-                                'name' => $order->billing_descriptor,
-                                'city' => 'Msida'
+                        break;
+                    case PaymentProviders::CHECKOUTCOM:
+                        $handler = new CheckoutDotComService($api);
+                        $payment = $handler->payByToken(
+                            $card_token,
+                            ['payer_id' => $order_main_txn['payer_id'], 'ip' => $order->ip],
+                            [
+                                'amount'    => $checkout_price,
+                                'currency'  => $order->currency,
+                                'id'        => $order->getIdAttribute(),
+                                'number'    => $order->number,
+                                'description' => implode(', ', array_column($products, 'product_name')),
+                                // TODO: remove city hardcode
+                                'billing_descriptor' => [
+                                    'name' => $order->billing_descriptor,
+                                    'city' => 'Msida'
+                                ]
                             ]
-                        ]
-                    );
-                } elseif ($api->payment_provider === PaymentProviders::MINTE) {
-                    $minte = new MinteService($api);
-                    $payment = $minte->payByToken(
-                        $card_token,
-                        [
-                            'street'        => $order->shipping_street,
-                            'city'          => $order->shipping_city,
-                            'country'       => $order->shipping_country,
-                            'state'         => $order->shipping_state,
-                            'zip'           => $order->shipping_zip,
-                            'email'         => $order->customer_email,
-                            'first_name'    => $order->customer_first_name,
-                            'last_name'     => $order->customer_last_name,
-                            'phone'         => $order->customer_phone,
-                            'ip'            => $req->ip()
-                        ],
-                        [
-                            'amount'    => $checkout_price,
-                            'currency'  => $order->currency,
-                            'order_id'  => $order->getIdAttribute(),
-                            'order_number'  => $order->number,
-                            'user_agent'    => $user_agent,
-                            'descriptor'    => $order->billing_descriptor
-                        ]
-                    );
-                    if ($payment['status'] === Txn::STATUS_CAPTURED) {
-                        $capture = $minte->capture($payment['hash'], ['amount' => $checkout_price, 'currency' => $order->currency]);
-                        PaymentService::logTxn(array_merge($capture, ['payment_method' => $order_main_txn['payment_method']]));
-                        $payment['status'] = $capture['status'];
-                        $payment['capture_hash'] = $capture['hash'];
-                    }
-                } elseif ($api->payment_provider === PaymentProviders::BLUESNAP) {
-                    $bluesnap = new BluesnapService($api);
-                    $payment = $bluesnap->payByVaultedShopperId(
-                        $order_main_txn['payer_id'],
-                        [
-                            'amount'    => $checkout_price,
-                            'currency'  => $order->currency,
-                            'billing_descriptor' => $order->billing_descriptor
-                        ]
-                    );
-                }
-
-                // update order
-                $upsells = array_map(function($v) use ($payment) {
-                    if (in_array($payment['status'], [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED])) {
-                        $v['status'] = PaymentService::STATUS_OK;
-                    } else {
-                        $v['status'] = PaymentService::STATUS_FAIL;
-                        $v['errors'] = $payment['errors'];
-                    }
-                    return $v;
-                }, $upsells);
+                        );
+                        break;
+                    case PaymentProviders::MINTE:
+                        $handler = new MinteService($api);
+                        $payment = $handler->payByToken(
+                            $card_token,
+                            [
+                                'street'        => $order->shipping_street,
+                                'city'          => $order->shipping_city,
+                                'country'       => $order->shipping_country,
+                                'state'         => $order->shipping_state,
+                                'zip'           => $order->shipping_zip,
+                                'email'         => $order->customer_email,
+                                'first_name'    => $order->customer_first_name,
+                                'last_name'     => $order->customer_last_name,
+                                'phone'         => $order->customer_phone,
+                                'ip'            => $req->ip()
+                            ],
+                            [
+                                'amount'    => $checkout_price,
+                                'currency'  => $order->currency,
+                                'order_id'  => $order->getIdAttribute(),
+                                'order_number'  => $order->number,
+                                'user_agent'    => $user_agent,
+                                'descriptor'    => $order->billing_descriptor
+                            ]
+                        );
+                        if ($payment['status'] === Txn::STATUS_CAPTURED) {
+                            $capture = $handler->capture($payment['hash'], ['amount' => $checkout_price, 'currency' => $order->currency]);
+                            PaymentService::logTxn(array_merge($capture, ['payment_method' => $order_main_txn['payment_method']]));
+                            $payment['status'] = $capture['status'];
+                            $payment['capture_hash'] = $capture['hash'];
+                        }
+                        break;
+                    case PaymentProviders::BLUESNAP:
+                        $handler = new BluesnapService($api);
+                        $payment = $handler->payByVaultedShopperId(
+                            $order_main_txn['payer_id'],
+                            [
+                                'amount'    => $checkout_price,
+                                'currency'  => $order->currency,
+                                'billing_descriptor' => $order->billing_descriptor
+                            ]
+                        );
+                        break;
+                    case PaymentProviders::STRIPE:
+                        $handler = new StripeService($api);
+                        $payment = $handler->payBySavedCard(
+                            $order_main_txn['payer_id'],
+                            [
+                                'amount' => $checkout_price,
+                                'currency' => $order->currency,
+                                'order_id' => $order->getIdAttribute(),
+                                'order_number' => $order->number,
+                                'installments' => $order->installments,
+                                'billing_descriptor' => $order->billing_descriptor
+                            ]
+                        );
+                        break;
+                endswitch;
 
                 // NOTE: re-request order to prevent race condition
                 $order = OdinOrder::getById($order->getIdAttribute());
@@ -548,22 +583,10 @@ class CardService {
                         throw new OrderUpdateException(json_encode($validator->errors()->all()));
                     }
                 }
-
-                // approve order if txn is approved
-                if ($payment['status'] === Txn::STATUS_APPROVED) {
-                    $order = PaymentService::approveOrder($payment, $payment['payment_provider']);
-                }
             }
         }
 
-        return [
-            'order_currency'    => $order->currency,
-            'order_number'      => $order->number,
-            'order_id'          => $order->getIdAttribute(),
-            'id'                => $order_main_product['txn_hash'],
-            'status'            => $order_main_txn['status'] !== Txn::STATUS_FAILED ? PaymentService::STATUS_OK : PaymentService::STATUS_FAIL,
-            'upsells'           => $upsells
-        ];
+        return PaymentService::generateCreateUpsellsOrderResult($order, $upsells, $payment);
     }
 
     /**
@@ -667,6 +690,7 @@ class CardService {
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\ProductNotFoundException
      * @throws \App\Exceptions\TxnNotFoundException
+     * @throws \Exception
      */
     public static function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id): array
     {
@@ -747,6 +771,49 @@ class CardService {
     }
 
     /**
+     * Stripe 3ds redirect
+     * @param string $order_id
+     * @param string $pi_id
+     * @return array
+     * @throws OrderUpdateException
+     * @throws PaymentException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     * @throws \Exception
+     */
+    public static function stripe3ds(string $order_id, string $pi_id): array
+    {
+        $order = OdinOrder::getById($order_id); // throwable
+        $order_txn = $order->getTxnByHash($pi_id); // throwable
+        $order_product = $order->getProductByTxnHash($order_txn['hash']); // throwable
+
+        $stripe = new StripeService(PaymentApiService::getById($order_txn['payment_api_id']));
+
+        $pinfo = $stripe->getPaymentInfo($pi_id);
+
+        $result = ['status' => false, 'result' => false, 'is_main' => $order_product['is_main']];
+        if ($pinfo['status']) {
+            $result['status'] = true;
+            switch ($pinfo['txn']['status']):
+                case Txn::STATUS_APPROVED:
+                    PaymentService::approveOrder($pinfo['txn'], PaymentProviders::STRIPE);
+                case Txn::STATUS_AUTHORIZED:
+                case Txn::STATUS_CAPTURED:
+                    $result['result'] = true;
+                    break;
+                case Txn::STATUS_FAILED:
+                    PaymentService::rejectTxn($pinfo['txn'], PaymentProviders::STRIPE);
+                    PaymentService::cacheOrderErrors(array_merge($pinfo['txn'], ['number' => $order->number]));
+                    break;
+            endswitch;
+        } else {
+            PaymentService::cacheOrderErrors(array_merge($pinfo['txn'], ['number' => $order->number]));
+        }
+
+        return $result;
+    }
+
+    /**
      * Approves order by ebanx hashes
      * @param array $hashes
      * @return void
@@ -773,7 +840,7 @@ class CardService {
 
             $ebanx = new EbanxService(PaymentApiService::getById($txn['payment_api_id']));
 
-            $payment = $ebanx->requestStatusByHash($hash, $txn ?? []);
+            $payment = $ebanx->requestStatusByHash($hash);
 
             if (!empty($payment['number'])) {
                 // prevention of race condition
@@ -989,6 +1056,31 @@ class CardService {
         if ($token) {
             $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_TOKEN_TTL_MIN . "M"));
             Cache::put(self::CACHE_TOKEN_PREFIX . $order_number, $token, $dt);
+        }
+    }
+
+    /**
+     * Handles stripe webhook
+     * @param string $sign
+     * @param string $payload
+     * @return void
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     * @throws OrderUpdateException
+     */
+    public static function stripeWebhook(string $sign, string $payload): void
+    {
+        $pi = StripeService::extractPaymentIntent($payload);
+        if (!empty($pi)) {
+            $order = OdinOrder::getByTxnHash($pi->id, PaymentProviders::STRIPE); //throwable
+            $order_txn = $order->getTxnByHash($pi->id); // throwable
+
+            $stripe = new StripeService(PaymentApiService::getById($order_txn['payment_api_id']));
+            $reply = $stripe->validateWebhook($sign, $payload);
+
+            if ($reply['status']) {
+                PaymentService::approveOrder($reply['txn'], PaymentProviders::STRIPE);
+            }
         }
     }
 }

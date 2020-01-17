@@ -12,7 +12,7 @@ class PaymentProviders
     const MINTE         = 'minte';
     const PAYPAL_HK     = 'paypal_hk';
     const APPMAX        = 'appmax';
-
+    const STRIPE        = 'stripe';
     /**
      * Payment providers
      * @var type
@@ -1568,6 +1568,27 @@ class PaymentProviders
                     PaymentMethods::ELO => [
                         '-3ds' => ['br']
                     ]
+                ],
+                'fallback' => []
+            ]
+        ],
+        self::STRIPE => [
+            'name'      => 'Stripe Card',
+            'is_active' => false,
+            'is_main'   => true,
+            'is_fallback' => false,
+            'in_prod'   => false,
+            'fraud_setting' => [
+                '3ds_limit' => 101,
+                'fallback_limit' => 99,
+                'refuse_limit' => 101
+            ],
+            'extra_fields'  => [/*...*/],
+            'methods'   => [
+                'main' => [
+                    PaymentMethods::VISA => [
+                        '-3ds' => ['ru']
+                    ],
                 ],
                 'fallback' => []
             ]

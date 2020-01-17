@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\PaymentException;
 use App\Services\ApmService;
 use App\Services\BluesnapService;
 use App\Services\CardService;
@@ -14,6 +15,7 @@ use App\Http\Requests\CreateApmOrderRequest;
 use App\Http\Requests\PaymentCardBs3dsRequest;
 use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\CreateApmUpsellsOrderRequest;
+use App\Http\Requests\PaymentCardStripe3dsRequest;
 use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
 use App\Http\Requests\GetPaymentMethodsByCountryRequest;
@@ -21,42 +23,68 @@ use App\Constants\PaymentProviders;
 use App\Models\Txn;
 use Illuminate\Http\Request;
 
+/**
+ * Class PaymentsController
+ * @package App\Http\Controllers
+ */
 class PaymentsController extends Controller
 {
     /**
      * Creates card payment
-     * @param  PaymentCardCreateOrderRequest $req
+     * @param PaymentCardCreateOrderRequest $req
      * @return array
+     * @throws \App\Exceptions\CustomerUpdateException
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\PaymentException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\ProviderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
-    public function createCardOrder(PaymentCardCreateOrderRequest $req)
+    public function createCardOrder(PaymentCardCreateOrderRequest $req): array
     {
         return CardService::createOrder($req);
     }
 
     /**
      * Creates APM
-     * @param  CreateApmOrderRequest $req
+     * @param CreateApmOrderRequest $req
      * @return array
+     * @throws \App\Exceptions\CustomerUpdateException
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\PaymentException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\ProviderNotFoundException
      */
-    public function createApmOrder(CreateApmOrderRequest $req)
+    public function createApmOrder(CreateApmOrderRequest $req): array
     {
         return ApmService::createOrder($req);
     }
 
     /**
      * Creates APM upsells
-     * @param  CreateApmOrderRequest $req
+     * @param CreateApmUpsellsOrderRequest $req
      * @return array
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
-    public function createApmUpsellsOrder(CreateApmUpsellsOrderRequest $req)
+    public function createApmUpsellsOrder(CreateApmUpsellsOrderRequest $req): array
     {
         return ApmService::createUpsellsOrder($req);
     }
 
     /**
      * Creates card upsells payment
-     * @param  PaymentCardCreateUpsellsOrderRequest $req
+     * @param PaymentCardCreateUpsellsOrderRequest $req
      * @return array
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public function createCardUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req)
     {
@@ -65,18 +93,24 @@ class PaymentsController extends Controller
 
     /**
      * Resolves BS 3ds payment
-     * @param  PaymentCardBs3dsRequest $req
+     * @param PaymentCardBs3dsRequest $req
      * @return array
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
-    public function completeBs3dsOrder(PaymentCardBs3dsRequest $req)
+    public function completeBs3dsOrder(PaymentCardBs3dsRequest $req): array
     {
         return CardService::completeBs3dsOrder($req->input('order_id'), $req->input('3ds_ref'));
     }
 
     /**
      * Returns order errors
-     * @param  PaymentCardOrderErrorsRequest $req
+     * @param PaymentCardOrderErrorsRequest $req
      * @return array
+     * @throws \App\Exceptions\OrderNotFoundException
      */
     public function getCardOrderErrors(PaymentCardOrderErrorsRequest $req)
     {
@@ -97,8 +131,12 @@ class PaymentsController extends Controller
 
     /**
      * Bluesnap webhook endpoint
-     * @param  Request $req
+     * @param Request $req
      * @return string
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public function bluesnapWebhook(Request $req): string
     {
@@ -125,8 +163,12 @@ class PaymentsController extends Controller
 
     /**
      * Accepts checkout.com charges.captured webhook
-     * @param  Request $req
+     * @param Request $req
      * @return void
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public function checkoutDotComCapturedWebhook(Request $req)
     {
@@ -152,8 +194,12 @@ class PaymentsController extends Controller
 
     /**
      * Checkout.com failed webhook
-     * @param  Request $req
+     * @param Request $req
      * @return void
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public function checkoutDotComFailedWebhook(Request $req): void
     {
@@ -181,8 +227,12 @@ class PaymentsController extends Controller
 
     /**
      * Ebanx notification
-     * @param  Request $req
+     * @param Request $req
      * @return void
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public function ebanxWebhook(Request $req)
     {
@@ -198,8 +248,11 @@ class PaymentsController extends Controller
 
     /**
      * Appmax webhook
-     * @param  Request $req
+     * @param Request $req
      * @return void
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public function appmaxWebhook(Request $req): void
     {
@@ -217,10 +270,35 @@ class PaymentsController extends Controller
     }
 
     /**
+     * Stripe webhook
+     * @param Request $req
+     * @return void
+     * @throws \Exception
+     */
+    public function stripeWebhook(Request $req): void
+    {
+        $sign = $req->header('Stripe-Signature');
+        $payload = $req->getContent();
+
+        if (!$sign || !$payload) {
+            logger()->error('Stripe malformed wh', ['ip' => $req->ip(), 'sign' => $sign, 'body' => $payload]);
+            throw new \Exception('malformed wh data');
+        }
+
+        CardService::stripeWebhook($sign, $payload);
+    }
+
+    /**
      * Mint-e redirect after 3ds
      * @param PaymentCardMinte3dsRequest $req
      * @param string $order_id
-     * @return void
+     * @return \Illuminate\Routing\Redirector
+     * @throws AuthException
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
     {
@@ -244,9 +322,15 @@ class PaymentsController extends Controller
 
     /**
      * Mint-e redirect after APM
-     * @param  ApmRedirectRequest $req
-     * @param  string             $order_id
-     * @return type
+     * @param ApmRedirectRequest $req
+     * @param string $order_id
+     * @return \Illuminate\Routing\Redirector
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     * @throws \Exception
      */
     public function minteApm(ApmRedirectRequest $req, string $order_id)
     {
@@ -266,6 +350,32 @@ class PaymentsController extends Controller
         $path = $reply['is_main'] ? '/checkout' : '/thankyou';
 
         return redirect("{$path}?order={$order_id}&apm={$status}");
+    }
+
+    /**
+     * Stripe redirect after 3ds
+     * @param PaymentCardStripe3dsRequest $req
+     * @param string $order_id
+     * @return \Illuminate\Routing\Redirector
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\PaymentException
+     * @throws \App\Exceptions\TxnNotFoundException
+     */
+    public function stripe3ds(PaymentCardStripe3dsRequest $req, string $order_id)
+    {
+        $pi_id = $req->input('payment_intent');
+
+        $reply = CardService::stripe3ds($order_id, $pi_id);
+
+        if (!$reply['status']) {
+            logger()->warning('Stripe 3ds redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+        }
+
+        $path = $reply['is_main'] ? '/checkout' : '/thankyou';
+        $status = $reply['result'] ? 'success' : 'failure';
+
+        return redirect("{$path}?order={$order_id}&3ds={$status}");
     }
 
     public function test(Request $req)

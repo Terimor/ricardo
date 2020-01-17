@@ -137,6 +137,47 @@ class PaymentService
     }
 
     /**
+     * Generates result of upsells order
+     * @param OdinOrder $order
+     * @param array $upsells
+     * @param array $payment
+     * @return array
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     */
+    public static function generateCreateUpsellsOrderResult(OdinOrder $order, array $upsells, array $payment): array
+    {
+        if (in_array($payment['status'], [Txn::STATUS_AUTHORIZED, Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED])) {
+            foreach ($upsells as $key => $item) {
+                if (!isset($item['status'])) {
+                    $upsells[$key]['status'] = self::STATUS_OK;
+                }
+            }
+        } else {
+            foreach ($upsells as $key => $item) {
+                $upsells[$key]['status'] = self::STATUS_FAIL;
+            }
+        }
+
+        // approve order if txn is approved
+        if ($payment['status'] === Txn::STATUS_APPROVED) {
+            $order = PaymentService::approveOrder($payment, $payment['payment_provider']);
+        }
+
+        return array_filter([
+            'errors'         => $payment['errors'] ?? null,
+            'id'             => $payment['hash'] ?? null,
+            'order_id'       => $order->getIdAttribute(),
+            'order_number'   => $order->number,
+            'order_currency' => $order->currency,
+            'redirect_url'   => $payment['redirect_url'] ?? null,
+            'status'         => $payment['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
+            'upsells'        => $upsells,
+        ]);
+    }
+
+    /**
      * Returns OdinProduct by cop_id or sku
      * @param string|null $cop_id
      * @param string|null $sku
@@ -511,6 +552,8 @@ class PaymentService
                 return MinteService::getCurrencyByCountry($country, $currency);
             case PaymentProviders::APPMAX:
                 return AppmaxService::getCurrencyByCountry($country, $currency);
+            case PaymentProviders::STRIPE:
+                return StripeService::getSupportedCurrency($currency);
             default:
                 return $currency;
         endswitch;

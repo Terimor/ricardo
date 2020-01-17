@@ -164,16 +164,8 @@ class ApmService {
         $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
         $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
 
-        // prepare upsells result
-        $upsells = array_map(function($v) {
-            $v['status'] = PaymentService::STATUS_FAIL;
-            return $v;
-        }, $upsells);
-
-        $is_upsells_possible = (new OrderService())->checkIfUpsellsPossible($order);
-
         $payment = [];
-        if ($is_upsells_possible && PaymentService::isApm($order_main_txn['payment_method'])) {
+        if ((new OrderService())->checkIfUpsellsPossible($order) && PaymentService::isApm($order_main_txn['payment_method'])) {
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
@@ -233,17 +225,6 @@ class ApmService {
                         break;
                 endswitch;
 
-                // update order
-                $upsells = array_map(function($v) use ($payment) {
-                    if ($payment['status'] === Txn::STATUS_AUTHORIZED) {
-                        $v['status'] = PaymentService::STATUS_OK;
-                    } else {
-                        $v['status'] = PaymentService::STATUS_FAIL;
-                        $v['errors'] = $payment['errors'];
-                    }
-                    return $v;
-                }, $upsells);
-
                 // NOTE: re-request order to prevent race condition
                 $order = OdinOrder::getById($order->getIdAttribute());
 
@@ -271,15 +252,7 @@ class ApmService {
             }
         }
 
-        return [
-            'id'             => $order_main_product['txn_hash'],
-            'order_currency' => $order->currency,
-            'order_number'   => $order->number,
-            'order_id'       => $order->getIdAttribute(),
-            'status'         => $order_main_txn['status'] !== Txn::STATUS_FAILED ? PaymentService::STATUS_OK : PaymentService::STATUS_FAIL,
-            'redirect_url'   => $payment['redirect_url'] ?? null,
-            'upsells'        => $upsells
-        ];
+        return PaymentService::generateCreateUpsellsOrderResult($order, $upsells, $payment);
     }
 
     /**
