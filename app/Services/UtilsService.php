@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Services;
+use App\Exceptions\BlockEmailException;
+use App\Exceptions\BaseOdinException;
 use App\Models\Setting;
 use App\Models\Pixel;
 use App\Models\AwsImage;
@@ -1007,21 +1009,30 @@ class UtilsService
     public static function getUserAgentParseData(): array
     {
         $userAgent = request()->header('user-agent');
-        $data = new DeviceDetector($userAgent);
-        $data->parse();
-        $deviceType = $data->getDeviceName();
+        try {
+            $data = new DeviceDetector($userAgent);
+            $data->parse();
+            $deviceType = $data->getDeviceName();
 
-        if (!in_array($deviceType, OdinOrder::$devices)) {
-            logger()->warning('WrongDeviceType', [$deviceType]);
+            $browser = $data->getClient();
+            $browser = $browser['name'] ?? null;
+
+            if (!in_array($deviceType, OdinOrder::$devices)) {
+                $ip = request()->ip();
+                throw new BaseOdinException([
+                    'device_type' => $deviceType,
+                    'ip' => $ip
+                ], "Wrong device type {$deviceType} - {$ip}");
+            }
+
+        } catch (\Exception $ex) {
+
         }
 
-        $browser = $data->getClient();
-        $browser = $browser['name'] ?? null;
-
         return [
-            'user_agent' => $userAgent,
-            'device_type' => $deviceType,
-            'browser' => $browser
+            'user_agent' => $userAgent ?? null,
+            'device_type' => $deviceType ?? null,
+            'browser' => $browser ?? null
         ];
     }
 }
