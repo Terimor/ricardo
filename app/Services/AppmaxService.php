@@ -25,6 +25,7 @@ class AppmaxService
     const STATUS_APPROVED   = 'aprovado';
     const STATUS_AUTHORIZED = 'autorizado';
 
+    const WEBHOOK_EVENT_ORDER_APPROVED = 'OrderApproved';
     const WEBHOOK_EVENT_ORDER_PAID = 'OrderPaid';
 
     const INSTALLMENTS_MIN = 1;
@@ -367,23 +368,15 @@ class AppmaxService
     public function validateWebhook(string $event, array $data): array
     {
         $result = ['status' => false];
-        if ($event === self::WEBHOOK_EVENT_ORDER_PAID) {
+        if ($event === self::WEBHOOK_EVENT_ORDER_APPROVED && $data['status'] === self::STATUS_APPROVED) {
             $result = [
                 'status' => true,
                 'txn' => [
                     'hash'      => (string)$data['id'],
-                    'status'    => Txn::STATUS_FAILED,
+                    'status'    => Txn::STATUS_APPROVED,
                     'value'     => preg_replace('/[^\d.]/', '', $data['total'])
                 ]
             ];
-            switch ($data['status']):
-                case self::STATUS_APPROVED:
-                    $result['txn']['status'] = Txn::STATUS_APPROVED;
-                    break;
-                case self::STATUS_AUTHORIZED:
-                    $result['txn']['status'] = Txn::STATUS_AUTHORIZED;
-                    break;
-            endswitch;
         } else {
             logger()->info("Unprocessed webhook [{$event}]", ['data' => $data]);
         }
