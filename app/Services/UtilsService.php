@@ -1022,7 +1022,7 @@ class UtilsService
         }
 
         if (!in_array($deviceType, OdinOrder::$devices)) {
-            logger()->error(str_repeat('*', 50)." Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType]);
+            logger()->error(str_repeat('*', 50)." Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType, 'user_agent' => $userAgent]);
         }
 
         return [
