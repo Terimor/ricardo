@@ -1025,7 +1025,7 @@ class UtilsService
             $deviceType = OdinOrder::DEVICE_TABLET;
         }
 
-        if (!isset(OdinOrder::$devices[$deviceType])) {
+        if ($deviceType && !isset(OdinOrder::$devices[$deviceType])) {
             logger()->error(str_repeat('*', 50)." Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType, 'user_agent' => $userAgent]);
         }
 
