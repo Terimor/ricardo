@@ -41,7 +41,7 @@ class MinteService
     /**
      * @var array
      */
-    private static $fallback_codes = ['05', 'Amount by terminal exceeded', 'ERR-MPI'];
+    private static $fallback_codes = ['05', '621', '622', '625', 'Amount by terminal exceeded', 'ERR-MPI'];
 
     /**
      * @var string
