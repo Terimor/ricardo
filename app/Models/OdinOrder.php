@@ -38,7 +38,8 @@ class OdinOrder extends OdinModel
         self::DEVICE_SMARTPHONE => 'Mobile',
         self::DEVICE_TABLET => 'Tablet',
         self::DEVICE_CONSOLE => 'Console',
-        self::DEVICE_TV => 'TV'
+        self::DEVICE_TV => 'TV',
+        self::DEVICE_PLAYER => 'Media Player'
     ];
 
     public static $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];
