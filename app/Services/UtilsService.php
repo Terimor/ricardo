@@ -1017,6 +1017,7 @@ class UtilsService
             $deviceType = $data->getDeviceName();
             $browser = $data->getClient();
             $browser = $browser['name'] ?? null;
+            $isBot = $data->isBot();
         } catch (\Exception $ex) {
             logger()->error($ex->getMessage(), ['ip' => $ip]);
         }
@@ -1037,7 +1038,7 @@ class UtilsService
             'user_agent' => $userAgent ?? null,
             'device_type' => $deviceType ?? null,
             'browser' => $browser ?? null,
-            'is_bot' => $data->isBot()
+            'is_bot' => $isBot ?? null
         ];
     }
 }
