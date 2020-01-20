@@ -1036,7 +1036,8 @@ class UtilsService
         return [
             'user_agent' => $userAgent ?? null,
             'device_type' => $deviceType ?? null,
-            'browser' => $browser ?? null
+            'browser' => $browser ?? null,
+            'is_bot' => $data->isBot()
         ];
     }
 }

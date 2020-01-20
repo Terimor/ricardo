@@ -42,6 +42,7 @@ class Click extends Model
         'price_set' => null, // string, Price set
         'country' => null, // string, Country code
         'ip' => null, // string, User IP address
+        'is_bot' => null, // bool
     ];
 
     public static function boot()
@@ -56,6 +57,7 @@ class Click extends Model
             $model->user_agent = $userAgentData['user_agent'] ?? null;
             $model->device_type = $userAgentData['device_type'] ?? null;
             $model->browser = $userAgentData['browser'] ?? null;
+            $model->is_bot = $userAgentData['is_bot'] ?? null;
 
         });
     }
