@@ -250,7 +250,7 @@ class ProductService
             $prices[$quantity]['installments6_old_value_text'] = $pricesOld[$quantity]['installments6_old_value_text'];
         }
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
-        $prices['exchange_rate'] = $pricesOld['exchange_rate'];
+        $prices['exchange_rate'] = $pricesOld['exchange_rate'] ?? 0;
         $lp->prices = $prices;
 
         $skus = [];
