@@ -455,19 +455,20 @@ class SiteController extends Controller
             }
         }
 
-        $txns = OrderService::getLastOrdersTxnSuccessPercent((int)$setting['prober_txns_orders']);
+        $txns = OrderService::getLastOrdersTxnSuccessPercent((int)$setting['prober_txns_orders'], (float)$setting['prober_txns_percent']);
 
         if ($txns <= (float)$setting['prober_txns_percent']) {
             $result = $bad;
         }
         $txns.= '%';
 
-        $firing = OrderService::getLastOrdersFiringPercent((int)$setting['prober_firing_orders']);
+        $firing = OrderService::getLastOrdersFiringPercent((int)$setting['prober_firing_orders'], (float)$setting['prober_firing_percent']);
 
         if ($firing <= (float)$setting['prober_firing_percent']) {
             $result = $bad;
         }
         $firing.= '%';
+
         return view('prober', compact('result', 'redis', 'txns', 'firing', 'setting'));
     }
 
