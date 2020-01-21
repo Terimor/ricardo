@@ -202,7 +202,7 @@ class OrderService
 
                  // if not flagged check fired logic
                 if ($affiliate && empty($order->is_flagged)) {
-                    // get first main product                    
+                    // get first main product
                     $productId = $order->getFirstProductId();
                     if ($order->is_reduced === null && $productId) {
                         // check in affiliate product list
@@ -210,7 +210,7 @@ class OrderService
                         $order->is_reduced = $isReduced;
                         $order->save();
                     }
-                    $events = $order->events ?? [];                    
+                    $events = $order->events ?? [];
                     // txid and postback logic
                     if ($order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_POSTBACK_SENT, $events))) {
                         // request queue if order has parameter txid and is_reduced and aff_id > 10
@@ -221,7 +221,7 @@ class OrderService
                         AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);
                         $events[] = OdinOrder::EVENT_AFF_POSTBACK_SENT;
                         $order->events = $events;
-                        $order->save();                        
+                        $order->save();
                     }
                 }
 
@@ -257,11 +257,12 @@ class OrderService
      * Get last fail txns percent
      * @return type
      */
-    public static function getLastOrdersTxnSuccessPercent($limit = 20): float
+    public static function getLastOrdersTxnSuccessPercent($limit = 20, $failPercent = 30): float
     {
         // get last 20 orders with a txns
         $orders = OdinOrder::getLastOrders($limit);
         $success_txns = 0; $successPercent = 0;
+        $orderNumbers = [];
         foreach ($orders as $order) {
             $orderTxns = $order->txns;
             foreach ($orderTxns as $txn) {
@@ -270,32 +271,45 @@ class OrderService
                     break;
                 }
             }
+            $orderNumbers[] = $order->number;
         }
 
         if ($success_txns > 0) {
             $successPercent = $success_txns / $limit * 100;
         }
         $successPercent = round($successPercent, 0);
+        // to log
+        if ($successPercent <= $failPercent) {
+            logger()->error(str_repeat('*', 30).'ProberTxnsLowPercent'.str_repeat('*', 30), ['success_percent' => $successPercent, 'fail_percent' => $failPercent, 'limit' => $limit, 'numbers' => $orderNumbers]);
+        }
 
         return $successPercent;
     }
-    
+
     /**
      * Get last affiliate orders firing percent
      * @param type $limit
      * @return float
      */
-    public static function getLastOrdersFiringPercent($limit = 100): float
+    public static function getLastOrdersFiringPercent($limit = 100, $failPercent = 30): float
     {
         $orders = OdinOrder::getLastAffiliateOrders($limit);
-        $firing = 0; $firingPercent = 0;
-        foreach ($orders as $order) {            
+        $orderNumbers = [];
+        $firing = 0;
+        foreach ($orders as $order) {
             if ($order->is_reduced === true) {
                 $firing++;
             }
+            $orderNumbers[] = $order->number;
         }
-        
+
         $firingPercent = round($firing / $limit * 100, 2);
+
+        // to log
+        if ($firingPercent <= $failPercent) {
+            logger()->error(str_repeat('*', 30).'ProberLowReducePercent'.str_repeat('*', 30), ['success_percent' => $firingPercent, 'fail_percent' => $failPercent, 'limit' => $limit, 'numbers' => $orderNumbers]);
+        }
+
         return $firingPercent;
     }
 }
