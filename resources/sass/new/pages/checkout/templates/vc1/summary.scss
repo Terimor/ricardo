@@ -1,0 +1,241 @@
+.summary {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+
+  .title {
+    align-items: center;
+     align-self: stretch;
+    background-color: #d54c27;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 5px 0;
+    text-transform: uppercase;
+  }
+
+  .installments-field {
+    align-self: stretch;
+    margin: 12px 8px 8px;
+    width: auto;
+
+    @media only screen and (min-width: $size1) {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+
+    .select-field-label {
+      display: none;
+    }
+  }
+
+  .warranty-field {
+    align-self: stretch;
+    margin: 25px 8px 0;
+    padding: 16px 4px 16px 34px;
+
+    @media only screen and (min-width: $size1) {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+  }
+
+  .warrant-arrow-right {
+    left: 4px;
+    top: 16px;
+  }
+
+  .warranty-field-check {
+    margin-right: 6px;
+    margin-top: 0;
+  }
+
+  .warranty-field-label {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .terms-field {
+    margin: 25px 8px 0;
+
+     @media only screen and (min-width: $size1) {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+  }
+
+  .terms-field-check {
+    margin-right: 6px;
+    margin-top: 0;
+  }
+
+  .terms-field-label {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .payment-error {
+    align-self: stretch;
+    font-size: 14px;
+    margin: 25px 8px 0;
+
+    @media only screen and (min-width: $size1) {
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+  }
+
+  .table {
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    margin-top: 6px;
+    padding: 12px 12px;
+
+    > .inside {
+      width: 240px;
+    }
+
+    .row {
+      display: flex;
+      padding-top: 5px;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .row-header {
+      display: flex;
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+
+      .col {
+        align-items: center;
+      }
+    }
+
+    .row-product .col-price {
+      color: #f00;
+    }
+
+    .col-item {
+      flex-grow: 1;
+    }
+
+    .col-quantity {
+      flex-shrink: 0;
+      width: 80px;
+    }
+
+    .col-price {
+      flex-shrink: 0;
+      width: 60px;
+    }
+
+    .row {
+      .col-item {
+        font-size: 14px;
+        font-style: italic;
+        line-height: 20px;
+      }
+
+      .col-quantity {
+        align-items: center;
+        font-size: 12px;
+        justify-content: center;
+      }
+
+      .col-price {
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+        justify-content: center;
+      }
+    }
+
+    .total {
+      border-top: 1px solid #ccc;
+      display: flex;
+      font-size: 22px;
+      justify-content: flex-end;
+      line-height: 50px;
+
+      .label {
+        color: #d54c27;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .value {
+        color: #000;
+        font-weight: 700;
+        padding-left: 5px;
+      }
+    }
+  }
+
+  .submit {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    margin-top: 25px;
+    position: relative;
+    width: 240px;
+
+    &.submitted {
+      cursor: default;
+    }
+
+    .disabled {
+      align-items: center;
+      background-color: rgba(255,255,255,.5);
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: 1;
+
+      .spinner {
+        margin-top: -18px;
+        transform: scale(.8);
+      }
+    }
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  .secure {
+    margin-top: 26px;
+  }
+}

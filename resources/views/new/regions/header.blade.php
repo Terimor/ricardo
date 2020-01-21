@@ -10,7 +10,8 @@
         <img
           src="{{ $main_logo ?? $product->logo_image }}"
           class="header-logo"
-          alt="">
+          alt=""
+        />
     </a>
 
     @yield('header')

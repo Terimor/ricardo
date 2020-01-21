@@ -26,6 +26,10 @@ export default {
 
   computed: {
 
+    js_data() {
+      return js_data;
+    },
+
     is_rtl() {
       return !!document.querySelector('html[dir="rtl"]');
     },

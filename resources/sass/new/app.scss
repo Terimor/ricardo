@@ -14,10 +14,6 @@ html {
   scroll-behavior: smooth;
 }
 
-[dir="rtl"] {
-  text-align: right;
-}
-
 body {
   box-sizing: border-box;
   color: #333;
@@ -34,6 +30,10 @@ body {
   * {
     box-sizing: border-box;
   }
+
+  [dir="rtl"] & {
+    text-align: right;
+  }
 }
 
 #app {
@@ -44,6 +44,19 @@ body {
 main {
   display: flex;
   flex-direction: column;
+}
+
+p {
+  margin: 0;
+}
+
+input,
+select,
+textarea {
+  color: #333;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
 }
 
 .container {

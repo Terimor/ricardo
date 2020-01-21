@@ -7,11 +7,12 @@
 
     <div class="deals">
 
-      <div
-        v-if="$v.form.deal.$dirty && $v.form.deal.$invalid"
-        class="deal-error error-container scroll-when-error invalid">
-        {!! t('checkout.main_deal.error') !!}
-      </div>
+      @include('new.components.error', [
+        'ref' => 'deal_error',
+        'active' => '$v.form.deal.$dirty && $v.form.deal.$invalid',
+        'class' => 'deal-error scroll-when-error invalid',
+        'label' => t('checkout.main_deal.error'),
+      ])
 
       @foreach ($deals as $deal)
         <div

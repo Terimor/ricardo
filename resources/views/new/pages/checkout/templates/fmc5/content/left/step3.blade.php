@@ -12,7 +12,7 @@
         'ref' => 'paypal_payment_error',
         'active' => 'payment_error && form.payment_provider === \'paypal\'',
         'class' => 'paypal-payment-error',
-        'label' => 'payment_error',
+        'label_code' => 'payment_error',
       ])
     </div>
 
@@ -33,9 +33,9 @@
 
         @include('new.components.error', [
           'ref' => 'payment_error',
-          'active' => 'payment_error',
+          'active' => 'payment_error && form.payment_provider === \'credit-card\'',
           'class' => 'payment-error',
-          'label' => 'payment_error',
+          'label_code' => 'payment_error',
         ])
 
       </div>

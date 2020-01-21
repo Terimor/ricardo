@@ -1,0 +1,65 @@
+.header {
+  align-items: center;
+  display: flex;
+  margin: 32px 12px 12px;
+
+  @media only screen and (min-width: $size2) {
+    margin: 12px 12px;
+  }
+
+  .logo {
+    display: flex;
+    width: 40%;
+
+    @media only screen and (min-width: $size2) {
+      width: auto;
+    }
+
+    img {
+      max-height: 66px;
+      max-width: 100%;
+    }
+  }
+
+  .secure {
+    margin-left: 2.5%;
+    max-width: 100%;
+    width: 40%;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: 2.5%;
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin-left: 40px;
+      width: auto;
+
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: 40px;
+      }
+    }
+  }
+
+  .made {
+    margin-left: 2.5%;
+    max-width: 100%;
+    width: 15%;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: 2.5%;
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin-left: 35px;
+      width: auto;
+
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: 35px;
+      }
+    }
+  }
+}

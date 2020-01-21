@@ -22,5 +22,13 @@ js_deps.wait(['vue'], () => {
       bottom,
     ],
 
+
+    created() {
+      if (js_query_params['3ds'] === 'failure') {
+        setTimeout(() => this.scroll_to_ref('payment_error'), 1000);
+        this.step = 3;
+      }
+    },
+
   });
 });

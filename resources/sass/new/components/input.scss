@@ -9,6 +9,7 @@
 .input-field-label {
   font-size: 17px;
   margin-bottom: 6px;
+  white-space: nowrap;
 
   .input.invalid & {
     color: #e74c3c;
@@ -101,8 +102,6 @@
 .input-field-input {
   border: 1px solid #ddd;
   border-radius: 3px;
-  color: #555;
-  font-size: 17px;
   height: 40px;
   outline: none;
   padding: 0 15px;

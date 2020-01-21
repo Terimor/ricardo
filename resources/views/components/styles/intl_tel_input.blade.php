@@ -1,4 +1,4 @@
-@if ($HasVueApp && !$is_new_engine)
+@if ($HasVueApp)
 
   <link
     id="intlTelInputCss"

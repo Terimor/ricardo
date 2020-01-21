@@ -1,8 +1,46 @@
+$size0: 320px;
+$size1: 414px;
+$size2: 905px;
+
 @import '../../checkout';
+@import './vc1/header';
+@import './vc1/steps-line';
+@import './vc1/yes-deliver';
+@import './vc1/product';
+@import './vc1/guarantee';
+@import './vc1/upsells';
+@import './vc1/providers';
+@import './vc1/shipping';
+@import './vc1/summary';
 
 
 .vc1 {
-  
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  font-family: Lato, "Noto Sans", sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  margin: 0 auto;
+  max-width: $size0;
+  width: 100%;
+
+  @media only screen and (min-width: $size1) {
+    max-width: $size1;
+  }
+
+  @media only screen and (min-width: $size2) {
+    max-width: $size2;
+  }
+
+  input,
+  select,
+  textarea {
+    color: #000;
+    font-family: Lato, "Noto Sans", sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+  }
 }
 
 .header-region {
@@ -11,12 +49,8 @@
 
 .footer-region {
   background-color: #d54803;
-  height: 160px;
+  min-height: 160px;
   padding: 30px 30px;
-}
-
-.footer__row {
-  width: 925px;
 }
 
 .footer__row-item {
@@ -34,4 +68,50 @@
   font-weight: 400;
   line-height: 30px;
   text-decoration: underline;
+}
+
+.footer-company-address {
+  color: #fff;
+  font-size: 14px;
+}
+
+.content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+  @media only screen and (min-width: $size2) {
+    align-items: flex-start;
+    flex-direction: row;
+    margin-bottom: 80px;
+  }
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+
+  @media only screen and (min-width: $size2) {
+    width: 625px;
+  }
+}
+
+.right-column {
+  border: 3px solid #d54c27;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  min-height: 1000px;
+  width: 280px;
+
+  @media only screen and (min-width: $size1) {
+    width: 370px;
+  }
+
+  @media only screen and (min-width: $size2) {
+    border-bottom-width: 8px;
+    margin-bottom: 0;
+    margin-top: 12px;
+    width: 280px;
+  }
 }

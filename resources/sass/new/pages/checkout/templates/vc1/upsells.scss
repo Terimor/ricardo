@@ -1,0 +1,91 @@
+.upsells {
+  border: 3px solid #d54c26;
+  display: none;
+  flex-direction: column;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  position: relative;
+  width: 550px;
+
+  @media only screen and (min-width: $size2) {
+    display: flex;
+  }
+
+  .img-check {
+    left: -35px;
+    position: absolute;
+    top: -10px;
+
+    [dir="rtl"] & {
+      left: 0;
+      right: -50px;
+    }
+  }
+
+  .title {
+    background-color: #d54c26;
+    color: #fff;
+    font-size: 40px;
+    font-weight: 900;
+    padding: 5px 25px;
+
+    span {
+      color: #fffeca;
+    }
+  }
+
+  .upsell {
+    align-items: center;
+    display: flex;
+    margin: 15px 30px;
+
+    .image {
+      flex-shrink: 0;
+      max-width: 120px;
+    }
+
+    .text {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      margin: 0 15px;
+
+      .name {
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .extra {
+        font-size: 22px;
+        font-style: italic;
+        font-weight: 700;
+        margin-top: 8px;
+
+        .old-price {
+          text-decoration: line-through;
+        }
+
+        .orange {
+          color: #d54803;
+        }
+      }
+    }
+
+    .prices {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      display: none;
+
+      .old-price {
+        font-size: 25px;
+        text-decoration: line-through;
+      }
+
+      .new-price {
+        font-size: 50px;
+        font-weight: 700;
+      }
+    }
+  }
+}

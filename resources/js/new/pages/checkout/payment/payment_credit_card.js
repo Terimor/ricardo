@@ -3,6 +3,8 @@ export default {
   methods: {
 
     credit_card_create_order() {
+      this.form.payment_provider = 'credit-card';
+
       let fingerprint_result = null;
       let ipqualityscore_result = null;
 
@@ -12,11 +14,10 @@ export default {
 
       this.$v.form.$touch();
 
-      if (this.$v.form.$pending || this.$v.form.$error) {
-        return this.scroll_to_error();
+      if (this.$v.form.$invalid || this.$v.form.$pending) {
+        return setTimeout(() => this.scroll_to_error(), 100);
       }
       
-      this.payment_provider = 'credit-card';
       this.payment_error = null;
       this.is_submitted = true;
 

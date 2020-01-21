@@ -3,10 +3,11 @@ export default {
   methods: {
 
     paypal_create_order() {
+      this.form.payment_provider = 'paypal';
+
       let fingerprint_result = null;
       let ipqualityscore_result = null;
-
-      this.form.payment_provider = 'paypal';
+      
       this.payment_error = null;
       this.is_submitted = true;
 

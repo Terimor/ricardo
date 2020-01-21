@@ -8,6 +8,7 @@
 .select-field-label {
   font-size: 17px;
   margin-bottom: 6px;
+  white-space: nowrap;
 
   .select.invalid & {
     color: #e74c3c;
@@ -40,9 +41,7 @@
 .select-field-input {
   border: 1px solid #ddd;
   border-radius: 3px;
-  color: #555;
   cursor: pointer;
-  font-size: 17px;
   height: 40px;
   outline: none;
   padding: 0 15px;

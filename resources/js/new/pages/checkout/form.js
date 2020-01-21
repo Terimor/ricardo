@@ -175,7 +175,7 @@ export default {
           Promise.resolve()
             .then(() => {
               const order_id = localStorage.getItem('odin_order_id');
-              return fetch_get('/pay-by-card-errors?order=' + order_id);
+              return this.fetch_get('/pay-by-card-errors?order=' + order_id);
             })
             .then(this.fetch_json)
             .then(body => {

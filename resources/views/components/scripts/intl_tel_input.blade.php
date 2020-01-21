@@ -1,4 +1,4 @@
-@if ($HasVueApp && !$is_new_engine)
+@if ($HasVueApp)
 
   <script
     src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.4/js/intlTelInput.min.js"

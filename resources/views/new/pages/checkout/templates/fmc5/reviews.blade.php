@@ -39,7 +39,7 @@
           <img src="{{ $cdn_url }}/assets/images/fmc5-5star.svg" />
         </div>
 
-        <div class="review-text">{{ $review['text'] }}</div>
+        <div class="review-text">{!! $review['text'] !!}</div>
         <div class="review-name">{{ $review['name'] }} – {{ $review['date'] }}</div>
 
         <div class="review-verified">

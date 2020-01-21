@@ -20,21 +20,4 @@ export default {
     };
   },
 
-
-  created() {
-    this.content_check_3ds_failure();
-  },
-
-
-  methods: {
-
-    content_check_3ds_failure() {
-      if (js_query_params['3ds'] === 'failure') {
-        setTimeout(() => this.scroll_to_ref('payment_error'), 1000);
-        this.step = 3;
-      }
-    },
-
-  },
-  
 };

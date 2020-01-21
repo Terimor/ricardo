@@ -1,5 +1,5 @@
 import { required } from 'vuelidate/lib/validators';
-import intl_tel_input from 'intl-tel-input';
+
 
 const phone_codes = window.intlTelInputGlobals.getCountryData()
   .reduce((acc, item) => {
@@ -65,7 +65,7 @@ export default {
 
             element.phone_init = true;
 
-            intl_tel_input(element, {
+            window.intlTelInput(element, {
               initialCountry: this.form.phone_country,
               separateDialCode: true,
             });

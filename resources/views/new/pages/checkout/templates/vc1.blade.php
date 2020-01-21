@@ -3,6 +3,7 @@
 
 @section('fonts_checkout')
   @include('components.fonts.lato')
+  @include('new.fonts.oswald')
 @endsection
 
 
@@ -25,6 +26,20 @@
 
 @section('content_checkout')
   <div class="vc1">
-    VC1
+    @include('new.pages.checkout.templates.vc1.header')
+    <div class="content">
+      <div class="left-column">
+        @include('new.pages.checkout.templates.vc1.steps-line')
+        @include('new.pages.checkout.templates.vc1.yes-deliver')
+        @include('new.pages.checkout.templates.vc1.product')
+        @include('new.pages.checkout.templates.vc1.guarantee')
+        @include('new.pages.checkout.templates.vc1.upsells')
+      </div>
+      <div class="right-column">
+        @include('new.pages.checkout.templates.vc1.providers')
+        @include('new.pages.checkout.templates.vc1.shipping')
+        @include('new.pages.checkout.templates.vc1.summary')
+      </div>
+    </div>
   </div>
 @endsection

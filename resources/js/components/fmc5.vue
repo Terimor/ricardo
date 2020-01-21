@@ -488,7 +488,7 @@
               <img :src="image5star"/>
             </div>
 
-            <div class="review-text">{{ review.text }}</div>
+            <div class="review-text" v-html="review.text"></div>
             <div class="review-name">{{ review.name }} – {{ review.date }}</div>
 
             <div class="review-verified">

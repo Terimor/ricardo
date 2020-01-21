@@ -1,0 +1,84 @@
+.shipping {
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    align-items: center;
+    background-color: #d54c27;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 11px;
+    padding: 5px 0;
+    text-transform: uppercase;
+  }
+
+  .form {
+    background-color: #f4f4f4;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px 12px 0;
+
+    .input,
+    .select {
+      margin: 0 0 13px;
+    }
+
+    .input-field-label,
+    .select-field-label {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+
+    .input-field-input,
+    .select-field-input {
+      border-radius: 6px;
+      height: 37px;
+
+      &::placeholder {
+        color: transparent;
+      }
+    }
+
+    .input-field-error,
+    .select-field-error {
+      font-size: 12px;
+    }
+  }
+
+  .first_name-field {
+    width: 48.5%;
+  }
+
+  .last_name-field {
+    margin-left: auto!important;
+    width: 48.5%;
+  }
+
+  .card_number-field {
+    .input-field-suffix {
+      width: 36px;
+    }
+
+    .input-field-input {
+      padding-right: 36px;
+
+      [dir="rtl"] & {
+        padding-left: 36px!important;
+      }
+    }
+  }
+
+  .card_date-field {
+    width: 55%;
+  }
+
+  .card_cvv-field {
+    margin-left: auto!important;
+    width: 42%;
+  }
+}

@@ -1,0 +1,67 @@
+.providers {
+  display: flex;
+  flex-direction: column;
+
+  .badge {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      align-items: center;
+      background-color: #d54c27;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      font-size: 18px;
+      font-style: italic;
+      font-weight: 700;
+      padding: 13px 0 8px;
+    }
+
+    .triangle {
+      border-left: 137px solid transparent;
+      border-right: 137px solid transparent;
+      border-top: 15px solid #d54c27;
+      height: 0;
+      width: 0;
+
+      @media only screen and (min-width: $size1) {
+        border-left-width: 182px;
+        border-right-width: 182px;
+      }
+
+      @media only screen and (min-width: $size2) {
+        border-left-width: 137px;
+        border-right-width: 137px;
+      }
+    }
+
+    &.checkout .title {
+      padding: 16px 0 8px;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    margin: 21px 24px 0;
+
+    .or {
+      align-items: center;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      font-weight: 700;
+      margin: 10px 0 13px;
+    }
+  }
+
+  .paypal-button-shim {
+    flex-direction: column;
+  }
+
+  .paypal-payment-error {
+    margin-top: 8px;
+  }
+}

@@ -1,0 +1,82 @@
+.yes-deliver {
+  align-items: flex-start;
+  display: flex;
+
+  @media only screen and (min-width: $size2) {
+    margin: 17px 0 0 25px;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: 25px;
+    }
+  }
+
+  .img-check {
+    margin: 7px 0 0 20px;
+
+    [dir="rtl"] & {
+      margin: 7px 0px 0 4px;
+    }
+
+    @media only screen and (min-width: $size1) {
+      margin: 7px 0 0 20px;
+
+      [dir="rtl"] & {
+        margin: 7px 0px 0 12px;
+      }
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin: 7px 0 0 4px;
+
+      [dir="rtl"] & {
+        margin: 7px -12px 0 16px;
+      }
+    }
+  }
+
+  .yes {
+    color: #ed1c25;
+    font-family: "Oswald", sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    margin: 7px 10px 4px -10px;
+    text-transform: uppercase;
+
+    [dir="rtl"] & {
+      margin: 7px 0 4px 10px;
+    }
+
+    @media only screen and (min-width: $size1) {
+      font-size: 64px;
+      margin: -5px 10px 4px -5px;
+
+      [dir="rtl"] & {
+        margin: -5px -5px 4px 10px;
+      }
+    }
+
+    @media only screen and (min-width: $size2) {
+      margin: -5px 20px 4px -5px;
+
+      [dir="rtl"] & {
+        margin: -5px -5px 4px 20px;
+      }
+    }
+  }
+
+  .deliver {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 15px 0 20px;
+
+    @media only screen and (min-width: $size2) {
+      font-size: 20px;
+      margin: 12px 12px 12px 0;
+
+      [dir="rtl"] & {
+        margin: 12px 0 12px 12px;
+      }
+    }
+  }
+}

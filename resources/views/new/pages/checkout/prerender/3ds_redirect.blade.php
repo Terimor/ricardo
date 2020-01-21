@@ -12,7 +12,7 @@
       var url_query_params = [].concat(Object.keys(stored_query_params)).concat(Object.keys(js_query_params)).reduce(function(acc, name) {
         acc[name] = js_query_params[name] !== undefined ? js_query_params[name] : stored_query_params[name];
         return acc;
-      });
+      }, {});
 
       var url_search = ['3ds_restore=1']
         .concat(
