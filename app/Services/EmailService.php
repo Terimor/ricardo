@@ -80,12 +80,21 @@ class EmailService
             );
             for ($i=1; $i<=3; $i++) {
                 try {
-                    $result = file_get_contents($url, false, $timeOut);
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_URL, $url);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+                    curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+                    $json = curl_exec($curl);
+                    curl_close($curl);
+                    $res = json_decode($json);
+                    //$result = file_get_contents($url, false, $timeOut);
                 } catch (\Exception $ex) {
                     //logger()->error("Validate email IPQS connection error", ['email' => $email,'code' => $ex->getCode(), 'message' => $ex->getMessage()]);
                 }
-                if (isset($result)) {
-                    $res = json_decode($result);
+                if(isset($res->success) && $res->success === true){
+                    //$res = json_decode($result);
                     if ($res) {
                         // check warning
                         if (!empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
