@@ -95,38 +95,36 @@ class EmailService
                 }
                 if(isset($res->success) && $res->success === true){
                     //$res = json_decode($result);
-                    if ($res) {
-                        // check warning
-                        if (!empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
-                            $warning = true;
-                        }
-
-                        if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
-                            $domain = explode('@', $email)[1];
-                            $suggest = str_replace($domain, $res->suggested_domain, $email);
-                        }
-
-                        if ((isset($res->overall_score) && $res->overall_score > 0)) {
-                            $valid = true;
-                        }
-
-                        $disposable = $res->disposable ?? false;
-
-                        // block if recent_abuse, leaked or overall_score = 0
-                        if (!empty($res->recent_abuse) || !empty($res->leaked)) {
-                            $block = true;
-                            logger()->info("Blocked email", ['email' => $email, 'res' => $res]);
-                            throw new BlockEmailException([
-                                'block' => $block,
-                                'warning' => $warning,
-                                'suggest' => $suggest,
-                                'valid' => $valid,
-                                'disposable' => $disposable
-                            ], "Email blocked {$email}, answer: ".json_encode($res));
-                        }
-
-                        break;
+                    // check warning
+                    if (!empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
+                        $warning = true;
                     }
+
+                    if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
+                        $domain = explode('@', $email)[1];
+                        $suggest = str_replace($domain, $res->suggested_domain, $email);
+                    }
+
+                    if ((isset($res->overall_score) && $res->overall_score > 0)) {
+                        $valid = true;
+                    }
+
+                    $disposable = $res->disposable ?? false;
+
+                    // block if recent_abuse, leaked or overall_score = 0
+                    if (!empty($res->recent_abuse) || !empty($res->leaked)) {
+                        $block = true;
+                        logger()->info("Blocked email", ['email' => $email, 'res' => $res]);
+                        throw new BlockEmailException([
+                            'block' => $block,
+                            'warning' => $warning,
+                            'suggest' => $suggest,
+                            'valid' => $valid,
+                            'disposable' => $disposable
+                        ], "Email blocked {$email}, answer: ".json_encode($res));
+                    }
+
+                    break;
                 }
             }
         } else {
