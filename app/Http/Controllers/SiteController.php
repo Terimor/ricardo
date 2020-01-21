@@ -517,4 +517,20 @@ class SiteController extends Controller
             logger()->info($request->all());
         }
     }
+
+    /**
+     * Debugger javascript.js
+     */
+    public function debugbarJavascript()
+    {
+        return response()->file(public_path('_debugbar/assets/javascript.js'));
+    }
+
+    /**
+     * Debugger stylesheets.css
+     */
+    public function debugbarStylesheets()
+    {
+        return response()->file(public_path('_debugbar/assets/stylesheets.css'));
+    }
 }

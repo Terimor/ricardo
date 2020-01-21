@@ -72,6 +72,9 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     // sitemap
     $router->get('/sitemap.xml', 'SiteController@sitemap');
 
+    // debugger
+    $router->get('/_debugbar/assets/javascript', 'SiteController@debugbarJavascript');
+    $router->get('/_debugbar/assets/stylesheets', 'SiteController@debugbarStylesheets');
 });
 
 /*Route::get('/debug-sentry', function () {
