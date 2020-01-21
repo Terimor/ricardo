@@ -288,6 +288,9 @@ class ProductService
                 'quantity_image' => $sku['quantity_image'],
             ];
         }
+        if (!$skus) {
+            logger()->error(str_repeat('*', 30).' ZeroSkus', ['product' => $product, 'url' => url()->full()]);
+        }
         $lp->skus = $skus;
 
         $reviews = [];
