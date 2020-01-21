@@ -100,7 +100,7 @@ class ProductService
 			if ($uproduct['product_id'] == $productId) {
 				$fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
 				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
-				$upsell = OdinProduct::where('_id', $productId)->first();
+				$upsell = OdinProduct::getById($productId);
 			}
 		}
 
@@ -133,6 +133,36 @@ class ProductService
         $upsellLocalize = $this->localizeUpsell($upsell);
         return $upsellLocalize;
 		//return $upsell;
+    }
+
+    /**
+     * @param $product
+     * @return array
+     */
+    public function getProductUpsells($product): array
+    {
+        $productUpsells = !empty($product->upsells) ? $product->upsells : null;
+        $productIds = $productUpsellsArray = [];
+        if ($productUpsells) {
+            $currency = CurrencyService::getCurrency();
+            foreach ($productUpsells as $upsell) {
+                $productIds[] = $upsell['product_id'];
+            }
+
+            $products = OdinProduct::getActiveByIds($productIds);
+            foreach ($productUpsells as $uproduct) {
+                foreach ($products as $pr) {
+                    $pr->currencyObject = $currency;
+                    if ($uproduct['product_id'] == (string)$pr->_id) {
+                        $fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
+                        $discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
+                        $pr->setUpsellPrices($fixedPrice, $discountPercent, 2);
+                        $productUpsellsArray[] = $this->localizeCheckoutUpsell($pr);
+                    }
+                }
+            }
+        }
+        return $productUpsellsArray;
     }
 
 	/**
@@ -293,10 +323,7 @@ class ProductService
      */
     public function localizeUpsell(OdinProduct $product)
     {
-        // prepare localize upsell
-
         $product->setLocalImages(true);
-
         $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
@@ -311,6 +338,23 @@ class ProductService
         $lp->upsellPrices = $product->upsellPrices ?? null;
 
         return $lp;
+    }
+
+    /**
+     * @param OdinProduct $product
+     * @return Localize
+     */
+    public function localizeCheckoutUpsell(OdinProduct $product)
+    {
+        $product->setLocalImages(true);
+        $lp = new Localize();
+        $lp->product_name = $product->product_name;
+        $lp->long_name = $product->long_name;
+        $lp->logo_image = $product->logo_image;
+        $lp->upsell_sku = $product['skus'][0]['code'];
+        $lp->image = !empty($product->image[0]) ? $product->image[0] : null;
+        $lp->upsellPrices = $product->upsellPrices ?? null;
+        return $lp->toArray();
     }
 
     /**

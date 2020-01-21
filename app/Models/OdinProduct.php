@@ -316,7 +316,7 @@ class OdinProduct extends Model
 
         if ($ids) {
             $this->images = [];
-            $this->imagesObjects = AwsImage::whereIn('_id', $ids)->get();
+            $this->imagesObjects = AwsImage::getByIds($ids);
             foreach ($this->imagesObjects as $image) {
                 $this->images[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
             }
@@ -436,7 +436,11 @@ class OdinProduct extends Model
     public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
     {
         $this->hide_cop_id_log = true;
-        $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+        if ($this->currencyObject) {
+            $currency = $this->currencyObject;
+        } else {
+            $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+        }
 
         // if null set quantity 1
         if (!$maxQuantity) {

@@ -254,6 +254,7 @@ class SiteController extends Controller
         }
 
         $product = $productService->resolveProduct($request, true);
+        $upsells = $productService->getProductUpsells($product);
 
         $setting = Setting::getValue([
             'ipqualityscore_api_hash',
@@ -306,7 +307,7 @@ class SiteController extends Controller
             compact(
                 'langCode', 'countryCode', 'product', 'setting', 'countries', 'loadedPhrases',
                 'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo',
-                'company_address', 'company_descriptor_prefix', 'cdn_url',
+                'company_address', 'company_descriptor_prefix', 'cdn_url', 'upsells',
                 'deals', 'deal_promo', 'deals_main_quantities', 'deals_free_quantities'
             )
         );
