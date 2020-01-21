@@ -150,6 +150,26 @@ class ProductService
             }
 
             $products = OdinProduct::getActiveByIds($productIds);
+            // collect images_ids
+            $imagesArray = [];
+            foreach ($products as $product) {
+                if (!empty($product->logo_image_id)) {
+                    $imagesArray[$product->logo_image_id] = $product->logo_image_id;
+                }
+                if (!empty($product->image_ids[0])) {
+                    $imagesArray[$product->image_ids[0]] = $product->image_ids[0];
+                }
+            }
+
+            $images = AwsImage::getByIds(array_values(array_unique($imagesArray)));
+            if ($images) {
+                foreach ($images as $image) {
+                    if (isset($imagesArray[(string)$image->_id])) {
+                        $imagesArray[(string)$image->_id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');;
+                    }
+                }
+            }
+
             foreach ($productUpsells as $uproduct) {
                 foreach ($products as $pr) {
                     $pr->currencyObject = $currency;
@@ -157,7 +177,7 @@ class ProductService
                         $fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
                         $discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
                         $pr->setUpsellPrices($fixedPrice, $discountPercent, 2);
-                        $productUpsellsArray[] = $this->localizeCheckoutUpsell($pr);
+                        $productUpsellsArray[] = $this->localizeCheckoutUpsell($pr, $imagesArray);
                     }
                 }
             }
@@ -342,17 +362,17 @@ class ProductService
 
     /**
      * @param OdinProduct $product
+     * @param array $images
      * @return Localize
      */
-    public function localizeCheckoutUpsell(OdinProduct $product)
+    public function localizeCheckoutUpsell(OdinProduct $product, array $images = [])
     {
-        $product->setLocalImages(true);
         $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->long_name = $product->long_name;
-        $lp->logo_image = $product->logo_image;
+        $lp->logo_image = $images[$product['logo_image_id']] ?? null;
         $lp->upsell_sku = $product['skus'][0]['code'];
-        $lp->image = !empty($product->image[0]) ? $product->image[0] : null;
+        $lp->image = !empty($images[$product['image_ids'][0]]) ? $images[$product['image_ids'][0]] : null;
         $lp->upsellPrices = $product->upsellPrices ?? null;
         return $lp->toArray();
     }
