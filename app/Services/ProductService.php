@@ -289,7 +289,7 @@ class ProductService
             ];
         }
         if (!$skus) {
-            logger()->error(str_repeat('*', 30).' ZeroSkus', ['product' => $product, 'url' => url()->full()]);
+            logger()->error(str_repeat('*', 30).' ZeroSkus', ['product' => $product ?? null, 'url' => url()->full() ?? null]);
         }
         $lp->skus = $skus;
 
