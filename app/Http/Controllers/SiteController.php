@@ -523,7 +523,7 @@ class SiteController extends Controller
      */
     public function debugbarJavascript()
     {
-        return response()->file(public_path('_debugbar/assets/javascript.js'));
+        return response()->file(resource_path('_debugbar/assets/javascript.js'));
     }
 
     /**
@@ -531,6 +531,6 @@ class SiteController extends Controller
      */
     public function debugbarStylesheets()
     {
-        return response()->file(public_path('_debugbar/assets/stylesheets.css'));
+        return response()->file(resource_path('_debugbar/assets/stylesheets.css'));
     }
 }
