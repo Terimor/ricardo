@@ -40,6 +40,8 @@ class PaymentApiService
             $keys = PaymentLimit::getAvailable($keys, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
         }
 
+        shuffle($keys);
+
         return array_pop($keys);
     }
 

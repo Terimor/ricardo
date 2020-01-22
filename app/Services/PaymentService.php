@@ -1560,7 +1560,7 @@ class PaymentService
 
     public function test(Request $req)
     {
-        return false;
+        return self::getProvidersForPay('at', PaymentMethods::VISA);
     }
 
 }
