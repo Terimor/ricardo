@@ -433,9 +433,9 @@ class CurrencyService
         //if (!empty(static::$currencyObject) && !$currencyCode && !$countryCode) {
             //$currency = static::$currencyObject;
         //} else {
-            if (!$currencyCode && !$countryCode) {
-                $saveToMem = true;
-            }
+            //if (!$currencyCode && !$countryCode) {
+              //  $saveToMem = true;
+            //}
 
             $currency = null;
             if ($currencyCode) {
