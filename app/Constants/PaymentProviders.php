@@ -896,6 +896,18 @@ class PaymentProviders
                 'refuse_limit' => 99
             ],
             'extra_fields'  => [
+                'at' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'be' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
                 'ca' => [
                     'state' => [
                         'type' => 'dropdown',
@@ -915,6 +927,30 @@ class PaymentProviders
                             ['value' => 'SK', 'label' => 'Saskatchewan'],
                             ['value' => 'YT', 'label' => 'Yukon Territory']
                         ]
+                    ]
+                ],
+                'de' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'es' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'gb' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'nl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
                     ]
                 ],
                 'us' => [
@@ -981,20 +1017,22 @@ class PaymentProviders
                         ],
                         'default' => 'DC'
                     ]
-                ]
+                ],
             ],
             'methods' => [
                 'main' => [
                     PaymentMethods::VISA => [
-                        // '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
-                        // '-3ds' => ['*'],
-                        '-3ds' => ['ca', 'gb', 'us'],
+                        '-3ds' => [
+                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl',
+                            'pt', 'si', 'sk', 'us'
+                        ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
-                        // '+3ds' => ['europe', 'by', 'gb', 'gy', 'id', 'il', 'in', 'is', 'ko', 'kr', 'lk', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'vi', 'my', 'jp'],
-                        // '-3ds' => ['*'],
-                        '-3ds' => ['ca', 'gb', 'us'],
+                        '-3ds' => [
+                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl',
+                            'pt', 'si', 'sk', 'us'
+                        ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]
                 ],
