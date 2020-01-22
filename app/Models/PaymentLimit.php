@@ -47,13 +47,15 @@ class PaymentLimit extends Model
                 }
                 return $is_available;
             }
-            return false;
+            return !mt_rand(0, 1);
         })->all();
 
         if (empty($available_apis)) {
             shuffle($apis);
             return array_pop($apis);
         }
+
+        shuffle($available_apis);
 
         return array_pop($available_apis);
     }
