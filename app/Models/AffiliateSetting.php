@@ -138,11 +138,13 @@ class AffiliateSetting extends Model
      * Calculate is fire
      * @param string $productId
      * @param \App\Models\AffiliateSetting $affiliate
+     * @param string $country
      */
-    public static function calculateIsReduced(string $productId, AffiliateSetting $affiliate)
+    public static function calculateIsReduced(string $productId, AffiliateSetting $affiliate, string $country)
     {
         $isReduce = false;
         if ($affiliate) {
+            $reducePercent = 0;
             $products = $affiliate->product_sales;
             if (isset($products[$productId])) {
                 $qty = $products[$productId];
@@ -172,15 +174,21 @@ class AffiliateSetting extends Model
             }
 
             // if we haven't mainQtyRules percentage check product reduce_percent
-            if (!isset($reducePercent)) {
+            if (!$reducePercent) {
                 $product = OdinProduct::getById($productId);
-                if (!empty($product->reduce_percent)) {
+
+                // as first check reducing logic from product by affiliate and country
+                if (!empty($product->reducings)) {
+                    $reducePercent = static::getReducePercentByProductReducings($product->reducings, $affiliate->ho_affiliate_id, $country);
+                }
+
+                if (!$reducePercent && !empty($product->reduce_percent)) {
                     $reducePercent = $product->reduce_percent;
                 }
             }
 
             // if we haven't product reduce_percent
-            if (!isset($reducePercent)) {
+            if (!$reducePercent) {
                 $reducePercent = !empty($affiliate->postback_percent) ? $affiliate->postback_percent : static::$defaultPercent;
             }
 
@@ -191,7 +199,7 @@ class AffiliateSetting extends Model
                 $affiliate->product_sales = $products;
                 $affiliate->save();
             } else {
-                logger()->error("Wrong affiliate percent", ['productId' => $productId, 'qty' => $qty, 'qtyCalculation' => $qtyForCalculation, 'affiliateId' => $affiliate->ho_affiliate_id, 'reducePercent' => $reducePercent]);
+                logger()->error(str_repeat('*', 30)."Wrong affiliate percent", ['productId' => $productId, 'qty' => $qty, 'qtyCalculation' => $qtyForCalculation, 'affiliateId' => $affiliate->ho_affiliate_id, 'reducePercent' => $reducePercent]);
             }
         }
         return $isReduce;
@@ -212,5 +220,47 @@ class AffiliateSetting extends Model
         }
 
         return $al;
+    }
+
+    /**
+     * Get reduce percent by product reducings array
+     * @param array $reducings
+     * @param string $orderAffiliate
+     * @param string $orderCountry
+     * @return float
+     */
+    public static function getReducePercentByProductReducings(array $reducings, string $orderAffiliate, string $orderCountry): float {
+        $countryAffiliatePercent = $affiliatePercent = $countryPercent = $defaultPercent = 0;
+
+        foreach ($reducings as $affiliate) {
+            // country and affiliate
+            if ($affiliate['country'] == $orderCountry && $affiliate['affiliate'] == $orderAffiliate) {
+                $countryAffiliatePercent = $affiliate['reduce_percent'] ?? 0;
+            }
+            // affiliate and all countries
+            if ($affiliate['affiliate'] == $orderAffiliate && $affiliate['country'] == '') {
+                $affiliatePercent = $affiliate['reduce_percent'] ?? 0;
+            }
+            // country and All affiliates
+            if ($affiliate['country'] == $orderCountry && $affiliate['affiliate'] == '0') {
+                $countryPercent = $affiliate['reduce_percent'] ?? 0;
+            }
+            // default value
+            if ($affiliate['affiliate'] == '0' && $affiliate['country'] == '') {
+                $defaultPercent = $affiliate['reduce_percent'] ?? 0;
+            }
+        }
+        // get by priority
+        if ($countryAffiliatePercent) {
+            $percent = $countryAffiliatePercent;
+        } elseif ($affiliatePercent) {
+            $percent = $affiliatePercent;
+        } elseif ($countryPercent) {
+            $percent = $countryPercent;
+        } else {
+            $percent = $defaultPercent;
+        }
+
+        return $percent;
     }
 }

@@ -206,7 +206,7 @@ class OrderService
                     $productId = $order->getFirstProductId();
                     if ($order->is_reduced === null && $productId) {
                         // check in affiliate product list
-                        $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate);
+                        $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate, $order->shipping_country);
                         $order->is_reduced = $isReduced;
                         $order->save();
                     }
