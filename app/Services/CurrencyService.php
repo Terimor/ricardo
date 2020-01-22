@@ -38,7 +38,7 @@ class CurrencyService
         'NZD' => '$',
         'SGD' => '$',
         'HKD' => 'HK$',
-        'TWD' => '$',       
+        'TWD' => '$',
         'BSD' => '$',
         'BBD' => '$',
         'BZD' => '$',
@@ -51,10 +51,10 @@ class CurrencyService
         'COP' => '$',
         'XCD' => '$',
         'SVC' => '$',
-        'FJD' => '$',        
+        'FJD' => '$',
         'LRD' => '$',
         'MXN' => '$',
-        'NAD' => '$',        
+        'NAD' => '$',
         'SBD' => '$',
         'SRD' => '$',
         'ARS' => '$'
@@ -176,6 +176,8 @@ class CurrencyService
         'MRO',
         'ETB'
     ];
+
+    public static $currencyObject = null;
 
     /**
      * Get local price from USD
@@ -426,69 +428,82 @@ class CurrencyService
      */
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
     {
-        $currency = null;
-        if ($currencyCode) {
-            $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
+        $saveToMem = false;
+        if (!empty(static::$currencyObject) && !$currencyCode && !$countryCode) {
+            $currency = static::$currencyObject;
         } else {
-            if (request()->get('cur')) {
-                $currencyCode = request()->get('cur');
-            }
-        }
-
-        // if we still haven't currency get it by country
-        if (!$currencyCode) {
-            if (!$countryCode) {
-                $countryCode = strtoupper(\Utils::getLocationCountryCode());
+            if (!$currencyCode && !$countryCode) {
+                $saveToMem = true;
             }
 
-            $localeString = \Utils::getCultureCode(null, $countryCode);
-            $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
-            $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
-        }
-
-        // if we still haven't currency get first active currency
-        if (!$currency) {
-            $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
-        }
-
-        // check and compare countries in currency
-        if (!empty($currency->countries)){
-            if (!in_array(strtolower($countryCode), $currency->countries)) {
-                $countryCode = $currency->countries[0];
+            $currency = null;
+            if ($currencyCode) {
+                $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
+            } else {
+                if (request()->get('cur')) {
+                    $currencyCode = request()->get('cur');
+                }
             }
-        } else {
-            //try to find in currency countries
-            if ($countryCode) {
-                $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
 
-                if(!$currency) {
-                    logger()->error("Can't find currency country", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
-                    $currencyCode = 'USD';
+            // if we still haven't currency get it by country
+            if (!$currencyCode) {
+                if (!$countryCode) {
+                    $countryCode = strtoupper(\Utils::getLocationCountryCode());
+                }
+
+                $localeString = \Utils::getCultureCode(null, $countryCode);
+                $numberFormatter = new \NumberFormatter($localeString, \NumberFormatter::CURRENCY);
+                $currencyCode = $numberFormatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
+            }
+
+            // if we still haven't currency get first active currency
+            if (!$currency) {
+                $currency = Currency::whereCode($currencyCode)->where('status', 'active')->first();
+            }
+
+            // check and compare countries in currency
+            if (!empty($currency->countries)) {
+                if (!in_array(strtolower($countryCode), $currency->countries)) {
+                    $countryCode = $currency->countries[0];
                 }
             } else {
-                $currencyCode = 'USD';
+                //try to find in currency countries
+                if ($countryCode) {
+                    $currency = Currency::where(['countries' => strtolower($countryCode)])->where('status', 'active')->first();
+
+                    if (!$currency) {
+                        logger()->error("Can't find currency country", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
+                        $currencyCode = 'USD';
+                    }
+                } else {
+                    $currencyCode = 'USD';
+                }
+
+                // default USD currency
+                $currency = Currency::whereCode($currencyCode)->first();
+                $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
             }
 
-            // default USD currency
-            $currency = Currency::whereCode($currencyCode)->first();
-            $countryCode = !empty($currency->countries[0]) ? $currency->countries[0] : 'US';
-        }
+            // if still no currency, then can't find USD try again ...
+            if (!$currency) {
+                $currency = Currency::where(['code' => 'USD'])->first();
+            }
+            if (!$currency) {
+                logger()->error("Urgent: Can't find currency", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
+            }
 
-        // if still no currency, then can't find USD try again ...
-        if (!$currency) {
-            $currency = Currency::where(['code' => 'USD'])->first();
-        }
-        if (!$currency) {
-            logger()->error("Urgent: Can't find currency", ['currencyCode' => $currencyCode, 'countryCode' => $countryCode]);
-        }
+            $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
 
-        $currency->countryCode = !empty($countryCode) ? $countryCode : 'US';
+            if (empty($localeString)) {
+                $localeString = \Utils::getCultureCode(null, $currency->countryCode);
+            }
 
-        if (empty($localeString)) {
-            $localeString = \Utils::getCultureCode(null, $currency->countryCode);
+            $currency->localeString = $localeString;
+
+            if ($saveToMem) {
+                static::$currencyObject = $currency;
+            }
         }
-
-        $currency->localeString = $localeString;
 
         return $currency;
     }
@@ -587,11 +602,11 @@ class CurrencyService
             $fractionDigits = 0;
             $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $fractionDigits);
         }
-        
+
         $priceText = $numberFormatter->formatCurrency($price, $currency->code);
 
         // check use symbol from db for formatting
-        if (isset(static::$useDBSymbol[$currency->code])) {             
+        if (isset(static::$useDBSymbol[$currency->code])) {
             $priceText = str_replace(static::$useDBSymbol[$currency->code], $currency->symbol, $priceText);
         }
 
