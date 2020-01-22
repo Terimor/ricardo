@@ -139,8 +139,9 @@ class AffiliateSetting extends Model
      * @param string $productId
      * @param \App\Models\AffiliateSetting $affiliate
      * @param string $country
+     * @return bool $isReduce
      */
-    public static function calculateIsReduced(string $productId, AffiliateSetting $affiliate, string $country)
+    public static function calculateIsReduced(string $productId, AffiliateSetting $affiliate, string $country): ?bool
     {
         $isReduce = false;
         if ($affiliate) {
