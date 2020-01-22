@@ -31,8 +31,8 @@
 <div class="contacts">
     <div class="container">
         <div class="contacts__wrapper">
-            {!! t('contacts.content', ['address' => $placeholders['address'], 'email' => $placeholders['email'],
-            'phone' => $placeholders['phone'], 'number' => $placeholders['number']]) !!}
+            {!! t('contacts.content', ['websitename' => $website_name, 'address' => $placeholders['address'], 'email' => $placeholders['email'],
+            'phone' => $placeholders['phone'], 'number' => $placeholders['number'], 'company' => $placeholders['company']]) !!}
             @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>

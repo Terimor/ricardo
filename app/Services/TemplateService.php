@@ -57,6 +57,18 @@ class TemplateService
     }
 
     /**
+     * Get company name
+     * @param string|null $settingValue
+     * @param Domain|null $domain
+     * @return string
+     */
+    public static function getCompanyName(?string $settingValue, ?Domain $domain = null) : string
+    {
+        $name = !empty($domain->company_name) ? $domain->company_name : $settingValue;
+        return $name ?? '';
+    }
+
+    /**
      * Get company data
      * @param mixed $domain
      * @return array
@@ -67,14 +79,16 @@ class TemplateService
             'support_address',
             'support_email',
             'support_phone',
-            'support_phone_us'
+            'support_phone_us',
+            'company_name'
         ]);
 
         $data = [
             'address' => TemplateService::getCompanyAddress($setting['support_address'], $domain, true),
             'phone' => TemplateService::getCompanyPhone($setting['support_phone'], $domain),
             'number' => TemplateService::getCompanyNumber($setting['support_phone_us'], $domain),
-            'email' => TemplateService::getCompanyEmail($setting['support_email'], $domain)
+            'email' => TemplateService::getCompanyEmail($setting['support_email'], $domain),
+            'company' => TemplateService::getCompanyName($setting['company_name'], $domain)
         ];
         return $data;
     }

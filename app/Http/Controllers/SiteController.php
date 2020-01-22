@@ -114,9 +114,9 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('contact_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-
         $placeholders = TemplateService::getCompanyData($domain);
-        return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo', 'placeholders'));
+        $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
+        return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo', 'website_name', 'placeholders'));
     }
 
     /**
@@ -132,7 +132,8 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('refunds_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view('returns', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
+        $placeholders = TemplateService::getCompanyData($domain);
+        return view('returns', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'placeholders'));
     }
 
     /**
