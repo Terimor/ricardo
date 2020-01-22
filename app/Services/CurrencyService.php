@@ -429,6 +429,7 @@ class CurrencyService
     public static function getCurrency(string $currencyCode = null, string $countryCode = null) : Currency
     {
         $saveToMem = false;
+        // if we get it from empty values save to memory
         if (!empty(static::$currencyObject) && !$currencyCode && !$countryCode) {
             $currency = static::$currencyObject;
         } else {
