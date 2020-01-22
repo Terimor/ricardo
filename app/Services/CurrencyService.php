@@ -430,12 +430,12 @@ class CurrencyService
     {
         $saveToMem = false;
         // if we get it from empty values save to memory
-        //if (!empty(static::$currencyObject) && !$currencyCode && !$countryCode) {
-            //$currency = static::$currencyObject;
-        //} else {
-            //if (!$currencyCode && !$countryCode) {
-              //  $saveToMem = true;
-            //}
+        if (!empty(static::$currencyObject) && !$currencyCode && !$countryCode) {
+            $currency = static::$currencyObject;
+        } else {
+            if (!$currencyCode && !$countryCode) {
+                $saveToMem = true;
+            }
 
             $currency = null;
             if ($currencyCode) {
@@ -501,10 +501,10 @@ class CurrencyService
 
             $currency->localeString = $localeString;
 
-            //if ($saveToMem) {
-             //   static::$currencyObject = $currency;
-            //}
-        //}
+            if ($saveToMem) {
+                static::$currencyObject = $currency;
+            }
+        }
 
         return $currency;
     }
