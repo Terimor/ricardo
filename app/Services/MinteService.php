@@ -28,7 +28,6 @@ class MinteService
     const STATUS_FAIL   = 'FAILED';
 
     const COUNTRY_CURRENCY = [
-        'us' => ['USD'],
         'ca' => ['CAD', 'USD'],
         'gb' => ['GBP', 'USD'],
         'at' => ['EUR', 'USD'],
@@ -54,13 +53,9 @@ class MinteService
         'si' => ['EUR', 'USD'],
         'sk' => ['EUR', 'USD'],
         'sm' => ['EUR', 'USD'],
-        'us' => ['EUR', 'USD'],
+        'us' => ['USD'],
         'va' => ['EUR', 'USD'],
-        '*'  => [
-            'CAD', 'EUR', 'GBP', 'USD'
-            // 'CAD', 'USD', 'EUR', 'GBP','CHF', 'SEK', 'DKK', 'NOK', 'JPY', 'KRW', 'AUD', 'NZD', 'ZAR', 'AED', 'PLN', 'CZK', 'HUF',
-            // 'RON', 'BGN', 'TWD', 'HKD', 'SGD', 'INR', 'ILS', 'MYR', 'CLP', 'RUB', 'TRY', 'PHP', 'HRK', 'MXN', 'COP', 'ARS'
-        ]
+        '*'  => ['USD']
     ];
 
     /**
