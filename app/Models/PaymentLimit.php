@@ -36,7 +36,8 @@ class PaymentLimit extends Model
     {
         $api_ids = collect($apis)->map(function($v) { return (string)$v->getIdAttribute(); })->toArray();
         $limits = self::whereIn('payment_api_ids', $api_ids)->where('currency', $currency)->get();
-        $available_apis = collect($apis)->filter(function($v) use ($limits, $pct) {
+
+        $available = collect($apis)->first(function($v) use ($limits, $pct) {
             $limit = $limits->first(function($vv) use ($v) {
                 return in_array($v->getIdAttribute(), $vv->payment_api_ids);
             });
@@ -47,17 +48,15 @@ class PaymentLimit extends Model
                 }
                 return $is_available;
             }
-            return !mt_rand(0, 1);
-        })->all();
+            return false;
+        });
 
-        if (empty($available_apis)) {
+        if (empty($available)) {
             shuffle($apis);
             return array_pop($apis);
         }
 
-        shuffle($available_apis);
-
-        return array_pop($available_apis);
+        return $available;
     }
 
 }
