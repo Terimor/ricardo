@@ -375,7 +375,7 @@ class ProductService
         $lp->long_name = $product->long_name;
         $lp->logo_image = $images[$product['logo_image_id']] ?? null;
         $lp->upsell_sku = $product['skus'][0]['code'];
-        $lp->image = !empty($images[$product['image_ids'][0]]) ? $images[$product['image_ids'][0]] : null;
+        $lp->image = (!empty($product['image_ids'][0]) && !empty($images[$product['image_ids'][0]])) ? $images[$product['image_ids'][0]] : null;
         $lp->upsellPrices = $product->upsellPrices ?? null;
         return $lp->toArray();
     }

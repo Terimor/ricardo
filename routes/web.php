@@ -59,6 +59,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/validate-email', 'EmailController@validateEmail');
     $router->get('/address-by-zip', 'SiteController@getBrazilAddressByZip');
     //$router->get('/send-postbacks', 'OrderController@sendPostbacks');
+    $router->get('/send-postbacks-list', 'OrderController@sendPostbacksByList');
     $router->post('apply-discount', 'AffiliateController@fingerprintClick');
 
     $router->post('/paypal-create-order', 'Payments\PaypalController@createOrder');
