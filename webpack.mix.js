@@ -35,6 +35,7 @@ mix
   .js('resources/js/views/thank-you.js', 'public/assets/js/views')
   .js('resources/js/views/order-tracking.js', 'public/assets/js/views')
   .js('resources/js/minishop/pages/home.js', 'public/assets/js/minishop')
+  .js('resources/js/minishop/pages/product.js', 'public/assets/js/minishop')
   .js('resources/js/new/pages/checkout/templates/fmc5.js', 'public/assets/js/new/pages/checkout/templates')
   .js('resources/js/new/pages/checkout/templates/vmp44.js', 'public/assets/js/new/pages/checkout/templates')
   .js('resources/js/new/pages/checkout/templates/vc1.js', 'public/assets/js/new/pages/checkout/templates')
@@ -54,6 +55,7 @@ mix
   .sass('resources/sass/new/pages/checkout/templates/vc1.scss', 'public/assets/css/new/pages/checkout/templates')
   .sass('resources/sass/new/pages/checkout/templates/vc2.scss', 'public/assets/css/new/pages/checkout/templates')
   .sass('resources/sass/minishop/pages/home.scss', 'public/assets/css/minishop')
+  .sass('resources/sass/minishop/pages/product.scss', 'public/assets/css/minishop')
   .copyDirectory('resources/images', 'public/assets/images')
   .copy('resources/scripts/bioep.min.js', 'public/assets/scripts');
 

@@ -29,7 +29,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/prober', 'SiteController@prober')->name('prober');
     $router->post('/log-data', 'SiteController@logData')->name('log-data');
 
-    //$router->get('/minishop/products', 'MiniShopController@products')->name('minishop.products');
+    $router->get('/product', 'SiteController@product')->name('product');
 
     //$router->get('/products', 'SiteController@products')->name('products');
     //$router->get('/product', 'ProductController@view')->name('product');

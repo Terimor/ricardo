@@ -78,7 +78,7 @@ class ViewServiceProvider extends ServiceProvider
         });
 
         // run minishop boot
-        if (Request::is('/')) {        
+        if (Request::is('/') || Request::is('product')) {
             static::miniShopBoot();
         }
     }

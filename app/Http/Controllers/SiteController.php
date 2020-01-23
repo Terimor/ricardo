@@ -102,6 +102,24 @@ class SiteController extends Controller
     }
 
     /**
+     * Product page
+     * @param Request $request
+     * @param ProductService $productService
+     * @param Domain $domain
+     * @param array $products
+     * @return type
+     */
+    public function product(Request $request, ProductService $productService)
+    {
+        $domain = Domain::getByName();
+        $cdn_url = \Utils::getCdnUrl();
+        (new I18nService())->loadPhrases('minishop_page');
+        $product = $productService->resolveProduct($request, true);
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
+        return view('minishop/pages/product', compact('cdn_url', 'page_title', 'product'));
+    }
+
+    /**
      * Contacts page
      * @param Request $request
      * @param ProductService $productService

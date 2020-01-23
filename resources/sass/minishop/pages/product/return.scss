@@ -1,0 +1,16 @@
+.return {
+  .show-more {
+    color: #181818;
+    display: inline-block;
+    font-size: 18px;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    i {
+      color: #d7440a;
+      padding-right: 10px;
+    }
+  }
+}
