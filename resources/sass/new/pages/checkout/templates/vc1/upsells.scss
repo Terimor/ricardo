@@ -2,10 +2,9 @@
   border: 3px solid #d54c26;
   display: none;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 0 25px;
   padding-bottom: 20px;
   position: relative;
-  width: 550px;
 
   @media only screen and (min-width: $size2) {
     display: flex;
@@ -86,6 +85,41 @@
         font-size: 50px;
         font-weight: 700;
       }
+    }
+  }
+}
+
+.vc1 > .upsells {
+  display: flex;
+  margin: 0 0 20px;
+
+  @media only screen and (min-width: $size2) {
+    display: none;
+  }
+
+  .img-check {
+    display: none;
+
+    @media only screen and (min-width: $size1) {
+      display: flex;
+    }
+  }
+
+  .title {
+    font-size: 28px;
+    text-align: center;
+
+    @media only screen and (min-width: $size1) {
+      font-size: 32px;
+    }
+  }
+
+  .upsell {
+    flex-direction: column;
+
+    .text {
+      margin: 16px 0;
+      text-align: center;
     }
   }
 }

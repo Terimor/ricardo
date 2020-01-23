@@ -2,7 +2,7 @@
 
   <div class="badge details">
     <div class="title">{!! t('vc1.providers.title') !!}</div>
-    <div class="triangle"></div>
+    <div class="triangle"><div></div></div>
   </div>
 
   <div class="buttons">
@@ -20,7 +20,7 @@
 
   <div class="badge checkout">
     <div class="title">{!! t('vc1.providers.checkout') !!}</div>
-    <div class="triangle"></div>
+    <div class="triangle"><div></div></div>
   </div>
 
 </div>

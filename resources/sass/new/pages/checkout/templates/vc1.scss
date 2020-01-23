@@ -21,15 +21,15 @@ $size2: 905px;
   font-family: Lato, "Noto Sans", sans-serif;
   font-size: 18px;
   line-height: 1.4;
-  margin: 0 auto;
-  max-width: $size0;
-  width: 100%;
+  margin: 0 16px;
 
   @media only screen and (min-width: $size1) {
+    margin: 0 auto;
     max-width: $size1;
   }
 
   @media only screen and (min-width: $size2) {
+    margin-bottom: 80px;
     max-width: $size2;
   }
 
@@ -76,14 +76,11 @@ $size2: 905px;
 }
 
 .content {
-  align-items: center;
   display: flex;
   flex-direction: column;
 
   @media only screen and (min-width: $size2) {
-    align-items: flex-start;
     flex-direction: row;
-    margin-bottom: 80px;
   }
 }
 
@@ -101,12 +98,6 @@ $size2: 905px;
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
-  min-height: 1000px;
-  width: 280px;
-
-  @media only screen and (min-width: $size1) {
-    width: 370px;
-  }
 
   @media only screen and (min-width: $size2) {
     border-bottom-width: 8px;

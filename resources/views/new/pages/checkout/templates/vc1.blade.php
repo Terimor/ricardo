@@ -41,5 +41,6 @@
         @include('new.pages.checkout.templates.vc1.summary')
       </div>
     </div>
+    @include('new.pages.checkout.templates.vc1.upsells')
   </div>
 @endsection

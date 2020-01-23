@@ -19,20 +19,16 @@
     }
 
     .triangle {
-      border-left: 137px solid transparent;
-      border-right: 137px solid transparent;
-      border-top: 15px solid #d54c27;
-      height: 0;
-      width: 0;
+      overflow: hidden;
+      padding-left: 50%;
+      padding-top: 15px;
 
-      @media only screen and (min-width: $size1) {
-        border-left-width: 182px;
-        border-right-width: 182px;
-      }
-
-      @media only screen and (min-width: $size2) {
-        border-left-width: 137px;
-        border-right-width: 137px;
+      div {
+        border-left: 500px solid transparent;
+        border-right: 500px solid transparent;
+        border-top: 36px solid #d54c27;
+        margin-left: -500px;
+        margin-top: -36px;
       }
     }
 
