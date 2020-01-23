@@ -1,13 +1,6 @@
 import { required } from 'vuelidate/lib/validators';
 
 
-const phone_codes = window.intlTelInputGlobals.getCountryData()
-  .reduce((acc, item) => {
-    acc[item.iso2] = item.dialCode;
-    return acc;
-  }, {});
-
-
 export default {
 
   data() {
@@ -15,7 +8,7 @@ export default {
       form: {
         phone: null,
         phone_country: js_data.country_code,
-        phone_code: phone_codes[js_data.country_code] || '',
+        phone_code: '',
       },
     };
   },
@@ -52,8 +45,8 @@ export default {
     phone_init() {
       js_deps.wait_for(
         () => {
-          return !!this.$refs.phone_field
-            && !!this.$refs.phone_field.querySelector('input');
+          return !!window.intlTelInput && !!window.intlTelInputGlobals
+            && !!this.$refs.phone_field && !!this.$refs.phone_field.querySelector('input');
         },
         () => {
           setTimeout(() => {
@@ -69,6 +62,14 @@ export default {
               initialCountry: this.form.phone_country,
               separateDialCode: true,
             });
+
+            const phone_codes = window.intlTelInputGlobals.getCountryData()
+              .reduce((acc, item) => {
+                acc[item.iso2] = item.dialCode;
+                return acc;
+              }, {});
+
+            this.form.phone_code = phone_codes[js_data.country_code] || '';
 
             element.addEventListener('countrychange', () => {
               const country = intlTelInputGlobals.getInstance(element).getSelectedCountryData();
