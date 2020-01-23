@@ -50,7 +50,7 @@
                     </div>
                     <a
                         class="index__button"
-                        href="/checkout"
+                        href="/product"
                     >
                         {{ t('index.get_it_now') }}
                     </a>

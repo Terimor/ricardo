@@ -66,32 +66,29 @@
       }
 
       .strike {
-        left: -4px;
+        left: 50%;
+        margin-left: -40px;
         position: absolute;
-        top: 18px;
+        top: 50%;
 
         [dir="rtl"] & {
-          left: 0;
-          right: -4px;
+          margin-left: 0;
+          margin-right: -40px;
         }
 
         @media only screen and (min-width: $size1) {
-          left: -14px;
-          top: 22px;
+          margin-left: -50px;
 
           [dir="rtl"] & {
-            left: 0;
-            right: -14px;
+            margin-right: -50px;
           }
         }
 
         @media only screen and (min-width: $size2) {
-          left: -12px;
-          top: 32px;
+          margin-left: -80px;
 
           [dir="rtl"] & {
-            left: 0;
-            right: -12px;
+            margin-right: -80px;
           }
         }
 
@@ -113,7 +110,7 @@
             transform: rotate(-15deg);
 
             @media only screen and (min-width: $size1) {
-              border-right-width: 120px;
+              border-right-width: 100px;
             }
 
             @media only screen and (min-width: $size2) {
@@ -127,7 +124,7 @@
             transform: rotate(15deg);
 
             @media only screen and (min-width: $size1) {
-              border-left-width: 120px;
+              border-left-width: 100px;
               margin-top: -8px;
             }
 
