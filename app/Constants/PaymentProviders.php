@@ -1023,15 +1023,15 @@ class PaymentProviders
                 'main' => [
                     PaymentMethods::VISA => [
                         '-3ds' => [
-                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl',
-                            'pt', 'si', 'sk', 'us'
+                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mc', 'mt',
+                            'nl', 'pt', 'si', 'sk', 'sm', 'us', 'va'
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '-3ds' => [
-                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl',
-                            'pt', 'si', 'sk', 'us'
+                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mc', 'mt',
+                            'nl', 'pt', 'si', 'sk', 'sm', 'us', 'va'
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]

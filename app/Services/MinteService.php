@@ -47,12 +47,15 @@ class MinteService
         'lt' => ['EUR', 'USD'],
         'lu' => ['EUR', 'USD'],
         'lv' => ['EUR', 'USD'],
+        'mc' => ['EUR', 'USD'],
         'mt' => ['EUR', 'USD'],
         'nl' => ['EUR', 'USD'],
         'pt' => ['EUR', 'USD'],
         'si' => ['EUR', 'USD'],
         'sk' => ['EUR', 'USD'],
+        'sm' => ['EUR', 'USD'],
         'us' => ['EUR', 'USD'],
+        'va' => ['EUR', 'USD'],
         '*'  => [
             'CAD', 'EUR', 'GBP', 'USD'
             // 'CAD', 'USD', 'EUR', 'GBP','CHF', 'SEK', 'DKK', 'NOK', 'JPY', 'KRW', 'AUD', 'NZD', 'ZAR', 'AED', 'PLN', 'CZK', 'HUF',

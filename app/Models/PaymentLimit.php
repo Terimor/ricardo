@@ -37,7 +37,11 @@ class PaymentLimit extends Model
         $api_ids = collect($apis)->map(function($v) { return (string)$v->getIdAttribute(); })->toArray();
         $limits = self::whereIn('payment_api_ids', $api_ids)->where('currency', $currency)->get();
 
-        $available = collect($apis)->first(function($v) use ($limits, $pct) {
+        shuffle($apis);
+
+        $availables = [];
+        $rest = [];
+        foreach ($apis as $v) {
             $limit = $limits->first(function($vv) use ($v) {
                 return in_array($v->getIdAttribute(), $vv->payment_api_ids);
             });
@@ -46,17 +50,15 @@ class PaymentLimit extends Model
                 if ($is_available && $limit->is_splitting) {
                     $is_available = !mt_rand(0, 1);
                 }
-                return $is_available;
+                if ($is_available) {
+                    $availables[] = $v;
+                }
+                continue;
             }
-            return false;
-        });
-
-        if (empty($available)) {
-            shuffle($apis);
-            return array_pop($apis);
+            $rest[] = $v;
         }
 
-        return $available;
+        return !empty($availables) ? array_pop($availables) : array_pop($rest);
     }
 
 }
