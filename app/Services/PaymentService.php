@@ -1133,7 +1133,7 @@ class PaymentService
         $sign       = $req->input('signature');
         $txn_hash   = $req->input('transid');
         $txn_status = $req->input('status');
-        $txn_ts     = $req->input('timestamp');
+        $txn_ts     = $req->input('timestamp', '');
 
         $order = OdinOrder::getById($order_id); // throwable
         $order_txn = $order->getTxnByHash($txn_hash); // throwable

@@ -43,7 +43,7 @@ class PaymentCardMinte3dsRequest extends FormRequest
             'status'    => ['required', 'string', 'in:SUCCESS,FAILED'],
             'signature' => ['required', 'string'],
             'token'     => ['string'],
-            'timestamp' => ['string'],
+            'timestamp' => ['nullable', 'string'],
             'errorcode' => ['nullable', 'string'],
             'errormessage' => ['nullable', 'string'],
         ];

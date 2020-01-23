@@ -225,12 +225,16 @@ class MinteService
                 $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
-                $code = !empty($body_decoded['errorcode']) ? $body_decoded['errorcode'] : $body_decoded['errormessage'];
-                if (in_array($code, self::$fallback_codes)) {
+                logger()->error("Mint-e auth", ['body' => $body_decoded]);
+
+                $code = $body_decoded['errorcode'] ?? null;
+                $msg  = $body_decoded['errormessage'] ?? null;
+
+                if (in_array($code ?? $msg, self::$fallback_codes)) {
                     $result['fallback'] = true;
                 }
-                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
-                logger()->error("Mint-e auth", ['body' => $body_decoded]);
+
+                $result['errors'] = [MinteCodeMapper::toPhrase($code, $msg)];
             }
             $result['provider_data'] = $body_decoded;
         } catch (GuzzReqException $ex) {
