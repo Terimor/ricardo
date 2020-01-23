@@ -1,14 +1,14 @@
 @if (isset($sentry_dsn) && config('app.env') !== 'local' && config('app.env') !== 'development' && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
 
   <script
-    src="https://browser.sentry-cdn.com/5.11.0/bundle.min.js"
+    src="https://browser.sentry-cdn.com/5.11.1/bundle.min.js"
     onload="js_deps.ready('sentry')"
     crossorigin="anonymous"
     async></script>
 
   @if (!empty($HasVueApp) || !empty($is_minishop))
     <script
-      src="https://browser.sentry-cdn.com/5.11.0/vue.min.js"
+      src="https://browser.sentry-cdn.com/5.11.1/vue.min.js"
       onload="js_deps.ready('sentry-vue')"
       crossorigin="anonymous"
       async></script>

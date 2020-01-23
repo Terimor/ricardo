@@ -20,6 +20,10 @@
   margin: 64px 0;
   max-width: 600px;
   width: 50%;
+
+  @media screen and ($s-down) {
+    width: 90%;
+  }
 }
 
 .dialog-title {
