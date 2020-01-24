@@ -45,16 +45,20 @@ export default {
           break;
       }
 
-      price = +price.replace(/[^0-9.]/g, '');
-      warranty = +warranty.replace(/[^0-9.]/g, '');
+      price = +price.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+      warranty = +warranty.replace(/,/g, '.').replace(/[^0-9.]/g, '');
 
       if (this.form.warranty) {
         price += warranty;
       }
 
       price = Math.round(price * 100) / 100;
+      price = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-      return price_text + js_data.product.prices[this.form.deal].value_text.replace(/[0-9.]+/, price);
+      const value_text = js_data.product.prices[this.form.deal].value_text;
+      const match = value_text.match(/[0-9.,\s]+/).shift().trim();
+
+      return price_text + value_text.replace(match, price);
     },
 
   },
