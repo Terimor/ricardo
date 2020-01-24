@@ -5,15 +5,15 @@
   margin-bottom: 10px;
 
   .title {
-    align-items: center;
-     align-self: stretch;
+    align-self: stretch;
     background-color: #d54c27;
     color: #fff;
     display: flex;
     flex-direction: column;
     font-size: 20px;
     font-weight: 700;
-    padding: 5px 0;
+    padding: 5px 12px;
+    text-align: center;
     text-transform: uppercase;
   }
 

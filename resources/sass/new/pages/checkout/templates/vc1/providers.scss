@@ -7,7 +7,6 @@
     flex-direction: column;
 
     .title {
-      align-items: center;
       background-color: #d54c27;
       color: #fff;
       display: flex;
@@ -15,7 +14,8 @@
       font-size: 18px;
       font-style: italic;
       font-weight: 700;
-      padding: 13px 0 8px;
+      padding: 13px 12px 8px;
+      text-align: center;
     }
 
     .triangle {
@@ -33,7 +33,7 @@
     }
 
     &.checkout .title {
-      padding: 16px 0 8px;
+      padding: 16px 12px 8px;
     }
   }
 

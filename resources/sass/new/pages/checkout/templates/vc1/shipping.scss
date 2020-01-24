@@ -3,7 +3,6 @@
   flex-direction: column;
 
   .title {
-    align-items: center;
     background-color: #d54c27;
     color: #fff;
     display: flex;
@@ -11,7 +10,8 @@
     font-size: 20px;
     font-weight: 700;
     margin-top: 11px;
-    padding: 5px 0;
+    padding: 5px 12px;
+    text-align: center;
     text-transform: uppercase;
   }
 
