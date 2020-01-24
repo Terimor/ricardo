@@ -45,7 +45,7 @@
         @endif
 
         @if((Route::is('checkout') || Route::is('checkout_price_set')) && (Request::get('show_timer') === '{timer}' || Request::get('show_timer') === '1'))
-          <timer-component />
+          <timer-component></timer-component>
         @endif
     </div>
 </header>
