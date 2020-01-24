@@ -111,11 +111,11 @@ js_deps.wait(['vue', 'element'], () => {
 
         getShippingAddress() {
             const data = {
-                shipping_city: js_data.order_customer.shipping_city,
-                shipping_street: js_data.order_customer.shipping_street,
-                shipping_state: js_data.order_customer.shipping_state,
-                shipping_country: js_data.order_customer.shipping_country,
-                shipping_zip: js_data.order_customer.shipping_zip,
+                shipping_city: js_data.order_customer && js_data.order_customer.shipping_city || '',
+                shipping_street: js_data.order_customer && js_data.order_customer.shipping_street || '',
+                shipping_state: js_data.order_customer && js_data.order_customer.shipping_state || '',
+                shipping_country: js_data.order_customer && js_data.order_customer.shipping_country || '',
+                shipping_zip: js_data.order_customer && js_data.order_customer.shipping_zip || '',
             }
 
             const queryString = Object.values(data).reduce((acc, string) => {

@@ -31,7 +31,7 @@
 <div class="static">
     <div class="container">
         <div class="static__wrapper">
-            @if (empty(Request::get('aff_id')) && empty(Request::get('offer_id')))
+            @if (false && empty(Request::get('aff_id')) && empty(Request::get('offer_id')))
               <div class="returns-address">
                 <div class="label">{{ t('returns.address.label') }}</div>
                 <select class="selector">
