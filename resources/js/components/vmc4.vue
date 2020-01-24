@@ -130,15 +130,15 @@
         return js_data.product.billing_descriptor;
       },
       purchase() {
-        const currentVariant = this.skusList.find(it => it.code === this.form.variant);
+        const variant = this.form.variant || (js_data.product.skus[0] && js_data.product.skus[0].code) || null;
 
         return preparePurchaseData({
           purchaseList: this.productData.prices,
           product_name: this.productData.product_name,
-          variant: currentVariant && currentVariant.name || null,
           installments: this.form.installments,
           quantityToShow: [1, 3, 5],
           onlyDiscount: true,
+          variant,
         });
       },
       dealList () {
