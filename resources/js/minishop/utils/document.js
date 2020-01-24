@@ -9,7 +9,9 @@ export default {
 
   created() {
     document.addEventListener('readystatechange', () => {
-      this.document.readyState = document.readyState;
+      if (this.document) {
+        this.document.readyState = document.readyState;
+      }
     });
   },
 
