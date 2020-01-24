@@ -54,8 +54,8 @@
 		],
 		methods: {
 			isBestseller() {
-				return this.item.discountName.toLowerCase() === 'bestseller'
-            },
+				return this.item && this.item.discountName && this.item.discountName.toLowerCase && this.item.discountName.toLowerCase() === 'bestseller' || false;
+      },
 			input(e) {
         if (window.navigator && navigator.userAgent && /Edge|Trident/.test(navigator.userAgent) && this.$parent.onInput) {
           this.$parent.onInput(e);
