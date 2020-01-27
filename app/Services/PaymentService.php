@@ -807,7 +807,9 @@ class PaymentService
                     return $v;
                 }, $upsells);
 
-                // add upsell products
+                // NOTE: re-request order to prevent race condition
+                $order = OdinOrder::getById($order->getIdAttribute());
+
                 foreach ($upsell_products as $item) {
                     $item['txn_hash'] = $payment['hash'];
                     $order->addProduct($item);
