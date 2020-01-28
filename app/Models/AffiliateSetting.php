@@ -19,7 +19,7 @@ class AffiliateSetting extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'ho_affiliate_id', 'postback_percent', 'is_signup_hidden', 'product_sales'
+        'name', 'ho_affiliate_id', 'postback_percent', 'is_signup_hidden', 'product_sales', 'is_3ds_off'
     ];
 
     /*
