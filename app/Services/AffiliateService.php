@@ -440,7 +440,7 @@ class AffiliateService
         } else {
             logger()->warning('FingerprintWrongData', ['request' => $request->all()]);
         }
-  }
+    }
 
     /**
      * Validate affiliate ID

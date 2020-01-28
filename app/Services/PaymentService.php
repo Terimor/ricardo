@@ -16,6 +16,7 @@ use App\Models\Txn;
 use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
+use App\Models\AffiliateSetting;
 use App\Services\BluesnapService;
 use App\Services\CurrencyService;
 use App\Services\CustomerService;
@@ -347,7 +348,6 @@ class PaymentService
         }
 
         // select providers by country
-        // $providers = self::getProvidersForPay($contact['country'], $method);
         $api = PaymentApiService::getByProductId(
             $product->getIdAttribute(),
             self::getProvidersForPay($contact['country'], $method),
@@ -365,20 +365,17 @@ class PaymentService
             throw new ProviderNotFoundException('Provider not found');
         }
 
-        self::fraudCheck($ipqs, $api->payment_provider); // throwable
+        $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
+        $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+
+        self::fraudCheck($ipqs, $api->payment_provider, $affid); // throwable
 
         $this->addCustomer($contact); // throwable
 
-        if (empty($order)) {;
+        if (empty($order)) {
             $price = $this->getLocalizedPrice($product, (int)$qty, $contact['country'], $api->payment_provider); // throwable
 
             $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
-
-            $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
-            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
-            $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
-            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
-            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
             $order = $this->addOrder([
                 'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
@@ -419,9 +416,9 @@ class PaymentService
                 'products'              => [$order_product],
                 'page_checkout'         => $page_checkout,
                 'params'                => $params,
-                'offer'                 => $offerId,
-                'affiliate'             => $affId,
-                'txid'                  => $validTxid,
+                'offer'                 => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
+                'affiliate'             => AffiliateService::validateAffiliateID($affid) ? $affid : null,
+                'txid'                  => AffiliateService::getValidTxid($params['txid'] ?? null),
                 'ipqualityscore'        => $ipqs
             ]);
         } else {
@@ -500,7 +497,13 @@ class PaymentService
                     'currency'  => $order->currency,
                     'id'        => $order->getIdAttribute(),
                     'number'    => $order->number,
-                    '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], PaymentProviders::CHECKOUTCOM, (array)$ipqs),
+                    '3ds'       => self::checkIs3dsNeeded(
+                        $method,
+                        $contact['country'],
+                        PaymentProviders::CHECKOUTCOM,
+                        $order->affiliate,
+                        (array)$ipqs
+                    ),
                     'description'   => $product->product_name,
                     // TODO: remove city hardcode
                     'billing_descriptor'   => ['name' => $order->billing_descriptor, 'city' => 'Msida']
@@ -525,7 +528,13 @@ class PaymentService
             case PaymentProviders::MINTE:
                 $mint = new MinteService($api);
                 $payment = $mint->payByCard($card, $contact, [
-                    '3ds'       => self::checkIs3dsNeeded($method, $contact['country'], PaymentProviders::MINTE, (array)$ipqs),
+                    '3ds'       => self::checkIs3dsNeeded(
+                        $method,
+                        $contact['country'],
+                        PaymentProviders::MINTE,
+                        $order->affiliate,
+                        (array)$ipqs
+                    ),
                     'amount'    => $order->total_price,
                     'currency'  => $order->currency,
                     'order_id'  => $order->getIdAttribute(),
@@ -864,9 +873,7 @@ class PaymentService
     public function fallbackOrder(OdinOrder &$order, array $card, array $details): array
     {
         $is_fallback_available = self::checkIsFallbackAvailable(
-            $details['provider'],
-            $order->ipqualityscore,
-            ['installments' => $order->installments]
+            $details['provider'], $order->affiliate, $order->ipqualityscore, ['installments' => $order->installments]
         );
 
         $result = ['status' => false, 'payment' => []];
@@ -1312,18 +1319,21 @@ class PaymentService
     /**
      * Checks payment to fraud
      * @param  ?array   $ipqs
+     * @param  string   $prv Payment provider
+     * @param  string|null  $affid
      * @param  bool     $thowable
      * @return void
      * @throws PaymentException
      */
-    public static function fraudCheck(?array $ipqs, string $prv = PaymentProviders::MINTE, bool $throwable = true): void
+    public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null, bool $throwable = true): void
     {
         if (!empty($ipqs) && \App::environment() === 'production') {
             $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
             $is_bot = $ipqs['bot_status'] ?? false;
             $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
-            $refuse_limit = PaymentProviders::$list[$prv]['fraud_setting']['refuse_limit'];
-            if ($fraud_chance > $refuse_limit || $is_bot || $is_valid_email === false) {
+            $affiliate = AffiliateSetting::getByHasOfferId($affid);
+            $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+            if ($fraud_chance > $fraud_setting['refuse_limit'] || $is_bot || $is_valid_email === false) {
                 throw new PaymentException('Payment is refused', 'card.error.refused');
             }
         }
@@ -1516,18 +1526,20 @@ class PaymentService
      * Checks if 3ds is available
      * @param  string $method
      * @param  string $country
-     * @param  string $prv default=minte
+     * @param  string $prv Payment provider
+     * @param  string|null $affid
      * @param  array  $ipqs
      * @return bool
      */
-    private static function checkIs3dsNeeded(string $method, string $country, string $prv = PaymentProviders::MINTE, array $ipqs = []): bool
+    private static function checkIs3dsNeeded(string $method, string $country, string $prv, ?string $affid = null, array $ipqs = []): bool
     {
         $result = true;
         $setting = PaymentProviders::$list[$prv]['methods']['main'][$method] ?? [];
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
-        $fraud_chance_limit = PaymentProviders::$list[$prv]['fraud_setting']['3ds_limit'];
+        $affiliate = AffiliateSetting::getByHasOfferId($affid);
+        $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
 
-        if ($fraud_chance < $fraud_chance_limit) {
+        if ($fraud_chance < $fraud_setting['3ds_limit']) {
             if (in_array($country, $setting['+3ds'] ?? []) ) {
                 $result = true;
             } else if (in_array('*', $setting['-3ds'] ?? []) || in_array($country, $setting['-3ds'] ?? [])) {
@@ -1540,17 +1552,19 @@ class PaymentService
 
     /**
      * Check if fallback provider available
-     * @param  string $prv
-     * @param  array|null  $ipqs
-     * @param  array|null  $details
+     * @param  string   $prv
+     * @param  string|null $affid
+     * @param  array|null  $ipqs    default=[]
+     * @param  array|null  $details defaul=[]
      * @return bool
      */
-    private static function checkIsFallbackAvailable(string $prv, ?array $ipqs = [], ?array $details = []): bool
+    private static function checkIsFallbackAvailable(string $prv, ?string $affid = null, ?array $ipqs = [], ?array $details = []): bool
     {
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
-        $fallback_limit = PaymentProviders::$list[$prv]['fraud_setting']['fallback_limit'];
+        $affiliate = AffiliateSetting::getByHasOfferId($affid);
+        $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
 
-        $result = $fraud_chance < $fallback_limit;
+        $result = $fraud_chance < $fraud_setting['fallback_limit'];
 
         if ($prv === PaymentProviders::EBANX) {
             $result = !empty($details['installments']) && $details['installments'] <= EbanxService::INSTALLMENTS_MIN;

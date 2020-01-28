@@ -74,7 +74,7 @@ class PayPalService
         if (!$upsell_order) {
             abort(404);
         }
-        
+
         $payment_api = PaymentApi::getActivePaypal();
 
         // If no upsells selected
@@ -181,7 +181,7 @@ class PayPalService
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => $payment_api->payment_provider,                
+                'payment_provider' => $payment_api->payment_provider,
                 'payer_id' => '',
             ], true);
 
@@ -241,9 +241,11 @@ class PayPalService
         $ipqs = $request->input('ipqs', null);
         $fingerprint = $request->get('f', null);
         $payment_api = PaymentApi::getActivePaypal();
-        
+        $params = !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null;
+        $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+
         // refuse payment if  there is fraud
-        PaymentService::fraudCheck($ipqs, $payment_api->payment_provider);
+        PaymentService::fraudCheck($ipqs, $payment_api->payment_provider, $affId);
 
         $order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
         if ($order) {
@@ -336,7 +338,7 @@ class PayPalService
                 'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => $payment_api->payment_provider,                
+                'payment_provider' => $payment_api->payment_provider,
                 'payer_id' => '',
             ], true);
             abort_if(!$txn_response['success'], 404);
@@ -369,11 +371,6 @@ class PayPalService
                 'payment_api_id' => (string)$payment_api->_id,
                 'payer_id' => $txn_response['txn']->payer_id,
             ];
-            $params = !empty($request->page_checkout) ? \Utils::getParamsFromUrl($request->page_checkout) : null;
-            $affId = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
-            $affId = AffiliateService::validateAffiliateID($affId) ? $affId : null;
-            $offerId = AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null);
-            $validTxid = AffiliateService::getValidTxid($params['txid'] ?? null);
 
             $order_reponse = $this->orderService->addOdinOrder([
                 'fingerprint' => $fingerprint,
@@ -391,9 +388,9 @@ class PayPalService
                 'products' => [$odin_order_product],
                 'txns' => [$order_txn_data],
                 'page_checkout' => $request->page_checkout,
-                'offer' => $offerId,
-                'affiliate' => $affId,
-                'txid' => $validTxid,
+                'offer' => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
+                'affiliate' => AffiliateService::validateAffiliateID($affId) ? $affId : null,
+                'txid' => AffiliateService::getValidTxid($params['txid'] ?? null),
                 'shop_currency' => $shop_currency_code,
                 'params' => $params,
                 'ipqualityscore' => $ipqs
@@ -440,7 +437,7 @@ class PayPalService
                 'currency' => $paypal_order_currency,
                 'provider_data' => $paypal_order,
                 'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => $payment_api->payment_provider,                
+                'payment_provider' => $payment_api->payment_provider,
                 'payer_id' => optional($paypal_order->payer)->payer_id,
             ], true);
 
@@ -538,7 +535,7 @@ class PayPalService
                     'currency' => $paypal_order_currency,
                     'provider_data' => $paypal_order,
                     'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                    'payment_provider' => $payment_api->payment_provider,                    
+                    'payment_provider' => $payment_api->payment_provider,
                     'payer_id' => optional($paypal_order->payer)->payer_id,
                 ], true);
 

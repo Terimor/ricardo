@@ -25,9 +25,16 @@ class PaymentProviders
             'is_fallback' => false,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 85,
-                'fallback_limit' => 0,
-                'refuse_limit' => 60
+                'common' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 60
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 80
+                ]
             ],
             'methods'   => [
                 'main' => [
@@ -45,9 +52,16 @@ class PaymentProviders
             'is_fallback' => false,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 85,
-                'fallback_limit' => 0,
-                'refuse_limit' => 60
+                'common' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 60
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 80
+                ]
             ],
             'methods'   => [
                 'main' => [
@@ -65,9 +79,16 @@ class PaymentProviders
             'is_fallback' => false,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 1,
-                'fallback_limit' => 65,
-                'refuse_limit' => 85
+                'common' => [
+                    '3ds_limit' => 1,
+                    'fallback_limit' => 65,
+                    'refuse_limit' => 85
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 66,
+                    'fallback_limit' => 85,
+                    'refuse_limit' => 85
+                ]
             ],
             'extra_fields'  => [
                 'ca' => [
@@ -371,9 +392,16 @@ class PaymentProviders
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 101,
-                'fallback_limit' => 99,
-                'refuse_limit' => 101
+                'common' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 101
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 101
+                ]
             ],
             'extra_fields'  => [
                 'ar' => [
@@ -736,9 +764,16 @@ class PaymentProviders
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 101,
-                'fallback_limit' => 0,
-                'refuse_limit' => 99
+                'common' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 99
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 99
+                ]
             ],
             'extra_fields'  => [
                 'ca' => [
@@ -865,9 +900,16 @@ class PaymentProviders
             'is_fallback'   => false,
             'in_prod'       => false,
             'fraud_setting' => [
-                '3ds_limit' => 101,
-                'fallback_limit' => 0,
-                'refuse_limit' => 101
+                'common' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 101
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 0,
+                    'refuse_limit' => 101
+                ]
             ],
             'methods' => [
                 'main' =>[
@@ -891,9 +933,16 @@ class PaymentProviders
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 1,
-                'fallback_limit' => 70,
-                'refuse_limit' => 99
+                'common' => [
+                    '3ds_limit' => 1,
+                    'fallback_limit' => 70,
+                    'refuse_limit' => 99
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 1,
+                    'fallback_limit' => 66,
+                    'refuse_limit' => 99
+                ]
             ],
             'extra_fields'  => [
                 'at' => [
@@ -1053,9 +1102,16 @@ class PaymentProviders
             'is_fallback' => false,
             'in_prod'   => true,
             'fraud_setting' => [
-                '3ds_limit' => 101,
-                'fallback_limit' => 99,
-                'refuse_limit' => 99
+                'common' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 101
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 101
+                ]
             ],
             'extra_fields'  => [
                 'br' => [
