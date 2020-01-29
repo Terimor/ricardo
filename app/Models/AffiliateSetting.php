@@ -125,10 +125,10 @@ class AffiliateSetting extends Model
      * @param type $hasOfferId
      * @return type
      */
-    public static function getByHasOfferId(string $hasOfferId)
+    public static function getByHasOfferId(?string $hasOfferId)
     {
         $affiliate = null;
-        if (AffiliateService::validateAffiliateID($hasOfferId)) {
+        if ($hasOfferId && AffiliateService::validateAffiliateID($hasOfferId)) {
             $affiliate = AffiliateSetting::firstOrCreate(['ho_affiliate_id' => $hasOfferId]);
         }
         return $affiliate;
