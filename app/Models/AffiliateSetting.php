@@ -138,10 +138,10 @@ class AffiliateSetting extends Model
      * Calculate is fire
      * @param string $productId
      * @param \App\Models\AffiliateSetting $affiliate
-     * @param string $country
+     * @param string|null $country
      * @return bool $isReduce
      */
-    public static function calculateIsReduced(string $productId, AffiliateSetting $affiliate, string $country): ?bool
+    public static function calculateIsReduced(string $productId, AffiliateSetting $affiliate, ?string $country): ?bool
     {
         $isReduce = false;
         if ($affiliate) {
@@ -179,7 +179,7 @@ class AffiliateSetting extends Model
                 $product = OdinProduct::getById($productId);
 
                 // as first check reducing logic from product by affiliate and country
-                if (!empty($product->reducings)) {
+                if (!empty($product->reducings) && $country) {
                     $reducePercent = static::getReducePercentByProductReducings($product->reducings, $affiliate->ho_affiliate_id, $country);
                 }
 
