@@ -22,8 +22,9 @@ class BluesnapService
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
-    const HTTP_CODE_SUCCESS = 200;
-    const HTTP_CODE_ERROR   = 400;
+    const HTTP_CODE_SUCCESS   = 200;
+    const HTTP_REFUND_SUCCESS = 204;
+    const HTTP_CODE_ERROR     = 400;
 
     const TYPE_WEBHOOK_CHARGE   = 'CHARGE';
     const TYPE_WEBHOOK_DECLINE  = 'DECLINE';
@@ -72,7 +73,7 @@ class BluesnapService
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
         $result = [
-            'address'   => $contact['street'] . !empty($contact['building']) ? ", {$contact['building']}" : '',
+            'address'   => $contact['street'] . (!empty($contact['building']) ? ", {$contact['building']}" : ''),
             'city'      => $contact['city'],
             'country'   => $contact['country'],
             'email'     => $contact['email'],
@@ -172,7 +173,7 @@ class BluesnapService
 
         try {
             $res = $client->post('transactions', [
-                'json' => \array_merge(
+                'json' => array_merge(
                     [
                         'amount'        => $details['amount'],
                         'currency'      => $details['currency'],
@@ -214,6 +215,55 @@ class BluesnapService
                 $result['provider_data']['res'] = $body_decoded;
             }
             logger()->error("Bluesnap pay", ['res'  => $result['provider_data']]);
+        }
+        return $result;
+    }
+
+    /**
+     * Refunds payment
+     * @param  string $id
+     * @param  float|null $amount null - full refund
+     * @return array
+     */
+    public function refund(string $id, ?float $amount = null): array
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'auth' => [$this->api->login, $this->api->password],
+            'headers' => ['Accept'  => 'application/json']
+        ]);
+
+        $result = ['status' => false];
+        try {
+            $path = "transactions/{$id}/refund";
+            if ($amount) {
+                $path .= '?amount=' . (string)$amount;
+            }
+
+            $res = $client->put($path);
+
+            if ($res->getStatusCode() === self::HTTP_REFUND_SUCCESS) {
+                $result['status'] = true;
+            } else {
+                $result['errors'] = [BluesnapCodeMapper::toPhrase()];
+                logger()->error("Bluesnap refund", ['res' => $res]);
+            }
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? $ex->getResponse() : null;
+            if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
+                $body_decoded = json_decode($res->getBody(), true);
+                if (!empty($body_decoded['message'])) {
+                    $result['errors'] = array_map(function($v) {
+                        $phrase = BluesnapCodeMapper::getPhrase($v['errorName']);
+                        if (!$phrase && !empty($v['invalidProperty'])) {
+                            $code = is_array($v['invalidProperty']) ? $v['invalidProperty']['name'] : $v['invalidProperty'];
+                            $phrase = BluesnapCodeMapper::toPhrase($code);
+                        }
+                        return $phrase ?? BluesnapCodeMapper::toPhrase();
+                    }, $body_decoded['message']);
+                }
+            }
+            logger()->error("Bluesnap refund", ['res'  => $res]);
         }
         return $result;
     }

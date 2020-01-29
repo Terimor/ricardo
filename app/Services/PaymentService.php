@@ -329,6 +329,10 @@ class PaymentService
                     $handler = new CheckoutDotComService($api);
                     $result = $handler->refund($txn_hash, $order->number, $order->currency, $amount);
                     break;
+                case PaymentProviders::BLUESNAP:
+                    $handler = new BluesnapService($api);
+                    $result = $handler->refund($txn_hash, $amount);
+                    break;
                 default:
                     logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
             endswitch;
