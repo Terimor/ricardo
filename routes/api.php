@@ -22,4 +22,5 @@ use Illuminate\Routing\Router;
 Route::group(['middleware' => ['auth.api-key']], function (Router $router) {
     $router->post('order/{orderId}/payment/{hash}/capture', 'ApiController@capturePayment');
     $router->post('order/{orderId}/payment/{hash}/void', 'ApiController@voidPayment');
+    $router->post('order/{orderId}/payment/{hash}/refund', 'ApiController@refundPayment');
 });

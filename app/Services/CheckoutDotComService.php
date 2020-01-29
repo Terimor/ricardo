@@ -17,6 +17,7 @@ use Checkout\Models\Payments\Capture;
 use Checkout\Models\Payments\Payment;
 use Checkout\Models\Payments\Source;
 use Checkout\Models\Payments\Voids;
+use Checkout\Models\Payments\Refund;
 use Checkout\Models\Payments\CardSource;
 use Checkout\Models\Payments\TokenSource;
 use Checkout\Library\Exceptions\CheckoutHttpException;
@@ -203,6 +204,32 @@ class CheckoutDotComService
             $result = $res->http_code === 202 ? true : false;
         } catch (CheckoutException $ex) {
             logger()->error("Checkout.com void", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+        }
+        return $result;
+    }
+
+    /**
+     * Voids payment
+     * @param  string $id
+     * @param  string $order_number
+     * @param  string $currency
+     * @param  float|null  $amount default=null
+     * @return array
+     */
+    public function refund(string $id, string $order_number, string $currency, ?float $amount = null): array
+    {
+        $result = ['status' => false];
+        try {
+            $amount = $amount ? CheckoutDotComAmountMapper::toProvider($amount, $currency) : null;
+            $res = $this->checkout->payments()->refund(new Refund($id, $amount, $order_number));
+            if ($res->http_code === 202) {
+                $result['status'] = true;
+            }
+        } catch (CheckoutException $ex) {
+            logger()->error("Checkout.com refund", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+            $result['errors'] = array_map(function($code) {
+                return CheckoutDotComCodeMapper::toPhrase($code);
+            }, $ex->getErrors() ?? []);
         }
         return $result;
     }

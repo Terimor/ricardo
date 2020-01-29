@@ -31,8 +31,9 @@ class CheckoutDotComCodeMapper
         '200T3' => 'card.error.not_functioning',
         '30033' => 'card.error.expired',
         'cvv_invalid' => 'card.error.cvv_incorrect',
-        'card_number_invalid'   => 'card.error.number_incorrect',
-        self::CODE_COMMON       => 'card.error.common'
+        'amount_invalid' => 'card.error.amount_invalid',
+        'card_number_invalid' => 'card.error.number_incorrect',
+        self::CODE_COMMON => 'card.error.common'
     ];
 
     /**

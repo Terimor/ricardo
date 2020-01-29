@@ -310,6 +310,33 @@ class PaymentService
     }
 
     /**
+     * Tries to refund payment
+     * @param  string $order_id
+     * @param  string $txn_hash
+     * @param  float|null  $amount
+     * @return array
+     */
+    public function refund(string $order_id, string $txn_hash, ?float $amount): array
+    {
+        $order = OdinOrder::getById($order_id); //throwable
+        $txn = $order->getTxnByHash($txn_hash); //throwable
+
+        $result = ['status' => false];
+        if ($txn['status'] === Txn::STATUS_APPROVED) {
+            $api = PaymentApiService::getById($txn['payment_api_id']);
+            switch ($txn['payment_provider']):
+                case PaymentProviders::CHECKOUTCOM:
+                    $handler = new CheckoutDotComService($api);
+                    $result = $handler->refund($txn_hash, $order->number, $order->currency, $amount);
+                    break;
+                default:
+                    logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
+            endswitch;
+        }
+        return $result;
+    }
+
+    /**
      * Creates a new order
      * @param PaymentCardCreateOrderRequest $req
      * @return array
