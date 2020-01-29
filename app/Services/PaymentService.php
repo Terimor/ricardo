@@ -1331,8 +1331,13 @@ class PaymentService
             $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
             $is_bot = $ipqs['bot_status'] ?? false;
             $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
-            $affiliate = AffiliateSetting::getByHasOfferId($affid);
-            $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+
+            $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting']['common'];
+            if ($affid) {
+                $affiliate = AffiliateSetting::getByHasOfferId($affid);
+                $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+            }
+
             if ($fraud_chance > $fraud_setting['refuse_limit'] || $is_bot || $is_valid_email === false) {
                 throw new PaymentException('Payment is refused', 'card.error.refused');
             }
@@ -1536,8 +1541,12 @@ class PaymentService
         $result = true;
         $setting = PaymentProviders::$list[$prv]['methods']['main'][$method] ?? [];
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
-        $affiliate = AffiliateSetting::getByHasOfferId($affid);
-        $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+
+        $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting']['common'];
+        if ($affid) {
+            $affiliate = AffiliateSetting::getByHasOfferId($affid);
+            $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+        }
 
         if ($fraud_chance < $fraud_setting['3ds_limit']) {
             if (in_array($country, $setting['+3ds'] ?? []) ) {
@@ -1561,8 +1570,12 @@ class PaymentService
     private static function checkIsFallbackAvailable(string $prv, ?string $affid = null, ?array $ipqs = [], ?array $details = []): bool
     {
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
-        $affiliate = AffiliateSetting::getByHasOfferId($affid);
-        $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+
+        $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting']['common'];
+        if ($affid) {
+            $affiliate = AffiliateSetting::getByHasOfferId($affid);
+            $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+        }
 
         $result = $fraud_chance < $fraud_setting['fallback_limit'];
 
