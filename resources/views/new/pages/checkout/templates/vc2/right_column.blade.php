@@ -2,7 +2,7 @@
 
   <div class="title">
     <i class="fa fa-shopping-cart"></i>
-    Order Summary
+    {!! t('vc2.summary.title') !!}
   </div>
 
   @include('new.pages.checkout.form.installments')
@@ -11,13 +11,13 @@
     <div class="name">{!! $product->product_name !!}</div>
     <div class="text">
       <i class="fa fa-download"></i>
-      Digital Product
+      {!! t('vc2.product.text') !!}
     </div>
     <div class="total">@{{ xprice_total_text }}</div>
   </div>
 
   <div class="access">
-    Immediate access to this product or service is available once payment is approved.
+    {!! t('vc2.product.access') !!}
   </div>
 
   @include('new.pages.checkout.form.warranty')
@@ -48,7 +48,7 @@
       'label_code' => 'payment_error',
     ])
 
-    @include('new.pages.checkout.payment.pay_card_button', ['label' => 'Pay Now'])
+    @include('new.pages.checkout.payment.pay_card_button', ['label' => t('vc2.pay_button')])
   </div>
 
   @include('new.pages.checkout.blocks.safe_payment')

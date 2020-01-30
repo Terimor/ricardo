@@ -2,7 +2,7 @@
   
   <div class="title">
     <i class="fa fa-user"></i>
-    Customer Information
+    {!! t('vc2.customer.title') !!}
   </div>
 
   <div class="form">
@@ -14,7 +14,7 @@
 
   <div class="title billing">
     <i class="fa fa-tags"></i>
-    Billing Information
+    {!! t('vc2.billing.title') !!}
   </div>
 
   @include('new.pages.checkout.templates.vc2.payment_provider')

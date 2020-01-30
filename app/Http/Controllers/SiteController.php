@@ -304,6 +304,7 @@ class SiteController extends Controller
 
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('checkout.page_title'));
+        $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
 
         $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain);
@@ -330,7 +331,7 @@ class SiteController extends Controller
             compact(
                 'langCode', 'countryCode', 'product', 'setting', 'countries', 'loadedPhrases',
                 'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo',
-                'company_address', 'company_descriptor_prefix', 'cdn_url', 'upsells',
+                'company_address', 'company_descriptor_prefix', 'cdn_url', 'upsells', 'website_name',
                 'deals', 'deal_promo', 'deals_main_quantities', 'deals_free_quantities'
             )
         );

@@ -1,4 +1,4 @@
 <div class="htitle">
   <i class="fa fa-lock"></i>
-  Secure Checkout
+  {!! t('vc2.htitle') !!}
 </div>
