@@ -57,7 +57,9 @@ class ApiController extends Controller
      */
     public function refundPayment(RefundPaymentApiRequest $req, string $order_id, string $txn_hash): array
     {
-        return $this->paymentService->refund($order_id, $txn_hash, $req->input('amount', null));
+        $reason = $req->input('reason');
+        $amount = $req->input('amount', null);
+        return $this->paymentService->refund($order_id, $txn_hash, $reason, $amount);
     }
 
 }
