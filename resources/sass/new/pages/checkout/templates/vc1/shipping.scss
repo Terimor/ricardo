@@ -57,6 +57,11 @@
   .complement-field {
     margin-left: auto!important;
     width: 48.5%;
+
+    [dir="rtl"] & {
+      margin-left: 0!important;
+      margin-right: auto!important;
+    }
   }
 
   .card_number-field {
@@ -80,5 +85,10 @@
   .card_cvv-field {
     margin-left: auto!important;
     width: 42%;
+
+    [dir="rtl"] & {
+      margin-left: 0!important;
+      margin-right: auto!important;
+    }
   }
 }

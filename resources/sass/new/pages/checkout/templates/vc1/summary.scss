@@ -42,6 +42,11 @@
     margin: 25px 8px 0;
     padding: 16px 4px 16px 34px;
 
+    [dir="rtl"] & {
+      padding-left: 4px;
+      padding-right: 34px;
+    }
+
     @media only screen and (min-width: $size1) {
       margin-left: 16px;
       margin-right: 16px;
@@ -55,12 +60,22 @@
 
   .warrant-arrow-right {
     left: 4px;
-    top: 16px;
+    top: 17px;
+  }
+
+  .warrant-arrow-left {
+    right: 4px;
+    top: 17px;
   }
 
   .warranty-field-check {
     margin-right: 6px;
     margin-top: 0;
+
+    [dir="rtl"] & {
+      margin-left: 6px;
+      margin-right: 0;
+    }
   }
 
   .warranty-field-label {

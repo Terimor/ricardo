@@ -71,25 +71,12 @@
         position: absolute;
         top: 50%;
 
-        [dir="rtl"] & {
-          margin-left: 0;
-          margin-right: -40px;
-        }
-
         @media only screen and (min-width: $size1) {
           margin-left: -50px;
-
-          [dir="rtl"] & {
-            margin-right: -50px;
-          }
         }
 
         @media only screen and (min-width: $size2) {
           margin-left: -80px;
-
-          [dir="rtl"] & {
-            margin-right: -80px;
-          }
         }
 
         div {

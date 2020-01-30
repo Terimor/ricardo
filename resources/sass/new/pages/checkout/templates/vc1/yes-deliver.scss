@@ -7,14 +7,22 @@
   }
 
   .img-check {
+    margin-right: -10px;
     margin-top: -8px;
 
-    @media only screen and (min-width: $size1) {
-      margin-top: -4px;
+    [dir="rtl"] & {
+      margin-left: 5px;
+      margin-right: -17px;
     }
 
-    @media only screen and (min-width: $size2) {
+    @media only screen and (min-width: $size1) {
+      margin-right: -5px;
       margin-top: -4px;
+
+      [dir="rtl"] & {
+        margin-left: 10px;
+        margin-right: -17px;
+      }
     }
   }
 
@@ -23,33 +31,24 @@
     font-family: "Oswald", sans-serif;
     font-size: 48px;
     font-weight: 700;
-    margin-left: -10px;
     margin-right: 10px;
     text-transform: uppercase;
 
     [dir="rtl"] & {
       margin-left: 10px;
-      margin-right: -10px;
+      margin-right: 0;
     }
 
     @media only screen and (min-width: $size1) {
       font-size: 64px;
-      margin-left: -5px;
-      margin-right: 10px;
-
-      [dir="rtl"] & {
-        margin-left: 10px;
-        margin-right: -5px;
-      }
     }
 
     @media only screen and (min-width: $size2) {
-      margin-left: -5px;
       margin-right: 20px;
 
       [dir="rtl"] & {
         margin-left: 20px;
-        margin-right: -5px;
+        margin-right: 0;
       }
     }
   }

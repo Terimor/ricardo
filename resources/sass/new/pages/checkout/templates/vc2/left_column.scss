@@ -49,6 +49,11 @@
   .complement-field {
     margin-left: auto!important;
     width: 48.5%;
+
+    [dir="rtl"] & {
+      margin-left: 0!important;
+      margin-right: auto!important;
+    }
   }
 
   .card_date-field {
@@ -59,12 +64,22 @@
     margin-left: 10px;
     margin-right: auto;
     max-width: 120px;
+
+    [dir="rtl"] & {
+      margin-left: auto;
+      margin-right: 10px;
+    }
   }
 
   .credit-cards-list {
     justify-content: flex-end;
-    margin: 0 0 -22px auto;
+    margin: 0 -2px -22px auto;
     max-width: 160px;
+
+    [dir="rtl"] & {
+      margin-left: -2px;
+      margin-right: auto;
+    }
 
     @media (min-width: 480px) {
       max-width: none;

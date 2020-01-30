@@ -3,6 +3,10 @@
   display: none;
   margin: 3px 25px 0;
 
+  [dir="rtl"] & {
+    margin: 3px 33px 0 17px;
+  }
+
   @media only screen and (min-width: $size2) {
     display: flex;
   }
