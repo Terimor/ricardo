@@ -1,2 +1,2 @@
 #!/bin/bash
-ssh -i ~/.ssh/odin_staging.pem ubuntu@odin.saga-be.host 'cd deploy && dep deploy --branch="stl-paypal-capture-hash"'
+ssh -i ~/.ssh/odin_staging.pem ubuntu@odin.saga-be.host 'cd deploy && dep deploy'
