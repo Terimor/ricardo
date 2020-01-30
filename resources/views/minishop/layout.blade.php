@@ -37,7 +37,7 @@
     @include('components.scripts.analytics')
     @include('components.scripts.sentry')
     @include('components.scripts.vue')
-    @include('minishop.scripts.freshchat')
+    {{-- @include('minishop.scripts.freshchat') --}}
     @yield('scripts')
 
   </head>
@@ -59,7 +59,7 @@
       @include('minishop.regions.footer')
 
       <!-- Fixed Region -->
-      @include('minishop.regions.fixed.freshchat')
+      {{-- @include('minishop.regions.fixed.freshchat') --}}
       @include('minishop.regions.fixed.support')
 
     </div>

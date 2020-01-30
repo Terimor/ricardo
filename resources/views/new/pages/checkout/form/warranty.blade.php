@@ -5,8 +5,8 @@
   :class="{ invalid: $v.form.warranty.$dirty && $v.form.warranty.$invalid }"
   @click="warranty_change(!form.warranty)">
 
-  <i class="warrant-arrow-left fa fa-arrow-left"></i>
-  <i class="warrant-arrow-right fa fa-arrow-right"></i>
+  <i class="warranty-arrow-left fa fa-arrow-left"></i>
+  <i class="warranty-arrow-right fa fa-arrow-right"></i>
 
   <img
     class="warranty-field-image"

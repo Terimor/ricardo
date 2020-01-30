@@ -31,8 +31,8 @@
   }
 }
 
-.warrant-arrow-left {
-  animation: warrant-arrow-left .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+.warranty-arrow-left {
+  animation: warranty-arrow-left .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
   color: #dc003a;
   display: none;
   font-size: 18px;
@@ -45,7 +45,7 @@
   }
 }
 
-@keyframes warrant-arrow-left {
+@keyframes warranty-arrow-left {
   0% {
     transform: translateX(0);
   }
@@ -54,8 +54,8 @@
   }
 }
 
-.warrant-arrow-right {
-  animation: warrant-arrow-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
+.warranty-arrow-right {
+  animation: warranty-arrow-right .5s cubic-bezier(.25,.46,.45,.94) infinite alternate both;
   color: #dc003a;
   font-size: 18px;
   left: 10px;
@@ -67,7 +67,7 @@
   }
 }
 
-@keyframes warrant-arrow-right {
+@keyframes warranty-arrow-right {
   0% {
     transform: translateX(0);
   }

@@ -24,6 +24,10 @@ if (location.pathname === '/splash') {
 
 // initialize FreshChat custom widget
 function initFreshChatWidget() {
+  if (location.pathname !== '/contact-us') {
+    return;
+  }
+
   wait(
     () => !!document.querySelector('#fc_frame'),
     () => {
