@@ -189,7 +189,7 @@ class PayPalService
 
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
-                'capture_hash' => $txn_response->provider_data->purchase_units[0]->payments->captures[0]['id'] ?? null,
+                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id ?? null,
                 'value' => $txn_response['txn']->value,
                 'status' =>  Txn::STATUS_CAPTURED,
                 'fee_usd' => 0,
@@ -364,7 +364,7 @@ class PayPalService
 
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
-                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]['id']  ?? null,
+                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id  ?? null,
                 'value' => $txn_response['txn']->value,
                 'status' =>  Txn::STATUS_CAPTURED,
                 'fee_usd' => 0,
@@ -449,7 +449,7 @@ class PayPalService
 
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
-                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]['id']  ?? null,
+                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id  ?? null,
                 'value' => $txn_response['txn']->value,
                 'status' => Txn::STATUS_CAPTURED,
                 'fee_usd' => 0,
@@ -548,7 +548,7 @@ class PayPalService
 
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,
-                    'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]['id']  ?? null,
+                    'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id  ?? null,
                     'value' => $txn_response['txn']->value,
                     'status' => Txn::STATUS_APPROVED,
                     'fee_usd' => 0,
