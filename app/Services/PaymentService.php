@@ -313,10 +313,11 @@ class PaymentService
      * Tries to refund payment
      * @param  string $order_id
      * @param  string $txn_hash
+     * @param  string $reason
      * @param  float|null  $amount
      * @return array
      */
-    public function refund(string $order_id, string $txn_hash, ?float $amount): array
+    public function refund(string $order_id, string $txn_hash, string $reason, ?float $amount): array
     {
         $order = OdinOrder::getById($order_id); //throwable
         $txn = $order->getTxnByHash($txn_hash); //throwable
@@ -332,6 +333,10 @@ class PaymentService
                 case PaymentProviders::BLUESNAP:
                     $handler = new BluesnapService($api);
                     $result = $handler->refund($txn_hash, $amount);
+                    break;
+                case PaymentProviders::EBANX:
+                    $handler = new EbanxService($api);
+                    $result = $handler->refund($txn_hash, $order->currency, $amount ?? $txn['value'], $reason);
                     break;
                 default:
                     logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");

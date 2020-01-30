@@ -313,6 +313,42 @@ class EbanxService
     }
 
     /**
+     * Refund payment
+     * @param  string $hash
+     * @param  string $currency
+     * @param  float  $amount
+     * @param  string $reason
+     * @return array
+     */
+    public function refund(string $hash, string $currency, float $amount, string $reason): array
+    {
+        $config = new Config([
+            'integrationKey'        => $this->api->key,
+            'sandboxIntegrationKey' => $this->environment !== self::ENV_LIVE ? $this->api->key : null,
+            'isSandbox'             => $this->environment !== self::ENV_LIVE,
+            'baseCurrency'          => $currency
+        ]);
+
+        $result = ['status' => false];
+        try {
+            $res = EBANX($config)->refund()->requestByHash($hash, $amount, $reason);
+
+            // logger()->info('Ebanx refund debug', $res);
+
+            if ($res['status'] === self::STATUS_OK) {
+                $result['status'] = true;
+            } else {
+                $result['errors'] = [EbanxCodeMapper::toPhrase($res['status_code'])];
+                logger()->warning("Ebanx refund", ['res' => $res]);
+            }
+        } catch (\Exception $ex) {
+            $result['errors'] = [EbanxCodeMapper::toPhrase()];
+            logger()->error("Ebanx refund", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+        }
+        return $result;
+    }
+
+    /**
      * Provides payment
      * @param  Card    $source
      * @param  Address $address

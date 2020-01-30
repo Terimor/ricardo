@@ -38,6 +38,7 @@ class RefundPaymentApiRequest extends FormRequest
         return [
             'amount'   => ['nullable', 'numeric'],
             'order_id' => ['required', 'string', 'size:24'],
+            'reason'   => ['required', 'string'],
             'txn_hash' => ['required', 'string']
         ];
     }
