@@ -146,6 +146,7 @@ class PaymentService
 
         $order->addTxn([
             'hash'              => (string)$data['hash'],
+            'capture_hash'      => $data['capture_hash'] ?? null,
             'value'             => $data['value'],
             'status'            => $data['status'],
             'fee_usd'           => 0,

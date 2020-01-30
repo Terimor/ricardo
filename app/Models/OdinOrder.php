@@ -117,6 +117,7 @@ class OdinOrder extends OdinModel
         'products' => [],
         'txns' => [ // — array of objects,
 //	        'hash' => null, // string, //link to Txn hash
+//          'capture_hash' => null, // string, // capture hash (for PayPal capture refunds)
 //	        'value' => null, float, //decreases after refund
 //	        'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
 //	        'fee_usd' => null,// — float, //provider's txn fee in USD
