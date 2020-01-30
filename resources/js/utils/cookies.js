@@ -20,8 +20,16 @@ export function getCookie(name) {
 
 
 export function setCookie(name, value, options = {}) {
-  const domain = '.' + location.hostname.split('.').slice(-2).join('.');
-  options = { domain, path: '/', ...options };
+  const domain = location.hostname !== '127.0.0.1'
+    ? '.' + location.hostname.split('.').slice(-2).join('.')
+    : '127.0.0.1';
+
+  options = {
+    Domain: domain,
+    Path: '/',
+    SameSite: 'None',
+    ...options,
+  };
 
   if (options.expires && options.expires.toUTCString) {
     options.expires = options.expires.toUTCString();
