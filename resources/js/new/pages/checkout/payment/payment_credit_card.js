@@ -38,9 +38,6 @@ export default {
         card_cvv: undefined,
       }));
 
-      const phone = this.form.phone.replace(/[^0-9]/g, '');
-      const card_number = this.form.card_number.replace(/[^0-9]/g, '');
-
       return Promise.resolve()
         .then(() => {
           return this.fingerprint_calculate();
@@ -49,31 +46,7 @@ export default {
           fingerprint_result = result;
         })
         .then(() => {
-          let fields = {
-            order_quantity: this.form.deal,
-            order_amount: this.get_local_order_amount(),
-            billing_first_name: this.form.first_name,
-            billing_last_name: this.form.last_name,
-            billing_country: this.form.country,
-            billing_address_1: this.form.street,
-            billing_city: this.form.city,
-            billing_region: this.extra_fields.state
-              ? this.form.state
-              : '',
-            billing_postcode: this.form.zipcode,
-            billing_email: this.form.email,
-            billing_phone: this.form.phone_code + phone,
-            credit_card_bin: card_number.substr(0, 6),
-            credit_card_expiration_month: this.form.card_date.split('/')[0],
-            credit_card_expiration_year: this.form.card_date.split('/')[1],
-            cvv_code: this.form.card_cvv,
-          };
-
-          if (window.sha256) {
-            fields.credit_card_hash = sha256(card_number);
-          }
-
-          return this.ipqualityscore_calculate(fields);
+          return this.ipqualityscore_form_calculate();
         })
         .then(result => {
           ipqualityscore_result = result;
@@ -89,7 +62,7 @@ export default {
             contact: {
               phone: {
                 country_code: this.form.phone_code,
-                number: phone,
+                number: this.form.phone.replace(/[^0-9]/g, ''),
               },
               first_name: this.form.first_name,
               last_name: this.form.last_name,
@@ -102,7 +75,7 @@ export default {
               country: this.form.country,
             },
             card: {
-              number: card_number,
+              number: this.form.card_number.replace(/[^0-9]/g, ''),
               cvv: this.form.card_cvv,
               month: this.form.card_date.split('/')[0],
               year: '20' + this.form.card_date.split('/')[1],

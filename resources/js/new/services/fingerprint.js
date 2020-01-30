@@ -10,7 +10,7 @@ export default {
 
     ready_state: {
       handler(value) {
-        if (!initialized && (value === 'interactive' || value === 'complete')) {
+        if (!initialized && this.ready_state === 'complete') {
           setTimeout(() => this.fingerprint_apply_discount(), 1000);
           initialized = true;
         }

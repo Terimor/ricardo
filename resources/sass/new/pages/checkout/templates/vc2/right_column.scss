@@ -1,0 +1,136 @@
+.right-column {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  padding: 0 15px;
+  
+  @media (min-width: $size1) {
+    width: 50%;
+  }
+
+  .title {
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+
+    i {
+      font-size: 18px;
+      margin: -2px 12px 0 6px;
+
+      [dir="rtl"] & {
+        margin: -2px 6px 0 12px;
+      }
+    }
+  }
+
+  .installments-field {
+    margin: 25px 0 10px;
+
+    .select-field-label {
+      display: none;
+    }
+  }
+
+  .product {
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    margin: 0 5px;
+    padding-bottom: 5px;
+
+    .name {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin: 10px 0;
+    }
+
+    .text {
+      color: #777;
+      font-size: 12px;
+      font-weight: 700;
+
+      i {
+        font-size: 12px;
+        margin: 0 2px;
+      }
+    }
+
+    .total {
+      align-self: flex-end;
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+  }
+
+  .access {
+    color: #666;
+    font-size: 14.4px;
+    font-weight: 400;
+    margin: 5px 5px;
+  }
+
+  .warranty-field {
+    margin-top: 20px;
+
+    .warranty-field-label {
+      margin-top: 1px;
+    }
+  }
+
+  .terms-field {
+    margin-top: 20px;
+
+    .terms-field-label {
+      font-size: 14.4px;
+      line-height: 1.42857143;
+    }
+
+    .terms-field-check {
+      margin-top: 0;
+    }
+  }
+
+  .payment-block,
+  .paypal-payment-block {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .payment-error,
+  .paypal-payment-error {
+    margin-bottom: 20px;
+  }
+
+  .pay-card-button {
+    align-items: center;
+    background-color: #e5202e;
+    border: 1px solid #e1e1e1;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    height: 50px;
+    justify-content: center;
+
+    &.active:hover {
+      background-color: #d41d2a;
+      border-color: transparent;
+    }
+
+    .disabled .spinner {
+      transform: scale(.6);
+    }
+  }
+
+  .safe-payment {
+    margin-top: 20px;
+  }
+}

@@ -200,33 +200,15 @@
     }
   }
 
-  .submit {
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
+  .pay-card-button {
     margin-top: 25px;
-    position: relative;
     width: 240px;
 
-    &.submitted {
-      cursor: default;
-    }
+    .disabled .spinner {
+      margin-top: -18px;
 
-    .disabled {
-      align-items: center;
-      background-color: rgba(255,255,255,.5);
-      bottom: 0;
-      display: flex;
-      justify-content: center;
-      left: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-      z-index: 1;
-
-      .spinner {
-        margin-top: -18px;
-        transform: scale(.8);
+      div:after {
+        background-color: #409eff;
       }
     }
 

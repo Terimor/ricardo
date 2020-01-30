@@ -17,21 +17,9 @@
 
   <div
     v-if="step === 3 && form.payment_provider === 'credit-card'"
-    :class="{ submitted: is_submitted }"
     class="button-next multi"
-    @click="next_click">
-
-    <div
-      v-if="is_submitted"
-      class="button-next-disabled"
-      @click.stop>
-      @include('new.components.spinner')
-    </div>
-
-    <div :class="{ hidden: is_submitted }">
-      <div>{{ t('fmc5.complete') }}</div>
-    </div>
-
+    @click.capture.stop="next_click">
+    @include('new.pages.checkout.payment.pay_card_button', ['label' => t('fmc5.complete')])
   </div>
 
 </div>

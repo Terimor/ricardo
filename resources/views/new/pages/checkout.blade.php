@@ -5,6 +5,8 @@
 
 @section('js_data')
   <script type="text/javascript">
+    js_data.company_address = @json($company_address);
+    js_data.company_descriptor_prefix = @json($company_descriptor_prefix);
     js_data.ipqualityscore_api_hash = @json($setting['ipqualityscore_api_hash']);
     js_data.recently_bought_names = @json($recentlyBoughtNames);
     js_data.recently_bought_cities = @json($recentlyBoughtCities);

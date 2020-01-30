@@ -13,3 +13,10 @@
 @import './form/warranty';
 @import './payment/credit_cards';
 @import './payment/paypal_button';
+@import './payment/pay_card_button';
+
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+}

@@ -3,6 +3,10 @@ export default {
   methods: {
 
     step3_submit() {
+      if (this.is_submitted) {
+        return;
+      }
+
       const fields = [
         'warranty',
         'card_holder',

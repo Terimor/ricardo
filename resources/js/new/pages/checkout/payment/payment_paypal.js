@@ -7,6 +7,10 @@ export default {
 
       let fingerprint_result = null;
       let ipqualityscore_result = null;
+
+      if (!this.form.deal) {
+        return;
+      }
       
       this.payment_error = null;
       this.is_submitted = true;
@@ -21,12 +25,7 @@ export default {
           fingerprint_result = result;
         })
         .then(() => {
-          let fields = {
-            order_quantity: this.form.deal,
-            order_amount: this.get_local_order_amount(),
-          };
-
-          return this.ipqualityscore_calculate(fields);
+          return this.ipqualityscore_form_calculate();
         })
         .then(result => {
           ipqualityscore_result = result;
@@ -78,11 +77,11 @@ export default {
         });
     },
 
-    paypal_on_approve(resp) {
+    paypal_verify_order(order_id) {
       return Promise.resolve()
         .then(() => {
           let data = {
-            orderID: resp.orderID,
+            orderID: order_id,
           };
 
           return this.fetch_post('/paypal-verify-order', data);

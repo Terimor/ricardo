@@ -17,8 +17,6 @@
 
   .form {
     background-color: #f4f4f4;
-    display: flex;
-    flex-wrap: wrap;
     padding: 10px 12px 0;
 
     .input,
@@ -29,7 +27,7 @@
     .input-field-label,
     .select-field-label {
       font-size: 14px;
-      font-weight: bold;
+      font-weight: 700;
       margin-bottom: 2px;
       text-transform: uppercase;
     }
@@ -50,11 +48,13 @@
     }
   }
 
-  .first_name-field {
+  .first_name-field,
+  .building-field {
     width: 48.5%;
   }
 
-  .last_name-field {
+  .last_name-field,
+  .complement-field {
     margin-left: auto!important;
     width: 48.5%;
   }

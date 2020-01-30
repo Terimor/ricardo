@@ -1,0 +1,89 @@
+@import './payment_provider';
+
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  padding: 0 15px;
+
+  @media (min-width: $size1) {
+    width: 50%;
+  }
+
+  .title {
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+
+    i {
+      font-size: 18px;
+      margin: -2px 12px 0 6px;
+
+      [dir="rtl"] & {
+        margin: -2px 6px 0 12px;
+      }
+    }
+  }
+
+  .billing {
+    margin-top: 25px;
+  }
+
+  .input,
+  .select {
+    margin: 0 0 15px;
+  }
+
+  .first_name-field,
+  .building-field {
+    width: 48.5%;
+  }
+
+  .last_name-field,
+  .complement-field {
+    margin-left: auto!important;
+    width: 48.5%;
+  }
+
+  .card_date-field {
+    max-width: 120px;
+  }
+
+  .card_cvv-field {
+    margin-left: 10px;
+    margin-right: auto;
+    max-width: 120px;
+  }
+
+  .credit-cards-list {
+    justify-content: flex-end;
+    margin: 0 0 -22px auto;
+    max-width: 160px;
+
+    @media (min-width: 480px) {
+      max-width: none;
+    }
+
+    @media (min-width: $size1) {
+      max-width: 160px;
+    }
+
+    @media (min-width: $size2) {
+      max-width: none;
+    }
+
+    .credit-card-item {
+      margin: 1px 2px;
+
+      img {
+        max-width: 35px;
+      }
+    }
+  }
+}

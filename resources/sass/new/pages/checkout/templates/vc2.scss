@@ -1,3 +1,127 @@
+$size1: 768px;
+$size2: 992px;
+$size3: 1200px;
+
+@import '../../checkout';
+@import '..//blocks/safe_payment';
+@import '../blocks/safe_invoice';
+@import './vc2/htitle';
+@import './vc2/left_column';
+@import './vc2/right_column';
+@import './vc2/guarantee';
+
+
 .vc2 {
-  font-size: 12px;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  margin: 5px 15px;
+
+  input,
+  select,  textarea {
+    color: #555;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 18px;
+    line-height: 1.42857143;
+  }
+
+  a {
+    color: #337ab7;
+    text-decoration: none;
+
+    &:hover, &:focus {
+      color: #23527c;
+      text-decoration: underline;
+    }
+  }
+}
+
+body {
+  background-color: #eee;
+}
+
+#app {
+  @media (min-width: $size1) {
+    margin: 0 auto;
+    padding: 0 15px;
+    width: 750px;
+  }
+
+  @media (min-width: $size2) {
+    width: 970px;
+  }
+
+  @media (min-width: $size3) {
+    width: 1024px;
+  }
+}
+
+main {
+  background-color: #fff;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+
+  @media (min-width: $size1) {
+    flex-direction: row;
+  }
+}
+
+.input-field-label,
+.select-field-label {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.input-field-input,
+.select-field-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 40px;
+  padding: 0 12px;
+
+  &::placeholder {
+    color: transparent;
+  }
+}
+
+.input-field-error,
+.select-field-error {
+  color: #a94442;
+  font-size: 13px;
+  margin-top: 2px;
+  padding: 0 3px;
+}
+
+.header-region {
+  border-bottom: 1px solid #ddd;
+  box-shadow: none;
+  height: 46px;
+  padding: 0;
+  z-index: 1;
+
+  @media (min-width: $size1) {
+    height: 69px;
+  }
+
+  > .container {
+    max-width: 100%;
+    padding: 0 25px;
+  }
+}
+
+.footer-region {
+  background-color: #eee;
+}
+
+.timer-minutes > div,
+.timer-seconds > div {
+  font-size: 44px;
 }

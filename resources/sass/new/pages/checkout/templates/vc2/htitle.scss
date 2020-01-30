@@ -1,0 +1,20 @@
+.htitle {
+  align-items: center;
+  background-color: #eee;
+  border-radius: 4px;
+  display: flex;
+  font-size: 22px;
+  height: 44px;
+  justify-content: center;
+  padding: 0 10px;
+
+  i {
+    font-size: 22px;
+    margin-right: 18px;
+
+    [dir="rtl"] & {
+      margin-left: 18px;
+      margin-right: 0;
+    }
+  }
+}

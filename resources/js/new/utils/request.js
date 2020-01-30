@@ -7,7 +7,7 @@ export default {
 
     ready_state: {
       handler(value) {
-        if (!initialized && (value === 'interactive' || value === 'complete')) {
+        if (!initialized && this.ready_state === 'complete') {
           this.search_populate_page_links();
           initialized = true;
         }

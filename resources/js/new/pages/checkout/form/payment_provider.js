@@ -27,10 +27,18 @@ export default {
 
 
   watch: {
+
     'form.payment_provider'(value) {
       window.selectedPayment = value;
       history.pushState({}, '', location.href);
     },
+
+    'form.installments'(value) {
+      if (value !== 1 && this.form.payment_provider === 'paypal') {
+        this.form.payment_provider = 'credit-card';
+      }
+    },
+
   },
 
 

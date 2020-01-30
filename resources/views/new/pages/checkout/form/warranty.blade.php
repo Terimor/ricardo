@@ -18,7 +18,7 @@
   ])
 
   <div class="warranty-field-label">
-    {!! t('checkout.warranty') !!}: @{{ warranty_price_text }}
+    {!! t('checkout.warranty') !!}: @{{ xprice_warranty_text }}
   </div>
   
 </div>

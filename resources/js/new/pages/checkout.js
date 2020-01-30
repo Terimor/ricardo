@@ -7,6 +7,7 @@ import recently_bought from './checkout/blocks/recently_bought';
 import leave_modal from './checkout/blocks/leave_modal';
 import form from './checkout/form';
 import payment from './checkout/payment';
+import prices from './checkout/prices';
 
 
 export default {
@@ -21,11 +22,13 @@ export default {
     leave_modal,
     form,
     payment,
+    prices,
   ],
 
 
   created() {
     this.set_browser_title();
+    this.scroll_3ds_failure();
   },
 
 
@@ -45,6 +48,12 @@ export default {
       const title_wait = this.t('checkout.page_title.wait');
       window.onfocus = () => document.title = title_normal;
       window.onblur = () => document.title = title_wait;
+    },
+
+    scroll_3ds_failure() {
+      if (js_query_params['3ds'] === 'failure') {
+        setTimeout(() => this.scroll_to_ref('payment_error'), 1000);
+      }
     },
 
   },

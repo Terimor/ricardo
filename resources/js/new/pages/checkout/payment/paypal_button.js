@@ -83,7 +83,7 @@ export default {
         },
 
         onApprove(data, actions) {
-          return self.paypal_on_approve(data);
+          return self.paypal_verify_order(data.orderID);
         },
 
         onError(err) {
@@ -102,7 +102,11 @@ export default {
     },
 
     paypal_button_click() {
+      this.$v.form.deal.$touch();
 
+      if (this.$v.form.deal.$invalid) {
+        return setTimeout(() => this.scroll_to_error(), 100);
+      }
     },
 
   },

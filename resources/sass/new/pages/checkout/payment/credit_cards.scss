@@ -1,3 +1,6 @@
+@import './credit_cards_list';
+
+
 .credit-cards {
   align-items: center;
   background-image: linear-gradient(#0f9b0f,#0d840d);
@@ -68,20 +71,4 @@
   font-weight: 700;
   text-shadow: rgba(0,0,0,.3) -1px -1px 0;
   text-transform: capitalize;
-}
-
-.credit-cards-list {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 8px -4px 0;
-}
-
-.credit-card-item {
-  display: flex;
-  flex-direction: column;
-  margin: 4px;
-
-  img {
-    max-width: 56px;
-  }
 }

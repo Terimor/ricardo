@@ -1,0 +1,15 @@
+.credit-cards-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 8px -4px 0;
+}
+
+.credit-card-item {
+  display: flex;
+  flex-direction: column;
+  margin: 4px;
+
+  img {
+    max-width: 56px;
+  }
+}
