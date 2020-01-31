@@ -134,15 +134,7 @@ class PaymentService
     private function addTxnToOrder(OdinOrder &$order, array $data, array $details): void
     {
         // log txn
-        (new OrderService())->addTxn([
-            'hash'              => $data['hash'],
-            'value'             => $data['value'],
-            'currency'          => $data['currency'],
-            'provider_data'     => $data['provider_data'],
-            'payment_method'    => $details['payment_method'],
-            'payment_provider'  => $data['payment_provider'],
-            'payer_id'          => $data['payer_id'] ?? null
-        ]);
+        $this->logTxn(array_merge($data, ['payment_method' => $details['payment_method']]));
 
         $order->addTxn([
             'hash'              => (string)$data['hash'],
@@ -155,6 +147,25 @@ class PaymentService
             'payment_method'    => $details['payment_method'],
             'payment_provider'  => $data['payment_provider'],
             'payment_api_id'    => $data['payment_api_id'] ?? null,
+            'payer_id'          => $data['payer_id'] ?? null
+        ]);
+    }
+
+    /**
+     * Stores transaction info in txn collection
+     * @param array $data
+     * @return void
+     */
+    private function logTxn(array $data): void
+    {
+        $model = new OrderService();
+        $model->addTxn([
+            'hash'              => $data['hash'],
+            'value'             => $data['value'],
+            'currency'          => $data['currency'],
+            'provider_data'     => $data['provider_data'],
+            'payment_method'    => $data['payment_method'],
+            'payment_provider'  => $data['payment_provider'],
             'payer_id'          => $data['payer_id'] ?? null
         ]);
     }
@@ -321,7 +332,10 @@ class PaymentService
     public function refund(string $order_id, string $txn_hash, string $reason, ?float $amount): array
     {
         $order = OdinOrder::getById($order_id); //throwable
-        $txn = $order->getTxnByHash($txn_hash); //throwable
+        $txn = $order->getTxnByHash($txn_hash, false);
+        if (empty($txn)) {
+            $txn = $order->getTxnByCaptureHash($txn_hash); //throwable
+        }
 
         $result = ['status' => false];
         if ($txn['status'] === Txn::STATUS_APPROVED) {
@@ -339,9 +353,25 @@ class PaymentService
                     $handler = new EbanxService($api);
                     $result = $handler->refund($txn_hash, $order->currency, $amount ?? $txn['value'], $reason);
                     break;
+                case PaymentProviders::MINTE:
+                    $handler = new MinteService($api);
+                    $result = $handler->refund($txn_hash, $amount ?? $txn['value']);
+                    break;
                 default:
                     logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
             endswitch;
+        }
+        if ($result['status']) {
+            $order->total_refunded_usd = CurrencyService::roundValueByCurrencyRules(
+                $order->total_refunded_usd + ($amount ?? $txn['value']) / $order->exchange_rate,
+                Currency::DEF_CUR
+            );
+            if (!$order->save()) {
+                $validator = $order->validate();
+                if ($validator->fails()) {
+                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
+                }
+            }
         }
         return $result;
     }
@@ -421,6 +451,7 @@ class PaymentService
                 'fingerprint'           => $fingerprint,
                 'total_paid'            => 0,
                 'total_paid_usd'        => 0,
+                'total_refunded_usd'    => 0,
                 'total_price'           => $order_product['total_price'],
                 'total_price_usd'       => $order_product['total_price_usd'],
                 'txns_fee_usd'          => 0,
@@ -563,8 +594,8 @@ class PaymentService
                 );
                 break;
             case PaymentProviders::MINTE:
-                $mint = new MinteService($api);
-                $payment = $mint->payByCard($card, $contact, [
+                $minte = new MinteService($api);
+                $payment = $minte->payByCard($card, $contact, [
                     '3ds'       => self::checkIs3dsNeeded(
                         $method,
                         $contact['country'],
@@ -580,6 +611,13 @@ class PaymentService
                     'user_agent'    => $user_agent,
                     'descriptor'    => $order->billing_descriptor
                 ]);
+                if ($payment['status'] === Txn::STATUS_CAPTURED) {
+                    $capture = $minte->capture($payment['hash'], ['amount' => $order->total_price, 'currency' => $order->currency]);
+                    $this->logTxn(array_merge($capture, ['payment_method' => $method]));
+                    $payment['status'] = $capture['status'];
+                    $payment['capture_hash'] = $capture['hash'];
+                }
+                break;
         endswitch;
 
         $this->addTxnToOrder($order, $payment, [
@@ -805,8 +843,8 @@ class PaymentService
                         ]
                     );
                 } elseif ($api->payment_provider === PaymentProviders::MINTE) {
-                    $mint = new MinteService($api);
-                    $payment = $mint->payByToken(
+                    $minte = new MinteService($api);
+                    $payment = $minte->payByToken(
                         $card_token,
                         [
                             'street'        => $order->shipping_street,
@@ -830,6 +868,12 @@ class PaymentService
                             'payment_api_id' => $order_main_txn['payment_api_id']
                         ]
                     );
+                    if ($payment['status'] === Txn::STATUS_CAPTURED) {
+                        $capture = $minte->capture($payment['hash'], ['amount' => $checkout_price, 'currency' => $order->currency]);
+                        $this->logTxn(array_merge($capture, ['payment_method' => $order_main_txn['payment_method']]));
+                        $payment['status'] = $capture['status'];
+                        $payment['capture_hash'] = $capture['hash'];
+                    }
                 } elseif ($api->payment_provider === PaymentProviders::BLUESNAP) {
                     $bluesnap = new BluesnapService($api);
                     $payment = $bluesnap->payByVaultedShopperId(
@@ -967,9 +1011,9 @@ class PaymentService
                 break;
             case PaymentProviders::MINTE:
                 $order = $this->checkOrderCurrency($order, PaymentProviders::MINTE);
-                $mint = new MinteService($api);
+                $minte = new MinteService($api);
                 $result['status']  = true;
-                $result['payment'] = $mint->payByCard(
+                $payment = $minte->payByCard(
                     $card,
                     [
                         'street'        => $order->shipping_street,
@@ -993,6 +1037,13 @@ class PaymentService
                         'user_agent'    => $details['useragent'] ?? null
                     ]
                 );
+                if ($payment['status'] === Txn::STATUS_CAPTURED) {
+                    $capture = $minte->capture($payment['hash'], ['amount' => $order->total_price, 'currency' => $order->currency]);
+                    $this->logTxn(array_merge($capture, ['payment_method' => $details['method']]));
+                    $payment['status'] = $capture['status'];
+                    $payment['capture_hash'] = $capture['hash'];
+                }
+                $result['payment'] = $payment;
                 break;
             case PaymentProviders::EBANX:
                 $ebanx = new EbanxService($api);
@@ -1065,15 +1116,12 @@ class PaymentService
 
         $txn = $order->getTxnByHash($data['hash'], false);
         if ($txn) {
-            if (isset($data['value'])) {
-                $txn['value'] = $data['value'];
-            }
-            $txn['status']  = $data['status'];
+            $txn = array_merge($txn, $data);
             $order->addTxn($txn);
         }
 
         if ($txn && $txn['status'] === Txn::STATUS_APPROVED) {
-            $products = $order->getProductsByTxnHash($data['hash']);
+            $products = $order->getProductsByTxnHash($txn['hash']);
             foreach ($products as $product) {
                 $product['is_paid'] = true;
                 if ($product['is_main']) {
@@ -1184,43 +1232,40 @@ class PaymentService
         $order = OdinOrder::getById($order_id); // throwable
         $order_txn = $order->getTxnByHash($txn_hash); // throwable
 
-        $mint = new MinteService(PaymentApiService::getById($order_txn['payment_api_id']));
-        $reply = $mint->captureMinte3ds([
-            'errcode'   => $errcode,
-            'errmsg'    => $errmsg,
-            'sign'      => $sign,
-            'hash'      => $txn_hash,
-            'status'    => $txn_status,
-            'timestamp' => $txn_ts,
-            'order_id'  => $order_id,
-            'payment_api_id' => $order_txn['payment_api_id']
-        ]);
+        $minte = new MinteService(PaymentApiService::getById($order_txn['payment_api_id']));
 
-        if (!$reply['status']) {
+        if (!$minte->verifySignature($txn_hash, $sign, $txn_ts)) {
             logger()->error('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new AuthException('Unauthorized');
         }
 
-        $result = false;
-        if ($reply['txn']['status'] === Txn::STATUS_APPROVED) {
-            $this->approveOrder($reply['txn'], PaymentProviders::MINTE);
-            $result = true;
-        } else {
-            $order = $this->rejectTxn($reply['txn'], PaymentProviders::MINTE);
+        $payment = $minte->handle3ds($order_txn, ['errcode' => $errcode, 'errmsg' => $errmsg, 'status' => $txn_status]);
+        if ($payment['status'] === Txn::STATUS_CAPTURED) {
+            $capture = $minte->capture($payment['hash'], ['amount' => $order_txn['value'], 'currency' => $order->currency]);
+            $this->logTxn(array_merge($capture, ['payment_method' => $order_txn['payment_method']]));
+            $payment['status'] = $capture['status'];
+            $payment['capture_hash'] = $capture['hash'];
+        }
 
-            PaymentService::cacheErrors(array_merge($reply['txn'], ['number' => $order->number]));
+        $result = false;
+        if ($payment['status'] === Txn::STATUS_APPROVED) {
+            $result = true;
+            $this->approveOrder($payment, PaymentProviders::MINTE);
+        } else {
+            $order = $this->rejectTxn($payment, PaymentProviders::MINTE);
+
+            PaymentService::cacheErrors(array_merge($payment, ['number' => $order->number]));
 
             $cardtk = self::getCardToken($order->number, false);
 
-            logger()->info("Pre-Fallback [{$order->number}]", ['cardtk' => !!$cardtk, 'fallback' => !empty($reply['txn']['fallback'])]);
+            logger()->info("Pre-Fallback [{$order->number}]", ['cardtk' => !!$cardtk, 'fallback' => !empty($payment['fallback'])]);
 
-            if (!empty($reply['txn']['fallback']) && $cardtk) {
-                $cardjs = MinteService::decrypt($cardtk, $order_id);
-
-                $reply = $this->fallbackOrder($order, json_decode($cardjs, true), [
-                    'provider'   => PaymentProviders::MINTE,
-                    'method'     => $order_txn['payment_method']
-                ]);
+            if (!empty($payment['fallback']) && $cardtk) {
+                $reply = $this->fallbackOrder(
+                    $order,
+                    json_decode(MinteService::decrypt($cardtk, $order_id), true),
+                    ['provider' => PaymentProviders::MINTE, 'method' => $order_txn['payment_method']]
+                );
 
                 if ($reply['status']) {
                     $result = true;

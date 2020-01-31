@@ -116,14 +116,10 @@ class MinteService
     public function payByCard(array $card, array $contact, array $details): array
     {
         $phone = $contact['phone'];
-        if (\gettype($contact['phone']) === 'array') {
+        if (gettype($contact['phone']) === 'array') {
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
-        $payment = $this->authorize($card, array_merge($contact, ['phone' => $phone]), $details);
-        if ($payment['status'] === Txn::STATUS_CAPTURED) {
-            return $this->capture($payment);
-        }
-        return $payment;
+        return $this->authorize($card, array_merge($contact, ['phone' => $phone]), $details);
     }
 
     /**
@@ -143,15 +139,53 @@ class MinteService
      */
     public function payByToken(string $token, array $contact, array $details): array
     {
-        $cardjs = self::decrypt($token, $details['order_id']);
+        return $this->authorize(
+            json_decode(self::decrypt($token, $details['order_id']), true),
+            $contact,
+            array_merge($details, ['3ds' => false])
+        );
+    }
 
-        $payment = $this->authorize(json_decode($cardjs, true), $contact, array_merge($details, ['3ds' => false]));
+    /**
+     * Refunds payment
+     * @param  string $id
+     * @param  float  $amount
+     * @return array
+     */
+    public function refund(string $id, float $amount): array
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'headers' => ['Accept'  => 'application/json']
+        ]);
 
-        if ($payment['status'] === Txn::STATUS_CAPTURED) {
-            return $this->capture($payment);
+        $result = ['status' => false];
+        try {
+            $nonce = UtilsService::millitime();
+            $body = [
+                'mid'       => $this->api->login,
+                'nonce'     => $nonce,
+                'amount'    => $amount,
+                'signature' => hash('sha256', $this->api->login . $nonce . $this->api->key),
+                'referenceid' => $id
+            ];
+
+            $res = $client->put('refund', ['json' => $body]);
+
+            $body_decoded = json_decode($res->getBody(), true);
+
+            if ($body_decoded['status'] === self::STATUS_OK) {
+                $result['status'] = true;
+            } else {
+                logger()->error("Mint-e refund", ['body' => $body_decoded]);
+                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
+            }
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
+            logger()->error("Mint-e capture", ['res'  => $res]);
+            $result['errors'] = [MinteCodeMapper::toPhrase()];
         }
-
-        return $payment;
+        return $result;
     }
 
     /**
@@ -229,9 +263,7 @@ class MinteService
                 $obj3ds
             );
 
-            $res = $client->put($route_path, [
-                'json' => $body
-            ]);
+            $res = $client->put($route_path, ['json' => $body]);
 
             $body_decoded = json_decode($res->getBody(), true);
 
@@ -270,15 +302,29 @@ class MinteService
 
     /**
      * Captures payment
-     * @param  array   $payment ['hash'=>string]
+     * @param  string  $hash
+     * @param  array   $details ['currency'=>string,'amount'=>float]
      * @return array
      */
-    private function capture(array $payment): array
+    public function capture(string $hash, array $details): array
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
             'headers' => ['Accept'  => 'application/json']
         ]);
+
+        $result = [
+            'is_flagged'        => false,
+            'currency'          => $details['currency'],
+            'value'             => $details['amount'],
+            'status'            => Txn::STATUS_FAILED,
+            'payment_provider'  => PaymentProviders::MINTE,
+            'payment_api_id'    => (string)$this->api->getIdAttribute(),
+            'hash'              => "fail_" . UtilsService::randomString(16),
+            'provider_data'     => null,
+            'errors'            => null,
+            'token'             => null
+        ];
 
         try {
             $nonce = UtilsService::millitime();
@@ -286,37 +332,33 @@ class MinteService
                 'mid'       => $this->api->login,
                 'nonce'     => $nonce,
                 'signature' => hash('sha256', $this->api->login . $nonce . $this->api->key),
-                'referenceid' => $payment['hash']
+                'referenceid' => $hash
             ];
 
-            // logger()->info('Mint-e capture body debug', ['body' => $body]);
-
-            $res = $client->put('capture', [
-                'json' => $body
-            ]);
-
-            // logger()->info('Mint-e capture res debug', ['body' => $res->getBody()]);
+            $res = $client->put('capture', ['json' => $body]);
 
             $body_decoded = json_decode($res->getBody(), true);
 
             if ($body_decoded['status'] === self::STATUS_OK) {
-                $payment['status']   = Txn::STATUS_APPROVED;
+                $result['status'] = Txn::STATUS_APPROVED;
+                $result['hash'] = $body_decoded['midtransid'];
             } else {
-                $payment['status']   = Txn::STATUS_FAILED;
-                $payment['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
                 logger()->error("Mint-e capture", ['body' => $body_decoded]);
+
+                $result['status'] = Txn::STATUS_FAILED;
+                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
             }
-            $payment['provider_data'] = $body_decoded;
+            $result['provider_data'] = $body_decoded;
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
 
-            $payment['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
-            $payment['errors'] = [MinteCodeMapper::toPhrase()];
-            $payment['status']   = Txn::STATUS_FAILED;
+            logger()->error("Mint-e capture", ['res'  => $res]);
 
-            logger()->error("Mint-e capture", ['res'  => $payment['provider_data']]);
+            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
+            $result['errors'] = [MinteCodeMapper::toPhrase()];
+            $result['status']   = Txn::STATUS_FAILED;
         }
-        return $payment;
+        return $result;
     }
 
     /**
@@ -380,38 +422,37 @@ class MinteService
     }
 
     /**
-     * Captures payment after 3ds authorization
-     * @param array $params
-     * [
-     *   'errcode'   => ?string,
-     *   'errmsg'    => ?string,
-     *   'sign'      => string,
-     *   'hash'      => string,
-     *   'status'    => string,
-     *   'timestamp' => string,
-     *   'order_id'  => string,
-     * ]
+     * Handles payment after 3ds
+     * @param array $payment Order->txns item
+     * @param array $params ['errcode' => ?string, 'errmsg' => ?string, 'status' => string]
      * @return array
      */
-    public function captureMinte3ds(array $params): array
+    public function handle3ds(array $payment, array $params): array
     {
-        $result = ['status' => false];
-
-        if ($params['sign'] === hash('sha256', $params['hash'] . $params['timestamp'] . $this->api->key)) {
-            $result = ['status' => true, 'txn' => ['hash' => $params['hash']]];
-            if ($params['status'] === self::STATUS_OK) {
-                $result['txn'] = $this->capture($params);
-            } else {
-                $code = !empty($params['errcode']) ? $params['errcode'] : $params['errmsg'];
-                if (in_array($code, self::$fallback_codes)) {
-                    $result['txn']['fallback'] = true;
-                }
-                $result['txn']['status'] = Txn::STATUS_FAILED;
-                $result['txn']['errors'] = [MinteCodeMapper::toPhrase($params['errcode'], $params['errmsg'])];
+        if ($params['status'] === self::STATUS_OK) {
+            $payment['status'] = Txn::STATUS_CAPTURED;
+        } else {
+            $code = !empty($params['errcode']) ? $params['errcode'] : $params['errmsg'];
+            if (in_array($code, self::$fallback_codes)) {
+                $payment['fallback'] = true;
             }
+            $payment['status'] = Txn::STATUS_FAILED;
+            $payment['errors'] = [MinteCodeMapper::toPhrase($params['errcode'], $params['errmsg'])];
         }
 
-        return $result;
+        return $payment;
+    }
+
+    /**
+     * Verifies signature
+     * @param  string $hash
+     * @param  string $sign
+     * @param  string $ts
+     * @return bool
+     */
+    public function verifySignature(string $hash, string $sign, string $ts): bool
+    {
+        return $sign === hash('sha256', $hash . $ts . $this->api->key);
     }
 
 }

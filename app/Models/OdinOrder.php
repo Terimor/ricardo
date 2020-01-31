@@ -65,6 +65,7 @@ class OdinOrder extends OdinModel
         'total_price_usd' => null, // * float, full USD price (with warranty)
         'total_chargeback' => 0, // total chargeback amount in local currency
         'total_chargeback_usd' => 0, // total chargeback amount in USD
+        'total_refunded_usd' => 0,
         'txns_fee_usd' => 0, //float, total amount of all txns' fee in USD
         'shipping_cost_usd' => 0, // float, Total shipping cost in USD
         'payout_usd' => 0, // float, Affiliate payout amount in USD
@@ -172,12 +173,12 @@ class OdinOrder extends OdinModel
      * @var array
      */
     protected $fillable = [
-        'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'shop_currency',
-        'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone', 'language', 'ip',
-        'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2', 'shipping_building',
-        'shipping_apt', 'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged', 'offer', 'affiliate',
-        'txid', 'billing_descriptor', 'is_refunding', 'is_refunded', 'qc_passed', 'installments', 'txns', 'params', 'is_invoice_sent', 'events',
-        'pixels', 'postbacks', 'fingerprint'
+        'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'total_refunded_usd',
+        'shop_currency', 'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone',
+        'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2',
+        'shipping_building', 'shipping_apt', 'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged',
+        'offer', 'affiliate', 'txid', 'billing_descriptor', 'is_refunding', 'is_refunded', 'qc_passed', 'installments', 'txns', 'params',
+        'is_invoice_sent', 'events', 'pixels', 'postbacks', 'fingerprint'
     ];
 
     protected static $save_history = true;
@@ -481,6 +482,23 @@ class OdinOrder extends OdinModel
     }
 
     /**
+     * Returns txn by capture_hash
+     * @param string $hash
+     * @param bool $throwable default=true
+     * @return array|null
+     */
+    public function getTxnByCaptureHash(string $hash, bool $throwable = true): ?array
+    {
+        $txn = collect($this->txns)->first(function($v) use($hash) {
+            return ($v['capture_hash'] ?? null) === $hash;
+        });
+        if (empty($txn) && $throwable) {
+            throw new TxnNotFoundException("Order txn [{$hash}] not found, order [{$this->number}]");
+        }
+        return $txn;
+    }
+
+    /**
      * Adds product
      * @param array $product
      * @param bool  $is_order_creation
@@ -518,7 +536,12 @@ class OdinOrder extends OdinModel
             ->reject(function ($v) use ($txn) {
                 return $v['hash'] === $txn['hash'];
             })
-            ->merge([$txn])->all();
+            ->merge([
+                collect($txn)->only([
+                    'hash', 'capture_hash', 'value', 'status', 'fee_usd', 'card_type', 'card_number',
+                    'payment_method','payment_provider', 'payment_api_id', 'payer_id'
+                ])->all()
+            ])->all();
     }
 
 
