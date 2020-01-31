@@ -49,7 +49,7 @@ export default {
         cities,
         usersActive,
         bestsellerText,
-        paypal: !!this.$root.paypalEnabled,
+        paypal: !!this.$root.paypalEnabled && js_data.country_code !== 'br',
       });
 
       const getNoticeHtml = () => notice.next().value;

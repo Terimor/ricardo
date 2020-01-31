@@ -35,12 +35,21 @@
         </option>
       @endif
 
-      <option
-        :key="item.value"
-        v-for="item in {{ $items }}"
-        :value="item.value"
-        v-html="item.label">
-      </option>
+      @if (!empty($items))
+        <template v-if="!{{ $items_code ?? 'false' }}">
+          @foreach ($items as $item)
+            <option value="{{ $item['value'] }}">{!! $item['label'] !!}</option>
+          @endforeach
+        </template>
+      @endif
+
+      @if (!empty($items_code))
+        <option
+          v-for="item in {{ $items_code }}"
+          :value="item.value"
+          v-html="item.label">
+        </option>
+      @endif
 
     </select>
 

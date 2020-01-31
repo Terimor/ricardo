@@ -18,9 +18,33 @@
     js_data.order_customer = @json($orderCustomer);
     js_data.product = @json($product);
 
-    window.amountjs = Math.round((js_data.order_customer.products.reduce(function(acc, product) { return acc + product.price_usd + product.warranty_price_usd }, 0)) * 100) / 100;
-    window.localamountjs = Math.round((js_data.order_customer.products.reduce(function(acc, product) { return acc + product.price + product.warranty_price }, 0)) * 100) / 100;
-    window.mainsku = js_data.order_customer.products.filter(function(product) { return product.is_main })[0].sku_code;
+    var products_success = js_data.order_customer.products
+        .filter(function(product) {
+            var txn = js_data.order_customer.txns.find(function(item) {
+                return item.hash === product.txn_hash;
+            });
+            return txn && txn.status !== 'failed';
+        });
+
+    window.amountjs = Math.round(
+        products_success
+            .reduce(function(acc, product) { return acc + product.price_usd + product.warranty_price_usd; }, 0)
+    * 100) / 100;
+
+    window.localamountjs = Math.round(
+        products_success
+            .reduce(function(acc, product) { return acc + product.price + product.warranty_price; }, 0)
+    * 100) / 100;
+
+    window.upsell_amt = Math.round(
+        products_success
+            .filter(function(product) { return product.is_upsells; })
+            .reduce(function(acc, product) { return acc + product.price_usd + product.warranty_price_usd; }, 0)
+    * 100) / 100;
+
+    window.mainsku = js_data.order_customer.products
+        .filter(function(product) { return product.is_main })[0].sku_code;
+
     window.localcurrency = js_data.order_customer.currency;
     window.orderid = js_data.order_customer._id;
   </script>

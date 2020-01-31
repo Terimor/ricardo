@@ -13,6 +13,7 @@
     </div>
 
     <div
+      v-if="!is_paypal_hidden"
       class="tab"
       :class="{ active: form.payment_provider === 'paypal' }"
       @click="payment_provider_change('paypal')">

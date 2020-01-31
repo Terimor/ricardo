@@ -2,25 +2,9 @@ export default {
 
   computed: {
 
-/*
-    get_local_order_amount() {
-      if (!this.form.deal || !js_data.product.prices[this.form.deal]) {
-        return 0;
-      }
-
-      const price = js_data.product.prices[this.form.deal].value || 0;
-      const exchange_rate = js_data.product.prices.exchange_rate || 1;
-
-      const warranty = this.form.warranty
-        ? js_data.product.prices[this.form.deal].warranty_price || 0
-        : 0;
-
-      let result = ((price + warranty) / exchange_rate) || 0;
-      result = Math.round(result * 100) / 100;
-
-      return result;
+    price_exchange_rate() {
+      return js_data.product.prices.exchange_rate || 1;
     },
-*/
 
     price_multiplier() {
       return this.form.installments !== 1
@@ -106,6 +90,10 @@ export default {
 
     price_total_value() {
       return Math.round((this.price_value + (this.form.warranty ? this.price_warranty_value : 0)) * 100) / 100;
+    },
+
+    price_total_value_usd() {
+      return Math.round(((this.price_value + (this.form.warranty ? this.price_warranty_value : 0)) / this.price_exchange_rate) * 100) / 100;
     },
 
   },

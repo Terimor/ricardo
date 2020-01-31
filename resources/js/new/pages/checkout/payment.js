@@ -19,7 +19,7 @@ export default {
   computed: {
 
     is_paypal_hidden() {
-      return !!js_data.product.is_paypal_hidden;
+      return !!js_data.product.is_paypal_hidden || this.form.installments !== 1;
     },
 
   },

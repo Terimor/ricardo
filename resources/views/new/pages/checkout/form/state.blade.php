@@ -16,6 +16,10 @@
 
 <template v-if="extra_fields.state && extra_fields.state.type === 'dropdown'">
 
+  @php
+    $states_options = $setting['payment_methods']['mastercard']['extra_fields']['state']['items'] ?? null;
+  @endphp
+
   @include('new.components.select', [
     'name' => 'state',
     'model' => 'form.state',
@@ -24,7 +28,8 @@
     'validation_labels' => [
       'required' => t('checkout.payment_form.state.required'),
     ],
-    'items' => 'state_items',
+    'items' => $states_options,
+    'items_code' => 'state_items',
     'loading' => 'is_loading.address',
     'placeholder' => true,
   ])

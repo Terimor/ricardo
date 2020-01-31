@@ -5,7 +5,7 @@ export default {
     ipqualityscore_form_calculate() {
       let fields = {
         order_quantity: this.form.deal,
-        order_amount: this.price_total_value,
+        order_amount: this.price_total_value_usd,
       };
 
       if (this.form.first_name) {
