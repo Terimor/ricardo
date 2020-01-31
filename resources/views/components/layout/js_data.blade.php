@@ -1,7 +1,7 @@
 <script type="text/javascript">
 
   // JS data
-  var js_data = {
+  window.js_data = {
     cdn_url: '{{ $cdn_url }}',
     i18n: {
       phrases: {},
@@ -12,7 +12,7 @@
   };
 
   // GET params
-  var js_query_params = location.search
+  window.js_query_params = location.search
     .substr(1)
     .split('&')
     .filter(function(item) {
@@ -35,8 +35,16 @@
   });
 
   // affiliate variables
-  var aff_idjs = affidjs = window.aff_idjs || window.affidjs || 0;
-  var offer_idjs = offeridjs = window.offer_idjs || window.offeridjs || 0;
+  window.aff_idjs = affidjs = window.aff_idjs || window.affidjs || 0;
+  window.offer_idjs = offeridjs = window.offer_idjs || window.offeridjs || 0;
+
+  // product variables
+  @if (isset($product))
+    window.fbpixelidjs = '{{ $product->fb_pixel_id ?? '' }}';
+    window.adwordsconvidjs = '{{ $product->gads_conversion_id ?? '' }}';
+    window.adwordsconvlabeljs = '{{ $product->gads_conversion_label ?? '' }}';
+    window.adwordsconvretargetjs = '{{ $product->gads_retarget_id ?? '' }}';
+  @endif
 
   if (js_query_params.cur === '{aff_currency}') {
     delete window.curjs;

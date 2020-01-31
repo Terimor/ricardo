@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 
-  var js_deps = {
+  window.js_deps = {
 
     deps: {},
 

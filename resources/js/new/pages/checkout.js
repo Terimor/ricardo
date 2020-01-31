@@ -44,10 +44,9 @@ export default {
   methods: {
 
     set_browser_title() {
-      const title_normal = document.title;
-      const title_wait = this.t('checkout.page_title.wait');
-      window.onfocus = () => document.title = title_normal;
-      window.onblur = () => document.title = title_wait;
+      const initial_title = document.title;
+      window.onfocus = () => document.title = initial_title;
+      window.onblur = () => document.title = this.t('checkout.page_title.wait');
     },
 
     scroll_3ds_failure() {

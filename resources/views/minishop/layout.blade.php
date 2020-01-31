@@ -16,7 +16,6 @@
 
     <!-- JS Data -->
     @include('components.layout.js_data')
-    @include('components.layout.js_product')
     @yield('js_data')
 
     <!-- JS Deps -->

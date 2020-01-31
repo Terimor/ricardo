@@ -27,23 +27,22 @@ export default {
 
 
   watch: {
+
     'form.deal'(value) {
       window.selectedOffer = value ? 1 : 0;
       history.pushState({}, '', location.href);
     },
+
   },
 
 
   computed: {
 
     deals_by_value() {
-      let deals_by_value = {};
-
-      for (let deal of js_data.deals) {
-        deals_by_value[deal.quantity] = deal;
-      }
-
-      return deals_by_value;
+      return js_data.deal_available.reduce((acc, deal) => {
+        acc[deal] = js_data.product.prices[deal];
+        return acc;
+      }, {});
     },
 
   },
@@ -60,7 +59,6 @@ export default {
         }
       }
     },
-
 
     deal_change(value) {
       this.form.deal = value;

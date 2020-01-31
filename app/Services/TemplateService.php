@@ -115,6 +115,10 @@ class TemplateService
             $deals_shortlist = true;
         }
 
+        if ($request->get('tpl') == 'vc1' || $request->get('tpl') == 'vc2') {
+            $deals_to_display = [1];
+        }
+
         foreach ($product->prices as $value => $deal) {
             $value = intval($value);
             if (in_array($value, $deals_to_display)) {
