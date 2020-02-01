@@ -45,6 +45,7 @@
     @include('components.scripts.analytics')
     @include('components.scripts.sentry')
     @include('components.scripts.paypal')
+    @include('components.scripts.bluesnap')
     @include('components.scripts.intl_tel_input')
     @include('components.scripts.libphonenumber')
     @include('components.scripts.sha256')
