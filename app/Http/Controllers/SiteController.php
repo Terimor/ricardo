@@ -251,7 +251,7 @@ class SiteController extends Controller
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
         $is_virtual_product = Route::is('checkout_vrtl');
-		$viewTemplate = !$is_virtual_product ? 'checkout' : 'new.pages.checkout.templates.vc1';
+		$viewTemplate = !$is_virtual_product ? 'checkout' : 'new.pages.vrtl.checkout.templates.vc1';
 
         if (!empty($priceSet)) {
             $request->merge(['cop_id' => $priceSet]);
@@ -269,10 +269,10 @@ class SiteController extends Controller
             }
         } else {
             if ($request->get('tpl') == 'vc1') {
-                $viewTemplate = 'new.pages.checkout.templates.vc1';
+                $viewTemplate = 'new.pages.vrtl.checkout.templates.vc1';
             }
             if ($request->get('tpl') == 'vc2') {
-                $viewTemplate = 'new.pages.checkout.templates.vc2';
+                $viewTemplate = 'new.pages.vrtl.checkout.templates.vc2';
             }
         }
 
@@ -345,6 +345,8 @@ class SiteController extends Controller
      */
     public function upsells(Request $request, ProductService $productService)
     {
+        $is_virtual_product = Route::is('upsells_vrtl');
+        $viewTemplate = !$is_virtual_product ? 'uppsells_funnel' : 'new.pages.vrtl.upsells';
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
@@ -375,7 +377,7 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('upsells.title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view('uppsells_funnel', compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
+        return view($viewTemplate, compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
     }
 
     /**
@@ -386,6 +388,8 @@ class SiteController extends Controller
      */
     public function thankyou(Request $request, ProductService $productService)
     {
+        $is_virtual_product = Route::is('thankyou_vrtl');
+        $viewTemplate = !$is_virtual_product ? 'thankyou' : 'new.pages.vrtl.thankyou';
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
@@ -427,7 +431,7 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('thankyou_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view('thankyou', compact('countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
+        return view($viewTemplate, compact('countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
     }
 
     /**

@@ -3,8 +3,8 @@ $size2: 992px;
 $size3: 1200px;
 
 @import '../../checkout';
-@import '..//blocks/safe_payment';
-@import '../blocks/safe_invoice';
+@import '../../../checkout/blocks/safe_payment';
+@import '../../../checkout/blocks/safe_invoice';
 @import './vc2/htitle';
 @import './vc2/left_column';
 @import './vc2/right_column';

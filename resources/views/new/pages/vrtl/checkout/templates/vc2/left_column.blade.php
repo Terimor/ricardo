@@ -17,7 +17,7 @@
     {!! t('vc2.billing.title') !!}
   </div>
 
-  @include('new.pages.checkout.templates.vc2.payment_provider')
+  @include('new.pages.vrtl.checkout.templates.vc2.payment_provider')
 
   <div class="form">
     <template v-if="form.payment_provider === 'credit-card'">

@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Models\Domain;
 use App\Models\Setting;
 
@@ -101,6 +102,8 @@ class TemplateService
      */
     public static function getDealsData($product, $request): array
     {
+        $is_virtual_product = Route::is('checkout_vrtl');
+
         $deals = [];
         $deals_shortlist = false;
         $deals_to_display = [1, 3, 5];
@@ -110,12 +113,12 @@ class TemplateService
         $deal_bestseller_index = -1;
         $deal_popular_index = -1;
 
-        if ($request->get('tpl') == 'fmc5x') {
-            $deals_to_display = [1, 2, 3, 4, 5];
-            $deals_shortlist = true;
-        }
-
-        if ($request->get('tpl') == 'vc1' || $request->get('tpl') == 'vc2') {
+        if (!$is_virtual_product) {
+            if ($request->get('tpl') == 'fmc5x') {
+                $deals_to_display = [1, 2, 3, 4, 5];
+                $deals_shortlist = true;
+            }
+        } else {
             $deals_to_display = [1];
         }
 

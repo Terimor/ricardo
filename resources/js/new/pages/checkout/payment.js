@@ -27,10 +27,14 @@ export default {
 
   methods: {
 
-    goto_thankyou_page(order, currency) {
+    goto_upsells(order, currency) {
       let url = js_data.product.upsells.length > 0
-        ? '/thankyou-promos'
-        : '/thankyou';
+        ? !this.is_vrtl_checkout
+          ? '/thankyou-promos'
+          : '/vrtl/upsells'
+        : !this.is_vrtl_checkout
+          ? '/thankyou'
+          : '/vrtl/thankyou';
 
       url += '?order=' + encodeURIComponent(order);
       url += '&cur=' + encodeURIComponent(currency);

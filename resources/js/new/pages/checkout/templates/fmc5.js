@@ -9,18 +9,18 @@ js_deps.wait(['vue'], () => {
     el: '#app',
 
 
-    validations() {
-      return {
-        ...checkout.validations.call(this),
-      };
-    },
-
-
     mixins: [
       checkout,
       content,
       bottom,
     ],
+
+
+    validations() {
+      return {
+        ...checkout.validations.call(this),
+      };
+    },
 
 
     created() {

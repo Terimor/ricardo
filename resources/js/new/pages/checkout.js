@@ -41,6 +41,15 @@ export default {
   },
 
 
+  computed: {
+
+    is_vrtl_checkout() {
+      return location.pathname.substr(1).split('/').shift() === 'vrtl';
+    },
+
+  },
+
+
   methods: {
 
     set_browser_title() {

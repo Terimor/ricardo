@@ -91,7 +91,7 @@ export default {
           const odin_order_id = localStorage.getItem('odin_order_id');
           const order_currency = localStorage.getItem('order_currency');
 
-          this.goto_thankyou_page(odin_order_id, order_currency);
+          this.goto_upsells(odin_order_id, order_currency);
         })
         .catch(err => {
           this.payment_error = this.t('checkout.payment_error');

@@ -1,4 +1,4 @@
-@if ($HasVueApp)
+@if ((Route::is('checkout') || Route::is('checkout_price_set') || Route::is('checkout_vrtl')) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
 
   <link
     id="intlTelInputCss"

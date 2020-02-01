@@ -177,7 +177,7 @@ export default {
             if (body.redirect_url) {
               location.href = body.redirect_url;
             } else {
-              this.goto_thankyou_page(body.order_id, body.order_currency);
+              this.goto_upsells(body.order_id, body.order_currency);
             }
           }
         })

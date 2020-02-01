@@ -27,11 +27,16 @@
     @endif
 
     @if (Request::get('3ds_restore') && Request::get('3ds') === 'success')
+      var is_vrtl = location.pathname.substr(1).split('/').shift() === 'vrtl';
       var url_query_params = JSON.parse(JSON.stringify(js_query_params));
 
       var url_pathname = js_data.product.upsells.length > 0
-        ? '/thankyou-promos'
-        : '/thankyou';
+        ? !is_vrtl
+          ? '/thankyou-promos'
+          : '/vrtl/upsells'
+        : !is_vrtl
+          ? '/thankyou'
+          : '/vrtl/thankyou';
 
       url_query_params.order = localStorage.getItem('odin_order_id');
       url_query_params.cur = localStorage.getItem('order_currency');
