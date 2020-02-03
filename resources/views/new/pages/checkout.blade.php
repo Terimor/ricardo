@@ -4,39 +4,7 @@
 
 
 @php
-  $deal_available = array_map(
-    function($deal) {
-      return $deal['quantity'];
-    },
-    $deals,
-  );
-
-  $i18n_phrases = array_reduce(
-    [
-      'checkout.page_title.wait',
-      'checkout.notification.just_bought',
-      'checkout.notification.users_active',
-      'checkout.payment_form.state',
-      'checkout.payment_form.zipcode',
-      'checkout.payment_form.installments.full_amount',
-      'checkout.payment_form.installments.pay_3',
-      'checkout.payment_form.installments.pay_6',
-      'checkout.payment_form.card_type.debit',
-      'checkout.payment_form.card_type.credit',
-      'document_type.ar.cuit',
-      'document_type.ar.cuil',
-      'document_type.ar.cdi',
-      'document_type.ar.dni',
-      'document_type.co.nit',
-      'document_type.co.cc',
-      'document_type.co.ce',
-    ],
-    function($acc, $phrase) use ($loadedPhrases) {
-      $acc[$phrase] = $loadedPhrases[$phrase];
-      return $acc;
-    },
-    [],
-  );
+  $deal_available = array_map(function($deal) { return $deal['quantity']; }, $deals);
 @endphp
 
 
@@ -47,7 +15,8 @@
 
     js_data.ipqualityscore_api_hash = @json($setting['ipqualityscore_api_hash'], JSON_UNESCAPED_UNICODE);
 
-    js_data.i18n.phrases = @json($i18n_phrases, JSON_UNESCAPED_UNICODE);
+    js_data.i18n.phrases = @json($loadedPhrases, JSON_UNESCAPED_UNICODE);
+    js_data.i18n.images = @json($loadedImages, JSON_UNESCAPED_UNICODE);
 
     js_data.recently_bought_names = @json($recentlyBoughtNames, JSON_UNESCAPED_UNICODE);
     js_data.recently_bought_cities = @json($recentlyBoughtCities, JSON_UNESCAPED_UNICODE);

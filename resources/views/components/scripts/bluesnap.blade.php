@@ -6,8 +6,8 @@
       : 'www.bluesnap.com';
   @endphp
 
-  <iframe width='1' height='1' frameborder='0' scrolling='no' src='https://{{ $bluesnap_domain }}/servlet/logo.htm?s={{ $bluesnap_fraud_session_id }}'>
-    <img width='1' height='1' src='https://{{ $bluesnap_domain }}/servlet/logo.gif?s={{ $bluesnap_fraud_session_id }}&d={{ $setting['bluesnap_seller_id'] }}'>
+  <iframe width='1' height='1' frameborder='0' scrolling='no' src='https://{{ $bluesnap_domain }}/servlet/logo.htm?s={{ $setting['bluesnap_fraud_session_id'] }}'>
+    <img width='1' height='1' src='https://{{ $bluesnap_domain }}/servlet/logo.gif?s={{ $setting['bluesnap_fraud_session_id'] }}&d={{ $setting['bluesnap_seller_id'] }}'>
   </iframe>
 
 @endif
