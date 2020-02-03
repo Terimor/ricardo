@@ -439,7 +439,7 @@ class ProductService
                 arsort($soldProducts);
                 $productIds = array_keys($soldProducts);
 
-                $products = OdinProduct::getActiveByIds($productIds);
+                $products = OdinProduct::getActiveByIds($productIds, '', true);
 
                 // get all images
                 $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
