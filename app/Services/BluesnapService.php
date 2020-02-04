@@ -221,11 +221,11 @@ class BluesnapService
 
     /**
      * Refunds payment
-     * @param  string $id
+     * @param  string $hash
      * @param  float|null $amount null - full refund
      * @return array
      */
-    public function refund(string $id, ?float $amount = null): array
+    public function refund(string $hash, ?float $amount = null): array
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
@@ -233,9 +233,9 @@ class BluesnapService
             'headers' => ['Accept'  => 'application/json']
         ]);
 
-        $result = ['status' => false, 'errors' => ["Something went wrong {$id}"]];
+        $result = ['status' => false, 'errors' => ["Something went wrong [{$hash}]"]];
         try {
-            $path = "transactions/{$id}/refund";
+            $path = "transactions/{$hash}/refund";
             if ($amount) {
                 $path .= '?amount=' . (string)$amount;
             }
@@ -257,7 +257,7 @@ class BluesnapService
                 $body_decoded = json_decode($res->getBody(), true);
                 if (!empty($body_decoded['message'])) {
                     $result['errors'] = array_map(function($v) {
-                        return ($v['description'] ?? "Something went wrong") . " {$id}";
+                        return ($v['description'] ?? "Something went wrong") . " [{$hash}]";
                     }, $body_decoded['message']);
                 }
             }

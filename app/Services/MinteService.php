@@ -148,11 +148,11 @@ class MinteService
 
     /**
      * Refunds payment
-     * @param  string $id
+     * @param  string $hash
      * @param  float  $amount
      * @return array
      */
-    public function refund(string $id, float $amount): array
+    public function refund(string $hash, float $amount): array
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
@@ -167,7 +167,7 @@ class MinteService
                 'nonce'     => $nonce,
                 'amount'    => $amount,
                 'signature' => hash('sha256', $this->api->login . $nonce . $this->api->key),
-                'referenceid' => $id
+                'referenceid' => $hash
             ];
 
             $res = $client->put('refund', ['json' => $body]);
@@ -178,12 +178,12 @@ class MinteService
                 $result['status'] = true;
             } else {
                 logger()->error("Mint-e refund", ['body' => $body_decoded]);
-                $result['errors'] = [($body_decoded['errormessage'] ?? 'Something went wrong') . " {$id}"];
+                $result['errors'] = [($body_decoded['errormessage'] ?? 'Something went wrong') . " [{$hash}]"];
             }
         } catch (GuzzReqException $ex) {
             logger()->error("Mint-e capture", ['res' => $ex->hasResponse() ? $ex->getResponse()->getBody() : null]);
 
-            $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " {$id}"];
+            $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " [{$hash}]"];
         }
         return $result;
     }

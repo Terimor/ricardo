@@ -210,18 +210,18 @@ class CheckoutDotComService
 
     /**
      * Voids payment
-     * @param  string $id
+     * @param  string $hash
      * @param  string $order_number
      * @param  string $currency
      * @param  float|null  $amount default=null
      * @return array
      */
-    public function refund(string $id, string $order_number, string $currency, ?float $amount = null): array
+    public function refund(string $hash, string $order_number, string $currency, ?float $amount = null): array
     {
         $result = ['status' => false];
         try {
             $amount = $amount ? CheckoutDotComAmountMapper::toProvider($amount, $currency) : null;
-            $res = $this->checkout->payments()->refund(new Refund($id, $amount, $order_number));
+            $res = $this->checkout->payments()->refund(new Refund($hash, $amount, $order_number));
             if ($res->http_code === 202) {
                 $result['status'] = true;
             }
@@ -230,16 +230,16 @@ class CheckoutDotComService
 
             switch ($ex->getCode()):
                 case 422:
-                    $result['errors'][] = "Invalid data was sent {$id}";
+                    $result['errors'][] = "Invalid data was sent [{$hash}]";
                     break;
                 case 403:
-                    $result['errors'][] = "Refund not allowed {$id}";
+                    $result['errors'][] = "Refund not allowed [{$hash}]";
                     break;
                 case 404:
-                    $result['errors'][] = "Payment not found {$id}";
+                    $result['errors'][] = "Payment not found [{$hash}]";
                     break;
                 default:
-                    $result['errors'][] = "Something went wrong {$id}";
+                    $result['errors'][] = "Something went wrong {{$hash}}";
             endswitch;
         }
         return $result;

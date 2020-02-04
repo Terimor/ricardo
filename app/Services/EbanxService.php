@@ -337,11 +337,11 @@ class EbanxService
                 $result['status'] = true;
             } else {
                 logger()->warning("Ebanx refund", ['res' => $res]);
-                $result['errors'] = [($res['status_message'] ?? 'Something went wrong') . " {$hash}"];
+                $result['errors'] = [($res['status_message'] ?? 'Something went wrong') . " [{$hash}]"];
             }
         } catch (\Exception $ex) {
             logger()->error("Ebanx refund", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
-            $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " {$hash}"];
+            $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " [{$hash}]"];
         }
         return $result;
     }
