@@ -342,7 +342,13 @@ class PaymentProviders
                             'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
                         ],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
+                        'excl' => [
+                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ck', 'cl', 'co', 'cx', 'cz', 'dk',
+                            'do', 'gb', 'gl', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li', 'ls', 'mx', 'my',
+                            'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk', 'tt', 'tr', 'tv',
+                            'tw', 'za', 'us', 'uz'
+                            // 'af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz'
+                        ]
                     ],
                     PaymentMethods::MASTERCARD => [
                         '+3ds' => [
@@ -350,7 +356,13 @@ class PaymentProviders
                             'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
                         ],
                         '-3ds' => ['*'],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'ca', 'bz', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz']
+                        'excl' => [
+                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ck', 'cl', 'co', 'cx', 'cz', 'dk',
+                            'do', 'gb', 'gl', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li', 'ls', 'mx', 'my',
+                            'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk', 'tt', 'tr', 'tv',
+                            'tw', 'za', 'us', 'uz'
+                            // 'af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz'
+                        ]
                     ],
                     PaymentMethods::AMEX => [
                         '+3ds' => [
@@ -945,13 +957,157 @@ class PaymentProviders
                 ]
             ],
             'extra_fields'  => [
-                'at' => [
+                'gb' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'au' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cn' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'de' => [
                     'state' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$'
                     ]
                 ],
                 'be' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'nl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'dk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'tr' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'id' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'jo' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'in' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'kh' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'et' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'pe' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cu' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'bo' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'es' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'bd' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'pk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'ng' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'jp' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'at' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'ph' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'vn' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cr' => [
                     'state' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$'
@@ -976,30 +1132,6 @@ class PaymentProviders
                             ['value' => 'SK', 'label' => 'Saskatchewan'],
                             ['value' => 'YT', 'label' => 'Yukon Territory']
                         ]
-                    ]
-                ],
-                'de' => [
-                    'state' => [
-                        'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
-                    ]
-                ],
-                'es' => [
-                    'state' => [
-                        'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
-                    ]
-                ],
-                'gb' => [
-                    'state' => [
-                        'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
-                    ]
-                ],
-                'nl' => [
-                    'state' => [
-                        'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
                     ]
                 ],
                 'us' => [
@@ -1072,15 +1204,19 @@ class PaymentProviders
                 'main' => [
                     PaymentMethods::VISA => [
                         '-3ds' => [
-                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mc', 'mt',
-                            'nl', 'pt', 'si', 'sk', 'sm', 'us', 'va'
+                            'ae', 'ar', 'au', 'gb', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
+                            'es', 'fi', 'fr', 'gb', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls', 'lt',
+                            'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'pt', 'ro', 'rp',
+                            'ru', 'se', 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '-3ds' => [
-                            'at', 'be', 'ca', 'cy', 'de', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'ie', 'it', 'lt', 'lu', 'lv', 'mc', 'mt',
-                            'nl', 'pt', 'si', 'sk', 'sm', 'us', 'va'
+                            'ae', 'ar', 'au', 'gb', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
+                            'es', 'fi', 'fr', 'gb', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls', 'lt',
+                            'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'pt', 'ro', 'rp',
+                            'ru', 'se', 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]

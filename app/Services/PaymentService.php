@@ -196,7 +196,7 @@ class PaymentService
         $usd_rate = $currency->usd_rate;
 
         // check currency, if it's not supported switch to default currency
-        $currency_code = $this->checkCurrency($country, $localized_product->prices['currency'], $provider);
+        $currency_code = $this->checkCurrency($country, $currency->code, $provider);
 
         if ($currency_code === Currency::DEF_CUR) {
             $price = $price_usd;
