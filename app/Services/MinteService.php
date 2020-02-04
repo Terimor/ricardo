@@ -178,12 +178,12 @@ class MinteService
                 $result['status'] = true;
             } else {
                 logger()->error("Mint-e refund", ['body' => $body_decoded]);
-                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
+                $result['errors'] = [$body_decoded['errormessage']];
             }
         } catch (GuzzReqException $ex) {
-            $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
-            logger()->error("Mint-e capture", ['res'  => $res]);
-            $result['errors'] = [MinteCodeMapper::toPhrase()];
+            logger()->error("Mint-e capture", ['res' => $ex->hasResponse() ? $ex->getResponse()->getBody() : null]);
+
+            $result['errors'] = [$ex->getMessage() ?? 'Something went wrong'];
         }
         return $result;
     }

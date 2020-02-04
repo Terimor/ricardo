@@ -333,17 +333,15 @@ class EbanxService
         try {
             $res = EBANX($config)->refund()->requestByHash($hash, $amount, $reason);
 
-            // logger()->info('Ebanx refund debug', $res);
-
             if ($res['status'] === self::STATUS_OK) {
                 $result['status'] = true;
             } else {
-                $result['errors'] = [EbanxCodeMapper::toPhrase($res['status_code'])];
                 logger()->warning("Ebanx refund", ['res' => $res]);
+                $result['errors'] = [$res['status_message'] ?? 'Something went wrong'];
             }
         } catch (\Exception $ex) {
-            $result['errors'] = [EbanxCodeMapper::toPhrase()];
             logger()->error("Ebanx refund", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+            $result['errors'] = [$ex->getMessage() ?? 'Something went wrong'];
         }
         return $result;
     }

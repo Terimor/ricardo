@@ -245,25 +245,22 @@ class BluesnapService
             if ($res->getStatusCode() === self::HTTP_REFUND_SUCCESS) {
                 $result['status'] = true;
             } else {
-                $result['errors'] = [BluesnapCodeMapper::toPhrase()];
                 logger()->error("Bluesnap refund", ['res' => $res]);
+                $result['errors'] = ['Something went wrong'];
             }
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
+
+            logger()->error("Bluesnap refund", ['res'  => $res]);
+
             if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
                 $body_decoded = json_decode($res->getBody(), true);
                 if (!empty($body_decoded['message'])) {
                     $result['errors'] = array_map(function($v) {
-                        $phrase = BluesnapCodeMapper::getPhrase($v['errorName']);
-                        if (!$phrase && !empty($v['invalidProperty'])) {
-                            $code = is_array($v['invalidProperty']) ? $v['invalidProperty']['name'] : $v['invalidProperty'];
-                            $phrase = BluesnapCodeMapper::toPhrase($code);
-                        }
-                        return $phrase ?? BluesnapCodeMapper::toPhrase();
+                        return $v['description'] ?? 'Something went wrong';
                     }, $body_decoded['message']);
                 }
             }
-            logger()->error("Bluesnap refund", ['res'  => $res]);
         }
         return $result;
     }

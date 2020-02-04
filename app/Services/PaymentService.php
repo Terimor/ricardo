@@ -358,20 +358,9 @@ class PaymentService
                     $result = $handler->refund($txn_hash, $amount ?? $txn['value']);
                     break;
                 default:
+                    $result['errors'] = ["PaymentService: refund for {$txn['payment_provider']} not implemented yet"];
                     logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
             endswitch;
-        }
-        if ($result['status']) {
-            $order->total_refunded_usd = CurrencyService::roundValueByCurrencyRules(
-                $order->total_refunded_usd + ($amount ?? $txn['value']) / $order->exchange_rate,
-                Currency::DEF_CUR
-            );
-            if (!$order->save()) {
-                $validator = $order->validate();
-                if ($validator->fails()) {
-                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                }
-            }
         }
         return $result;
     }

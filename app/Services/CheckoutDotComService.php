@@ -227,9 +227,17 @@ class CheckoutDotComService
             }
         } catch (CheckoutException $ex) {
             logger()->error("Checkout.com refund", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
-            $result['errors'] = array_map(function($code) {
-                return CheckoutDotComCodeMapper::toPhrase($code);
-            }, $ex->getErrors() ?? []);
+
+            switch ($ex->getCode()):
+                case 422:
+                    $result['errors'][] = 'Invalid data was sent';
+                case 403:
+                    $result['errors'][] = 'Refund not allowed';
+                case 404:
+                    $result['errors'][] = 'Payment not found';
+                default:
+                    $result['errors'][] = 'Something went wrong';
+            endswitch;
         }
         return $result;
     }

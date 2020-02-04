@@ -59,7 +59,9 @@ class ApiController extends Controller
     {
         $reason = $req->input('reason');
         $amount = $req->input('amount', null);
-        return $this->paymentService->refund($order_id, $txn_hash, $reason, $amount);
+        $result = $this->paymentService->refund($order_id, $txn_hash, $reason, $amount);
+
+        return array_merge($result, ['hash' => $txn_hash]);
     }
 
 }
