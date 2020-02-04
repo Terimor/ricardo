@@ -13,6 +13,29 @@
 
     deps: {},
 
+    add_style(name, url) {
+      if (!js_deps.deps[name]) {
+        var link = document.createElement('link');
+        link.onload = js_deps.ready.call(link, name);
+        link.rel = 'stylesheet';
+        link.media = 'none';
+        link.href = url;
+
+        document.head.append(script);
+      }
+    },
+
+    add_script(name, url) {
+      if (!js_deps.deps[name]) {
+        var script = document.createElement('script');
+        script.onload = js_deps.ready(name);
+        script.async = true;
+        script.src = url;
+
+        document.head.append(script);
+      }
+    },
+
     ready: function(name) {
       if (this.media === 'none') {
         this.media = 'all';

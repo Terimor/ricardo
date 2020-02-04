@@ -1,6 +1,4 @@
 import app from '../app';
-import fingerprint from '../services/fingerprint';
-import ipqualityscore from '../services/ipqualityscore';
 import timer from './checkout/blocks/timer';
 import preloader from './checkout/blocks/preloader';
 import recently_bought from './checkout/blocks/recently_bought';
@@ -14,8 +12,6 @@ export default {
 
   mixins: [
     app,
-    fingerprint,
-    ipqualityscore,
     timer,
     preloader,
     recently_bought,

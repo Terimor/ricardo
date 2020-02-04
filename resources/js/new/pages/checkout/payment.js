@@ -1,3 +1,5 @@
+import bluesnap from './payment/bluesnap';
+import fingerprint from './payment/fingerprint';
 import credit_cards from './payment/credit_cards';
 import ipqualityscore from './payment/ipqualityscore';
 import payment_credit_card from './payment/payment_credit_card';
@@ -8,6 +10,8 @@ import paypal_button from './payment/paypal_button';
 export default {
 
   mixins: [
+    bluesnap,
+    fingerprint,
     credit_cards,
     ipqualityscore,
     payment_credit_card,

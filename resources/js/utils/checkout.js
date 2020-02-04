@@ -1,4 +1,5 @@
 import fingerprint from '../services/fingerprintjs2';
+import { bluesnapCreateOrder } from '../services/bluesnap';
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
@@ -204,6 +205,21 @@ export function sendCheckoutRequest(data) {
       return resp.json();
     })
     .then(res => {
+      if (res.bs_pf_token) {
+        return bluesnapCreateOrder(data, res.bs_pf_token, res.currency, res.amount)
+          .then(bs_3ds_ref => {
+            data.bs_3ds_ref = bs_3ds_ref;
+            sendCheckoutRequest(data);
+            return new Promise(resolve => {});
+          })
+          .catch(errText => {
+            return Promise.reject({ errText });
+          });
+      }
+
+      return res;
+    })
+    .then(res => {
       if (res.order_id) {
         localStorage.setItem('odin_order_id', res.order_id);
         localStorage.setItem('order_currency', res.order_currency);
@@ -253,7 +269,7 @@ export function sendCheckoutRequest(data) {
     })
     .catch(err => {
       return {
-        paymentError: t('checkout.payment_error'),
+        paymentError: err && err.errText || t('checkout.payment_error'),
       };
     });
 }

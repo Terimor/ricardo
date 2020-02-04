@@ -6,6 +6,12 @@ export default {
       return js_data.product.prices.exchange_rate || 1;
     },
 
+    price_currency() {
+      return !js_query_params.cur || js_query_params.cur === '{aff_currency}'
+        ? js_data.product.prices.currency
+        : js_query_params.cur;
+    },
+
     price_multiplier() {
       return this.form.installments !== 1
         ? this.form.installments + '× '

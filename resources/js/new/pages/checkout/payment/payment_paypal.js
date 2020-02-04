@@ -25,7 +25,7 @@ export default {
           fingerprint_result = result;
         })
         .then(() => {
-          return this.ipqualityscore_form_calculate();
+          return this.ipqualityscore_calculate();
         })
         .then(result => {
           ipqualityscore_result = result;
@@ -45,9 +45,7 @@ export default {
             is_warranty_checked: this.form.warranty,
             order: '',
             page_checkout: location.href,
-            cur: !js_query_params.cur || js_query_params.cur === '{aff_currency}'
-              ? js_data.product.prices.currency
-              : js_query_params.cur,
+            cur: this.price_currency,
             offer: js_query_params.offer || null,
             affiliate: js_query_params.affiliate || null,
             ipqs: ipqualityscore_result,

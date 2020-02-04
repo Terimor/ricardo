@@ -2,13 +2,12 @@
 
   // JS data
   window.js_data = {
-    cdn_url: '{{ $cdn_url }}',
+    cdn_url: @json($cdn_url, JSON_UNESCAPED_UNICODE),
+    is_production: @json(config('app.env') !== 'local' && config('app.env') !== 'development' ? 'production' : 'development', JSON_UNESCAPED_UNICODE),
     i18n: {
       phrases: {},
       images: {},
     },
-    is_black_friday: false,//new Date().getTime() > new Date(2019, 10, 25).getTime() && new Date().getTime() < new Date(2019, 11, 3).getTime(),
-    is_christmas: false,//new Date().getTime() > new Date(2019, 11, 3).getTime() && new Date().getTime() < new Date(2019, 11, 25).getTime(),
   };
 
   // GET params

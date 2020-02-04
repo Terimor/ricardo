@@ -2,7 +2,7 @@ export default {
 
   methods: {
 
-    credit_card_create_order() {
+    credit_card_create_order(fields = {}) {
       this.form.payment_provider = 'credit-card';
 
       let fingerprint_result = null;
@@ -46,13 +46,14 @@ export default {
           fingerprint_result = result;
         })
         .then(() => {
-          return this.ipqualityscore_form_calculate();
+          return this.ipqualityscore_calculate();
         })
         .then(result => {
           ipqualityscore_result = result;
         })
         .then(() => {
           let data = {
+            ...fields,
             page_checkout: location.href,
             product: {
               qty: this.form.deal,
@@ -121,10 +122,7 @@ export default {
           }
 
           let url = '/pay-by-card';
-
-          url += '?cur=' + (!js_query_params.cur || js_query_params.cur === '{aff_currency}'
-            ? js_data.product.prices.currency
-            : js_query_params.cur);
+          url += '?cur=' + this.price_currency;
 
           if (localStorage.getItem('order_failed')) {
             url += '&order=' + localStorage.getItem('odin_order_id');
@@ -133,6 +131,21 @@ export default {
           return this.fetch_post(url, data);
         })
         .then(this.fetch_json)
+        .then(body => {
+          if (body.bs_pf_token) {
+            return this.bluesnap_create_order(body.bs_pf_token, body.currency, body.amount)
+              .then(bs_3ds_ref => {
+                this.is_submitted = false;
+                this.credit_card_create_order({ bs_3ds_ref });
+                return new Promise(resolve => {});
+              })
+              .catch(errText => {
+                return Promise.reject({ errText });
+              });
+          }
+
+          return body;
+        })
         .then(body => {
           if (body.order_id) {
             localStorage.setItem('odin_order_id', body.order_id);
@@ -181,8 +194,8 @@ export default {
             }
           }
         })
-        .catch(() => {
-          this.payment_error = this.t('checkout.payment_error');
+        .catch(err => {
+          this.payment_error = err && err.errText || this.t('checkout.payment_error');
           this.is_submitted = false;
         });
     },
