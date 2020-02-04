@@ -230,16 +230,16 @@ class CheckoutDotComService
 
             switch ($ex->getCode()):
                 case 422:
-                    $result['errors'][] = 'Invalid data was sent';
+                    $result['errors'][] = "Invalid data was sent {$id}";
                     break;
                 case 403:
-                    $result['errors'][] = 'Refund not allowed';
+                    $result['errors'][] = "Refund not allowed {$id}";
                     break;
                 case 404:
-                    $result['errors'][] = 'Payment not found';
+                    $result['errors'][] = "Payment not found {$id}";
                     break;
                 default:
-                    $result['errors'][] = 'Something went wrong';
+                    $result['errors'][] = "Something went wrong {$id}";
             endswitch;
         }
         return $result;

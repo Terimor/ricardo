@@ -233,7 +233,7 @@ class BluesnapService
             'headers' => ['Accept'  => 'application/json']
         ]);
 
-        $result = ['status' => false, 'errors' => ['Something went wrong']];
+        $result = ['status' => false, 'errors' => ["Something went wrong {$id}"]];
         try {
             $path = "transactions/{$id}/refund";
             if ($amount) {
@@ -257,7 +257,7 @@ class BluesnapService
                 $body_decoded = json_decode($res->getBody(), true);
                 if (!empty($body_decoded['message'])) {
                     $result['errors'] = array_map(function($v) {
-                        return $v['description'] ?? 'Something went wrong';
+                        return ($v['description'] ?? "Something went wrong") . " {$id}";
                     }, $body_decoded['message']);
                 }
             }
