@@ -233,7 +233,7 @@ class BluesnapService
             'headers' => ['Accept'  => 'application/json']
         ]);
 
-        $result = ['status' => false];
+        $result = ['status' => false, 'errors' => ['Something went wrong']];
         try {
             $path = "transactions/{$id}/refund";
             if ($amount) {
@@ -244,9 +244,9 @@ class BluesnapService
 
             if ($res->getStatusCode() === self::HTTP_REFUND_SUCCESS) {
                 $result['status'] = true;
+                unset($result['errors']);
             } else {
                 logger()->error("Bluesnap refund", ['res' => $res]);
-                $result['errors'] = ['Something went wrong'];
             }
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
