@@ -73,7 +73,7 @@
             </li>
 
             @for ($index = 1; $index <= $pagination['total_pages']; $index++)
-              <li class="page-item{{ $index === $pagination['page'] ? ' active' : '' }}">
+              <li class="page-item{{ $index == $pagination['page'] ? ' active' : '' }}">
                 <a class="page-link" href="/?page={{ $index }}">{{ $index }}</a>
               </li>
             @endfor
