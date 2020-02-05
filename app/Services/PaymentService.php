@@ -331,11 +331,8 @@ class PaymentService
      */
     public function refund(string $order_id, string $txn_hash, string $reason, ?float $amount): array
     {
-        $order = OdinOrder::getById($order_id); //throwable
-        $txn = $order->getTxnByHash($txn_hash, false);
-        if (empty($txn)) {
-            $txn = $order->getTxnByCaptureHash($txn_hash); //throwable
-        }
+        $order = OdinOrder::getById($order_id); // throwable
+        $txn = $order->getTxnByHash($txn_hash); // throwable
 
         $result = ['status' => false];
         if ($txn['status'] === Txn::STATUS_APPROVED) {
@@ -355,7 +352,7 @@ class PaymentService
                     break;
                 case PaymentProviders::MINTE:
                     $handler = new MinteService($api);
-                    $result = $handler->refund($txn_hash, $amount ?? $txn['value']);
+                    $result = $handler->refund($txn['capture_hash'], $amount ?? $txn['value']);
                     break;
                 default:
                     $result['errors'] = ["PaymentService: refund for {$txn['payment_provider']} not implemented yet"];
