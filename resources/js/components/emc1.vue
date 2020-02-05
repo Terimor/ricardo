@@ -427,6 +427,8 @@
             if (res.paypalPaymentError) {
               this.paypalPaymentError = res.paypalPaymentError;
             }
+
+            return res;
           })
           .catch(err => {
             this.paypalPaymentError = t('checkout.payment_error');
