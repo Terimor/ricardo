@@ -9,6 +9,8 @@
 .input-field-label {
   font-size: 17px;
   margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 
   .input.invalid & {

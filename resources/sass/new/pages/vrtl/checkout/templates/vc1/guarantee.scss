@@ -53,36 +53,26 @@
   }
 
   .title {
+    border-top: 1px solid #e2e2e2;
+    border-bottom: 1px solid #e2e2e2;
     color: #000;
     display: flex;
     flex-direction: column;
     font-size: 22px;
     font-weight: 700;
     line-height: 32px;
-    margin: auto;
-    padding: 60px 0px 12px 220px;
+    margin: 60px 60px 12px 292px;
+    padding: 15px 0;
     text-align: center;
 
     [dir="rtl"] & {
-      padding: 60px 220px 12px 0;
-    }
-
-    p {
-      border-top: 1px solid #e2e2e2;
-      border-bottom: 1px solid #e2e2e2;
-      margin: 0;
-      padding: 15px 0;
-      width: 240px;
+      margin: 60px 292px 12px 60px;
     }
   }
 
   .text {
     display: flex;
     flex-direction: column;
-    margin: 12px 30px 0px 30px;
-
-    p {
-      margin: 0px 30px 10px 30px;
-    }
+    margin: 16px 60px;
   }
 }
