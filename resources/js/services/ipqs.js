@@ -1,3 +1,6 @@
+let cache = null;
+
+
 window.IPQ = {
 
   Callback() {
@@ -16,8 +19,12 @@ window.IPQ = {
 
 
 export function ipqsCheck(fields = {}) {
+  let attempt = 0;
+
   return new Promise(resolve => {
-    let attempt = 0;
+    if (cache) {
+      return resolve(cache);
+    }
 
     IPQ.sendRequest = () => {
       attempt++;
@@ -35,6 +42,7 @@ export function ipqsCheck(fields = {}) {
 
     IPQ.success = result => {
       localStorage.setItem('3ds_ipqs', JSON.stringify(result));
+      cache = result;
       resolve(result);
     };
 
@@ -57,6 +65,7 @@ export function ipqsCheck(fields = {}) {
       }
 
       if (result) {
+        cache = result;
         return resolve(result);
       }
     }

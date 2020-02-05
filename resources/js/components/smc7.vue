@@ -285,7 +285,6 @@
           cvv: null,
           terms: null,
         },
-        ipqsResult: null,
         isOpenPromotionModal: false,
         isOpenSpecialOfferModal: false,
         isSubmitted: false,
@@ -478,6 +477,8 @@
         }
       },
       submit() {
+        let ipqsResult = null;
+
         this.$v.form.$touch();
 
         if (this.$v.form.$invalid && this.form.country === 'br') {
@@ -549,10 +550,6 @@
 
         Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             let data = {
               order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
               billing_first_name: this.form.fname,
@@ -578,19 +575,10 @@
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
-            /*
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
-              return setTimeout(() => {
-                this.paymentError = t('checkout.abuse_error');
-                this.isSubmitted = false;
-              }, 1000);
-            }
-            */
-
             let data = {
               product: {
                 sku: this.form.variant,
@@ -618,7 +606,7 @@
                 month: this.form.cardDate.split('/')[0],
                 year: '20' + this.form.cardDate.split('/')[1],
               },
-              ipqs: this.ipqsResult,
+              ipqs: ipqsResult,
             };
 
             if (this.$root.isAffIDEmpty) {
@@ -627,29 +615,35 @@
 
             this.setExtraFieldsForCardPayment(data);
 
-            sendCheckoutRequest(data)
-              .then(res => {
-                if (res.status !== 'ok' && this.form.country === 'br') {
-                  this.log_data('BRAZIL: SMC7 - Credit Card - response', {
-                    error: res.paymentError,
-                    res: { ...res, paymentError: undefined },
-                    form: { ...this.$v.form.$model, cardNumber: undefined },
-                    fraud_chance: this.ipqsResult.fraud_chance,
-                    ipqs: this.ipqsResult,
-                  });
-                }
-
-                if (res.paymentError) {
-                  this.paymentError = res.paymentError;
-                  this.isSubmitted = false;
-                }
-              });
+            return sendCheckoutRequest(data);
           })
+          .then(res => {
+            if (res.status !== 'ok' && this.form.country === 'br') {
+              this.log_data('BRAZIL: SMC7 - Credit Card - response', {
+                error: res.paymentError,
+                res: { ...res, paymentError: undefined },
+                form: { ...this.$v.form.$model, cardNumber: undefined },
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
+              });
+            }
+
+            if (res.paymentError) {
+              this.paymentError = res.paymentError;
+              this.isSubmitted = false;
+            }
+          })
+          .catch(err => {
+            this.paymentError = t('checkout.payment_error');
+            this.isSubmitted = false;
+          });
       },
       setPromotionalModal(val) {
         this.isOpenPromotionModal = val
       },
       paypalCreateOrder () {
+        let ipqsResult = null;
+
         this.form.paymentProvider = 'paypal';
 
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
@@ -667,25 +661,21 @@
 
         return Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             const data = {
               order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
             };
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+            if (ipqsResult && ipqsResult.recent_abuse) {
               if (this.form.country === 'br') {
                 this.log_data('BRAZIL: SMC7 - PayPal - IPQS - recent_abuse', {
-                  fraud_chance: this.ipqsResult.fraud_chance,
-                  ipqs: this.ipqsResult,
+                  fraud_chance: ipqsResult.fraud_chance,
+                  ipqs: ipqsResult,
                 });
               }
 
@@ -703,7 +693,7 @@
               cur: currency,
               offer: js_query_params.offer || null,
               affiliate: js_query_params.affiliate || null,
-              ipqsResult: this.ipqsResult,
+              ipqsResult,
             });
           })
           .then(res => {
@@ -711,8 +701,8 @@
               this.log_data('BRAZIL: SMC7 - PayPal - response', {
                 error: res.paypalPaymentError,
                 res: { ...res, paypalPaymentError: undefined },
-                fraud_chance: this.ipqsResult.fraud_chance,
-                ipqs: this.ipqsResult,
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
               });
             }
 
@@ -721,6 +711,9 @@
             }
 
             return res;
+          })
+          .catch(err => {
+            this.paypalPaymentError = t('checkout.payment_error');
           });
       },
 

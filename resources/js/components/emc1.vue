@@ -171,7 +171,6 @@
     data () {
       return {
         isFormShown: false,
-        ipqsResult: null,
         paypalPaymentError: '',
         selectedProductData: {
           prices: null,
@@ -359,6 +358,8 @@
         }
       },
       paypalCreateOrder () {
+        let ipqsResult = null;
+
         this.form.paymentProvider = 'paypal';
 
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
@@ -376,31 +377,29 @@
 
         return Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             const data = {
               order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
             };
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+            if (ipqsResult && ipqsResult.recent_abuse) {
               if (this.form.country === 'br') {
                 this.log_data('BRAZIL: EMC1 - PayPal - IPQS - recent_abuse', {
-                  fraud_chance: this.ipqsResult.fraud_chance,
-                  ipqs: this.ipqsResult,
+                  fraud_chance: ipqsResult.fraud_chance,
+                  ipqs: ipqsResult,
                 });
               }
 
-              return setTimeout(() => {
+              setTimeout(() => {
                 this.paypalPaymentError = t('checkout.abuse_error');
               }, 1000);
+
+              return new Promise(resolve => {});
             }
 
             return paypalCreateOrder({
@@ -412,7 +411,7 @@
               cur: currency,
               offer: js_query_params.offer || null,
               affiliate: js_query_params.affiliate || null,
-              ipqsResult: this.ipqsResult,
+              ipqsResult,
             });
           })
           .then(res => {
@@ -420,16 +419,17 @@
               this.log_data('BRAZIL: EMC1 - PayPal - response', {
                 error: res.paypalPaymentError,
                 res: { ...res, paypalPaymentError: undefined },
-                fraud_chance: this.ipqsResult.fraud_chance,
-                ipqs: this.ipqsResult,
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
               });
             }
 
             if (res.paypalPaymentError) {
               this.paypalPaymentError = res.paypalPaymentError;
             }
-
-            return res;
+          })
+          .catch(err => {
+            this.paypalPaymentError = t('checkout.payment_error');
           });
       },
       paypalOnApprove(data) {

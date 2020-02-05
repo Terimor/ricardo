@@ -133,7 +133,10 @@ export default {
         .then(this.fetch_json)
         .then(body => {
           if (body.bs_pf_token) {
-            return this.bluesnap_create_order(body.bs_pf_token, body.currency, body.amount)
+            localStorage.setItem('odin_order_id', body.order_id);
+            localStorage.setItem('order_failed', body.order_id);
+
+            return this.bluesnap_create_order(body.bs_pf_token, body.order_currency, body.order_amount)
               .then(bs_3ds_ref => {
                 this.is_submitted = false;
                 this.credit_card_create_order({ bs_3ds_ref });

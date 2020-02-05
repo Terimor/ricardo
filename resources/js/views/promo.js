@@ -42,7 +42,6 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         showPreloader: js_query_params.preload === '{preload}' || +js_query_params.preload === 3,
         isFormShown: false,
         selectedPlan: null,
-        ipqsResult: null,
         paypalPaymentError: '',
         stateList: (stateList[js_data.country_code] || []).map((it) => ({
           value: it,
@@ -284,6 +283,8 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       },
 
       paypalCreateOrder () {
+        let ipqsResult = null;
+
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
           ? js_data.product.prices.currency
           : js_query_params.cur;
@@ -299,21 +300,17 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
 
         return Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             const data = {
               order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
             };
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+            if (ipqsResult && ipqsResult.recent_abuse) {
               return setTimeout(() => {
                 this.paypalPaymentError = t('checkout.abuse_error');
               }, 1000);
@@ -328,7 +325,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
               cur: currency,
               offer: js_query_params.offer || null,
               affiliate: js_query_params.affiliate || null,
-              ipqsResult: this.ipqsResult,
+              ipqsResult,
             });
           })
           .then(res => {
@@ -337,6 +334,9 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
             }
 
             return res;
+          })
+          .catch(err => {
+            this.paypalPaymentError = t('checkout.payment_error');
           });
       },
 

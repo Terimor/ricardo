@@ -628,7 +628,6 @@
           cvv: null,
           terms: null,
         },
-        ipqsResult: null,
         isSubmitted: false,
         paypalPaymentError: false,
         paymentError: false,
@@ -1062,6 +1061,8 @@
       },
 
       paypalCreateOrder() {
+        let ipqsResult = null;
+
         this.form.paymentProvider = 'paypal';
 
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
@@ -1079,25 +1080,21 @@
 
         return Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             const data = {
               order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
             };
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+            if (ipqsResult && ipqsResult.recent_abuse) {
               if (this.form.country === 'br') {
                 this.log_data('BRAZIL: FMC5 - PayPal - IPQS - recent_abuse', {
-                  fraud_chance: this.ipqsResult.fraud_chance,
-                  ipqs: this.ipqsResult,
+                  fraud_chance: ipqsResult.fraud_chance,
+                  ipqs: ipqsResult,
                 });
               }
 
@@ -1111,7 +1108,7 @@
               cur: currency,
               offer: js_query_params.offer || null,
               affiliate: js_query_params.affiliate || null,
-              ipqsResult: this.ipqsResult,
+              ipqsResult,
             });
           })
           .then(res => {
@@ -1119,8 +1116,8 @@
               this.log_data('BRAZIL: FMC5 - PayPal - response', {
                 error: res.paypalPaymentError,
                 res: { ...res, paypalPaymentError: undefined },
-                fraud_chance: this.ipqsResult.fraud_chance,
-                ipqs: this.ipqsResult,
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
               });
             }
 
@@ -1129,6 +1126,9 @@
             }
 
             return res;
+          })
+          .catch(err => {
+            this.paypalPaymentError = this.$t('checkout.payment_error');
           });
       },
 
@@ -1137,6 +1137,8 @@
       },
 
       creditCardSubmit() {
+        let ipqsResult = null;
+
         if (this.isSubmitted) {
           return;
         }
@@ -1182,10 +1184,6 @@
 
         Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             let data = {
               order_amount: this.getOrderAmount(this.form.deal, this.form.isWarrantyChecked),
               billing_first_name: this.form.fname,
@@ -1209,9 +1207,10 @@
               data.credit_card_hash = sha256(cardNumber);
             }
 
-            return ipqsCheck(data).then(ipqsResult => {
-              this.ipqsResult = ipqsResult;
-            });
+            return ipqsCheck(data);
+          })
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
             let data = {
@@ -1241,7 +1240,7 @@
                 month: this.form.cardDate.split('/')[0],
                 year: '20' + this.form.cardDate.split('/')[1],
               },
-              ipqs: this.ipqsResult,
+              ipqs: ipqsResult,
             };
 
             if (this.$root.isAffIDEmpty) {
@@ -1250,23 +1249,27 @@
 
             this.setExtraFieldsForCardPayment(data);
 
-            return sendCheckoutRequest(data)
-              .then(res => {
-                if (res.status !== 'ok' && this.form.country === 'br') {
-                  this.log_data('BRAZIL: FMC5 - Credit Card - response', {
-                    error: res.paymentError,
-                    res: { ...res, paymentError: undefined },
-                    form: { ...this.$v.form.$model, cardNumber: undefined },
-                    fraud_chance: this.ipqsResult.fraud_chance,
-                    ipqs: this.ipqsResult,
-                  });
-                }
-
-                if (res.paymentError) {
-                  this.paymentError = res.paymentError;
-                  this.isSubmitted = false;
-                }
+            return sendCheckoutRequest(data);
+          })
+          .then(res => {
+            if (res.status !== 'ok' && this.form.country === 'br') {
+              this.log_data('BRAZIL: FMC5 - Credit Card - response', {
+                error: res.paymentError,
+                res: { ...res, paymentError: undefined },
+                form: { ...this.$v.form.$model, cardNumber: undefined },
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
               });
+            }
+
+            if (res.paymentError) {
+              this.paymentError = res.paymentError;
+              this.isSubmitted = false;
+            }
+          })
+          .catch(err => {
+            this.paymentError = this.$t('checkout.payment_error');
+            this.isSubmitted = false;
           });
       },
 

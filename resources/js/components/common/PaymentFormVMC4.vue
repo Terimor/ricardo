@@ -304,7 +304,6 @@
         paymentError: '',
         paypalPaymentError: '',
         isSubmitted: false,
-        ipqsResult: null,
         isLoading: {
           address: false,
         },
@@ -431,6 +430,8 @@
         this.vmc4Form.complement = res.complement || this.vmc4Form.complement;
       },
 			submit() {
+        let ipqsResult = null;
+
 				this.$v.form.$touch();
         this.$v.vmc4Form.$touch();
 
@@ -498,10 +499,6 @@
 
         Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             let data = {
               order_amount: this.getOrderAmount(this.vmc4Form.deal, this.vmc4Form.isWarrantyChecked),
               billing_first_name: this.form.stepTwo.fname,
@@ -527,79 +524,67 @@
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
-          .then(ipqsResult => {
-            /*
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
-              return setTimeout(() => {
-                this.paymentError = t('checkout.abuse_error');
-                this.isSubmitted = false;
-              }, 1000);
-            }
-            */
+          .then(() => {
+            let data = {
+              product: {
+                sku: this.vmc4Form.variant,
+                qty: parseInt(this.vmc4Form.deal, 10),
+                is_warranty_checked: this.vmc4Form.isWarrantyChecked,
+              },
+              contact: {
+                phone: {
+                  country_code: this.dialCode,
+                  number: phoneNumber,
+                },
+                first_name: this.form.stepTwo.fname,
+                last_name: this.form.stepTwo.lname,
+                email: this.form.stepTwo.email,
+              },
+              address: {
+                city: this.form.stepThree.city,
+                country: this.form.stepThree.country,
+                zip: this.form.stepThree.zipCode,
+                street: this.form.stepThree.street,
+              },
+              card: {
+                number: cardNumber,
+                cvv: this.form.stepThree.cvv,
+                month: this.form.stepThree.cardDate.split('/')[0],
+                year: '20' + this.form.stepThree.cardDate.split('/')[1],
+              },
+              ipqs: ipqsResult,
+            };
 
-            if (this.form.paymentProvider === 'bank-payment') {
+            if (this.$root.isAffIDEmpty) {
+              data.card.holder = this.form.stepThree.cardHolder;
+            }
+
+            this.$parent.setExtraFieldsForCardPayment(data);
+
+            return sendCheckoutRequest(data);
+          })
+          .then(res => {
+            if (res.status !== 'ok' && this.form.stepThree.country === 'br') {
+              this.log_data('BRAZIL: VMC4 - Credit Card - response', {
+                error: res.paymentError,
+                res: { ...res, paymentError: undefined },
+                form: { ...this.$v.form.$model, ...this.$v.vmc4Form.$model, stepThree: { ...this.$v.form.stepThree.$model, cardNumber: undefined } },
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
+              });
+            }
+
+            if (res.paymentError) {
+              this.paymentError = res.paymentError;
               this.isSubmitted = false;
-              return;
             }
-
-            if (this.form.paymentProvider === 'credit-card') {
-              let data = {
-                product: {
-                  sku: this.vmc4Form.variant,
-                  qty: parseInt(this.vmc4Form.deal, 10),
-                  is_warranty_checked: this.vmc4Form.isWarrantyChecked,
-                },
-                contact: {
-                  phone: {
-                    country_code: this.dialCode,
-                    number: phoneNumber,
-                  },
-                  first_name: this.form.stepTwo.fname,
-                  last_name: this.form.stepTwo.lname,
-                  email: this.form.stepTwo.email,
-                },
-                address: {
-                  city: this.form.stepThree.city,
-                  country: this.form.stepThree.country,
-                  zip: this.form.stepThree.zipCode,
-                  street: this.form.stepThree.street,
-                },
-                card: {
-                  number: cardNumber,
-                  cvv: this.form.stepThree.cvv,
-                  month: this.form.stepThree.cardDate.split('/')[0],
-                  year: '20' + this.form.stepThree.cardDate.split('/')[1],
-                },
-                ipqs: this.ipqsResult,
-              };
-
-              if (this.$root.isAffIDEmpty) {
-                data.card.holder = this.form.stepThree.cardHolder;
-              }
-
-              this.$parent.setExtraFieldsForCardPayment(data);
-
-              sendCheckoutRequest(data)
-                .then(res => {
-                  if (res.status !== 'ok' && this.form.stepThree.country === 'br') {
-                    this.log_data('BRAZIL: VMC4 - Credit Card - response', {
-                      error: res.paymentError,
-                      res: { ...res, paymentError: undefined },
-                      form: { ...this.$v.form.$model, ...this.$v.vmc4Form.$model, stepThree: { ...this.$v.form.stepThree.$model, cardNumber: undefined } },
-                      fraud_chance: this.ipqsResult.fraud_chance,
-                      ipqs: this.ipqsResult,
-                    });
-                  }
-
-                  if (res.paymentError) {
-                    this.paymentError = res.paymentError;
-                    this.isSubmitted = false;
-                  }
-                });
-            }
+          })
+          .catch(err => {
+            this.paymentError = t('checkout.payment_error');
+            this.isSubmitted = false;
           });
 			},
       paypalSubmit() {
@@ -639,6 +624,8 @@
           });
       },
       paypalCreateOrder() {
+        let ipqsResult = null;
+
         this.form.paymentProvider = 'paypal';
 
         const currency = !js_query_params.cur || js_query_params.cur === '{aff_currency}'
@@ -656,25 +643,21 @@
 
         return Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             const data = {
               order_amount: this.getOrderAmount(this.vmc4Form.deal, this.vmc4Form.isWarrantyChecked),
             };
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
+            if (ipqsResult && ipqsResult.recent_abuse) {
               if (this.form.stepThree.country === 'br') {
                 this.log_data('BRAZIL: VMC4 - PayPal - IPQS - recent_abuse', {
-                  fraud_chance: this.ipqsResult.fraud_chance,
-                  ipqs: this.ipqsResult,
+                  fraud_chance: ipqsResult.fraud_chance,
+                  ipqs: ipqsResult,
                 });
               }
 
@@ -692,7 +675,7 @@
               cur: currency,
               offer: js_query_params.offer || null,
               affiliate: js_query_params.affiliate || null,
-              ipqsResult: this.ipqsResult,
+              ipqsResult,
             });
           })
           .then(res => {
@@ -700,8 +683,8 @@
               this.log_data('BRAZIL: VMC4 - PayPal - response', {
                 error: res.paypalPaymentError,
                 res: { ...res, paypalPaymentError: undefined },
-                fraud_chance: this.ipqsResult.fraud_chance,
-                ipqs: this.ipqsResult,
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
               });
             }
 
@@ -710,6 +693,9 @@
             }
 
             return res;
+          })
+          .catch(err => {
+            this.paypalPaymentError = t('checkout.payment_error');
           });
       },
       paypalOnApprove(data) {

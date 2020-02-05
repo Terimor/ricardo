@@ -206,7 +206,10 @@ export function sendCheckoutRequest(data) {
     })
     .then(res => {
       if (res.bs_pf_token) {
-        return bluesnapCreateOrder(data, res.bs_pf_token, res.currency, res.amount)
+        localStorage.setItem('odin_order_id', res.order_id);
+        localStorage.setItem('order_failed', res.order_id);
+
+        return bluesnapCreateOrder(data, res.bs_pf_token, res.order_currency, res.order_amount)
           .then(bs_3ds_ref => {
             data.bs_3ds_ref = bs_3ds_ref;
             sendCheckoutRequest(data);

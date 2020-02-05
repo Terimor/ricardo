@@ -233,7 +233,6 @@
         isLoading: {
           address: false,
         },
-        ipqsResult: null,
         isSubmitted: false,
         paymentError: '',
       }
@@ -303,6 +302,7 @@
         this.paymentForm.complement = res.complement || this.paymentForm.complement;
       },
       submit () {
+        let ipqsResult = null;
         const { paymentForm, exp } = this;
 
         this.$v.form.$touch();
@@ -377,10 +377,6 @@
 
         Promise.resolve()
           .then(() => {
-            if (this.ipqsResult) {
-              return this.ipqsResult;
-            }
-
             let data = {
               order_amount: this.getOrderAmount(paymentForm.deal, paymentForm.isWarrantyChecked),
               billing_first_name: paymentForm.fname,
@@ -406,81 +402,68 @@
 
             return ipqsCheck(data);
           })
-          .then(ipqsResult => {
-            this.ipqsResult = ipqsResult;
+          .then(result => {
+            ipqsResult = result;
           })
           .then(() => {
-            /*
-            if (this.ipqsResult && this.ipqsResult.recent_abuse) {
-              return setTimeout(() => {
-                this.paymentError = t('checkout.abuse_error');
-                this.isSubmitted = false;
-              }, 1000);
-            }
-            */
+            let data = {
+              product: {
+                sku: paymentForm.variant,
+                qty: parseInt(paymentForm.deal, 10),
+                is_warranty_checked: paymentForm.isWarrantyChecked,
+              },
+              contact: {
+                phone: {
+                  country_code: this.dialCode,
+                  number: phoneNumber,
+                },
+                first_name: paymentForm.fname,
+                last_name: paymentForm.lname,
+                email: paymentForm.email,
+              },
+              address: {
+                city: paymentForm.city,
+                country: paymentForm.country,
+                zip: paymentForm.zipcode,
+                street: paymentForm.street,
+              },
+              card: {
+                number: cardNumber,
+                cvv: paymentForm.cvv,
+                month: paymentForm.cardDate.split('/')[0],
+                year: '20' + paymentForm.cardDate.split('/')[1],
+              },
+              ipqs: ipqsResult,
+            };
 
-            if (paymentForm.paymentProvider === 'bank-payment') {
+            if (this.$root.isAffIDEmpty) {
+              data.card.holder = paymentForm.cardHolder;
+            }
+
+            this.$parent.setExtraFieldsForCardPayment(data);
+
+            return sendCheckoutRequest(data);
+          })
+          .then(res => {
+            if (res.status !== 'ok' && this.paymentForm.country === 'br') {
+              this.log_data('BRAZIL: EMC1 - Credit Card - response', {
+                error: res.paymentError,
+                res: { ...res, paymentError: undefined },
+                form: { ...this.$v.form.$model, cardNumber: undefined },
+                fraud_chance: ipqsResult.fraud_chance,
+                ipqs: ipqsResult,
+              });
+            }
+
+            if (res.paymentError) {
+              this.paymentError = res.paymentError;
               this.isSubmitted = false;
-              this.$emit('showCart');
-              return;
-            }
-
-            if (paymentForm.paymentProvider === 'credit-card') {
-              let data = {
-                product: {
-                  sku: paymentForm.variant,
-                  qty: parseInt(paymentForm.deal, 10),
-                  is_warranty_checked: paymentForm.isWarrantyChecked,
-                },
-                contact: {
-                  phone: {
-                    country_code: this.dialCode,
-                    number: phoneNumber,
-                  },
-                  first_name: paymentForm.fname,
-                  last_name: paymentForm.lname,
-                  email: paymentForm.email,
-                },
-                address: {
-                  city: paymentForm.city,
-                  country: paymentForm.country,
-                  zip: paymentForm.zipcode,
-                  street: paymentForm.street,
-                },
-                card: {
-                  number: cardNumber,
-                  cvv: paymentForm.cvv,
-                  month: paymentForm.cardDate.split('/')[0],
-                  year: '20' + paymentForm.cardDate.split('/')[1],
-                },
-                ipqs: this.ipqsResult,
-              };
-
-              if (this.$root.isAffIDEmpty) {
-                data.card.holder = paymentForm.cardHolder;
-              }
-
-              this.$parent.setExtraFieldsForCardPayment(data);
-
-              sendCheckoutRequest(data)
-                .then(res => {
-                  if (res.status !== 'ok' && this.paymentForm.country === 'br') {
-                    this.log_data('BRAZIL: EMC1 - Credit Card - response', {
-                      error: res.paymentError,
-                      res: { ...res, paymentError: undefined },
-                      form: { ...this.$v.form.$model, cardNumber: undefined },
-                      fraud_chance: this.ipqsResult.fraud_chance,
-                      ipqs: this.ipqsResult,
-                    });
-                  }
-
-                  if (res.paymentError) {
-                    this.paymentError = res.paymentError;
-                    this.isSubmitted = false;
-                  }
-                });
             }
           })
+          .catch(err => {
+            this.paymentError = t('checkout.payment_error');
+            this.isSubmitted = false;
+          });
       }
     },
   };
