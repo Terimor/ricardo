@@ -31,7 +31,6 @@ class MinteService
         'ae' => ['AED', 'USD'],
         'ar' => ['ARS', 'USD'],
         'au' => ['AUD', 'USD'],
-        'gb' => ['GBP', 'USD'],
         'at' => ['EUR', 'USD'],
         'be' => ['EUR', 'USD'],
         'bg' => ['BGN', 'USD'],
