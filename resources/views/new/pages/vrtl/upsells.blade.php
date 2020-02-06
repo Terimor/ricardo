@@ -12,6 +12,11 @@
 @endsection
 
 
+@section('fonts')
+  @include('components.fonts.lato')
+@endsection
+
+
 @section('styles')
   <link
     href="{{ mix_cdn('assets/css/new/pages/vrtl/upsells.css') }}"
@@ -30,5 +35,7 @@
 
 
 @section('content')
-  Upsells
+  <div class="upsells container">
+    Upsells
+  </div>
 @endsection

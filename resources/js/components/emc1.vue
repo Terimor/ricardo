@@ -52,6 +52,12 @@
                         <Warranty
                           :form="form" />
                     </div>
+                    <div
+                      v-if="$root.isAffIDEmpty && form.deal"
+                      class="price-total">
+                      <div class="label">Total amount:</div>
+                      <div class="value">{{ price_total_text }}</div>
+                    </div>
                 </div>
                 <div class="paper col-md-5 main__payment">
                     <img id="product-image" :src="productImage" alt="">
@@ -295,6 +301,68 @@
           value: it.code,
           imageUrl: it.quantity_image[1],
         }));
+      },
+      price_text() {
+        let result = '';
+
+        if (this.form.deal) {
+          switch (this.form.installments) {
+            case 1:
+              result = js_data.product.prices[this.form.deal].value_text;
+              break;
+            case 3:
+              result = js_data.product.prices[this.form.deal].installments3_value_text;
+              break;
+            case 6:
+              result = js_data.product.prices[this.form.deal].installments6_value_text;
+              break;
+          }
+        }
+
+        return result;
+      },
+      price_warranty_text() {
+        let result = '';
+
+        if (this.form.deal) {
+          switch (this.form.installments) {
+            case 1:
+              result = js_data.product.prices[this.form.deal].warranty_price_text;
+              break;
+            case 3:
+              result = js_data.product.prices[this.form.deal].installments3_warranty_price_text;
+              break;
+            case 6:
+              result = js_data.product.prices[this.form.deal].installments6_warranty_price_text;
+              break;
+          }
+        }
+
+        return result;
+      },
+      price_total_text() {
+        let result = '';
+
+        let total = this.price_total_value.toString();
+        total = total.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+        if (this.form.deal) {
+          result = js_data.product.prices[this.form.deal].value_text;
+          const match = result.match(/[0-9.,\s]+/).shift().trim();
+
+          result = result.replace(match, total);
+        }
+
+        return result;
+      },
+      price_value() {
+        return +this.price_text.replace(/,/g, '.').replace(/[^0-9.]/g, '') || 0;
+      },
+      price_warranty_value() {
+        return +this.price_warranty_text.replace(/,/g, '.').replace(/[^0-9.]/g, '') || 0;
+      },
+      price_total_value() {
+        return Math.round((this.price_value + (this.form.isWarrantyChecked ? this.price_warranty_value : 0)) * 100) / 100;
       },
       textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + js_data.country_code) || '' }),
       textStep: () => t('checkout.step'),
@@ -616,6 +684,17 @@
               }
             }
           }
+        }
+      }
+
+      .price-total {
+        color: #e74c3c;
+        display: flex;
+        font-size: 14px;
+        margin: 15px 20px;
+
+        .value {
+          margin-left: auto;
         }
       }
     }

@@ -1,1 +1,30 @@
 @import '../../app';
+
+
+main {
+  background-color: #e7e7e7;
+}
+
+.upsells {
+  background-color: #fff;
+  border: 1px solid #a6a6a6;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  font-family: Lato, "Noto Sans", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 35px;
+  margin-top: 35px;
+  min-height: 500px;
+  padding: 40px 40px;
+
+  input,
+  select,
+  textarea {
+    color: #333;
+    font-family: Lato, "Noto Sans", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
