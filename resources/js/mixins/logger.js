@@ -3,6 +3,10 @@ export default {
   methods: {
 
     log_data(text, data, type = 'error') {
+      if (!data.loaded_phrases && !data.loaded_images) {
+        return;
+      }
+
       data = {
         url: location.href,
         user_agent: navigator.userAgent,
