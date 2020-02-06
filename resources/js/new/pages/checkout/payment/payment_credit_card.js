@@ -2,7 +2,7 @@ export default {
 
   methods: {
 
-    credit_card_create_order(fields = {}) {
+    credit_card_create_order(other_fields = {}) {
       this.form.payment_provider = 'credit-card';
 
       let fingerprint_result = null;
@@ -53,7 +53,6 @@ export default {
         })
         .then(() => {
           let data = {
-            ...fields,
             page_checkout: location.href,
             product: {
               qty: this.form.deal,
@@ -119,6 +118,10 @@ export default {
 
           if (this.extra_fields.document_number) {
             data.contact.document_number = this.form.document_number;
+          }
+
+          if (other_fields.bs_3ds_ref) {
+            data.card.bs_3ds_ref = other_fields.bs_3ds_ref;
           }
 
           let url = '/pay-by-card';

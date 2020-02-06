@@ -211,7 +211,7 @@ export function sendCheckoutRequest(data) {
 
         return bluesnapCreateOrder(data, res.bs_pf_token, res.order_currency, res.order_amount)
           .then(bs_3ds_ref => {
-            data.bs_3ds_ref = bs_3ds_ref;
+            data.card.bs_3ds_ref = bs_3ds_ref;
             sendCheckoutRequest(data);
             return new Promise(resolve => {});
           })
