@@ -49,7 +49,7 @@ class MinteService
         'es' => ['EUR', 'USD'],
         'fi' => ['EUR', 'USD'],
         'fr' => ['EUR', 'USD'],
-        'gb' => ['GBR', 'EUR', 'USD'],
+        'gb' => ['GBP', 'EUR', 'USD'],
         'gr' => ['EUR', 'USD'],
         'hk' => ['HKD', 'USD'],
         'hm' => ['AUD', 'USD'],
