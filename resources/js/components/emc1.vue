@@ -56,7 +56,7 @@
                       v-if="$root.isAffIDEmpty && form.deal"
                       class="price-total">
                       <div class="label">Total amount:</div>
-                      <div class="value">{{ price_total_text }}</div>
+                      <div class="value">{{ xprice_total_text }}</div>
                     </div>
                 </div>
                 <div class="paper col-md-5 main__payment">
@@ -355,6 +355,11 @@
 
         return result;
       },
+      price_multiplier() {
+        return this.form.installments !== 1
+          ? this.form.installments + '× '
+          : '';
+      },
       price_value() {
         return +this.price_text.replace(/,/g, '.').replace(/[^0-9.]/g, '') || 0;
       },
@@ -363,6 +368,15 @@
       },
       price_total_value() {
         return Math.round((this.price_value + (this.form.isWarrantyChecked ? this.price_warranty_value : 0)) * 100) / 100;
+      },
+      xprice_text() {
+        return this.price_multiplier + this.price_text;
+      },
+      xprice_warranty_text() {
+        return this.price_multiplier + this.price_warranty_text;
+      },
+      xprice_total_text() {
+        return this.price_multiplier + this.price_total_text;
       },
       textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + js_data.country_code) || '' }),
       textStep: () => t('checkout.step'),
