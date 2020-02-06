@@ -704,7 +704,7 @@
 
       .price-total {
         display: flex;
-        font-size: 14px;
+        font-size: 17px;
         margin: 10px 20px 5px;
 
         .value {
