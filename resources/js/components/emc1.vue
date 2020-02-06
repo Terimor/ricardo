@@ -51,12 +51,13 @@
 
                         <Warranty
                           :form="form" />
-                    </div>
-                    <div
-                      v-if="$root.isAffIDEmpty && form.deal"
-                      class="price-total">
-                      <div class="label">Total amount:</div>
-                      <div class="value">{{ xprice_total_text }}</div>
+
+                        <div
+                          v-if="$root.isAffIDEmpty && form.deal"
+                          class="price-total">
+                          <div class="label">Total amount:</div>
+                          <div class="value">{{ xprice_total_text }}</div>
+                        </div>
                     </div>
                 </div>
                 <div class="paper col-md-5 main__payment">
@@ -702,10 +703,9 @@
       }
 
       .price-total {
-        color: #e74c3c;
         display: flex;
         font-size: 14px;
-        margin: 15px 20px;
+        margin: 10px 20px 5px;
 
         .value {
           margin-left: auto;
