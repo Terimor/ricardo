@@ -55,7 +55,7 @@
                         <div
                           v-if="$root.isAffIDEmpty && form.deal"
                           class="price-total">
-                          <div class="label">Total amount:</div>
+                          <div class="label">{{ textTotalAmount }}</div>
                           <div class="value">{{ xprice_total_text }}</div>
                         </div>
                     </div>
@@ -401,7 +401,7 @@
       textSpecialOfferPopupButtonPurchase: () => t('checkout.special_offer_popup.button_purchase'),
       textSpecialOfferPopupButtonEmpty: () => t('checkout.special_offer_popup.button_empty'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
-
+      textTotalAmount: () => t('checkout.total_amount'),
       imageSafePayment: () => timage('safe_payment'),
     },
     watch: {
