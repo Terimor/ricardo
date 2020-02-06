@@ -1213,7 +1213,7 @@ class PaymentService
         $sign       = $req->input('signature');
         $txn_hash   = $req->input('transid');
         $txn_status = $req->input('status');
-        $txn_ts     = $req->input('timestamp', '');
+        $txn_ts     = $req->input('timestamp', '') ?? '';
 
         $order = OdinOrder::getById($order_id); // throwable
         $order_txn = $order->getTxnByHash($txn_hash); // throwable
@@ -1534,8 +1534,8 @@ class PaymentService
      */
     public static function getCheckoutService(string $number, string $hash): CheckoutDotComService
     {
-        $order = OdinOrder::getByNumber($number); //throwable
-        $txn = $order->getTxnByHash($hash, false);
+        $order = OdinOrder::getByNumber($number); // throwable
+        $txn = $order->getTxnByHash($hash); // throwable
         $api = PaymentApiService::getById($txn['payment_api_id']);
         return new CheckoutDotComService($api);
     }
