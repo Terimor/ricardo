@@ -74,7 +74,7 @@ class PaymentProviders
         ],
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,
@@ -343,10 +343,10 @@ class PaymentProviders
                         ],
                         '-3ds' => ['*'],
                         'excl' => [
-                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ck', 'cl', 'co', 'cx', 'cz', 'dk',
-                            'do', 'gb', 'gl', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li', 'ls', 'mx', 'my',
-                            'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk', 'tt', 'tr', 'tv',
-                            'tw', 'za', 'us', 'uz'
+                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
+                            'dk', 'do', 'gb', 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
+                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk',
+                            'tt', 'tr', 'tv', 'tw', 'za', 'us', 'uz'
                             // 'af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz'
                         ]
                     ],
@@ -357,10 +357,10 @@ class PaymentProviders
                         ],
                         '-3ds' => ['*'],
                         'excl' => [
-                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ck', 'cl', 'co', 'cx', 'cz', 'dk',
-                            'do', 'gb', 'gl', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li', 'ls', 'mx', 'my',
-                            'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk', 'tt', 'tr', 'tv',
-                            'tw', 'za', 'us', 'uz'
+                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
+                            'dk', 'do', 'gb', 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
+                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk',
+                            'tt', 'tr', 'tv', 'tw', 'za', 'us', 'uz'
                             // 'af', 'ag', 'al', 'ar', 'br', 'bz', 'ca', 'cf', 'co', 'do', 'gb', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'us', 'uz'
                         ]
                     ],
@@ -772,17 +772,17 @@ class PaymentProviders
         self::BLUESNAP  => [
             'name'      => 'Bluesnap',
             'is_active' => true,
-            'is_main'   => false,
+            'is_main'   => true,
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
                 'common' => [
-                    '3ds_limit' => 101,
+                    '3ds_limit' => 1,
                     'fallback_limit' => 0,
                     'refuse_limit' => 99
                 ],
                 'affiliate' => [
-                    '3ds_limit' => 101,
+                    '3ds_limit' => 1,
                     'fallback_limit' => 0,
                     'refuse_limit' => 99
                 ]
@@ -873,10 +873,222 @@ class PaymentProviders
                         ],
                         'default' => 'DC'
                     ]
+                ],
+                'gb' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'au' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cn' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'de' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'be' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'nl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'dk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'tr' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'id' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'jo' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'in' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'kh' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'et' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'pe' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cu' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'bo' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'es' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'bd' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'pk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'ng' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'jp' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'at' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'ph' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'vn' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'cr' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
                 ]
             ],
             'methods' => [
-                'main' => [],
+                'main' => [
+                    PaymentMethods::VISA => [
+                        '+3ds' => [
+                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                            'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        ],
+                        '-3ds' => ['*'],
+                        'excl' => [
+                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
+                            'dk', 'do', 'gb', 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
+                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk',
+                            'tt', 'tr', 'tv', 'tw', 'za', 'us', 'uz'
+                        ]
+                    ],
+                    PaymentMethods::MASTERCARD => [
+                        '+3ds' => [
+                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                            'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        ],
+                        '-3ds' => ['*'],
+                        'excl' => [
+                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
+                            'dk', 'do', 'gb', 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
+                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'ro', 'rp', 'ru', 'se', 'sg', 'sy', 'tk',
+                            'tt', 'tr', 'tv', 'tw', 'za', 'us', 'uz'
+                        ]
+                    ],
+                    PaymentMethods::AMEX => [
+                        '+3ds' => [
+                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                            'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        ],
+                        '-3ds' => ['*'],
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                    ],
+                    PaymentMethods::DISCOVER => [
+                        '+3ds' => [
+                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                            'kr', 'lk', 'mp', 'my', 'no', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        ],
+                        '-3ds' => ['*'],
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                    ],
+                    PaymentMethods::DINERSCLUB => [
+                        '+3ds' => [
+                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                            'kr', 'lk', 'mp', 'my', 'no', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        ],
+                        '-3ds' => ['*'],
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                    ],
+                    PaymentMethods::JCB => [
+                        '+3ds' => ['bd', 'ca', 'cn', 'hk', 'id', 'jp', 'kr', 'la', 'mm', 'mn', 'ph', 'se', 'th', 'tw', 'us', 'vn'],
+                        '-3ds' => ['sg'],
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                    ]
+                ],
                 'fallback' => [
                     PaymentMethods::VISA => [
                         '-3ds' => ['*'],
@@ -1204,19 +1416,19 @@ class PaymentProviders
                 'main' => [
                     PaymentMethods::VISA => [
                         '-3ds' => [
-                            'ae', 'ar', 'au', 'gb', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
-                            'es', 'fi', 'fr', 'gb', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls', 'lt',
-                            'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'pt', 'ro', 'rp',
-                            'ru', 'se', 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
+                            'ae', 'ar', 'au', 'gb', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk',
+                            'ee', 'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li',
+                            'ls', 'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'pt',
+                            'ro', 'rp', 'ru', 'se', 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
                         ],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'ru', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '-3ds' => [
-                            'ae', 'ar', 'au', 'gb', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
-                            'es', 'fi', 'fr', 'gb', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls', 'lt',
-                            'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'pt', 'ro', 'rp',
-                            'ru', 'se', 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
+                            'ae', 'ar', 'au', 'gb', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk',
+                            'ee', 'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li',
+                            'ls', 'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'pi', 'pl', 'pn', 'pt',
+                            'ro', 'rp', 'ru', 'se', 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]

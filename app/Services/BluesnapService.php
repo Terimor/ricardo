@@ -40,9 +40,8 @@ class BluesnapService
      */
     public function __construct(PaymentApi $api)
     {
-        $this->api = $api;
-
         $environment = Setting::getValue('bluesnap_environment', self::ENV_LIVE);
+        $this->api = $api;
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'ws' : 'sandbox') . '.bluesnap.com/services/2/';
     }
 
@@ -69,7 +68,7 @@ class BluesnapService
     public static function createCardHolderObj(array $contact): array
     {
         $phone = $contact['phone'];
-        if (\gettype($contact['phone']) === 'array') {
+        if (gettype($contact['phone']) === 'array') {
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
         $result = [
@@ -97,6 +96,27 @@ class BluesnapService
     }
 
     /**
+     * Creates payment response template
+     * @param  array $details ['currency'=>string,'amount'=>float,'order_id'=>string]
+     * @return array
+     */
+    public function createPaymentTmpl(array $details): array
+    {
+        return [
+            'is_flagged'        => false,
+            'currency'          => $details['currency'],
+            'value'             => $details['amount'],
+            'status'            => Txn::STATUS_NEW,
+            'payment_provider'  => PaymentProviders::BLUESNAP,
+            'hash'              => "new_" . UtilsService::randomString(16),
+            'payment_api_id'    => (string)$this->api->getIdAttribute(),
+            'payer_id'          => null,
+            'provider_data'     => null,
+            'errors'            => null
+        ];
+    }
+
+    /**
      * Returns data protection key
      * @return string
      */
@@ -111,20 +131,48 @@ class BluesnapService
      * @param  array   $contact
      * @param  array   $details
      * [
+     *   '3ds'=>boolean,
+     *   'bs_3ds_ref'=>?string,
      *   'currency'=>string,
      *   'amount'=>float,
-     *   'billing_descriptor'=>string
+     *   'billing_descriptor'=>string,
+     *   'order_id'=>string
      * ]
      * @return array
      */
     public function payByCard(array $card, array $contact, array $details): array
     {
-        return $this->pay(
-            [
-                'cardHolderInfo'    => self::createCardHolderObj($contact),
-                'creditCard'        => self::createCardObj($card),
-            ],
-            $details
+        $payment = [];
+        if ($details['3ds']) {
+            if (!empty($details['bs_3ds_ref'])) {
+                $payment = $this->pay(
+                    [
+                        'cardHolderInfo' => self::createCardHolderObj($contact),
+                        'creditCard'     => self::createCardObj($card),
+                    ],
+                    $details
+                );
+            } else {
+                $pf_token = $this->getPfToken();
+                $payment = [
+                    'bs_pf_token' => $pf_token,
+                    'status' => !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW
+                ];
+            }
+        } else {
+            $payment = $this->pay(
+                [
+                    'cardHolderInfo' => self::createCardHolderObj($contact),
+                    'creditCard'     => self::createCardObj($card),
+                ],
+                $details
+            );
+        }
+
+        return array_merge(
+            $this->createPaymentTmpl($details),
+            $payment,
+            ['token' => self::encrypt(json_encode($card), $details['order_id'])]
         );
     }
 
@@ -136,52 +184,47 @@ class BluesnapService
      */
     public function payByVaultedShopperId(string $shopper_id, array $details): array
     {
-        return $this->pay(['vaultedShopperId' => $shopper_id], $details);
+        return array_merge(
+            $this->createPaymentTmpl($details),
+            $this->pay(['vaultedShopperId' => $shopper_id], $details)
+        );
     }
 
     /**
      * Provides payment
      * @param  array   $source
      * @param  array   $details
-     * [
-     *  'currency'=>string,
-     *  'amount'=>float,
-     *  'billing_descriptor'=>string,
-     * ]
+     * ['bs_3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
      * @return array
      */
     private function pay(array $source, array $details): array
     {
-        $result = [
-            'is_flagged'        => false,
-            'currency'          => $details['currency'],
-            'value'             => $details['amount'],
-            'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentProviders::BLUESNAP,
-            'hash'              => "fail_" . UtilsService::randomString(16),
-            'payment_api_id'    => (string)$this->api->getIdAttribute(),
-            'payer_id'          => null,
-            'provider_data'     => null,
-            'errors'            => null
-        ];
-
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
             'auth' => [$this->api->login, $this->api->password],
-            'headers' => ['Accept'  => 'application/json']
+            'headers' => ['Accept' => 'application/json']
         ]);
 
+        $result = [];
         try {
+            $threeDSecure = [];
+            if (!empty($details['bs_3ds_ref'])) {
+                $threeDSecure['threeDSecure'] = [
+                    'threeDSecureReferenceId' => $details['bs_3ds_ref']
+                ];
+            }
+
             $res = $client->post('transactions', [
                 'json' => array_merge(
+                    $source,
+                    $threeDSecure,
                     [
-                        'amount'        => $details['amount'],
-                        'currency'      => $details['currency'],
-                        'cardTransactionType'   => 'AUTH_CAPTURE',
-                        'softDescriptor'    =>  $details['billing_descriptor'],
-                        'storeCard'     => true
-                    ],
-                    $source
+                        'amount'   => $details['amount'],
+                        'currency' => $details['currency'],
+                        'cardTransactionType' => 'AUTH_CAPTURE',
+                        'softDescriptor' =>  $details['billing_descriptor'],
+                        'storeCard' => true
+                    ]
                 )
             ]);
 
@@ -193,6 +236,7 @@ class BluesnapService
                 $result['value']    = $body_decoded['amount'];
                 $result['status']   = Txn::STATUS_CAPTURED;
             } else {
+                $result['status']   = Txn::STATUS_FAILED;
                 $result['errors'] = [BluesnapCodeMapper::toPhrase()];
                 logger()->error("Bluesnap pay", ['res' => $res]);
             }
@@ -200,6 +244,7 @@ class BluesnapService
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => null];
+            $result['status']   = Txn::STATUS_FAILED;
             if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
                 $body_decoded = \json_decode($res->getBody(), true);
                 if (!empty($body_decoded['message'])) {
@@ -215,6 +260,34 @@ class BluesnapService
                 $result['provider_data']['res'] = $body_decoded;
             }
             logger()->error("Bluesnap pay", ['res'  => $result['provider_data']]);
+        }
+        return $result;
+    }
+
+
+    /**
+     * Returns pfToken for a new card payment
+     * @return string|null
+     */
+    private function getPfToken(): ?string
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'auth' => [$this->api->login, $this->api->password],
+            'headers' => ['Accept' => 'application/json']
+        ]);
+
+        $result = null;
+        try {
+            $res = $client->post('payment-fields-tokens');
+            $headers = $res->getHeader('Location');
+            if (!empty($headers)) {
+                $exploded = explode('/', end($headers));
+                $result = end($exploded);
+            }
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? $ex->getResponse() : null;
+            logger()->error("Bluesnap pfToken", ['res'  => $res]);
         }
         return $result;
     }

@@ -544,6 +544,15 @@ class OdinOrder extends OdinModel
             ])->all();
     }
 
+    /**
+     * Removes txn
+     * @param string $hash
+     * @param void
+     */
+    public function dropTxn(string $hash): void
+    {
+        $this->txns = collect($this->txns)->reject(function ($v) use ($hash) { return $v['hash'] === $hash; })->all();
+    }
 
     /**
      * Get main order SKU

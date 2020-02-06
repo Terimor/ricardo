@@ -38,28 +38,7 @@ class PaymentsController extends Controller
      */
     public function createCardOrder(PaymentCardCreateOrderRequest $req)
     {
-        $reply = $this->paymentService->createOrder($req);
-
-        $result = [
-            'order_currency'    => $reply['order_currency'],
-            'order_number'      => $reply['order_number'],
-            'order_id'          => $reply['order_id'],
-            'id'                => $reply['id'],
-            'status'            => $reply['status']
-        ];
-
-        if (!empty($reply['errors'])) {
-            $result['errors'] = $reply['errors'];
-            PaymentService::cacheErrors([
-                'number'    => $reply['order_number'],
-                'errors'    => $reply['errors']
-            ]);
-        }
-        if (!empty($reply['redirect_url'])) {
-            $result['redirect_url'] = stripslashes($reply['redirect_url']);
-        }
-
-        return $result;
+        return $this->paymentService->createOrder($req);
     }
 
     /**

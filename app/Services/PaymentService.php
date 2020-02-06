@@ -378,6 +378,7 @@ class PaymentService
         $fingerprint = $req->get('f', null);
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
+        $bs_3ds_ref = $req->input('card.bs_3ds_ref', null);
         $shop_currency = CurrencyService::getCurrency()->code;
         $contact = array_merge(
             $req->get('contact'),
@@ -477,6 +478,15 @@ class PaymentService
             ]);
         } else {
             $order_product = $order->getMainProduct(); // throwable
+
+            // NOTE: Bluesnap hack
+            $order_txn = $order->getTxnByHash($order_product['txn_hash'], false);
+            if ($bs_3ds_ref && $order_txn) {
+                $api = PaymentApiService::getById($order_txn['payment_api_id']);
+                $order->dropTxn($order_txn['hash']);
+            }
+            //
+
             $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contact['country']);
             $order->customer_email      = $contact['email'];
             $order->customer_first_name = $contact['first_name'];
@@ -572,10 +582,18 @@ class PaymentService
                     $card,
                     $contact,
                     [
-                        'amount'        => $order->total_price,
-                        'currency'      => $order->currency,
-                        'number'        => $order->number,
-                        'billing_descriptor'   => $order->billing_descriptor
+                        'amount' => $order->total_price,
+                        'currency' => $order->currency,
+                        'order_id' => $order->getIdAttribute(),
+                        'bs_3ds_ref' => $bs_3ds_ref,
+                        'billing_descriptor' => $order->billing_descriptor,
+                        '3ds'  => self::checkIs3dsNeeded(
+                            $method,
+                            $contact['country'],
+                            PaymentProviders::BLUESNAP,
+                            $order->affiliate,
+                            (array)$ipqs
+                        )
                     ]
                 );
                 break;
@@ -655,22 +673,26 @@ class PaymentService
 
         // response
         $result = [
-            'id'                => null,
-            'order_currency'    => $order->currency,
-            'order_number'      => $order->number,
-            'order_id'          => $order->getIdAttribute(),
-            'status'            => self::STATUS_FAIL
+            'order_currency' => $order->currency,
+            'order_number'   => $order->number,
+            'order_amount'   => $payment['value'],
+            'order_id'       => $order->getIdAttribute(),
+            'status'         => self::STATUS_FAIL,
+            'id'             => null
         ];
 
         if ($payment['status'] !== Txn::STATUS_FAILED) {
             $result['id'] = $payment['hash'];
             $result['status'] = self::STATUS_OK;
-            $result['redirect_url'] = $payment['redirect_url'] ?? null;
+            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
+            $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
+            $result['bs_mid'] = $payment['bs_mid'] ?? null;
         } else {
             $result['errors'] = $payment['errors'];
+            PaymentService::cacheErrors(['number' => $order->number, 'errors' => $payment['errors']]);
         }
 
-        return $result;
+        return array_filter($result);
     }
 
     /**
@@ -961,6 +983,9 @@ class PaymentService
 
         if (!$api) {
             logger()->info("Fallback api not found [{$order->number}] for provider {$details['provider']}");
+            return $result;
+        } elseif ($api->payment_provider === $details['provider']) {
+            logger()->info("Fallback api cannot be the same as the {$details['provider']}] provider");
             return $result;
         }
 

@@ -24,7 +24,7 @@ class GetPaymentMethodsByCountryRequest extends FormRequest
     public function rules()
     {
         return [
-            'country' => ['required', 'string', 'size:2'],
+            'country' => ['required', 'string', 'size:2']
         ];
     }
 }

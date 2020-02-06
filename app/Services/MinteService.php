@@ -37,6 +37,7 @@ class MinteService
         'bt' => ['INR', 'USD'],
         'ca' => ['CAD', 'USD'],
         'cc' => ['AUD', 'USD'],
+        'ch' => ['CHF', 'USD'],
         'ck' => ['NZD', 'USD'],
         'cl' => ['CLP', 'USD'],
         'co' => ['COP', 'USD'],
@@ -50,6 +51,7 @@ class MinteService
         'fi' => ['EUR', 'USD'],
         'fr' => ['EUR', 'USD'],
         'gb' => ['GBP', 'USD'],
+        'gp' => ['EUR', 'USD'],
         'gr' => ['EUR', 'USD'],
         'hk' => ['HKD', 'USD'],
         'hm' => ['AUD', 'USD'],
@@ -103,7 +105,7 @@ class MinteService
     /**
      * @var array
      */
-    private static $fallback_codes = ['05', '621', '622', '625', 'Amount by terminal exceeded', 'ERR-MPI'];
+    private static $fallback_codes = ['05', '621', '622', '625', 'Amount by terminal exceeded', 'Company limits exceeded.', 'ERR-MPI'];
 
     /**
      * @var string
