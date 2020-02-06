@@ -1016,7 +1016,7 @@ class PaymentService
                         '3ds'           => false,
                         'amount'        => $order->total_price,
                         'currency'      => $order->currency,
-                        'number'        => $order->number,
+                        'order_id'      => $order->getIdAttribute(),
                         'billing_descriptor'   => $order->billing_descriptor
                     ]
                 );
