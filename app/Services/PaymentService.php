@@ -1013,6 +1013,7 @@ class PaymentService
                         'document_number'   => $order->customer_doc_id
                     ],
                     [
+                        '3ds'           => false,
                         'amount'        => $order->total_price,
                         'currency'      => $order->currency,
                         'number'        => $order->number,
