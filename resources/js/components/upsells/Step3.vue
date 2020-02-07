@@ -112,15 +112,18 @@ export default {
 
   mounted() {
     this.isLoading = true;
-    getUppSells(this.id, this.selectedProductData.quantity || this.selectedProductData.deal || 1).then(({ data }) => {
-        this.name = data.upsell.long_name;
-        this.description = data.upsell.description;
-        this.upsellPrices = data.upsell.upsellPrices;
-        this.imageUrl = data.upsell.upsell_hero_image;
-        this.priceFormatted = this.currentPrices.price_text;
-        this.price = this.currentPrices.price;
-        this.finalPrice = this.currentPrices.price_text;
-        this.finalPricePure = this.currentPrices.price;
+    getUppSells(this.id, this.selectedProductData.quantity || this.selectedProductData.deal || 1)
+      .then(res => {
+        if (res && res.data) {
+          this.name = res.data.upsell.long_name;
+          this.description = res.data.upsell.description;
+          this.upsellPrices = res.data.upsell.upsellPrices;
+          this.imageUrl = res.data.upsell.upsell_hero_image;
+          this.priceFormatted = this.currentPrices.price_text;
+          this.price = this.currentPrices.price;
+          this.finalPrice = this.currentPrices.price_text;
+          this.finalPricePure = this.currentPrices.price;
+        }
       })
       .then(() => {
         this.isLoading = false;

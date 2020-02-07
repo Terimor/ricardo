@@ -77,18 +77,22 @@
         handler(newVal) {
           if (newVal) {
             this.isLoading = true;
-            getUppSells(newVal, 1).then(({ data }) => {
-              this.name = data.upsell.long_name;
-              this.description = data.upsell.description;
-              this.upsellPrices = data.upsell.upsellPrices;
-              this.imageUrl = data.upsell.image;
-              this.priceFormatted = this.currentPrices.price_text;
-              this.price = this.currentPrices.price;
-              this.finalPrice = this.currentPrices.price_text;
-              this.finalPricePure = this.currentPrices.price;
-            }).then(() => {
-              this.isLoading = false;
-            });
+            getUppSells(newVal, 1)
+              .then(res => {
+                if (res && res.data) {
+                  this.name = res.data.upsell.long_name;
+                  this.description = res.data.upsell.description;
+                  this.upsellPrices = res.data.upsell.upsellPrices;
+                  this.imageUrl = res.data.upsell.image;
+                  this.priceFormatted = this.currentPrices.price_text;
+                  this.price = this.currentPrices.price;
+                  this.finalPrice = this.currentPrices.price_text;
+                  this.finalPricePure = this.currentPrices.price;
+                }
+              })
+              .then(() => {
+                this.isLoading = false;
+              });
           }
         },
       },

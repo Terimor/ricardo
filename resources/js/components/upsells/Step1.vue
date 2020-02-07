@@ -93,14 +93,18 @@
 
     mounted() {
       this.isLoading = true;
-      getUppSells(this.id, 2).then(({ data }) => {
-        this.upsellPrices = data.upsell.upsellPrices;
-        this.name = data.upsell.long_name;
-        this.description = data.upsell.description;
-        this.imageUrl = data.upsell.image;
-        this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text;
-        this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price;
-      }).then(() => {
+      getUppSells(this.id, 2)
+        .then(res => {
+          if (res && res.data) {
+            this.upsellPrices = res.data.upsell.upsellPrices;
+            this.name = res.data.upsell.long_name;
+            this.description = res.data.upsell.description;
+            this.imageUrl = res.data.upsell.image;
+            this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text;
+            this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price;
+          }
+        })
+        .then(() => {
           this.isLoading = false;
         });
     },
