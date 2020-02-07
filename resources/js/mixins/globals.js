@@ -18,7 +18,7 @@ export default {
     sortedCountryList() {
       return js_data.countries
         .map(name => {
-          const label = this.$t('country.' + name);
+          const label = this.$t('country.' + name) || '';
 
           return {
             value: name,

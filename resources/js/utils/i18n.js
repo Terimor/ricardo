@@ -57,7 +57,7 @@ export function t(phrase, args = {}, options = {}) {
   }
 
   textarea.innerHTML = translated;
-  translated = textarea.innerText;
+  translated = textarea.innerText || translated;
 
   return translated;
 }
