@@ -74,7 +74,7 @@ class PaymentProviders
         ],
         self::CHECKOUTCOM => [
             'name'      => 'Checkout.com',
-            'is_active' => true,
+            'is_active' => false,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => true,
@@ -772,18 +772,18 @@ class PaymentProviders
         self::BLUESNAP  => [
             'name'      => 'Bluesnap',
             'is_active' => true,
-            'is_main'   => false,
+            'is_main'   => true,
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
                 'common' => [
                     '3ds_limit' => 1,
-                    'fallback_limit' => 0,
+                    'fallback_limit' => 70,
                     'refuse_limit' => 99
                 ],
                 'affiliate' => [
                     '3ds_limit' => 1,
-                    'fallback_limit' => 0,
+                    'fallback_limit' => 66,
                     'refuse_limit' => 99
                 ]
             ],
