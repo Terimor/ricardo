@@ -13,7 +13,7 @@
 
     deps: {},
 
-    add_style(name, url) {
+    add_style: function(name, url) {
       if (!js_deps.deps[name]) {
         var link = document.createElement('link');
         link.onload = js_deps.ready.call(link, name);
@@ -25,7 +25,7 @@
       }
     },
 
-    add_script(name, url) {
+    add_script: function(name, url) {
       if (!js_deps.deps[name]) {
         var script = document.createElement('script');
         script.onload = js_deps.ready(name);

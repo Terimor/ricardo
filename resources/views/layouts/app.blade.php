@@ -45,7 +45,6 @@
     @include('components.scripts.analytics')
     @include('components.scripts.sentry')
     @include('components.scripts.bluesnap_3ds')
-    @include('components.scripts.bluesnap_fraud')
     @include('components.scripts.paypal')
     @include('components.scripts.intl_tel_input')
     @include('components.scripts.libphonenumber')
@@ -102,6 +101,9 @@
 
     <!-- Pixels -->
     @include('components.scripts.pixels')
+
+    <!-- Others -->
+    @include('components.scripts.bluesnap_fraud')
 
   </body>
 
