@@ -87,7 +87,7 @@ js_deps.wait(['vue', 'element'], () => {
         },
 
         saveOrderNumber() {
-            localStorage.setItem('order_number', js_data.order_customer.number)
+            localStorage.setItem('order_number', js_data.order_customer && js_data.order_customer.number || '');
         }
     },
 
