@@ -1033,6 +1033,11 @@
     }
 
     .emc1-popover-variant {
+        @media screen and (max-width: 400px) {
+          left: 0!important;
+          right: 0!important;
+        }
+
         .el-select-dropdown__item {
             height: auto;
         }

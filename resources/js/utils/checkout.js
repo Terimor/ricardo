@@ -283,7 +283,7 @@ export function goToThankYou(order, cur) {
     ? '/thankyou-promos'
     : '/thankyou';
 
-  let url_search = '?order=' + order + '&cur=' + cur;
+  let url_search = '?order=' + encodeURIComponent(order) + '&cur=' + encodeURIComponent(cur);
 
   if (js_query_params.cop_id) {
     url_search += '&cop_id=' + encodeURIComponent(js_query_params.cop_id);
