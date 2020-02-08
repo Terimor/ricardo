@@ -36,6 +36,16 @@ js_deps.wait(['vue', 'element'], () => {
 
         }
 
+        const share_params =
+            [
+                js_query_params.cop_id ? 'cop_id=' + encodeURIComponent(js_query_params.cop_id) : null,
+                js_query_params.product ? 'product=' + encodeURIComponent(js_query_params.product) : null,
+            ]
+            .filter(param => !!param)
+            .join('&');
+
+        const share_url = location.origin + '/splash' + (share_params.length > 0 ? '?' + share_params : '');
+
         return {
             subOrder,
             selectedProductData,
@@ -44,8 +54,8 @@ js_deps.wait(['vue', 'element'], () => {
             orderCustomer: js_data.order_customer,
             total: 0,
             sharingLinkList: {
-                facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=`,
-                twitter: `https://twitter.com/share?&url=${window.location.href}text=`
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${share_url}&quote=`,
+                twitter: `https://twitter.com/share?&url=${share_url}&text=`
 
             }
         };
