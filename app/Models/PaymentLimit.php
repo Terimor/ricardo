@@ -39,7 +39,7 @@ class PaymentLimit extends Model
 
         shuffle($apis);
 
-        $availables = [];
+        $available = null;
         $rest = [];
         foreach ($apis as $v) {
             $limit = $limits->first(function($vv) use ($v) {
@@ -51,14 +51,15 @@ class PaymentLimit extends Model
                     $is_available = !mt_rand(0, 1);
                 }
                 if ($is_available) {
-                    $availables[] = $v;
+                    $available = $v;
+                    break;
                 }
                 continue;
             }
             $rest[] = $v;
         }
 
-        return !empty($availables) ? array_pop($availables) : array_pop($rest);
+        return $available ?? array_pop($rest);
     }
 
 }
