@@ -21,6 +21,7 @@ use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
 use App\Services\AffiliateService;
+use stdClass;
 
 /**
  * Class PayPalService
@@ -275,7 +276,11 @@ class PayPalService
 
         // if order and the same values return current order
         if ($order && $order->total_price == $local_price) {
-            $response = null;
+            $response = new stdClass();
+            if (!empty($order->txns[0]['hash'])) {
+                $response->result = null;
+                $response->result->id = $order->txns[0]['hash'];
+            }
         } else {
             // If local currency is not supported by PayPal convert to USD. Used for purchase only.
             $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
