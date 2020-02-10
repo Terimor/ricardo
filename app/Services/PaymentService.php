@@ -406,10 +406,10 @@ class PaymentService
             $product = OdinProduct::getBySku($sku); // throwable
         }
 
-        $domain = Domain::getByProductId($product->getIdAttribute());
+        $domain = Domain::getByName();
         $api = PaymentApiService::getAvailableOne(
-            $domain->getIdAttribute(),
             $product->getIdAttribute(),
+            optional($domain)->getIdAttribute(),
             self::getProvidersForPay($contact['country'], $method),
             $shop_currency
         );
@@ -981,10 +981,10 @@ class PaymentService
             return $result;
         }
 
-        $domain = Domain::getByProductId($product->getIdAttribute());
+        $domain = Domain::getByName();
         $api = PaymentApiService::getAvailableOne(
-            $domain->getIdAttribute(),
             $product->getIdAttribute(),
+            optional($domain)->getIdAttribute(),
             self::getProvidersForPay($order->shipping_country, $details['method'], false),
             $order->currency
         );

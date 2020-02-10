@@ -23,6 +23,8 @@
 
     js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
     js_data.deal_available = @json($deal_available, JSON_UNESCAPED_UNICODE);
+
+    js_data.countries = @json($countries, JSON_UNESCAPED_UNICODE);
     js_data.payment_methods = @json($setting['payment_methods'], JSON_UNESCAPED_UNICODE);
 
     window.selectedOffer = 0;
