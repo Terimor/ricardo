@@ -249,7 +249,8 @@ class PayPalService
         PaymentService::fraudCheck($ipqs, $payment_api->payment_provider, $affId);
 
         $order = $request->get('order') ? OdinOrder::find($request->get('order')) : null;
-        if ($order) {
+        $upsellFlag = $request->get('is_upsell');
+        if ($order && $upsellFlag) {
             return $this->createUpsellOrder($request);
         }
 
@@ -272,135 +273,140 @@ class PayPalService
         $total_price_usd = $price_usd;
         $total_local_price = $local_price;
 
-        // If local currency is not supported by PayPal convert to USD. Used for purchase only.
-        $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
+        // if order and the same values return current order
+        if ($order && $order->total_price == $local_price) {
+            $response = null;
+        } else {
+            // If local currency is not supported by PayPal convert to USD. Used for purchase only.
+            $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
 
-        $pp_currency_code = !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency;
+            $pp_currency_code = !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency;
 
-        $items = [[
-            'name' => $product->product_name,
-            'description' => $product->long_name,
-            'sku' => $request->sku_code,
-            'unit_amount' => [
-                'currency_code' => $pp_currency_code,
-                'value' => !$is_currency_supported ? $price_usd : $local_price,
-            ],
-            'quantity' => 1
-        ]];
-        if ($request->input('is_warranty_checked') && $product->warranty_percent) {
-            $local_warranty_price = CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']);
-            $total_price_usd = CurrencyService::roundValueByCurrencyRules(
-                ($priceData['price'] + $priceData['warranty']) / $priceData['exchange_rate'],
-                self::DEFAULT_CURRENCY
-            );
-            $local_warranty_usd = CurrencyService::roundValueByCurrencyRules(
-                CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $price_usd),
-                self::DEFAULT_CURRENCY
-            );
-            $total_local_price += $local_warranty_price;
-            $items[] = [
-                'name' => 'Warranty',
-                'description' => 'Warranty',
+            $items = [[
+                'name' => $product->product_name,
+                'description' => $product->long_name,
+                'sku' => $request->sku_code,
                 'unit_amount' => [
                     'currency_code' => $pp_currency_code,
-                    'value' => !$is_currency_supported ? $local_warranty_usd : $local_warranty_price,
+                    'value' => !$is_currency_supported ? $price_usd : $local_price,
                 ],
                 'quantity' => 1
-            ];
-        }
-        $unit = [
-            'description' => $product->long_name,
-            'amount' => [
-                'currency_code' => $pp_currency_code,
-                'value' => !$is_currency_supported ? $total_price_usd : $total_local_price,
-                'items' => $items,
-            ]
-        ];
-
-        $pp_request = new OrdersCreateRequest();
-        $pp_request->prefer('return=representation');
-        $pp_request->body = [
-            'intent' => 'CAPTURE',
-            'purchase_units' => [$unit]
-        ];
-        $response = null;
-        try {
-            $response = $this->payPalHttpClient->execute($pp_request);
-        } catch (HttpException $e) {
-            $this->handlePPBraintreeException($e, $shop_currency);
-        }
-
-        if (isset($response->statusCode) && $response->statusCode === 201) {
-            $paypal_order = $response->result;
-
-            $txn_response = $this->orderService->addTxn([
-                'hash' => $paypal_order->id,
-                'value' => (float)$paypal_order->purchase_units[0]->amount->value,
-                'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
-                'provider_data' => $paypal_order,
-                'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => $payment_api->payment_provider,
-                'payer_id' => '',
-            ], true);
-            abort_if(!$txn_response['success'], 404);
-
-            $txn = $txn_response['txn']->attributesToArray();
-
-            $odin_order_product = [
-                'sku_code' => $request->sku_code,
-                'quantity' => (int)$request->sku_quantity,
-                'price' => $is_currency_supported ? $local_price : $price_usd,
-                'price_usd' => $price_usd,
-                'warranty_price' => $is_currency_supported ? ($local_warranty_price ?? null) : ($local_warranty_usd ?? null),
-                'warranty_price_usd' => $local_warranty_usd ?? null,
-                'is_main' => true,
-                'is_paid' => false,
-                'is_exported' => false,
-                'is_plus_one' => false,
-                'price_set' => $product->prices['price_set'],
-                'txn_hash' => $txn['hash'],
-                'is_upsells' => false,
+            ]];
+            if ($request->input('is_warranty_checked') && $product->warranty_percent) {
+                $local_warranty_price = CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']);
+                $total_price_usd = CurrencyService::roundValueByCurrencyRules(
+                    ($priceData['price'] + $priceData['warranty']) / $priceData['exchange_rate'],
+                    self::DEFAULT_CURRENCY
+                );
+                $local_warranty_usd = CurrencyService::roundValueByCurrencyRules(
+                    CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $price_usd),
+                    self::DEFAULT_CURRENCY
+                );
+                $total_local_price += $local_warranty_price;
+                $items[] = [
+                    'name' => 'Warranty',
+                    'description' => 'Warranty',
+                    'unit_amount' => [
+                        'currency_code' => $pp_currency_code,
+                        'value' => !$is_currency_supported ? $local_warranty_usd : $local_warranty_price,
+                    ],
+                    'quantity' => 1
+                ];
+            }
+            $unit = [
+                'description' => $product->long_name,
+                'amount' => [
+                    'currency_code' => $pp_currency_code,
+                    'value' => !$is_currency_supported ? $total_price_usd : $total_local_price,
+                    'items' => $items,
+                ]
             ];
 
-            $order_txn_data = [
-                'hash' => $txn_response['txn']->hash,
-                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id  ?? null,
-                'value' => $txn_response['txn']->value,
-                'status' =>  Txn::STATUS_CAPTURED,
-                'fee_usd' => 0,
-                'payment_provider' => $txn_response['txn']->payment_provider,
-                'payment_method' => $txn_response['txn']->payment_method,
-                'payment_api_id' => (string)$payment_api->_id,
-                'payer_id' => $txn_response['txn']->payer_id,
+            $pp_request = new OrdersCreateRequest();
+            $pp_request->prefer('return=representation');
+            $pp_request->body = [
+                'intent' => 'CAPTURE',
+                'purchase_units' => [$unit]
             ];
+            $response = null;
+            try {
+                $response = $this->payPalHttpClient->execute($pp_request);
+            } catch (HttpException $e) {
+                $this->handlePPBraintreeException($e, $shop_currency);
+            }
 
-            $order_reponse = $this->orderService->addOdinOrder([
-                'fingerprint' => $fingerprint,
-                'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
-                'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
-                'total_paid' => 0,
-                'total_paid_usd' => 0,
-                'txns_fee_usd' => 0,
-                'total_price' => !$is_currency_supported ? $total_price_usd : $total_local_price,
-                'total_price_usd' => $total_price_usd,
-                'customer_phone' => null,
-                'language' => app()->getLocale(),
-                'ip' => $request->ip(),
-                'warehouse_id' => $product->warehouse_id,
-                'products' => [$odin_order_product],
-                'txns' => [$order_txn_data],
-                'page_checkout' => $request->page_checkout,
-                'offer' => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
-                'affiliate' => AffiliateService::validateAffiliateID($affId) ? $affId : null,
-                'txid' => AffiliateService::getValidTxid($params['txid'] ?? null),
-                'shop_currency' => $shop_currency_code,
-                'params' => $params,
-                'ipqualityscore' => $ipqs
-            ], true);
+            if (isset($response->statusCode) && $response->statusCode === 201) {
+                $paypal_order = $response->result;
 
-            $order = $order_reponse['order'];
+                $txn_response = $this->orderService->addTxn([
+                    'hash' => $paypal_order->id,
+                    'value' => (float)$paypal_order->purchase_units[0]->amount->value,
+                    'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
+                    'provider_data' => $paypal_order,
+                    'payment_method' => PaymentMethods::INSTANT_TRANSFER,
+                    'payment_provider' => $payment_api->payment_provider,
+                    'payer_id' => '',
+                ], true);
+                abort_if(!$txn_response['success'], 404);
 
-            abort_if(!$order_reponse['success'], 404);
+                $txn = $txn_response['txn']->attributesToArray();
+
+                $odin_order_product = [
+                    'sku_code' => $request->sku_code,
+                    'quantity' => (int)$request->sku_quantity,
+                    'price' => $is_currency_supported ? $local_price : $price_usd,
+                    'price_usd' => $price_usd,
+                    'warranty_price' => $is_currency_supported ? ($local_warranty_price ?? null) : ($local_warranty_usd ?? null),
+                    'warranty_price_usd' => $local_warranty_usd ?? null,
+                    'is_main' => true,
+                    'is_paid' => false,
+                    'is_exported' => false,
+                    'is_plus_one' => false,
+                    'price_set' => $product->prices['price_set'],
+                    'txn_hash' => $txn['hash'],
+                    'is_upsells' => false,
+                ];
+
+                $order_txn_data = [
+                    'hash' => $txn_response['txn']->hash,
+                    'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id ?? null,
+                    'value' => $txn_response['txn']->value,
+                    'status' => Txn::STATUS_CAPTURED,
+                    'fee_usd' => 0,
+                    'payment_provider' => $txn_response['txn']->payment_provider,
+                    'payment_method' => $txn_response['txn']->payment_method,
+                    'payment_api_id' => (string)$payment_api->_id,
+                    'payer_id' => $txn_response['txn']->payer_id,
+                ];
+
+                $order_reponse = $this->orderService->addOdinOrder([
+                    'fingerprint' => $fingerprint,
+                    'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                    'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
+                    'total_paid' => 0,
+                    'total_paid_usd' => 0,
+                    'txns_fee_usd' => 0,
+                    'total_price' => !$is_currency_supported ? $total_price_usd : $total_local_price,
+                    'total_price_usd' => $total_price_usd,
+                    'customer_phone' => null,
+                    'language' => app()->getLocale(),
+                    'ip' => $request->ip(),
+                    'warehouse_id' => $product->warehouse_id,
+                    'products' => [$odin_order_product],
+                    'txns' => [$order_txn_data],
+                    'page_checkout' => $request->page_checkout,
+                    'offer' => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
+                    'affiliate' => AffiliateService::validateAffiliateID($affId) ? $affId : null,
+                    'txid' => AffiliateService::getValidTxid($params['txid'] ?? null),
+                    'shop_currency' => $shop_currency_code,
+                    'params' => $params,
+                    'ipqualityscore' => $ipqs
+                ], true);
+
+                $order = $order_reponse['order'];
+
+                abort_if(!$order_reponse['success'], 404);
+            }
         }
         return [
             'braintree_response' => $response,
