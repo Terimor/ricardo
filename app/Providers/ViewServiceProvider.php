@@ -57,7 +57,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('html_to_app', AffiliateService::getHtmlToApp(Request(), $affiliate));
 
             $view->with('lang_locale', app()->getLocale());
-            $view->with('lang_direction', in_array(app()->getLocale(), ['he', 'ar']) ? 'rtl' : 'ltr');
+            $view->with('lang_direction', in_array(app()->getLocale(), ['ar', 'he', 'ur']) ? 'rtl' : 'ltr');
             $view->with('is_new_engine', ((Route::is('checkout') || Route::is('checkout_price_set')) && Request::get('tpl') === 'fmc5x') || Route::is('checkout_vrtl') || Route::is('upsells_vrtl') || Route::is('thankyou_vrtl'));
         });
 
@@ -96,7 +96,7 @@ class ViewServiceProvider extends ServiceProvider
             $domain = Domain::getByName();
             $cdn_url = UtilsService::getCdnUrl();
 
-            $direction = !in_array($lang, ['he', 'ar'])
+            $direction = !in_array($lang, ['ar', 'he', 'ur'])
                 ? 'ltr'
                 : 'rtl';
 

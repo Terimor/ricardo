@@ -5,13 +5,13 @@
   .title {
     background-color: #d54c27;
     color: #fff;
-    display: flex;
-    flex-direction: column;
     font-size: 20px;
     font-weight: 700;
     margin-top: 11px;
+    overflow: hidden;
     padding: 5px 12px;
     text-align: center;
+    text-overflow: ellipsis;
     text-transform: uppercase;
   }
 
