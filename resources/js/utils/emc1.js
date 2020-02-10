@@ -211,8 +211,8 @@ export function paypalCreateOrder ({
       return resp.json();
     })
     .then(res => {
-      if (res.id) {
-        stored_paypal_order_id = res.id;
+      if (res.odin_order_id) {
+        stored_paypal_order_id = res.odin_order_id;
       }
 
       if (res.error) {
