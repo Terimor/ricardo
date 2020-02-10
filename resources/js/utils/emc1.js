@@ -163,12 +163,14 @@ export function * getNotice ({
   }
 }
 
+
+let stored_paypal_order_id = null;
+
 export function paypalCreateOrder ({
   xsrfToken = document.head.querySelector('meta[name="csrf-token"]').content,
   sku_code,
   sku_quantity,
   is_warranty_checked,
-  order = '',
   page_checkout = document.location.href,
   cur,
   offer = js_query_params.offer || null,
@@ -192,7 +194,7 @@ export function paypalCreateOrder ({
         sku_code,
         sku_quantity,
         is_warranty_checked,
-        order,
+        order: stored_paypal_order_id || '',
         page_checkout,
         cur,
         offer,
@@ -209,6 +211,10 @@ export function paypalCreateOrder ({
       return resp.json();
     })
     .then(res => {
+      if (res.id) {
+        stored_paypal_order_id = res.id;
+      }
+
       if (res.error) {
         if (res.error.code === 10008) {
           res.paypalPaymentError = t(res.error.message.phrase, res.error.message.args);
