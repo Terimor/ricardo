@@ -25,6 +25,9 @@ class AppmaxService
     const STATUS_APPROVED   = 'aprovado';
     const STATUS_AUTHORIZED = 'autorizado';
 
+    const TYPE_REFUND_FULL  = 'total';
+    const TYPE_REFUND_PART  = 'partial';
+
     const WEBHOOK_EVENT_ORDER_APPROVED = 'OrderApproved';
     const WEBHOOK_EVENT_ORDER_PAID = 'OrderPaid';
 
@@ -355,6 +358,54 @@ class AppmaxService
             }
 
             logger()->error("Appmax pay", ['res' => $result['provider_data']]);
+        }
+        return $result;
+    }
+
+    /**
+     * Refunds payment
+     * @param  string $hash
+     * @param  string $type
+     * @param  float  $amount
+     * @return array
+     */
+    public function refund(string $hash, string $type, float $amount): array
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'headers' => ['Accept'  => 'application/json']
+        ]);
+
+        $result = ['status' => false, 'errors' => ["Something went wrong. TXN [{$hash}]"]];
+        try {
+            $res = $client->post('refund', [
+                'json' => [
+                    'access-token' => $this->api->secret,
+                    'order_id' => $hash,
+                    'refund_type' => $type,
+                    'refund_amount' => $amount
+                ]
+            ]);
+
+            $body = json_decode($res->getBody(), true);
+
+            if ($body['success']) {
+                $result['status'] = true;
+                unset($result['errors']);
+            } else {
+                logger()->info("Appmax refund", ['res' => $res->getBody()]);
+            }
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null;
+
+            logger()->error("Appmax refund", ['res' => $res]);
+
+            if ($res) {
+                $body = json_decode($res, true);
+                if (!empty($body)) {
+                    $result['errors'] = [($body['text'] ?? "Something went wrong") . " TXN [{$hash}]"];
+                }
+            }
         }
         return $result;
     }
