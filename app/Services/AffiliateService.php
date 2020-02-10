@@ -438,7 +438,7 @@ class AffiliateService
             Click::saveByData($data);
 
         } else {
-            logger()->warning('FingerprintWrongData', ['request' => $request->all()]);
+            //logger()->warning('FingerprintWrongData', ['request' => $request->all()]);
         }
     }
 

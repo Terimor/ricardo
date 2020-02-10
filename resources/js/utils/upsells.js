@@ -27,6 +27,7 @@ export function paypalCreateOrder ({
         'X-Requested-With': 'XMLHttpRequest'
       },
       body: JSON.stringify({
+        is_upsell: true,
         sku_code,
         sku_quantity,
         is_warranty_checked,
