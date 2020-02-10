@@ -12,6 +12,7 @@ use App\Exceptions\InvalidParamsException;
 use App\Exceptions\AuthException;
 use App\Exceptions\PaymentException;
 use App\Exceptions\OrderUpdateException;
+use App\Models\Domain;
 use App\Models\Txn;
 use App\Models\Currency;
 use App\Models\OdinOrder;
@@ -405,8 +406,9 @@ class PaymentService
             $product = OdinProduct::getBySku($sku); // throwable
         }
 
-        // select providers by country
-        $api = PaymentApiService::getByProductId(
+        $domain = Domain::getByProductId($product->getIdAttribute());
+        $api = PaymentApiService::getAvailableOne(
+            $domain->getIdAttribute(),
             $product->getIdAttribute(),
             self::getProvidersForPay($contact['country'], $method),
             $shop_currency
@@ -761,6 +763,7 @@ class PaymentService
 
             $api = PaymentApiService::getById($order_main_txn['payment_api_id']);
             if ($checkout_price >= OdinProduct::MIN_PRICE && $api) {
+                $checkout_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
                 if ($api->payment_provider === PaymentProviders::APPMAX) {
                     $appmax = new AppmaxService($api);
                     $payment = $appmax->payByToken(
@@ -978,8 +981,10 @@ class PaymentService
             return $result;
         }
 
-        $api = PaymentApiService::getByProductId(
-            (string)$product->getIdAttribute(),
+        $domain = Domain::getByProductId($product->getIdAttribute());
+        $api = PaymentApiService::getAvailableOne(
+            $domain->getIdAttribute(),
+            $product->getIdAttribute(),
             self::getProvidersForPay($order->shipping_country, $details['method'], false),
             $order->currency
         );
