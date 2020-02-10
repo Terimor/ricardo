@@ -3,6 +3,7 @@
     <Country
       :$v="$v.form.country"
       :form="paymentForm"
+      :placeholder="true"
       name="country" />
     <ZipCode
       v-if="paymentForm.country === 'br'"

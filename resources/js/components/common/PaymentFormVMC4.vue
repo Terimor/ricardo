@@ -165,6 +165,7 @@
               <Country
                 :$v="$v.form.stepThree.country"
                 :form="form.stepThree"
+                :placeholder="true"
                 name="country" />
             </div>
             <Terms
@@ -319,14 +320,18 @@
 						cardNumber: null,
 						cardDate: null,
 						cvv: null,
-						country: js_data.country_code,
+						country: js_data.countries.indexOf(js_data.country_code) !== -1
+              ? js_data.country_code
+              : null,
             street: null,
 						city: null,
 						zipCode: null,
             terms: null,
 					},
 					countryCodePhoneField: js_data.country_code,
-          country: js_data.country_code,
+          country: js_data.countries.indexOf(js_data.country_code) !== -1
+            ? js_data.country_code
+            : null,
 					paymentProvider: null,
 				},
 			}

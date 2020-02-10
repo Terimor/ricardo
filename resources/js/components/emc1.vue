@@ -196,7 +196,9 @@
           street: null,
           city: null,
           zipcode: null,
-          country: js_data.country_code,
+          country: js_data.countries.indexOf(js_data.country_code) !== -1
+            ? js_data.country_code
+            : null,
           cardHolder: null,
           cardNumber: null,
           cardDate: null,

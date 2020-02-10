@@ -274,7 +274,9 @@
           email: null,
           phone: null,
           variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
-          country: js_data.country_code,
+          country: js_data.countries.indexOf(js_data.country_code) !== -1
+            ? js_data.country_code
+            : null,
           streetAndNumber: null,
           city: null,
           zipCode: null,

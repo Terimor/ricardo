@@ -8,7 +8,9 @@
     :list="$root.sortedCountryList"
     :label="textLabel"
     :rest="{
-      placeholder: textPlaceholder,
+      placeholder: placeholder
+        ? textPlaceholder
+        : null,
       autocomplete: 'country-name',
       name: 'country-name',
     }"
@@ -26,6 +28,7 @@
     props: [
       'form',
       'name',
+      'placeholder',
       'tabindex',
       'order',
       '$v',
