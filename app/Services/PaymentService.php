@@ -338,7 +338,15 @@ class PaymentService
         $result = ['status' => false];
         if ($txn['status'] === Txn::STATUS_APPROVED) {
             $api = PaymentApiService::getById($txn['payment_api_id']);
-            switch ($txn['payment_provider']):
+            switch ($api->payment_provider):
+                case PaymentProviders::APPMAX:
+                    $type = AppmaxService::TYPE_REFUND_FULL;
+                    if ($amount && $amount < $txn['value']) {
+                        $type = AppmaxService::TYPE_REFUND_PART;
+                    }
+                    $handler = new AppmaxService($api);
+                    $result = $handler->refund($txn_hash, $type, $amount ?? $txn['value']);
+                    break;
                 case PaymentProviders::CHECKOUTCOM:
                     $handler = new CheckoutDotComService($api);
                     $result = $handler->refund($txn_hash, $order->number, $order->currency, $amount);
