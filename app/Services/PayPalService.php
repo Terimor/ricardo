@@ -284,6 +284,12 @@ class PayPalService
             $subTotal = $price_usd + $local_warranty_usd;
         }
 
+        // create new order and transaction after 25 min
+        $expireTime = strtotime("-25 min");
+        if ($order && $order->created_at->toDateTime()->getTimestamp() < $expireTime) {
+            $order = null;
+        }
+
         // if order and the same values return current order
         if ($order && $order->total_price == $subTotal && !empty($order->txns[0]['hash'])) {
             $response = new stdClass();
