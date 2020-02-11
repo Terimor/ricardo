@@ -273,18 +273,17 @@ class PayPalService
         $local_price = $priceData['price'];
         $total_price_usd = $price_usd;
         $total_local_price = $local_price;
+        $local_warranty_price = ($request->input('is_warranty_checked') && $product->warranty_percent) ? CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']) : 0;
+        $subTotal = $local_price + $local_warranty_price;
 
         // if order and the same values return current order
-        if ($order && $order->total_price == $local_price) {
+        if ($order && $order->total_price == $subTotal && !empty($order->txns[0]['hash'])) {
             $response = new stdClass();
-            if (!empty($order->txns[0]['hash'])) {
-                $response->result = null;
-                $response->result->id = $order->txns[0]['hash'];
-            }
+            $response->result = new stdClass();
+            $response->result->id = $order->txns[0]['hash'];
         } else {
             // If local currency is not supported by PayPal convert to USD. Used for purchase only.
             $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
-
             $pp_currency_code = !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency;
 
             $items = [[
