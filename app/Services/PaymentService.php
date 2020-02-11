@@ -1137,7 +1137,9 @@ class PaymentService
         }
 
         // check webhook reply
-        if (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
+        if ($order->status === OdinOrder::STATUS_CANCELLED) {
+            logger()->info("Webhook cancelled order [{$order->number}]", ['data' => $data]);
+        } elseif (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
             logger()->info("Webhook ignored, order [{$order->number}] status [{$order->status}]", ['data' => $data]);
             return $order;
         }
@@ -1170,8 +1172,8 @@ class PaymentService
             $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total['value'], $currency->code);
             $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total['value'] / $currency->usd_rate, Currency::DEF_CUR);
 
-            $price_paid_diff    = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
-            $order->status      = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+            $price_paid_diff = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
+            $order->status   = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
         }
 
         if (!$order->save()) {
@@ -1182,6 +1184,16 @@ class PaymentService
         }
 
         return $order;
+    }
+
+    /**
+     * Restores cancelled order
+     * @param OdinOrder &$order
+     * @return void
+     */
+    public function restoreOrder(OdinOrder &$order): void
+    {
+
     }
 
     /**
