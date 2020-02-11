@@ -285,7 +285,7 @@ class PayPalService
         }
 
         // if order and the same values return current order
-        if ($order && $order->total_price == $subTotal && !empty($order->txns[0]['hash'])) {
+        if ($order && $order->total_price == $subTotal && !empty($order->txns[0]['hash']) && 0) {
             $response = new stdClass();
             $response->result = new stdClass();
             $response->result->id = $order->txns[0]['hash'];
