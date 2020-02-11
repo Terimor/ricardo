@@ -284,8 +284,8 @@ class PayPalService
             $subTotal = $price_usd + $local_warranty_usd;
         }
 
-        // create new order and transaction after 25 min
-        $expireTime = strtotime("-25 min");
+        // create new order and transaction after 1 hour
+        $expireTime = strtotime("-1 hour");
         if ($order && $order->created_at->toDateTime()->getTimestamp() < $expireTime) {
             $order = null;
         }
