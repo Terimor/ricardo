@@ -11,20 +11,109 @@ main {
   color: #333;
   display: flex;
   flex-direction: column;
-  font-family: Lato, "Noto Sans", sans-serif;
+  font-family: Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   margin-bottom: 35px;
   margin-top: 35px;
   min-height: 500px;
-  padding: 40px 40px;
+  padding: 24px 50px;
 
   input,
   select,
   textarea {
     color: #333;
-    font-family: Lato, "Noto Sans", sans-serif;
+    font-family: Roboto, sans-serif;
     font-size: 16px;
     line-height: 1.5;
   }
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.page-note {
+  background-color: #f4ee9c;
+  border: 1px dashed #000;
+  font-size: 23px;
+  margin: 40px auto 0;
+  padding: 23px 10px 25px;
+  text-align: center;
+
+  .prefix {
+    color: #c30000;
+    font-size: 22px;
+    font-weight: 900;
+  }
+}
+
+.upsell-subtitle {
+  border-bottom: 1px dashed #000;
+  font-size: 16px;
+  font-style: italic;
+  margin: 62px auto 0;
+  padding: 0 100px 27px;
+  text-align: center;
+}
+
+.upsell-title {
+  color: #880000;
+  font-size: 34px;
+  font-weight: 900;
+  margin-top: 21px;
+  text-align: center;
+}
+
+.upsell-subtitle2 {
+  color: #464646;
+  font-size: 36px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.upsell-letter {
+  margin-top: 35px;
+}
+
+.upsell-letter2 {
+  font-size: 17px;
+  margin-top: 30px;
+}
+
+.upsell-vimeo {
+  height: 261px;
+  margin: 25px 0 33px;
+  width: 100%;
+}
+
+.guarantee {
+  align-items: flex-start;
+  background-color: #f3f3f3;
+  border: 1px dashed #71ba71;
+  display: flex;
+  margin-top: 30px;
+}
+
+.guarantee-image {
+  margin: 25px 0 0 37px;
+  max-width: 240px;
+}
+
+.guarantee-content {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 16px 57px 55px;
+}
+
+.guarantee-title {
+  font-size: 40px;
+  font-weight: 900;
+}
+
+.guarantee-text {
+  font-size: 17px;
+  margin-top: 2px;
 }
