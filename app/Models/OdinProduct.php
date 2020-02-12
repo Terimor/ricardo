@@ -234,8 +234,10 @@ class OdinProduct extends Model
                       $value[$key][$quantity]['installments3_warranty_price_text'] = null;
                       $value[$key][$quantity]['installments6_warranty_price_text'] = null;
                     }
+                    $value[$key][$quantity]['total_amount'] = round($price['price'] + $value[$key][$quantity]['warranty_price'], 2);
+                    $value[$key][$quantity]['total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key][$quantity]['total_amount'], $currency);
 
-                        //installments
+                    //installments
                     $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
                     $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
                     $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
