@@ -18,6 +18,28 @@ export default {
         : '';
     },
 
+    price_value() {
+      return this.form.deal
+        ? js_data.product.prices[this.form.deal].value
+        : 0;
+    },
+
+    price_warranty_value() {
+      return this.form.deal
+        ? js_data.product.prices[this.form.deal].warranty_price
+        : 0;
+    },
+
+    price_total_value() {
+      return this.form.deal
+        ? js_data.product.prices[this.form.deal].total_amount
+        : 0;
+    },
+
+    price_total_value_usd() {
+      return Math.round((this.price_total_value / this.price_exchange_rate) * 100) / 100;
+    },
+
     price_text() {
       let result = '';
 
@@ -61,14 +83,24 @@ export default {
     price_total_text() {
       let result = '';
 
-      let total = this.price_total_value.toString();
-      total = total.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
       if (this.form.deal) {
-        result = js_data.product.prices[this.form.deal].value_text;
-        const match = result.match(/[0-9.,\s]+/).shift().trim();
-
-        result = result.replace(match, total);
+        switch (this.form.installments) {
+          case 1:
+            result = this.form.warranty
+              ? js_data.product.prices[this.form.deal].total_amount_text
+              : js_data.product.prices[this.form.deal].value_text;
+            break;
+          case 3:
+            result = this.form.warranty
+              ? js_data.product.prices[this.form.deal].installments3_total_amount_text
+              : js_data.product.prices[this.form.deal].installments3_value_text;
+            break;
+          case 6:
+            result = this.form.warranty
+              ? js_data.product.prices[this.form.deal].installments6_total_amount_text
+              : js_data.product.prices[this.form.deal].installments6_value_text;
+            break;
+        }
       }
 
       return result;
@@ -84,22 +116,6 @@ export default {
 
     xprice_total_text() {
       return this.price_multiplier + this.price_total_text;
-    },
-
-    price_value() {
-      return +this.price_text.replace(/,/g, '.').replace(/[^0-9.]/g, '') || 0;
-    },
-
-    price_warranty_value() {
-      return +this.price_warranty_text.replace(/,/g, '.').replace(/[^0-9.]/g, '') || 0;
-    },
-
-    price_total_value() {
-      return Math.round((this.price_value + (this.form.warranty ? this.price_warranty_value : 0)) * 100) / 100;
-    },
-
-    price_total_value_usd() {
-      return Math.round(((this.price_value + (this.form.warranty ? this.price_warranty_value : 0)) / this.price_exchange_rate) * 100) / 100;
     },
 
   },

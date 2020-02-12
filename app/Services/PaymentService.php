@@ -338,7 +338,7 @@ class PaymentService
         $result = ['status' => false];
         if ($txn['status'] === Txn::STATUS_APPROVED) {
             $api = PaymentApiService::getById($txn['payment_api_id']);
-            switch ($api->payment_provider):
+            switch (optional($api)->payment_provider):
                 case PaymentProviders::APPMAX:
                     $type = AppmaxService::TYPE_REFUND_FULL;
                     if ($amount && $amount < $txn['value']) {
