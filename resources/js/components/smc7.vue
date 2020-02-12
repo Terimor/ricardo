@@ -71,18 +71,15 @@
                             </radio-button-group>
                         </div>
 
-                        <div class="smc7__step-2"
+                        <div class="smc7__step-2 variant-selection"
                           v-if="isShowVariant"
                         >
                             <h2><span>{{textStep}}</span> 2: <span>{{textSelectVariant}}</span></h2>
-                            <select-field
-                              popperClass="smc7-popover-variant"
-                              v-model="form.variant"
-                              :rest="{
-                                placeholder: 'Variant'
-                              }"
-                              :list="variantList"
-                              @input="onVariantChange" />
+                            <Variant
+                              :$v="$v.form.variant"
+                              :form="form"
+                              name="variant"
+                              @change="onVariantChange" />
                         </div>
 
                         <div class="smc7__step-3">
@@ -160,6 +157,7 @@
                               :createOrder="paypalCreateOrder"
                               :onApprove="paypalOnApprove"
                               :$vterms="$v.form.terms"
+                              :$vvariant="$v.form.variant"
                               :$vdeal="$v.form.deal"
                               @click="paypalSubmit"
                             >{{ paypalRiskFree }}</paypal-button>
@@ -183,12 +181,12 @@
         <el-dialog
                 @click="isOpenPromotionModal = false"
                 class="cvv-popup"
-                :title="checkoutmainDealErrorText"
+                :title="promo_modal_title"
                 :lock-scroll="false"
                 :visible.sync="isOpenPromotionModal">
             <div class="cvv-popup__content">
                 <p class="error-container">
-                    {{ checkoutmainDealErrorText }}
+                    {{ promo_modal_text }}
                 </p>
 
                 <button
@@ -209,6 +207,7 @@
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import PurchasAlreadyExists from './common/PurchasAlreadyExists';
   import Installments from './common/extra-fields/Installments';
+  import Variant from './common/common-fields/Variant';
   import FirstName from './common/common-fields/FirstName';
   import LastName from './common/common-fields/LastName';
   import Email from './common/common-fields/Email';
@@ -243,6 +242,7 @@
       PurchasAlreadyExists,
       Warranty,
       Spinner,
+      Variant,
       FirstName,
       LastName,
       Email,
@@ -273,7 +273,9 @@
           lname: null,
           email: null,
           phone: null,
-          variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
+          variant: !js_data.product.is_choice_required
+            ? js_data.product.skus[0] && js_data.product.skus[0].code || null
+            : null,
           country: js_data.countries.indexOf(js_data.country_code) !== -1
             ? js_data.country_code
             : null,
@@ -423,6 +425,22 @@
         }));
       },
 
+      promo_modal_title() {
+        if (this.$v.form.deal.$invalid) {
+          return t('checkout.main_deal.error_popup.title');
+        } else if (this.$v.form.variant.$invalid) {
+          return t('checkout.select_variant');
+        }
+      },
+
+      promo_modal_text() {
+        if (this.$v.form.deal.$invalid) {
+          return t('checkout.main_deal.error_popup.message');
+        } else if (this.$v.form.variant.$invalid) {
+          return t('checkout.select_variant');
+        }
+      },
+
     },
     mounted() {
       this.refreshTopBlock();
@@ -501,7 +519,17 @@
 
           this.setPromotionalModal(true);
           return;
+        } else if (this.$v.form.variant.$invalid) {
+          const element = document.querySelector('.variant-selection');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
+          this.setPromotionalModal(true);
+          return;
         }
+
         if (this.$v.form.$pending || this.$v.form.$error) {
           this.scrollToError();
           return;
@@ -721,7 +749,19 @@
 
       paypalSubmit() {
         if (this.$v.form.deal.$invalid) {
+          this.$v.form.deal.$touch();
+
           const element = document.querySelector('.smc7__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
+          this.isOpenPromotionModal = true;
+        } else if (this.$v.form.variant.$invalid) {
+          this.$v.form.variant.$touch();
+
+          const element = document.querySelector('.variant-selection');
 
           if (element && element.scrollIntoView) {
             element.scrollIntoView();
@@ -809,6 +849,15 @@
     }
 
     .smc7 {
+
+      .variant-field-label {
+        display: none;
+      }
+
+      .variant-field-input {
+        border-color: #000;
+        border-radius: 0;
+      }
 
       .label-container-radio__discount {
         color: #16a085;

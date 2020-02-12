@@ -101,7 +101,9 @@
 				form: {
           deal: null,
           isWarrantyChecked: false,
-          variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
+          variant: !js_data.product.is_choice_required
+            ? js_data.product.skus[0] && js_data.product.skus[0].code || null
+            : null,
         },
 			};
     },

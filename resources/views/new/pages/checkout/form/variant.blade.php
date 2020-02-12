@@ -28,13 +28,13 @@
           v-if="variant_opened"
           class="variant-field-dropdown">
 
-          @foreach ($product->skus as $index => $sku)
+          @foreach ($product->skus as $sku)
             <div
               class="variant-field-item"
               :class="{ active: form.variant === '{{ $sku['code'] }}' }"
               @click="variant_change('{{ $sku['code'] }}')">
 
-              <img :src="variants_by_index[{{ $index }}].quantity_image[1]" alt="" />
+              <img src="{{ $sku['quantity_image'][1] }}" alt="" />
               <div>{{ $sku['name'] }}</div>
 
             </div>

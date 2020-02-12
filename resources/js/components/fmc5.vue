@@ -293,6 +293,7 @@
                 v-show="form.installments === 1"
                 :createOrder="paypalCreateOrder"
                 :onApprove="paypalOnApprove"
+                :$vvariant="$v.form.variant"
                 :$vdeal="$v.form.deal"
                 @click="paypalSubmit"
               >{{ textPaypalRiskFree }}</paypal-button>
@@ -998,8 +999,8 @@
       },
 
       initVariant() {
-        this.form.variant = this.product.skus[0]
-          ? this.product.skus[0].code
+        this.form.variant = !js_data.product.is_choice_required
+          ? js_data.product.skus[0] && js_data.product.skus[0].code || null
           : null;
       },
 
@@ -1603,9 +1604,20 @@
     width: auto;
   }
 
-  #variant-field {
-    margin: 20px 20px;
-    width: auto;
+  .variant-field {
+    margin: 30px 20px 20px;
+
+    :global(.variant-field-label) {
+      display: none;
+    }
+
+    :global(.variant-field-input) {
+      border-color: #bbb;
+    }
+
+    :global(.variant-field-input-label) {
+      font-size: 18px;
+    }
   }
 
   .deal-error {

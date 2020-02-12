@@ -325,6 +325,15 @@
 
           this.$emit('setPromotionalModal', true);
           return;
+        } else if (this.$v.form.variant.$invalid) {
+          const element = document.querySelector('.variant-selection');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
+          this.$emit('setPromotionalModal', true);
+          return;
         }
 
         if (this.$v.form.$pending || this.$v.form.$error) {

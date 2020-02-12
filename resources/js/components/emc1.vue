@@ -32,21 +32,14 @@
                           :validation="$v.form.deal"
                           :list="dealList" />
 
-                        <div v-if="isShowVariant">
-                            <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
-                            <select-field
-                              popperClass="emc1-popover-variant"
-                              v-model="form.variant"
-                              :validation="$v.form.variant"
-                              validationMessage="Invalid field"
-                              :config="{
-                                prefix: 'EchoBeat7'
-                              }"
-                              :rest="{
-                                placeholder: 'Variant'
-                              }"
-                              :list="variantList"
-                              @input="onVariantChange" />
+                        <div v-if="isShowVariant" class="variant-selection">
+                          <h2><span v-html="textStep"></span> 2: <span v-html="textSelectVariant"></span></h2>
+
+                          <Variant
+                            :$v="$v.form.variant"
+                            :form="form"
+                            name="variant"
+                            @change="onVariantChange" />
                         </div>
 
                         <Warranty
@@ -73,6 +66,7 @@
                           :createOrder="paypalCreateOrder"
                           :onApprove="paypalOnApprove"
                           v-show="form.installments === 1"
+                          :$vvariant="$v.form.variant"
                           :$vdeal="$v.form.deal"
                           @click="paypalSubmit"
                         >{{ paypalRiskFree }}</paypal-button>
@@ -111,11 +105,11 @@
         <el-dialog
                 @click="isOpenPromotionModal = false"
                 class="cvv-popup"
-                :title="textMainDealErrorPopupTitle"
+                :title="promo_modal_title"
                 :lock-scroll="false"
                 :visible.sync="isOpenPromotionModal">
             <div class="cvv-popup__content">
-                <p class="error-container" v-html="textMainDealErrorPopupMessage"></p>
+                <p class="error-container" v-html="promo_modal_text"></p>
 
                 <button
                         @click="isOpenPromotionModal = false"
@@ -140,6 +134,7 @@
   import { t, timage } from '../utils/i18n';
   import { getNotice, getRadioHtml } from '../utils/emc1';
   import ProductItem from './common/ProductItem';
+  import Variant from './common/common-fields/Variant';
   import Warranty from './common/Warranty';
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
@@ -169,6 +164,7 @@
     components: {
       SaleBadge,
       ProductItem,
+      Variant,
       Warranty,
       ProductOffer,
       PurchasAlreadyExists,
@@ -187,7 +183,9 @@
           isWarrantyChecked: false,
           countryCodePhoneField: js_data.country_code,
           deal: null,
-          variant: js_data.product.skus[0] && js_data.product.skus[0].code || null,
+          variant: !js_data.product.is_choice_required
+            ? js_data.product.skus[0] && js_data.product.skus[0].code || null
+            : null,
           paymentProvider: null,
           fname: null,
           lname: null,
@@ -344,8 +342,6 @@
       textArtcile: () => t('checkout.article'),
       textPrice: () => t('checkout.header_banner.price'),
       textMainDealError: () => t('checkout.main_deal.error'),
-      textMainDealErrorPopupTitle: () => t('checkout.main_deal.error_popup.title'),
-      textMainDealErrorPopupMessage: () => t('checkout.main_deal.error_popup.message'),
       textMainDealErrorPopupButton: () => t('checkout.main_deal.error_popup.button'),
       textSelectVariant: () => t('checkout.select_variant'),
       textPaymentMethod: () => t('checkout.payment_method'),
@@ -362,6 +358,21 @@
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
       textTotalAmount: () => t('checkout.total_amount'),
       imageSafePayment: () => timage('safe_payment'),
+
+      promo_modal_title() {
+        if (this.$v.form.deal.$invalid) {
+          return t('checkout.main_deal.error_popup.title');
+        } else if (this.$v.form.variant.$invalid) {
+          return t('checkout.select_variant');
+        }
+      },
+      promo_modal_text() {
+        if (this.$v.form.deal.$invalid) {
+          return t('checkout.main_deal.error_popup.message');
+        } else if (this.$v.form.variant.$invalid) {
+          return t('checkout.select_variant');
+        }
+      },
     },
     watch: {
       'form.deal'(value) {
@@ -390,7 +401,19 @@
       },
       paypalSubmit() {
         if (this.$v.form.deal.$invalid) {
+          this.$v.form.deal.$touch();
+
           const element = document.querySelector('.main__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
+          this.isOpenPromotionModal = true;
+        } else if (this.$v.form.variant.$invalid) {
+          this.$v.form.variant.$touch();
+
+          const element = document.querySelector('.variant-selection');
 
           if (element && element.scrollIntoView) {
             element.scrollIntoView();
@@ -989,31 +1012,13 @@
                 padding: 0;
             }
         }
-    }
 
-    .emc1-popover-variant {
-        @media screen and (max-width: 480px) {
-          left: 0!important;
-          right: 0!important;
+        .variant-selection {
+          margin-top: 10px;
         }
 
-        .el-select-dropdown__item {
-            height: auto;
-        }
-
-        .select__label {
-            opacity: 1;
-            & > div {
-                display: flex;
-                align-items: center;
-
-                img {
-                    height: 80px;
-                    width: auto;
-                    margin-left: 10px;
-                    margin-right: 10px;
-                }
-            }
+        .variant-field-label {
+          display: none;
         }
     }
 

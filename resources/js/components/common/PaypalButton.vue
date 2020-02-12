@@ -17,6 +17,7 @@
     props: [
       'createOrder',
       'onApprove',
+      '$vvariant',
       '$vterms',
       '$vdeal',
     ],
@@ -30,6 +31,11 @@
 
     watch: {
       '$vdeal.$invalid'() {
+        if (this.action && this.isValid()) {
+          this.action.enable();
+        }
+      },
+      '$vvariant.$invalid'() {
         if (this.action && this.isValid()) {
           this.action.enable();
         }
@@ -50,7 +56,7 @@
 
     methods: {
       isValid() {
-        return (!this.$vdeal || !this.$vdeal.$invalid) && (!this.$vterms || !this.$vterms.$invalid);
+        return (!this.$vdeal || !this.$vdeal.$invalid) && (!this.$vvariant || !this.$vvariant.$invalid) && (!this.$vterms || !this.$vterms.$invalid);
       },
       initButton () {
         const { createOrder, onApprove } = this;
