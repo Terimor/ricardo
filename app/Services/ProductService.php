@@ -269,6 +269,9 @@ class ProductService
             $prices[$quantity]['installments6_unit_value_text'] = $pricesOld[$quantity]['installments6_unit_value_text'];
             $prices[$quantity]['installments6_old_value_text'] = $pricesOld[$quantity]['installments6_old_value_text'];
 
+            $prices[$quantity]['installments3_total_amount_text'] = $pricesOld[$quantity]['installments3_total_amount_text'];
+            $prices[$quantity]['installments6_total_amount_text'] = $pricesOld[$quantity]['installments6_total_amount_text'];
+
             $prices[$quantity]['total_amount'] = $pricesOld[$quantity]['total_amount'];
             $prices[$quantity]['total_amount_text'] = $pricesOld[$quantity]['total_amount_text'];
         }
