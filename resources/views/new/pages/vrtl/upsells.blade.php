@@ -3,6 +3,14 @@
 @section('title', $page_title)
 
 
+@section('js_data')
+  <script type="text/javascript">
+    js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
+    js_data.order_customer = @json($orderCustomer, JSON_UNESCAPED_UNICODE);
+  </script>
+@endsection
+
+
 @section('js_deps')
   <script type="text/javascript">
     js_deps.show([
@@ -96,7 +104,17 @@
     </div>
     <div class="last-call-card">
       <div class="last-call-card-title">Secure Your ONE-TIME Only Offer For DIY Biodiesel Upgrade</div>
-      <img class="last-call-card-image" src="{{ $product->images[0] ?? '' }}" />
+      <div class="last-call-card-inside">
+        <img class="last-call-card-image" src="{{ $product->image[0] ?? '' }}" />
+        <div class="last-call-card-download">Delivered as Download</div>
+        <div class="last-call-card-old-price">Total Value: <span class="value">$97</span></div>
+        <div class="last-call-card-label-1">Get Started Today For:</div>
+        <div class="last-call-card-price">$37!</div>
+        <div class="last-call-card-button">Add To My Order</div>
+        <div class="last-call-card-label-2">YES! Upgrade My Order Now!</div>
+        <div class="last-call-card-label-3">No Thanks, I Don't Want This One-Time Offer For the DIY Home Made Wordshop. I understand that I'll never return to this page and 
+        that's OK.</div>
+      </div>
     </div>
   </div>
 @endsection

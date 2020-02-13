@@ -80,7 +80,7 @@ export default {
 
     installments_init() {
       if (this.extra_fields.installments && this.extra_fields.installments.default) {
-        this.form.installments = this.extra_fields.installments.default;
+        this.form.installments = this.extra_fields.installments.default || 1;
       }
     },
 

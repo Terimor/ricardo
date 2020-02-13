@@ -55,7 +55,7 @@ export default {
 
     card_type_init() {
       if (this.extra_fields.card_type && this.extra_fields.card_type.default) {
-        this.form.card_type = this.extra_fields.card_type.default;
+        this.form.card_type = this.extra_fields.card_type.default || null;
       }
     },
 

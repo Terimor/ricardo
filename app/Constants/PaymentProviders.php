@@ -94,7 +94,7 @@ class PaymentProviders
                 'ca' => [
                     'state' => [
                         'type' => 'dropdown',
-                        'default' => 'ON',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'AB', 'label' => 'Alberta'],
                             ['value' => 'BC', 'label' => 'British Columbia'],
@@ -115,6 +115,7 @@ class PaymentProviders
                 'us' => [
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'AE', 'label' => 'Armed Forces (AE)'],
                             ['value' => 'AK', 'label' => 'Alaska'],
@@ -173,8 +174,7 @@ class PaymentProviders
                             ['value' => 'WI', 'label' => 'Wisconsin'],
                             ['value' => 'WV', 'label' => 'West Virginia'],
                             ['value' => 'WY', 'label' => 'Wyoming']
-                        ],
-                        'default' => 'DC'
+                        ]
                     ]
                 ],
                 'gb' => [
@@ -476,6 +476,7 @@ class PaymentProviders
                     ],
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'Buenos Aires', 'label' => 'Buenos Aires'],
                             ['value' => 'Córdoba', 'label' => 'Córdoba'],
@@ -501,8 +502,7 @@ class PaymentProviders
                             ['value' => 'La Pampa', 'label' => 'La Pampa'],
                             ['value' => 'Santa Cruz', 'label' => 'Santa Cruz'],
                             ['value' => 'Tierra del Fuego', 'label' => 'Tierra del Fuego']
-                        ],
-                        'default' => 'Buenos Aires'
+                        ]
                     ]
                 ],
                 'br' => [
@@ -531,6 +531,7 @@ class PaymentProviders
                     ],
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'DF', 'label' => 'Distrito Federal'],
                             ['value' => 'AC', 'label' => 'Acre'],
@@ -559,8 +560,7 @@ class PaymentProviders
                             ['value' => 'SP', 'label' => 'São Paulo'],
                             ['value' => 'SE', 'label' => 'Sergipe'],
                             ['value' => 'TO', 'label' => 'Tocantins']
-                        ],
-                        'default' => 'DF'
+                        ]
                     ]
                 ],
                 'co' => [
@@ -610,6 +610,7 @@ class PaymentProviders
                     ],
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'Capital District', 'label' => 'Capital District'],
                             ['value' => 'Amazonas', 'label' => 'Amazonas'],
@@ -643,8 +644,7 @@ class PaymentProviders
                             ['value' => 'Tolima', 'label' => 'Tolima'],
                             ['value' => 'Valle del Cauca', 'label' => 'Valle del Cauca'],
                             ['value' => 'Vaupés', 'label' => 'Vaupés']
-                        ],
-                        'default' => 'Capital District'
+                        ]
                     ]
                 ],
                 'mx' => [
@@ -666,6 +666,7 @@ class PaymentProviders
                     ],
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' =>  'Aguascalientes', 'label' =>  'Aguascalientes'],
                             ['value' => 'Baja California', 'label' => 'Baja California'],
@@ -699,8 +700,7 @@ class PaymentProviders
                             ['value' => 'Veracruz', 'label' => 'Veracruz'],
                             ['value' => 'Yucatán', 'label' => 'Yucatán'],
                             ['value' => 'Zacatecas', 'label' =>  'Zacatecas']
-                        ],
-                        'default' => 'Distrito Federal'
+                        ]
                     ],
                     'installments'  => [
                         'type'  => 'dropdown',
@@ -791,7 +791,7 @@ class PaymentProviders
                 'ca' => [
                     'state' => [
                         'type' => 'dropdown',
-                        'default' => 'ON',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'AB', 'label' => 'Alberta'],
                             ['value' => 'BC', 'label' => 'British Columbia'],
@@ -812,6 +812,7 @@ class PaymentProviders
                 'us' => [
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'AE', 'label' => 'Armed Forces (AE)'],
                             ['value' => 'AK', 'label' => 'Alaska'],
@@ -870,8 +871,7 @@ class PaymentProviders
                             ['value' => 'WI', 'label' => 'Wisconsin'],
                             ['value' => 'WV', 'label' => 'West Virginia'],
                             ['value' => 'WY', 'label' => 'Wyoming']
-                        ],
-                        'default' => 'DC'
+                        ]
                     ]
                 ],
                 'gb' => [
@@ -1328,7 +1328,7 @@ class PaymentProviders
                 'ca' => [
                     'state' => [
                         'type' => 'dropdown',
-                        'default' => 'ON',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'AB', 'label' => 'Alberta'],
                             ['value' => 'BC', 'label' => 'British Columbia'],
@@ -1349,6 +1349,7 @@ class PaymentProviders
                 'us' => [
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'AE', 'label' => 'Armed Forces (AE)'],
                             ['value' => 'AK', 'label' => 'Alaska'],
@@ -1407,8 +1408,7 @@ class PaymentProviders
                             ['value' => 'WI', 'label' => 'Wisconsin'],
                             ['value' => 'WV', 'label' => 'West Virginia'],
                             ['value' => 'WY', 'label' => 'Wyoming']
-                        ],
-                        'default' => 'DC'
+                        ]
                     ]
                 ],
             ],
@@ -1492,6 +1492,7 @@ class PaymentProviders
                     ],
                     'state' => [
                         'type'  => 'dropdown',
+                        'pattern'   => '^.{1,30}$',
                         'items' => [
                             ['value' => 'DF', 'label' => 'Distrito Federal'],
                             ['value' => 'AC', 'label' => 'Acre'],
@@ -1520,8 +1521,7 @@ class PaymentProviders
                             ['value' => 'SP', 'label' => 'São Paulo'],
                             ['value' => 'SE', 'label' => 'Sergipe'],
                             ['value' => 'TO', 'label' => 'Tocantins']
-                        ],
-                        'default' => 'DF'
+                        ]
                     ]
                 ]
             ],

@@ -17,7 +17,7 @@ main {
   margin-bottom: 35px;
   margin-top: 35px;
   min-height: 500px;
-  padding: 24px 50px;
+  padding: 24px 50px 40px;
 
   input,
   select,
@@ -116,4 +116,105 @@ main {
 .guarantee-text {
   font-size: 17px;
   margin-top: 2px;
+}
+
+.last-call-title {
+  font-size: 50px;
+  font-weight: 900;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.last-call-text {
+  margin-top: 40px;
+}
+
+.last-call-card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-top: 28px;
+}
+
+.last-call-card-title {
+  background-color: #ab0000;
+  border: 2px dashed #8c8c8c;
+  color: #fff;
+  font-size: 56px;
+  font-weight: 700;  
+  padding: 4px 16px 0;
+}
+
+.last-call-card-inside {
+  border: 2px dashed #8c8c8c;
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 16px 38px;
+}
+
+.last-call-card-image {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.last-call-card-download {
+  font-size: 18px;
+  margin-left: -35%;
+  margin-top: 40px;
+}
+
+.last-call-card-old-price {
+  color: #a90000;
+  font-size: 52px;
+  font-weight: 700;
+  margin-top: 28px;
+
+  .value {
+    text-decoration: line-through;
+  }
+}
+
+.last-call-card-label-1 {
+  font-size: 38px;
+  margin-top: 6px;
+}
+
+.last-call-card-price {
+  color: #029800;
+  font-size: 92px;
+  font-weight: 900;
+  margin-top: -22px;
+  text-decoration: underline;
+}
+
+.last-call-card-button {
+  background-color: #f65b00;
+  box-shadow: 0px 2px 5px 0px #000;
+  color: #fff;
+  cursor: pointer;
+  font-size: 58px;
+  font-weight: 700;
+  margin: -14px auto 0;
+  padding: 10px 116px;
+}
+
+.last-call-card-label-2 {
+  color: #0021b7;
+  cursor: pointer;
+  font-size: 32px;
+  margin-top: 2px;
+  text-decoration: underline;
+}
+
+.last-call-card-label-3 {
+  align-self: center;
+  border-top: 2px dashed #8c8c8c;
+  color: #0021b7;
+  cursor: pointer;
+  font-size: 24px;
+  margin-top: 42px;
+  max-width: 800px;
+  padding: 20px 20px 0;
+  text-decoration: underline;
 }
