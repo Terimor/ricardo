@@ -60,6 +60,7 @@
               :form="paymentForm"
               name="city" />
             <State
+              :placeholder="true"
               :country="paymentForm.country"
               :stateExtraField="stateExtraField"
               :isLoading="isLoading"

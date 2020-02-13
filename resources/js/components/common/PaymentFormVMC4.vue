@@ -610,14 +610,15 @@
         
       },
 			isAllowNext(currentStep) {
-				const isStepOneInvalid = this.$v.vmc4Form.$invalid;
+				const isStepOneInvalid = this.$v.vmc4Form.deal.$invalid || this.$v.vmc4Form.variant.$invalid;
 				const isStepTwoInvalid = this.$v.form.stepTwo.$invalid;
 				const isStepThreeInvalid =
 					this.form.paymentProvider !== 'paypal' &&
           this.$v.form.stepThree.$invalid;
 
         if (currentStep === 1 && isStepOneInvalid) {
-          this.$v.vmc4Form.$touch();
+          this.$v.vmc4Form.deal.$touch();
+          this.$v.vmc4Form.variant.$touch();
           this.isOpenPromotionModal = true;
         }
         else if (currentStep === 2 && isStepTwoInvalid) {

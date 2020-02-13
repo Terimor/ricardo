@@ -11,7 +11,7 @@
     :label="textTitle"
     :rest="{
       placeholder: placeholder
-        ? textTitle
+        ? textPlaceholder
         : null,
       autocomplete: 'shipping region',
       name: 'ship-state',
@@ -29,6 +29,11 @@
     :validationMessage="textRequired"
     v-loading="isLoading.address"
     element-loading-spinner="el-icon-loading"
+    :rest="{
+      placeholder: placeholder
+        ? textPlaceholder
+        : null,
+    }"
     :label="textTitle"
     theme="variant-1"
     :tabindex="tabindex"
@@ -63,6 +68,10 @@
 
       textRequired() {
         return this.$t('checkout.payment_form.state.required');
+      },
+
+      textPlaceholder() {
+        return this.$t('checkout.payment_form.state.selected');
       },
 
     },
