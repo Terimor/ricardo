@@ -361,14 +361,14 @@ class PaymentService
                     break;
                 case PaymentProviders::MINTE:
                     if (empty($txn['capture_hash'])) {
-                        $result['errors'] = ["Transaction cannot be refunded. TXN [$txn_hash]"];
+                        $result['errors'] = ["Transaction [$txn_hash] cannot be refunded"];
                         break;
                     }
                     $handler = new MinteService($api);
                     $result = $handler->refund($txn['capture_hash'], $amount ?? $txn['value']);
                     break;
                 default:
-                    $result['errors'] = ["Refund for {$txn['payment_provider']} not implemented yet. TXN [$txn_hash]"];
+                    $result['errors'] = ["Refund for {$txn['payment_provider']} not implemented yet. [$txn_hash]"];
                     logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
             endswitch;
         }
