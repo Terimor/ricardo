@@ -1,5 +1,5 @@
 <template>
-  <div class="select scroll-when-error" :class="{ [theme]: theme }" :style="{ order: order || null }">
+  <div class="select scroll-when-error" :class="{ [theme]: theme, invalid: invalid }" :style="{ order: order || null }">
     <span v-if="label" class="label">{{label}}</span>
     <el-select
       v-if="!standart"
@@ -104,6 +104,12 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
+
+    &.invalid {
+      .label {
+        color: #e74c3c;
+      }
+    }
 
     .label {
       margin-bottom: 6px;
