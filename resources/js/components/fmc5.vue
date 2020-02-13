@@ -1618,6 +1618,10 @@
     :global(.variant-field-input-label) {
       font-size: 18px;
     }
+
+    :global(.variant-field-item) {
+      font-size: 16px;
+    }
   }
 
   .deal-error {

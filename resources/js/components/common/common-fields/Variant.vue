@@ -3,13 +3,14 @@
   <div
     v-if="visible"
     class="variant-field scroll-when-error"
-    :class="{ opened: opened, invalid: invalid }">
+    :class="{ opened: opened, invalid: invalid, up: up }">
 
     <div class="variant-field-label">{{ textLabel }}</div>
 
     <div class="inside">
 
       <div
+        ref="variant_field_input"
         class="variant-field-input"
         @click="toggle">
 
@@ -64,6 +65,7 @@
     data() {
       return {
         opened: false,
+        up: false,
       };
     },
 
@@ -111,6 +113,13 @@
     methods: {
 
       toggle() {
+        if (!this.opened) {
+          const item_height = 80;
+          const input_rect = this.$refs.variant_field_input.getBoundingClientRect();
+          const free_space = document.documentElement.clientHeight - (input_rect.top + input_rect.height);
+          this.up = free_space < item_height * this.items.length;
+        }
+
         this.opened = !this.opened;
       },
 
@@ -217,6 +226,11 @@
     top: 100%;
     transition: all .3s ease;
     z-index: 10;
+
+    .variant-field.up & {
+      bottom: 100%;
+      top: auto;
+    }
 
     &.slide-down-enter, &.slide-down-leave-to {
       padding: 0;

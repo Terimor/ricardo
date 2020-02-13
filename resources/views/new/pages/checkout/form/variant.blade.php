@@ -2,18 +2,19 @@
 
   <div
     class="variant-field scroll-when-error"
-    :class="{ opened: variant_opened, invalid: $v.form.variant.$dirty && $v.form.variant.$invalid }">
+    :class="{ opened: variant_opened, up: variant_up, invalid: $v.form.variant.$dirty && $v.form.variant.$invalid }">
 
     <div class="variant-field-label">{{ t('checkout.select_variant') }}</div>
 
     <div class="inside">
 
       <div
+        ref="variant_field_input"
         class="variant-field-input"
         @click="variant_toggle">
 
-        <div v-if="!form.variant">&nbsp;</div>
-        <div v-if="form.variant">@{{ variants_by_code[form.variant].name }}</div>
+        <img v-if="form.variant" :src="variant_image" class="variant-field-input-image" alt="" />
+        <div class="variant-field-input-label">@{{ form.variant ? variant_name : '' }}</div>
         <i class="fa fa-angle-down"></i>
 
       </div>
