@@ -47,8 +47,8 @@ class PaymentService
     const SUCCESS_PATH  =   '/checkout';
     const FAILURE_PATH  =   '/checkout';
 
-    const STATUS_OK     = 'ok';
-    const STATUS_FAIL   = 'fail';
+    const STATUS_OK   = 'ok';
+    const STATUS_FAIL = 'fail';
 
     const CACHE_TOKEN_PREFIX    = 'CardToken';
     const CACHE_ERRORS_PREFIX   = 'PayErrors';
@@ -651,8 +651,8 @@ class PaymentService
         if (!empty($payment['fallback'])) {
 
             $reply = $this->fallbackOrder($order, $card, [
-                'provider'   => $api->payment_provider,
                 'method'     => $method,
+                'provider'   => $api->payment_provider,
                 'useragent'  => $user_agent
             ]);
 
@@ -699,10 +699,9 @@ class PaymentService
             $result['status'] = self::STATUS_OK;
             $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
             $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
-            $result['bs_mid'] = $payment['bs_mid'] ?? null;
         } else {
             $result['errors'] = $payment['errors'];
-            PaymentService::cacheErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+            PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
         }
 
         return array_filter($result);
@@ -967,7 +966,7 @@ class PaymentService
     }
 
     /**
-     * Invokes fallback provider
+     * Invokes fallback
      * @param  OdinOrder $order
      * @param  array     $card
      * @param  array     $details ['provider' => string, 'method' => string, 'useragent' => ?string]
@@ -1029,7 +1028,13 @@ class PaymentService
                         'document_number'   => $order->customer_doc_id
                     ],
                     [
-                        '3ds'           => false,
+                        '3ds' => self::checkIs3dsNeeded(
+                            $details['method'],
+                            $order->shipping_country,
+                            PaymentProviders::BLUESNAP,
+                            $order->affiliate,
+                            (array)$order->ipqualityscore
+                        ),
                         'amount'        => $order->total_price,
                         'currency'      => $order->currency,
                         'order_id'      => $order->getIdAttribute(),
@@ -1056,7 +1061,13 @@ class PaymentService
                         'ip'            => $order->ip
                     ],
                     [
-                        '3ds'       => false,
+                        '3ds' => self::checkIs3dsNeeded(
+                            $details['method'],
+                            $order->shipping_country,
+                            PaymentProviders::MINTE,
+                            $order->affiliate,
+                            (array)$order->ipqualityscore
+                        ),
                         'amount'    => $order->total_price,
                         'currency'  => $order->currency,
                         'order_id'  => $order->getIdAttribute(),
@@ -1107,8 +1118,7 @@ class PaymentService
                         'amount'        => $order->total_price,
                         'currency'      => $order->currency,
                         'number'        => $order->number,
-                        'installments'  => $order->installments,
-                        // 'product_id'    => $product->getIdAttribute()
+                        'installments'  => $order->installments
                     ]
                 );
                 break;
@@ -1258,9 +1268,9 @@ class PaymentService
      * Mint-e 3ds redirect
      * @param  PaymentCardMinte3dsRequest $req
      * @param string $order_id
-     * @return bool
+     * @return array
      */
-    public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id): bool
+    public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id): array
     {
         $errcode    = $req->input('errorcode');
         $errmsg     = $req->input('errormessage');
@@ -1287,20 +1297,20 @@ class PaymentService
             $payment['capture_hash'] = $capture['hash'];
         }
 
-        $result = false;
+        $result = ['status' => self::STATUS_FAIL];
         if ($payment['status'] === Txn::STATUS_APPROVED) {
-            $result = true;
+            $result = ['status' => self::STATUS_OK];
             $this->approveOrder($payment, PaymentProviders::MINTE);
         } else {
             $order = $this->rejectTxn($payment, PaymentProviders::MINTE);
 
-            PaymentService::cacheErrors(array_merge($payment, ['number' => $order->number]));
+            PaymentService::cacheOrderErrors(array_merge($payment, ['number' => $order->number]));
 
             $cardtk = self::getCardToken($order->number, false);
 
             logger()->info("Pre-Fallback [{$order->number}]", ['cardtk' => !!$cardtk, 'fallback' => !empty($payment['fallback'])]);
 
-            if (!empty($payment['fallback']) && $cardtk) {
+            if (/*!empty($payment['fallback']) &&*/ $cardtk) {
                 $reply = $this->fallbackOrder(
                     $order,
                     json_decode(MinteService::decrypt($cardtk, $order_id), true),
@@ -1308,7 +1318,11 @@ class PaymentService
                 );
 
                 if ($reply['status']) {
-                    $result = true;
+                    $result = [
+                        'status'        => self::STATUS_OK,
+                        'redirect_url'  => $reply['payment']['redirect_url'] ?? null,
+                        'bs_pf_token'   => $reply['payment']['bs_pf_token'] ?? null
+                    ];
 
                     $order_product = $order->getMainProduct(); // throwable
                     $order_product['txn_hash'] = $reply['payment']['hash'];
@@ -1324,8 +1338,8 @@ class PaymentService
                     }
 
                     if ($reply['payment']['status'] === Txn::STATUS_FAILED) {
-                        PaymentService::cacheErrors(array_merge($reply['payment'], ['number' => $order->number]));
-                        $reslt = false;
+                        PaymentService::cacheOrderErrors(array_merge($reply['payment'], ['number' => $order->number]));
+                        $result = ['status' => self::STATUS_FAIL];
                     }
                 }
             }
@@ -1428,13 +1442,13 @@ class PaymentService
      * @param array  $data
      * @return void
      */
-    public static function cacheErrors(array $data = []): void
+    public static function cacheOrderErrors(array $data = []): void
     {
         $order_number = $data['number'] ?? null;
         $errors = $data['errors'] ?? null;
         if ($order_number && !empty($errors)) {
             $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_ERRORS_TTL_MIN . "M"));
-            Cache::put(self::CACHE_ERRORS_PREFIX . $order_number, \json_encode($errors), $dt);
+            Cache::put(self::CACHE_ERRORS_PREFIX . $order_number, json_encode($errors), $dt);
         }
     }
 
@@ -1471,11 +1485,11 @@ class PaymentService
      * @param string $order_id
      * @return array
      */
-    public static function getOrderErrors(string $order_id): array
+    public static function getCachedOrderErrors(string $order_id): array
     {
         $order = OdinOrder::getById($order_id);
         $cache_reply = Cache::get(self::CACHE_ERRORS_PREFIX . $order->number);
-        return $cache_reply ? json_decode($cache_reply, true) : [];
+        return $cache_reply ? (json_decode($cache_reply, true) ?? []) : [];
     }
 
     /**
