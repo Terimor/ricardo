@@ -67,10 +67,10 @@ class PaymentsController extends Controller
     public function getCardOrderErrors(PaymentCardOrderErrorsRequest $req)
     {
         $order_id = $req->get('order');
-        $reply = PaymentService::getOrderErrors($order_id);
+        $reply = PaymentService::getCachedOrderErrors($order_id);
         return [
             'order_id'  => $order_id,
-            'errors'    => $reply ?? []
+            'errors'    => !empty($reply['errors']) ? $reply['errors'] : []
         ];
     }
 
@@ -165,7 +165,7 @@ class PaymentsController extends Controller
 
         $this->paymentService->rejectTxn($reply['txn'], PaymentProviders::CHECKOUTCOM);
 
-        PaymentService::cacheErrors($reply['txn']);
+        PaymentService::cacheOrderErrors($reply['txn']);
     }
 
     /**
@@ -213,12 +213,16 @@ class PaymentsController extends Controller
      */
     public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
     {
-        $query = [
-            'order' => $order_id,
-            '3ds'   => $this->paymentService->minte3ds($req, $order_id) ? 'success' : 'failure'
-        ];
+        $reply = $this->paymentService->minte3ds($req, $order_id);
 
-        return redirect('/checkout?' . $qs = http_build_query($query));
+        $query = array_filter([
+            '3ds'   => $reply['status'] === PaymentService::STATUS_OK ? 'success' : 'failure',
+            'order' => $order_id,
+            'bs_pf_token'   => $reply['bs_pf_token'] ?? null,
+            'redirect_url'  => $reply['redirect_url'] ?? null
+        ]);
+
+        return redirect('/checkout?' . http_build_query($query));
     }
 
     public function test(Request $req)

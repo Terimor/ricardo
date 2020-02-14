@@ -360,10 +360,8 @@ class CheckoutDotComService
                     $result['status']       = Txn::STATUS_AUTHORIZED;
                     $result['is_flagged']   = true;
                 } else {
-                    if (in_array($response_code, self::$fallback_codes)) {
-                        $result['fallback'] = true;
-                    }
-                    $result['errors']  = [CheckoutDotComCodeMapper::toPhrase($response_code)];
+                    $result['fallback'] = in_array($response_code, self::$fallback_codes);
+                    $result['errors']   = [CheckoutDotComCodeMapper::toPhrase($response_code)];
                 }
             } elseif ($res->http_code === 202 && $res->status === self::STATUS_PENDING) { // pending 3ds
                 $result['status']       = Txn::STATUS_AUTHORIZED;
@@ -459,10 +457,11 @@ class CheckoutDotComService
             $result = [
                 'status'    => true,
                 'txn' => [
-                    'errors'    => [CheckoutDotComCodeMapper::toPhrase($response_code)],
-                    'status'    => Txn::STATUS_FAILED,
                     'hash'      => $data['id'],
-                    'number'    => $data['reference']
+                    'number'    => $data['reference'],
+                    'status'    => Txn::STATUS_FAILED,
+                    'fallback'  => in_array($response_code, self::$fallback_codes),
+                    'errors'    => [CheckoutDotComCodeMapper::toPhrase($response_code)]
                 ]
             ];
         }
