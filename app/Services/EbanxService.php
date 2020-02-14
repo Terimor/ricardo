@@ -215,14 +215,19 @@ class EbanxService
         $content = $req->getContent();
         $notification = new Notification($req->get('operation'), $req->get('notification_type'), explode(',', $req->get('hash_codes')));
 
-        $result = ['status' => false];
+        $result = ['status' => false, 'hashes' => []];
 
-        $cert = File::get(\config_path("cert/ebanx-notifications-public.pem"));
+        $cert = File::get(config_path("cert/ebanx-notifications-public.pem"));
 
-        $is_sign_valid = \openssl_verify($content, \base64_decode($sign), $cert);
+        $is_sign_valid = openssl_verify($content, \base64_decode($sign), $cert);
 
-        if ($is_sign_valid && EbanxUtils::isValidNotification($notification)) {
-            $result = ['status' => true, 'hashes' => $notification->getHashCodes()];
+        if ($is_sign_valid === 1) {
+            $result['status'] = true;
+            if ($notification->getNotificationType() === EbanxUtils::UPDATE) {
+                $result['hashes'] = $notification->getHashCodes();
+            } else {
+                logger()->info('Ebanx unprocessed webhook', ['content' => $content]);
+            }
         }
 
         return $result;
