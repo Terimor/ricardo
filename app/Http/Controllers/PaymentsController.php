@@ -222,6 +222,10 @@ class PaymentsController extends Controller
             'redirect_url'  => $reply['redirect_url'] ?? null
         ]);
 
+        if (!empty($query['bs_pf_token']) || !empty($query['redirect_url'])) {
+            $query['3ds'] = 'pending';
+        }
+
         return redirect('/checkout?' . http_build_query($query));
     }
 
