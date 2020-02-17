@@ -1,4 +1,8 @@
-<div class="order-upgraded">{!! t('vc_upsells.order_upgraded') !!}</div>
+<div
+  v-if="order_upgraded_visible"
+  class="order-upgraded">
+  {!! t('vc_upsells.order_upgraded') !!}
+</div>
 <div class="page-title">A complete guide on how to build a geothermal heat pump.</div>
 <div class="upsell-long-name">{{ $product->long_name }}</div>
 <div class="upsell-last-call-text">
@@ -23,7 +27,7 @@
     </div>
     <div
       class="last-call-card-label-3"
-      @click="next_upsell">
+      @click="cancel">
       {!! t('vc_upsells.last_call_card.label_3') !!}
     </div>
   </div>

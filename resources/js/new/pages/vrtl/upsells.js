@@ -42,6 +42,18 @@ js_deps.wait(['vue'], () => {
     },
 
 
+    computed: {
+
+      order_upgraded_visible() {
+        const prev_index = this.step - 3;
+        const upsell = js_data.upsells[prev_index];
+
+        return this.cart[upsell.id] !== undefined;
+      },
+
+    },
+
+
     methods: {
 
       add_upsell() {
@@ -52,10 +64,16 @@ js_deps.wait(['vue'], () => {
         const upsell = js_data.upsells[index];
         Vue.set(this.cart, upsell.id, 1);
 
-        this.next_upsell();
+        if (js_data.upsells[index + 1]) {
+          this.step = this.step !== 1
+            ? this.step + 1
+            : 3;
+        } else {
+          this.goto_checkout();
+        }
       },
 
-      next_upsell() {
+      cancel() {
         const index = this.step !== 1
           ? this.step - 2
           : 0;
@@ -63,7 +81,7 @@ js_deps.wait(['vue'], () => {
         if (js_data.upsells[index + 1]) {
           this.step = this.step !== 1
             ? this.step + 1
-            : 3;
+            : 2;
         } else {
           this.goto_checkout();
         }

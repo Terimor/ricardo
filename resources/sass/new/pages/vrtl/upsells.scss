@@ -65,10 +65,6 @@ main {
     font-style: italic;
     font-weight: 400;
   }
-
-  .step3 & {
-    margin-top: 18px;
-  }
 }
 
 .page-note {
@@ -314,6 +310,10 @@ main {
   max-width: 800px;
   padding: 20px 20px 0;
   text-decoration: underline;
+}
+
+.order-upgraded {
+  margin-bottom: 18px;
 }
 
 .upsell-long-name {

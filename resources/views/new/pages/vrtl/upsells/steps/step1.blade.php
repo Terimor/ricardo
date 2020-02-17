@@ -82,7 +82,7 @@
     </div>
     <div
       class="last-call-card-label-3"
-      @click="next_upsell">
+      @click="cancel">
       {!! t('vc_upsells.last_call_card.label_3') !!}
     </div>
   </div>
