@@ -706,7 +706,12 @@ class PayPalService
         if (!empty($paypal_order->purchase_units) && $paypal_order->purchase_units[0]) {
             $shipping = $paypal_order->purchase_units[0]->shipping ?? null;
             if (!empty($shipping->address)) {
-                $order->shipping_country = optional($shipping->address)->country_code;
+                $shipping_country_code = optional($shipping->address)->country_code;
+                // replace c2 to ch(china)
+                if ($shipping_country_code == 'c2') {
+                    $shipping_country_code = 'cn';
+                }
+                $order->shipping_country = $shipping_country_code;
                 $order->shipping_zip = optional($shipping->address)->postal_code;
                 $order->shipping_state = optional($shipping->address)->admin_area_1;
                 $order->shipping_city = optional($shipping->address)->admin_area_2;
