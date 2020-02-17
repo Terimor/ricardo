@@ -7,6 +7,7 @@ use App\Services\EbanxService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
+use App\Http\Requests\PaymentCardBs3dsRequest;
 use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
@@ -57,6 +58,12 @@ class PaymentsController extends Controller
             'status'            => $reply['status'],
             'upsells'           => $reply['upsells']
         ];
+    }
+
+
+    public function completeBs3dsOrder(PaymentCardBs3dsRequest $req, string $order_id)
+    {
+        return $this->paymentService->completeBs3dsOrder($req->input('order_id'), $res->input('3ds_ref'));
     }
 
     /**
