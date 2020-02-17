@@ -380,7 +380,7 @@ class PaymentService
      * @param PaymentCardCreateOrderRequest $req
      * @return array
      */
-    public function createOrder(PaymentCardCreateOrderRequest $req)
+    public function createOrder(PaymentCardCreateOrderRequest $req): array
     {
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
@@ -391,7 +391,7 @@ class PaymentService
         $fingerprint = $req->get('f', null);
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
-        $bs_3ds_ref = $req->input('card.bs_3ds_ref', null);
+        // $bs_3ds_ref = $req->input('card.bs_3ds_ref', null);
         $shop_currency = CurrencyService::getCurrency()->code;
         $contact = array_merge(
             $req->get('contact'),
@@ -494,11 +494,11 @@ class PaymentService
             $order_product = $order->getMainProduct(); // throwable
 
             // NOTE: Bluesnap hack
-            $order_txn = $order->getTxnByHash($order_product['txn_hash'], false);
-            if ($bs_3ds_ref && $order_txn) {
-                $api = PaymentApiService::getById($order_txn['payment_api_id']);
-                $order->dropTxn($order_txn['hash']);
-            }
+            // $order_txn = $order->getTxnByHash($order_product['txn_hash'], false);
+            // if ($bs_3ds_ref && $order_txn) {
+            //     $api = PaymentApiService::getById($order_txn['payment_api_id']);
+            //     $order->dropTxn($order_txn['hash']);
+            // }
             //
 
             $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contact['country']);
@@ -599,7 +599,7 @@ class PaymentService
                         'amount' => $order->total_price,
                         'currency' => $order->currency,
                         'order_id' => $order->getIdAttribute(),
-                        'bs_3ds_ref' => $bs_3ds_ref,
+                        // 'bs_3ds_ref' => $bs_3ds_ref,
                         'billing_descriptor' => $order->billing_descriptor,
                         '3ds'  => self::checkIs3dsNeeded(
                             $method,
@@ -708,11 +708,93 @@ class PaymentService
     }
 
     /**
+     * Resolves Blusnap 3ds payment
+     * @param  string $order_id
+     * @param  string $ref
+     * @return array
+     */
+    public function completeBs3dsOrder(string $order_id, string $ref): array
+    {
+        $user_agent = $req->header('User-Agent');
+
+        $order = OdinOrder::getById($order_id); // throwable
+        $order_product = $order->getMainProduct(); // throwable
+        $order_txn = $order->getTxnByHash($order_product['txn_hash']); // throwable
+        $order->dropTxn($order_txn['hash']);
+
+        $api = PaymentApiService::getById($order_txn['payment_api_id']);
+        $bluesnap = new BluesnapService($api);
+        $payment = $bluesnap->payByVaultedShopperId(
+            $order_txn['payer_id'],
+            [
+                '3ds_ref'   => $ref,
+                'amount'    => $order_txn['value'],
+                'currency'  => $order->currency,
+                'billing_descriptor' => $order->billing_descriptor
+            ]
+        );
+
+        $this->addTxnToOrder($order, $payment, $order_txn);
+
+        $order_product['txn_hash'] = $payment['hash'];
+        $order->addProduct($order_product, true);
+
+        // check is this fallback
+        $cardtk = self::getCardToken($order->number, false);
+        if (!empty($payment['fallback']) && $cardtk) {
+            $reply = $this->fallbackOrder(
+                $order,
+                json_decode(BluesnapService::decrypt($cardtk, $order_id), true),
+                [
+                    'method'     => $order_txn['payment_method'],
+                    'provider'   => PaymentProviders::BLUESNAP,
+                    'useragent'  => $user_agent
+                ]
+            );
+
+            if ($reply['status']) {
+                $payment = $reply['payment'];
+                $order_product = $order->getMainProduct(); // throwable
+                $order_product['txn_hash'] = $payment['hash'];
+                $order->addProduct($order_product, true);
+                $this->addTxnToOrder($order, $payment, $order_rxn);
+            }
+        }
+
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
+            }
+        }
+
+        $result = [
+            'order_currency' => $order->currency,
+            'order_number'   => $order->number,
+            'order_amount'   => $payment['value'],
+            'order_id'       => $order->getIdAttribute(),
+            'status'         => self::STATUS_FAIL,
+            'id'             => null
+        ];
+
+        if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $result['id'] = $payment['hash'];
+            $result['status'] = self::STATUS_OK;
+            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
+        } else {
+            $result['errors'] = $payment['errors'];
+            PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+        }
+
+        return array_filter($result);
+    }
+
+    /**
      * Adds upsells to order using CardToken
      * @param  PaymentCardCreateUpsellsOrderRequest $req
      * @return array
      */
-    public function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req)
+    public function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req): array
     {
         $upsells = $req->input('upsells', []);
         $user_agent = $req->header('User-Agent');
@@ -1008,9 +1090,9 @@ class PaymentService
 
         switch ($api->payment_provider):
             case PaymentProviders::BLUESNAP:
+                $result['status']  = true;
                 $order = $this->checkOrderCurrency($order, PaymentProviders::BLUESNAP);
                 $bluesnap = new BluesnapService($api);
-                $result['status']  = true;
                 $result['payment'] = $bluesnap->payByCard(
                     $card,
                     [
