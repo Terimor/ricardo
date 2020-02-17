@@ -68,7 +68,7 @@ class BluesnapService
     public static function createCardHolderObj(array $contact): array
     {
         $phone = $contact['phone'];
-        if (gettype($contact['phone']) === 'array') {
+        if (is_array($contact['phone'])) {
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
         $result = [
@@ -128,11 +128,11 @@ class BluesnapService
     /**
      * Provides payment by card
      * @param  array   $card
-     * @param  array   $contact
+     * @param  array   $contacts
      * @param  array   $details
      * [
      *   '3ds'=>boolean,
-     *   'bs_3ds_ref'=>?string,
+     *   '3ds_ref'=>?string,
      *   'currency'=>string,
      *   'amount'=>float,
      *   'billing_descriptor'=>string,
@@ -140,29 +140,31 @@ class BluesnapService
      * ]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $details): array
+    public function payByCard(array $card, array $contacts, array $details): array
     {
         $payment = [];
         if ($details['3ds']) {
-            if (!empty($details['bs_3ds_ref'])) {
-                $payment = $this->pay(
-                    [
-                        'cardHolderInfo' => self::createCardHolderObj($contact),
-                        'creditCard'     => self::createCardObj($card),
-                    ],
-                    $details
-                );
-            } else {
-                $pf_token = $this->getPfToken();
-                $payment = [
-                    'bs_pf_token' => $pf_token,
-                    'status' => !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW
-                ];
-            }
+            // if (!empty($details['3ds_ref'])) {
+            //     $payment = $this->pay(
+            //         [
+            //             'cardHolderInfo' => self::createCardHolderObj($contacts),
+            //             'creditCard'     => self::createCardObj($card),
+            //         ],
+            //         $details
+            //     );
+            // } else {
+            $shopper_id = $this->createVaultedShopperId($card, $contacts);
+            $pf_token = $this->getPfToken($card);
+            $payment = [
+                'payer_id' => $shopper_id,
+                'bs_pf_token' => $pf_token,
+                'status' => !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW
+            ];
+            // }
         } else {
             $payment = $this->pay(
                 [
-                    'cardHolderInfo' => self::createCardHolderObj($contact),
+                    'cardHolderInfo' => self::createCardHolderObj($contacts),
                     'creditCard'     => self::createCardObj($card),
                 ],
                 $details
@@ -194,7 +196,7 @@ class BluesnapService
      * Provides payment
      * @param  array   $source
      * @param  array   $details
-     * ['bs_3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
+     * ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
      * @return array
      */
     private function pay(array $source, array $details): array
@@ -208,9 +210,9 @@ class BluesnapService
         $result = [];
         try {
             $threeDSecure = [];
-            if (!empty($details['bs_3ds_ref'])) {
+            if (!empty($details['3ds_ref'])) {
                 $threeDSecure['threeDSecure'] = [
-                    'threeDSecureReferenceId' => $details['bs_3ds_ref']
+                    'threeDSecureReferenceId' => $details['3ds_ref']
                 ];
             }
 
@@ -264,12 +266,14 @@ class BluesnapService
         return $result;
     }
 
-
     /**
-     * Returns pfToken for a new card payment
+     * Creates vaulted shopper and returns its ID
+     * @param  array  $card
+     * @param  array  $contacts
+     * @param  array  $details
      * @return string|null
      */
-    private function getPfToken(): ?string
+    private function createVaultedShopperId(array $card, array $contacts, array $details): ?string
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
@@ -279,7 +283,54 @@ class BluesnapService
 
         $result = null;
         try {
-            $res = $client->post('payment-fields-tokens');
+            $res = $client->post('vaulted-shoppers', [
+                'json' => array_merge(
+                    self::createCardHolderObj($contacts),
+                    [
+                        'shopperCurrency' => $details['currency'],
+                        'paymentSources'  => [
+                            'creditCardInfo' => [
+                                'creditCard' => self::createCardObj($card),
+                                'billingContactInfo' => [
+                                    'lastName'  => $contacts['last_name'],
+                                    'firstName' => $contacts['first_name'],
+                                    'country'   => $contacts['country'],
+                                    'zip'       => $contacts['zip']
+                                ]
+                            ]
+                        ]
+                    ]
+                )
+            ]);
+            $result = $res['vaultedShopperId'];
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? $ex->getResponse() : null;
+            logger()->error("Bluesnap vaulted shopper", ['res'  => $res]);
+        }
+        return $result;
+    }
+
+    /**
+     * Returns pfToken for a new card payment
+     * @param array $card
+     * @return string|null
+     */
+    private function getPfToken(array $card): ?string
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'auth' => [$this->api->login, $this->api->password],
+            'headers' => ['Accept' => 'application/json']
+        ]);
+
+        $result = null;
+        try {
+            $res = $client->post('payment-fields-tokens/prefill', [
+                'json' => [
+                    'ccNumber' => $card['number'],
+                    'expDate'  => "{$card['month']}/{$card['year']}"
+                ]
+            ]);
             $headers = $res->getHeader('Location');
             if (!empty($headers)) {
                 $exploded = explode('/', end($headers));
