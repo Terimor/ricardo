@@ -20,6 +20,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'pay-by-card',
+        'pay-by-card-bs-3ds',
         'pay-by-card-upsells',
         'checkoutdotcom-captured-webhook',
         'checkoutdotcom-failed-webhook',
