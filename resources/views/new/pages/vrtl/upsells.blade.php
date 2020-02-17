@@ -7,7 +7,7 @@
   <script type="text/javascript">
     js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
     js_data.order_customer = @json($orderCustomer, JSON_UNESCAPED_UNICODE);
-    js_data.upsells = @json([['id' => '123'], ['id' => '456'], ['id' => '789']], JSON_UNESCAPED_UNICODE);
+    js_data.upsells = @json($product->upsells, JSON_UNESCAPED_UNICODE);
   </script>
 @endsection
 
