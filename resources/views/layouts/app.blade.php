@@ -63,7 +63,7 @@
 
   <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
 
-    <div id="app">
+    <div id="app" ref="app">
         {{--@include('components.black_friday')--}}
         {{--@include('components.christmas')--}}
         @if (!$is_new_engine)

@@ -49,6 +49,10 @@ export default {
 
       localStorage.setItem('odin_order_created_at', new Date());
 
+      if (js_data.product.upsells.length > 0) {
+        localStorage.setItem((this.is_vrtl_checkout ? 'vrtl_' : '') + 'show_upsells', true);
+      }
+
       this.goto(url, ['3ds', '3ds_restore']);
     },
 

@@ -1,23 +1,40 @@
+$size1: 480px;
+$size2: 768px;
+
 @import '../../app';
 
 
 main {
   background-color: #e7e7e7;
+
+  @media (min-width: $size2) {
+    padding: 0 30px;
+  }
 }
 
 .upsells {
   background-color: #fff;
-  border: 1px solid #a6a6a6;
   color: #333;
   display: flex;
   flex-direction: column;
   font-family: Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  margin-bottom: 35px;
-  margin-top: 35px;
-  min-height: 500px;
-  padding: 24px 50px 40px;
+  max-width: 1140px;
+  padding: 24px 16px 40px;
+  width: 100%;
+
+  @media (min-width: $size1) {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  @media (min-width: $size2) {
+    border: 1px solid #a6a6a6;
+    margin: 35px auto;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
 
   input,
   select,
@@ -27,12 +44,31 @@ main {
     font-size: 16px;
     line-height: 1.5;
   }
+
+  > .inside {
+    display: flex;
+    flex-direction: column;
+    transition: opacity .3s ease;
+  }
 }
 
 .page-title {
   font-size: 48px;
   font-weight: 900;
   text-align: center;
+
+  @media (min-width: $size2) {
+    margin: 0 16px;
+  }
+
+  .step2 & {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .step3 & {
+    margin-top: 18px;
+  }
 }
 
 .page-note {
@@ -40,7 +76,8 @@ main {
   border: 1px dashed #000;
   font-size: 23px;
   margin: 40px auto 0;
-  padding: 23px 10px 25px;
+  max-width: 760px;
+  padding: 23px 16px 25px;
   text-align: center;
 
   .prefix {
@@ -55,8 +92,14 @@ main {
   font-size: 16px;
   font-style: italic;
   margin: 62px auto 0;
-  padding: 0 100px 27px;
+  max-width: 780px;
+  padding-bottom: 27px;
   text-align: center;
+  width: 100%;
+}
+
+.upsell-subtitle-inside {
+  max-width: 780px;
 }
 
 .upsell-title {
@@ -90,32 +133,70 @@ main {
 }
 
 .guarantee {
-  align-items: flex-start;
+  align-items: center;
   background-color: #f3f3f3;
   border: 1px dashed #71ba71;
   display: flex;
+  flex-direction: column;
   margin-top: 30px;
+
+  @media (min-width: $size2) {
+    align-items: flex-start;
+    flex-direction: row;
+  }
 }
 
 .guarantee-image {
-  margin: 25px 0 0 37px;
+  margin-top: 25px;
   max-width: 240px;
+
+  @media (min-width: $size2) {
+    margin-left: 37px;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: 37px;
+    }
+  }
 }
 
 .guarantee-content {
   display: flex;
   flex-direction: column;
-  margin: 20px 16px 57px 55px;
+  margin: 20px 32px 57px;
+
+  @media (min-width: $size2) {
+    margin-left: 55px;
+    margin-right: 16px;
+
+    [dir="rtl"] & {
+      margin-left: 16px;
+      margin-right: 55px;
+    }
+  }
 }
 
 .guarantee-title {
   font-size: 40px;
   font-weight: 900;
+  text-align: center;
+
+  @media (min-width: $size2) {
+    text-align: left;
+
+    [dir="rtl"] & {
+      text-align: right;
+    }
+  }
 }
 
 .guarantee-text {
   font-size: 17px;
-  margin-top: 2px;
+  margin-top: 32px;
+
+  @media (min-width: $size2) {
+    margin-top: 2px;
+  }
 }
 
 .last-call-title {
@@ -134,6 +215,10 @@ main {
   flex-direction: column;
   text-align: center;
   margin-top: 28px;
+
+  .step3 & {
+    margin-top: 38px;
+  }
 }
 
 .last-call-card-title {
@@ -146,6 +231,7 @@ main {
 }
 
 .last-call-card-inside {
+  align-items: center;
   border: 2px dashed #8c8c8c;
   border-top: 0;
   display: flex;
@@ -155,13 +241,17 @@ main {
 
 .last-call-card-image {
   max-width: 100%;
-  margin: 0 auto;
 }
 
 .last-call-card-download {
   font-size: 18px;
   margin-left: -35%;
   margin-top: 40px;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: -35%;
+  }
 }
 
 .last-call-card-old-price {
@@ -178,6 +268,10 @@ main {
 .last-call-card-label-1 {
   font-size: 38px;
   margin-top: 6px;
+
+  .step3 & {
+    margin-top: 28px;
+  }
 }
 
 .last-call-card-price {
@@ -188,15 +282,18 @@ main {
   text-decoration: underline;
 }
 
-.last-call-card-button {
+.last-call-card-submit {
   background-color: #f65b00;
   box-shadow: 0px 2px 5px 0px #000;
   color: #fff;
   cursor: pointer;
   font-size: 58px;
   font-weight: 700;
-  margin: -14px auto 0;
-  padding: 10px 116px;
+  line-height: 1;
+  margin-top: -14px;
+  max-width: 680px;
+  padding: 25px 0;
+  width: 100%;
 }
 
 .last-call-card-label-2 {
@@ -217,4 +314,14 @@ main {
   max-width: 800px;
   padding: 20px 20px 0;
   text-decoration: underline;
+}
+
+.upsell-long-name {
+  font-size: 50px;
+  margin-top: -5px;
+}
+
+.upsell-last-call-text {
+  font-size: 24px;
+  margin-top: 35px;
 }

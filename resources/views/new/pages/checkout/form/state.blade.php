@@ -5,10 +5,10 @@
     'model' => 'form.state',
     'validation' => '$v.form.state',
     'label_code' => 'state_label',
+    'placeholder_code' => 'state_label',
     'validation_labels' => [
       'required' => t('checkout.payment_form.state.required'),
     ],
-    'placeholder' => true,
   ])
 
 </template>
@@ -25,13 +25,13 @@
     'model' => 'form.state',
     'validation' => '$v.form.state',
     'label_code' => 'state_label',
+    'placeholder' => t('checkout.payment_form.state.selected'),
     'validation_labels' => [
       'required' => t('checkout.payment_form.state.required'),
     ],
     'items' => $states_options,
     'items_code' => 'state_items',
     'loading' => 'is_loading.address',
-    'placeholder' => true,
   ])
 
 </template>

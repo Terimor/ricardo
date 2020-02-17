@@ -22,9 +22,9 @@
   'model' => 'form.country',
   'validation' => '$v.form.country',
   'label' => t('checkout.payment_form.сountry'),
+  'placeholder' => t('checkout.payment_form.сountry'),
   'validation_labels' => [
     'required' => t('checkout.payment_form.сountry.required'),
   ],
   'items' => $countries_options,
-  'placeholder' => true,
 ])

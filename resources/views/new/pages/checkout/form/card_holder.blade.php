@@ -5,10 +5,10 @@
     'model' => 'form.card_holder',
     'validation' => '$v.form.card_holder',
     'label' => t('checkout.payment_form.card_holder'),
+    'placeholder' => t('checkout.payment_form.card_holder'),
     'validation_labels' => [
       'required' => t('checkout.payment_form.card_holder.required'),
     ],
-    'placeholder' => true,
   ])
 
 @endif

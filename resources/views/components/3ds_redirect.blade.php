@@ -53,7 +53,7 @@
     </script>
   @endif
 
-  @if (Request::get('3ds') === 'failure' && Request::get('3ds_restore'))
+  @if (Request::get('3ds') !== 'success' && Request::get('3ds_restore'))
     <script type="text/javascript">
       (function() {
         localStorage.setItem('order_failed', localStorage.getItem('odin_order_id'));
