@@ -722,6 +722,18 @@ class PaymentService
         $order_txn = $order->getTxnByHash($order_product['txn_hash']); // throwable
         $order->dropTxn($order_txn['hash']);
 
+        $result = [
+            'order_currency' => $order->currency,
+            'order_number'   => $order->number,
+            'order_amount'   => $order_txn['value'],
+            'order_id'       => $order->getIdAttribute(),
+            'status'         => self::STATUS_FAIL
+        ];
+
+        if (empty($order_txn['payer_id'])) {
+            return $result;
+        }
+
         $api = PaymentApiService::getById($order_txn['payment_api_id']);
         $bluesnap = new BluesnapService($api);
         $payment = $bluesnap->payByVaultedShopperId(
@@ -767,15 +779,6 @@ class PaymentService
                 throw new OrderUpdateException(json_encode($validator->errors()->all()));
             }
         }
-
-        $result = [
-            'order_currency' => $order->currency,
-            'order_number'   => $order->number,
-            'order_amount'   => $payment['value'],
-            'order_id'       => $order->getIdAttribute(),
-            'status'         => self::STATUS_FAIL,
-            'id'             => null
-        ];
 
         if ($payment['status'] !== Txn::STATUS_FAILED) {
             $result['id'] = $payment['hash'];
