@@ -230,6 +230,8 @@ class PaymentsController extends Controller
         ]);
 
         if (!empty($query['bs_pf_token']) || !empty($query['redirect_url'])) {
+            $query['amount'] = $reply['amount'];
+            $query['cur'] = $reply['currency'];
             $query['3ds'] = 'pending';
         }
 

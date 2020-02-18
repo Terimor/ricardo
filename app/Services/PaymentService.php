@@ -1404,6 +1404,8 @@ class PaymentService
 
                 if ($reply['status']) {
                     $result = [
+                        'amount'        => $reply['payment']['value'],
+                        'currency'      => $order->currency,
                         'status'        => self::STATUS_OK,
                         'redirect_url'  => $reply['payment']['redirect_url'] ?? null,
                         'bs_pf_token'   => $reply['payment']['bs_pf_token'] ?? null
