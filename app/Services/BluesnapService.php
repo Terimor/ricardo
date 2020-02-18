@@ -153,7 +153,7 @@ class BluesnapService
             //         $details
             //     );
             // } else {
-            $shopper_id = $this->createVaultedShopperId($card, $contacts);
+            $shopper_id = $this->createVaultedShopperId($card, $contacts, $details);
             $pf_token = $this->getPfToken($card);
             $payment = [
                 'payer_id' => $shopper_id,
