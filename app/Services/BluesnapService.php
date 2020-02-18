@@ -67,32 +67,19 @@ class BluesnapService
      */
     public static function createCardHolderObj(array $contact): array
     {
-        $phone = $contact['phone'];
-        if (is_array($contact['phone'])) {
-            $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
-        }
-        $result = [
+        return array_filter([
             'address'   => $contact['street'] . (!empty($contact['building']) ? ", {$contact['building']}" : ''),
+            'address2'  => $contact['complement'] ?? null,
             'city'      => $contact['city'],
             'country'   => $contact['country'],
             'email'     => $contact['email'],
             'firstName' => $contact['first_name'],
             'lastName'  => $contact['last_name'],
-            'phone'     => $phone,
-            'zip'       => $contact['zip']
-        ];
-        if (!empty($contact['state'])) {
-            $result['state'] = $contact['state'];
-        }
-
-        if (!empty($contact['complement'])) {
-            $result['address2'] = $contact['complement'];
-        }
-
-        if (!empty($contact['document_number'])) {
-            $result['personalIdentificationNumber'] = $contact['document_number'];
-        }
-        return $result;
+            'phone'     => is_array($contact['phone']) ? $contact['phone']['country_code'] . $contact['phone']['number'] : $contact['phone'],
+            'zip'       => $contact['zip'],
+            'state'     => $contact['state'] ?? null,
+            'personalIdentificationNumber' => $contact['document_number'] ?? null
+        ]);
     }
 
     /**
@@ -290,22 +277,24 @@ class BluesnapService
                         'shopperCurrency' => $details['currency'],
                         'paymentSources'  => [
                             'creditCardInfo' => [
-                                'creditCard' => self::createCardObj($card),
-                                'billingContactInfo' => [
-                                    'lastName'  => $contacts['last_name'],
-                                    'firstName' => $contacts['first_name'],
-                                    'country'   => $contacts['country'],
-                                    'zip'       => $contacts['zip']
+                                [
+                                    'creditCard' => self::createCardObj($card),
+                                    'billingContactInfo' => self::createCardHolderObj($contacts)
                                 ]
                             ]
                         ]
                     ]
                 )
             ]);
-            $result = $res['vaultedShopperId'];
+
+            $body_decoded = json_decode($res->getBody(), true);
+            $result = $body_decoded['vaultedShopperId'];
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
-            logger()->error("Bluesnap vaulted shopper", ['res'  => $res]);
+            logger()->error("Bluesnap vaulted shopper", [
+                'code'  => optional($res)->getStatusCode(),
+                'body'  => optional($res)->getBody()
+            ]);
         }
         return $result;
     }
