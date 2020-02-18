@@ -327,7 +327,10 @@ class BluesnapService
             }
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
-            logger()->error("Bluesnap pfToken", ['res'  => $res]);
+            logger()->error("Bluesnap pfToken", [
+                'code'  => optional($res)->getStatusCode(),
+                'body'  => optional($res)->getBody()
+            ]);
         }
         return $result;
     }
