@@ -715,7 +715,7 @@ class PaymentService
      */
     public function completeBs3dsOrder(string $order_id, string $ref): array
     {
-        $user_agent = $req->header('User-Agent');
+        $user_agent = request()->header('User-Agent');
 
         $order = OdinOrder::getById($order_id); // throwable
         $order_product = $order->getMainProduct(); // throwable
