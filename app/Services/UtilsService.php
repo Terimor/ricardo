@@ -1063,10 +1063,6 @@ class UtilsService
             }
         }
         $countryCode = !empty($location['countryCode']) ? $location['countryCode'] : '';
-        if (!$countryCode) {
-            logger()->error(str_repeat('*', 10)."CandFindLocationIPApi", ['ip' => $ip, 'location' => $location]);
-        }
-
         return strtolower($countryCode);
     }
 }
