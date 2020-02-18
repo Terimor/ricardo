@@ -61,9 +61,9 @@ class PaymentsController extends Controller
     }
 
 
-    public function completeBs3dsOrder(PaymentCardBs3dsRequest $req, string $order_id)
+    public function completeBs3dsOrder(PaymentCardBs3dsRequest $req)
     {
-        return $this->paymentService->completeBs3dsOrder($req->input('order_id'), $res->input('3ds_ref'));
+        return $this->paymentService->completeBs3dsOrder($req->input('order_id'), $req->input('3ds_ref'));
     }
 
     /**
