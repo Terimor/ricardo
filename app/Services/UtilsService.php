@@ -1043,7 +1043,7 @@ class UtilsService
     }
 
     /**
-     * Returns location by IP address using ip-api.com service
+     * Returns country code location by IP address using ip-api.com service
      * Alternative method if MaxMind doesn't find location
      * SAGA: Utils::getLocationByIP()
      * @param type $ip
@@ -1063,8 +1063,8 @@ class UtilsService
             }
         }
         $countryCode = !empty($location['countryCode']) ? $location['countryCode'] : '';
-        if ($countryCode) {
-            logger()->error(str_repeat('*', 10)."CandFindApi", ['ip' => $ip, 'location' => $location ?? null]);
+        if (!$countryCode) {
+            logger()->error(str_repeat('*', 10)."CandFindLocationIPApi", ['ip' => $ip, 'location' => $location ?? null]);
         }
 
         return strtolower($countryCode);
