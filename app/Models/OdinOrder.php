@@ -208,8 +208,8 @@ class OdinOrder extends OdinModel
 
                     if (!$model->country) {
                         // get alternative way to get country code
-                        $model->country = \Utils::getLocationCountryCodeByIPApi($ip);
                         logger()->error(str_repeat('*', 10)."Cant find country by IP {$ip} for order {$model->number}");
+                        $model->country = \Utils::getLocationCountryCodeByIPApi($ip);
                     }
                 }
             }
