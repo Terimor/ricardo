@@ -135,22 +135,16 @@ export default {
         })
         .then(this.fetch_json)
         .then(body => {
-          if (body.bs_pf_token) {
-            localStorage.setItem('odin_order_id', body.order_id);
-            localStorage.setItem('order_failed', body.order_id);
-
-            return this.bluesnap_create_order(body.bs_pf_token, body.order_currency, body.order_amount)
-              .then(bs_3ds_ref => {
-                this.is_submitted = false;
-                this.credit_card_create_order({ bs_3ds_ref });
-                return new Promise(resolve => {});
-              })
-              .catch(errText => {
-                return Promise.reject({ errText });
-              });
+          if (!body.bs_pf_token) {
+            return body;
           }
 
-          return body;
+          return this.bluesnap_create_order(body.bs_pf_token, body.order_currency, body.order_amount)
+            .then(bs_3ds_ref => this.fetch_post('/pay-by-card-bs-3ds', {
+              order_id: body.order_id,
+              '3ds_ref': bs_3ds_ref,
+            }))
+            .then(this.fetch_json);
         })
         .then(body => {
           if (body.order_id) {
@@ -201,7 +195,7 @@ export default {
           }
         })
         .catch(err => {
-          this.payment_error = err && err.errText || this.t('checkout.payment_error');
+          this.payment_error = this.t('checkout.payment_error');
           this.is_submitted = false;
         });
     },
