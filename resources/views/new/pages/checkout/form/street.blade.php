@@ -3,9 +3,9 @@
   'model' => 'form.street',
   'validation' => '$v.form.street',
   'label' => t('checkout.payment_form.street'),
+  'placeholder' => t('checkout.payment_form.street'),
   'validation_labels' => [
     'required' => t('checkout.payment_form.street.required'),
   ],
   'loading' => 'is_loading.address',
-  'placeholder' => true,
 ])

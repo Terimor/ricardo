@@ -53,5 +53,9 @@
       localStorage.setItem('odin_order_created_at', new Date());
       location.href = url_pathname + '?' + url_search;
     @endif
+
+    @if (Request::get('3ds_restore') && Request::get('3ds') !== 'success')
+      localStorage.setItem('order_failed', localStorage.getItem('odin_order_id'));
+    @endif
   })();
 </script>

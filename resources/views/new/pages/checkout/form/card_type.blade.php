@@ -21,12 +21,12 @@
     'model' => 'form.card_type',
     'validation' => '$v.form.card_type',
     'label' => t('checkout.payment_form.card_type.title'),
+    'placeholder' => t('checkout.payment_form.card_type.title'),
     'validation_labels' => [
       'required' => t('checkout.payment_form.card_type.required'),
     ],
     'items' => $card_type_options,
     'items_code' => 'card_type_items',
-    'placeholder' => true,
   ])
 
 </template>

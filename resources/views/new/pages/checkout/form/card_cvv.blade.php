@@ -3,6 +3,7 @@
   'model' => 'form.card_cvv',
   'validation' => '$v.form.card_cvv',
   'label' => t('checkout.payment_form.card_cvv'),
+  'placeholder' => t('checkout.payment_form.card_cvv'),
   'validation_labels' => [
     'required' => t('checkout.payment_form.card_cvv.required'),
     'numeric' => t('checkout.payment_form.card_cvv.required'),
@@ -12,7 +13,6 @@
   'suffix' => '<i class="fa fa-question-circle"></i>',
   'suffix_click' => 'card_cvv_suffix_open',
   'input' => 'card_cvv_input',
-  'placeholder' => true,
 ])
 
 <div

@@ -21,12 +21,12 @@
     'model' => 'form.document_type',
     'validation' => '$v.form.document_type',
     'label' => t('checkout.payment_form.document_type.title'),
+    'placeholder' => t('checkout.payment_form.document_type.title'),
     'validation_labels' => [
       'required' => t('checkout.payment_form.document_type.required'),
     ],
     'items' => $document_type_options,
     'items_code' => 'document_type_items',
-    'placeholder' => true,
   ])
 
 </template>

@@ -3,6 +3,7 @@
   'model' => 'form.email',
   'validation' => '$v.form.email',
   'label' => t('checkout.payment_form.email'),
+  'placeholder' => t('checkout.payment_form.email'),
   'validation_labels' => [
     'required' => t('checkout.payment_form.email.required'),
     'email' => t('checkout.payment_form.email.invalid'),
@@ -15,5 +16,4 @@
   ],
   'blur' => 'email_blur',
   'input' => 'email_input',
-  'placeholder' => true,
 ])
