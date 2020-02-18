@@ -117,16 +117,20 @@ function bindReturnsAddressDropdown() {
           address.classList.add('fade'); 
  
           setTimeout(() => { 
-            address.innerHTML = selector.querySelector('[value="' + selector.value + '"]').dataset.value || ''; 
-            address.classList.remove('disable'); 
-            address.classList.remove('fade'); 
+            if (selector.value) {
+              address.innerHTML = selector.querySelector('[value="' + selector.value + '"]').dataset.value || ''; 
+              address.classList.remove('disable'); 
+              address.classList.remove('fade'); 
+            }
           }); 
         } else { 
           address.classList.add('fade'); 
  
-          setTimeout(() => { 
-            address.innerHTML = selector.querySelector('[value="' + selector.value + '"]').dataset.value || ''; 
-            address.classList.remove('fade'); 
+          setTimeout(() => {
+            if (selector.value) {
+              address.innerHTML = selector.querySelector('[value="' + selector.value + '"]').dataset.value || ''; 
+              address.classList.remove('fade'); 
+            }
           }, 300); 
         } 
       }); 

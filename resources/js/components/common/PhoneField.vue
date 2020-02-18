@@ -68,24 +68,26 @@
         },
         () => {
           setTimeout(() => {
-            this.selector = document.querySelector(`#${this.id}`)
+            if (this.id) {
+              this.selector = document.querySelector(`#${this.id}`)
 
-            if (window.intlTelInput) {
-              intlTelInput(this.selector, {
-                initialCountry: this.countryCode,
-                separateDialCode: true,
-              });
-            }
-
-            this.selector.addEventListener('countrychange', () => {
-              if (window.intlTelInputGlobals) {
-                this.$emit('onCountryChange', intlTelInputGlobals.getInstance(this.selector).getSelectedCountryData());
+              if (window.intlTelInput) {
+                intlTelInput(this.selector, {
+                  initialCountry: this.countryCode,
+                  separateDialCode: true,
+                });
               }
 
-              this.checkPadding();
-            });
+              this.selector.addEventListener('countrychange', () => {
+                if (window.intlTelInputGlobals) {
+                  this.$emit('onCountryChange', intlTelInputGlobals.getInstance(this.selector).getSelectedCountryData());
+                }
 
-            this.checkPadding();
+                this.checkPadding();
+              });
+
+              this.checkPadding();
+            }
           }, 100);
         },
       )
