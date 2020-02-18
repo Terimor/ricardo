@@ -1330,13 +1330,16 @@ class PaymentService
             $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
         }
 
+        // NOTE: prevent implicit currency defenition
+        $product->currency = $order->currency;
+
         $price = $this->getLocalizedPrice($product, $order_product['quantity'], $order->shipping_country, $provider); // throwable
 
         if ($order->currency === $price['currency']) {
             return $order;
         }
 
-        logger()->info("Fallback [{$order->number}] change currency {$order->currency} -> USD");
+        logger()->info("Fallback [{$order->number}] change currency {$order->currency} -> {$price['currency']}");
 
         $order_product = $this->createOrderProduct($order_product['sku_code'], $price, ['is_warranty' => !!$order_product['warranty_price']]);
 
