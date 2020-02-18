@@ -1159,12 +1159,12 @@ class PaymentProviders
             'fraud_setting' => [
                 'common' => [
                     '3ds_limit' => 1,
-                    'fallback_limit' => 99,
+                    'fallback_limit' => 101, //99
                     'refuse_limit' => 99
                 ],
                 'affiliate' => [
                     '3ds_limit' => 1,
-                    'fallback_limit' => 99,
+                    'fallback_limit' => 101, //99
                     'refuse_limit' => 99
                 ]
             ],
