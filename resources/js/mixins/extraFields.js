@@ -183,7 +183,7 @@ export const tplMixin = {
     },
 
     getExtraFieldsFromLocalStorage() {
-      if (js_query_params['3ds'] === 'failure') {
+      if (js_query_params['3ds'] && js_query_params['3ds'] !== 'success') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
