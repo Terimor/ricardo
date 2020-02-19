@@ -87,7 +87,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
     },
 
     created() {
-      if (this.queryParams['3ds'] === 'failure') {
+      if (this.queryParams['3ds'] && this.queryParams['3ds'] !== 'success') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 

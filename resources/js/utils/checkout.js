@@ -184,33 +184,45 @@ export function sendCheckoutRequest(data) {
   data.page_checkout = location.href;
 
   return Promise.resolve()
-    .then(fingerprint)
-    .then(hash => data.f = hash)
-    .then(() => fetch('/pay-by-card' + url_search, {
-      method: 'post',
-      credentials: 'same-origin',
-      headers: {
-        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      body: JSON.stringify(data),
-    }))
-    .then(resp => {
-      if (!resp.ok) {
-        throw new Error(resp.statusText);
-      }
-
-      return resp.json();
-    })
-    .then(res => {
-      if (!res.bs_pf_token) {
-        return res;
+    .then(() => {
+      if (data.bs_3ds_pending) {
+        return;
       }
 
       return Promise.resolve()
+        .then(fingerprint)
+        .then(hash => data.f = hash)
+        .then(() => fetch('/pay-by-card' + url_search, {
+          method: 'post',
+          credentials: 'same-origin',
+          headers: {
+            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(data),
+        }))
+        .then(resp => {
+          if (!resp.ok) {
+            throw new Error(resp.statusText);
+          }
+
+          return resp.json();
+        });
+    })
+    .then(res => {
+      if (!data.bs_3ds_pending && !res.bs_pf_token) {
+        return res;
+      }
+
+      const order_id = data.bs_3ds_pending ? js_query_params.order : res.order_id;
+      const bs_pf_token = data.bs_3ds_pending ? js_query_params.bs_pf_token : res.bs_pf_token;
+      const currency = data.bs_3ds_pending ? js_query_params.cur : res.order_currency;
+      const amount = data.bs_3ds_pending ? +js_query_params.amount : res.order_amount;
+
+      return Promise.resolve()
         .then(() => new Promise((resolve, reject) => {
-          bluesnap.threeDsPaymentsSetup(res.bs_pf_token, sdkResponse => {
+          bluesnap.threeDsPaymentsSetup(bs_pf_token, sdkResponse => {
             if (+sdkResponse.code !== 1) {
               return reject(sdkResponse.info.errors[0] || sdkResponse.info.warnings[0]);
             }
@@ -219,8 +231,8 @@ export function sendCheckoutRequest(data) {
           });
 
           bluesnap.threeDsPaymentsSubmitData({
-            currency: res.order_currency,
-            amount: res.order_amount,
+            currency,
+            amount,
           });
         }))
         .then(bs_3ds_ref => fetch('/pay-by-card-bs-3ds', {
@@ -233,7 +245,7 @@ export function sendCheckoutRequest(data) {
           },
           body: JSON.stringify({
             '3ds_ref': bs_3ds_ref,
-            order_id: res.order_id,
+            order_id,
           }),
         }))
         .then(resp => {
@@ -242,10 +254,6 @@ export function sendCheckoutRequest(data) {
           }
 
           return resp.json();
-        })
-        .catch(err => {
-          err = !err.message ? new Error(err) : err;
-          return Promise.reject(err);
         });
     })
     .then(res => {

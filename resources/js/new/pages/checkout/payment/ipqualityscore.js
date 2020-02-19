@@ -112,7 +112,7 @@ export default {
           resolve(null);
         };
 
-        if (js_query_params['3ds'] === 'failure') {
+        if (js_query_params['3ds_restore']) {
           let result = null;
 
           try {
