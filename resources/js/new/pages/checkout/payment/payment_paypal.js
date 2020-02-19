@@ -15,8 +15,6 @@ export default {
       this.payment_error = null;
       this.is_submitted = true;
 
-      localStorage.setItem('selectedProductData', JSON.stringify(this.form));
-
       return Promise.resolve()
         .then(() => {
           return this.fingerprint_calculate();

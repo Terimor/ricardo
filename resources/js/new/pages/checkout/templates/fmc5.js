@@ -24,7 +24,7 @@ js_deps.wait(['vue'], () => {
 
 
     created() {
-      if (js_query_params['3ds'] === 'failure') {
+      if (js_query_params['3ds_restore']) {
         this.step = 3;
       }
     },

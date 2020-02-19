@@ -54,7 +54,11 @@
       location.href = url_pathname + '?' + url_search;
     @endif
 
-    @if (Request::get('3ds_restore') && Request::get('3ds') !== 'success')
+    @if (Request::get('3ds_restore') && Request::get('3ds') === 'pending' && Request::get('redirect_url'))
+      location.href = js_query_params.redirect_url;
+    @endif
+
+    @if (Request::get('3ds_restore') && Request::get('3ds') === 'failure')
       localStorage.setItem('order_failed', localStorage.getItem('odin_order_id'));
     @endif
   })();

@@ -296,7 +296,7 @@
       }
     },
     created() {
-      if (this.queryParams['3ds'] === 'failure') {
+      if (this.queryParams['3ds'] && this.queryParams['3ds'] !== 'success') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
@@ -317,7 +317,9 @@
         catch (err) {
           
         }
+      }
 
+      if (this.queryParams['3ds'] === 'failure') {
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
 
@@ -340,6 +342,30 @@
             }
           }, 100);
         });
+      }
+
+      if (this.queryParams['3ds'] === 'pending' && this.queryParams['bs_pf_token']) {
+        setTimeout(() => {
+          this.isSubmitted = true;
+
+          sendCheckoutRequest({ bs_3ds_pending: true })
+            .then(res => {
+              if (res.paymentError) {
+                this.paymentError = res.paymentError;
+                this.isSubmitted = false;
+              }
+            })
+            .catch(err => {
+              this.paymentError = t('checkout.payment_error');
+              this.isSubmitted = false;
+            });
+
+          const element = document.querySelector('#purchase-button');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+        }, 1000);
       }
 
       setTimeout(() => {

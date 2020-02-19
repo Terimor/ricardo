@@ -110,7 +110,9 @@ export default {
 
 
   created() {
+    this.form_check_3ds_restore();
     this.form_check_3ds_failure();
+    this.form_check_3ds_pending();
   },
 
 
@@ -167,31 +169,21 @@ export default {
       return is_valid;
     },
 
+    form_check_3ds_restore() {
+      if (js_query_params['3ds_restore']) {
+        this.credit_card_3ds_form_resrote();
+      }
+    },
+
     form_check_3ds_failure() {
       if (js_query_params['3ds'] === 'failure') {
-        try {
-          this.form = JSON.parse(localStorage.getItem('selectedProductData'));
+        this.credit_card_get_3ds_errors();
+      }
+    },
 
-          Promise.resolve()
-            .then(() => {
-              const order_id = localStorage.getItem('odin_order_id');
-              return this.fetch_get('/pay-by-card-errors?order=' + order_id);
-            })
-            .then(this.fetch_json)
-            .then(body => {
-              this.payment_error = this.t('checkout.payment_error');
-
-              if (body.errors && body.errors.length > 0) {
-                this.payment_error = this.t(body.errors[0]);
-              }
-            })
-            .catch(err => {
-              this.payment_error = this.t('checkout.payment_error');
-            });
-        }
-        catch (err) {
-          
-        }
+    form_check_3ds_pending() {
+      if (js_query_params['3ds'] === 'pending' && js_query_params.bs_pf_token) {
+        this.credit_card_create_order_3ds_bluesnap();
       }
     },
 
