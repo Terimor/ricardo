@@ -1419,7 +1419,7 @@ class PaymentProviders
                             'ae', 'ar', 'au', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
                             'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls',
                             'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pt', 'ro',
-                            /*'ru', 'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
+                            'ru', /*'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'ru', 'sy', 'tt', 'uz']
                     ],

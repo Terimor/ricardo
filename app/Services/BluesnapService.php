@@ -119,7 +119,6 @@ class BluesnapService
      * @param  array   $details
      * [
      *   '3ds'=>boolean,
-     *   '3ds_ref'=>?string,
      *   'currency'=>string,
      *   'amount'=>float,
      *   'billing_descriptor'=>string,
@@ -131,15 +130,6 @@ class BluesnapService
     {
         $payment = [];
         if ($details['3ds']) {
-            // if (!empty($details['3ds_ref'])) {
-            //     $payment = $this->pay(
-            //         [
-            //             'cardHolderInfo' => self::createCardHolderObj($contacts),
-            //             'creditCard'     => self::createCardObj($card),
-            //         ],
-            //         $details
-            //     );
-            // } else {
             $shopper_id = $this->createVaultedShopperId($card, $contacts, $details);
             $pf_token = $this->getPfToken($card);
             $payment = [
@@ -147,7 +137,6 @@ class BluesnapService
                 'bs_pf_token' => $pf_token,
                 'status' => !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW
             ];
-            // }
         } else {
             $payment = $this->pay(
                 [
@@ -168,7 +157,7 @@ class BluesnapService
     /**
      * Provides payment by vaulted shopper id
      * @param  array   $shooper_id
-     * @param  array   $details ['currency'=>string,'amount'=>float,'billing_descriptor'=>string]
+     * @param  array   $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
      * @return array
      */
     public function payByVaultedShopperId(string $shopper_id, array $details): array
@@ -182,8 +171,7 @@ class BluesnapService
     /**
      * Provides payment
      * @param  array   $source
-     * @param  array   $details
-     * ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
+     * @param  array   $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
      * @return array
      */
     private function pay(array $source, array $details): array

@@ -391,7 +391,6 @@ class PaymentService
         $fingerprint = $req->get('f', null);
         $order_id = $req->get('order');
         $installments = (int)$req->input('card.installments', 0);
-        // $bs_3ds_ref = $req->input('card.bs_3ds_ref', null);
         $shop_currency = CurrencyService::getCurrency()->code;
         $contact = array_merge(
             $req->get('contact'),
@@ -493,14 +492,6 @@ class PaymentService
         } else {
             $order_product = $order->getMainProduct(); // throwable
 
-            // NOTE: Bluesnap hack
-            // $order_txn = $order->getTxnByHash($order_product['txn_hash'], false);
-            // if ($bs_3ds_ref && $order_txn) {
-            //     $api = PaymentApiService::getById($order_txn['payment_api_id']);
-            //     $order->dropTxn($order_txn['hash']);
-            // }
-            //
-
             $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contact['country']);
             $order->customer_email      = $contact['email'];
             $order->customer_first_name = $contact['first_name'];
@@ -599,7 +590,6 @@ class PaymentService
                         'amount' => $order->total_price,
                         'currency' => $order->currency,
                         'order_id' => $order->getIdAttribute(),
-                        // 'bs_3ds_ref' => $bs_3ds_ref,
                         'billing_descriptor' => $order->billing_descriptor,
                         '3ds'  => self::checkIs3dsNeeded(
                             $method,
@@ -1398,7 +1388,7 @@ class PaymentService
 
             logger()->info("Pre-Fallback [{$order->number}]", ['cardtk' => !!$cardtk, 'fallback' => !empty($payment['fallback'])]);
 
-            if (/*!empty($payment['fallback']) &&*/ $cardtk) {
+            if (!empty($payment['fallback']) && $cardtk) {
                 $reply = $this->fallbackOrder(
                     $order,
                     json_decode(MinteService::decrypt($cardtk, $order_id), true),
