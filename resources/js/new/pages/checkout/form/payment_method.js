@@ -32,7 +32,7 @@ export default {
   validations() {
     return {
       payment_method: {
-        required,
+
       },
     };
   },
