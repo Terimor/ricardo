@@ -1042,7 +1042,7 @@ class PaymentProviders
                         'excl' => [
                             'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
                             'dk', 'do', /*'gb',*/ 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
-                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'ro', /*'ru', 'se',*/ 'sg', 'sy', 'tk',
+                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'ro', 'ru', /*'se',*/ 'sg', 'sy', 'tk',
                             'tt', 'tr', 'tv', 'tw', 'za', 'us', 'uz'
                         ]
                     ],
