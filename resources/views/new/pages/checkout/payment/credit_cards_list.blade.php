@@ -1,11 +1,13 @@
 <div class="credit-cards-list">
-  @foreach ($setting['payment_methods'] as $name => $payment_method)
-    @if ($name !== 'instant_transfer')
-      <div class="credit-card-item credit-card-{{ $name }}">
-        <img
-          src="{{ $payment_method['logo'] }}"
-          title="{{ $payment_method['name'] }}" />
-      </div>
-    @endif
-  @endforeach
+  <div
+    v-for="(payment_method, name) in payment_methods"
+    v-if="name !== 'instant_transfer'"
+    :class="{ ['credit-card-' + name]: true }"
+    class="credit-card-item">
+
+    <img
+      :src="payment_method.logo"
+      :title="payment_method.name" />
+
+  </div>
 </div>
