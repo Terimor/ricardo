@@ -45,7 +45,6 @@ class PaymentCardCreateOrderRequest extends FormRequest
             'card.year'                     => ['required', 'regex:/^20\d{2}$/'],
             'card.cvv'                      => ['required', 'regex:/^\d{3,4}$/'],
             'card.installments'             => ['integer', 'between:0,6'],
-            // 'card.bs_3ds_ref'               => ['string'],
             'product.qty'                   => ['required', 'integer', 'between:1,5'],
             'product.sku'                   => ['required', 'string'],
             'product.is_warranty_checked'   => ['boolean'],

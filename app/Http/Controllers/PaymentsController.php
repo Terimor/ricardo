@@ -77,7 +77,7 @@ class PaymentsController extends Controller
         $reply = PaymentService::getCachedOrderErrors($order_id);
         return [
             'order_id'  => $order_id,
-            'errors'    => !empty($reply['errors']) ? $reply['errors'] : []
+            'errors'    => $reply ?? []
         ];
     }
 
