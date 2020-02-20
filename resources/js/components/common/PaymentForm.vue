@@ -60,6 +60,7 @@
               :form="paymentForm"
               name="city" />
             <State
+              :placeholder="true"
               :country="paymentForm.country"
               :stateExtraField="stateExtraField"
               :isLoading="isLoading"
@@ -263,6 +264,30 @@
           }, 100);
         });
       }
+
+      if (this.queryParams['3ds'] === 'pending' && this.queryParams['bs_pf_token']) {
+        setTimeout(() => {
+          this.isSubmitted = true;
+
+          sendCheckoutRequest({ bs_3ds_pending: true })
+            .then(res => {
+              if (res.paymentError) {
+                this.paymentError = res.paymentError;
+                this.isSubmitted = false;
+              }
+            })
+            .catch(err => {
+              this.paymentError = t('checkout.payment_error');
+              this.isSubmitted = false;
+            });
+
+          const element = document.querySelector('#purchase-button');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+        }, 1000);
+      }
     },
 
     computed: {
@@ -318,6 +343,15 @@
 
         if (this.$v.form.deal.$invalid) {
           const element = document.querySelector('.main__deal');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+
+          this.$emit('setPromotionalModal', true);
+          return;
+        } else if (this.$v.form.variant.$invalid) {
+          const element = document.querySelector('.variant-selection');
 
           if (element && element.scrollIntoView) {
             element.scrollIntoView();

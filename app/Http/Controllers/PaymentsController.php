@@ -7,6 +7,7 @@ use App\Services\EbanxService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
+use App\Http\Requests\PaymentCardBs3dsRequest;
 use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\PaymentCardOrderErrorsRequest;
 use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
@@ -59,6 +60,12 @@ class PaymentsController extends Controller
         ];
     }
 
+
+    public function completeBs3dsOrder(PaymentCardBs3dsRequest $req)
+    {
+        return $this->paymentService->completeBs3dsOrder($req->input('order_id'), $req->input('3ds_ref'));
+    }
+
     /**
      * Returns order errors
      * @param  PaymentCardOrderErrorsRequest $req
@@ -67,7 +74,7 @@ class PaymentsController extends Controller
     public function getCardOrderErrors(PaymentCardOrderErrorsRequest $req)
     {
         $order_id = $req->get('order');
-        $reply = PaymentService::getOrderErrors($order_id);
+        $reply = PaymentService::getCachedOrderErrors($order_id);
         return [
             'order_id'  => $order_id,
             'errors'    => $reply ?? []
@@ -165,7 +172,7 @@ class PaymentsController extends Controller
 
         $this->paymentService->rejectTxn($reply['txn'], PaymentProviders::CHECKOUTCOM);
 
-        PaymentService::cacheErrors($reply['txn']);
+        PaymentService::cacheOrderErrors($reply['txn']);
     }
 
     /**
@@ -213,12 +220,22 @@ class PaymentsController extends Controller
      */
     public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id)
     {
-        $query = [
-            'order' => $order_id,
-            '3ds'   => $this->paymentService->minte3ds($req, $order_id) ? 'success' : 'failure'
-        ];
+        $reply = $this->paymentService->minte3ds($req, $order_id);
 
-        return redirect('/checkout?' . $qs = http_build_query($query));
+        $query = array_filter([
+            '3ds'   => $reply['status'] === PaymentService::STATUS_OK ? 'success' : 'failure',
+            'order' => $order_id,
+            'bs_pf_token'   => $reply['bs_pf_token'] ?? null,
+            'redirect_url'  => $reply['redirect_url'] ?? null
+        ]);
+
+        if (!empty($query['bs_pf_token']) || !empty($query['redirect_url'])) {
+            $query['amount'] = $reply['amount'];
+            $query['cur'] = $reply['currency'];
+            $query['3ds'] = 'pending';
+        }
+
+        return redirect('/checkout?' . http_build_query($query));
     }
 
     public function test(Request $req)

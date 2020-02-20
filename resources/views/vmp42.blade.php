@@ -238,6 +238,7 @@
                                 :style="{ 'max-width': '400px' }"
                                 :create-order="paypalCreateOrder"
                                 :on-approve="paypalOnApprove"
+                                :$vvariant="$v.form.variant"
                                 :$vdeal="$v.form.deal"
                                 @click="paypalSubmit"
                             >{{ t('checkout.paypal.risk_free') }}</paypal-button>

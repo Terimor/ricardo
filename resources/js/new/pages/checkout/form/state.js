@@ -71,7 +71,7 @@ export default {
 
     state_init() {
       if (this.extra_fields.state && this.extra_fields.state.default) {
-        this.form.state = this.extra_fields.state.default;
+        this.form.state = this.extra_fields.state.default || null;
       }
     },
 

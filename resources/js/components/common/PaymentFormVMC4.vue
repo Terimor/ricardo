@@ -19,16 +19,10 @@
             v-model="vmc4Form.deal"
             :list="dealList"
             />
-            <template v-if="isShowVariant">
-              <h2 v-html="textSelectVariant"></h2>
-              <select-field
-                popperClass="smc7-popover-variant"
-                v-model="vmc4Form.variant"
-                :rest="{
-                  placeholder: 'Variant'
-                }"
-                :list="variantList" />
-            </template>
+          <Variant
+            :$v="$v.vmc4Form.variant"
+            :form="vmc4Form"
+            name="variant" />
         </div>
         <div class="step step-2" v-if="step === 2">
           <div class="full-name">
@@ -62,6 +56,7 @@
             v-show="vmc4Form.installments === 1"
             :createOrder="paypalCreateOrder"
             :onApprove="paypalOnApprove"
+            :$vvariant="$v.vmc4Form.variant"
             :$vdeal="$v.vmc4Form.deal"
             @click="paypalSubmit"
           >{{ paypalRiskFree }}</paypal-button>
@@ -198,11 +193,13 @@
     <el-dialog
       @click="isOpenPromotionModal = false"
       class="deal-popup"
-      :title="textMainDealErrorPopupTitle"
+      :title="promo_modal_title"
       :lock-scroll="false"
       :visible.sync="isOpenPromotionModal"
     >
       <div class="deal-popup__content">
+        <p class="error-container" v-html="promo_modal_text"></p>
+
         <button
           @click="isOpenPromotionModal = false"
           type="button"
@@ -230,6 +227,7 @@
 	import {fade} from "../../utils/common";
   import { queryParams } from  '../../utils/queryParams';
   import Installments from './extra-fields/Installments';
+  import Variant from './common-fields/Variant';
   import FirstName from './common-fields/FirstName';
   import LastName from './common-fields/LastName';
   import Email from './common-fields/Email';
@@ -265,6 +263,7 @@
       RadioButtonItemDeal,
       Spinner,
       Installments,
+      Variant,
       FirstName,
       LastName,
       Email,
@@ -342,7 +341,7 @@
         this.isFormShown = true;
       }
 
-      if (this.queryParams['3ds'] === 'failure') {
+      if (this.queryParams['3ds'] && this.queryParams['3ds'] !== 'success') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
@@ -364,7 +363,9 @@
         catch (err) {
           
         }
+      }
 
+      if (this.queryParams['3ds'] === 'failure') {
         get3dsErrors().then(paymentError => {
           this.paymentError = paymentError;
 
@@ -387,6 +388,30 @@
             }
           }, 100);
         });
+      }
+
+      if (this.queryParams['3ds'] === 'pending' && this.queryParams['bs_pf_token']) {
+        setTimeout(() => {
+          this.isSubmitted = true;
+
+          sendCheckoutRequest({ bs_3ds_pending: true })
+            .then(res => {
+              if (res.paymentError) {
+                this.paymentError = res.paymentError;
+                this.isSubmitted = false;
+              }
+            })
+            .catch(err => {
+              this.paymentError = t('checkout.payment_error');
+              this.isSubmitted = false;
+            });
+
+          const element = document.querySelector('.submit-btn');
+
+          if (element && element.scrollIntoView) {
+            element.scrollIntoView();
+          }
+        }, 1000);
       }
     },
 		computed: {
@@ -412,6 +437,21 @@
       textPaymentError: () => t('checkout.payment_error'),
       textNext: () => t('checkout.next'),
       textBack: () => t('checkout.back'),
+
+      promo_modal_title() {
+        if (this.$v.vmc4Form.deal.$invalid) {
+          return t('checkout.main_deal.error_popup.title');
+        } else if (this.$v.vmc4Form.variant.$invalid) {
+          return t('checkout.select_variant');
+        }
+      },
+      promo_modal_text() {
+        if (this.$v.vmc4Form.deal.$invalid) {
+          return t('checkout.main_deal.error_popup.message');
+        } else if (this.$v.vmc4Form.variant.$invalid) {
+          return t('checkout.select_variant');
+        }
+      },
 		},
     watch: {
       'form.paymentProvider'(value) {
@@ -596,7 +636,7 @@
         
       },
 			isAllowNext(currentStep) {
-				const isStepOneInvalid = this.$v.vmc4Form.deal.$invalid;
+				const isStepOneInvalid = this.$v.vmc4Form.deal.$invalid || this.$v.vmc4Form.variant.$invalid;
 				const isStepTwoInvalid = this.$v.form.stepTwo.$invalid;
 				const isStepThreeInvalid =
 					this.form.paymentProvider !== 'paypal' &&
@@ -604,6 +644,7 @@
 
         if (currentStep === 1 && isStepOneInvalid) {
           this.$v.vmc4Form.deal.$touch();
+          this.$v.vmc4Form.variant.$touch();
           this.isOpenPromotionModal = true;
         }
         else if (currentStep === 2 && isStepTwoInvalid) {
@@ -792,7 +833,14 @@
         position: absolute;
         top: -26px;
         right: 50px;
-
+      }
+      .variant-field {
+        margin-bottom: 20px;
+      }
+      .variant-field-label {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 8px;
       }
     }
 

@@ -206,6 +206,7 @@ class CurrencyService
             $price = OdinProduct::MIN_PRICE;
         }
         $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
+        $exchangedPrice = round($exchangedPrice, 2);
 
         if (in_array($currencyCode, static::$upToNext500)) {
             $exchangedPrice = ceil($exchangedPrice);

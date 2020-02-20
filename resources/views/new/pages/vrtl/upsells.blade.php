@@ -3,6 +3,20 @@
 @section('title', $page_title)
 
 
+@section('js_data')
+  <script type="text/javascript">
+    js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
+    js_data.order_customer = @json($orderCustomer, JSON_UNESCAPED_UNICODE);
+    js_data.upsells = @json($product->upsells, JSON_UNESCAPED_UNICODE);
+  </script>
+@endsection
+
+
+@section('js_prerender')
+  @include('new.pages.vrtl.upsells.prerender.thankyou_redirect')
+@endsection
+
+
 @section('js_deps')
   <script type="text/javascript">
     js_deps.show([
@@ -13,7 +27,7 @@
 
 
 @section('fonts')
-  @include('components.fonts.lato')
+  @include('new.fonts.roboto')
 @endsection
 
 
@@ -35,7 +49,18 @@
 
 
 @section('content')
-  <div class="upsells container">
-    Upsells
+  <div class="upsells">
+    <div
+      v-if="step < 3"
+      :class="{ ['step' + step]: true }"
+      class="inside">
+      @include('new.pages.vrtl.upsells.steps.step1')
+    </div>
+    <div
+      v-else
+      :class="{ ['step' + step]: true }"
+      class="inside">
+      @include('new.pages.vrtl.upsells.steps.step3')
+    </div>
   </div>
 @endsection

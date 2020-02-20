@@ -1041,4 +1041,28 @@ class UtilsService
             'is_bot' => $isBot ?? null
         ];
     }
+
+    /**
+     * Returns country code location by IP address using ip-api.com service
+     * Alternative method if MaxMind doesn't find location
+     * SAGA: Utils::getLocationByIP()
+     * @param type $ip
+     * @return type
+     */
+    public static function getLocationCountryCodeByIPApi($ip) {
+        $location = null;
+        if ($ip) {
+            //this endpoint is limited to 150 requests per minute from an IP address. If you go over this limit your IP address will be blackholed.
+            $url = 'http://ip-api.com/json/' . $ip;
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($ch);
+            curl_close($ch);
+            if ($result) {
+                $location = json_decode($result, true);
+            }
+        }
+        $countryCode = !empty($location['countryCode']) ? $location['countryCode'] : '';
+        return strtolower($countryCode);
+    }
 }

@@ -53,11 +53,15 @@
     </script>
   @endif
 
-  @if (Request::get('3ds') === 'failure' && Request::get('3ds_restore'))
+  @if (Request::get('3ds_restore') && Request::get('3ds') === 'pending' && Request::get('redirect_url'))
     <script type="text/javascript">
-      (function() {
-        localStorage.setItem('order_failed', localStorage.getItem('odin_order_id'));
-      })();
+      location.href = js_query_params.redirect_url;
+    </script>
+  @endif
+
+  @if (Request::get('3ds') === 'failed' && Request::get('3ds_restore'))
+    <script type="text/javascript">
+      localStorage.setItem('order_failed', localStorage.getItem('odin_order_id'));
     </script>
   @endif
 

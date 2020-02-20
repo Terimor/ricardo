@@ -45,8 +45,8 @@
       type="text"
       class="input-field-input{{ !empty($monospace) ? ' monospace' : '' }}"
       @input.touch="input_touch({{ $validation }})"
-      @if (!empty($label_code) && !empty($placeholder)) :placeholder="{{ $label_code }}" @endif
-      @if (!empty($label) && !empty($placeholder)) placeholder="{{ $label }}" @endif
+      @if (!empty($placeholder_code)) :placeholder="{{ $placeholder_code }}" @endif
+      @if (!empty($placeholder)) placeholder="{{ $placeholder }}" @endif
       @if (!empty($model)) v-model="{{ $model }}" @endif
       @if (!empty($input)) @input="{{ $input }}" @endif
       @if (!empty($focus)) @focus="{{ $focus }}" @endif

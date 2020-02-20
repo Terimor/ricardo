@@ -28,7 +28,7 @@ class OdinProduct extends Model
     protected $fillable = [
         'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout',
         'logo_image_id', 'favicon_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only',
-        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'category_id', 'vimeo_id',
+        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'is_choice_required', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
         'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'reviews', 'affiliates', 'currency',
         'image_ids', 'splash_description', 'reduce_percent', 'is_europe_only', 'is_catch_all_hidden', 'countries', 'reducings'
@@ -234,8 +234,10 @@ class OdinProduct extends Model
                       $value[$key][$quantity]['installments3_warranty_price_text'] = null;
                       $value[$key][$quantity]['installments6_warranty_price_text'] = null;
                     }
+                    $value[$key][$quantity]['total_amount'] = round($price['price'] + $value[$key][$quantity]['warranty_price'], 2);
+                    $value[$key][$quantity]['total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key][$quantity]['total_amount'], $currency);
 
-                        //installments
+                    //installments
                     $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
                     $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
                     $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
@@ -247,6 +249,11 @@ class OdinProduct extends Model
                     $value[$key][$quantity]['installments6_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value, $currency);
                     $value[$key][$quantity]['installments6_unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value / $quantity, $currency);
                     $value[$key][$quantity]['installments6_old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_old_value, $currency);
+
+                    $value[$key][$quantity]['installments3_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments3_value + ($installments3_warranty_price ?? 0)), $currency);
+                    $value[$key][$quantity]['installments6_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments6_value + ($installments6_warranty_price ?? 0)), $currency);
+
+
                   } else {
                     logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
                   }

@@ -163,7 +163,7 @@ export const tplMixin = {
 
       this.form.state = this.extraFields.state && this.extraFields.state.default !== undefined
         ? this.extraFields.state.default
-        : this.form.state;
+        : null;
 
       this.form.card_type = this.extraFields.card_type && this.extraFields.card_type.default !== undefined
         ? this.extraFields.card_type.default
@@ -183,7 +183,7 @@ export const tplMixin = {
     },
 
     getExtraFieldsFromLocalStorage() {
-      if (js_query_params['3ds'] === 'failure') {
+      if (js_query_params['3ds'] && js_query_params['3ds'] !== 'success') {
         try {
           const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 

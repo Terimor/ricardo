@@ -1,4 +1,5 @@
 <div
+  ref="pay_card_button"
   class="pay-card-button"
   :class="{ active: !is_submitted }"
   @click="credit_card_create_order">

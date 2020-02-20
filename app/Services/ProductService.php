@@ -268,6 +268,12 @@ class ProductService
             $prices[$quantity]['installments6_value_text'] = $pricesOld[$quantity]['installments6_value_text'];
             $prices[$quantity]['installments6_unit_value_text'] = $pricesOld[$quantity]['installments6_unit_value_text'];
             $prices[$quantity]['installments6_old_value_text'] = $pricesOld[$quantity]['installments6_old_value_text'];
+
+            $prices[$quantity]['installments3_total_amount_text'] = $pricesOld[$quantity]['installments3_total_amount_text'];
+            $prices[$quantity]['installments6_total_amount_text'] = $pricesOld[$quantity]['installments6_total_amount_text'];
+
+            $prices[$quantity]['total_amount'] = $pricesOld[$quantity]['total_amount'];
+            $prices[$quantity]['total_amount_text'] = $pricesOld[$quantity]['total_amount_text'];
         }
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
         $prices['exchange_rate'] = $pricesOld['exchange_rate'] ?? 0;
@@ -329,6 +335,7 @@ class ProductService
         $lp->gads_conversion_id = $product->gads_conversion_id;
         $lp->gads_conversion_label = $product->gads_conversion_label;
         $lp->is_europe_only = $product->is_europe_only ?? false;
+        $lp->is_choice_required = $product->is_choice_required ?? false;
         if ($payment_api) {
             $lp->is_paypal_hidden = $product->is_paypal_hidden ?? false;
         } else {

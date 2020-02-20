@@ -55,7 +55,7 @@ export default {
 
     document_type_init() {
       if (this.extra_fields.document_type && this.extra_fields.document_type.default) {
-        this.form.document_type = this.extra_fields.document_type.default;
+        this.form.document_type = this.extra_fields.document_type.default || null;
       }
     },
 

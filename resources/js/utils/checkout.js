@@ -1,5 +1,4 @@
 import fingerprint from '../services/fingerprintjs2';
-import { bluesnapCreateOrder } from '../services/bluesnap';
 import { getCountOfInstallments } from './installments';
 import { t } from './i18n';
 import { queryParams } from  './queryParams';
@@ -185,42 +184,77 @@ export function sendCheckoutRequest(data) {
   data.page_checkout = location.href;
 
   return Promise.resolve()
-    .then(fingerprint)
-    .then(hash => data.f = hash)
-    .then(() => fetch('/pay-by-card' + url_search, {
-      method: 'post',
-      credentials: 'same-origin',
-      headers: {
-        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      body: JSON.stringify(data),
-    }))
-    .then(resp => {
-      if (!resp.ok) {
-        throw new Error(resp.statusText);
+    .then(() => {
+      if (data.bs_3ds_pending) {
+        return;
       }
 
-      return resp.json();
+      return Promise.resolve()
+        .then(fingerprint)
+        .then(hash => data.f = hash)
+        .then(() => fetch('/pay-by-card' + url_search, {
+          method: 'post',
+          credentials: 'same-origin',
+          headers: {
+            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(data),
+        }))
+        .then(resp => {
+          if (!resp.ok) {
+            throw new Error(resp.statusText);
+          }
+
+          return resp.json();
+        });
     })
     .then(res => {
-      if (res.bs_pf_token) {
-        localStorage.setItem('odin_order_id', res.order_id);
-        localStorage.setItem('order_failed', res.order_id);
-
-        return bluesnapCreateOrder(data, res.bs_pf_token, res.order_currency, res.order_amount)
-          .then(bs_3ds_ref => {
-            data.card.bs_3ds_ref = bs_3ds_ref;
-            sendCheckoutRequest(data);
-            return new Promise(resolve => {});
-          })
-          .catch(errText => {
-            return Promise.reject({ errText });
-          });
+      if (!data.bs_3ds_pending && !res.bs_pf_token) {
+        return res;
       }
 
-      return res;
+      const order_id = data.bs_3ds_pending ? js_query_params.order : res.order_id;
+      const bs_pf_token = data.bs_3ds_pending ? js_query_params.bs_pf_token : res.bs_pf_token;
+      const currency = data.bs_3ds_pending ? js_query_params.cur : res.order_currency;
+      const amount = data.bs_3ds_pending ? +js_query_params.amount : res.order_amount;
+
+      return Promise.resolve()
+        .then(() => new Promise((resolve, reject) => {
+          bluesnap.threeDsPaymentsSetup(bs_pf_token, sdkResponse => {
+            if (+sdkResponse.code !== 1) {
+              return reject(sdkResponse.info.errors[0] || sdkResponse.info.warnings[0]);
+            }
+
+            resolve(sdkResponse.threeDSecure.threeDSecureReferenceId);
+          });
+
+          bluesnap.threeDsPaymentsSubmitData({
+            currency,
+            amount,
+          });
+        }))
+        .then(bs_3ds_ref => fetch('/pay-by-card-bs-3ds', {
+          method: 'post',
+          credentials: 'same-origin',
+          headers: {
+            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify({
+            '3ds_ref': bs_3ds_ref,
+            order_id,
+          }),
+        }))
+        .then(resp => {
+          if (!resp.ok) {
+            throw new Error(resp.statusText);
+          }
+
+          return resp.json();
+        });
     })
     .then(res => {
       if (res.order_id) {
@@ -272,7 +306,7 @@ export function sendCheckoutRequest(data) {
     })
     .catch(err => {
       return {
-        paymentError: err && err.errText || t('checkout.payment_error'),
+        paymentError: t('checkout.payment_error'),
       };
     });
 }

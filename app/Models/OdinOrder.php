@@ -207,7 +207,11 @@ class OdinOrder extends OdinModel
                     $model->country = isset($location->countryCode) ? strtolower($location->countryCode) : null;
 
                     if (!$model->country) {
-                        logger()->error("Cant find country by IP {$ip} for order {$model->number}");
+                        // get alternative way to get country code
+                        $model->country = \Utils::getLocationCountryCodeByIPApi($ip);
+                        if (!$model->country) {
+                            logger()->error(str_repeat('*', 10)."Cant find country by IP {$ip} for order {$model->number}");
+                        }
                     }
                 }
             }

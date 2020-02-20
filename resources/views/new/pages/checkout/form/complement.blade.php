@@ -5,11 +5,11 @@
     'model' => 'form.complement',
     'validation' => '$v.form.complement',
     'label' => t('checkout.payment_form.complement'),
+    'placeholder' => t('checkout.payment_form.complement'),
     'validation_labels' => [
       'valid' => t('checkout.payment_form.complement.required'),
     ],
     'loading' => 'is_loading.address',
-    'placeholder' => true,
   ])
 
 </template>

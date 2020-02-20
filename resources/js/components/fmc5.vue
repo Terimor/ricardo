@@ -293,6 +293,7 @@
                 v-show="form.installments === 1"
                 :createOrder="paypalCreateOrder"
                 :onApprove="paypalOnApprove"
+                :$vvariant="$v.form.variant"
                 :$vdeal="$v.form.deal"
                 @click="paypalSubmit"
               >{{ textPaypalRiskFree }}</paypal-button>
@@ -998,8 +999,8 @@
       },
 
       initVariant() {
-        this.form.variant = this.product.skus[0]
-          ? this.product.skus[0].code
+        this.form.variant = !js_data.product.is_choice_required
+          ? js_data.product.skus[0] && js_data.product.skus[0].code || null
           : null;
       },
 
@@ -1014,7 +1015,7 @@
       },
 
       check3dsFailure() {
-        if (js_query_params['3ds'] === 'failure') {
+        if (js_query_params['3ds'] && js_query_params['3ds'] !== 'success') {
           try {
             const selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
 
@@ -1032,29 +1033,55 @@
             this.form.zipcode = selectedProductData.zipcode || this.form.zipcode;
             this.form.country = selectedProductData.country || this.form.country;
 
-            get3dsErrors()
-              .then(paymentError => {
-                this.paymentError = paymentError;
-
-                if (this.form.country === 'br') {
-                  let ipqs = null; try { ipqs = JSON.parse(localStorage.getItem('3ds_ipqs')); } catch (err) {};
-
-                  this.log_data('BRAZIL: FMC5 - Credit Card - 3ds failure', {
-                    error: paymentError,
-                    form: { ...this.$v.form.$model, cardNumber: undefined },
-                    fraud_chance: ipqs ? ipqs.fraud_chance : null,
-                    ipqs,
-                  });
-                }
-
-                setTimeout(() => this.scrollToSelector('#payment-error'), 1000);
-              });
-
             this.step = 3;
           }
           catch (err) {
             
           }
+        }
+
+        if (js_query_params['3ds'] === 'failure') {
+          get3dsErrors()
+            .then(paymentError => {
+              this.paymentError = paymentError;
+
+              if (this.form.country === 'br') {
+                let ipqs = null; try { ipqs = JSON.parse(localStorage.getItem('3ds_ipqs')); } catch (err) {};
+
+                this.log_data('BRAZIL: FMC5 - Credit Card - 3ds failure', {
+                  error: paymentError,
+                  form: { ...this.$v.form.$model, cardNumber: undefined },
+                  fraud_chance: ipqs ? ipqs.fraud_chance : null,
+                  ipqs,
+                });
+              }
+
+              setTimeout(() => this.scrollToSelector('#payment-error'), 1000);
+            });
+        }
+
+        if (js_query_params['3ds'] === 'pending' && js_query_params.bs_pf_token) {
+          setTimeout(() => {
+            this.isSubmitted = true;
+
+            sendCheckoutRequest({ bs_3ds_pending: true })
+              .then(res => {
+                if (res.paymentError) {
+                  this.paymentError = res.paymentError;
+                  this.isSubmitted = false;
+                }
+              })
+              .catch(err => {
+                this.paymentError = t('checkout.payment_error');
+                this.isSubmitted = false;
+              });
+
+            const element = document.querySelector('.button-next');
+
+            if (element && element.scrollIntoView) {
+              element.scrollIntoView();
+            }
+          }, 1000);
         }
       },
 
@@ -1603,9 +1630,24 @@
     width: auto;
   }
 
-  #variant-field {
-    margin: 20px 20px;
-    width: auto;
+  .variant-field {
+    margin: 30px 20px 20px;
+
+    :global(.variant-field-label) {
+      display: none;
+    }
+
+    :global(.variant-field-input) {
+      border-color: #bbb;
+    }
+
+    :global(.variant-field-input-label) {
+      font-size: 18px;
+    }
+
+    :global(.variant-field-item) {
+      font-size: 16px;
+    }
   }
 
   .deal-error {

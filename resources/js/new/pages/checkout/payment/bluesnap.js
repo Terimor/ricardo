@@ -13,9 +13,6 @@ export default {
         });
 
         const card = {
-          ccNumber: this.form.card_number.replace(/[^0-9]/g, ''),
-          expDate: this.form.card_date.substr(0, 3) + '20' + this.form.card_date.substr(3),
-          cvv: this.form.card_cvv.toString(),
           currency,
           amount,
         };

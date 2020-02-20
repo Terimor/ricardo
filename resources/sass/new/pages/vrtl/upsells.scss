@@ -1,30 +1,327 @@
+$size1: 480px;
+$size2: 768px;
+
 @import '../../app';
 
 
 main {
   background-color: #e7e7e7;
+
+  @media (min-width: $size2) {
+    padding: 0 30px;
+  }
 }
 
 .upsells {
   background-color: #fff;
-  border: 1px solid #a6a6a6;
   color: #333;
   display: flex;
   flex-direction: column;
-  font-family: Lato, "Noto Sans", sans-serif;
+  font-family: Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  margin-bottom: 35px;
-  margin-top: 35px;
-  min-height: 500px;
-  padding: 40px 40px;
+  max-width: 1140px;
+  padding: 24px 16px 40px;
+  width: 100%;
+
+  @media (min-width: $size1) {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  @media (min-width: $size2) {
+    border: 1px solid #a6a6a6;
+    margin: 35px auto;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
 
   input,
   select,
   textarea {
     color: #333;
-    font-family: Lato, "Noto Sans", sans-serif;
+    font-family: Roboto, sans-serif;
     font-size: 16px;
     line-height: 1.5;
   }
+
+  > .inside {
+    display: flex;
+    flex-direction: column;
+    transition: opacity .3s ease;
+  }
+}
+
+.page-title {
+  font-size: 48px;
+  font-weight: 900;
+  text-align: center;
+
+  @media (min-width: $size2) {
+    margin: 0 16px;
+  }
+
+  .step2 & {
+    font-style: italic;
+    font-weight: 400;
+  }
+}
+
+.page-note {
+  background-color: #f4ee9c;
+  border: 1px dashed #000;
+  font-size: 23px;
+  margin: 40px auto 0;
+  max-width: 760px;
+  padding: 23px 16px 25px;
+  text-align: center;
+
+  .prefix {
+    color: #c30000;
+    font-size: 22px;
+    font-weight: 900;
+  }
+}
+
+.upsell-subtitle {
+  border-bottom: 1px dashed #000;
+  font-size: 16px;
+  font-style: italic;
+  margin: 62px auto 0;
+  max-width: 780px;
+  padding-bottom: 27px;
+  text-align: center;
+  width: 100%;
+}
+
+.upsell-subtitle-inside {
+  max-width: 780px;
+}
+
+.upsell-title {
+  color: #880000;
+  font-size: 34px;
+  font-weight: 900;
+  margin-top: 21px;
+  text-align: center;
+}
+
+.upsell-subtitle2 {
+  color: #464646;
+  font-size: 36px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.upsell-letter {
+  margin-top: 35px;
+}
+
+.upsell-letter2 {
+  font-size: 17px;
+  margin-top: 30px;
+}
+
+.upsell-vimeo {
+  height: 261px;
+  margin: 25px 0 33px;
+  width: 100%;
+}
+
+.guarantee {
+  align-items: center;
+  background-color: #f3f3f3;
+  border: 1px dashed #71ba71;
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+
+  @media (min-width: $size2) {
+    align-items: flex-start;
+    flex-direction: row;
+  }
+}
+
+.guarantee-image {
+  margin-top: 25px;
+  max-width: 240px;
+
+  @media (min-width: $size2) {
+    margin-left: 37px;
+
+    [dir="rtl"] & {
+      margin-left: 0;
+      margin-right: 37px;
+    }
+  }
+}
+
+.guarantee-content {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 32px 57px;
+
+  @media (min-width: $size2) {
+    margin-left: 55px;
+    margin-right: 16px;
+
+    [dir="rtl"] & {
+      margin-left: 16px;
+      margin-right: 55px;
+    }
+  }
+}
+
+.guarantee-title {
+  font-size: 40px;
+  font-weight: 900;
+  text-align: center;
+
+  @media (min-width: $size2) {
+    text-align: left;
+
+    [dir="rtl"] & {
+      text-align: right;
+    }
+  }
+}
+
+.guarantee-text {
+  font-size: 17px;
+  margin-top: 32px;
+
+  @media (min-width: $size2) {
+    margin-top: 2px;
+  }
+}
+
+.last-call-title {
+  font-size: 50px;
+  font-weight: 900;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.last-call-text {
+  margin-top: 40px;
+}
+
+.last-call-card {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-top: 28px;
+
+  .step3 & {
+    margin-top: 38px;
+  }
+}
+
+.last-call-card-title {
+  background-color: #ab0000;
+  border: 2px dashed #8c8c8c;
+  color: #fff;
+  font-size: 56px;
+  font-weight: 700;  
+  padding: 4px 16px 0;
+}
+
+.last-call-card-inside {
+  align-items: center;
+  border: 2px dashed #8c8c8c;
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 16px 38px;
+}
+
+.last-call-card-image {
+  max-width: 100%;
+}
+
+.last-call-card-download {
+  font-size: 18px;
+  margin-left: -35%;
+  margin-top: 40px;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: -35%;
+  }
+}
+
+.last-call-card-old-price {
+  color: #a90000;
+  font-size: 52px;
+  font-weight: 700;
+  margin-top: 28px;
+
+  .value {
+    text-decoration: line-through;
+  }
+}
+
+.last-call-card-label-1 {
+  font-size: 38px;
+  margin-top: 6px;
+
+  .step3 & {
+    margin-top: 28px;
+  }
+}
+
+.last-call-card-price {
+  color: #029800;
+  font-size: 92px;
+  font-weight: 900;
+  margin-top: -22px;
+  text-decoration: underline;
+}
+
+.last-call-card-submit {
+  background-color: #f65b00;
+  box-shadow: 0px 2px 5px 0px #000;
+  color: #fff;
+  cursor: pointer;
+  font-size: 58px;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: -14px;
+  max-width: 680px;
+  padding: 25px 0;
+  width: 100%;
+}
+
+.last-call-card-label-2 {
+  color: #0021b7;
+  cursor: pointer;
+  font-size: 32px;
+  margin-top: 2px;
+  text-decoration: underline;
+}
+
+.last-call-card-label-3 {
+  align-self: center;
+  border-top: 2px dashed #8c8c8c;
+  color: #0021b7;
+  cursor: pointer;
+  font-size: 24px;
+  margin-top: 42px;
+  max-width: 800px;
+  padding: 20px 20px 0;
+  text-decoration: underline;
+}
+
+.order-upgraded {
+  margin-bottom: 18px;
+}
+
+.upsell-long-name {
+  font-size: 50px;
+  margin-top: -5px;
+}
+
+.upsell-last-call-text {
+  font-size: 24px;
+  margin-top: 35px;
 }

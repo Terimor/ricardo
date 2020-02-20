@@ -24,7 +24,7 @@ export default {
 
   created() {
     this.set_browser_title();
-    this.scroll_3ds_failure();
+    this.scroll_3ds_restore();
   },
 
 
@@ -54,9 +54,13 @@ export default {
       window.onblur = () => document.title = this.t('checkout.page_title.wait');
     },
 
-    scroll_3ds_failure() {
+    scroll_3ds_restore() {
       if (js_query_params['3ds'] === 'failure') {
         setTimeout(() => this.scroll_to_ref('payment_error'), 1000);
+      }
+
+      if (js_query_params['3ds'] === 'pending' && js_query_params.bs_pf_token) {
+        setTimeout(() => this.scroll_to_ref('terms_field'), 1000);
       }
     },
 

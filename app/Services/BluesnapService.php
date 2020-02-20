@@ -67,32 +67,19 @@ class BluesnapService
      */
     public static function createCardHolderObj(array $contact): array
     {
-        $phone = $contact['phone'];
-        if (gettype($contact['phone']) === 'array') {
-            $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
-        }
-        $result = [
+        return array_filter([
             'address'   => $contact['street'] . (!empty($contact['building']) ? ", {$contact['building']}" : ''),
+            'address2'  => $contact['complement'] ?? null,
             'city'      => $contact['city'],
             'country'   => $contact['country'],
             'email'     => $contact['email'],
             'firstName' => $contact['first_name'],
             'lastName'  => $contact['last_name'],
-            'phone'     => $phone,
-            'zip'       => $contact['zip']
-        ];
-        if (!empty($contact['state'])) {
-            $result['state'] = $contact['state'];
-        }
-
-        if (!empty($contact['complement'])) {
-            $result['address2'] = $contact['complement'];
-        }
-
-        if (!empty($contact['document_number'])) {
-            $result['personalIdentificationNumber'] = $contact['document_number'];
-        }
-        return $result;
+            'phone'     => is_array($contact['phone']) ? $contact['phone']['country_code'] . $contact['phone']['number'] : $contact['phone'],
+            'zip'       => $contact['zip'],
+            'state'     => $contact['state'] ?? null,
+            'personalIdentificationNumber' => $contact['document_number'] ?? null
+        ]);
     }
 
     /**
@@ -128,11 +115,10 @@ class BluesnapService
     /**
      * Provides payment by card
      * @param  array   $card
-     * @param  array   $contact
+     * @param  array   $contacts
      * @param  array   $details
      * [
      *   '3ds'=>boolean,
-     *   'bs_3ds_ref'=>?string,
      *   'currency'=>string,
      *   'amount'=>float,
      *   'billing_descriptor'=>string,
@@ -140,29 +126,21 @@ class BluesnapService
      * ]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $details): array
+    public function payByCard(array $card, array $contacts, array $details): array
     {
         $payment = [];
         if ($details['3ds']) {
-            if (!empty($details['bs_3ds_ref'])) {
-                $payment = $this->pay(
-                    [
-                        'cardHolderInfo' => self::createCardHolderObj($contact),
-                        'creditCard'     => self::createCardObj($card),
-                    ],
-                    $details
-                );
-            } else {
-                $pf_token = $this->getPfToken();
-                $payment = [
-                    'bs_pf_token' => $pf_token,
-                    'status' => !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW
-                ];
-            }
+            $shopper_id = $this->createVaultedShopperId($card, $contacts, $details);
+            $pf_token = $this->getPfToken($card);
+            $payment = [
+                'payer_id' => $shopper_id,
+                'bs_pf_token' => $pf_token,
+                'status' => !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW
+            ];
         } else {
             $payment = $this->pay(
                 [
-                    'cardHolderInfo' => self::createCardHolderObj($contact),
+                    'cardHolderInfo' => self::createCardHolderObj($contacts),
                     'creditCard'     => self::createCardObj($card),
                 ],
                 $details
@@ -179,7 +157,7 @@ class BluesnapService
     /**
      * Provides payment by vaulted shopper id
      * @param  array   $shooper_id
-     * @param  array   $details ['currency'=>string,'amount'=>float,'billing_descriptor'=>string]
+     * @param  array   $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
      * @return array
      */
     public function payByVaultedShopperId(string $shopper_id, array $details): array
@@ -193,8 +171,7 @@ class BluesnapService
     /**
      * Provides payment
      * @param  array   $source
-     * @param  array   $details
-     * ['bs_3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
+     * @param  array   $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
      * @return array
      */
     private function pay(array $source, array $details): array
@@ -208,9 +185,9 @@ class BluesnapService
         $result = [];
         try {
             $threeDSecure = [];
-            if (!empty($details['bs_3ds_ref'])) {
+            if (!empty($details['3ds_ref'])) {
                 $threeDSecure['threeDSecure'] = [
-                    'threeDSecureReferenceId' => $details['bs_3ds_ref']
+                    'threeDSecureReferenceId' => $details['3ds_ref']
                 ];
             }
 
@@ -264,12 +241,14 @@ class BluesnapService
         return $result;
     }
 
-
     /**
-     * Returns pfToken for a new card payment
+     * Creates vaulted shopper and returns its ID
+     * @param  array  $card
+     * @param  array  $contacts
+     * @param  array  $details
      * @return string|null
      */
-    private function getPfToken(): ?string
+    private function createVaultedShopperId(array $card, array $contacts, array $details): ?string
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
@@ -279,7 +258,56 @@ class BluesnapService
 
         $result = null;
         try {
-            $res = $client->post('payment-fields-tokens');
+            $res = $client->post('vaulted-shoppers', [
+                'json' => array_merge(
+                    self::createCardHolderObj($contacts),
+                    [
+                        'shopperCurrency' => $details['currency'],
+                        'paymentSources'  => [
+                            'creditCardInfo' => [
+                                [
+                                    'creditCard' => self::createCardObj($card),
+                                    'billingContactInfo' => self::createCardHolderObj($contacts)
+                                ]
+                            ]
+                        ]
+                    ]
+                )
+            ]);
+
+            $body_decoded = json_decode($res->getBody(), true);
+            $result = $body_decoded['vaultedShopperId'];
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? $ex->getResponse() : null;
+            logger()->error("Bluesnap vaulted shopper", [
+                'code'  => optional($res)->getStatusCode(),
+                'body'  => optional($res)->getBody()
+            ]);
+        }
+        return $result;
+    }
+
+    /**
+     * Returns pfToken for a new card payment
+     * @param array $card
+     * @return string|null
+     */
+    private function getPfToken(array $card): ?string
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'auth' => [$this->api->login, $this->api->password],
+            'headers' => ['Accept' => 'application/json']
+        ]);
+
+        $result = null;
+        try {
+            $res = $client->post('payment-fields-tokens/prefill', [
+                'json' => [
+                    'ccNumber' => $card['number'],
+                    'expDate'  => "{$card['month']}/{$card['year']}"
+                ]
+            ]);
             $headers = $res->getHeader('Location');
             if (!empty($headers)) {
                 $exploded = explode('/', end($headers));
@@ -287,7 +315,10 @@ class BluesnapService
             }
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
-            logger()->error("Bluesnap pfToken", ['res'  => $res]);
+            logger()->error("Bluesnap pfToken", [
+                'code'  => optional($res)->getStatusCode(),
+                'body'  => optional($res)->getBody()
+            ]);
         }
         return $result;
     }

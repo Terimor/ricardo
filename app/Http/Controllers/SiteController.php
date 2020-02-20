@@ -347,6 +347,7 @@ class SiteController extends Controller
      */
     public function upsells(Request $request, ProductService $productService)
     {
+        $cdn_url = \Utils::getCdnUrl();
         $is_virtual_product = Route::is('upsells_vrtl');
         $viewTemplate = !$is_virtual_product ? 'uppsells_funnel' : 'new.pages.vrtl.upsells';
 		$product = $productService->resolveProduct($request, true);
@@ -379,7 +380,7 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('upsells.title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view($viewTemplate, compact('countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
+        return view($viewTemplate, compact('cdn_url', 'countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
     }
 
     /**

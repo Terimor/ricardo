@@ -26,12 +26,12 @@
       @if (!empty($change)) @change="{{ $change }}" @endif
     >
 
-      @if (!empty($placeholder))
+      @if (!empty($placeholder) || !empty($placeholder_code))
         <option
           :value="null"
           style="display:none">
-          {!! !empty($label_code) ? '@{{ ' . $label_code . ' }}' : '' !!}
-          {!! !empty($label) ? $label : '' !!}
+          {!! !empty($placeholder_code) ? '@{{ ' . $placeholder_code . ' }}' : '' !!}
+          {!! !empty($placeholder) ? $placeholder : '' !!}
         </option>
       @endif
 
