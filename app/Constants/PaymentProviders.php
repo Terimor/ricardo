@@ -1421,7 +1421,7 @@ class PaymentProviders
                             'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pt', 'ro',
                             'ru', /*'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
                         ],
-                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'ru', 'sy', 'tt', 'uz']
+                        'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::MASTERCARD => [
                         '-3ds' => [
