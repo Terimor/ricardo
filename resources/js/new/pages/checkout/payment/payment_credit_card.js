@@ -29,6 +29,7 @@ export default {
       }
 
       localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
+
       localStorage.setItem('3ds_form', JSON.stringify({
         ...this.form,
         card_holder: undefined,

@@ -1,4 +1,4 @@
-@if ((Route::is('checkout') || Route::is('checkout_price_set') || Route::is('checkout_vrtl')) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
+@if (!empty($is_checkout) && empty($is_smartbell))
 
   <link
     id="intlTelInputCss"

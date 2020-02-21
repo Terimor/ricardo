@@ -1,4 +1,4 @@
-@if ($HasVueApp && Request::get('exit') && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro' && !$is_new_engine)
+@if ($HasVueApp && Request::get('exit') && empty($is_smartbell) && !$is_new_engine)
 
   <script
     src="{{ mix_cdn('assets/scripts/bioep.min.js') }}"

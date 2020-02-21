@@ -1,4 +1,4 @@
-@if (!empty($ga_id) && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
+@if (!empty($ga_id) && empty($is_smartbell))
 
   <script
     src="https://www.googletagmanager.com/gtag/js?id={{ $ga_id }}"

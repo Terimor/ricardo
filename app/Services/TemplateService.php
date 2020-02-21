@@ -102,7 +102,8 @@ class TemplateService
      */
     public static function getDealsData($product, $request): array
     {
-        $is_virtual_product = Route::is('checkout_vrtl');
+        $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+        $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
 
         $deals = [];
         $deals_shortlist = false;
@@ -113,12 +114,14 @@ class TemplateService
         $deal_bestseller_index = -1;
         $deal_popular_index = -1;
 
-        if (!$is_virtual_product) {
-            if ($request->get('tpl') == 'fmc5x') {
+        if ($is_checkout_page) {
+            if ($request->get('tpl') === 'fmc5x') {
                 $deals_to_display = [1, 2, 3, 4, 5];
                 $deals_shortlist = true;
             }
-        } else {
+        }
+
+        if ($is_vrtl_page) {
             $deals_to_display = [1];
         }
 

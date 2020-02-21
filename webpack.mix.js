@@ -37,6 +37,12 @@ mix
   .js('resources/js/minishop/pages/home.js', 'public/assets/js/minishop')
   .js('resources/js/minishop/pages/product.js', 'public/assets/js/minishop')
   .js('resources/js/new/pages/checkout/templates/fmc5.js', 'public/assets/js/new/pages/checkout/templates')
+
+  .js('resources/js/new/pages/checkout/templates/hp01.js', 'public/assets/js/new/pages/checkout/templates')
+  .js('resources/js/new/pages/checkout/templates/thor-power.js', 'public/assets/js/new/pages/checkout/templates')
+  .js('resources/js/new/pages/checkout/templates/hydrolinx.js', 'public/assets/js/new/pages/checkout/templates')
+  .js('resources/js/new/pages/checkout/templates/slimeazy.js', 'public/assets/js/new/pages/checkout/templates')
+
   .js('resources/js/new/pages/vrtl/checkout/templates/vc1.js', 'public/assets/js/new/pages/vrtl/checkout/templates')
   .js('resources/js/new/pages/vrtl/checkout/templates/vc2.js', 'public/assets/js/new/pages/vrtl/checkout/templates')
   .js('resources/js/new/pages/vrtl/upsells.js', 'public/assets/js/new/pages/vrtl')
@@ -52,6 +58,12 @@ mix
   .sass('resources/sass/views/order-tracking.scss', 'public/assets/css')
   .sass('resources/sass/views/index.scss', 'public/assets/css')
   .sass('resources/sass/new/pages/checkout/templates/fmc5.scss', 'public/assets/css/new/pages/checkout/templates')
+
+  .sass('resources/sass/new/pages/checkout/templates/hp01.scss', 'public/assets/css/new/pages/checkout/templates')
+  .sass('resources/sass/new/pages/checkout/templates/thor-power.scss', 'public/assets/css/new/pages/checkout/templates')
+  .sass('resources/sass/new/pages/checkout/templates/hydrolinx.scss', 'public/assets/css/new/pages/checkout/templates')
+  .sass('resources/sass/new/pages/checkout/templates/slimeazy.scss', 'public/assets/css/new/pages/checkout/templates')
+
   .sass('resources/sass/new/pages/vrtl/checkout/templates/vc1.scss', 'public/assets/css/new/pages/vrtl/checkout/templates')
   .sass('resources/sass/new/pages/vrtl/checkout/templates/vc2.scss', 'public/assets/css/new/pages/vrtl/checkout/templates')
   .sass('resources/sass/new/pages/vrtl/upsells.scss', 'public/assets/css/new/pages/vrtl')
