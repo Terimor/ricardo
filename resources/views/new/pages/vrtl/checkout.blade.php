@@ -1,1 +1,0 @@
-@extends('new.pages.checkout')
