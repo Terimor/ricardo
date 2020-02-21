@@ -3804,16 +3804,16 @@
         },
         {
             "name": "srmklive/paypal",
-            "version": "1.6.10",
+            "version": "1.6.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/srmklive/laravel-paypal.git",
-                "reference": "fc9960958b65257919328c3668f0e55a3661ad31"
+                "reference": "b71b1e4fd2a6b10034324b871f9bc58bd37db7be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/srmklive/laravel-paypal/zipball/fc9960958b65257919328c3668f0e55a3661ad31",
-                "reference": "fc9960958b65257919328c3668f0e55a3661ad31",
+                "url": "https://api.github.com/repos/srmklive/laravel-paypal/zipball/b71b1e4fd2a6b10034324b871f9bc58bd37db7be",
+                "reference": "b71b1e4fd2a6b10034324b871f9bc58bd37db7be",
                 "shasum": ""
             },
             "require": {
@@ -3855,7 +3855,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2019-09-04T10:56:48+00:00"
+            "time": "2019-12-24T06:21:20+00:00"
         },
         {
             "name": "stevebauman/location",
