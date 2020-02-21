@@ -2450,20 +2450,20 @@
         },
         {
             "name": "paypal/paypal-checkout-sdk",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paypal/Checkout-PHP-SDK.git",
-                "reference": "b321066fdce122cd63368b559d54674bdf2f12a8"
+                "reference": "ed6a55075448308b87a8b59dcb7fedf04a048cb1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paypal/Checkout-PHP-SDK/zipball/b321066fdce122cd63368b559d54674bdf2f12a8",
-                "reference": "b321066fdce122cd63368b559d54674bdf2f12a8",
+                "url": "https://api.github.com/repos/paypal/Checkout-PHP-SDK/zipball/ed6a55075448308b87a8b59dcb7fedf04a048cb1",
+                "reference": "ed6a55075448308b87a8b59dcb7fedf04a048cb1",
                 "shasum": ""
             },
             "require": {
-                "braintree/braintreehttp": "0.3.0"
+                "paypal/paypalhttp": "1.0.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^5.7"
@@ -2477,7 +2477,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "https://github.com/paypal/Checkout-PHP-SDK/blob/master/LICENSE"
             ],
             "authors": [
                 {
@@ -2495,7 +2495,46 @@
                 "rest",
                 "sdk"
             ],
-            "time": "2019-02-04T06:59:08+00:00"
+            "time": "2019-11-07T23:16:44+00:00"
+        },
+        {
+            "name": "paypal/paypalhttp",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paypal/paypalhttp_php.git",
+                "reference": "1ad9b846a046f09d6135cbf2cbaa7701bbc630a3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paypal/paypalhttp_php/zipball/1ad9b846a046f09d6135cbf2cbaa7701bbc630a3",
+                "reference": "1ad9b846a046f09d6135cbf2cbaa7701bbc630a3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7",
+                "wiremock-php/wiremock-php": "1.43.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PayPalHttp\\": "lib/PayPalHttp"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PayPal",
+                    "homepage": "https://github.com/paypal/paypalhttp_php/contributors"
+                }
+            ],
+            "time": "2019-11-06T21:27:12+00:00"
         },
         {
             "name": "php-http/client-common",
