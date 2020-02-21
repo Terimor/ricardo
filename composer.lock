@@ -556,16 +556,16 @@
         },
         {
             "name": "ebanx/benjamin",
-            "version": "1.21.0",
+            "version": "1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ebanx/benjamin.git",
-                "reference": "4016e70f75e21200aa4d07425b11c0126a4fa19f"
+                "reference": "64257ea9a6caa58c95678f347b2ee1c0b30e2434"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ebanx/benjamin/zipball/4016e70f75e21200aa4d07425b11c0126a4fa19f",
-                "reference": "4016e70f75e21200aa4d07425b11c0126a4fa19f",
+                "url": "https://api.github.com/repos/ebanx/benjamin/zipball/64257ea9a6caa58c95678f347b2ee1c0b30e2434",
+                "reference": "64257ea9a6caa58c95678f347b2ee1c0b30e2434",
                 "shasum": ""
             },
             "require": {
@@ -594,7 +594,7 @@
                 "Apache-2.0"
             ],
             "description": "Business rule provider lib for plugin implementations",
-            "time": "2019-12-16T12:55:32+00:00"
+            "time": "2020-02-18T17:26:51+00:00"
         },
         {
             "name": "egulias/email-validator",
