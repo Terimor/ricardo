@@ -283,13 +283,13 @@ class SiteController extends Controller
         }
 
         if ($is_vrtl_page) {
-            $viewTemplate = 'new.pages.vrtl.checkout.templates.vc1';
+            $viewTemplate = 'new.pages.checkout.templates.vc1';
 
             if ($request->get('tpl') == 'vc1') {
-                $viewTemplate = 'new.pages.vrtl.checkout.templates.vc1';
+                $viewTemplate = 'new.pages.checkout.templates.vc1';
             }
             if ($request->get('tpl') == 'vc2') {
-                $viewTemplate = 'new.pages.vrtl.checkout.templates.vc2';
+                $viewTemplate = 'new.pages.checkout.templates.vc2';
             }
         }
 
