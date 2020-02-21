@@ -1,4 +1,4 @@
-@if (Route::is('checkout') || Route::is('checkout_price_set'))
+@if (!empty($is_checkout_page))
 
   <div
     ref="christmas"

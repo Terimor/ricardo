@@ -3,7 +3,6 @@
   // JS data
   window.js_data = {
     cdn_url: @json($cdn_url, JSON_UNESCAPED_UNICODE),
-    is_production: @json(config('app.env') !== 'local' && config('app.env') !== 'development' ? 'production' : 'development', JSON_UNESCAPED_UNICODE),
     i18n: {
       phrases: {},
       images: {},
@@ -25,6 +24,9 @@
       return acc;
     }, {});
 
+  @if (!empty($priceSet))
+    js_query_params.cop_id = @json($priceSet, JSON_UNESCAPED_UNICODE);
+  @endif
 
   // GET params to JS variables
   Object.keys(js_query_params).forEach(function(key) {

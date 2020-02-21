@@ -1,4 +1,4 @@
-@if (Route::is('contact-us') /* !$HasVueApp && !Route::is('splash') */ && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
+@if (Route::is('contact-us') && empty($is_smartbell))
   <script>
     function initFreshChat() {
       if (window.fcWidget) {

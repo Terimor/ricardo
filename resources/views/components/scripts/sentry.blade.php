@@ -1,4 +1,4 @@
-@if (isset($sentry_dsn) && config('app.env') !== 'local' && config('app.env') !== 'development' && str_replace('www.', '', Request::getHost()) !== 'smartbell.pro')
+@if (isset($sentry_dsn) && config('app.env') !== 'local' && config('app.env') !== 'development' && empty($is_smartbell))
 
   <script
     src="https://browser.sentry-cdn.com/5.11.1/bundle.min.js"

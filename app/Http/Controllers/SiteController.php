@@ -250,30 +250,51 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
-        $is_virtual_product = Route::is('checkout_vrtl');
-		$viewTemplate = !$is_virtual_product ? 'checkout' : 'new.pages.vrtl.checkout.templates.vc1';
+        $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+        $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
+        $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
 
-        if (!empty($priceSet)) {
-            $request->merge(['cop_id' => $priceSet]);
-        }
+        if ($is_checkout_page) {
+            $viewTemplate = 'checkout';
 
-        if (!$is_virtual_product) {
-    		if ($request->get('tpl') == 'vmp41') {
-    			$viewTemplate = 'vmp41';
-    		}
+            if ($request->get('tpl') == 'vmp41') {
+                $viewTemplate = 'vmp41';
+            }
             if ($request->get('tpl') == 'vmp42') {
                 $viewTemplate = 'vmp42';
             }
             if ($request->get('tpl') == 'fmc5x') {
                 $viewTemplate = 'new.pages.checkout.templates.fmc5';
             }
-        } else {
+        }
+
+        if ($is_health_page) {
+            $viewTemplate = 'new.pages.checkout.templates.hp01';
+
+            if ($request->get('tpl') == 'thor-power') {
+                $viewTemplate = 'new.pages.checkout.templates.thor-power';
+            }
+            if ($request->get('tpl') == 'hydrolinx') {
+                $viewTemplate = 'new.pages.checkout.templates.hydrolinx';
+            }
+            if ($request->get('tpl') == 'slimeazy') {
+                $viewTemplate = 'new.pages.checkout.templates.slimeazy';
+            }
+        }
+
+        if ($is_vrtl_page) {
+            $viewTemplate = 'new.pages.vrtl.checkout.templates.vc1';
+
             if ($request->get('tpl') == 'vc1') {
                 $viewTemplate = 'new.pages.vrtl.checkout.templates.vc1';
             }
             if ($request->get('tpl') == 'vc2') {
                 $viewTemplate = 'new.pages.vrtl.checkout.templates.vc2';
             }
+        }
+
+        if (!empty($priceSet)) {
+            $request->merge(['cop_id' => $priceSet]);
         }
 
         $product = $productService->resolveProduct($request, true);
@@ -319,7 +340,10 @@ class SiteController extends Controller
         $deals_main_quantities = [];
         $deals_free_quantities = [];
 
-        $is_new_engine = ((Route::is('checkout') || Route::is('checkout_price_set')) && $request->get('tpl') === 'fmc5x') || $is_virtual_product;
+        $is_checkout = $is_checkout_page || $is_health_page || $is_vrtl_page;
+        $is_new_engine = ($is_checkout_page && $request->get('tpl') === 'fmc5x') || $is_health_page || $is_vrtl_page;
+        $is_smartbell = str_replace('www.', '', $request->getHost()) === 'smartbell.pro';
+
         if ($is_new_engine) {
             $data_deals = TemplateService::getDealsData($product, $request);
             $deals = $data_deals['deals'];
@@ -334,7 +358,8 @@ class SiteController extends Controller
                 'langCode', 'countryCode', 'product', 'setting', 'countries', 'loadedPhrases',
                 'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo',
                 'company_address', 'company_descriptor_prefix', 'cdn_url', 'upsells', 'website_name',
-                'deals', 'deal_promo', 'deals_main_quantities', 'deals_free_quantities'
+                'deals', 'deal_promo', 'deals_main_quantities', 'deals_free_quantities',
+                'is_checkout', 'is_new_engine', 'is_checkout_page', 'is_health_page', 'is_vrtl_page', 'is_smartbell'
             )
         );
     }
@@ -347,9 +372,13 @@ class SiteController extends Controller
      */
     public function upsells(Request $request, ProductService $productService)
     {
+        $viewTemplate = 'uppsells_funnel';
+
+        if (Route::is('upsells_vrtl')) {
+            $viewTemplate = 'new.pages.vrtl.upsells';
+        }
+
         $cdn_url = \Utils::getCdnUrl();
-        $is_virtual_product = Route::is('upsells_vrtl');
-        $viewTemplate = !$is_virtual_product ? 'uppsells_funnel' : 'new.pages.vrtl.upsells';
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
@@ -380,7 +409,17 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('upsells.title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view($viewTemplate, compact('cdn_url', 'countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
+
+        $is_upsells_page = Route::is('upsells');
+        $is_vrtl_upsells_page = Route::is('upsells_vrtl');
+        $is_upsells = $is_upsells_page || $is_vrtl_upsells_page;
+        $is_smartbell = str_replace('www.', '', $request->getHost()) === 'smartbell.pro';
+        $is_new_engine = $is_vrtl_upsells_page;
+
+        return view($viewTemplate, compact(
+            'cdn_url', 'countryCode', 'product', 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo',
+            'is_upsells', 'is_new_engine', 'is_upsells_page', 'is_vrtl_upsells_page', 'is_smartbell'
+        ));
     }
 
     /**
@@ -391,8 +430,12 @@ class SiteController extends Controller
      */
     public function thankyou(Request $request, ProductService $productService)
     {
-        $is_virtual_product = Route::is('thankyou_vrtl');
-        $viewTemplate = !$is_virtual_product ? 'thankyou' : 'new.pages.vrtl.thankyou';
+        $viewTemplate = 'thankyou';
+
+        if (Route::is('thankyou_vrtl')) {
+            $viewTemplate = 'new.pages.vrtl.thankyou';
+        }
+
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
@@ -434,7 +477,16 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('thankyou_title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view($viewTemplate, compact('countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo'));
+
+        $is_thankyou_page = Route::is('thankyou');
+        $is_vrtl_thankyou_page = Route::is('thankyou_vrtl');
+        $is_thankyou = $is_thankyou_page || $is_vrtl_thankyou_page;
+        $is_smartbell = str_replace('www.', '', $request->getHost()) === 'smartbell.pro';
+
+        return view($viewTemplate, compact(
+            'countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo',
+            'is_thankyou', 'is_thankyou_page', 'is_vrtl_thankyou_page', 'is_smartbell'
+        ));
     }
 
     /**

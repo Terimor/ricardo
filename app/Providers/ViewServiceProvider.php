@@ -42,8 +42,20 @@ class ViewServiceProvider extends ServiceProvider
                 'freshchat_token'
             ]);
 
+            $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+            $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
+            $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
+            $is_upsells_page = Route::is('upsells');
+            $is_vrtl_upsells_page = Route::is('upsells_vrtl');
+            $is_checkout = $is_checkout_page || $is_health_page || $is_vrtl_page;
+            $is_upsells = $is_upsells_page || $is_vrtl_upsells_page;
+
+            $is_thankyou_page = Route::is('thankyou');
+            $is_vrtl_thankyou_page = Route::is('thankyou_vrtl');
+            $is_thankyou = $is_thankyou_page || $is_vrtl_thankyou_page;
+
             $view->with('cdn_url', UtilsService::getCdnUrl());
-            $view->with('HasVueApp', Route::is('checkout') || Route::is('checkout_price_set') || Route::is('checkout_vrtl') || Route::is('upsells') || Route::is('upsells_vrtl') || Route::is('thankyou') || Route::is('thankyou_vrtl') || Route::is('order-tracking'));
+            $view->with('HasVueApp', $is_checkout || $is_upsells || $is_thankyou || Route::is('order-tracking'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('sentry_dsn', $settings['sentry_dsn']);
             $view->with('FreshchatToken', $settings['freshchat_token']);
@@ -58,7 +70,7 @@ class ViewServiceProvider extends ServiceProvider
 
             $view->with('lang_locale', app()->getLocale());
             $view->with('lang_direction', in_array(app()->getLocale(), ['ar', 'he', 'ur']) ? 'rtl' : 'ltr');
-            $view->with('is_new_engine', ((Route::is('checkout') || Route::is('checkout_price_set')) && Request::get('tpl') === 'fmc5x') || Route::is('checkout_vrtl') || Route::is('upsells_vrtl') || Route::is('thankyou_vrtl'));
+            $view->with('is_new_engine', ($is_checkout_page && Request::get('tpl') === 'fmc5x') || $is_health_page || $is_vrtl_page || $is_vrtl_upsells_page);
         });
 
         View::composer(['layouts.footer', 'new.regions.footer'], function($view) {
@@ -113,6 +125,12 @@ class ViewServiceProvider extends ServiceProvider
             $locale_affiliate = AffiliateSetting::getLocaleAffiliate($affiliate ?? null);
             $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
 
+            $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+            $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
+            $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
+            $is_vrtl_upsells_page = Route::is('upsells_vrtl');
+            $is_vrtl_thankyou_page = Route::is('thankyou_vrtl');
+
             $view->with('is_minishop', true);
             $view->with('lang_locale', $lang);
             $view->with('lang_direction', $direction);
@@ -126,7 +144,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
             $view->with('company_address', TemplateService::getCompanyAddress($settings['support_address'], $domain));
-            $view->with('is_new_engine', ((Route::is('checkout') || Route::is('checkout_price_set')) && Request::get('tpl') === 'fmc5x') || Route::is('checkout_vrtl') || Route::is('upsells_vrtl') || Route::is('thankyou_vrtl'));
+            $view->with('is_new_engine', ($is_checkout_page && Request::get('tpl') === 'fmc5x') || $is_health_page || $is_vrtl_page || $is_vrtl_upsells_page || $is_vrtl_thankyou_page);
         });
     }
 }
