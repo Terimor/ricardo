@@ -186,7 +186,7 @@ return [
      | from trying to overcome bugs like this: http://trac.nginx.org/nginx/ticket/97
      |
      */
-    'route_prefix' => 'api/v2/_debugbar',
+    'route_prefix' => '_debugbar',
 
     /*
      |--------------------------------------------------------------------------
