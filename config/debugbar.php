@@ -13,7 +13,7 @@ return [
      |
      */
 
-    'enabled' => false,
+    'enabled' => true,
     'except' => [
         'telescope*'
     ],
@@ -186,7 +186,7 @@ return [
      | from trying to overcome bugs like this: http://trac.nginx.org/nginx/ticket/97
      |
      */
-    'route_prefix' => '_debugbar',
+    'route_prefix' => 'api/v2/_debugbar',
 
     /*
      |--------------------------------------------------------------------------
