@@ -22,9 +22,9 @@ class Currency extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'status', 'code', 'symbol', 'usd_rate', 'price_rate', 'countries', 'created_at', 'updated_at'
+        'name', 'status', 'code', 'symbol', 'usd_rate', 'price_rate', 'price_correction_percent', 'countries', 'created_at', 'updated_at'
     ];
-    
+
     /**
      * Get currency by country code
      * @param type $countryCode

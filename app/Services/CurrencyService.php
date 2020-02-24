@@ -206,6 +206,10 @@ class CurrencyService
             $price = OdinProduct::MIN_PRICE;
         }
         $rate = (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
+        // add correction percent to calculate price
+        if (!empty($currency->price_correction_percent)) {
+            $rate = $rate + $rate * $currency->price_correction_percent / 100;
+        }
         $exchangedPrice = $price * $rate;
         $exchangedPrice = round($exchangedPrice, 2);
 
@@ -229,7 +233,7 @@ class CurrencyService
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
                 'code' => $currencyCode,
-                'exchange_rate' => $rate,
+                'exchange_rate' => $currency->usd_rate,
             ];
         }
 
@@ -250,7 +254,7 @@ class CurrencyService
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
                 'code' => $currencyCode,
-                'exchange_rate' => $rate,
+                'exchange_rate' => $currency->usd_rate,
             ];
         }
 
@@ -292,7 +296,7 @@ class CurrencyService
             'price' => $exchangedPrice,
             'price_text' =>  CurrencyService::formatCurrency($numberFormatter, $exchangedPrice, $currency),
             'code' => $currencyCode,
-            'exchange_rate' => $rate,
+            'exchange_rate' => $currency->usd_rate,
         ];
     }
 
