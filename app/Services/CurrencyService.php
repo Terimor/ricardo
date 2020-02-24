@@ -205,7 +205,8 @@ class CurrencyService
             logger()->error("Price < ".OdinProduct::MIN_PRICE, ['price' => $price]);
             $price = OdinProduct::MIN_PRICE;
         }
-        $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
+        $rate = (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
+        $exchangedPrice = $price * $rate;
         $exchangedPrice = round($exchangedPrice, 2);
 
         if (in_array($currencyCode, static::$upToNext500)) {
@@ -228,7 +229,7 @@ class CurrencyService
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
                 'code' => $currencyCode,
-                'exchange_rate' => $currency->usd_rate,
+                'exchange_rate' => $rate,
             ];
         }
 
@@ -249,7 +250,7 @@ class CurrencyService
                 'price' => $exchangedPrice,
                 'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
                 'code' => $currencyCode,
-                'exchange_rate' => $currency->usd_rate,
+                'exchange_rate' => $rate,
             ];
         }
 
@@ -291,7 +292,7 @@ class CurrencyService
             'price' => $exchangedPrice,
             'price_text' =>  CurrencyService::formatCurrency($numberFormatter, $exchangedPrice, $currency),
             'code' => $currencyCode,
-            'exchange_rate' => $currency->usd_rate,
+            'exchange_rate' => $rate,
         ];
     }
 
