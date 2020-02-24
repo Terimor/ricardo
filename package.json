@@ -12,24 +12,24 @@
     "dependencies": {
         "babel-polyfill": "^6.26.0",
         "credit-card-type": "^8.3.0",
-        "date-fns": "^2.4.1",
+        "date-fns": "^2.9.0",
         "fingerprintjs2": "^2.1.0",
         "isomorphic-fetch": "^2.2.1",
-        "postcode-validator": "^2.0.0",
-        "rimraf": "^3.0.0",
+        "postcode-validator": "^2.1.0",
+        "rimraf": "^3.0.2",
         "vue-mq": "^1.0.1",
         "vue-owl-carousel": "^2.0.3",
-        "vuelidate": "^0.7.4",
-        "webpack": "^4.41.0"
+        "vuelidate": "^0.7.5",
+        "webpack": "^4.41.6"
     },
     "devDependencies": {
-        "cross-env": "^5.1",
-        "eslint": "^6.1.0",
+        "cross-env": "^5.2.1",
+        "eslint": "^6.8.0",
         "eslint-plugin-vue": "^5.2.3",
-        "laravel-mix": "^4.0.7",
+        "laravel-mix": "^4.1.4",
         "resolve-url-loader": "3.1.0",
-        "sass": "^1.15.2",
-        "sass-loader": "^7.1.0",
-        "vue-template-compiler": "^2.6.10"
+        "sass": "^1.25.0",
+        "sass-loader": "^7.3.1",
+        "vue-template-compiler": "^2.6.11"
     }
 }

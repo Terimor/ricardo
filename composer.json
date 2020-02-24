@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.3",
+        "php": "^7.4",
         "barryvdh/laravel-debugbar": "^3.2",
         "beyondcode/laravel-dump-server": "^1.3",
         "braintree/braintreehttp": "^0.3.0",
@@ -24,12 +24,12 @@
         "jean85/pretty-package-versions": "^1.2",
         "jenssegers/agent": "^2.6",
         "jenssegers/mongodb": "^3.6",
-        "laravel/framework": "^6.2",
-        "laravel/tinker": "^1.0",
-        "maximebf/debugbar": "^1.15",
+        "laravel/framework": "^6.16",
+        "laravel/tinker": "^2.2.0",
+        "maximebf/debugbar": "^1.16.1",
         "maxmind-db/reader": "^1.4",
-        "maxmind/web-service-common": "^0.5.0",
-        "mongodb/mongodb": "1.4.3",
+        "maxmind/web-service-common": "^0.6.0",
+        "mongodb/mongodb": "1.6.0",
         "ocramius/package-versions": "^1.5",
         "paypal/paypal-checkout-sdk": "^1.0",
         "piwik/device-detector": "^3.12",
@@ -39,11 +39,11 @@
         "stevebauman/location": "^5.0"
     },
     "require-dev": {
-        "facade/ignition": "^1.6.0",
+        "facade/ignition": "^1.16.0",
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
+        "phpunit/phpunit": "^9.0.1"
     },
     "config": {
         "optimize-autoloader": true,
