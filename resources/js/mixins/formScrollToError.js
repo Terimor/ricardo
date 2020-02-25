@@ -26,11 +26,6 @@ export default {
           }
         }
       }
-      /*
-      if (element && element.scrollIntoView) {
-        element.scrollIntoView();
-      }
-      */
     },
     
     scrollToError() {

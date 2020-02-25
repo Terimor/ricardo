@@ -32,9 +32,7 @@ js_deps.wait(['vue'], () => {
     watch: {
 
       step() {
-        if (document.documentElement.style.scrollBehavior !== undefined) {
-          scrollTo({ top: 0, behavior: 'instant' });
-        } else {
+        if (window.scrollTo) {
           scrollTo(0, 0);
         }
       },
