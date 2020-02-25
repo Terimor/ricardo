@@ -30,6 +30,18 @@ class BluesnapService
     const TYPE_WEBHOOK_DECLINE  = 'DECLINE';
 
     /**
+     * @var array
+     */
+    private static $fallback_codes = [
+        'THREE_D_SECURE_FAILURE',
+        'DO_NOT_HONOR',
+        'AUTHORIZATION_EXPIRED',
+        'VALIDATION_GENERAL_FAILURE',
+        'PAYMENT_GENERAL_FAILURE',
+        'INVALID_TRANSACTION'
+    ];
+
+    /**
      * @var string
      */
     private $endpoint;
@@ -130,13 +142,12 @@ class BluesnapService
     {
         $payment = [];
         if ($details['3ds']) {
-            $shopper_id = $this->createVaultedShopperId($card, $contacts, $details);
-            $pf_token = $this->getPfToken($card);
-            $payment = [
-                'payer_id' => $shopper_id,
-                'bs_pf_token' => $pf_token,
-                'status' => !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW
-            ];
+            $payment = $this->createVaultedShopperId($card, $contacts, $details);
+            if (!empty($payment['payer_id'])) {
+                $pf_token = $this->getPfToken($card);
+                $payment['bs_pf_token'] = $pf_token;
+                $payment['status'] = !$pf_token ? Txn::STATUS_FAILED : Txn::STATUS_NEW;
+            }
         } else {
             $payment = $this->pay(
                 [
@@ -220,23 +231,12 @@ class BluesnapService
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
-            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => null];
-            $result['status']   = Txn::STATUS_FAILED;
-            if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
-                $body_decoded = \json_decode($res->getBody(), true);
-                if (!empty($body_decoded['message'])) {
-                    $result['errors'] = array_map(function($v) {
-                        $phrase = BluesnapCodeMapper::getPhrase($v['errorName']);
-                        if (!$phrase && !empty($v['invalidProperty'])) {
-                            $code = is_array($v['invalidProperty']) ? $v['invalidProperty']['name'] : $v['invalidProperty'];
-                            $phrase = BluesnapCodeMapper::toPhrase($code);
-                        }
-                        return $phrase ?? BluesnapCodeMapper::toPhrase();
-                    }, $body_decoded['message']);
-                }
-                $result['provider_data']['res'] = $body_decoded;
-            }
-            logger()->error("Bluesnap pay", ['res'  => $result['provider_data']]);
+            $code = optional($res)->getStatusCode();
+            $body = optional($res)->getBody();
+            $result['provider_data'] = ['code'  => $code, 'body'  => $body];
+            $result['status'] = Txn::STATUS_FAILED;
+            $result = array_merge($result, $this->parseErrorResponse($body));
+            logger()->error("Bluesnap pay", $result['provider_data']);
         }
         return $result;
     }
@@ -246,9 +246,9 @@ class BluesnapService
      * @param  array  $card
      * @param  array  $contacts
      * @param  array  $details
-     * @return string|null
+     * @return array
      */
-    private function createVaultedShopperId(array $card, array $contacts, array $details): ?string
+    private function createVaultedShopperId(array $card, array $contacts, array $details): array
     {
         $client = new GuzzHttpCli([
             'base_uri' => $this->endpoint,
@@ -256,7 +256,7 @@ class BluesnapService
             'headers' => ['Accept' => 'application/json']
         ]);
 
-        $result = null;
+        $result = ['payer_id' => null, 'status' => Txn::STATUS_FAILED];
         try {
             $res = $client->post('vaulted-shoppers', [
                 'json' => array_merge(
@@ -276,13 +276,14 @@ class BluesnapService
             ]);
 
             $body_decoded = json_decode($res->getBody(), true);
-            $result = $body_decoded['vaultedShopperId'];
+            $payer_id = $body_decoded['vaultedShopperId'] ?? null;
+            $result = ['payer_id' => $payer_id, 'status' => !$payer_id ? Txn::STATUS_FAILED : Txn::STATUS_NEW];
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
-            logger()->error("Bluesnap vaulted shopper", [
-                'code'  => optional($res)->getStatusCode(),
-                'body'  => optional($res)->getBody()
-            ]);
+            $code = optional($res)->getStatusCode();
+            $body = optional($res)->getBody();
+            logger()->error("Bluesnap vaulted shopper", ['code'  => $code, 'body'  => $body]);
+            $result = array_merge($result, $this->parseErrorResponse($body));
         }
         return $result;
     }
@@ -319,6 +320,30 @@ class BluesnapService
                 'code'  => optional($res)->getStatusCode(),
                 'body'  => optional($res)->getBody()
             ]);
+        }
+        return $result;
+    }
+
+    /**
+     * Parses error response
+     * @param  ?string $data
+     * @return array
+     */
+    private function parseErrorResponse(?string $data): array
+    {
+        $result = [];
+        $body_decoded = json_decode($data, true);
+        if (!empty($body_decoded['message'])) {
+            $result = array_reduce($body_decoded['message'], function($carry, $item) {
+                $phrase = BluesnapCodeMapper::getPhrase($item['errorName']);
+                $carry['fallback'] = in_array($item['errorName'], self::$fallback_codes);
+                if (!$phrase && !empty($item['invalidProperty'])) {
+                    $code = is_array($item['invalidProperty']) ? $item['invalidProperty']['name'] : $item['invalidProperty'];
+                    $phrase = BluesnapCodeMapper::toPhrase($code);
+                }
+                $carry['errors'][] = $phrase ?? BluesnapCodeMapper::toPhrase();
+                return $carry;
+            }, ['errors' => [], 'fallback' => false]);
         }
         return $result;
     }

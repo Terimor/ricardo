@@ -5,7 +5,7 @@ export default {
     scrollToElement(element) {
       if (element) {
         let position = element.getBoundingClientRect().top - 20;
-        position += document.documentElement.scrollTop;
+        position += Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
 
         if (js_data.is_black_friday) {
           position -= this.$root.$refs.black_friday.clientHeight;

@@ -759,7 +759,7 @@ class PaymentService
                 $order_product = $order->getMainProduct(); // throwable
                 $order_product['txn_hash'] = $payment['hash'];
                 $order->addProduct($order_product, true);
-                $this->addTxnToOrder($order, $payment, $order_rxn);
+                $this->addTxnToOrder($order, $payment, $order_txn);
             }
         }
 

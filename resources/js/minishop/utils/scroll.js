@@ -12,7 +12,7 @@ export default {
     scroll_to(element) {
       if (element) {
         let position = element.getBoundingClientRect().top - 20;
-        position += document.documentElement.scrollTop;
+        position += Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
 
         for (let ref_name of fixed_refs) {
           if (this.$root.$refs[ref_name]) {

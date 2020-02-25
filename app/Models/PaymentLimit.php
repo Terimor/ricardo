@@ -26,40 +26,43 @@ class PaymentLimit extends Model
     protected $dates = ['created_at', 'updated_at'];
 
     /**
-     * Returns available limits
+     * Returns available apis
      * @param array  $apis
      * @param string $currency
      * @param int    $pct
-     * @return PaymentApi|null
+     * @return PaymentApi[]
      */
-    public static function getAvailable(array $apis, string $currency, int $pct): ?PaymentApi
+    public static function getAvailableApis(array $apis, string $currency, int $pct): array
     {
+        // get PaymentApi ids
         $api_ids = collect($apis)->map(function($v) { return (string)$v->getIdAttribute(); })->toArray();
+        // get PaymentLimit collection by PaymentApi ids and currency
         $limits = self::whereIn('payment_api_ids', $api_ids)->where('currency', $currency)->get();
 
-        shuffle($apis);
-
-        $available = null;
+        $availables = [];
         $rest = [];
         foreach ($apis as $v) {
+            // get PaymentLimit by PaymentApi id
             $limit = $limits->first(function($vv) use ($v) {
                 return in_array($v->getIdAttribute(), $vv->payment_api_ids);
             });
+            // check PaymentLimit for exceeding the limit if it exists
             if (!empty($limit)) {
                 $is_available = $limit->paid_usd < $limit->limit_usd * $pct / 100;
+                // toss a coin if is_splitting is set
                 if ($is_available && $limit->is_splitting) {
                     $is_available = !mt_rand(0, 1);
                 }
                 if ($is_available) {
-                    $available = $v;
-                    break;
+                    $availables[] = $v;
                 }
+                // go to next iteration to prevent duplicates
                 continue;
             }
-            $rest[] = $v;
+            $availables[] = $v;
         }
 
-        return $available ?? array_pop($rest);
+        return $availables;
     }
 
 }
