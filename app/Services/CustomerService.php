@@ -35,8 +35,8 @@ class CustomerService
         // prepare array fields
         $this->setArrayFields($data, $model);
 
-		// add language code
-		if (!$model->language) {
+        // add language code
+        if (!$model->language) {
             $model->language = app()->getLocale();
         }
 
@@ -121,4 +121,5 @@ class CustomerService
 
         return true;
     }
+
 }

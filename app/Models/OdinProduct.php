@@ -567,8 +567,9 @@ class OdinProduct extends Model
 
     /**
      * Returns product by Sku
-     * @param  string $sku
+     * @param string $sku
      * @return OdinProduct|null
+     * @throws ProductNotFoundException
      */
     public static function getBySku(string $sku, bool $throwable = true): ?OdinProduct
     {
@@ -581,16 +582,19 @@ class OdinProduct extends Model
 
     /**
      * Get by cop_id
-     * @param string $copId - prices.price_set
-     * @param bool $isExists - if true check in database else get a model
+     * @param string|null $cop_id - prices.price_set
+     * @param bool $is_exists - if true check in database else get a model
+     * @return OdinProduct|null
      */
-    public static function getByCopId(string $copId, bool $isExists = false)
+    public static function getByCopId(?string $cop_id, bool $is_exists = false): ?OdinProduct
     {
         $model = null;
-        if ($isExists) {
-            $model = OdinProduct::where('prices.price_set', $copId)->exists();
-        } else {
-            $model = OdinProduct::where('prices.price_set', $copId)->first();
+        if ($cop_id) {
+            if ($is_exists) {
+                $model = OdinProduct::where('prices.price_set', $cop_id)->exists();
+            } else {
+                $model = OdinProduct::where('prices.price_set', $cop_id)->first();
+            }
         }
         return $model;
     }

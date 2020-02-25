@@ -4,14 +4,14 @@ namespace App\Constants;
 
 class PaymentProviders
 {
-    const PAYPAL           = 'paypal';
-    const EBANX            = 'ebanx';
-    const CHECKOUTCOM      = 'checkoutcom';
-    const BLUESNAP         = 'bluesnap';
-    const NOVALNET         = 'novalnet';
-    const MINTE            = 'minte';
-    const PAYPAL_HK        = 'paypal_hk';
-    const APPMAX           = 'appmax';
+    const PAYPAL        = 'paypal';
+    const EBANX         = 'ebanx';
+    const CHECKOUTCOM   = 'checkoutcom';
+    const BLUESNAP      = 'bluesnap';
+    const NOVALNET      = 'novalnet';
+    const MINTE         = 'minte';
+    const PAYPAL_HK     = 'paypal_hk';
+    const APPMAX        = 'appmax';
 
     /**
      * Payment providers
@@ -1138,10 +1138,7 @@ class PaymentProviders
                 ]
             ],
             'methods' => [
-                'main' =>[
-                    PaymentMethods::PREZELEWY24 => [
-                        '-3ds' => ['pl']
-                    ],
+                'main' => [
                     PaymentMethods::IDEAL => [
                         '-3ds' => ['nl']
                     ],
@@ -1433,7 +1430,21 @@ class PaymentProviders
                             'ru', /*'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
+                    ],
+                    /*
+                    PaymentMethods::EPS => [
+                        '-3ds' => ['at']
+                    ],
+                    PaymentMethods::P24 => [
+                        '-3ds' => ['pl']
+                    ],
+                    PaymentMethods::IDEAL => [
+                        '-3ds' => ['nl']
+                    ],
+                    PaymentMethods::BANCONTACT => [
+                        '-3ds' => ['be']
                     ]
+                    */
                 ],
                 'fallback' => [
                     PaymentMethods::VISA => [

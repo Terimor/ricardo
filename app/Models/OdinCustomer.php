@@ -125,6 +125,17 @@ class OdinCustomer extends Model
         $this->attributes['email'] =  strtolower(trim($value));
     }
 
+
+    /**
+     * Switches to buuyer and saves
+     * @return void
+     */
+    public function switchToBuyer(): void
+    {
+        $this->type = self::TYPE_BUYER;
+        $this->save();
+    }
+
     /**
      * Generate customer number
      * @param string $countryCode

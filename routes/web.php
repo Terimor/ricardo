@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\Router $router) {
-  // debugger
-  $router->get('/api/_debugbar/assets/javascript', 'SiteController@debugbarJavascript');
-  $router->get('/api/_debugbar/assets/stylesheets', 'SiteController@debugbarStylesheets');
+    // debugger
+    $router->get('/api/_debugbar/assets/javascript', 'SiteController@debugbarJavascript');
+    $router->get('/api/_debugbar/assets/stylesheets', 'SiteController@debugbarStylesheets');
 
-  $router->get('/', 'SiteController@index')->name('home');
+    $router->get('/', 'SiteController@index')->name('home');
     $router->get('/contact-us', 'SiteController@contactUs')->name('contact-us');
     $router->get('/returns', 'SiteController@returns')->name('returns');
     $router->get('/privacy', 'SiteController@privacy')->name('privacy');
@@ -49,12 +49,15 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/pay-by-card-bs-3ds', 'PaymentsController@completeBs3dsOrder');
     $router->get('/pay-by-card-errors', 'PaymentsController@getCardOrderErrors');
     $router->post('/pay-by-card-upsells', 'PaymentsController@createCardUpsellsOrder');
+    $router->post('/pay-by-apm', 'PaymentsController@createApmOrder');
+    $router->post('/pay-by-apm-upsells', 'PaymentsController@createApmUpsellsOrder');
     $router->post('/checkoutdotcom-captured-webhook', 'PaymentsController@checkoutDotComCapturedWebhook');
     $router->post('/checkoutdotcom-failed-webhook', 'PaymentsController@checkoutDotComFailedWebhook');
     $router->post('/ebanx-webhook', 'PaymentsController@ebanxWebhook');
     $router->post('/bluesnap-webhook', 'PaymentsController@bluesnapWebhook');
     $router->post('/appmax-webhook', 'PaymentsController@appmaxWebhook');
     $router->post('/minte-3ds/{orderId}', 'PaymentsController@minte3ds');
+    $router->post('/minte-apm/{orderId}', 'PaymentsController@minteApm');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
     $router->get('/test', 'SiteController@test');

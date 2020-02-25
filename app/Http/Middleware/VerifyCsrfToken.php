@@ -19,7 +19,9 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
+        'pay-by-apm',
         'pay-by-card',
+        'pay-by-apm-upsells',
         'pay-by-card-bs-3ds',
         'pay-by-card-upsells',
         'checkoutdotcom-captured-webhook',
@@ -29,6 +31,7 @@ class VerifyCsrfToken extends Middleware
         'ebanx-webhook',
         'paypal-webhooks',
         'minte-3ds/*',
+        'minte-apm/*',
         'paypal-create-order',
         'paypal-verify-order',
 		'calculate-upsells-total',

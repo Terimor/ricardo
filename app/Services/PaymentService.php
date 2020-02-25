@@ -1,16 +1,9 @@
 <?php
 namespace App\Services;
 
-use App\Models\OdinCustomer;
 use Illuminate\Support\Facades\Cache;
-use App\Http\Requests\PaymentCardMinte3dsRequest;
-use App\Http\Requests\PaymentCardCreateOrderRequest;
-use App\Http\Requests\PaymentCardCreateUpsellsOrderRequest;
-use Illuminate\Http\Request;
 use App\Exceptions\CustomerUpdateException;
-use App\Exceptions\ProviderNotFoundException;
 use App\Exceptions\InvalidParamsException;
-use App\Exceptions\AuthException;
 use App\Exceptions\PaymentException;
 use App\Exceptions\OrderUpdateException;
 use App\Models\Domain;
@@ -18,29 +11,16 @@ use App\Models\Txn;
 use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
+use App\Models\OdinCustomer;
 use App\Models\AffiliateSetting;
-use App\Services\BluesnapService;
-use App\Services\CurrencyService;
-use App\Services\CustomerService;
-use App\Services\AppmaxService;
-use App\Services\CheckoutDotComService;
-use App\Services\EbanxService;
-use App\Services\MinteService;
-use App\Services\OrderService;
-use App\Services\AffiliateService;
-use App\Mappers\PaymentMethodMapper;
 use App\Constants\PaymentProviders;
 use App\Constants\PaymentMethods;
-use Http\Client\Exception\HttpException;
 
 /**
  * Payment Service class
  */
 class PaymentService
 {
-    const CARD_CREDIT = 'credit';
-    const CARD_DEBIT  = 'debit';
-
     const FRAUD_CHANCE_MAX  = 100;
 
     const THROW_IS_IP_ABUSED    = true;
@@ -51,9 +31,7 @@ class PaymentService
     const STATUS_OK   = 'ok';
     const STATUS_FAIL = 'fail';
 
-    const CACHE_TOKEN_PREFIX    = 'CardToken';
     const CACHE_ERRORS_PREFIX   = 'PayErrors';
-    const CACHE_TOKEN_TTL_MIN   = 15;
     const CACHE_ERRORS_TTL_MIN  = 1;
 
     const BILLING_DESCRIPTOR_MAX_LENGTH = 20;
@@ -61,67 +39,36 @@ class PaymentService
     const BILLING_DESCRIPTOR_COUNTRIES_CODE = '888-743-8103';
 
     /**
-     * @var CustomerService $customerService
-     */
-    protected $customerService;
-
-    /**
-     * @var OrderService $orderService
-     */
-    protected $orderService;
-
-    /**
-     * @var ProductService $productService
-     */
-    protected $productService;
-
-    /**
-     * PaymentService constructor
-     * @param CustomerService $customerService
-     * @param OrderService $orderService
-     * @param ProductService $productService
-     */
-    public function __construct(CustomerService $customerService, OrderService $orderService, ProductService $productService)
-    {
-        $this->customerService = $customerService;
-        $this->orderService = $orderService;
-        $this->productService = $productService;
-    }
-
-    /**
-     * Updates or adds customer
-     * @param array $contact
-     * @return OdinCustomer
-     * @throws CustomerUpdateException
-     */
-    private function addCustomer(array $contact): OdinCustomer
-    {
-        $reply = $this->customerService->addOrUpdate(
-            array_merge($contact,
-                [
-                    'doc_id' => $contact['document_number'] ?? null,
-                    'phone'  => $contact['phone']['country_code'] . $contact['phone']['number']
-                ]
-            ),
-            true
-        );
-
-        if (isset($reply['errors'])) {
-            throw new CustomerUpdateException(json_encode($reply['errors']));
-        }
-
-        return $reply['customer'];
-    }
-
-    /**
      * Adds a new OdinOrder
      * @param array $data
      * @return OdinOrder
      * @throws OrderUpdateException
      */
-    private function addOrder(array $data): OdinOrder
+    public static function addOrder(array $data): OdinOrder
     {
-        $reply = $this->orderService->addOdinOrder(array_merge(['status' => OdinOrder::STATUS_NEW], $data), true);
+        $reply = (new OrderService())->addOdinOrder(
+            array_merge(
+                ['status' => OdinOrder::STATUS_NEW],
+                [
+                    'total_refunded_usd'    => 0,
+                    'total_chargeback_usd'  => 0,
+                    'total_paid'        => 0,
+                    'total_paid_usd'    => 0,
+                    'total_chargeback'  => 0,
+                    'txns_fee_usd'      => 0,
+                    'is_reduced'        => false,
+                    'is_invoice_sent'   => false,
+                    'is_survey_sent'    => false,
+                    'is_flagged'        => false,
+                    'is_refunding'      => false,
+                    'is_refunded'       => false,
+                    'is_qc_passed'      => false,
+                    'txns'              => [],
+                ],
+                $data
+            ),
+            true
+        );
 
         if (isset($reply['errors'])) {
             throw new OrderUpdateException(json_encode($reply['errors']));
@@ -137,10 +84,10 @@ class PaymentService
      * @param  array        $details
      * @return void
      */
-    private function addTxnToOrder(OdinOrder &$order, array $data, array $details): void
+    public static function addTxnToOrder(OdinOrder &$order, array $data, array $details): void
     {
         // log txn
-        $this->logTxn(array_merge($data, ['payment_method' => $details['payment_method']]));
+        self::logTxn(array_merge($data, ['payment_method' => $details['payment_method']]));
 
         $order->addTxn([
             'hash'              => (string)$data['hash'],
@@ -149,7 +96,7 @@ class PaymentService
             'status'            => $data['status'],
             'fee_usd'           => 0,
             'card_type'         => $details['card_type'] ?? null,
-            'card_number'       => $details['card_number'],
+            'card_number'       => $details['card_number'] ?? null,
             'payment_method'    => $details['payment_method'],
             'payment_provider'  => $data['payment_provider'],
             'payment_api_id'    => $data['payment_api_id'] ?? null,
@@ -158,14 +105,60 @@ class PaymentService
     }
 
     /**
+     * Generates result for createOrder method
+     * @param OdinOrder $order
+     * @param array $payment
+     * @return array
+     */
+    public static function generateCreateOrderResult(OdinOrder $order, array $payment): array
+    {
+        $result = [
+            'order_currency' => $order->currency,
+            'order_number'   => $order->number,
+            'order_amount'   => $payment['value'],
+            'order_id'       => $order->getIdAttribute(),
+            'status'         => self::STATUS_FAIL,
+            'id'             => null
+        ];
+
+        if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $result['id'] = $payment['hash'];
+            $result['status'] = self::STATUS_OK;
+            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
+            $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
+        } else {
+            $result['errors'] = $payment['errors'];
+            self::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+        }
+
+        return array_filter($result);
+    }
+
+    /**
+     * Returns OdinProduct by cop_id or sku
+     * @param string|null $cop_id
+     * @param string|null $sku
+     * @return OdinProduct|null
+     * @throws \App\Exceptions\ProductNotFoundException
+     */
+    public static function getProductByCopIdOrSku(?string $cop_id, ?string $sku): ?OdinProduct
+    {
+        $product = OdinProduct::getByCopId($cop_id);
+
+        if (!$product && $sku) {
+            $product = OdinProduct::getBySku($sku); // throwable
+        }
+        return $product;
+    }
+
+    /**
      * Stores transaction info in txn collection
      * @param array $data
      * @return void
      */
-    private function logTxn(array $data): void
+    public static function logTxn(array $data): void
     {
-        $model = new OrderService();
-        $model->addTxn([
+        (new OrderService())->addTxn([
             'hash'              => $data['hash'],
             'value'             => $data['value'],
             'currency'          => $data['currency'],
@@ -185,10 +178,10 @@ class PaymentService
      * @return array
      * @throws InvalidParamsException
      */
-    private function getLocalizedPrice(OdinProduct $product, int $qty, string $country, string $provider): array
+    public static function getLocalizedPrice(OdinProduct $product, int $qty, string $country, string $provider): array
     {
         // NOTE: implicit definition currency
-        $localized_product = $this->productService->localizeProduct($product);
+        $localized_product = (new ProductService())->localizeProduct($product);
         if (empty($localized_product->prices[$qty])) {
             throw new InvalidParamsException('Invalid parameter "qty"');
         }
@@ -202,7 +195,7 @@ class PaymentService
         $usd_rate = $currency->usd_rate;
 
         // check currency, if it's not supported switch to default currency
-        $currency_code = $this->checkCurrency($country, $currency->code, $provider);
+        $currency_code = self::checkCurrency($country, $currency->code, $provider);
 
         if ($currency_code === Currency::DEF_CUR) {
             $price = $price_usd;
@@ -211,14 +204,14 @@ class PaymentService
         }
 
         return [
-            'currency'          => $currency_code,
-            'price_set'         => $product->prices['price_set'] ?? '',
-            'quantity'          => $qty,
-            'usd_rate'          => $usd_rate,
-            'value'             => $price,
-            'value_usd'         => $price_usd,
-            'warranty_value'    => $price_warranty,
-            'warranty_value_usd'    => $price_warranty_usd
+            'currency'  => $currency_code,
+            'price_set' => $product->prices['price_set'] ?? '',
+            'quantity'  => $qty,
+            'usd_rate'  => $usd_rate,
+            'value'     => $price,
+            'value_usd' => $price_usd,
+            'warranty_value' => $price_warranty,
+            'warranty_value_usd' => $price_warranty_usd
         ];
     }
 
@@ -228,9 +221,8 @@ class PaymentService
      * @param  array       $price
      * @param  array       $details [is_main => bool, is_plus_one => bool, is_warranty => bool]
      * @return array
-     * @throws InvalidParamsException
      */
-    private function createOrderProduct(string $sku, array $price, array $details = []): array
+    public static function createOrderProduct(string $sku, array $price, array $details = []): array
     {
         $is_main = $details['is_main'] ?? true;
         $order_product = [
@@ -262,806 +254,14 @@ class PaymentService
     }
 
     /**
-     * Captures payment
-     * @param  string $order_id
-     * @param  string $txn_hash
-     * @return bool
-     */
-    public function capture(string $order_id, string $txn_hash): bool
-    {
-        $order = OdinOrder::getById($order_id); //throwable
-        $txn = $order->getTxnByHash($txn_hash); //throwable
-
-        $result = false;
-        if ($txn['status'] === Txn::STATUS_AUTHORIZED) {
-            if ($txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
-                $api = PaymentApiService::getById($txn['payment_api_id']);
-                $checkout = new CheckoutDotComService($api);
-                $result = $checkout->capture($txn_hash);
-
-                if ($result) {
-                    $txn['status'] = Txn::STATUS_CAPTURED;
-                    $order->addTxn($txn);
-                    if (!$order->save()) {
-                        $validator = $order->validate();
-                        if ($validator->fails()) {
-                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                        }
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Voids payment
-     * @param  string $order_id
-     * @param  string $txn_hash
-     * @return bool
-     */
-    public function void(string $order_id, string $txn_hash): bool
-    {
-        $order = OdinOrder::getById($order_id); //throwable
-        $txn = $order->getTxnByHash($txn_hash); //throwable
-
-        $result = false;
-        if ($txn['status'] === Txn::STATUS_AUTHORIZED) {
-            if ($txn['payment_provider'] === PaymentProviders::CHECKOUTCOM) {
-                $api = PaymentApiService::getById($txn['payment_api_id']);
-                $checkout = new CheckoutDotComService($api);
-                $result = $checkout->void($txn_hash);
-
-                if ($result) {
-                    $txn['status'] = Txn::STATUS_FAILED;
-                    $order->addTxn($txn);
-                    if (!$order->save()) {
-                        $validator = $order->validate();
-                        if ($validator->fails()) {
-                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                        }
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Tries to refund payment
-     * @param  string $order_id
-     * @param  string $txn_hash
-     * @param  string $reason
-     * @param  float|null  $amount
-     * @return array
-     */
-    public function refund(string $order_id, string $txn_hash, string $reason, ?float $amount): array
-    {
-        $order = OdinOrder::getById($order_id); // throwable
-        $txn = $order->getTxnByHash($txn_hash); // throwable
-
-        $result = ['status' => false];
-        if ($txn['status'] === Txn::STATUS_APPROVED) {
-            $api = PaymentApiService::getById($txn['payment_api_id']);
-            switch (optional($api)->payment_provider):
-                case PaymentProviders::APPMAX:
-                    $type = AppmaxService::TYPE_REFUND_FULL;
-                    if ($amount && $amount < $txn['value']) {
-                        $type = AppmaxService::TYPE_REFUND_PART;
-                    }
-                    $handler = new AppmaxService($api);
-                    $result = $handler->refund($txn_hash, $type, $amount ?? $txn['value']);
-                    break;
-                case PaymentProviders::CHECKOUTCOM:
-                    $handler = new CheckoutDotComService($api);
-                    $result = $handler->refund($txn_hash, $order->number, $order->currency, $amount);
-                    break;
-                case PaymentProviders::BLUESNAP:
-                    $handler = new BluesnapService($api);
-                    $result = $handler->refund($txn_hash, $amount);
-                    break;
-                case PaymentProviders::EBANX:
-                    $handler = new EbanxService($api);
-                    $result = $handler->refund($txn_hash, $order->currency, $amount ?? $txn['value'], $reason);
-                    break;
-                case PaymentProviders::MINTE:
-                    if (empty($txn['capture_hash'])) {
-                        $result['errors'] = ["Transaction [$txn_hash] cannot be refunded"];
-                        break;
-                    }
-                    $handler = new MinteService($api);
-                    $result = $handler->refund($txn['capture_hash'], $amount ?? $txn['value']);
-                    break;
-                default:
-                    $result['errors'] = ["Refund for {$txn['payment_provider']} not implemented yet. [$txn_hash]"];
-                    logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
-            endswitch;
-        }
-        return $result;
-    }
-
-    /**
-     * Creates a new order
-     * @param PaymentCardCreateOrderRequest $req
-     * @return array
-     */
-    public function createOrder(PaymentCardCreateOrderRequest $req): array
-    {
-        ['sku' => $sku, 'qty' => $qty] = $req->get('product');
-        $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
-        $page_checkout = $req->input('page_checkout', $req->header('Referer'));
-        $user_agent = utf8_encode($req->header('User-Agent'));
-        $kount_session_id = $req->input('kount_session_id', null);
-        $ipqs = $req->input('ipqs', null);
-        $card = $req->get('card');
-        $fingerprint = $req->get('f', null);
-        $order_id = $req->get('order');
-        $installments = (int)$req->input('card.installments', 0);
-        $shop_currency = CurrencyService::getCurrency()->code;
-        $contact = array_merge(
-            $req->get('contact'),
-            $req->get('address'),
-            [
-                'ip' => $req->ip(), 'email' => strtolower($req->input('contact.email')),
-                'f' => $fingerprint,
-                'page' => $page_checkout,
-                'sku' => $sku
-            ]
-        );
-        $method = PaymentMethodMapper::toMethod($card['number']);
-
-        // find order for update
-        $order = null;
-        if (!empty($order_id)) {
-            $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
-        }
-
-        $product = null;
-        if ($req->get('cop_id')) {
-            $product = OdinProduct::getByCopId($req->get('cop_id'));
-        }
-        if (!$product) {
-            $product = OdinProduct::getBySku($sku); // throwable
-        }
-
-        $domain = Domain::getByName();
-        $api = PaymentApiService::getAvailableOne(
-            $product->getIdAttribute(),
-            optional($domain)->getIdAttribute(),
-            self::getProvidersForPay($contact['country'], $method),
-            $shop_currency
-        );
-        if (empty($api)) {
-            logger()->warning(
-                'Provider not found',
-                [
-                    'country' => $contact['country'],
-                    'method' => $method,
-                    'card' => UtilsService::prepareCardNumber($card['number'])
-                ]
-            );
-            throw new ProviderNotFoundException('Provider not found');
-        }
-
-        $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
-        $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
-
-        self::fraudCheck($ipqs, $api->payment_provider, $affid); // throwable
-
-        $customer = $this->addCustomer($contact); // throwable
-
-        if (empty($order)) {
-            $price = $this->getLocalizedPrice($product, (int)$qty, $contact['country'], $api->payment_provider); // throwable
-
-            $order_product = $this->createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
-
-            $order = $this->addOrder([
-                'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
-                'currency'              => $price['currency'],
-                'exchange_rate'         => $price['usd_rate'],
-                'fingerprint'           => $fingerprint,
-                'total_paid'            => 0,
-                'total_paid_usd'        => 0,
-                'total_refunded_usd'    => 0,
-                'total_price'           => $order_product['total_price'],
-                'total_price_usd'       => $order_product['total_price_usd'],
-                'txns_fee_usd'          => 0,
-                'installments'          => $installments,
-                'is_reduced'            => false,
-                'is_invoice_sent'       => false,
-                'is_survey_sent'        => false,
-                'is_flagged'            => false,
-                'is_refunding'          => false,
-                'is_refunded'           => false,
-                'is_qc_passed'          => false,
-                'customer_email'        => $contact['email'],
-                'customer_first_name'   => $contact['first_name'],
-                'customer_last_name'    => $contact['last_name'],
-                'customer_phone'        => $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']),
-                'customer_doc_id'       => $contact['document_number'] ?? null,
-                'ip'                    => $contact['ip'],
-                'language'              => app()->getLocale(),
-                'txns'                  => [],
-                'shipping_country'      => $contact['country'],
-                'shipping_zip'          => $contact['zip'],
-                'shipping_state'        => $contact['state'] ?? null,
-                'shipping_city'         => $contact['city'],
-                'shipping_street'       => $contact['street'],
-                'shipping_street2'      => $contact['district'] ?? null,
-                'shipping_building'     => $contact['building'] ?? null,
-                'shipping_apt'          => $contact['complement'] ?? null,
-                'shop_currency'         => CurrencyService::getCurrency()->code,
-                'warehouse_id'          => $product->warehouse_id,
-                'products'              => [$order_product],
-                'page_checkout'         => $page_checkout,
-                'params'                => $params,
-                'offer'                 => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
-                'affiliate'             => AffiliateService::validateAffiliateID($affid) ? $affid : null,
-                'txid'                  => AffiliateService::getValidTxid($params['txid'] ?? null),
-                'ipqualityscore'        => $ipqs
-            ]);
-        } else {
-            $order_product = $order->getMainProduct(); // throwable
-
-            $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contact['country']);
-            $order->customer_email      = $contact['email'];
-            $order->customer_first_name = $contact['first_name'];
-            $order->customer_last_name  = $contact['last_name'];
-            $order->customer_phone      = $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']);
-            $order->customer_doc_id     = $contact['document_number'] ?? null;
-            $order->shipping_country    = $contact['country'];
-            $order->shipping_zip        = $contact['zip'];
-            $order->shipping_state      = $contact['state'] ?? null;
-            $order->shipping_city       = $contact['city'];
-            $order->shipping_street     = $contact['street'];
-            $order->shipping_street2    = $contact['district'] ?? null;
-            $order->shipping_building   = $contact['building'] ?? null;
-            $order->shipping_apt        = $contact['complement'] ?? null;
-            $order->installments        = $installments;
-        }
-        // create payment
-        $payment = [];
-        switch ($api->payment_provider):
-            case PaymentProviders::APPMAX:
-                $appmax = new AppmaxService($api);
-                $payment = $appmax->payByCard(
-                    $card,
-                    $contact,
-                    [
-                        [
-                            'sku'   => $sku,
-                            'qty'   => $qty,
-                            'name'  => $product->product_name,
-                            'desc'  => $product->long_name,
-                            'image' => $product->logo_image,
-                            'amount'    => $order->total_price,
-                        ]
-                    ],
-                    [
-                        'amount'        => $order->total_price,
-                        'order_id'      => $order->getIdAttribute(),
-                        'currency'      => $order->currency,
-                        'installments'  => $installments,
-                        'document_number' => $order->customer_doc_id
-                    ]
-                );
-                break;
-            case PaymentProviders::EBANX:
-                $ebanx = new EbanxService($api);
-                $payment = $ebanx->payByCard(
-                    $card,
-                    $contact,
-                    [
-                        [
-                            'sku'   => $sku,
-                            'qty'   => $qty,
-                            'name'  => $product->product_name,
-                            'desc'  => $product->description,
-                            'amount'    => $order->total_price,
-                            'is_main'   => true
-                        ]
-                    ],
-                    [
-                        'amount'        => $order->total_price,
-                        'currency'      => $order->currency,
-                        'number'        => $order->number,
-                        'installments'  => $installments,
-                        'product_id'    => $product->getIdAttribute()
-                    ]
-                );
-                break;
-            case PaymentProviders::CHECKOUTCOM:
-                $checkout = new CheckoutDotComService($api);
-                $payment = $checkout->payByCard($card, $contact, [
-                    'amount'    => $order->total_price,
-                    'currency'  => $order->currency,
-                    'id'        => $order->getIdAttribute(),
-                    'number'    => $order->number,
-                    '3ds'       => self::checkIs3dsNeeded(
-                        $method,
-                        $contact['country'],
-                        PaymentProviders::CHECKOUTCOM,
-                        $order->affiliate,
-                        (array)$ipqs
-                    ),
-                    'description'   => $product->product_name,
-                    // TODO: remove city hardcode
-                    'billing_descriptor'   => ['name' => $order->billing_descriptor, 'city' => 'Msida']
-                ]);
-                if ($payment['status'] !== Txn::STATUS_FAILED) {
-                    $payment['token'] = $checkout->requestToken($card, $contact);
-                }
-                break;
-            case PaymentProviders::BLUESNAP:
-                $bluesnap = new BluesnapService($api);
-                $payment = $bluesnap->payByCard(
-                    $card,
-                    $contact,
-                    [
-                        'amount' => $order->total_price,
-                        'currency' => $order->currency,
-                        'order_id' => $order->getIdAttribute(),
-                        'billing_descriptor' => $order->billing_descriptor,
-                        'kount_session_id' => $kount_session_id,
-                        '3ds'  => self::checkIs3dsNeeded(
-                            $method,
-                            $contact['country'],
-                            PaymentProviders::BLUESNAP,
-                            $order->affiliate,
-                            (array)$ipqs
-                        )
-                    ]
-                );
-                break;
-            case PaymentProviders::MINTE:
-                $minte = new MinteService($api);
-                $payment = $minte->payByCard($card, $contact, [
-                    '3ds'       => self::checkIs3dsNeeded(
-                        $method,
-                        $contact['country'],
-                        PaymentProviders::MINTE,
-                        $order->affiliate,
-                        (array)$ipqs
-                    ),
-                    'amount'    => $order->total_price,
-                    'currency'  => $order->currency,
-                    'order_id'  => $order->getIdAttribute(),
-                    'order_number'  => $order->number,
-                    'product_id'    => $product->getIdAttribute(),
-                    'user_agent'    => $user_agent,
-                    'descriptor'    => $order->billing_descriptor
-                ]);
-                if ($payment['status'] === Txn::STATUS_CAPTURED) {
-                    $capture = $minte->capture($payment['hash'], ['amount' => $order->total_price, 'currency' => $order->currency]);
-                    $this->logTxn(array_merge($capture, ['payment_method' => $method]));
-                    $payment['status'] = $capture['status'];
-                    $payment['capture_hash'] = $capture['hash'];
-                }
-                break;
-        endswitch;
-
-        $this->addTxnToOrder($order, $payment, [
-            'payment_method' => $method,
-            'card_number' => UtilsService::prepareCardNumber($card['number']),
-            'card_type' => $card['type'] ?? null
-        ]);
-
-        $order_product['txn_hash'] = $payment['hash'];
-        $order->addProduct($order_product, true);
-
-        // check is this fallback
-        if (!empty($payment['fallback'])) {
-
-            $reply = $this->fallbackOrder($order, $card, [
-                'method'     => $method,
-                'provider'   => $api->payment_provider,
-                'useragent'  => $user_agent
-            ]);
-
-            if ($reply['status']) {
-                $payment = $reply['payment'];
-                $order_product = $order->getMainProduct(); // throwable
-                $order_product['txn_hash'] = $payment['hash'];
-                $order->addProduct($order_product, true);
-                $this->addTxnToOrder($order, $payment, [
-                    'payment_method' => $method,
-                    'card_number' => UtilsService::prepareCardNumber($card['number']),
-                    'card_type' => $card['type'] ?? null
-                ]);
-            }
-        }
-
-        // cache token
-        self::setCardToken($order->number, $payment['token'] ?? null);
-
-        $order->is_flagged = $payment['is_flagged'];
-        if (!$order->save()) {
-            $validator = $order->validate();
-            if ($validator->fails()) {
-                throw new OrderUpdateException(json_encode($validator->errors()->all()));
-            }
-        }
-
-        // approve order if txn is approved
-        if ($payment['status'] === Txn::STATUS_APPROVED) {
-            $order = $this->approveOrder($payment, $payment['payment_provider']);
-        }
-
-        $result = [
-            'order_currency' => $order->currency,
-            'order_number'   => $order->number,
-            'order_amount'   => $payment['value'],
-            'order_id'       => $order->getIdAttribute(),
-            'status'         => self::STATUS_FAIL,
-            'id'             => null
-        ];
-
-        if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['id'] = $payment['hash'];
-            $result['status'] = self::STATUS_OK;
-            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
-            $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
-
-            $customer->type = OdinCustomer::TYPE_BUYER;
-            $customer->save();
-        } else {
-            $result['errors'] = $payment['errors'];
-            PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
-        }
-
-        return array_filter($result);
-    }
-
-    /**
-     * Resolves Blusnap 3ds payment
-     * @param  string $order_id
-     * @param  string $ref
-     * @return array
-     */
-    public function completeBs3dsOrder(string $order_id, string $ref): array
-    {
-        $user_agent = utf8_encode(request()->header('User-Agent'));
-
-        $order = OdinOrder::getById($order_id); // throwable
-        $order_product = $order->getMainProduct(); // throwable
-        $order_txn = $order->getTxnByHash($order_product['txn_hash']); // throwable
-        $order->dropTxn($order_txn['hash']);
-
-        $result = [
-            'order_currency' => $order->currency,
-            'order_number'   => $order->number,
-            'order_amount'   => $order_txn['value'],
-            'order_id'       => $order->getIdAttribute(),
-            'status'         => self::STATUS_FAIL
-        ];
-
-        if (empty($order_txn['payer_id'])) {
-            return $result;
-        }
-
-        $hndl = new BluesnapService(PaymentApiService::getById($order_txn['payment_api_id']));
-        $payment = $hndl->payByVaultedShopperId(
-            $order_txn['payer_id'],
-            [
-                '3ds_ref'   => $ref,
-                'amount'    => $order_txn['value'],
-                'currency'  => $order->currency,
-                'billing_descriptor' => $order->billing_descriptor
-            ]
-        );
-
-        $this->addTxnToOrder($order, $payment, $order_txn);
-
-        $order_product['txn_hash'] = $payment['hash'];
-        $order->addProduct($order_product, true);
-
-        // check is this fallback
-        $cardtk = self::getCardToken($order->number, false);
-        if (!empty($payment['fallback']) && $cardtk) {
-            $reply = $this->fallbackOrder(
-                $order,
-                json_decode(BluesnapService::decrypt($cardtk, $order_id), true),
-                [
-                    'method'     => $order_txn['payment_method'],
-                    'provider'   => PaymentProviders::BLUESNAP,
-                    'useragent'  => $user_agent
-                ]
-            );
-
-            if ($reply['status']) {
-                $payment = $reply['payment'];
-                $order_product = $order->getMainProduct(); // throwable
-                $order_product['txn_hash'] = $payment['hash'];
-                $order->addProduct($order_product, true);
-                $this->addTxnToOrder($order, $payment, $order_txn);
-            }
-        }
-
-        if (!$order->save()) {
-            $validator = $order->validate();
-            if ($validator->fails()) {
-                throw new OrderUpdateException(json_encode($validator->errors()->all()));
-            }
-        }
-
-        if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['id'] = $payment['hash'];
-            $result['status'] = self::STATUS_OK;
-            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
-        } else {
-            $result['errors'] = $payment['errors'];
-            PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
-        }
-
-        return array_filter($result);
-    }
-
-    /**
-     * Adds upsells to order using CardToken
-     * @param  PaymentCardCreateUpsellsOrderRequest $req
-     * @return array
-     */
-    public function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req): array
-    {
-        $upsells = $req->input('upsells', []);
-        $user_agent = utf8_encode($req->header('User-Agent'));
-
-        $order = OdinOrder::getById($req->get('order')); // throwable
-        $order_main_product = $order->getMainProduct(); // throwable
-        $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
-        $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
-
-        // prepare upsells result
-        $upsells = array_map(function($v) {
-            $v['status'] = self::STATUS_FAIL;
-            return $v;
-        }, $upsells);
-
-        $card_token = null;
-        $is_upsells_possible = $this->orderService->checkIfUpsellsPossible($order);
-        if ($is_upsells_possible) {
-            if ($order_main_txn['payment_provider'] === PaymentProviders::BLUESNAP) {
-                $is_upsells_possible = !!$order_main_txn['payer_id'];
-            } else {
-                $card_token = self::getCardToken($order->number);
-                $is_upsells_possible = !!$card_token;
-            }
-        }
-
-        if ($is_upsells_possible) {
-            $products = [];
-            $upsell_products = [];
-            $checkout_price = 0;
-            foreach ($upsells as $key => $item) {
-                try {
-                    $product = $this->productService->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
-                    $upsell_price = $product->upsellPrices[$item['qty']];
-                    $upsell_product = $this->createOrderProduct(
-                        $product->upsell_sku,
-                        [
-                            'currency'  => $upsell_price['code'],
-                            'quantity'  => (int)$item['qty'],
-                            'value'     => $upsell_price['price'],
-                            'value_usd' => $upsell_price['price'] / $upsell_price['exchange_rate']
-                        ],
-                        [
-                            'is_main' => false,
-                            'is_plus_one' => ($item['id'] === $main_product->getIdAttribute())
-                        ]
-                    );
-                    $checkout_price += $upsell_price['price'];
-                    $products[$product->upsell_sku] = $product;
-                    $upsell_products[] = $upsell_product;
-                } catch (HttpException $e) {
-                    $upsells[$key]['status'] = self::STATUS_FAIL;
-                }
-            }
-
-            $api = PaymentApiService::getById($order_main_txn['payment_api_id']);
-            if ($checkout_price >= OdinProduct::MIN_PRICE && $api) {
-                $checkout_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
-                if ($api->payment_provider === PaymentProviders::APPMAX) {
-                    $appmax = new AppmaxService($api);
-                    $payment = $appmax->payByToken(
-                        $card_token,
-                        [
-                            'street'            => $order->shipping_street,
-                            'city'              => $order->shipping_city,
-                            'country'           => $order->shipping_country,
-                            'state'             => $order->shipping_state,
-                            'district'          => $order->shipping_street2,
-                            'building'          => $order->shipping_building,
-                            'complement'        => $order->shipping_apt,
-                            'zip'               => $order->shipping_zip,
-                            'email'             => $order->customer_email,
-                            'first_name'        => $order->customer_first_name,
-                            'last_name'         => $order->customer_last_name,
-                            'phone'             => $order->customer_phone,
-                            'ip'                => $req->ip()
-                        ],
-                        array_map(function($item) use($products) {
-                            return [
-                                'sku'   => $item['sku_code'],
-                                'qty'   => $item['quantity'],
-                                'name'  => $products[$item['sku_code']]->product_name,
-                                'desc'  => $products[$item['sku_code']]->long_name,
-                                'image'  => $products[$item['sku_code']]->logo_image,
-                                'amount' => $item['price']
-                            ];
-                        }, $upsell_products),
-                        [
-                            'amount'        => $checkout_price,
-                            'order_id'      => $order->getIdAttribute(),
-                            'currency'      => $order->currency,
-                            'installments'  => $order->installments,
-                            'document_number' => $order->customer_doc_id
-                        ]
-                    );
-                } elseif ($api->payment_provider === PaymentProviders::EBANX) {
-                    $ebanx = new EbanxService($api);
-                    $payment = $ebanx->payByToken(
-                        $card_token,
-                        [
-                            'street'            => $order->shipping_street,
-                            'city'              => $order->shipping_city,
-                            'country'           => $order->shipping_country,
-                            'state'             => $order->shipping_state,
-                            'building'          => $order->shipping_building,
-                            'complement'        => $order->shipping_apt,
-                            'zip'               => $order->shipping_zip,
-                            'document_number'   => $order->customer_doc_id,
-                            'email'             => $order->customer_email,
-                            'first_name'        => $order->customer_first_name,
-                            'last_name'         => $order->customer_last_name,
-                            'phone'             => $order->customer_phone,
-                            'ip'                => $req->ip()
-                        ],
-                        array_map(function($item) use($products) {
-                            return [
-                                'sku'   => $item['sku_code'],
-                                'qty'   => $item['quantity'],
-                                'name'  => $products[$item['sku_code']]->product_name,
-                                'desc'  => $products[$item['sku_code']]->description,
-                                'amount'    => $item['price'],
-                                'is_main'   => false
-                            ];
-                        }, $upsell_products),
-                        [
-                            'amount'        => $checkout_price,
-                            'currency'      => $order->currency,
-                            'number'        => $order->number,
-                            'installments'  => $order->installments,
-                            'payment_api_id' => $order_main_txn['payment_api_id']
-                        ]
-                    );
-                } elseif ($api->payment_provider === PaymentProviders::CHECKOUTCOM) {
-                    $checkout = new CheckoutDotComService($api);
-                    $payment = $checkout->payByToken(
-                        $card_token,
-                        ['payer_id' => $order_main_txn['payer_id'], 'ip' => $order->ip],
-                        [
-                            'amount'    => $checkout_price,
-                            'currency'  => $order->currency,
-                            'id'        => $order->getIdAttribute(),
-                            'number'    => $order->number,
-                            'description' => implode(', ', array_column($products, 'product_name')),
-                            // TODO: remove city hardcode
-                            'billing_descriptor' => [
-                                'name' => $order->billing_descriptor,
-                                'city' => 'Msida'
-                            ]
-                        ]
-                    );
-                } elseif ($api->payment_provider === PaymentProviders::MINTE) {
-                    $minte = new MinteService($api);
-                    $payment = $minte->payByToken(
-                        $card_token,
-                        [
-                            'street'        => $order->shipping_street,
-                            'city'          => $order->shipping_city,
-                            'country'       => $order->shipping_country,
-                            'state'         => $order->shipping_state,
-                            'zip'           => $order->shipping_zip,
-                            'email'         => $order->customer_email,
-                            'first_name'    => $order->customer_first_name,
-                            'last_name'     => $order->customer_last_name,
-                            'phone'         => $order->customer_phone,
-                            'ip'            => $req->ip()
-                        ],
-                        [
-                            'amount'    => $checkout_price,
-                            'currency'  => $order->currency,
-                            'order_id'  => $order->getIdAttribute(),
-                            'descriptor'    => $order->billing_descriptor,
-                            'order_number'  => $order->number,
-                            'user_agent'    => $user_agent,
-                            'payment_api_id' => $order_main_txn['payment_api_id']
-                        ]
-                    );
-                    if ($payment['status'] === Txn::STATUS_CAPTURED) {
-                        $capture = $minte->capture($payment['hash'], ['amount' => $checkout_price, 'currency' => $order->currency]);
-                        $this->logTxn(array_merge($capture, ['payment_method' => $order_main_txn['payment_method']]));
-                        $payment['status'] = $capture['status'];
-                        $payment['capture_hash'] = $capture['hash'];
-                    }
-                } elseif ($api->payment_provider === PaymentProviders::BLUESNAP) {
-                    $bluesnap = new BluesnapService($api);
-                    $payment = $bluesnap->payByVaultedShopperId(
-                        $order_main_txn['payer_id'],
-                        [
-                            'amount'    => $checkout_price,
-                            'currency'  => $order->currency,
-                            'billing_descriptor' => $order->billing_descriptor
-                        ]
-                    );
-                }
-
-                // update order
-                $upsells = array_map(function($v) use ($payment) {
-                    if (in_array($payment['status'], [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED])) {
-                        $v['status'] = self::STATUS_OK;
-                    } else {
-                        $v['status'] = self::STATUS_FAIL;
-                        $v['errors'] = $payment['errors'];
-                    }
-                    return $v;
-                }, $upsells);
-
-                // NOTE: re-request order to prevent race condition
-                $order = OdinOrder::getById($order->getIdAttribute());
-
-                foreach ($upsell_products as $item) {
-                    $item['txn_hash'] = $payment['hash'];
-                    $order->addProduct($item);
-                }
-
-                $this->addTxnToOrder($order, $payment, $order_main_txn);
-
-                if ($order->status === OdinOrder::STATUS_PAID) {
-                    $order->status = OdinOrder::STATUS_HALFPAID;
-                }
-
-                $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
-                $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
-                $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($order->total_price / $order->exchange_rate, Currency::DEF_CUR);
-
-                // reset flag if txn is approved
-                if ($payment['status'] === Txn::STATUS_APPROVED) {
-                    $order->is_invoice_sent = false;
-                }
-
-                if (!$order->save()) {
-                    $validator = $order->validate();
-                    if ($validator->fails()) {
-                        throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                    }
-                }
-
-                // approve order if txn is approved
-                if ($payment['status'] === Txn::STATUS_APPROVED) {
-                    $order = $this->approveOrder($payment, $payment['payment_provider']);
-                }
-            }
-        }
-
-        return [
-            'order_currency'    => $order->currency,
-            'order_number'      => $order->number,
-            'order_id'          => $order->getIdAttribute(),
-            'id'                => $order_main_product['txn_hash'],
-            'status'            => $order_main_txn['status'] !== Txn::STATUS_FAILED ? self::STATUS_OK : self::STATUS_FAIL,
-            'upsells'           => $upsells
-        ];
-    }
-
-    /**
      * Invokes fallback
-     * @param  OdinOrder $order
-     * @param  array     $card
-     * @param  array     $details ['provider' => string, 'method' => string, 'useragent' => ?string]
+     * @param OdinOrder $order
+     * @param array $card
+     * @param array $details ['provider' => string, 'method' => string, 'useragent' => ?string]
      * @return array
+     * @throws \App\Exceptions\ProductNotFoundException
      */
-    public function fallbackOrder(OdinOrder &$order, array $card, array $details): array
+    public static function fallbackOrder(OdinOrder &$order, array $card, array $details): array
     {
         $is_fallback_available = self::checkIsFallbackAvailable(
             $details['provider'], $order->affiliate, $order->ipqualityscore, ['installments' => $order->installments]
@@ -1080,6 +280,7 @@ class PaymentService
         $domain = Domain::getByName();
         $api = PaymentApiService::getAvailableOne(
             $product->getIdAttribute(),
+            $details['method'],
             optional($domain)->getIdAttribute(),
             self::getProvidersForPay($order->shipping_country, $details['method'], false),
             $order->currency
@@ -1098,7 +299,7 @@ class PaymentService
         switch ($api->payment_provider):
             case PaymentProviders::BLUESNAP:
                 $result['status']  = true;
-                $order = $this->checkOrderCurrency($order, PaymentProviders::BLUESNAP);
+                $order = self::checkOrderCurrency($order, PaymentProviders::BLUESNAP);
                 $bluesnap = new BluesnapService($api);
                 $result['payment'] = $bluesnap->payByCard(
                     $card,
@@ -1133,7 +334,7 @@ class PaymentService
                 );
                 break;
             case PaymentProviders::MINTE:
-                $order = $this->checkOrderCurrency($order, PaymentProviders::MINTE);
+                $order = self::checkOrderCurrency($order, PaymentProviders::MINTE);
                 $minte = new MinteService($api);
                 $result['status']  = true;
                 $payment = $minte->payByCard(
@@ -1160,6 +361,7 @@ class PaymentService
                         ),
                         'amount'    => $order->total_price,
                         'currency'  => $order->currency,
+                        'domain'    => optional($domain)->name,
                         'order_id'  => $order->getIdAttribute(),
                         'order_number'  => $order->number,
                         'descriptor'    => $order->billing_descriptor,
@@ -1168,7 +370,7 @@ class PaymentService
                 );
                 if ($payment['status'] === Txn::STATUS_CAPTURED) {
                     $capture = $minte->capture($payment['hash'], ['amount' => $order->total_price, 'currency' => $order->currency]);
-                    $this->logTxn(array_merge($capture, ['payment_method' => $details['method']]));
+                    self::logTxn(array_merge($capture, ['payment_method' => $details['method']]));
                     $payment['status'] = $capture['status'];
                     $payment['capture_hash'] = $capture['hash'];
                 }
@@ -1224,7 +426,7 @@ class PaymentService
      * @param array $data ['hash'=>string,'number'=>?string,'value'=>?float,'status'=>string]
      * @return OdinOrder|null
      */
-    public function approveOrder(array $data, ?string $provider = null): ?OdinOrder
+    public static function approveOrder(array $data, ?string $provider = null): ?OdinOrder
     {
         $order = null;
         if (!empty($data['number'])) {
@@ -1287,23 +489,13 @@ class PaymentService
     }
 
     /**
-     * Restores cancelled order
-     * @param OdinOrder &$order
-     * @return void
-     */
-    public function restoreOrder(OdinOrder &$order): void
-    {
-
-    }
-
-    /**
      * Returns supported currency
      * @param  string $country
      * @param  string $currency
      * @param  string $prv default=minte
      * @return string
      */
-    public function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINTE): string
+    public static function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINTE): string
     {
         switch ($prv):
             case PaymentProviders::EBANX:
@@ -1323,7 +515,7 @@ class PaymentService
      * @param  string      $prv
      * @return OdinOrder
      */
-    public function checkOrderCurrency(OdinOrder $order, string $provider = PaymentProviders::MINTE): OdinOrder
+    public static function checkOrderCurrency(OdinOrder $order, string $provider = PaymentProviders::MINTE): OdinOrder
     {
         $order_product = $order->getMainProduct(); // throwable
 
@@ -1338,7 +530,7 @@ class PaymentService
         // NOTE: prevent implicit currency defenition
         $product->currency = $order->currency;
 
-        $price = $this->getLocalizedPrice($product, $order_product['quantity'], $order->shipping_country, $provider); // throwable
+        $price = self::getLocalizedPrice($product, $order_product['quantity'], $order->shipping_country, $provider); // throwable
 
         if ($order->currency === $price['currency']) {
             return $order;
@@ -1346,7 +538,7 @@ class PaymentService
 
         logger()->info("Fallback [{$order->number}] change currency {$order->currency} -> {$price['currency']}");
 
-        $order_product = $this->createOrderProduct($order_product['sku_code'], $price, ['is_warranty' => !!$order_product['warranty_price']]);
+        $order_product = self::createOrderProduct($order_product['sku_code'], $price, ['is_warranty' => !!$order_product['warranty_price']]);
 
         $order->currency        = $price['currency'];
         $order->exchange_rate   = $price['usd_rate'];
@@ -1358,153 +550,11 @@ class PaymentService
     }
 
     /**
-     * Mint-e 3ds redirect
-     * @param  PaymentCardMinte3dsRequest $req
-     * @param string $order_id
-     * @return array
-     */
-    public function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id): array
-    {
-        $errcode    = $req->input('errorcode');
-        $errmsg     = $req->input('errormessage');
-        $sign       = $req->input('signature');
-        $txn_hash   = $req->input('transid');
-        $txn_status = $req->input('status');
-        $txn_ts     = $req->input('timestamp', '') ?? '';
-
-        $order = OdinOrder::getById($order_id); // throwable
-        $order_txn = $order->getTxnByHash($txn_hash); // throwable
-
-        $minte = new MinteService(PaymentApiService::getById($order_txn['payment_api_id']));
-
-        if (!$minte->verifySignature($txn_hash, $sign, $txn_ts)) {
-            logger()->warning('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
-            throw new AuthException('Unauthorized');
-        }
-
-        $payment = $minte->handle3ds($order_txn, ['errcode' => $errcode, 'errmsg' => $errmsg, 'status' => $txn_status]);
-        if ($payment['status'] === Txn::STATUS_CAPTURED) {
-            $capture = $minte->capture($payment['hash'], ['amount' => $order_txn['value'], 'currency' => $order->currency]);
-            $this->logTxn(array_merge($capture, ['payment_method' => $order_txn['payment_method']]));
-            $payment['status'] = $capture['status'];
-            $payment['capture_hash'] = $capture['hash'];
-        }
-
-        $result = ['status' => self::STATUS_FAIL];
-        if ($payment['status'] === Txn::STATUS_APPROVED) {
-            $result = ['status' => self::STATUS_OK];
-            $this->approveOrder($payment, PaymentProviders::MINTE);
-        } else {
-            $order = $this->rejectTxn($payment, PaymentProviders::MINTE);
-
-            PaymentService::cacheOrderErrors(array_merge($payment, ['number' => $order->number]));
-
-            $cardtk = self::getCardToken($order->number, false);
-
-            logger()->info("Pre-Fallback [{$order->number}]", ['cardtk' => !!$cardtk, 'fallback' => !empty($payment['fallback'])]);
-
-            if (!empty($payment['fallback']) && $cardtk) {
-                $reply = $this->fallbackOrder(
-                    $order,
-                    json_decode(MinteService::decrypt($cardtk, $order_id), true),
-                    ['provider' => PaymentProviders::MINTE, 'method' => $order_txn['payment_method']]
-                );
-
-                if ($reply['status']) {
-                    $result = [
-                        'amount'        => $reply['payment']['value'],
-                        'currency'      => $order->currency,
-                        'status'        => self::STATUS_OK,
-                        'redirect_url'  => $reply['payment']['redirect_url'] ?? null,
-                        'bs_pf_token'   => $reply['payment']['bs_pf_token'] ?? null
-                    ];
-
-                    $order_product = $order->getMainProduct(); // throwable
-                    $order_product['txn_hash'] = $reply['payment']['hash'];
-                    $order->addProduct($order_product, true);
-                    $this->addTxnToOrder($order, $reply['payment'], $order_txn);
-                    $order->is_flagged = $reply['payment']['is_flagged'];
-
-                    if (!$order->save()) {
-                        $validator = $order->validate();
-                        if ($validator->fails()) {
-                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                        }
-                    }
-
-                    if ($reply['payment']['status'] === Txn::STATUS_FAILED) {
-                        PaymentService::cacheOrderErrors(array_merge($reply['payment'], ['number' => $order->number]));
-                        $result = ['status' => self::STATUS_FAIL];
-                    }
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Approves order by ebanx hashes
-     * @param  array  $hashes
-     * @return void
-     */
-    public function ebanxNotification(array $hashes): void
-    {
-        foreach ($hashes as $hash) {
-            $order = OdinOrder::getByTxnHash($hash, PaymentProviders::EBANX, false);
-
-            if (!$order) {
-                logger()->warning('Ebanx: order not found', ['hash' => $hash]);
-                continue;
-            }
-
-            $txn = $order->getTxnByHash($hash, false);
-
-            if (empty($txn['payment_api_id'])) {
-                logger()->warning('Ebanx: payment_api_id not found', ['order' => $order->number, 'hash' => $hash]);
-                continue;
-            }
-
-            $ebanx = new EbanxService(PaymentApiService::getById($txn['payment_api_id']));
-
-            $payment = $ebanx->requestStatusByHash($hash, $txn ?? []);
-
-            if (!empty($payment['number'])) {
-                // prevention of race condition
-                usleep(mt_rand(0, 2000) * 1000);
-
-                $this->approveOrder($payment, PaymentProviders::EBANX);
-            } else {
-                logger()->warning('Ebanx: payment not found', ['hash' => $hash]);
-            }
-        }
-    }
-
-    /**
-     * Handles Appmax webhook
-     * @param string $event
-     * @param array  $data
-     * @return void
-     */
-    public function appmaxWebhook(string $event, array $data): void
-    {
-        $order = OdinOrder::getByTxnHash($data['id'], PaymentProviders::APPMAX); //throwable
-        $txn = $order->getTxnByHash((string)$data['id'], false);
-
-        $api = PaymentApiService::getById($txn['payment_api_id']);
-        $reply = (new AppmaxService($api))->validateWebhook($event, $data);
-
-        if ($reply['status']) {
-            $this->approveOrder($reply['txn'], PaymentProviders::APPMAX);
-        }
-    }
-
-    /**
      * Reject txn
      * @param array $data
      * @return OdinOrder|null
      */
-    public function rejectTxn(array $data, ?string $provider = null): ?OdinOrder
+    public static function rejectTxn(array $data, ?string $provider = null): ?OdinOrder
     {
         $order = null;
         if (!empty($data['number'])) {
@@ -1532,8 +582,33 @@ class PaymentService
     }
 
     /**
+     * Updates or adds customer
+     * @param array $contacts
+     * @return OdinCustomer
+     * @throws CustomerUpdateException
+     */
+    public static function addCustomer(array $contacts): OdinCustomer
+    {
+        $reply = (new CustomerService)->addOrUpdate(
+            array_merge($contacts,
+                [
+                    'doc_id'    => $contacts['document_number'] ?? null,
+                    'phone'     => $contacts['phone']['country_code'] . UtilsService::preparePhone($contacts['phone']['number'])
+                ]
+            ),
+            true
+        );
+
+        if (isset($reply['errors'])) {
+            throw new CustomerUpdateException(json_encode($reply['errors']));
+        }
+
+        return $reply['customer'];
+    }
+
+    /**
      * Caches webhook errors
-     * @param array  $data
+     * @param array $data
      * @return void
      */
     public static function cacheOrderErrors(array $data = []): void
@@ -1548,14 +623,13 @@ class PaymentService
 
     /**
      * Checks payment to fraud
-     * @param  ?array   $ipqs
-     * @param  string   $prv Payment provider
-     * @param  string|null  $affid
-     * @param  bool     $thowable
+     * @param  array $ipqs
+     * @param  string $prv Payment provider
+     * @param  string|null $affid
      * @return void
      * @throws PaymentException
      */
-    public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null, bool $throwable = true): void
+    public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null): void
     {
         if (!empty($ipqs) && \App::environment() === 'production') {
             $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
@@ -1599,7 +673,7 @@ class PaymentService
      *   ]
      * ];
      * @param string $country
-     * @param bool   $is_main default=true
+     * @param bool $is_main default=true
      * @return boolean
      */
     public static function getPaymentMethodsByCountry(string $country, bool $is_main = true)
@@ -1628,9 +702,10 @@ class PaymentService
                 }
                 if ($result[$providerId]) {
                     foreach ($result[$providerId] as $methodId => &$methodData) {
-                        $method             = PaymentMethods::$list[$methodId];
+                        $method = PaymentMethods::$list[$methodId];
                         $methodData['name'] = $method['name'];
-                        $methodData['logo'] = \Utils::getCdnUrl(true).$method['logo'];
+                        $methodData['is_apm'] = $method['is_apm'];
+                        $methodData['logo'] = UtilsService::getCdnUrl(true).$method['logo'];
                         if (isset($provider['extra_fields']) && isset($provider['extra_fields'][$country])) {
                             $methodData['extra_fields'] = $provider['extra_fields'][$country];
                         }
@@ -1675,59 +750,13 @@ class PaymentService
     }
 
     /**
-     * Returns card token from cache
-     * @param string $order_number
-     * @param boolean $is_remove default=true
-     * @return string|null
+     * Checks if it's APM
+     * @param string $method
+     * @return bool [description]
      */
-    public static function getCardToken(string $order_number, bool $is_remove = true): ?string
+    public static function isApm(string $method): bool
     {
-        if ($is_remove) {
-            return Cache::pull(self::CACHE_TOKEN_PREFIX . $order_number);
-        }
-        return Cache::get(self::CACHE_TOKEN_PREFIX . $order_number);
-    }
-
-    /**
-     * Returns CheckoutDotComService by order number
-     * @param  string $number
-     * @param  string $hash
-     * @return CheckoutDotComService
-     */
-    public static function getCheckoutService(string $number, string $hash): CheckoutDotComService
-    {
-        $order = OdinOrder::getByNumber($number); // throwable
-        $txn = $order->getTxnByHash($hash); // throwable
-        $api = PaymentApiService::getById($txn['payment_api_id']);
-        return new CheckoutDotComService($api);
-    }
-
-    /**
-     * Returns BluesnapService by order number
-     * @param  string $number
-     * @param  string $hash
-     * @return BluesnapService
-     */
-    public static function getBluesnapService(string $number, string $hash): BluesnapService
-    {
-        $order = OdinOrder::getByNumber($number); //throwable
-        $txn = $order->getTxnByHash($hash, false);
-        $api = PaymentApiService::getById($txn['payment_api_id']);
-        return new BluesnapService($api);
-    }
-
-    /**
-     * Puts card token to cache
-     * @param string $order_number
-     * @param string|null $token
-     * @return void
-     */
-    public static function setCardToken(string $order_number, ?string $token): void
-    {
-        if ($token) {
-            $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_TOKEN_TTL_MIN . "M"));
-            Cache::put(self::CACHE_TOKEN_PREFIX . $order_number, $token, $dt);
-        }
+        return PaymentMethods::$list[$method]['is_apm'];
     }
 
     /**
@@ -1736,7 +765,7 @@ class PaymentService
      * @param array $methodCountries
      * @return bool
      */
-    private static function checkIfMethodInCountries(string $country, array $methodCountries): bool
+    public static function checkIfMethodInCountries(string $country, array $methodCountries): bool
     {
         $result = false;
 
@@ -1766,7 +795,7 @@ class PaymentService
      * @param  array  $ipqs
      * @return bool
      */
-    private static function checkIs3dsNeeded(string $method, string $country, string $prv, ?string $affid = null, array $ipqs = []): bool
+    public static function checkIs3dsNeeded(string $method, string $country, string $prv, ?string $affid = null, array $ipqs = []): bool
     {
         $result = true;
         $setting = PaymentProviders::$list[$prv]['methods']['main'][$method] ?? [];
@@ -1797,7 +826,7 @@ class PaymentService
      * @param  array|null  $details defaul=[]
      * @return bool
      */
-    private static function checkIsFallbackAvailable(string $prv, ?string $affid = null, ?array $ipqs = [], ?array $details = []): bool
+    public static function checkIsFallbackAvailable(string $prv, ?string $affid = null, ?array $ipqs = [], ?array $details = []): bool
     {
         $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
 
@@ -1816,8 +845,7 @@ class PaymentService
         return $result;
     }
 
-
-    public function test(Request $req)
+    public static function test(\Illuminate\Http\Request $req)
     {
         return self::getProvidersForPay('at', PaymentMethods::VISA);
     }

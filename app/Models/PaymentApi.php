@@ -20,6 +20,7 @@ use App\Constants\PaymentProviders;
  * @property string[] $product_category_ids
  * @property string $description
  * @property bool $is_active
+ * @property bool $is_apm
  * @property mixed $created_at
  * @property mixed $updated_at
  */
@@ -54,11 +55,14 @@ class PaymentApi extends Model
      * Returns Model by provider
      * @param array $providers
      * @param bool  $is_active default=true
+     * @param bool  $is_apm default=false
      * @return Collection
      */
-    public static function getAllByProviders(array $providers, bool $is_active = true): Collection
+    public static function getAllByProviders(array $providers, bool $is_active = true, bool $is_apm = false): Collection
     {
-        return PaymentApi::where('is_active', $is_active)->whereIn('payment_provider', $providers)->get();
+        return PaymentApi::where(['is_active' => $is_active, 'is_apm' => $is_apm])
+            ->whereIn('payment_provider', $providers)
+            ->get();
     }
 
     /**
@@ -67,7 +71,9 @@ class PaymentApi extends Model
      */
     public static function getActivePaypal()
     {
-        $provider = self::whereIn('payment_provider', [PaymentProviders::PAYPAL, PaymentProviders::PAYPAL_HK])->where(['is_active' => true])->first();
+        $provider = self::whereIn('payment_provider', [PaymentProviders::PAYPAL, PaymentProviders::PAYPAL_HK])
+            ->where(['is_active' => true])
+            ->first();
         if (!$provider) {
             logger()->warning('Paypal not active');
         }

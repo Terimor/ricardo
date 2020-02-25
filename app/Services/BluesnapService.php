@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\PaymentApi;
 use App\Models\Setting;
 use App\Models\Txn;
-use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\BluesnapCodeMapper;
 use Illuminate\Http\Request;
@@ -225,7 +224,7 @@ class BluesnapService
             } else {
                 $result['status']   = Txn::STATUS_FAILED;
                 $result['errors'] = [BluesnapCodeMapper::toPhrase()];
-                logger()->warning("Bluesnap pay", ['res' => $res]);
+                logger()->warning('Bluesnap pay', ['res' => $res]);
             }
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
@@ -260,26 +259,28 @@ class BluesnapService
             $fraud_info = [];
             if (!empty($details['kount_session_id'])) {
                 $fraud_info = [
-                    'fraudSessionId'   => $details['kount_session_id'],
-                    'shopperIpAddress' => $contacts['ip'],
-                    'shippingContactInfo' => [
-                        'address'   => $contacts['street'] . (!empty($contact['building']) ? ", {$contact['building']}" : ''),
-                        'address2'  => $contacts['complement'] ?? null,
-                        'city'      => $contacts['city'],
-                        'country'   => strtoupper($contacts['country']),
-                        'firstName' => $contacts['first_name'],
-                        'lastName'  => $contacts['last_name'],
-                        'zip'       => $contacts['zip'],
-                        'state'     => $contacts['state'] ?? null
+                    'transactionFraudInfo' => [
+                        'fraudSessionId'   => $details['kount_session_id'],
+                        'shopperIpAddress' => $contacts['ip'],
+                        'shippingContactInfo' => [
+                            'address'   => $contacts['street'] . (!empty($contact['building']) ? ", {$contact['building']}" : ''),
+                            'address2'  => $contacts['complement'] ?? null,
+                            'city'      => $contacts['city'],
+                            'country'   => strtoupper($contacts['country']),
+                            'firstName' => $contacts['first_name'],
+                            'lastName'  => $contacts['last_name'],
+                            'zip'       => $contacts['zip'],
+                            'state'     => $contacts['state'] ?? null
+                        ]
                     ]
                 ];
             }
 
             $res = $client->post('vaulted-shoppers', [
                 'json' => array_merge(
+                    $fraud_info,
                     self::createCardHolderObj($contacts),
                     [
-                        'transactionFraudInfo' => $fraud_info,
                         'shopperCurrency' => $details['currency'],
                         'paymentSources'  => [
                             'creditCardInfo' => [
