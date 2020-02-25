@@ -202,7 +202,7 @@ class CurrencyService
         $fractionDigits = $numberFormatter->getAttribute(\NumberFormatter::MAX_FRACTION_DIGITS);
         // if price < min set minimum price = min
         if ($price < OdinProduct::MIN_PRICE) {
-            logger()->error("Price < ".OdinProduct::MIN_PRICE, ['price' => $price]);
+            logger()->error("Price < ".OdinProduct::MIN_PRICE, ['price' => $price, 'url' => request()->fullUrl()]);
             $price = OdinProduct::MIN_PRICE;
         }
         $rate = (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
