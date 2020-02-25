@@ -1011,7 +1011,7 @@
       },
 
       onCreditCardSelect() {
-        setTimeout(() => this.scrollToSelector('.form'), 500);
+        setTimeout(() => this.scrollToSelector('.form'), 100);
       },
 
       check3dsFailure() {

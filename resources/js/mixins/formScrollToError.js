@@ -3,6 +3,7 @@ export default {
   methods: {
 
     scrollToElement(element) {
+      /*
       if (element) {
         let position = element.getBoundingClientRect().top - 20;
         position += document.documentElement.scrollTop;
@@ -25,6 +26,10 @@ export default {
             scrollTo(0, position);
           }
         }
+      }
+      */
+      if (element && element.scrollIntoView) {
+        element.scrollIntoView();
       }
     },
     
