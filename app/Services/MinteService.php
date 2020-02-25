@@ -23,9 +23,9 @@ class MinteService
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
-    const STATUS_OK     = 'SUCCESS';
-    const STATUS_3DS    = 'PENDING';
-    const STATUS_FAIL   = 'FAILED';
+    const ST_SUCCESS    = 'SUCCESS';
+    const ST_PENDING    = 'PENDING';
+    const ST_FAILED     = 'FAILED';
 
     const COUNTRY_CURRENCY = [
         'ae' => ['AED', 'USD'],
@@ -141,6 +141,26 @@ class MinteService
     }
 
     /**
+     * Creates payment response template
+     * @param  array $details ['currency'=>string,'amount'=>float]
+     * @return array
+     */
+    public function createPaymentTmpl(array $details): array
+    {
+        return [
+            'is_flagged'        => false,
+            'currency'          => $details['currency'],
+            'value'             => $details['amount'],
+            'status'            => Txn::STATUS_NEW,
+            'payment_provider'  => PaymentProviders::MINTE,
+            'payment_api_id'    => (string)$this->api->getIdAttribute(),
+            'payer_id'          => null,
+            'provider_data'     => null,
+            'errors'            => null
+        ];
+    }
+
+    /**
      * Provides payment by card
      * @param  array   $card
      * @param  array   $contact
@@ -159,7 +179,7 @@ class MinteService
     public function payByCard(array $card, array $contact, array $details): array
     {
         $phone = $contact['phone'];
-        if (gettype($contact['phone']) === 'array') {
+        if (is_array($contact['phone'])) {
             $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
         }
         return $this->authorize($card, array_merge($contact, ['phone' => $phone]), $details);
@@ -217,7 +237,7 @@ class MinteService
 
             $body_decoded = json_decode($res->getBody(), true);
 
-            if ($body_decoded['status'] === self::STATUS_OK) {
+            if ($body_decoded['status'] === self::ST_SUCCESS) {
                 $result['status'] = true;
             } else {
                 logger()->warning("Mint-e refund", ['body' => $body_decoded]);
@@ -254,18 +274,7 @@ class MinteService
             'headers' => ['Accept'  => 'application/json']
         ]);
 
-        $result = [
-            'is_flagged'        => false,
-            'currency'          => $details['currency'],
-            'value'             => $details['amount'],
-            'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentProviders::MINTE,
-            'payment_api_id'    => (string)$this->api->getIdAttribute(),
-            'hash'              => "fail_" . UtilsService::randomString(16),
-            'provider_data'     => null,
-            'errors'            => null,
-            'token'             => null
-        ];
+        $result = $this->createPaymentTmpl($details);
 
         try {
             $route_path = 'authorize';
@@ -275,8 +284,8 @@ class MinteService
             if ($details['3ds']) {
                 $route_path = 'authorize3ds';
                 $obj3ds = [
-                    'redirecturl'   => 'https://' . request()->getHttpHost() . "/minte-3ds/{$details['order_id']}",
-                    'useragent'     => $details['user_agent']
+                    'redirecturl' => 'https://' . request()->getHttpHost() . "/minte-3ds/{$details['order_id']}",
+                    'useragent' => $details['user_agent']
                 ];
             }
 
@@ -287,11 +296,12 @@ class MinteService
                     'name'      => $contact['first_name'] . ' ' . $contact['last_name'],
                     'address'   => $contact['street'],
                     'city'      => $contact['city'],
-                    'zip'       => $contact['zip'],
+                    'zip'       => substr($contact['zip'], 0, 15),
                     'country'   => $contact['country'],
                     'state'     => $contact['state'] ?? '',
                     'email'     => $contact['email'],
                     'phone'     => $contact['phone'],
+                    'domain'    => $details['domain'],
                     'amount'    => $details['amount'],
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
@@ -310,11 +320,11 @@ class MinteService
 
             $body_decoded = json_decode($res->getBody(), true);
 
-            if ($body_decoded['status'] === self::STATUS_OK) {
+            if ($body_decoded['status'] === self::ST_SUCCESS) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_CAPTURED;
                 $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
-            } elseif ($body_decoded['status'] === self::STATUS_3DS) {
+            } elseif ($body_decoded['status'] === self::ST_PENDING) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_AUTHORIZED;
                 $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
@@ -325,7 +335,12 @@ class MinteService
                 $code = $body_decoded['errorcode'] ?? null;
                 $msg  = $body_decoded['errormessage'] ?? null;
 
-                $result['fallback'] = in_array($code ?? $msg, self::$fallback_codes);
+                if (in_array($code ?? $msg, self::$fallback_codes)) {
+                    $result['fallback'] = true;
+                }
+
+                $result['hash'] = "fail_" . UtilsService::randomString(16);
+                $result['status'] = Txn::STATUS_FAILED;
                 $result['errors'] = [MinteCodeMapper::toPhrase($code, $msg)];
             }
             $result['provider_data'] = $body_decoded;
@@ -379,7 +394,7 @@ class MinteService
 
             $body_decoded = json_decode($res->getBody(), true);
 
-            if ($body_decoded['status'] === self::STATUS_OK) {
+            if ($body_decoded['status'] === self::ST_SUCCESS) {
                 $result['status'] = Txn::STATUS_APPROVED;
                 $result['hash'] = $body_decoded['midtransid'];
             } else {
@@ -442,7 +457,7 @@ class MinteService
 
             logger()->info('Mint-e res debug', ['body' => $res->getBody()]);
 
-            if ($body_decoded['status'] === self::STATUS_OK) {
+            if ($body_decoded['status'] === self::ST_SUCCESS) {
                 $result['hash'] = $body_decoded['midtransid'];
                 $result['status'] = Txn::STATUS_APPROVED;
             } else {
@@ -462,6 +477,75 @@ class MinteService
     }
 
     /**
+     * Processes APM payments
+     * @param  string $method
+     * @param  array  $contacts
+     * @param  array  $details
+     * @return array
+     */
+    public function payApm(string $method, array $contacts, array $details): array
+    {
+        $client = new GuzzHttpCli([
+            'base_uri' => $this->endpoint,
+            'headers' => ['Accept' => 'application/json']
+        ]);
+
+        $result = $this->createPaymentTmpl($details);
+
+        try {
+            $nonce = UtilsService::millitime();
+            $res = $client->put('apm', [
+                'json' => [
+                    'mid'       => $this->api->login,
+                    'type'      => $method,
+                    'nonce'     => $nonce,
+                    'name'      => $contacts['first_name'] . ' ' . $contacts['last_name'],
+                    'address'   => $contacts['street'],
+                    'city'      => $contacts['city'],
+                    'zip'       => substr($contacts['zip'], 0, 15),
+                    'country'   => $contacts['country'],
+                    'state'     => $contacts['state'] ?? '',
+                    'email'     => $contacts['email'],
+                    'phone'     => is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone'],
+                    'domain'    => $details['domain'],
+                    'amount'    => $details['amount'],
+                    'currency'  => $details['currency'],
+                    'orderid'   => $details['order_number'],
+                    'orderdesc' => $details['order_desc'],
+                    'signature' => hash('sha256', $this->api->login . $nonce . $this->api->key),
+                    'useragent' => $details['user_agent'],
+                    'customerip' => $contacts['ip'],
+                    'redirecturl' => 'https://' . request()->getHttpHost() . "/minte-apm/{$details['order_id']}"
+                ]
+            ]);
+
+            $body_decoded = json_decode($res->getBody(), true);
+
+            $result['provider_data'] = ['code' => $res->getStatusCode(), 'body' => $res->getBody()];
+
+            if ($body_decoded['status'] === self::ST_PENDING) {
+                $result['hash']   = $body_decoded['transid'];
+                $result['status'] = Txn::STATUS_AUTHORIZED;
+                $result['redirect_url'] = $body_decoded['redirecturl'];
+            } else {
+                logger()->error("Mint-e apm", $result['provider_data']);
+
+                $result['hash'] = "fail_" . UtilsService::randomString(16);
+                $result['status'] = Txn::STATUS_FAILED;
+                $result['errors'] = [
+                    MinteCodeMapper::toPhrase($body_decoded['errorcode'] ?? null, $body_decoded['errormessage'] ?? null)
+                ];
+            }
+        } catch (GuzzReqException $ex) {
+            $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
+            $result['errors'] = [MinteCodeMapper::toPhrase()];
+            $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
+            logger()->error("Mint-e apm", $result['provider_data']);
+        }
+        return $result;
+    }
+
+    /**
      * Handles payment after 3ds
      * @param array $payment Order->txns item
      * @param array $params ['errcode' => ?string, 'errmsg' => ?string, 'status' => string]
@@ -469,13 +553,31 @@ class MinteService
      */
     public function handle3ds(array $payment, array $params): array
     {
-        if ($params['status'] === self::STATUS_OK) {
+        if ($params['status'] === self::ST_SUCCESS) {
             $payment['status'] = Txn::STATUS_CAPTURED;
         } else {
             $code = !empty($params['errcode']) ? $params['errcode'] : $params['errmsg'];
             if (in_array($code, self::$fallback_codes)) {
                 $payment['fallback'] = true;
             }
+            $payment['status'] = Txn::STATUS_FAILED;
+            $payment['errors'] = [MinteCodeMapper::toPhrase($params['errcode'], $params['errmsg'])];
+        }
+
+        return $payment;
+    }
+
+    /**
+     * Handles APM redirect response
+     * @param array $payment Order->txns item
+     * @param array $params ['errcode' => ?string, 'errmsg' => ?string, 'status' => string]
+     * @return array
+     */
+    public function handleApm(array $payment, array $params): array
+    {
+        if ($params['status'] === self::ST_SUCCESS) {
+            $payment['status'] = Txn::STATUS_APPROVED;
+        } else {
             $payment['status'] = Txn::STATUS_FAILED;
             $payment['errors'] = [MinteCodeMapper::toPhrase($params['errcode'], $params['errmsg'])];
         }

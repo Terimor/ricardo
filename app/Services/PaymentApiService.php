@@ -67,18 +67,19 @@ class PaymentApiService
     /**
      * Returns PaymentApi by domain or product
      * @param  string $product_id
+     * @param  string $method
      * @param  string|null $domain_id
      * @param  array  $prv_list default=[]
      * @param  string|null $currency default=null
      * @return PaymentApi|null
      */
-    public static function getAvailableOne(string $product_id, ?string $domain_id, array $prv_list = [], ?string $currency = null): ?PaymentApi
+    public static function getAvailableOne(string $product_id, string $method, ?string $domain_id, array $prv_list = [], ?string $currency = null): ?PaymentApi
     {
         if (empty($prv_list)) {
             return null;
         }
 
-        $apis_by_prv = PaymentApi::getAllByProviders($prv_list)->groupBy('payment_provider');
+        $apis_by_prv = PaymentApi::getAllByProviders($prv_list, true, PaymentService::isApm($method))->groupBy('payment_provider');
 
         // get PaymentApis for each provider by sequential filtering (domain->product->default)
         $filtered = [];

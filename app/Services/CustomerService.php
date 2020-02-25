@@ -14,7 +14,7 @@ class CustomerService
      * @param boolean $returnModel
      * @return array
      */
-    public function addOrUpdate(array $data, bool $returnModel = false): array
+    public static function addOrUpdate(array $data, bool $returnModel = false): array
     {
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
@@ -68,4 +68,5 @@ class CustomerService
              ];
         }
     }
+
 }
