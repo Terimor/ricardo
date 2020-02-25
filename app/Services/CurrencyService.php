@@ -205,7 +205,16 @@ class CurrencyService
             logger()->error("Price < ".OdinProduct::MIN_PRICE, ['price' => $price]);
             $price = OdinProduct::MIN_PRICE;
         }
-        $exchangedPrice = $price * (!empty($currency->price_rate) ? $currency->price_rate : $currency->usd_rate);
+        if (!empty($currency->price_rate)) {
+            $rate = $currency->price_rate;
+        } else {
+            $rate = $currency->usd_rate;
+            // add correction percent to calculate price
+            if (!empty($currency->price_correction_percent)) {
+                $rate = $rate + $rate * $currency->price_correction_percent / 100;
+            }
+        }
+        $exchangedPrice = $price * $rate;
         $exchangedPrice = round($exchangedPrice, 2);
 
         if (in_array($currencyCode, static::$upToNext500)) {

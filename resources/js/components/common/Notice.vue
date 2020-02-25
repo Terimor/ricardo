@@ -29,6 +29,10 @@ export default {
   ],
 
   mounted() {
+    if (+js_query_params.recentlybought === 0) {
+      return;
+    }
+
     if (this.showPreloader) {
       const interval = setInterval(() => {
         if (!this.showPreloader) {
