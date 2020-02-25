@@ -42,6 +42,10 @@ export default {
     recently_bought_init() {
       const timeout = 2000 + (this.preloader_enabled ? 10000 : 0);
 
+      if (+js_query_params.recentlybought === 0) {
+        return;
+      }
+
       setTimeout(() => {
         setInterval(() => {
           index++;
