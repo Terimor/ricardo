@@ -397,7 +397,7 @@
 
         setTimeout(() => {
           this.scrollToSelector('.payment-form');
-        }, 100);
+        }, 500);
       },
       paypalSubmit() {
         if (this.$v.form.deal.$invalid) {
