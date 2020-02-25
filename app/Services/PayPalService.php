@@ -468,6 +468,14 @@ class PayPalService
 
             $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
 
+            if (!$order) {
+                logger()->error(
+                    'Cant find matching order for txh.hash: ' . $paypal_order->id,
+                    ['paypal_order' => $paypal_order]
+                );
+                abort(404);
+            }
+
             $order_txn_data = [
                 'hash' => $txn_response['txn']->hash,
                 'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id  ?? null,
@@ -566,6 +574,14 @@ class PayPalService
                 $txn = $txn_response['txn']->attributesToArray();
 
                 $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
+
+                if (!$order) {
+                    logger()->error(
+                        'Cant find matching order for txh.hash: ' . $paypal_order->id,
+                        ['paypal_order' => $paypal_order]
+                    );
+                    abort(404);
+                }
 
                 $order_txn_data = [
                     'hash' => $txn_response['txn']->hash,

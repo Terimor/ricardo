@@ -325,10 +325,7 @@ class MinteService
                 $code = $body_decoded['errorcode'] ?? null;
                 $msg  = $body_decoded['errormessage'] ?? null;
 
-                if (in_array($code ?? $msg, self::$fallback_codes)) {
-                    $result['fallback'] = true;
-                }
-
+                $result['fallback'] = in_array($code ?? $msg, self::$fallback_codes);
                 $result['errors'] = [MinteCodeMapper::toPhrase($code, $msg)];
             }
             $result['provider_data'] = $body_decoded;
@@ -338,7 +335,7 @@ class MinteService
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
 
-            logger()->error("Mint-e auth", ['res'  => $result['provider_data']]);
+            logger()->error("Mint-e auth", $result['provider_data']);
         }
         return $result;
     }
