@@ -15,50 +15,44 @@ class PaymentApiService
 
     /**
      * Returns PaymentApi by domain
-     * @param  string $domain_id
      * @param  Collection  $apis
-     * @param  string|null $currency
+     * @param  string|null $domain_id
      * @return PaymentApi|null
      */
-    private static function getByDomainId(string $domain_id, Collection $apis, ?string $currency = null): ?PaymentApi
+    private static function getByDomainId(Collection $apis, ?string $domain_id): ?PaymentApi
     {
-        $keys = $apis->filter(function($v) use ($domain_id) { return in_array($domain_id, $v->domain_ids); })->all();
-
-        if ($currency) {
-            return PaymentLimit::getAvailable($keys, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
+        $result = null;
+        if ($domain_id) {
+            // get PaymentApi by filtering items by domain_id
+            // result will be the first element whose domain_ids field contains the search value
+            $result = $apis->filter(function($v) use ($domain_id) { return in_array($domain_id, $v->domain_ids); })->first();
         }
-        return array_shift($keys);
+        return $result;
     }
 
     /**
      * Returns PaymentApi by product
-     * @param  string $product_id
      * @param  Collection  $apis
-     * @param  string|null $currency
+     * @param  string $product_id
      * @return PaymentApi|null
      */
-    private static function getByProductId(string $product_id, Collection $apis, ?string $currency = null): ?PaymentApi
+    private static function getByProductId(Collection $apis, string $product_id): ?PaymentApi
     {
-        $keys = $apis->filter(function($v) use ($product_id) { return in_array($product_id, $v->product_ids); })->all();
-        if ($currency) {
-            return PaymentLimit::getAvailable($keys, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
-        }
-        return array_shift($keys);
+        // get PaymentApi by filtering items by product_id
+        // result will be the first element whose product_ids field contains the search value
+        return $apis->filter(function($v) use ($product_id) { return in_array($product_id, $v->product_ids); })->first();
     }
 
     /**
      * Returns default PaymentApi
      * @param  Collection  $apis
-     * @param  string|null $currency
      * @return PaymentApi|null
      */
-    private static function getDefault(Collection $apis, ?string $currency = null): ?PaymentApi
+    private static function getDefault(Collection $apis): ?PaymentApi
     {
-        $keys = $apis->filter(function($v) { return empty($v->product_ids) && empty($v->domain_ids); })->all();
-        if ($currency) {
-            return PaymentLimit::getAvailable($keys, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
-        }
-        return array_shift($keys);
+        // get PaymentApi by filtering items by domain_ids and product_ids
+        // result will be the first element whose domain_ids and product_ids fields are empty
+        return $apis->filter(function($v) { return empty($v->product_ids) && empty($v->domain_ids); })->first();
     }
 
     /**
@@ -75,19 +69,29 @@ class PaymentApiService
             return null;
         }
 
-        $apis = PaymentApi::getAllByProviders($prv_list);
+        $apis_by_prv = PaymentApi::getAllByProviders($prv_list)->groupBy('payment_provider');
 
-        $api = null;
-
-        if ($domain_id) {
-            $api = self::getByDomainId($domain_id, $apis, $currency);
+        // get PaymentApis for each provider by sequential filtering (domain->product->default)
+        $filtered = [];
+        foreach ($apis_by_prv as $v) {
+            $api = self::getByDomainId($v, $domain_id);
+            if (!$api) {
+                $api = self::getByProductId($v, $product_id);
+                if (!$api) {
+                    $api = self::getDefault($v);
+                }
+            }
+            $filtered[] = $api;
         }
 
-        if (!$api) {
-            $api = self::getByProductId($product_id, $apis, $currency);
+        // filter PaymentApis by currency limits
+        if ($currency) {
+            $filtered = PaymentLimit::getAvailableApis($filtered, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
         }
 
-        return $api ?? self::getDefault($apis, $currency);
+        shuffle($filtered);
+
+        return array_pop($filtered);
     }
 
     /**

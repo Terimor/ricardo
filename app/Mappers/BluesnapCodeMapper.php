@@ -20,7 +20,8 @@ class BluesnapCodeMapper
         'LIMIT_EXCEEDED'        => 'card.error.month_limit',
         'GENERAL_PAYMENT_PROCESSING_ERROR' => 'card.error.not_functioning',
         'securityCode'          => 'card.error.cvv_incorrect',
-        'address1'              => 'card.error.address_incorrect'
+        'address1'              => 'card.error.address_incorrect',
+        'cardNumber'            => 'card.error.number_incorrect'
     ];
 
 

@@ -769,7 +769,7 @@ class PaymentProviders
                 ]
             ]
         ],
-        self::BLUESNAP  => [
+        self::BLUESNAP => [
             'name'      => 'Bluesnap',
             'is_active' => true,
             'is_main'   => true,
@@ -1034,58 +1034,60 @@ class PaymentProviders
             'methods' => [
                 'main' => [
                     PaymentMethods::VISA => [
-                        '+3ds' => [
-                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
-                            'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
-                        ],
+                        // '+3ds' => [
+                        //     'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                        //     'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        // ],
                         '-3ds' => ['*'],
                         'excl' => [
-                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
-                            'dk', 'do', /*'gb',*/ 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
-                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'ro', 'ru', /*'se',*/ 'sg', 'sy', 'tk',
-                            'tt', 'tr', 'tv', 'tw', 'za', 'us', 'uz'
+                            // 'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
+                            // 'dk', 'do', /*'gb',*/ 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
+                            // 'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'ro', 'ru', /*'se',*/ 'sg', 'sy', 'tk',
+                            // 'tt', 'tr', 'tv', 'tw', 'za', 'us', 'uz'
+                            'af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz'
                         ]
                     ],
                     PaymentMethods::MASTERCARD => [
-                        '+3ds' => [
-                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
-                            'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
-                        ],
+                        // '+3ds' => [
+                        //     'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                        //     'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        // ],
                         '-3ds' => ['*'],
                         'excl' => [
-                            'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
-                            'dk', 'do', /*'gb',*/ 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
-                            'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'ro', 'ru', /*'se',*/ 'sg', 'sy', 'tk', 'tt',
-                            'tr', 'tv', 'tw', 'za', 'us', 'uz'
+                            // 'ae', 'af', 'ag', 'al', 'ar', 'au', 'bg', 'br', 'bt', 'bz', 'ca', 'cf', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cz',
+                            // 'dk', 'do', /*'gb',*/ 'gl', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'il', 'in', 'je', 'jo', 'jp', 'ki', 'kr', 'kz', 'li',
+                            // 'ls', 'mx', 'my', 'na', 'nf', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'ro', 'ru', /*'se',*/ 'sg', 'sy', 'tk', 'tt',
+                            // 'tr', 'tv', 'tw', 'za', 'us', 'uz'
+                            'af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz'
                         ]
                     ],
                     PaymentMethods::AMEX => [
-                        '+3ds' => [
-                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
-                            'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
-                        ],
+                        // '+3ds' => [
+                        //     'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                        //     'ko', 'kr', 'lk', 'mp', 'my', 'no', 'nz', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        // ],
                         '-3ds' => ['*'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::DISCOVER => [
-                        '+3ds' => [
-                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
-                            'kr', 'lk', 'mp', 'my', 'no', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
-                        ],
+                        // '+3ds' => [
+                        //     'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                        //     'kr', 'lk', 'mp', 'my', 'no', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        // ],
                         '-3ds' => ['*'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::DINERSCLUB => [
-                        '+3ds' => [
-                            'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
-                            'kr', 'lk', 'mp', 'my', 'no', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
-                        ],
+                        // '+3ds' => [
+                        //     'europe', 'as', 'at', 'au', 'by', 'ca', 'сh', 'de', 'dk', 'fr', 'gb', 'gu', 'gy', 'jp', 'id', 'il', 'in', 'is',
+                        //     'kr', 'lk', 'mp', 'my', 'no', 'pe', 'ph', 'pr', 'ro', 'ru', 'sa', 'se', 'tr', 'um', 'us', 'vi', 'vn'
+                        // ],
                         '-3ds' => ['*'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
                     PaymentMethods::JCB => [
-                        '+3ds' => ['bd', 'ca', 'cn', 'hk', 'id', 'jp', 'kr', 'la', 'mm', 'mn', 'ph', 'se', 'th', 'tw', 'us', 'vn'],
-                        '-3ds' => ['sg'],
+                        // '+3ds' => ['bd', 'ca', 'cn', 'hk', 'id', 'jp', 'kr', 'la', 'mm', 'mn', 'ph', 'se', 'th', 'tw', 'us', 'vn'],
+                        '-3ds' => ['bd', 'ca', 'cn', 'hk', 'id', 'jp', 'kr', 'la', 'mm', 'mn', 'ph', 'se', 'sg', 'th', 'tw', 'us', 'vn'],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ]
                 ],
@@ -1117,7 +1119,7 @@ class PaymentProviders
                 ]
             ]
         ],
-        self::NOVALNET  => [
+        self::NOVALNET => [
             'name'          => 'Novalnet',
             'is_active'     => false,
             'is_main'       => false,
@@ -1435,10 +1437,20 @@ class PaymentProviders
                 ],
                 'fallback' => [
                     PaymentMethods::VISA => [
-                        '-3ds' => ['ar', 'co', 'mx']
+                        '-3ds' => [
+                            'ae', 'ar', 'au', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
+                            'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls',
+                            'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pt', 'ro',
+                            'ru', /*'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
+                        ]
                     ],
                     PaymentMethods::MASTERCARD => [
-                        '-3ds' => ['ar', 'co', 'mx']
+                        '-3ds' => [
+                            'ae', 'ar', 'au', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
+                            'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls',
+                            'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pt', 'ro',
+                            'ru', /*'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
+                        ]
                     ]
                 ],
             ]
