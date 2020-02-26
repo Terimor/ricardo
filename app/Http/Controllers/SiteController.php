@@ -137,6 +137,36 @@ class SiteController extends Controller
         return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo', 'website_name', 'placeholders'));
     }
 
+    public function support(Request $request,ProductService $productService){
+        if(isset($request['search'])){
+           $odinOrder =  OdinOrder::query();
+           $info = [];
+           $odinOrders =  $odinOrder->where('customer_email',$request['search'])
+             ->orWhere('trackings','elemMatch',['number' => $request['search']])->get();
+           if($odinOrders->isNotEmpty()) {
+               foreach ($odinOrders as $order) {
+                   foreach ($order->trackings ?? [] as $tracking) {
+                       $info[] = [
+                           'link' => "http://sprtdls.aftership.com/{$tracking['number']}",
+                           'number' => $tracking['number']
+                       ];
+                   }
+               }
+               if(empty($info)) {
+                   $info = 'Your package is in the processing facility. we will send you the tracking number soon';
+               }
+           } else {
+               $info = 'Email not found';
+           }
+        }
+        $data = [
+        'product' => $productService->resolveProduct($request, true),
+        'page_title' => 'Support',
+        'info' => $info??null,
+        ];
+        return view('support', $data);
+    }
+
     /**
      * Returns page
      * @param Request $request
