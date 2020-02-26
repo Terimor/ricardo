@@ -221,10 +221,10 @@ class AppmaxService
         $result = null;
         try {
             $res = $client->post('customer', [
-                'json' => \array_merge(['access-token' => $this->api->secret], self::createCustomerObj($contacts))
+                'json' => array_merge(['access-token' => $this->api->secret], self::createCustomerObj($contacts))
             ]);
 
-            $body = \json_decode($res->getBody(), true);
+            $body = json_decode($res->getBody(), true);
 
             if ($body['success']) {
                 $result = (string)$body['data']['id'];
@@ -232,7 +232,7 @@ class AppmaxService
                 logger()->info("Appmax customer", ['res' => (string)$res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
-            logger()->error("Appmax customer", [
+            logger()->warning("Appmax customer", [
                 'res' => $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null
             ]);
         }
@@ -270,7 +270,7 @@ class AppmaxService
                 ]
             ]);
 
-            $body = \json_decode($res->getBody(), true);
+            $body = json_decode($res->getBody(), true);
 
             if ($body['success']) {
                 $result = (string)$body['data']['id'];
@@ -278,7 +278,7 @@ class AppmaxService
                 logger()->info("Appmax order", ['res' => (string)$res->getBody()]);
             }
         } catch (GuzzReqException $ex) {
-            logger()->error("Appmax order", [
+            logger()->warning("Appmax order", [
                 'res' => $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null
             ]);
         }
@@ -357,7 +357,7 @@ class AppmaxService
                 }
             }
 
-            logger()->error("Appmax pay", ['res' => $result['provider_data']]);
+            logger()->warning("Appmax pay", ['res' => $result['provider_data']]);
         }
         return $result;
     }
@@ -398,7 +398,7 @@ class AppmaxService
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? (string)$ex->getResponse()->getBody() : null;
 
-            logger()->error("Appmax refund", ['res' => $res]);
+            logger()->warning("Appmax refund", ['res' => $res]);
 
             if ($res) {
                 $body = json_decode($res, true);

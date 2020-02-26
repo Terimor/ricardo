@@ -257,12 +257,20 @@
   width: auto;
 }
 
+.variant-field-label {
+  display: none;
+}
+
 .variant-field-input {
   border-color: #bbb;
 }
 
 .variant-field-input-label {
   font-size: 18px;
+
+  &.empty {
+    font-size: 18px;
+  }
 }
 
 .variant-field-item {

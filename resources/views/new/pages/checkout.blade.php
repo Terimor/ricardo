@@ -84,6 +84,7 @@
 
 @section('header')
   @include('new.pages.checkout.blocks.timer_desktop')
+  @yield('header_checkout')
 @endsection
 
 

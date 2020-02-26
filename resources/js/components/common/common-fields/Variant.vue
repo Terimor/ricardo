@@ -15,7 +15,8 @@
         @click="toggle">
 
         <img v-if="value" :src="image" class="variant-field-input-image" alt="" />
-        <div class="variant-field-input-label">{{ value ? items_by_code[value].name : textLabel }}</div>
+        <div v-if="!value" class="variant-field-input-label empty">{{ textLabel }}</div>
+        <div v-if="value" class="variant-field-input-label">{{ items_by_code[value].name }}</div>
         <i class="fa fa-angle-down"></i>
       </div>
 
@@ -155,11 +156,16 @@
 
   .variant-field-input {
     align-items: center;
+    background: linear-gradient(to bottom,#f7f8fa,#e7e9ec);
     border: 1px solid #dcdfe6;
     border-radius: 3px;
     cursor: pointer;
     display: flex;
     padding: 8px 15px;
+
+    &:hover {
+      background: linear-gradient(to bottom,#e7e9ec,#f7f8fa);
+    }
 
     .variant-field.opened & {
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
@@ -183,6 +189,13 @@
     .variant-field-input-label {
       color: #555;
       font-size: 14px;
+
+      &.empty {
+        align-items: center;
+        display: flex;
+        font-size: 16px;
+        height: 80px;
+      }
     }
 
     i {

@@ -124,7 +124,7 @@ class CheckoutDotComService
                 ]
             ]);
         } catch (GuzzReqException $e) {
-            logger()->error("Checkout.com Reporting API [{$payment_id}]", [
+            logger()->warning("Checkout.com Reporting API [{$payment_id}]", [
                 'request'   => Psr7\str($e->getRequest()),
                 'response'  => $e->hasResponse() ? Psr7\str($e->getResponse()) : null,
             ]);
@@ -169,7 +169,7 @@ class CheckoutDotComService
             $card_token = $this->checkout->tokens()->request($source);
             $result = $card_token->token;
         } catch (CheckoutException $ex) {
-            logger()->error("Checkout.com token", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
+            logger()->warning("Checkout.com token", ['code' => $ex->getCode(), 'errors' => $ex->getErrors()]);
         }
         return $result;
     }
@@ -186,7 +186,7 @@ class CheckoutDotComService
             $res = $this->checkout->payments()->capture(new Capture($id));
             $result = $res->http_code === 202 ? true : false;
         } catch (CheckoutException $ex) {
-            logger()->error("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+            logger()->warning("Checkout.com capture", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         }
         return $result;
     }
@@ -203,7 +203,7 @@ class CheckoutDotComService
             $res = $this->checkout->payments()->void(new Voids($id));
             $result = $res->http_code === 202 ? true : false;
         } catch (CheckoutException $ex) {
-            logger()->error("Checkout.com void", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+            logger()->warning("Checkout.com void", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
         }
         return $result;
     }
@@ -226,7 +226,7 @@ class CheckoutDotComService
                 $result['status'] = true;
             }
         } catch (CheckoutException $ex) {
-            logger()->error("Checkout.com refund", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
+            logger()->warning("Checkout.com refund", ['code' => $ex->getCode(), 'body' => $ex->getBody()]);
 
             switch ($ex->getCode()):
                 case 422:
@@ -372,7 +372,7 @@ class CheckoutDotComService
             $result['errors'] = array_map(function($code) {
                 return CheckoutDotComCodeMapper::toPhrase($code);
             },$ex->getErrors() ?? []);
-            logger()->error("Checkout.com pay", [
+            logger()->warning("Checkout.com pay", [
                 'order' => $order_details['number'],
                 'code' => $ex->getCode(),
                 'body' => $ex->getBody()
@@ -380,7 +380,7 @@ class CheckoutDotComService
         } catch (CheckoutException $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'body' => $ex->getBody()];
             $result['errors'] = [CheckoutDotComCodeMapper::toPhrase()];
-            logger()->error("Checkout.com pay", [
+            logger()->warning("Checkout.com pay", [
                 'order' => $order_details['number'],
                 'code' => $ex->getCode(),
                 'body' => $ex->getBody()

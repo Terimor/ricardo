@@ -17,6 +17,7 @@ use App\Constants\PaymentProviders;
  * @property string $login
  * @property string[] $product_ids
  * @property string[] $domain_ids
+ * @property string[] $product_category_ids
  * @property string $description
  * @property bool $is_active
  * @property mixed $created_at
@@ -30,7 +31,8 @@ class PaymentApi extends Model
 
     protected $attributes = [
         'product_ids' => [],
-        'domain_ids' => []
+        'domain_ids' => [],
+        'product_category_ids' => []
     ];
 
     /**

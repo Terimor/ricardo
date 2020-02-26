@@ -220,11 +220,11 @@ class MinteService
             if ($body_decoded['status'] === self::STATUS_OK) {
                 $result['status'] = true;
             } else {
-                logger()->error("Mint-e refund", ['body' => $body_decoded]);
+                logger()->warning("Mint-e refund", ['body' => $body_decoded]);
                 $result['errors'] = [($body_decoded['errormessage'] ?? 'Something went wrong') . " [{$hash}]"];
             }
         } catch (GuzzReqException $ex) {
-            logger()->error("Mint-e capture", ['res' => $ex->hasResponse() ? $ex->getResponse()->getBody() : null]);
+            logger()->warning("Mint-e capture", ['res' => $ex->hasResponse() ? $ex->getResponse()->getBody() : null]);
 
             $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " [{$hash}]"];
         }
@@ -320,7 +320,7 @@ class MinteService
                 $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
-                logger()->error("Mint-e auth", ['body' => $body_decoded]);
+                logger()->warning("Mint-e auth", ['body' => $body_decoded]);
 
                 $code = $body_decoded['errorcode'] ?? null;
                 $msg  = $body_decoded['errormessage'] ?? null;
@@ -335,7 +335,7 @@ class MinteService
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
 
-            logger()->error("Mint-e auth", $result['provider_data']);
+            logger()->warning("Mint-e auth", $result['provider_data']);
         }
         return $result;
     }
@@ -383,7 +383,7 @@ class MinteService
                 $result['status'] = Txn::STATUS_APPROVED;
                 $result['hash'] = $body_decoded['midtransid'];
             } else {
-                logger()->error("Mint-e capture", ['body' => $body_decoded]);
+                logger()->warning("Mint-e capture", ['body' => $body_decoded]);
 
                 $result['status'] = Txn::STATUS_FAILED;
                 $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
@@ -392,7 +392,7 @@ class MinteService
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
 
-            logger()->error("Mint-e capture", ['res'  => $res]);
+            logger()->warning("Mint-e capture", ['res'  => $res]);
 
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
@@ -447,7 +447,7 @@ class MinteService
                 $result['status'] = Txn::STATUS_APPROVED;
             } else {
                 $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
-                logger()->error("Mint-e pay", ['body' => $body_decoded]);
+                logger()->warning("Mint-e pay", ['body' => $body_decoded]);
             }
             $result['provider_data'] = $body_decoded;
         } catch (GuzzReqException $ex) {
@@ -456,7 +456,7 @@ class MinteService
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
 
-            logger()->error("Mint-e pay", ['res'  => $result['provider_data']]);
+            logger()->warning("Mint-e pay", ['res'  => $result['provider_data']]);
         }
         return $result;
     }
