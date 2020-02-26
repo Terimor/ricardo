@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\Router $router) {
   // debugger
-  $router->get('/_debugbar/assets/javascript', 'SiteController@debugbarJavascript');
-  $router->get('/_debugbar/assets/stylesheets', 'SiteController@debugbarStylesheets');
+  $router->get('/api/_debugbar/assets/javascript', 'SiteController@debugbarJavascript');
+  $router->get('/api/_debugbar/assets/stylesheets', 'SiteController@debugbarStylesheets');
 
   $router->get('/', 'SiteController@index')->name('home');
     $router->get('/contact-us', 'SiteController@contactUs')->name('contact-us');
