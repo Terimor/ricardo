@@ -262,7 +262,7 @@ class EbanxService
                 logger()->warning("Ebanx cancelled", ['reply' => \json_encode($res)]);
             }
         } catch (\Exception $ex) {
-            logger()->error("Ebanx info", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+            logger()->warning("Ebanx info", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
         }
         return $result;
     }
@@ -345,7 +345,7 @@ class EbanxService
                 $result['errors'] = [($res['status_message'] ?? 'Something went wrong') . " [{$hash}]"];
             }
         } catch (\Exception $ex) {
-            logger()->error("Ebanx refund", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+            logger()->warning("Ebanx refund", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
             $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " [{$hash}]"];
         }
         return $result;
@@ -424,7 +424,7 @@ class EbanxService
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
             $result['errors'] = [EbanxCodeMapper::toPhrase()];
-            logger()->error("Ebanx pay", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+            logger()->warning("Ebanx pay", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
         }
         return $result;
     }

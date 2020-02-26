@@ -1217,7 +1217,7 @@ class PaymentService
         } elseif (!empty($data['hash']) && $provider) {
             $order = OdinOrder::getByTxnHash($data['hash'], $provider); // throwable
         } else {
-            logger()->error('Order approve failed', $data);
+            logger()->warning('Order approve failed', $data);
             return $order;
         }
 
@@ -1363,7 +1363,7 @@ class PaymentService
         $minte = new MinteService(PaymentApiService::getById($order_txn['payment_api_id']));
 
         if (!$minte->verifySignature($txn_hash, $sign, $txn_ts)) {
-            logger()->error('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+            logger()->warning('Mint-e unauthorized redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
             throw new AuthException('Unauthorized');
         }
 
@@ -1498,7 +1498,7 @@ class PaymentService
         } elseif (!empty($data['hash']) && $provider) {
             $order = OdinOrder::getByTxnHash($data['hash'], $provider); // throwable
         } else {
-            logger()->error('Order txn reject failed', $data);
+            logger()->warning('Order txn reject failed', $data);
             return $order;
         }
 

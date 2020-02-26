@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\PaymentApi;
+use App\Models\OdinProduct;
 use App\Models\PaymentLimit;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -39,8 +40,14 @@ class PaymentApiService
     private static function getByProductId(Collection $apis, string $product_id): ?PaymentApi
     {
         // get PaymentApi by filtering items by product_id
-        // result will be the first element whose product_ids field contains the search value
-        return $apis->filter(function($v) use ($product_id) { return in_array($product_id, $v->product_ids); })->first();
+        // result will be the first element whose product_ids (product_category_ids) field contains the search value
+        return $apis->filter(function($v) use ($product_id) {
+            $product_ids = $v->product_ids;
+            if (!empty($v->product_category_ids)) {
+                $product_ids = OdinProduct::getProductIdsByCategoryIds($v->product_category_ids);
+            }
+            return in_array($product_id, $product_ids);
+        })->first();
     }
 
     /**
@@ -51,8 +58,10 @@ class PaymentApiService
     private static function getDefault(Collection $apis): ?PaymentApi
     {
         // get PaymentApi by filtering items by domain_ids and product_ids
-        // result will be the first element whose domain_ids and product_ids fields are empty
-        return $apis->filter(function($v) { return empty($v->product_ids) && empty($v->domain_ids); })->first();
+        // result will be the first element whose domain_ids and product_ids fields and product_category_ids are empty
+        return $apis->filter(function($v) {
+            return empty($v->product_ids) && empty($v->domain_ids) && empty($v->product_category_ids);
+        })->first();
     }
 
     /**

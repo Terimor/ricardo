@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Cache;
+use NumberFormatter;
 use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use App\Services\CurrencyService;
 use App\Services\PaymentService;
 use App\Exceptions\ProductNotFoundException;
-use NumberFormatter;
 use App\Models\Setting;
-use Cache;
 
 /**
  * Class OdinProduct
@@ -35,9 +36,9 @@ class OdinProduct extends Model
     ];
 
     protected $hidden = [
-        '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at', 'image_id',
-    'logo_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only', 'is_3ds_required',
-        'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent'
+        '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at',
+        'image_id', 'logo_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only',
+        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent'
     ];
 
     /**
@@ -645,6 +646,21 @@ class OdinProduct extends Model
             $products = $productsQuery->get();
         }
         return $products;
+    }
+
+    /**
+     * Returns products ids by categories
+     * @param array $category_ids
+     * @return array
+     */
+    public static function getProductIdsByCategoryIds(array $category_ids): array
+    {
+        return OdinProduct::select('_id')
+            ->whereIn('category_id', $category_ids)
+            ->get()
+            ->map(function($v) { return $v->getIdAttribute(); })
+            ->all();
+
     }
 
     /**

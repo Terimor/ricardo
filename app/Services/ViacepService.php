@@ -44,7 +44,7 @@ class ViacepService
                 'complement' => $body['complemento'] ?? null,
             ];
         } catch (GuzzReqException $ex) {
-            logger()->error("Viacep", [
+            logger()->warning("Viacep", [
                 'request'   => Psr7\str($ex->getRequest()),
                 'response'  => $ex->hasResponse() ? Psr7\str($ex->getResponse()) : null,
             ]);

@@ -226,7 +226,7 @@ class BluesnapService
             } else {
                 $result['status']   = Txn::STATUS_FAILED;
                 $result['errors'] = [BluesnapCodeMapper::toPhrase()];
-                logger()->error("Bluesnap pay", ['res' => $res]);
+                logger()->warning("Bluesnap pay", ['res' => $res]);
             }
             $result['provider_data'] = (string)$res->getBody();
         } catch (GuzzReqException $ex) {
@@ -236,7 +236,7 @@ class BluesnapService
             $result['provider_data'] = ['code'  => $code, 'body'  => $body];
             $result['status'] = Txn::STATUS_FAILED;
             $result = array_merge($result, $this->parseErrorResponse($body));
-            logger()->error("Bluesnap pay", $result['provider_data']);
+            logger()->warning("Bluesnap pay", $result['provider_data']);
         }
         return $result;
     }
@@ -282,7 +282,7 @@ class BluesnapService
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
             $code = optional($res)->getStatusCode();
             $body = optional($res)->getBody();
-            logger()->error("Bluesnap vaulted shopper", ['code'  => $code, 'body'  => $body]);
+            logger()->warning("Bluesnap vaulted shopper", ['code'  => $code, 'body'  => $body]);
             $result = array_merge($result, $this->parseErrorResponse($body));
         }
         return $result;
@@ -316,7 +316,7 @@ class BluesnapService
             }
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
-            logger()->error("Bluesnap pfToken", [
+            logger()->warning("Bluesnap pfToken", [
                 'code'  => optional($res)->getStatusCode(),
                 'body'  => optional($res)->getBody()
             ]);
@@ -375,12 +375,12 @@ class BluesnapService
                 $result['status'] = true;
                 unset($result['errors']);
             } else {
-                logger()->error("Bluesnap refund", ['res' => $res]);
+                logger()->warning("Bluesnap refund", ['res' => $res]);
             }
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
 
-            logger()->error("Bluesnap refund", ['res'  => $res]);
+            logger()->warning("Bluesnap refund", ['res'  => $res]);
 
             if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
                 $body_decoded = json_decode($res->getBody(), true);
