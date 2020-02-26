@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\Router $router) {
-    $router->get('/', 'SiteController@index')->name('home');
+  // debugger
+  $router->get('/_debugbar/assets/javascript', 'SiteController@debugbarJavascript');
+  $router->get('/_debugbar/assets/stylesheets', 'SiteController@debugbarStylesheets');
+
+  $router->get('/', 'SiteController@index')->name('home');
     $router->get('/contact-us', 'SiteController@contactUs')->name('contact-us');
     $router->get('/returns', 'SiteController@returns')->name('returns');
     $router->get('/privacy', 'SiteController@privacy')->name('privacy');
@@ -78,10 +82,6 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     // sitemap
     $router->get('/sitemap.xml', 'SiteController@sitemap');
-
-    // debugger
-  $router->get( '/api/_debugbar/assets/stylesheets', '\Barryvdh\Debugbar\Controllers\AssetController@css' );
-  $router->get( '/api/_debugbar/assets/javascript', '\Barryvdh\Debugbar\Controllers\AssetController@js' );
 });
 
 /*Route::get('/debug-sentry', function () {
