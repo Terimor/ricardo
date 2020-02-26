@@ -80,8 +80,8 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/sitemap.xml', 'SiteController@sitemap');
 
     // debugger
-//    $router->get('/_debugbar/assets/javascript', 'SiteController@debugbarJavascript');
-//    $router->get('/_debugbar/assets/stylesheets', 'SiteController@debugbarStylesheets');
+  $router->get( '/api/_debugbar/assets/stylesheets', '\Barryvdh\Debugbar\Controllers\AssetController@css' );
+  $router->get( '/api/_debugbar/assets/javascript', '\Barryvdh\Debugbar\Controllers\AssetController@js' );
 });
 
 /*Route::get('/debug-sentry', function () {
