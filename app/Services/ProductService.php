@@ -552,7 +552,6 @@ class ProductService
     public function getAllSoldDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 12): array
     {
         $allSoldProducts = Cache::get('DomainSoldProductsData');
-        $allSoldProducts = null;
         if (mb_strlen($search) < 2) {
             $search = '';
         }
@@ -587,6 +586,7 @@ class ProductService
             // calculate data for pagination
             $totalCount = count($allSoldProducts);
             $totalPages = ceil($totalCount / $limit);
+            $totalPages = 10;
             $page = max($page, 1); // get 1 page when page <= 0
             $page = min($page, $totalPages); // get last page when page > $totalPages
             $offset = ($page - 1) * $limit;
