@@ -9,7 +9,7 @@
     </script>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function () {
-            let tabElements = document.querySelectorAll('[data-toggle="tab"]');
+            const tabElements = document.querySelectorAll('[data-toggle="tab"]');
             tabElements.forEach(function (item, index) {
                 item.addEventListener('click', function (e) {
                     tabElements.forEach(function (item) {
@@ -19,8 +19,30 @@
                     this.classList.add('active');
                     document.querySelector(`#${this.getAttribute('data-child')}`).classList.add('show', 'active')
                 });
-            })
-        })
+            });
+            const form = document.querySelectorAll('form');
+            form.forEach(function (item) {
+                item.addEventListener('submit',sendRequest)
+            });
+        });
+        function sendRequest(event) {
+            event.preventDefault();
+            fetch('{{ route("support-request") }}',{
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({'search':this.querySelector('[name="search"]').value})
+            }).then( response => {
+                if(response.status >= 200 && response.status < 300) {
+                    response.text().then(data=>{
+                        document.querySelector('#response_data').innerHTML = data;
+                    })
+                }
+
+            } );
+        }
 
     </script>
 
@@ -28,33 +50,6 @@
 
 @section('content')
     <div class="contacts bg-white py-5">
-        <div class="container">
-            @if(is_array($info))
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Tracking number</th>
-                        <th scope="col">Tracking website</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($info as $i)
-                        <tr>
-                            <th scope="row">{{ $loop->iteration }}</th>
-                            <td>{{ $i['number'] }}</td>
-                            <td><a target="_blank" href="{{ $i['link'] }}">{{ $i['link'] }}</a></td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-
-            @elseif(is_string($info))
-                <div class="alert alert-warning" role="alert">
-                    {{ $info }}
-                </div>
-            @endif
-        </div>
         <div class="container py-5">
             <div class="contacts__wrapper">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -76,7 +71,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade" id="parcel">
-                        <form action="" method="get">
+                        <form action="" method="get" >
                             <div class="input-group mt-5 mb-3">
                                 <input type="text" name="search" class="form-control"
                                        placeholder="write tracking number or mail"
@@ -88,7 +83,7 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="number">
-                        <form action="" method="get">
+                        <form action="" method="get" >
                             <div class="input-group mt-5 mb-3">
                                 <input type="text" name="search" class="form-control"
                                        placeholder="where is my tracking number"
@@ -105,5 +100,6 @@
                 </div>
             </div>
         </div>
+        <div class="container" id="response_data"></div>
     </div>
 @endsection

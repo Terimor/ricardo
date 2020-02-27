@@ -138,27 +138,6 @@ class SiteController extends Controller
     }
 
     public function support(Request $request,ProductService $productService){
-        if(isset($request['search'])){
-           $odinOrder =  OdinOrder::query();
-           $info = [];
-           $odinOrders =  $odinOrder->where('customer_email',$request['search'])
-             ->orWhere('trackings','elemMatch',['number' => $request['search']])->get();
-           if($odinOrders->isNotEmpty()) {
-               foreach ($odinOrders as $order) {
-                   foreach ($order->trackings ?? [] as $tracking) {
-                       $info[] = [
-                           'link' => "http://sprtdls.aftership.com/{$tracking['number']}",
-                           'number' => $tracking['number']
-                       ];
-                   }
-               }
-               if(empty($info)) {
-                   $info = 'Your package is in the processing facility. we will send you the tracking number soon';
-               }
-           } else {
-               $info = 'Email not found';
-           }
-        }
         $data = [
         'product' => $productService->resolveProduct($request, true),
         'page_title' => 'Support',
@@ -167,6 +146,39 @@ class SiteController extends Controller
         return view('support', $data);
     }
 
+    public function supportRequest(Request $request){
+
+        if(isset($request['search']) && $request['search']) {
+            $odinOrder =  OdinOrder::query();
+            $info = [];
+            $odinOrders =  $odinOrder->where('customer_email',$request['search'])
+                ->orWhere('trackings','elemMatch',['number' => $request['search']])->get();
+            if($odinOrders->isNotEmpty()) {
+                foreach ($odinOrders as $order) {
+                    foreach ($order->trackings ?? [] as $tracking) {
+                        $products = implode(',',array_map(function ($product) {
+                            return $product['sku_code'];
+                        },$order->products));
+                        $info[] = [
+                            'order_number'=>$order->number,
+                            'products'=> $products,
+                            'link' => "http://sprtdls.aftership.com/{$tracking['number']}",
+                            'tracking_number' => $tracking['number']
+                        ];
+                    }
+                }
+                if(empty($info)) {
+                    $info = 'Your package is in the processing facility. we will send you the tracking number soon';
+                }
+            } else {
+                $info = 'Email not found';
+            }
+        } else {
+            $info = 'The search is required';
+        }
+
+            return response()->view('components.support.order_info',compact('info'));
+    }
     /**
      * Returns page
      * @param Request $request

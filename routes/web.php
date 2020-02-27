@@ -83,7 +83,8 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     // sitemap
     $router->get('/sitemap.xml', 'SiteController@sitemap');
     // support
-    $router->get('/support', 'SiteController@support');
+    $router->get('/support-abc', 'SiteController@support');
+    $router->post('/support-abc', 'SiteController@supportRequest')->name('support-request');
 });
 
 /*Route::get('/debug-sentry', function () {
