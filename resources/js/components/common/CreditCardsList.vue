@@ -9,7 +9,8 @@
       class="credit-card-item">
 
       <img
-        :src="paymentMethods[paymentMethodName].logo"
+        class="lazy"
+        :data-src="paymentMethods[paymentMethodName].logo"
         :title="paymentMethods[paymentMethodName].name" />
 
     </div>
@@ -21,13 +22,33 @@
 
 <script>
 
+  import globals from '../../mixins/globals';
+
+
   export default {
 
     name: 'CreditCardsList',
 
+
     props: [
       'withPaypal',
     ],
+
+
+    mixins: [
+      globals,
+    ],
+
+
+    mounted() {
+      this.lazyload_update();
+    },
+
+
+    updated() {
+      this.lazyload_update();
+    },
+
 
     computed: {
 
