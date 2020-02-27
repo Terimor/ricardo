@@ -36,6 +36,6 @@ class VerifyCsrfToken extends Middleware
         'apply-discount',
         /* test routes */
         'test-payments',
-        'support'
+        'support-abc'
     ];
 }

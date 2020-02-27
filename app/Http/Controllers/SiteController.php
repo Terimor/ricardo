@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
+use App\Models\OdinProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Services\ProductService;
@@ -149,21 +150,21 @@ class SiteController extends Controller
     public function supportRequest(Request $request){
 
         if(isset($request['search']) && $request['search']) {
+            $search = trim(mb_strtolower($request['search']));
             $odinOrder =  OdinOrder::query();
             $info = [];
-            $odinOrders =  $odinOrder->where('customer_email',$request['search'])
-                ->orWhere('trackings','elemMatch',['number' => $request['search']])->get();
+            $odinOrders =  $odinOrder->where('customer_email',$search)
+                ->orWhere('trackings','elemMatch',['number' => $search])->get();
             if($odinOrders->isNotEmpty()) {
                 foreach ($odinOrders as $order) {
                     foreach ($order->trackings ?? [] as $tracking) {
-                        $products = implode(',',array_map(function ($product) {
-                            return $product['sku_code'];
-                        },$order->products));
+                        $products = array_map(function ($product) {
+                            return $product['quantity'].' x '.OdinProduct::getBySku($product['sku_code'])->product_name;
+                        },$order->products);
                         $info[] = [
                             'order_number'=>$order->number,
-                            'products'=> $products,
+                            'products'=> implode('<br>', $products),
                             'link' => "http://sprtdls.aftership.com/{$tracking['number']}",
-                            'tracking_number' => $tracking['number']
                         ];
                     }
                 }

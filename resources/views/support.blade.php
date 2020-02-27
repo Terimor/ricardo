@@ -72,30 +72,39 @@
                 <div class="tab-content">
                     <div class="tab-pane fade" id="parcel">
                         <form action="" method="get" >
-                            <div class="input-group mt-5 mb-3">
-                                <input type="text" name="search" class="form-control"
-                                       placeholder="write tracking number or mail"
-                                       aria-label="tracking number or mail" aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="submit">search</button>
+                            <div class="d-flex flex-column mt-5  mb-3 ">
+                                <label for="">Enter tracking number or mail</label>
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control"
+                                           placeholder="Enter tracking number or mail"
+                                           required
+                                           aria-label="tracking number or mail" aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">search</button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
                     </div>
                     <div class="tab-pane fade" id="number">
                         <form action="" method="get" >
-                            <div class="input-group mt-5 mb-3">
-                                <input type="text" name="search" class="form-control"
-                                       placeholder="where is my tracking number"
+                            <div class="d-flex flex-column mt-5  mb-3 ">
+                                <label for="">Enter email</label>
+                            <div class="input-group">
+                                <input type="email" name="search" class="form-control"
+                                       placeholder="Enter email" required
                                        aria-label="number" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" type="submit">search</button>
                                 </div>
                             </div>
+                            </div>
                         </form>
                     </div>
                     <div class="tab-pane fade" id="other">
-                        <a href="{{ route('contact-us') }}">Contact us </a>
+                        <div class="container mt-5">
+                            <a href="{{ route('contact-us') }}">Contact us </a>
+                        </div>
                     </div>
                 </div>
             </div>

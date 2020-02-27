@@ -6,7 +6,6 @@
             <th scope="col">#</th>
             <th scope="col">Order number</th>
             <th scope="col">Order products</th>
-            <th scope="col">Tracking number</th>
             <th scope="col">Tracking website</th>
         </tr>
         </thead>
@@ -15,8 +14,7 @@
             <tr>
                 <th scope="row">{{ $loop->iteration }}</th>
                 <td>{{ $i['order_number'] }}</td>
-                <td>{{ $i['productsg'] }}</td>
-                <td>{{ $i['tracking_number'] }}</td>
+                <td>{!! $i['products'] !!}</td>
                 <td><a target="_blank" href="{{ $i['link'] }}">{{ $i['link'] }}</a></td>
             </tr>
         @endforeach
