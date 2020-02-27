@@ -1,7 +1,7 @@
 <template>
   <label class="label-container-radio radio-button-deal"
           :class="[`item-${item.value}`, {disabled: item.isOutOfStock, 'labeled': item.discountName}]">
-    <img class="share" :src="$root.cdn_url + '/assets/images/share.png'" v-if="showShareArrow">
+    <img class="lazy share" :data-src="$root.cdn_url + '/assets/images/share.png'" v-if="showShareArrow">
     <input type="radio"
            :checked="item.value === value"
            name="radio"
@@ -24,7 +24,7 @@
       </div>
       <div class="price">
         <div class="bestseller" v-if="isBestseller()">
-          <img :src="$root.cdn_url + '/assets/images/best-seller-checkout4.png'" alt="Bestseller">
+          <img class="lazy" :data-src="$root.cdn_url + '/assets/images/best-seller-checkout4.png'" alt="Bestseller">
         </div>
         <span>
           {{ price }}
@@ -40,7 +40,8 @@
 </template>
 
 <script>
-    import { t } from '../../utils/i18n';
+  import { t } from '../../utils/i18n';
+  import globals from '../../mixins/globals';
 
 	export default {
 		name: 'radio-button-item-deal',
@@ -52,6 +53,9 @@
 			'showPerUnitPrice',
 			'showDiscount'
 		],
+    mixins: [
+      globals,
+    ],
 		methods: {
 			isBestseller() {
 				return this.item && this.item.discountName && this.item.discountName.toLowerCase && this.item.discountName.toLowerCase() === 'bestseller' || false;
@@ -71,10 +75,15 @@
       },
     },
     mounted() {
+      this.lazyload_update();
+
       this.$nextTick(function () {
         this.$emit('finish-render')
       })
-    }
+    },
+    updated() {
+      this.lazyload_update();
+    },
 	}
 </script>
 

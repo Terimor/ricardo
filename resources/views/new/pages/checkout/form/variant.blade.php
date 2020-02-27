@@ -13,7 +13,7 @@
         class="variant-field-input"
         @click="variant_toggle">
 
-        <img v-if="form.variant" :src="variant_image" class="variant-field-input-image" alt="" />
+        <img v-if="form.variant" class="lazy" :data-src="variant_image" class="variant-field-input-image" alt="" />
         <div v-if="!form.variant" class="variant-field-input-label empty">{{ t('checkout.select_variant') }}</div>
         <div v-if="form.variant" class="variant-field-input-label">@{{ variant_name }}</div>
         <i class="fa fa-angle-down"></i>

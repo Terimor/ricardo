@@ -1,8 +1,9 @@
 <template>
   <label class="pay-method-item">
     <img
+      class="lazy"
       alt="Pay Image"
-      :src="input.imgUrl"
+      :data-src="input.imgUrl"
       :style="{
         'border':
           checked
@@ -19,9 +20,19 @@
   </label>
 </template>
 <script>
+  import globals from '../../mixins/globals';
 	export default {
 		name: 'PayMethodItem',
 		props: ['value', 'input'],
+    mixins: [
+      globals,
+    ],
+    mounted() {
+      this.lazyload_update();
+    },
+    updated() {
+      this.lazyload_update();
+    },
     computed: {
 			checked () {
 				return this.input.value === this.value

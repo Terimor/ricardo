@@ -40,11 +40,11 @@
     'label_code' => 'payment_error',
   ])
 
-  @include('new.pages.checkout.payment.pay_card_button', ['image' => '<img alt="" src="' . $cdn_url . '/assets/images/checkout/vc1/buy.gif" />'])
+  @include('new.pages.checkout.payment.pay_card_button', ['image' => '<img alt="" class="lazy" data-src="' . $cdn_url . '/assets/images/checkout/vc1/buy.gif" />'])
 
   <img
     alt=""
-    class="secure"
-    src="{{ $cdn_url }}/assets/images/checkout/vc1/secure2.png" />
+    class="secure lazy"
+    data-src="{{ $cdn_url }}/assets/images/checkout/vc1/secure2.png" />
 
 </div>

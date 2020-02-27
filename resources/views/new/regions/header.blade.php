@@ -8,8 +8,8 @@
       href="/checkout"
       class="header-logo-link">
         <img
-          src="{{ $main_logo ?? $product->logo_image }}"
-          class="header-logo"
+          data-src="{{ $main_logo ?? $product->logo_image }}"
+          class="header-logo lazy"
           alt=""
         />
     </a>

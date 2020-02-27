@@ -14,8 +14,8 @@
 
     <img
       v-if="preloader_step === 1"
-      class="preloader-country-image"
-      src="{{ $cdn_url }}/assets/images/country-flags/{{ $countryCode }}.png">
+      class="preloader-country-image lazy"
+      data-src="{{ $cdn_url }}/assets/images/country-flags/{{ $countryCode }}.png">
 
     @for ($i = 2; $i <= 3; $i++)
       <div

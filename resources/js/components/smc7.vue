@@ -5,9 +5,10 @@
                 <div class="container paper smc7__product">
                     <div class="col-md-7 image-wrapper">
                         <img
-                                id="product-image-head"
-                                :src="productImage"
-                                alt=""
+                          class="lazy"
+                          id="product-image-head"
+                          :data-src="productImage"
+                          alt=""
                         >
                     </div>
                     <div
@@ -165,7 +166,8 @@
                         </template>
                         <div class="smc7__bottom">
                             <img
-                              :src="imageSafePayment.url"
+                              class="lazy"
+                              :data-src="imageSafePayment.url"
                               :alt="imageSafePayment.title"
                               :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
@@ -217,6 +219,7 @@
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import smc7validation from "../validation/smc7-validation";
+  import globals from '../mixins/globals';
   import queryToComponent from '../mixins/queryToComponent';
   import scrollToError from '../mixins/formScrollToError';
   import blackFriday from '../mixins/blackFriday';
@@ -251,6 +254,7 @@
     },
     validations: smc7validation,
     mixins: [
+      globals,
       queryToComponent,
       extraFields.tplMixin,
       purchasMixin,
@@ -470,6 +474,10 @@
     },
     mounted() {
       this.refreshTopBlock();
+      this.lazyload_update();
+    },
+    updated() {
+      this.lazyload_update();
     },
     watch: {
       'form.deal'(value) {

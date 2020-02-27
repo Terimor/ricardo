@@ -17,8 +17,8 @@
   <div class="right">
     <img
       alt=""
-      class="image"
-      src="{{ $product->image[0] }}"
+      class="image lazy"
+      data-src="{{ $product->image[0] }}"
     />
   </div>
 

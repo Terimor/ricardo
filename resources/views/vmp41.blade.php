@@ -165,8 +165,8 @@
                         <div class="promo__product-content">
                             <img
                                 :alt="item.textComposite"
-                                class="promo__discount-image"
-                                :src="productImages[item.totalQuantity] || item.image"
+                                class="lazy promo__discount-image"
+                                :data-src="productImages[item.totalQuantity] || item.image"
                             >
                             <div class="promo__product-info-wrapper">
                                 <strong class="promo__discount-text">@{{ item.textComposite }}</strong>
@@ -207,10 +207,10 @@
                             }
                         }"
                     >
-                        <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/technatic_1.png" alt="">
-                        <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/Best_Product.png" alt="">
-                        <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/Gadgetify_1.png" alt="">
-                        <img class="promo__carousel-img" src="https://static-backend.saratrkr.com/image_assets/NewYourToday_3.png" alt="">
+                        <img class="lazy promo__carousel-img" data-src="https://static-backend.saratrkr.com/image_assets/technatic_1.png" alt="">
+                        <img class="lazy promo__carousel-img" data-src="https://static-backend.saratrkr.com/image_assets/Best_Product.png" alt="">
+                        <img class="lazy promo__carousel-img" data-src="https://static-backend.saratrkr.com/image_assets/Gadgetify_1.png" alt="">
+                        <img class="lazy promo__carousel-img" data-src="https://static-backend.saratrkr.com/image_assets/NewYourToday_3.png" alt="">
                     </carousel>
                 </section>
                 
@@ -225,7 +225,7 @@
                                     <div class="promo__review-image">
                                         <div class="wrapper">
                                             <img class="lazy"
-                                                 src="{{ $review['image'] ?? '' }}">
+                                                 data-src="{{ $review['image'] ?? '' }}">
                                         </div>
                                     </div>
                                     <div class="section-text stars">
@@ -272,8 +272,8 @@
                                         :class="{ 'selected-variant': form.variant === variantItem.value }"
                                     >
                                         <img
-                                            class="promo__variant-icon"
-                                            :src="variantItem.imageUrl"
+                                            class="lazy promo__variant-icon"
+                                            :data-src="variantItem.imageUrl"
                                             :alt="variantItem.label" />
                                     </div>
                                 </div>
