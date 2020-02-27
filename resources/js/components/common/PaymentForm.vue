@@ -129,7 +129,7 @@
             <span class="checkmark"></span>
           </label>
           <span class="warranty-field-icon">
-            <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
+            <img :data-src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
           </span>
         </span>
         <Terms

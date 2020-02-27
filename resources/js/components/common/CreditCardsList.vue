@@ -9,7 +9,7 @@
       class="credit-card-item">
 
       <img
-        :src="paymentMethods[paymentMethodName].logo"
+        :data-src="paymentMethods[paymentMethodName].logo"
         :title="paymentMethods[paymentMethodName].name" />
 
     </div>
