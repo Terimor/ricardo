@@ -36,7 +36,7 @@
               :class="{ active: form.variant === '{{ $sku['code'] }}' }"
               @click="variant_change('{{ $sku['code'] }}')">
 
-              <img src="{{ $sku['quantity_image'][1] }}" alt="" />
+              <img class="lazy" data-src="{{ $sku['quantity_image'][1] }}" alt="" />
               <div>{{ $sku['name'] }}</div>
 
             </div>

@@ -8,7 +8,10 @@
       v-if="recently_bought_active === 'just_bought'"
       class="recently-notice">
       <div class="recently-notice__left">
-        <img src="{{ $product->image[0] }}" alt="">
+        <img
+          class="lazy"
+          data-src="{{ $product->image[0] }}"
+          alt="">
       </div>
       <div class="recently-notice__right">
         <p v-html="recently_bought_just_bought"></p>
@@ -31,11 +34,17 @@
       class="recently-notice recently-notice_paypal"
       @click="recently_bought_paypal_click">
       <div class="recently-notice__left">
-        <img src="{{ $cdn_url }}/assets/images/paypal232.png" alt="PayPal">
+        <img
+          class="lazy"
+          data-src="{{ $cdn_url }}/assets/images/paypal232.png"
+          alt="PayPal">
       </div>
       <div class="recently-notice__right">
         <p>{{ t('checkout.paypal.risk_free') }}</p>
-        <img src="{{ $cdn_url }}/assets/images/paypal-highq.png" alt="PayPal">
+        <img
+          class="lazy"
+          data-src="{{ $cdn_url }}/assets/images/paypal-highq.png"
+          alt="PayPal">
       </div>
     </div>
 

@@ -61,6 +61,12 @@ export default {
       window.onfocus = () => document.title = this.title + this.additionalTitle;
       window.onblur = () => document.title = this.waitTitle;
     },
+    lazyload_update() {
+      js_deps.wait_for(
+        () => window.lazyLoadInstance,
+        () => lazyLoadInstance.update(),
+      );
+    },
   },
   computed: {
     countryCode() {
@@ -73,7 +79,8 @@ export default {
     },
   },
   mounted () {
-    localStorage.removeItem('order_currency')
+    localStorage.removeItem('order_currency');
+    this.lazyload_update();
     this.initial();
   },
 }

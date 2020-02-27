@@ -14,7 +14,7 @@ js_deps.wait(['vue'], () => {
 
     data() {
       return {
-        step: 1,
+        step: 3,
       };
     },
 

@@ -8,7 +8,7 @@
     'required' => t('checkout.payment_form.card_number.required'),
     'valid' => t('checkout.payment_form.card_number.required'),
   ],
-  'prefix' => '<img :src="card_number_prefix_url || \'' . $cdn_url . '/assets/images/cc-icons/iconcc.png\'" />',
+  'prefix' => '<img class="lazy" :data-src="card_number_prefix_url || \'' . $cdn_url . '/assets/images/cc-icons/iconcc.png\'" />',
   'suffix' => '<i class="fa fa-lock"></i>',
   'input' => 'card_number_input',
 ])

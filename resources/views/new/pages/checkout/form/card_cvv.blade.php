@@ -36,7 +36,9 @@
 
     <div class="dialog-content">
       <div>{!! t('checkout.payment_form.cvv_popup.line_1') !!}</div>
-      <img src="{{ $cdn_url }}/assets/images/cvv_popup.jpg">
+      <img
+        class="lazy"
+        data-src="{{ $cdn_url }}/assets/images/cvv_popup.jpg">
       <div>{!! t('checkout.payment_form.cvv_popup.line_2') !!}</div>
     </div>
 

@@ -22,8 +22,8 @@
     <div class="paypal-button-label">{{ t('checkout.paypal.risk_free') }}</div>
 
     <img
-      class="paypal-button-image"
-      src="{{ $cdn_url }}/assets/images/paypal-highq.png" />
+      class="lazy paypal-button-image"
+      data-src="{{ $cdn_url }}/assets/images/paypal-highq.png" />
 
   </div>
 
