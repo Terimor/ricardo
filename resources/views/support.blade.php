@@ -22,26 +22,27 @@
             });
             const form = document.querySelectorAll('form');
             form.forEach(function (item) {
-                item.addEventListener('submit',sendRequest)
+                item.addEventListener('submit', sendRequest)
             });
         });
+
         function sendRequest(event) {
             event.preventDefault();
-            fetch('{{ route("support-request") }}',{
+            fetch('{{ route("support-request") }}', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({'search':this.querySelector('[name="search"]').value})
-            }).then( response => {
-                if(response.status >= 200 && response.status < 300) {
-                    response.text().then(data=>{
+                body: JSON.stringify({'search': this.querySelector('[name="search"]').value})
+            }).then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    response.text().then(data => {
                         document.querySelector('#response_data').innerHTML = data;
                     })
                 }
 
-            } );
+            });
         }
 
     </script>
@@ -71,7 +72,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade" id="parcel">
-                        <form action="" method="get" >
+                        <form action="" method="get">
                             <div class="d-flex flex-column mt-5  mb-3 ">
                                 <label for="">Enter tracking number or mail</label>
                                 <div class="input-group">
@@ -87,17 +88,17 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="number">
-                        <form action="" method="get" >
+                        <form action="" method="get">
                             <div class="d-flex flex-column mt-5  mb-3 ">
                                 <label for="">Enter email</label>
-                            <div class="input-group">
-                                <input type="email" name="search" class="form-control"
-                                       placeholder="Enter email" required
-                                       aria-label="number" aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="submit">search</button>
+                                <div class="input-group">
+                                    <input type="email" name="search" class="form-control"
+                                           placeholder="Enter email" required
+                                           aria-label="number" aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">search</button>
+                                    </div>
                                 </div>
-                            </div>
                             </div>
                         </form>
                     </div>
