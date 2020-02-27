@@ -5,4 +5,12 @@
     onload="js_deps.ready('lazyload')"
     async></script>
 
+  <script type="text/javascript">
+    js_deps.wait(['lazyload'], () => {
+      window.lazyLoadInstance = new LazyLoad({
+        elements_selector: '.lazy',
+      });
+    });
+  </script>
+
 @endif
