@@ -1,7 +1,7 @@
 <template>
   <label class="label-container-radio radio-button-deal"
           :class="[`item-${item.value}`, {disabled: item.isOutOfStock, 'labeled': item.discountName}]">
-    <img class="share" :src="$root.cdn_url + '/assets/images/share.png'" v-if="showShareArrow">
+    <img class="share" :data-src="$root.cdn_url + '/assets/images/share.png'" v-if="showShareArrow">
     <input type="radio"
            :checked="item.value === value"
            name="radio"

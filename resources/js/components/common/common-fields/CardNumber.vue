@@ -15,7 +15,7 @@
       autocomplete: 'cc-number',
       'data-bluesnap': 'encryptedCreditCard',
     }"
-    :prefix="`<img src='${paymentMethodURL}' />`"
+    :prefix="`<img data-src='${paymentMethodURL}' />`"
     :postfix="`<i class='fa fa-lock'></i>`"
     theme="variant-1"
     :tabindex="tabindex"

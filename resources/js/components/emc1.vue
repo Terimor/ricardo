@@ -54,7 +54,7 @@
                     </div>
                 </div>
                 <div class="paper col-md-5 main__payment">
-                    <img id="product-image" :src="productImage" alt="">
+                    <img id="product-image" :data-src="productImage" alt="">
                     <template v-if="!isPurchasAlreadyExists">
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
                         <h3 v-html="textPaySecurely"></h3>
@@ -87,7 +87,7 @@
                         </transition>
                         <div class="main__bottom">
                             <img
-                              :src="imageSafePayment.url"
+                              :data-src="imageSafePayment.url"
                               :alt="imageSafePayment.title"
                               :title="imageSafePayment.title">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>

@@ -46,6 +46,7 @@
     @include('components.scripts.sentry')
     @include('components.scripts.bluesnap_3ds')
     @include('components.scripts.paypal')
+    @include('components.scripts.lazyload')
     @include('components.scripts.intl_tel_input')
     @include('components.scripts.libphonenumber')
     @include('components.scripts.sha256')

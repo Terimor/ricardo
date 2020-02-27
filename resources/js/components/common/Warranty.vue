@@ -13,7 +13,7 @@
         <span class="checkmark" :class="{ active: form.isWarrantyChecked }"></span>
       </div>
 
-      <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
+      <img :data-src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
 
       <i class="fa fa-arrow-left slide-left"></i>
       <i class="fa fa-arrow-right slide-right"></i>
