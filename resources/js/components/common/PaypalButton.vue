@@ -4,7 +4,7 @@
     <div class="paypal-shim" :class="{ 'active': !isSubmitted }">
       <div v-if="isSubmitted" class="disabled"></div>
       <div class="title"><slot /></div>
-      <img class="image" :data-src="$root.cdn_url + '/assets/images/paypal-highq.png'" />
+      <img class="image" :src="$root.cdn_url + '/assets/images/paypal-highq.png'" />
     </div>
   </div>
 </template>
