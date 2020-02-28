@@ -15,7 +15,7 @@
       autocomplete: 'cc-number',
       'data-bluesnap': 'encryptedCreditCard',
     }"
-    :prefix="`<img src='${paymentMethodURL}' />`"
+    :prefix="`<img class='lazy' data-src='${paymentMethodURL}' />`"
     :postfix="`<i class='fa fa-lock'></i>`"
     theme="variant-1"
     :tabindex="tabindex"
@@ -26,6 +26,9 @@
 
 
 <script>
+
+  import globals from '../../../mixins/globals';
+
 
   export default {
 
@@ -41,10 +44,25 @@
     ],
 
 
+    mixins: [
+      globals,
+    ],
+
+
     data() {
       return {
         oldValue: this.form[this.name],
       };
+    },
+
+
+    mounted() {
+      this.lazyload_update();
+    },
+
+
+    updated() {
+      this.lazyload_update();
     },
 
 

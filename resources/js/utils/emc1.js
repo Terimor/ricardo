@@ -43,7 +43,7 @@ export const getRadioHtml = ({
       : ''}
 
   
-        ${idx === 1 ? '<img class="share" src="' + js_data.cdn_url + '/assets/images/share.png">' : ''}
+        ${idx === 1 ? '<img class="lazy share" data-src="' + js_data.cdn_url + '/assets/images/share.png">' : ''}
     
         <p class="label-container-radio__name-price">
                   
@@ -82,11 +82,11 @@ export function * getNotice ({
   const messageMap = {
     paypal: `<div class="recently-notice recently-notice_paypal">
         <div class="recently-notice__left">
-          <img src="${js_data.cdn_url}/assets/images/paypal232.png" alt="PayPal">
+          <img class="lazy" data-src="${js_data.cdn_url}/assets/images/paypal232.png" alt="PayPal">
         </div>
         <div class="recently-notice__right">
           <p>${t('checkout.paypal.risk_free')}</p>
-          <img src="${js_data.cdn_url}/assets/images/paypal-highq.png" alt="PayPal">
+          <img class="lazy" data-src="${js_data.cdn_url}/assets/images/paypal-highq.png" alt="PayPal">
         </div>
       </div>
     `,
@@ -140,7 +140,7 @@ export function * getNotice ({
         if(users[index] && cities[index]) {
             yield `<div class="recently-notice">
               <div class="recently-notice__left">
-                <img src="${js_data.product.image[0]}" alt="">
+                <img class="lazy" data-src="${js_data.product.image[0]}" alt="">
               </div>
               <div class="recently-notice__right">
                 <p>${t('checkout.notification.just_bought', { first_name: users[index], city: cities[index] || cities[0], count: quantity, product: js_data.product.product_name })}</p>

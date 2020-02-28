@@ -1,8 +1,8 @@
 <div class="guarantee">
 
   <img
-    src="{{ $cdn_url }}/assets/images/fmc5-guarantee.jpg"
-    class="guarantee-image" />
+    class="lazy guarantee-image"
+    data-src="{{ $cdn_url }}/assets/images/fmc5-guarantee.jpg" />
 
   <div class="guarantee-title">{{ t('fmc5.guarantee.title') }}</div>
 

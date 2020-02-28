@@ -2,8 +2,8 @@
 
   <img
     alt=""
-    class="img-check"
-    src="{{ $cdn_url }}/assets/images/checkout/vc1/check.png">
+    class="img-check lazy"
+    data-src="{{ $cdn_url }}/assets/images/checkout/vc1/check.png">
 
   <div class="yes">{!! t('vc1.yes') !!}</div>
 

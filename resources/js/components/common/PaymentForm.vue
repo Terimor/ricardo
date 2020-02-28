@@ -129,7 +129,7 @@
             <span class="checkmark"></span>
           </label>
           <span class="warranty-field-icon">
-            <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
+            <img class="lazy" :data-src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
           </span>
         </span>
         <Terms
@@ -156,6 +156,7 @@
   import { ipqsCheck } from '../../services/ipqs';
   import { t } from '../../utils/i18n';
   import { debounce } from '../../utils/common'
+  import globals from '../../mixins/globals';
   import queryToComponent from '../../mixins/queryToComponent';
   import scrollToError from '../../mixins/formScrollToError';
   import { sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
@@ -201,6 +202,7 @@
       'paymentMethodURL',
     ],
     mixins: [
+      globals,
       queryToComponent,
       purchasMixin,
       scrollToError,
@@ -288,6 +290,14 @@
           }
         }, 1000);
       }
+    },
+
+    mounted() {
+      this.lazyload_update();
+    },
+
+    updated() {
+      this.lazyload_update();
     },
 
     computed: {

@@ -2,8 +2,8 @@
 
   <img
     v-if="step > 1"
-    src="{{ $cdn_url }}/assets/images/fmc5-back.png"
-    class="button-back"
+    class="lazy button-back"
+    data-src="{{ $cdn_url }}/assets/images/fmc5-back.png"
     @click="back_click" />
 
   <div

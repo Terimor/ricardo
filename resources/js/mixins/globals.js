@@ -36,4 +36,21 @@ export default {
 
   },
 
+  methods: {
+
+    lazyload_update() {
+      js_deps.wait_for(
+        () => window.lazyLoadInstance,
+        () => {
+          [].forEach.call(document.querySelectorAll('img.lazy.loaded'), element => {
+            element.removeAttribute('data-was-processed');
+          });
+
+          lazyLoadInstance.update();
+        },
+      );
+    },
+
+  },
+
 };

@@ -14,12 +14,14 @@
     </div> 
 
     <img
-      src="{{ $cdn_url }}/assets/images/fmc5-stars-lines.png"
-      class="stars-lines" />
+      class="lazy stars-lines"
+      data-src="{{ $cdn_url }}/assets/images/fmc5-stars-lines.png" />
 
     <div class="reviews-overall">
       <div>{{ t('fmc5.reviews.overall') }}</div>
-      <img src="{{ $cdn_url }}/assets/images/fmc5-5star.svg" />
+      <img
+        class="lazy"
+        data-src="{{ $cdn_url }}/assets/images/fmc5-5star.svg" />
     </div>
 
     <div class="reviews-percent">
@@ -36,14 +38,18 @@
         <div
           class="review-5star"
           :style="{ width: {{ $review['rate'] }} * 20 + 'px' }">
-          <img src="{{ $cdn_url }}/assets/images/fmc5-5star.svg" />
+          <img
+            class="lazy"
+            data-src="{{ $cdn_url }}/assets/images/fmc5-5star.svg" />
         </div>
 
         <div class="review-text">{!! $review['text'] !!}</div>
         <div class="review-name">{{ $review['name'] }} – {{ $review['date'] }}</div>
 
         <div class="review-verified">
-          <img src="{{ $cdn_url }}/assets/images/fmc5-verified-check.svg" />
+          <img
+            class="lazy"
+            data-src="{{ $cdn_url }}/assets/images/fmc5-verified-check.svg" />
           <div>{{ t('fmc5.reviews.verified') }}</div>
         </div>
 

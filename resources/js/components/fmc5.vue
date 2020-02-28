@@ -34,8 +34,8 @@
             <div class="mproduct-long-name">{{ product.long_name }}</div>
 
             <img
-              :src="product.image[0]"
-              class="mproduct-image" />
+              :data-src="product.image[0]"
+              class="lazy mproduct-image" />
 
             <div
               class="mdescription"
@@ -48,7 +48,7 @@
         <div class="content-left">
 
           <div class="step">
-            <img :src="imageStep" />
+            <img class="lazy" :data-src="imageStep" />
             <strong>{{ textStep }} #{{ step }}:&nbsp;</strong>
             <span v-if="step === 1">{{ textStepQuantity }}</span>
             <span v-if="step === 2">{{ textStepShipping }}</span>
@@ -375,8 +375,8 @@
 
             <img
               v-if="step > 1"
-              :src="imageButtonBack"
-              class="button-back"
+              :data-src="imageButtonBack"
+              class="lazy button-back"
               @click="backClick" />
 
             <div
@@ -420,13 +420,13 @@
                 <div>#1 {{ textN1Bestseller }}</div>
               </div>
               <img
-                :src="image5star"
-                class="product-5star" />
+                :data-src="image5star"
+                class="lazy product-5star" />
             </div>
 
             <img
-              :src="product.image[0]"
-              class="product-image" />
+              :data-src="product.image[0]"
+              class="lazy product-image" />
 
           </div>
 
@@ -436,8 +436,8 @@
 
           <div class="guarantee">
             <img
-              :src="imageGuarantee"
-              class="guarantee-image" />
+              :data-src="imageGuarantee"
+              class="lazy guarantee-image" />
             <div class="guarantee-title">{{ textGuaranteeTitle }}</div>
             <div class="guarantee-text">{{ textGuaranteeText }}</div>
             <div class="guarantee-text">{{ product.home_name }} {{ product.splash_description }}</div>
@@ -463,12 +463,12 @@
           </div> 
 
           <img
-            :src="imageStarsLines"
-            class="stars-lines" />
+            :data-src="imageStarsLines"
+            class="lazy stars-lines" />
 
           <div class="reviews-overall">
             <div>{{ textReviewsOverall }}</div>
-            <img :src="image5star" />
+            <img class="lazy" :data-src="image5star" />
           </div>
 
           <div class="reviews-percent">
@@ -486,14 +486,14 @@
             <div
               class="review-5star"
               :style="{ width: review.rate * 20 + 'px' }">
-              <img :src="image5star"/>
+              <img class="lazy" :data-src="image5star"/>
             </div>
 
             <div class="review-text" v-html="review.text"></div>
             <div class="review-name">{{ review.name }} – {{ review.date }}</div>
 
             <div class="review-verified">
-              <img :src="imageVerifiedCheck" />
+              <img class="lazy" :data-src="imageVerifiedCheck" />
               <div>{{ textReviewsVerified }}</div>
             </div>
 
@@ -521,6 +521,7 @@
 
   import validations from '../validation/fmc5-validation';
   import scrollToError from '../mixins/formScrollToError';
+  import globals from '../mixins/globals';
   import purchasMixin from '../mixins/purchas';
   import * as extraFields from '../mixins/extraFields';
   import blackFriday from '../mixins/blackFriday';
@@ -566,6 +567,7 @@
 
 
     mixins: [
+      globals,
       scrollToError,
       extraFields.tplMixin,
       purchasMixin,
@@ -643,6 +645,16 @@
       this.initVariant();
       this.initPaymentProvider();
       this.check3dsFailure();
+    },
+
+
+    mounted() {
+      this.lazyload_update();
+    },
+
+
+    updated() {
+      this.lazyload_update();
     },
 
 
@@ -734,7 +746,7 @@
       productDescription() {
         return this.product.description.replace(
           /<li([^>]*)>(((?!(<\/li>)).)*)<\/li>/g,
-          '<li$1><img src="' + this.$root.cdn_url + '/assets/images/fmc5-list-check.png" /><div>$2</div></li>',
+          '<li$1><img class="lazy" data-src="' + this.$root.cdn_url + '/assets/images/fmc5-list-check.png" /><div>$2</div></li>',
         );
       },
 

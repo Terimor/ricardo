@@ -73,7 +73,7 @@ export default {
     },
   },
   mounted () {
-    localStorage.removeItem('order_currency')
+    localStorage.removeItem('order_currency');
     this.initial();
   },
 }

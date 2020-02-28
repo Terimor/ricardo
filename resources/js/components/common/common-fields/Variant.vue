@@ -14,7 +14,7 @@
         class="variant-field-input"
         @click="toggle">
 
-        <img v-if="value" :src="image" class="variant-field-input-image" alt="" />
+        <img v-if="value" :data-src="image" class="lazy variant-field-input-image" alt="" />
         <div v-if="!value" class="variant-field-input-label empty">{{ textLabel }}</div>
         <div v-if="value" class="variant-field-input-label">{{ items_by_code[value].name }}</div>
         <i class="fa fa-angle-down"></i>
@@ -38,7 +38,7 @@
             :class="{ active: item.code === value }"
             @click="change(item.code)">
 
-            <img :src="item.quantity_image[1]" alt="" />
+            <img class="lazy" :data-src="item.quantity_image[1]" alt="" />
             <div>{{ item.name }}</div>
           </div>
 
@@ -54,6 +54,9 @@
 
 <script>
 
+  import globals from '../../../mixins/globals';
+
+
   export default {
 
     props: [
@@ -63,11 +66,26 @@
     ],
 
 
+    mixins: [
+      globals,
+    ],
+
+
     data() {
       return {
         opened: false,
         up: false,
       };
+    },
+
+
+    mounted() {
+      this.lazyload_update();
+    },
+
+
+    updated() {
+      this.lazyload_update();
     },
 
 

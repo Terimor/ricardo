@@ -4,8 +4,8 @@
 
     <img
       alt=""
-      class="img-check"
-      src="{{ $cdn_url }}/assets/images/checkout/vc1/check.png">
+      class="img-check lazy"
+      data-src="{{ $cdn_url }}/assets/images/checkout/vc1/check.png">
 
     <div class="title">{!! t('vc1.upsells.title') !!}</div>
 
@@ -14,8 +14,8 @@
         
         <img
           alt=""
-          class="image"
-          src="{{ $upsell['image'] }}" />
+          class="image lazy"
+          data-src="{{ $upsell['image'] }}" />
 
         <div class="text">
           <div class="name">{{ $upsell['long_name'] }}</div>

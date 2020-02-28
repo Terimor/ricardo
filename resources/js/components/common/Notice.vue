@@ -4,6 +4,7 @@
 
 <script>
 import { t } from '../../utils/i18n';
+import globals from '../../mixins/globals';
 import notification from '../../mixins/notification';
 import queryToComponent from '../../mixins/queryToComponent';
 import { getNotice } from '../../utils/emc1';
@@ -13,6 +14,7 @@ export default {
   name: 'Notice',
 
   mixins: [
+    globals,
     notification,
     queryToComponent,
   ],
@@ -64,6 +66,8 @@ export default {
           this.showNotification({
             content: getNoticeHtml()
           });
+
+          this.lazyload_update();
 
           const targetNotice = document.querySelector('.recently-notice_paypal');
           const targetButton = document.querySelector('#paypal-button');

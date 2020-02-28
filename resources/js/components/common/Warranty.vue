@@ -13,7 +13,7 @@
         <span class="checkmark" :class="{ active: form.isWarrantyChecked }"></span>
       </div>
 
-      <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
+      <img class="lazy" :data-src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
 
       <i class="fa fa-arrow-left slide-left"></i>
       <i class="fa fa-arrow-right slide-right"></i>
@@ -26,7 +26,10 @@
 
 
 <script>
-  
+
+  import globals from '../../mixins/globals';
+
+
   export default {
 
     name: 'Warranty',
@@ -35,6 +38,21 @@
     props: [
       'form',
     ],
+
+
+    mixins: [
+      globals,
+    ],
+
+
+    mounted() {
+      this.lazyload_update();
+    },
+
+
+    updated() {
+      this.lazyload_update();
+    },
 
 
     computed: {

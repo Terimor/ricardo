@@ -8,9 +8,10 @@
               <div class="col-content" id="col-prod-image">
                 <div class="product_img">
                   <img
+                    class="lazy"
                     id="main-prod-image"
                     alt="Product image"
-                    :src="productImage"
+                    :data-src="productImage"
                   >
                 </div>
                 <div class="product_desc" v-html="productData.description"></div>
@@ -38,7 +39,7 @@
                             <span v-html="textWarranty"></span>: {{quantityOfInstallments}} {{warrantyPriceText}}
                             <span class="checkmark" :class="{ active: form.isWarrantyChecked }"></span>
                           </div>
-                          <img :src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
+                          <img class="lazy" :data-src="$root.cdn_url + '/assets/images/best-saller.png'" alt="">
                           <i class="fa fa-arrow-left slide-left"></i>
                           <i class="fa fa-arrow-right slide-right"></i>
                         </button>
@@ -49,13 +50,14 @@
               <div class="secure-pay-content">
                 <div class="logos-content">
                   <img
-                    :src="imageSafePayment.url"
+                    class="lazy"
+                    :data-src="imageSafePayment.url"
                     :alt="imageSafePayment.title"
                     :title="imageSafePayment.title">
                 </div>
                 <div class="text-content">
                   <p>
-                    <img alt="" src="//static.saratrkr.com/images/lock.png">
+                    <img alt="" class="lazy" data-src="//static.saratrkr.com/images/lock.png">
                     <span v-html="textSafeSSLEncryption"></span>
                   </p>
                   <p><span v-html="textCreditCardInvoiced"></span><br/>"{{ companyDescriptorPrefix }}{{ billing_descriptor }}"</p>
@@ -70,6 +72,7 @@
   </div>
 </template>
 <script>
+  import globals from '../mixins/globals';
   import RadioButtonItemDeal from "./common/RadioButtonItemDeal";
   import * as extraFields from '../mixins/extraFields';
 	import { preparePurchaseData } from "../utils/checkout";
@@ -88,6 +91,7 @@
       RadioButtonItemDeal,
     },
     mixins: [
+      globals,
       purchasMixin,
       queryToComponent,
       extraFields.tplMixin,
@@ -117,6 +121,12 @@
           
         }
       }
+    },
+    mounted() {
+      this.lazyload_update();
+    },
+    updated() {
+      this.lazyload_update();
     },
 		computed: {
       companyAddress() {

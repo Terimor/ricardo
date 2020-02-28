@@ -3,7 +3,8 @@
   class="step">
 
   <img
-    :src="'{{ $cdn_url }}/assets/images/fmc5-step' + step + '.png'" />
+    class="lazy"
+    :data-src="'{{ $cdn_url }}/assets/images/fmc5-step' + step + '.png'" />
 
   <strong>{{ t('fmc5.step') }} #@{{ step }}:&nbsp;</strong>
 

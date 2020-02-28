@@ -46,7 +46,7 @@
   And of course, you have absolutely no risk because you are protected by our...
 </div>
 <div class="guarantee">
-  <img class="guarantee-image" src="{{ $cdn_url . '/assets/images/upsells/guarantee.png' }}" />
+  <img class="guarantee-image lazy" data-src="{{ $cdn_url . '/assets/images/upsells/guarantee.png' }}" />
   <div class="guarantee-content">
     <div class="guarantee-title">{!! t('vc_upsells.guarantee.title') !!}</div>
     <div class="guarantee-text">{!! t('vc_upsells.guarantee.text') !!}</div>
@@ -62,7 +62,7 @@
 <div class="last-call-card">
   <div class="last-call-card-title">{!! t('vc_upsells.last_call_card.title', ['product' => $product->product_name]) !!}</div>
   <div class="last-call-card-inside">
-    <img class="last-call-card-image" src="{{ $product->image[0] ?? '' }}" />
+    <img class="last-call-card-image lazy" data-src="{{ $product->image[0] ?? '' }}" />
     <div class="last-call-card-download">{!! t('vc_upsells.last_call_card.download') !!}</div>
     <div class="last-call-card-old-price">{!! t('vc_upsells.last_call_card.old_price', ['amount' => '<span class="value">$97</span>']) !!}</div>
     <div class="last-call-card-label-1">{!! t('vc_upsells.last_call_card.label_1') !!}</div>

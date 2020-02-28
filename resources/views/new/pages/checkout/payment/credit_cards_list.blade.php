@@ -6,7 +6,8 @@
     class="credit-card-item">
 
     <img
-      :src="payment_method.logo"
+      class="lazy"
+      :data-src="payment_method.logo"
       :title="payment_method.name" />
 
   </div>

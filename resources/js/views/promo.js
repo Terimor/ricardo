@@ -146,6 +146,12 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
           });
         },
       );
+
+      this.lazyload_update();
+    },
+
+    updated() {
+      this.lazyload_update();
     },
 
     computed: {

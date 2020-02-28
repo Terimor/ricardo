@@ -28,7 +28,7 @@
 
       <div class="cvv-popup__content">
         <p v-html="textPopupLine1"></p>
-        <div><img :src="$root.cdn_url + '/assets/images/cvv_popup.jpg'" alt=""></div>
+        <div><img class="lazy" :data-src="$root.cdn_url + '/assets/images/cvv_popup.jpg'" alt=""></div>
         <p v-html="textPopupLine2"></p>
       </div>
 
@@ -40,6 +40,9 @@
 
 
 <script>
+
+  import globals from '../../../mixins/globals';
+
 
   export default {
 
@@ -53,10 +56,25 @@
     ],
 
 
+    mixins: [
+      globals,
+    ],
+
+
     data() {
       return {
         isModalOpen: false,
       };
+    },
+
+
+    mounted() {
+      this.lazyload_update();
+    },
+
+
+    updated() {
+      this.lazyload_update();
     },
 
 
