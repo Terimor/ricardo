@@ -15,6 +15,7 @@
       type="tel"
       v-bind="rest"
       @input="input"
+      @blur="blur"
       :value="value"
       :id="id">
     <span v-show="invalid" class="error">{{validationMessage}}</span>
@@ -57,7 +58,10 @@
         if (this.validation) {
           this.validation.$touch()
         }
-      }
+      },
+      blur() {
+        this.$emit('blur');
+      },
     },
 
     mounted () {

@@ -182,24 +182,28 @@
               <div class="form">
 
                 <FirstName
+                  @check_for_leads_request="check_for_leads_request"
                   :$v="$v.form.fname"
                   :placeholder="true"
                   :form="form"
                   name="fname" />
 
                 <LastName
+                  @check_for_leads_request="check_for_leads_request"
                   :$v="$v.form.lname"
                   :placeholder="true"
                   :form="form"
                   name="lname" />
 
                 <Email
+                  @check_for_leads_request="check_for_leads_request"
                   :$v="$v.form.email"
                   :placeholder="true"
                   :form="form"
                   name="email" />
 
                 <Phone
+                  @check_for_leads_request="check_for_leads_request"
                   :$v="$v.form.phone"
                   :placeholder="true"
                   :ccform="form"
@@ -527,7 +531,7 @@
   import blackFriday from '../mixins/blackFriday';
   import christmas from '../mixins/christmas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
-  import { sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
+  import { checkForLeadsRequest, sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
   import { ipqsCheck } from '../services/ipqs';
   import Variant from './common/common-fields/Variant';
   import FirstName from './common/common-fields/FirstName';
@@ -1095,6 +1099,16 @@
             }
           }, 1000);
         }
+      },
+
+      check_for_leads_request() {
+        const form = this.form;
+
+        const phone = form.phone
+          ? this.dialCode + form.phone.replace(/[^0-9]/g, '')
+          : '';
+
+        checkForLeadsRequest(form.variant, form.fname, form.lname, form.email, phone);
       },
 
       paypalSubmit() {

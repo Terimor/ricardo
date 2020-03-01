@@ -6,20 +6,24 @@
         <div class="payment-form__contact-information">
           <FirstName
             :$v="$v.form.fname"
+            @check_for_leads_request="check_for_leads_request"
             :form="paymentForm"
             name="fname" />
           <LastName
             :$v="$v.form.lname"
+            @check_for_leads_request="check_for_leads_request"
             :form="paymentForm"
             name="lname" />
           <Email
             :$v="$v.form.email"
+            @check_for_leads_request="check_for_leads_request"
             :form="paymentForm"
             name="email" />
           <Phone
             :$v="$v.form.phone"
             :ccform="paymentForm"
             ccname="countryCodePhoneField"
+            @check_for_leads_request="check_for_leads_request"
             :form="paymentForm"
             name="phone" />
         </div>
@@ -159,7 +163,7 @@
   import globals from '../../mixins/globals';
   import queryToComponent from '../../mixins/queryToComponent';
   import scrollToError from '../../mixins/formScrollToError';
-  import { sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
+  import { checkForLeadsRequest, sendCheckoutRequest, get3dsErrors } from '../../utils/checkout';
   import purchasMixin from '../../mixins/purchas';
   import Spinner from './preloaders/Spinner';
   import FirstName from './common-fields/FirstName';
@@ -335,6 +339,15 @@
         this.paymentForm.state = res.state || this.paymentForm.state;
         this.paymentForm.district = res.district || this.paymentForm.district;
         this.paymentForm.complement = res.complement || this.paymentForm.complement;
+      },
+      check_for_leads_request() {
+        const form = this.paymentForm;
+
+        const phone = form.phone
+          ? this.dialCode + form.phone.replace(/[^0-9]/g, '')
+          : '';
+
+        checkForLeadsRequest(form.variant, form.fname, form.lname, form.email, phone);
       },
       submit () {
         let ipqsResult = null;

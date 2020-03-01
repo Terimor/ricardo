@@ -6,6 +6,7 @@ import leave_modal from './checkout/blocks/leave_modal';
 import form from './checkout/form';
 import payment from './checkout/payment';
 import prices from './checkout/prices';
+import leads from './checkout/leads';
 
 
 export default {
@@ -19,6 +20,7 @@ export default {
     form,
     payment,
     prices,
+    leads,
   ],
 
 

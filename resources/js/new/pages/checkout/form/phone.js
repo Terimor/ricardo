@@ -101,6 +101,10 @@ export default {
       this.form.phone = value;
     },
 
+    phone_blur() {
+      this.check_for_leads_request();
+    },
+
   },
 
 };
