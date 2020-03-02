@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
             app('sentry')->captureException($exception);
             // create a log Telegram
             $log = new Logger('Odin');
-            $log->pushHandler(new TelegramBotHandler('1106700536:AAFHrMWUATCo1S6bul1d4_50BAQ7Q_ww0r8','-356565893'));
+            $log->pushHandler(new TelegramBotHandler(env('TELEGRAM_BOT_TOKEN'),env('TELEGRAM_CHAT_ID')));
 
             $log->error($exception);
         } else {
