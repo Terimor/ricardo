@@ -30,7 +30,6 @@
       'awesome.css',
       'element.css',
       'bootstrap.css',
-      'intl_tel_input.css',
       'layout-styles',
       'page-styles',
     ]);

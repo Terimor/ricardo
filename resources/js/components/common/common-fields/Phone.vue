@@ -18,7 +18,8 @@
     theme="variant-1"
     :tabindex="tabindex"
     :order="order"
-    @input="input" />
+    @input="input"
+    @blur="blur" />
 
 </template>
 
@@ -70,6 +71,10 @@
         value = value.replace(/^0/, '');
 
         this.form[this.name] = value;
+      },
+
+      blur() {
+        this.$emit('check_for_leads_request');
       },
 
     },

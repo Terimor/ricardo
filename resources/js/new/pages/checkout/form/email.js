@@ -71,6 +71,8 @@ export default {
     },
 
     email_blur() {
+      this.check_for_leads_request();
+
       const value = this.form.email || '';
 
       if (this.$v.form.email.$invalid) {

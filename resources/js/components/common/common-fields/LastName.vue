@@ -15,7 +15,8 @@
     }"
     theme="variant-1"
     :tabindex="tabindex"
-    :order="order" />
+    :order="order"
+    @blur="blur" />
 
 </template>
 
@@ -42,6 +43,15 @@
 
       textRequired() {
         return this.$t('checkout.payment_form.last_name.required');
+      },
+
+    },
+
+
+    methods: {
+
+      blur() {
+        this.$emit('check_for_leads_request');
       },
 
     },

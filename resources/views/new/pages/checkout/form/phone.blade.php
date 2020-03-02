@@ -10,4 +10,5 @@
   ],
   'init' => 'phone_init',
   'input' => 'phone_input',
+  'blur' => 'phone_blur',
 ])

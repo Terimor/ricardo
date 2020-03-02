@@ -16,6 +16,7 @@
     theme="variant-1"
     :tabindex="tabindex"
     :order="order"
+    @input="input"
     @blur="blur" />
 
 </template>
@@ -54,6 +55,15 @@
 
 
     methods: {
+
+      input() {
+        let value = this.form[this.name];
+
+        value = value.replace(/[^A-z0-9]/g, '')
+        value = value.substr(0, 12);
+
+        this.form[this.name] = value;
+      },
 
       blur() {
         const value = this.form[this.name];

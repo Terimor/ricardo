@@ -34,6 +34,10 @@ class CustomerService
 		if (!empty($data['doc_id']) && !in_array($data['doc_id'], $model->doc_ids)) {
             $model->doc_ids = array_merge($model->doc_ids, [$data['doc_id']]);
         }
+		// add language code
+		if (!$model->language) {
+            $model->language = substr(app()->getLocale(), 0, 2);
+        }
 
         // addresses
         $address = [

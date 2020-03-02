@@ -1,4 +1,5 @@
 import checkout from '../../checkout';
+import section4 from './slimeazy/section4';
 
 
 js_deps.wait(['vue'], () => {
@@ -9,6 +10,7 @@ js_deps.wait(['vue'], () => {
 
     mixins: [
       checkout,
+      section4,
     ],
 
 

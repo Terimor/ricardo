@@ -2,6 +2,7 @@ export default {
 
   data: {
     ready_state: document.readyState,
+    window_width: window.innerWidth,
   },
 
 
@@ -9,6 +10,10 @@ export default {
     document.addEventListener('readystatechange', () => {
       this.ready_state = document.readyState;
     });
+
+    addEventListener('resize', () => {
+      this.window_width = window.innerWidth;
+    })
   },
 
 };
