@@ -1,0 +1,163 @@
+.section3 {
+  padding: 40px 0;
+
+  @media (min-width: $size2) {
+    padding: 50px 0;
+  }
+
+  .container {
+    @media (min-width: $size1) {
+      flex-direction: row;
+    }
+  }
+
+  .left {
+    padding: 0 15px;
+
+    @media (min-width: $size1) {
+      width: 58.33%;
+    }
+
+    .title {
+      color: #000;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.1;
+
+      @media (min-width: $size0) {
+        font-size: 26px;
+      }
+
+      @media (min-width: $size1) {
+        font-size: 28px;
+      }
+
+      @media (min-width: $size2) {
+        font-size: 42px;
+      }
+    }
+
+    .subtitle {
+      color: #000;
+      font-size: 22px;
+      font-weight: 700;
+
+      @media (min-width: $size0) {
+        font-size: 26px;
+      }
+
+      @media (min-width: $size2) {
+        font-size: 36px;
+      }
+    }
+
+    .image1 {
+      display: flex;
+      padding: 5px 0;
+
+      @media (min-width: $size2) {
+        padding: 10px 0;
+      }
+
+      img {
+        max-width: 70%;
+
+        @media (min-width: $size0) {
+          max-width: 54%;
+        }
+
+        @media (min-width: $size1) {
+          max-width: 80%;
+        }
+
+        @media (min-width: $size2) {
+          max-width: 100%;
+        }
+      }
+    }
+
+    .image2 {
+      display: flex;
+
+      img {
+        max-width: 70%;
+
+        @media (min-width: $size0) {
+          max-width: 54%;
+        }
+
+        @media (min-width: $size1) {
+          max-width: 80%;
+        }
+
+        @media (min-width: $size2) {
+          max-width: 100%;
+        }
+      }
+    }
+
+    .subtitle2 {
+      color: #000;
+      font-family: Oswald, sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.1;
+      padding: 15px 0;
+
+      @media (min-width: $size2) {
+        font-size: 24px;
+        padding: 20px 0;
+      }
+    }
+
+    .title2 {
+      color: #1771b7;
+      font-family: Oswald, sans-serif;
+      font-size: 22px;
+      font-weight: bold;
+      line-height: 1.1;
+      text-transform: uppercase;
+      -webkit-text-stroke: 1px white;
+
+      @media (min-width: $size0) {
+        font-size: 30px;
+      }
+
+      @media (min-width: $size2) {
+        font-size: 38px;
+      }
+    }
+
+    .text {
+      color: #000;
+      font-size: 15px;
+      padding: 5px 0;
+
+      @media (min-width: $size1) {
+        font-size: 18px;
+        padding: 20px 0 0;
+      }
+    }
+  }
+
+  .right {
+    display: flex;
+    padding: 0 15px;
+
+    @media (min-width: $size1) {
+      padding-top: 0;
+      width: 41.66%;
+    }
+
+    .image {
+      align-self: flex-start;
+      margin: 30px auto 0;
+      max-width: 70%;
+
+      @media (min-width: $size1) {
+        margin: 0;
+        max-width: 100%;
+      }
+    }
+  }
+}

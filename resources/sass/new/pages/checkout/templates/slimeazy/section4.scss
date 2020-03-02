@@ -1,0 +1,154 @@
+.section4 {
+  padding-top: 36px;
+  padding-bottom: 40px;
+
+  @media (min-width: $size1) {
+    padding-top: 40px;
+    padding-bottom: 44px;
+  }
+
+  @media (min-width: $size2) {
+    padding-top: 50px;
+    padding-bottom: 48px;
+  }
+
+  .container {
+    padding: 0 15px;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: column;
+
+    .text {
+      color: #000;
+      font-family: Oswald, sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 28px;
+      padding-bottom: 12px;
+      text-align: center;
+
+      @media (min-width: $size0) {
+        font-size: 26px;
+        line-height: 1.1;
+      }
+
+      @media (min-width: $size1) {
+        font-size: 32px;
+      }
+
+      @media (min-width: $size2) {
+        font-size: 40px;
+      }
+
+      @media (min-width: $size3) {
+        font-size: 48px;
+      }
+    }
+
+    .underline {
+      border-top: solid 2px #8ad4b4;
+      display: none;
+      margin: 0 auto;
+      max-width: 490px;
+      width: 100%;
+
+      @media (min-width: $size1) {
+        display: block;
+      }
+    }
+  }
+
+  .slider {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    .left {
+      cursor: pointer;
+      display: none;
+      left: 0;
+      opacity: .5;
+      position: absolute;
+      top: 110px;
+      z-index: 1;
+
+      @media (min-width: $size2) {
+        display: block;
+      }
+    }
+
+    .right {
+      cursor: pointer;
+      display: none;
+      opacity: .5;
+      position: absolute;
+      right: 0;
+      top: 110px;
+      z-index: 1;
+
+      @media (min-width: $size2) {
+        display: block;
+      }
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .inside {
+      display: flex;
+      transition: margin .5s ease;
+    }
+
+    .slide {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+      padding: 24px 15px 0;
+
+      @media (min-width: $size1) {
+        padding-top: 50px;
+      }
+
+      .image {
+        display: flex;
+
+        img {
+          flex-shrink: 0;
+          max-width: 100%;
+        }
+      }
+
+      .text {
+        color: #000;
+        font-family: Oswald, sans-serif;
+        font-size: 15px;
+        margin: 14px 0;
+        text-align: center;
+
+        @media (min-width: $size0) {
+          font-size: 16px;
+        }
+      }
+
+      .name {
+        color: #000;
+        font-family: Arial, sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 22px;
+
+        @media (min-width: $size0) {
+          font-size: 24px;
+          line-height: 1.1;
+        }
+      }
+    }
+  }
+}
