@@ -82,9 +82,6 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     // sitemap
     $router->get('/sitemap.xml', 'SiteController@sitemap');
-    // support
-
-    $router->post('/new-customer', 'OdinCustomerController@addOrUpdate');
 });
 
 /*Route::get('/debug-sentry', function () {
