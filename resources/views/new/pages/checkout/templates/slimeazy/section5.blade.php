@@ -17,24 +17,24 @@
             <img class="image lazy" data-src="{{ $cdn_url }}/assets/images/checkout/slimeazy/fottr-mobile-img1.png" />
           </div>
           <div class="subright">
-            <div class="line1">Lose Weight</div>
-            <div class="line2">& increase energy</div>
+            <div class="title">Lose Weight</div>
+            <div class="subtitle">& increase energy</div>
             <div class="options">
               <div class="option">
                 <img class="lazy" data-src="{{ $cdn_url }}/assets/images/checkout/slimeazy/teck-white.png" />
-                Helps You Lose Weight
+                <div>Helps You Lose Weight</div>
               </div>
               <div class="option">
                 <img class="lazy" data-src="{{ $cdn_url }}/assets/images/checkout/slimeazy/teck-white.png" />
-                Helps Increase Your Metabolism
+                <div>Helps Increase Your Metabolism</div>
               </div>
               <div class="option">
                 <img class="lazy" data-src="{{ $cdn_url }}/assets/images/checkout/slimeazy/teck-white.png" />
-                Helps Increase Fat Oxidation
+                <div>Helps Increase Fat Oxidation</div>
               </div>
               <div class="option">
                 <img class="lazy" data-src="{{ $cdn_url }}/assets/images/checkout/slimeazy/teck-white.png" />
-                Helps Increase Energy
+                <div>Helps Increase Energy</div>
               </div>
             </div>
           </div>
