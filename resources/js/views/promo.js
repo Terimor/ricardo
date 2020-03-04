@@ -1,4 +1,5 @@
 import '../resourses/polyfills';
+import '../services/globals';
 import carousel from 'vue-owl-carousel';
 import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
