@@ -138,6 +138,12 @@ class SiteController extends Controller
         return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo', 'website_name', 'placeholders'));
     }
 
+    /**
+     * Show Support page
+     * @param  Request  $request
+     * @param  ProductService  $productService
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function support(Request $request,ProductService $productService){
         $data = [
         'product' => $productService->resolveProduct($request, true),
@@ -147,6 +153,11 @@ class SiteController extends Controller
         return view('support', $data);
     }
 
+    /**
+     * Show Support page with search results
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function supportRequest(Request $request){
 
         if(isset($request['search']) && $request['search']) {
@@ -178,7 +189,7 @@ class SiteController extends Controller
             $info = 'The search is required';
         }
 
-            return response()->view('components.support.order_info',compact('info'));
+        return response()->view('components.support.order_info',compact('info'));
     }
     /**
      * Returns page
