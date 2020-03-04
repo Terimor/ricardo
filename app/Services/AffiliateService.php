@@ -106,6 +106,10 @@ class AffiliateService
                      $url = str_replace('#DOMAIN#', $domain, $url);
                  }
 
+                 // replace all #tag# after processing
+                $url = str_replace('=#', '={', $url);
+                $url = str_replace('#', '}', $url);
+
                 // send request query
                 RequestQueue::saveNewRequestQuery($url, $postback->delay);
                 $postbacksArray[] = $url;
