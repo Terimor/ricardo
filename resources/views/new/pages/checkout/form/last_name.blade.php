@@ -7,4 +7,5 @@
   'validation_labels' => [
     'required' => t('checkout.payment_form.last_name.required'),
   ],
+  'blur' => 'last_name_blur',
 ])

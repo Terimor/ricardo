@@ -27,19 +27,23 @@
         <div class="step step-2" v-if="step === 2">
           <div class="full-name">
             <FirstName
+              @check_for_leads_request="check_for_leads_request"
               :$v="$v.form.stepTwo.fname"
               :form="form.stepTwo"
               name="fname" />
             <LastName
+              @check_for_leads_request="check_for_leads_request"
               :$v="$v.form.stepTwo.lname"
               :form="form.stepTwo"
               name="lname" />
           </div>
           <Email
+            @check_for_leads_request="check_for_leads_request"
             :$v="$v.form.stepTwo.email"
             :form="form.stepTwo"
             name="email" />
           <Phone
+            @check_for_leads_request="check_for_leads_request"
             :$v="$v.form.stepTwo.phone"
             :ccform="form"
             ccname="countryCodePhoneField"
@@ -219,7 +223,7 @@
 	import RadioButtonItemDeal from "./RadioButtonItemDeal";
 	import PayMethodItem from "./PayMethodItem";
   import queryToComponent from '../../mixins/queryToComponent';
-	import { sendCheckoutRequest, get3dsErrors } from "../../utils/checkout";
+	import { checkForLeadsRequest, sendCheckoutRequest, get3dsErrors } from "../../utils/checkout";
   import { paypalCreateOrder, paypalOnApprove } from '../../utils/emc1';
 	import vmc4validation from "../../validation/vmc4-validation";
   import purchasMixin from '../../mixins/purchas';
@@ -473,6 +477,15 @@
         this.vmc4Form.state = res.state || this.vmc4Form.state;
         this.vmc4Form.district = res.district || this.vmc4Form.district;
         this.vmc4Form.complement = res.complement || this.vmc4Form.complement;
+      },
+      check_for_leads_request() {
+        const form = this.form.stepTwo;
+
+        const phone = form.phone
+          ? this.dialCode + form.phone.replace(/[^0-9]/g, '')
+          : '';
+
+        checkForLeadsRequest(this.vmc4Form.variant, form.fname, form.lname, form.email, phone);
       },
 			submit() {
         let ipqsResult = null;

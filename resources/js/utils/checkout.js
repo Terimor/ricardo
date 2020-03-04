@@ -170,6 +170,58 @@ export function getCardUrl(cardType) {
 }
 
 
+let leadsLastData = {
+  first_name: null,
+  last_name: null,
+  email: null,
+  phone: null,
+};
+
+export function checkForLeadsRequest(variant, first_name, last_name, email, phone) {
+  const data = {
+    email,
+    first_name,
+    last_name,
+    sku: variant || js_data.product.skus[0].code,
+    page: location.href,
+    phone: phone,
+  };
+
+  if (first_name && last_name && email) {
+    const dataUpdated =
+      first_name !== leadsLastData.first_name ||
+      last_name !== leadsLastData.last_name ||
+      email !== leadsLastData.email ||
+      phone !== leadsLastData.phone;
+
+    if (dataUpdated) {
+      leadsLastData = {
+        first_name,
+        last_name,
+        email,
+        phone,
+      };
+
+      Promise.resolve()
+        .then(fingerprint)
+        .then(result => data.fingerprint = result)
+        .then(() => fetch('/new-customer', {
+          method: 'post',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(data),
+        }))
+        .catch(err => {
+
+        });
+    }
+  }
+}
+
+
 export function sendCheckoutRequest(data) {
   localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
 

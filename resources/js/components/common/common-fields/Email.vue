@@ -110,6 +110,8 @@
       },
 
       blur() {
+        this.$emit('check_for_leads_request');
+      
         const value = this.form[this.name];
 
         if (this.$v.$invalid) {

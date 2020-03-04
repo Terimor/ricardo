@@ -87,22 +87,26 @@
                             <h2><span>{{textStep}}</span> {{ !isShowVariant ? 2 : 3  }}: <span>{{textContactInformation}}</span></h2>
                             <div class="full-name">
                               <FirstName
+                                @check_for_leads_request="check_for_leads_request"
                                 :$v="$v.form.fname"
                                 :placeholder="true"
                                 :form="form"
                                 name="fname" />
                               <LastName
+                                @check_for_leads_request="check_for_leads_request"
                                 :$v="$v.form.lname"
                                 :placeholder="true"
                                 :form="form"
                                 name="lname" />
                             </div>
                             <Email
+                              @check_for_leads_request="check_for_leads_request"
                               :$v="$v.form.email"
                               :placeholder="true"
                               :form="form"
                               name="email" />
                             <Phone
+                              @check_for_leads_request="check_for_leads_request"
                               :$v="$v.form.phone"
                               :ccform="form"
                               ccname="countryCodePhoneField"
@@ -229,7 +233,7 @@
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { ipqsCheck } from '../services/ipqs';
-  import { sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
+  import { checkForLeadsRequest, sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
   import { queryParams } from  '../utils/queryParams';
   import logger from '../mixins/logger';
@@ -529,6 +533,13 @@
         if (newPrice) {
           document.querySelector('#new-price').innerHTML = this.quantityOfInstallments + valueText;
         }
+      },
+      check_for_leads_request() {
+        const phone = this.form.phone
+          ? this.dialCode + this.form.phone.replace(/[^0-9]/g, '')
+          : '';
+
+        checkForLeadsRequest(this.form.variant, this.form.fname, this.form.lname, this.form.email, phone);
       },
       submit() {
         let ipqsResult = null;
