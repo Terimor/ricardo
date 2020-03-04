@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
 use App\Models\OdinProduct;
-use App\Services\UtilsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Services\ProductService;
@@ -16,6 +15,7 @@ use App\Services\I18nService;
 use App\Services\OrderService;
 use App\Services\ViacepService;
 use App\Services\TemplateService;
+use App\Services\UtilsService;
 use App\Constants\PaymentMethods;
 use Cache;
 use App\Models\OdinOrder;
