@@ -44,7 +44,7 @@ class SiteController extends Controller
         $isMultiproduct = false;
         if (!empty($domain->is_multiproduct) || !empty($domain->is_catch_all)) {
             if (!empty($domain->is_catch_all)) {
-                $products = $productService->getAllSoldDomainsProducts($domain, (int)$request->get('page'), $request->get('search'));
+                $products = $productService->getAllSoldDomainsProducts($domain, (int)$request->get('p'), $request->get('search'));
                 $isMultiproduct = true;
             } else {
                 $products = ProductService::getDomainProducts($domain);
