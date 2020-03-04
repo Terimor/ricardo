@@ -273,6 +273,17 @@ class OdinOrder extends OdinModel
     }
 
     /**
+     * Returns OdinOrder by Email Or TrackingNumber
+     * @param  string    $search
+     * @return OdinOrder|null
+     */
+    public static function getByEmailOrTrackingNumber(string $search): ?OdinOrder
+    {
+        return OdinOrder::query()->where('customer_email',$search)
+            ->orWhere('trackings','elemMatch',['number' => $search])->get();
+    }
+
+    /**
      * Returns OdinOrder by Txn hash
      * @param  string    $hash
      * @param  string|null $provider

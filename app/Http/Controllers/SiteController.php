@@ -162,10 +162,8 @@ class SiteController extends Controller
 
         if(isset($request['search']) && $request['search']) {
             $search = trim(mb_strtolower($request['search']));
-            $odinOrder =  OdinOrder::query();
+            $odinOrders =  OdinOrder::getByEmailOrTrackingNumber($search);
             $info = [];
-            $odinOrders =  $odinOrder->where('customer_email',$search)
-                ->orWhere('trackings','elemMatch',['number' => $search])->get();
             if($odinOrders->isNotEmpty()) {
                 foreach ($odinOrders as $order) {
                     foreach ($order->trackings ?? [] as $tracking) {
