@@ -9,8 +9,8 @@
   <i class="warranty-arrow-right fa fa-arrow-right"></i>
 
   <img
-    class="warranty-field-image"
-    src="{{ $cdn_url }}/assets/images/best-saller.png">
+    class="warranty-field-image lazy"
+    data-src="{{ $cdn_url }}/assets/images/best-saller.png">
 
   @include('new.components.check', [
     'active' => 'form.warranty',

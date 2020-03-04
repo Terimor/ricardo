@@ -4,13 +4,14 @@
     <div class="paypal-shim" :class="{ 'active': !isSubmitted }">
       <div v-if="isSubmitted" class="disabled"></div>
       <div class="title"><slot /></div>
-      <img class="image" :src="$root.cdn_url + '/assets/images/paypal-highq.png'" />
+      <img class="lazy image" :data-src="$root.cdn_url + '/assets/images/paypal-highq.png'" />
     </div>
   </div>
 </template>
 
 <script>
   import wait from '../../utils/wait';
+  import globals from '../../mixins/globals';
 
   export default {
     name: 'PaypalButton',
@@ -20,6 +21,9 @@
       '$vvariant',
       '$vterms',
       '$vdeal',
+    ],
+    mixins: [
+      globals,
     ],
 
     data() {
@@ -52,6 +56,12 @@
         () => !!window.paypal,
         () => this.initButton(),
       );
+
+      this.lazyload_update();
+    },
+
+    updated() {
+      this.lazyload_update();
     },
 
     methods: {

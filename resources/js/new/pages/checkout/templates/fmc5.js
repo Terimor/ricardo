@@ -81,6 +81,8 @@ js_deps.wait(['vue'], () => {
           'email',
           'phone',
           'street',
+          'building',
+          'complement',
           'district',
           'city',
           'state',

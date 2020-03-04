@@ -13,7 +13,7 @@
         class="variant-field-input"
         @click="variant_toggle">
 
-        <img v-if="form.variant" :src="variant_image" class="variant-field-input-image" alt="" />
+        <img v-if="form.variant" class="variant-field-input-image lazy" :data-src="variant_image" alt="" />
         <div v-if="!form.variant" class="variant-field-input-label empty">{{ t('checkout.select_variant') }}</div>
         <div v-if="form.variant" class="variant-field-input-label">@{{ variant_name }}</div>
         <i class="fa fa-angle-down"></i>
@@ -36,7 +36,7 @@
               :class="{ active: form.variant === '{{ $sku['code'] }}' }"
               @click="variant_change('{{ $sku['code'] }}')">
 
-              <img src="{{ $sku['quantity_image'][1] }}" alt="" />
+              <img class="lazy" data-src="{{ $sku['quantity_image'][1] }}" alt="" />
               <div>{{ $sku['name'] }}</div>
 
             </div>

@@ -5,9 +5,10 @@
                 <div class="container paper smc7__product">
                     <div class="col-md-7 image-wrapper">
                         <img
-                                id="product-image-head"
-                                :src="productImage"
-                                alt=""
+                          class="lazy"
+                          id="product-image-head"
+                          :data-src="productImage"
+                          alt=""
                         >
                     </div>
                     <div
@@ -86,22 +87,26 @@
                             <h2><span>{{textStep}}</span> {{ !isShowVariant ? 2 : 3  }}: <span>{{textContactInformation}}</span></h2>
                             <div class="full-name">
                               <FirstName
+                                @check_for_leads_request="check_for_leads_request"
                                 :$v="$v.form.fname"
                                 :placeholder="true"
                                 :form="form"
                                 name="fname" />
                               <LastName
+                                @check_for_leads_request="check_for_leads_request"
                                 :$v="$v.form.lname"
                                 :placeholder="true"
                                 :form="form"
                                 name="lname" />
                             </div>
                             <Email
+                              @check_for_leads_request="check_for_leads_request"
                               :$v="$v.form.email"
                               :placeholder="true"
                               :form="form"
                               name="email" />
                             <Phone
+                              @check_for_leads_request="check_for_leads_request"
                               :$v="$v.form.phone"
                               :ccform="form"
                               ccname="countryCodePhoneField"
@@ -165,7 +170,8 @@
                         </template>
                         <div class="smc7__bottom">
                             <img
-                              :src="imageSafePayment.url"
+                              class="lazy"
+                              :data-src="imageSafePayment.url"
                               :alt="imageSafePayment.title"
                               :title="imageSafePayment.title">
                             <div class="smc7__bottom__safe">
@@ -217,6 +223,7 @@
   import SaleBadge from './common/SaleBadge';
   import ProductOffer from '../components/common/ProductOffer';
   import smc7validation from "../validation/smc7-validation";
+  import globals from '../mixins/globals';
   import queryToComponent from '../mixins/queryToComponent';
   import scrollToError from '../mixins/formScrollToError';
   import blackFriday from '../mixins/blackFriday';
@@ -226,7 +233,7 @@
   import purchasMixin from '../mixins/purchas';
   import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
   import { ipqsCheck } from '../services/ipqs';
-  import { sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
+  import { checkForLeadsRequest, sendCheckoutRequest, get3dsErrors } from '../utils/checkout';
   import Spinner from './common/preloaders/Spinner';
   import { queryParams } from  '../utils/queryParams';
   import logger from '../mixins/logger';
@@ -251,6 +258,7 @@
     },
     validations: smc7validation,
     mixins: [
+      globals,
       queryToComponent,
       extraFields.tplMixin,
       purchasMixin,
@@ -470,6 +478,10 @@
     },
     mounted() {
       this.refreshTopBlock();
+      this.lazyload_update();
+    },
+    updated() {
+      this.lazyload_update();
     },
     watch: {
       'form.deal'(value) {
@@ -521,6 +533,13 @@
         if (newPrice) {
           document.querySelector('#new-price').innerHTML = this.quantityOfInstallments + valueText;
         }
+      },
+      check_for_leads_request() {
+        const phone = this.form.phone
+          ? this.dialCode + this.form.phone.replace(/[^0-9]/g, '')
+          : '';
+
+        checkForLeadsRequest(this.form.variant, this.form.fname, this.form.lname, this.form.email, phone);
       },
       submit() {
         let ipqsResult = null;

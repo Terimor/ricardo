@@ -20,4 +20,13 @@ export default {
     };
   },
 
+
+  methods: {
+
+    last_name_blur() {
+      this.check_for_leads_request();
+    },
+
+  },
+
 };

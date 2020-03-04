@@ -11,7 +11,7 @@
 <div class="last-call-card">
   <div class="last-call-card-title">{!! t('vc_upsells.last_call_card.title', ['product' => $product->product_name]) !!}</div>
   <div class="last-call-card-inside">
-    <img class="last-call-card-image" src="{{ $product->image[0] ?? '' }}" />
+    <img class="last-call-card-image lazy" data-src="{{ $product->image[0] ?? '' }}" />
     <div class="last-call-card-download">{!! t('vc_upsells.last_call_card.download') !!}</div>
     <div class="last-call-card-label-1">{!! t('vc_upsells.last_call_card.label_1') !!}</div>
     <div class="last-call-card-price">$17!</div>

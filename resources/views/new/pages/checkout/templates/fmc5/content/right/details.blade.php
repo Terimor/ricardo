@@ -12,13 +12,13 @@
     </div>
 
     <img
-      src="{{ $cdn_url }}/assets/images/fmc5-5star.svg"
-      class="product-5star" />
+      class="lazy product-5star"
+      data-src="{{ $cdn_url }}/assets/images/fmc5-5star.svg" />
 
   </div>
 
   <img
-    src="{{ $product->image[0] }}"
-    class="product-image" />
+    class="lazy product-image"
+    data-src="{{ $product->image[0] }}" />
 
 </div>

@@ -5,20 +5,21 @@
     href="/vrtl">
     <img
       alt=""
-      src="{{ $main_logo ?? $product->logo_image }}"
+      class="lazy"
+      data-src="{{ $main_logo ?? $product->logo_image }}"
     />
   </a>
 
   <img
     alt=""
-    class="secure"
-    src="{{ $cdn_url }}/assets/images/checkout/vc1/secure.png"
+    class="secure lazy"
+    data-src="{{ $cdn_url }}/assets/images/checkout/vc1/secure.png"
   />
 
   <img
     alt=""
-    class="made"
-    src="{{ $cdn_url }}/assets/images/checkout/vc1/made.png"
+    class="made lazy"
+    data-src="{{ $cdn_url }}/assets/images/checkout/vc1/made.png"
   />
   
 </div>

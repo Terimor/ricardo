@@ -24,6 +24,16 @@ export default {
   ],
 
 
+  mounted() {
+    this.lazyload_update();
+  },
+
+
+  updated() {
+    this.lazyload_update();
+  },
+
+
   computed: {
 
     js_data() {
@@ -41,6 +51,24 @@ export default {
     is_affid_empty() {
       return (!js_query_params.aff_id || js_query_params.aff_id === '0')
         && (!js_query_params.affid || js_query_params.affid === '0');
+    },
+
+  },
+
+
+  methods: {
+
+    lazyload_update() {
+      js_deps.wait_for(
+        () => window.lazyLoadInstance,
+        () => {
+          [].forEach.call(document.querySelectorAll('img.lazy.loaded'), element => {
+            element.removeAttribute('data-was-processed');
+          });
+
+          lazyLoadInstance.update();
+        },
+      );
     },
 
   },

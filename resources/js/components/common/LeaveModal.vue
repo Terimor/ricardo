@@ -101,7 +101,7 @@
                     width: 450,
                     html: `
                         <div class="leave-modal">
-                            <img src="${this.productImage}" alt="" />
+                            <img class="lazy" src="${this.productImage}" alt="" />
                             ${this.textText}
                             <button class="offer-btn" onclick="agreeLeaveModal()">${this.textAgree}</button>
                             <button class="close-btn" onclick="closeLeaveModal()">${this.textClose}</button>

@@ -54,7 +54,7 @@
                     </div>
                 </div>
                 <div class="paper col-md-5 main__payment">
-                    <img id="product-image" :src="productImage" alt="">
+                    <img id="product-image" class="lazy" :data-src="productImage" alt="">
                     <template v-if="!isPurchasAlreadyExists">
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
                         <h3 v-html="textPaySecurely"></h3>
@@ -87,7 +87,8 @@
                         </transition>
                         <div class="main__bottom">
                             <img
-                              :src="imageSafePayment.url"
+                              class="lazy"
+                              :data-src="imageSafePayment.url"
                               :alt="imageSafePayment.title"
                               :title="imageSafePayment.title">
                             <p><i class="fa fa-lock"></i><span v-html="textSafeSSLEncryption"></span></p>
@@ -126,7 +127,8 @@
 <script>
   import emc1Validation from '../validation/emc1-validation';
   import scrollToError from '../mixins/formScrollToError';
-  import notification from '../mixins/notification'
+  import globals from '../mixins/globals';
+  import notification from '../mixins/notification';
   import * as extraFields from '../mixins/extraFields';
   import queryToComponent from '../mixins/queryToComponent'
   import blackFriday from '../mixins/blackFriday';
@@ -152,6 +154,7 @@
   export default {
     name: 'emc1',
     mixins: [
+      globals,
       notification,
       scrollToError,
       queryToComponent,
@@ -572,7 +575,7 @@
         }
       },
     },
-    mounted () {
+    mounted() {
       const qty = +this.queryParams.qty;
       const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
 
@@ -581,7 +584,11 @@
       }
 
       this.refreshTopBlock();
-    }
+      this.lazyload_update();
+    },
+    updated() {
+      this.lazyload_update();
+    },
   }
 </script>
 

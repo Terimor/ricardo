@@ -385,7 +385,7 @@ class PaymentService
         ['sku' => $sku, 'qty' => $qty] = $req->get('product');
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
-        $user_agent = $req->header('User-Agent');
+        $user_agent = utf8_encode($req->header('User-Agent'));
         $ipqs = $req->input('ipqs', null);
         $card = $req->get('card');
         $fingerprint = $req->get('f', null);
@@ -705,7 +705,7 @@ class PaymentService
      */
     public function completeBs3dsOrder(string $order_id, string $ref): array
     {
-        $user_agent = request()->header('User-Agent');
+        $user_agent = utf8_encode(request()->header('User-Agent'));
 
         $order = OdinOrder::getById($order_id); // throwable
         $order_product = $order->getMainProduct(); // throwable
@@ -790,7 +790,7 @@ class PaymentService
     public function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req): array
     {
         $upsells = $req->input('upsells', []);
-        $user_agent = $req->header('User-Agent');
+        $user_agent = utf8_encode($req->header('User-Agent'));
 
         $order = OdinOrder::getById($req->get('order')); // throwable
         $order_main_product = $order->getMainProduct(); // throwable

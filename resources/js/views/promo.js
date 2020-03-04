@@ -1,4 +1,5 @@
 import '../resourses/polyfills';
+import '../services/globals';
 import carousel from 'vue-owl-carousel';
 import { stateList } from '../resourses/state';
 import emc1Validation from '../validation/emc1-validation'
@@ -146,6 +147,12 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
           });
         },
       );
+
+      this.lazyload_update();
+    },
+
+    updated() {
+      this.lazyload_update();
     },
 
     computed: {

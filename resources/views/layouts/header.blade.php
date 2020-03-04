@@ -9,7 +9,7 @@
     <div class="container {{ Request::is('/') ? 'd-flex flex-column flex-sm-row justify-content-between' : '' }}">
         
         <a @if ($HasVueApp) href="/checkout" @else href="/" @endif class="header__logo_link">
-            <img src="{{$main_logo ?? $product->logo_image}}" class="header__logo" alt="">
+            <img data-src="{{$main_logo ?? $product->logo_image}}" class="lazy header__logo" alt="">
         </a>
         @if(Request::is('/'))
             <ul class="header__menu">
