@@ -19,6 +19,11 @@ class CustomerService
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
 
+        if($model->type == 'buyer') {
+            $model->first_name = $model->getOriginal('first_name');
+            $model->last_name = $model->getOriginal('last_name');
+        }
+
         // add ip if not in array
         $ip = !empty($data['ip']) ? $data['ip'] : request()->ip();
         if (!in_array($ip, $model->ip)) {
