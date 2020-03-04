@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use App\Exceptions\OrderNotFoundException;
@@ -275,12 +276,12 @@ class OdinOrder extends OdinModel
     /**
      * Returns OdinOrder by Email Or TrackingNumber
      * @param  string    $search
-     * @return OdinOrder|null
+     * @return Collection|null
      */
-    public static function getByEmailOrTrackingNumber(string $search): ?OdinOrder
+    public static function getByEmailOrTrackingNumber(string $search): ?Collection
     {
-        return OdinOrder::query()->where('customer_email',$search)
-            ->orWhere('trackings','elemMatch',['number' => $search])->get();
+        return OdinOrder::query()->where('customer_email',mb_strtolower($search))
+            ->orWhere('trackings','elemMatch',['number' => mb_strtoupper($search)])->get();
     }
 
     /**

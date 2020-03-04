@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
 use App\Models\OdinProduct;
+use App\Services\UtilsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Services\ProductService;
@@ -158,10 +159,10 @@ class SiteController extends Controller
      * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function supportRequest(Request $request){
+    public function supportRequest(Request $request) {
 
         if (isset($request['search']) && $request['search']) {
-            $search = trim(mb_strtolower($request['search']));
+            $search = trim($request['search']);
             $odinOrders =  OdinOrder::getByEmailOrTrackingNumber($search);
             $info = [];
             if ($odinOrders->isNotEmpty()) {
@@ -173,7 +174,7 @@ class SiteController extends Controller
                         $info[] = [
                             'order_number'=>$order->number,
                             'products'=> implode('<br>', $products),
-                            'link' => "http://sprtdls.aftership.com/{$tracking['number']}",
+                            'link' => UtilsService::generateAftershipTrackingLink($tracking['number']),
                         ];
                     }
                 }

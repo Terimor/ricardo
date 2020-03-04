@@ -1065,4 +1065,13 @@ class UtilsService
         $countryCode = !empty($location['countryCode']) ? $location['countryCode'] : '';
         return strtolower($countryCode);
     }
+
+    /**
+     * return Aftership Link
+     * @param  string  $number
+     * @return string
+     */
+    public static function generateAftershipTrackingLink(string $number) {
+        return  "http://sprtdls.aftership.com/{$number}";
+    }
 }
