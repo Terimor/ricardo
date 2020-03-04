@@ -160,7 +160,7 @@ class SiteController extends Controller
      */
     public function supportRequest(Request $request){
 
-        if(isset($request['search']) && $request['search']) {
+        if (isset($request['search']) && $request['search']) {
             $search = trim(mb_strtolower($request['search']));
             $odinOrders =  OdinOrder::getByEmailOrTrackingNumber($search);
             $info = [];
