@@ -144,11 +144,11 @@ class SiteController extends Controller
      * @param  ProductService  $productService
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function support(Request $request,ProductService $productService){
+    public function support(Request $request,ProductService $productService) {
         $data = [
-        'product' => $productService->resolveProduct($request, true),
-        'page_title' => 'Support',
-        'info' => $info??null,
+            'product' => $productService->resolveProduct($request, true),
+            'page_title' => 'Support',
+            'info' => $info ?? null,
         ];
         return view('support', $data);
     }
