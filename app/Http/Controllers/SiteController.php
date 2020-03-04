@@ -616,4 +616,12 @@ class SiteController extends Controller
     {
         return response()->file(resource_path('_debugbar/assets/stylesheets.css'));
     }
+
+    /**
+     * Temporary hook
+     */
+    public function newCustomer()
+    {
+        return response(null, 200);
+    }
 }

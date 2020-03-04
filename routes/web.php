@@ -83,9 +83,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     // sitemap
     $router->get('/sitemap.xml', 'SiteController@sitemap');
 
-    $router->any('/new-customer',function (){
-       return response(null,200);
-    });
+    $router->any('/new-customer', 'SiteController@newCustomer');
 });
 
 /*Route::get('/debug-sentry', function () {
