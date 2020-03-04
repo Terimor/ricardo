@@ -164,7 +164,7 @@ class SiteController extends Controller
             $search = trim(mb_strtolower($request['search']));
             $odinOrders =  OdinOrder::getByEmailOrTrackingNumber($search);
             $info = [];
-            if($odinOrders->isNotEmpty()) {
+            if ($odinOrders->isNotEmpty()) {
                 foreach ($odinOrders as $order) {
                     foreach ($order->trackings ?? [] as $tracking) {
                         $products = array_map(function ($product) {
@@ -177,7 +177,7 @@ class SiteController extends Controller
                         ];
                     }
                 }
-                if(empty($info)) {
+                if (empty($info)) {
                     $info = 'Your package is in the processing facility. we will send you the tracking number soon';
                 }
             } else {
