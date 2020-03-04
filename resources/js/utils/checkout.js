@@ -211,6 +211,7 @@ export function checkForLeadsRequest(variant, first_name, last_name, email, phon
           headers: {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
           },
           body: JSON.stringify(data),
         }))

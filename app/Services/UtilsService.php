@@ -1008,7 +1008,7 @@ class UtilsService
      */
     public static function getUserAgentParseData(): array
     {
-        $userAgent = request()->header('user-agent');
+        $userAgent = utf8_encode(request()->header('user-agent'));
         $ip = request()->ip();
         $deviceType = null;
         try {
