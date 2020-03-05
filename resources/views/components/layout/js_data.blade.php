@@ -2,7 +2,7 @@
 
   // JS data
   window.js_data = {
-    cdn_url: @json($cdn_url, JSON_UNESCAPED_UNICODE),
+    cdn_url: @json($cdn_url ?? '', JSON_UNESCAPED_UNICODE),
     i18n: {
       phrases: {},
       images: {},

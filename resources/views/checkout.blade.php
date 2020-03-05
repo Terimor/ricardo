@@ -23,6 +23,11 @@
 @endsection
 
 
+@section('js_prerender')
+  @include('prerender.checkout.3ds_failure')
+@endsection
+
+
 @section('js_deps')
 
   <script type="text/javascript">

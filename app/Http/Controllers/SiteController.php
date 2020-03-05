@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
+use App\Models\OdinProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Services\ProductService;
@@ -14,6 +15,7 @@ use App\Services\I18nService;
 use App\Services\OrderService;
 use App\Services\ViacepService;
 use App\Services\TemplateService;
+use App\Services\UtilsService;
 use App\Constants\PaymentMethods;
 use Cache;
 use App\Models\OdinOrder;
@@ -137,6 +139,57 @@ class SiteController extends Controller
         return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo', 'website_name', 'placeholders'));
     }
 
+    /**
+     * Show Support page
+     * @param  Request  $request
+     * @param  ProductService  $productService
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function support(Request $request,ProductService $productService) {
+        $data = [
+            'product' => $productService->resolveProduct($request, true),
+            'page_title' => 'Support',
+            'info' => $info ?? null,
+        ];
+        return view('support', $data);
+    }
+
+    /**
+     * Show Support page with search results
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function supportRequest(Request $request) {
+
+        if (isset($request['search']) && $request['search']) {
+            $search = trim($request['search']);
+            $odinOrders =  OdinOrder::getByEmailOrTrackingNumber($search,['number', 'trackings.number', 'trackings.aftership_slug', 'products.sku_code', 'products.quantity']);
+            $info = [];
+            if ($odinOrders->isNotEmpty()) {
+                foreach ($odinOrders as $order) {
+                    foreach ($order->trackings ?? [] as $tracking) {
+                        $products = array_map(function ($product) {
+                            return $product['quantity'].' × '.OdinProduct::getBySku($product['sku_code'])->product_name;
+                        }, $order->products);
+                        $info[] = [
+                            'order_number' => $order->number,
+                            'products' => implode('<br>', $products),
+                            'link' => UtilsService::generateTrackingLink($tracking['number'], $tracking['aftership_slug']),
+                        ];
+                    }
+                }
+                if (empty($info)) {
+                    $info = 'Your package is in the processing facility. we will send you the tracking number soon';
+                }
+            } else {
+                $info = 'Email not found';
+            }
+        } else {
+            $info = 'The search is required';
+        }
+
+        return response()->view('components.support.order_info', compact('info'));
+    }
     /**
      * Returns page
      * @param Request $request
@@ -300,11 +353,28 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $upsells = $productService->getProductUpsells($product);
 
+        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
+            return view('prerender.checkout.txid_iframe');
+        }
+
+        if ($request->get('3ds') && !$request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_restore');
+        }
+
+        if ($request->get('3ds') === 'success' && $request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_success', compact('product', 'is_vrtl_page'));
+        }
+
+        if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
+            return redirect($request->get('redirect_url'));
+        }
+
         $setting = Setting::getValue([
             'ipqualityscore_api_hash',
             'bluesnap_seller_id',
             'support_address'
         ]);
+
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
         $setting['bluesnap_fraud_session_id'] = substr(session()->getId(), 0, 32);

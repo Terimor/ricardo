@@ -28,7 +28,7 @@ if (location.pathname.startsWith('/checkout')) {
     '3ds_ipqs',
   ];
 
-  if (product_id !== js_data.product.id && !window['3ds_redirect']) {
+  if (product_id !== js_data.product.id) {
     if (product_id) {
       for (let fieldName of cookieFields) {
         cookies.deleteCookie(fieldName);
@@ -52,7 +52,7 @@ if (location.pathname.startsWith('/checkout')) {
   const direct = +(js_query_params.direct || null);
 
   if (offer_id > 0 && aff_id > 10 && direct === 1 && txid.length < 20) {
-    let iframeURL = 'https://track.8xgb.com/aff_c?offer_id=' + offer_id + '&aff_id=' + aff_id;
+    let iframeURL = 'https://track.8xgb.com/aff_c?offer_id=' + offer_id + '&aff_id=' + aff_id + '&emptypage=1';
 
     const params = [
       'aff_sub1',
