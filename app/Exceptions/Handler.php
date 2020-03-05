@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Exceptions;
-use App\Services\TelegramService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Monolog\Handler\TelegramBotHandler;
 use Monolog\Logger;
