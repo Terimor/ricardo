@@ -85,9 +85,9 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     // support
     $router->get('/support-abc', 'SiteController@support');
     $router->post('/support-abc', 'SiteController@supportRequest')->name('support-request');
+
     $router->post('/new-customer', 'OdinCustomerController@addOrUpdate');
 
-//    $router->any('/new-customer', 'SiteController@newCustomer');
 });
 
 /*Route::get('/debug-sentry', function () {
