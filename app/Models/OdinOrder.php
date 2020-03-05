@@ -282,11 +282,11 @@ class OdinOrder extends OdinModel
     {
         $query = self::query();
         if (strpos($search, '@') === false) {
-            $query->Where('trackings','elemMatch', ['number' => mb_strtoupper($search)]);
+            $query->where('trackings','elemMatch', ['number' => mb_strtoupper($search)]);
         } else {
             $query->where('customer_email', mb_strtolower($search));
         }
-        return $query->get();
+        return $query->select('number', 'trackings.number', 'trackings.aftership_slug', 'products.sku_code', 'products.quantity')->get();
     }
 
     /**

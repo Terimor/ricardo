@@ -174,7 +174,7 @@ class SiteController extends Controller
                         $info[] = [
                             'order_number' => $order->number,
                             'products' => implode('<br>', $products),
-                            'link' => UtilsService::generateAftershipTrackingLink($tracking['number']),
+                            'link' => UtilsService::generateTrackingLink($tracking['number'], $tracking['aftership_slug']),
                         ];
                     }
                 }

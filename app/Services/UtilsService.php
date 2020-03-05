@@ -1074,4 +1074,28 @@ class UtilsService
     public static function generateAftershipTrackingLink(string $number) {
         return  "http://sprtdls.aftership.com/{$number}";
     }
+
+    /**
+     * Generates tracking link
+     * @param string|array $number
+     * @param string $slug
+     * @param bool $as_array
+     * @param bool $use_default_template
+     * @return string
+     */
+    public static function generateTrackingLink($number, $slug, bool $use_default_template = false) {
+        $default_template = 'https://track.aftership.com/#SLUG#/#NUMBER#';
+        if ($use_default_template) {
+            $template = $default_template;
+        } else {
+            $template = Setting::getValue('tracking_link_template', $default_template);
+        }
+
+        if ($number) {
+            $link = str_replace('#NUMBER#', $number, $template);
+            $link = str_replace('#SLUG#', $slug, $link);
+            return $link;
+        }
+        return null;
+    }
 }
