@@ -19,8 +19,7 @@ class Localization
     public function handle($request, Closure $next)
     {
         \Utils::unsetGetParameters($request);
-        
-        //$translated_languages = ['ru', 'en'];
+
         $translated_languages = I18n::getTranslationLanguages(true);
 
         if ($request->has('lang')) {
@@ -28,23 +27,14 @@ class Localization
             if (!in_array($lang, $translated_languages)) {
                 $lang = 'en';
             }
-        } else {            
+        } else {
             $lang = $request->getPreferredLanguage($translated_languages);
         }
-        
-        /*if($request->hasCookie('lang')) {
-            app()->setLocale($lang);
-            return $next($request);
-        }*/
 
         // Check for specific languages that needs to be replaced for internal usage.
         $lang = I18nService::getInternalLanguageByLocaleLanguage($lang);
 
         app()->setLocale($lang);
         return $next($request);
-
-        /*$response = $next($request);
-        return $response->withCookie(cookie()->forever('lang', $lang));*/
-
     }
 }
