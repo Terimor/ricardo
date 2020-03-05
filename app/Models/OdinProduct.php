@@ -469,7 +469,7 @@ class OdinProduct extends Model
             // quantity loop
             $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency);
             // calculate discount percent
-            $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : null;
+            $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : 0;
             $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);
         } else if ($discountPercent) {
             // get price from 1 qty

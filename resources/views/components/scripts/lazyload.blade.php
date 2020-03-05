@@ -6,7 +6,7 @@
     async></script>
 
   <script type="text/javascript">
-    js_deps.wait(['lazyload'], () => {
+    js_deps.wait(['lazyload'], function() {
       window.lazyLoadInstance = new LazyLoad({
         elements_selector: '.lazy',
       });

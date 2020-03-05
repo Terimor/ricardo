@@ -109,6 +109,7 @@ export default {
         headers: {
           'Content-Type': 'application/json',
           'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
           ...headers,
         },
         body: JSON.stringify({

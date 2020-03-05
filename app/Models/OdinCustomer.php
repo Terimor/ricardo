@@ -25,7 +25,6 @@ class OdinCustomer extends Model
      */
     protected $attributes = [
         'email' => null, // * unique string,
-        'type' => 'lead', // * string,
         'first_name' => null, // * string
         'last_name' => null, // * string
         'ip' => [], // array of strings
@@ -33,14 +32,13 @@ class OdinCustomer extends Model
 		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
-            'country' => null, // enum string
-            'zip' => null, // string
-            'state' => null, // string
-            'city' => null, // string
-            'street' => null, // string
-            'street2' => null, // string
-            'building' => null, // string
-	        'apt' => null, // string
+            //'country' => null, // enum string
+            //'zip' => null, // string
+            //'state' => null, // string
+            //'city' => null, // string
+            //'street' => null, // string
+            //'street2' => null, // string
+	    //'apt' => null, // string
         ],
         'paypal_payer_id' => null, // string
 		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
@@ -83,15 +81,11 @@ class OdinCustomer extends Model
             if (!empty($data['_id'])) {
                 // skip unique for email
                 $data['email'] .= $data['_id'];
-                if(isset($data['fingerprint']) && is_string($data['fingerprint'])) {
-                    $data['fingerprint'] .= $data['_id'];
-                }
             }
         }
 
         return Validator::make($data, [
             'email'     => 'required|email|unique:odin_customer',
-            'fingerprint'     => 'unique:odin_customer',
             'first_name'    => 'required',
             'last_name'    => 'required',
         ]);

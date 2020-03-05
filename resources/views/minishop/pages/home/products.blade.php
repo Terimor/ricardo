@@ -69,17 +69,17 @@
           <ul class="pagination">
 
             <li class="page-item{{ $pagination['page'] <= 1 ? ' disabled' : '' }}">
-              <a class="page-link" href="/?page={{ $pagination['page'] - 1 }}">&laquo;</a>
+              <a class="page-link" href="/?p={{ $pagination['page'] - 1 }}">&laquo;</a>
             </li>
 
             @for ($index = 1; $index <= $pagination['total_pages']; $index++)
               <li class="page-item{{ $index == $pagination['page'] ? ' active' : '' }}">
-                <a class="page-link" href="/?page={{ $index }}">{{ $index }}</a>
+                <a class="page-link" href="/?p={{ $index }}">{{ $index }}</a>
               </li>
             @endfor
 
             <li class="page-item{{ $pagination['page'] >= $pagination['total_pages'] ? ' disabled' : '' }}">
-              <a class="page-link" href="/?page={{ $pagination['page'] + 1 }}">&raquo;</a>
+              <a class="page-link" href="/?p={{ $pagination['page'] + 1 }}">&raquo;</a>
             </li>
 
           </ul>
