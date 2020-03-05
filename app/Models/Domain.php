@@ -51,7 +51,7 @@ class Domain extends Model
             $name = $name ?? $host;
             $domain = Domain::where('name', $name)->first();
             if (!$domain) {
-                logger()->error("Can't find a domain", ['host' => request()->getHost()]);
+                logger()->warning("Can't find a domain", ['host' => request()->getHost()]);
                 $domain = Domain::first();
             }
             static::$cached_current_domain = $domain;
