@@ -49,10 +49,12 @@ class Handler extends ExceptionHandler
             //log to sentry in production only
             app('sentry')->captureException($exception);
             // create a log Telegram
-            $log = new Logger('Odin');
-            $log->pushHandler(new TelegramBotHandler('896776756:AAFUu5a9lbMizty2IXKyfG7bMy988Vm0NmU', '-1001271143925'));
-            foreach (str_split((string) $exception, 4000) as $message) {
-                $log->error($message);
+            try {
+                $log = new Logger('Odin');
+                $log->pushHandler(new TelegramBotHandler('896776756:AAFUu5a9lbMizty2IXKyfG7bMy988Vm0NmU', '-1001271143925'));
+                $log->error(str_split((string) $exception, 4000)[0]);
+            } catch (\Exception $e) {
+                logger()->warning($e->getMessage());
             }
         } else {
             parent::report($exception);
