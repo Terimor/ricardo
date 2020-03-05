@@ -20,10 +20,6 @@
     ];
 
     if (product_id !== js_data.product.id) {
-      if (window['3ds_redirect']) {
-        return;
-      }
-
       if (product_id) {
         cookie_fields.forEach(function(name) {
           document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';

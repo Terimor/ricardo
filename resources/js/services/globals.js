@@ -28,7 +28,7 @@ if (location.pathname.startsWith('/checkout')) {
     '3ds_ipqs',
   ];
 
-  if (product_id !== js_data.product.id && !window['3ds_redirect']) {
+  if (product_id !== js_data.product.id) {
     if (product_id) {
       for (let fieldName of cookieFields) {
         cookies.deleteCookie(fieldName);

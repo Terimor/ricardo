@@ -22,7 +22,6 @@
     @yield('js_data')
 
     <!-- JS Prerender -->
-    @include('components.3ds_redirect')
     @yield('js_prerender')
 
     <!-- JS Deps -->

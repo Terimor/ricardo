@@ -46,7 +46,7 @@
 
 
 @section('js_prerender')
-  @include('new.pages.checkout.prerender.3ds_redirect')
+  @include('prerender.checkout.3ds_failure')
   @include('new.pages.checkout.prerender.reset_product')
   @include('new.pages.checkout.prerender.direct_linking')
   @include('new.pages.checkout.prerender.txid_cookie')

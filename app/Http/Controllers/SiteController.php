@@ -353,11 +353,28 @@ class SiteController extends Controller
         $product = $productService->resolveProduct($request, true);
         $upsells = $productService->getProductUpsells($product);
 
+        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
+            return view('prerender.checkout.txid_iframe');
+        }
+
+        if ($request->get('3ds') && !$request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_restore');
+        }
+
+        if ($request->get('3ds') === 'success' && $request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_success', compact('product', 'is_vrtl_page'));
+        }
+
+        if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
+            return redirect($request->get('redirect_url'));
+        }
+
         $setting = Setting::getValue([
             'ipqualityscore_api_hash',
             'bluesnap_seller_id',
             'support_address'
         ]);
+
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
         $setting['bluesnap_fraud_session_id'] = substr(session()->getId(), 0, 32);
