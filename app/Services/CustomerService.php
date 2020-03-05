@@ -32,7 +32,7 @@ class CustomerService
 
         // add fingerprint if not in array
         if (!empty($data['fingerprint']) && !in_array($data['fingerprint'], $model->fingerprint ?? [])) {
-            $model->fingerprint = array_merge($model->fingerprint ?? [],[$data['fingerprint']]);
+            $model->fingerprint = array_merge($model->fingerprint ?? [], [$data['fingerprint']]);
         }
 
         // add phone if not in array

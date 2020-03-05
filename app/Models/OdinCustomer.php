@@ -40,7 +40,6 @@ class OdinCustomer extends Model
 //            'city' => null, // string
 //            'street' => null, // string
 //            'street2' => null, // string
-//            'building' => null, // string
 //	        'apt' => null, // string
         ],
         'paypal_payer_id' => null, // string
