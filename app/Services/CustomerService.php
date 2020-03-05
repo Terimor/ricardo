@@ -19,6 +19,7 @@ class CustomerService
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
 
+        // if type is buyer, first name and last name should not be changed
         if ($model->type == 'buyer') {
             $model->first_name = $model->getOriginal('first_name');
             $model->last_name = $model->getOriginal('last_name');
