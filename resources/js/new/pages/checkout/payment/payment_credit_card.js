@@ -194,6 +194,10 @@ export default {
             data.contact.document_number = this.form.document_number;
           }
 
+          if (window.kount_params) {
+            data.kount_session_id = kount_params.MercSessId;
+          }
+
           let url = '/pay-by-card';
           url += '?cur=' + this.price_currency;
 

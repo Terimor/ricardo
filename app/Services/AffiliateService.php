@@ -49,6 +49,9 @@ class AffiliateService
                 $url = $postback->url;
                 // check and replace params
                 $params = !empty($order->params) ? $order->params : [];
+                // set params aff_sub and aff_sub1
+                $params = static::replaceAffSubsParams($params);
+
                 // if we have #TXID# in code check it then replace to txid
                 if (strpos($url, '#TXID#')) {
                     if (!empty($order->txid)) {
@@ -62,7 +65,6 @@ class AffiliateService
                         $url = str_replace('#OFFER_ID#', $order->offer, $url);
                     }
                 }
-
                 $url = static::replaceQueryParams($url, $params);
 
                 // replace order currency
@@ -268,7 +270,8 @@ class AffiliateService
             }
 
             // replace query
-            $code = AffiliateService::replaceQueryParams($code, $request->query());
+            $params = self::replaceAffSubsParams($request->query());
+            $code = AffiliateService::replaceQueryParams($code, $params);
 
             // replace country
             $code = str_replace('#COUNTRY#', $countryCode, $code);
@@ -466,5 +469,20 @@ class AffiliateService
         }
 
         return $valid;
+    }
+
+    /**
+     * Replace params aff_subX logic
+     * @param array $params
+     * @return array
+     */
+    public static function replaceAffSubsParams(array $params): array
+    {
+        if (!empty($params['aff_sub1']) && empty($params['aff_sub'])) {
+            $params['aff_sub'] = $params['aff_sub1'];
+        } elseif (empty($params['aff_sub1']) && !empty($params['aff_sub'])) {
+            $params['aff_sub1'] = $params['aff_sub'];
+        }
+        return $params;
     }
 }

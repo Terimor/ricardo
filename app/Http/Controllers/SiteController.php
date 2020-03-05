@@ -371,13 +371,11 @@ class SiteController extends Controller
 
         $setting = Setting::getValue([
             'ipqualityscore_api_hash',
-            'bluesnap_seller_id',
             'support_address'
         ]);
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
-        $setting['bluesnap_fraud_session_id'] = substr(session()->getId(), 0, 32);
 
         $countries =  \Utils::getShippingCountries(true, $product->is_europe_only, $product->countries);
 
