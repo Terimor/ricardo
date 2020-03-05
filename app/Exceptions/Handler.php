@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Monolog\Handler\TelegramBotHandler;
+use Monolog\Logger;
 
 class Handler extends ExceptionHandler
 {
@@ -46,6 +48,10 @@ class Handler extends ExceptionHandler
         if (\App::environment() === 'production' && app()->bound('sentry') && $this->shouldReport($exception)) {
             //log to sentry in production only
             app('sentry')->captureException($exception);
+            // create a log Telegram
+            $log = new Logger('Odin');
+            $log->pushHandler(new TelegramBotHandler('896776756:AAFUu5a9lbMizty2IXKyfG7bMy988Vm0NmU', '-1001271143925'));
+            $log->error($exception);
         } else {
             parent::report($exception);
         }

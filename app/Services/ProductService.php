@@ -295,7 +295,7 @@ class ProductService
             ];
         }
         if (!$skus) {
-            logger()->error(str_repeat('*', 30).' ZeroSkus', ['product' => $product ?? null, 'url' => url()->full() ?? null]);
+            abort(404, 'Product not available');
         }
         $lp->skus = $skus;
 
