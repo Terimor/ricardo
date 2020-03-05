@@ -46,7 +46,7 @@ class CustomerService
         }
 		// add language code
 		if (!$model->language) {
-            $model->language = substr(app()->getLocale(), 0, 2);
+            $model->language = app()->getLocale();
         }
 
         // addresses
