@@ -426,7 +426,11 @@ class CurrencyService
      * @return float
      */
     public static function getDiscountPercent(float $priceOld, float $priceNow): float {
-		$percent = round(($priceOld - $priceNow) / $priceOld * 100);
+        if ($priceOld) {
+            $percent = round(($priceOld - $priceNow) / $priceOld * 100);
+        } else {
+            $percent = 0;
+        }
 		return $percent;
     }
 
