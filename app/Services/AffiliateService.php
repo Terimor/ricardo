@@ -270,7 +270,8 @@ class AffiliateService
             }
 
             // replace query
-            $code = AffiliateService::replaceQueryParams($code, $request->query());
+            $params = self::replaceAffSubsParams($request->query());
+            $code = AffiliateService::replaceQueryParams($code, $params);
 
             // replace country
             $code = str_replace('#COUNTRY#', $countryCode, $code);
