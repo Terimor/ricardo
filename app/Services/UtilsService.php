@@ -1067,21 +1067,11 @@ class UtilsService
     }
 
     /**
-     * return Aftership Link
-     * @param  string  $number
-     * @return string
-     */
-    public static function generateAftershipTrackingLink(string $number) {
-        return  "http://sprtdls.aftership.com/{$number}";
-    }
-
-    /**
      * Generates tracking link
-     * @param string|array $number
+     * @param string $number
      * @param string $slug
-     * @param bool $as_array
      * @param bool $use_default_template
-     * @return string
+     * @return string|null
      */
     public static function generateTrackingLink($number, $slug, bool $use_default_template = false) {
         $default_template = 'https://track.aftership.com/#SLUG#/#NUMBER#';
