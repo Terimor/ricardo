@@ -30,6 +30,7 @@ class OdinCustomer extends Model
         'last_name' => null, // * string
         'ip' => [], // array of strings
         'phones' => [], // array of strings
+        'fingerprint' => [], // array of strings
 		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
@@ -83,15 +84,11 @@ class OdinCustomer extends Model
             if (!empty($data['_id'])) {
                 // skip unique for email
                 $data['email'] .= $data['_id'];
-                if(isset($data['fingerprint']) && is_string($data['fingerprint'])) {
-                    $data['fingerprint'] .= $data['_id'];
-                }
             }
         }
 
         return Validator::make($data, [
             'email'     => 'required|email|unique:odin_customer',
-            'fingerprint'     => 'unique:odin_customer',
             'first_name'    => 'required',
             'last_name'    => 'required',
         ]);

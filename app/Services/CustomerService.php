@@ -19,7 +19,7 @@ class CustomerService
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
 
-        if($model->type == 'buyer') {
+        if ($model->type == 'buyer') {
             $model->first_name = $model->getOriginal('first_name');
             $model->last_name = $model->getOriginal('last_name');
         }
@@ -28,6 +28,11 @@ class CustomerService
         $ip = !empty($data['ip']) ? $data['ip'] : request()->ip();
         if (!in_array($ip, $model->ip)) {
             $model->ip = array_merge($model->ip, [$ip]);
+        }
+
+        // add fingerprint if not in array
+        if (!empty($data['fingerprint']) && !in_array($data['fingerprint'], $model->fingerprint ?? [])) {
+            $model->fingerprint = array_merge($model->fingerprint ?? [],[$data['fingerprint']]);
         }
 
         // add phone if not in array
