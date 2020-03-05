@@ -236,6 +236,10 @@ export function sendCheckoutRequest(data) {
 
   data.page_checkout = location.href;
 
+  if (window.kount_params) {
+    data.kount_session_id = kount_params.MercSessId;
+  }
+
   return Promise.resolve()
     .then(() => {
       if (data.bs_3ds_pending) {
