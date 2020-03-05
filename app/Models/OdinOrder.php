@@ -280,8 +280,13 @@ class OdinOrder extends OdinModel
      */
     public static function getByEmailOrTrackingNumber(string $search): ?Collection
     {
-        return OdinOrder::query()->where('customer_email',mb_strtolower($search))
-            ->orWhere('trackings','elemMatch',['number' => mb_strtoupper($search)])->get();
+        $query = self::query();
+        if (strpos($search, '@') === false) {
+            $query->Where('trackings','elemMatch',['number' => mb_strtoupper($search)]);
+        } else {
+            $query->where('customer_email',mb_strtolower($search));
+        };
+        return $query->get();
     }
 
     /**
