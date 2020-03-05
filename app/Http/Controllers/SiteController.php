@@ -169,11 +169,11 @@ class SiteController extends Controller
                 foreach ($odinOrders as $order) {
                     foreach ($order->trackings ?? [] as $tracking) {
                         $products = array_map(function ($product) {
-                            return $product['quantity'].' x '.OdinProduct::getBySku($product['sku_code'])->product_name;
-                        },$order->products);
+                            return $product['quantity'].' × '.OdinProduct::getBySku($product['sku_code'])->product_name;
+                        }, $order->products);
                         $info[] = [
-                            'order_number'=>$order->number,
-                            'products'=> implode('<br>', $products),
+                            'order_number' => $order->number,
+                            'products' => implode('<br>', $products),
                             'link' => UtilsService::generateAftershipTrackingLink($tracking['number']),
                         ];
                     }
@@ -188,7 +188,7 @@ class SiteController extends Controller
             $info = 'The search is required';
         }
 
-        return response()->view('components.support.order_info',compact('info'));
+        return response()->view('components.support.order_info', compact('info'));
     }
     /**
      * Returns page
