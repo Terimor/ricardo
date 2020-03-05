@@ -50,8 +50,7 @@ class Handler extends ExceptionHandler
             app('sentry')->captureException($exception);
             // create a log Telegram
             $log = new Logger('Odin');
-            $log->pushHandler(new TelegramBotHandler(env('TELEGRAM_BOT_TOKEN'),env('TELEGRAM_CHAT_ID')));
-
+            $log->pushHandler(new TelegramBotHandler(env('TELEGRAM_BOT_TOKEN'), env('TELEGRAM_CHAT_ID')));
             $log->error($exception);
         } else {
             parent::report($exception);
