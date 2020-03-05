@@ -28,7 +28,7 @@ class CustomerService
         $data['ip'] = !empty($data['ip']) ? $data['ip'] : request()->ip();
 
         // prepare array fields
-        $array_fields = ['fingerprint' => 'fingerprint','phone' => 'phones','doc_id' => 'doc_ids','ip'=>'ip'];
+        $array_fields = ['fingerprint' => 'fingerprint', 'phone' => 'phones', 'doc_id' => 'doc_ids', 'ip'=>'ip'];
         foreach ($array_fields as $key => $value) {
             if (!empty($data[$key]) && !in_array($data[$key], $model->{$value} ?? [])) {
                 $model->{$value} = array_merge($model->{$value} ?? [], [$data[$key]]);
