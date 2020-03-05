@@ -163,7 +163,7 @@ class SiteController extends Controller
 
         if (isset($request['search']) && $request['search']) {
             $search = trim($request['search']);
-            $odinOrders =  OdinOrder::getByEmailOrTrackingNumber($search);
+            $odinOrders =  OdinOrder::getByEmailOrTrackingNumber($search,['number', 'trackings.number', 'trackings.aftership_slug', 'products.sku_code', 'products.quantity']);
             $info = [];
             if ($odinOrders->isNotEmpty()) {
                 foreach ($odinOrders as $order) {

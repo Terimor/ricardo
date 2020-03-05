@@ -275,10 +275,11 @@ class OdinOrder extends OdinModel
 
     /**
      * Returns OdinOrder by Email Or TrackingNumber
-     * @param  string    $search
+     * @param  string $search
+     * @param  array $select
      * @return Collection|null
      */
-    public static function getByEmailOrTrackingNumber(string $search): ?Collection
+    public static function getByEmailOrTrackingNumber(string $search, array $select = []): ?Collection
     {
         $query = self::query();
         if (strpos($search, '@') === false) {
@@ -286,7 +287,10 @@ class OdinOrder extends OdinModel
         } else {
             $query->where('customer_email', mb_strtolower($search));
         }
-        return $query->select('number', 'trackings.number', 'trackings.aftership_slug', 'products.sku_code', 'products.quantity')->get();
+        if ($select) {
+            $query->select($select);
+        }
+        return $query->get();
     }
 
     /**
