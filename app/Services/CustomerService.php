@@ -29,12 +29,7 @@ class CustomerService
         $data['ip'] = !empty($data['ip']) ? $data['ip'] : request()->ip();
 
         // prepare array fields
-        $array_fields = ['fingerprint' => 'fingerprint', 'phone' => 'phones', 'doc_id' => 'doc_ids', 'ip'=>'ip'];
-        foreach ($array_fields as $key => $value) {
-            if (!empty($data[$key]) && !in_array($data[$key], $model->{$value} ?? [])) {
-                $model->{$value} = array_merge($model->{$value} ?? [], [$data[$key]]);
-            }
-        }
+        $this->setArrayFields($data, $model);
 
 		// add language code
 		if (!$model->language) {
@@ -88,5 +83,36 @@ class CustomerService
         }
 
         return $model_addresses;
+    }
+
+    /**
+     * Prepare set array fields in model
+     * @param  array  $data
+     * @param $model
+     * @return bool
+     */
+    private function setArrayFields(array $data, $model) :bool {
+
+        // add fingerprint if not in array
+        if (!empty($data['fingerprint']) && !in_array($data['fingerprint'], $model->fingerprint ?? [])) {
+            $model->fingerprint = array_merge($model->fingerprint ?? [], [$data['fingerprint']]);
+        }
+
+        // add phone if not in array
+        if (!empty($data['phone']) && !in_array($data['phone'], $model->phones ?? [])) {
+            $model->phones = array_merge($model->phones ?? [], [$data['phone']]);
+        }
+
+        // doc_ids
+        if (!empty($data['doc_id']) && !in_array($data['doc_id'], $model->doc_ids ?? [])) {
+            $model->doc_ids = array_merge($model->doc_ids ?? [], [$data['doc_id']]);
+        }
+
+        // add ip if not in array
+        if (!empty($data['ip']) && !in_array($data['ip'], $model->ip ?? [])) {
+            $model->ip = array_merge($model->ip ?? [], [$data['ip']]);
+        }
+
+        return true;
     }
 }
