@@ -74,6 +74,8 @@ class CustomerService
             'city' => !empty($data['city']) ? trim($data['city']) : '',
             'street' => !empty($data['street']) ? trim($data['street']) : '',
             'street2' => !empty($data['street2']) ? trim($data['street2']) : '',
+            'apt' => !empty($data['apt']) ? trim($data['apt']) : '',
+            'building' => !empty($data['building']) ? trim($data['building']) : '',
         ];
 
         $addressJson = json_encode($address);
