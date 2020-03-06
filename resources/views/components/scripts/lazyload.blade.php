@@ -7,9 +7,11 @@
 
   <script type="text/javascript">
     js_deps.wait(['lazyload'], function() {
-      window.lazyLoadInstance = new LazyLoad({
-        elements_selector: '.lazy',
-      });
+      if (window.LazyLoad) {
+        window.lazyLoadInstance = new LazyLoad({
+          elements_selector: '.lazy',
+        });
+      }
     });
   </script>
 
