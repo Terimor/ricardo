@@ -281,7 +281,7 @@
           lname: null,
           email: null,
           phone: null,
-          variant: !js_data.product.is_choice_required
+          variant: js_data.product.skus.length === 1 || !js_data.product.is_choice_required
             ? js_data.product.skus[0] && js_data.product.skus[0].code || null
             : null,
           country: js_data.countries.indexOf(js_data.country_code) !== -1
