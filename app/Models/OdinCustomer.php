@@ -25,20 +25,22 @@ class OdinCustomer extends Model
      */
     protected $attributes = [
         'email' => null, // * unique string,
+        'type' => 'lead', // * string,
         'first_name' => null, // * string
         'last_name' => null, // * string
         'ip' => [], // array of strings
         'phones' => [], // array of strings
+        'fingerprint' => [], // array of strings
 		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
-            //'country' => null, // enum string
-            //'zip' => null, // string
-            //'state' => null, // string
-            //'city' => null, // string
-            //'street' => null, // string
-            //'street2' => null, // string
-	    //'apt' => null, // string
+//            'country' => null, // enum string
+//            'zip' => null, // string
+//            'state' => null, // string
+//            'city' => null, // string
+//            'street' => null, // string
+//            'street2' => null, // string
+//	        'apt' => null, // string
         ],
         'paypal_payer_id' => null, // string
 		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),

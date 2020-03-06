@@ -19,39 +19,30 @@ class CustomerService
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
 
+        // if type is buyer, first name and last name should not be changed
+        if ($model->type == 'buyer') {
+            $model->first_name = $model->getOriginal('first_name');
+            $model->last_name = $model->getOriginal('last_name');
+        }
+
         // add ip if not in array
-        $ip = !empty($data['ip']) ? $data['ip'] : request()->ip();
-        if (!in_array($ip, $model->ip)) {
-            $model->ip = array_merge($model->ip, [$ip]);
+        $data['ip'] = !empty($data['ip']) ? $data['ip'] : request()->ip();
+
+        // prepare array fields
+        $array_fields = ['fingerprint' => 'fingerprint', 'phone' => 'phones', 'doc_id' => 'doc_ids', 'ip'=>'ip'];
+        foreach ($array_fields as $key => $value) {
+            if (!empty($data[$key]) && !in_array($data[$key], $model->{$value} ?? [])) {
+                $model->{$value} = array_merge($model->{$value} ?? [], [$data[$key]]);
+            }
         }
 
-        // add phone if not in array
-        if (!empty($data['phone']) && !in_array($data['phone'], $model->phones)) {
-            $model->phones = array_merge($model->phones, [$data['phone']]);
-        }
-
-		// doc_ids
-		if (!empty($data['doc_id']) && !in_array($data['doc_id'], $model->doc_ids)) {
-            $model->doc_ids = array_merge($model->doc_ids, [$data['doc_id']]);
+		// add language code
+		if (!$model->language) {
+            $model->language = app()->getLocale();
         }
 
         // addresses
-        $address = [
-            'country' => !empty($data['country']) ? trim($data['country']) : '',
-            'zip' => !empty($data['zip']) ? trim($data['zip']) : '',
-            'state' => !empty($data['state']) ? trim($data['state']) : '',
-            'city' => !empty($data['city']) ? trim($data['city']) : '',
-            'street' => !empty($data['street']) ? trim($data['street']) : '',
-            'street2' => !empty($data['street2']) ? trim($data['street2']) : '',
-        ];
-
-        $addressJson = json_encode($address);
-        $modelAddressesJson = json_encode($model->addresses);
-
-        // add address if not in array
-        if (!strstr(' '.$modelAddressesJson, $addressJson)) {
-            $model->addresses = array_merge($model->addresses, [$address]);
-        }
+        $model->addresses = $this->getUpdatedAddresses($data, $model);
 
         $validator = $model->validate();
 
@@ -67,5 +58,35 @@ class CustomerService
                 'customer' => $returnModel ? $model : $model->attributesToArray()
              ];
         }
+    }
+
+    /**
+     * Prepare addresses field
+     * @param  array  $data
+     * @param  OdinCustomer  $model
+     * @return array
+     */
+    private function getUpdatedAddresses(array $data, $model) :array {
+        $address = [
+            'country' => !empty($data['country']) ? trim($data['country']) : '',
+            'zip' => !empty($data['zip']) ? trim($data['zip']) : '',
+            'state' => !empty($data['state']) ? trim($data['state']) : '',
+            'city' => !empty($data['city']) ? trim($data['city']) : '',
+            'street' => !empty($data['street']) ? trim($data['street']) : '',
+            'street2' => !empty($data['street2']) ? trim($data['street2']) : '',
+            'apt' => !empty($data['apt']) ? trim($data['apt']) : '',
+            'building' => !empty($data['building']) ? trim($data['building']) : '',
+        ];
+
+        $addressJson = json_encode($address);
+        $modelAddressesJson = json_encode($model->addresses);
+        // add address if not in array
+        if (!strstr(' '.$modelAddressesJson, $addressJson)) {
+            $model_addresses = array_merge($model->addresses, [$address]);
+        } else {
+            $model_addresses = $model->addresses;
+        }
+
+        return $model_addresses;
     }
 }
