@@ -7,12 +7,12 @@ use Jenssegers\Mongodb\Eloquent\Model;
 class RequestQueue extends Model
 {
     protected $collection = 'request_queue';
-    
+
     protected $dates = ['created_at', 'request_at'];
-    
+
     const UPDATED_AT = null;
-    
-    public $timestamps = true;    
+
+    public $timestamps = true;
     /**
      * The attributes that are mass assignable.
      *
@@ -24,9 +24,9 @@ class RequestQueue extends Model
 
     const STATUS_NEW = 'new';
     const TYPE_AFFILIATE_POSTBACK = 'affiliate_postback';
-    const URL_AFFILIATE_POSTBACK = 'https://track.h8m8.com/aff_lsr?transaction_id=';
+    const URL_AFFILIATE_POSTBACK = 'https://check.12buyme34.com/aff_lsr?transaction_id=';
     const DEFAULT_DELAY = 60;
-    
+
     /**
      * Attributes with default values
      *
@@ -35,9 +35,9 @@ class RequestQueue extends Model
     protected $attributes = [
         'type' => null,
         'status' => self::STATUS_NEW,
-        'url' => null,        
+        'url' => null,
     ];
-    
+
     /**
      * Save txidrow
      * @param type $txid
@@ -53,9 +53,9 @@ class RequestQueue extends Model
             $rq->save();
         }
     }
-    
+
     /**
-     * 
+     *
      * @param string $url
      * @param int $delay
      */
