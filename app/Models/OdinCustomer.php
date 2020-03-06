@@ -19,13 +19,15 @@ class OdinCustomer extends Model
 
     protected $guarded = ['addresses', 'ip', 'phones'];
 
+    const TYPE_LEAD = 'lead';
+
     /**
      *
      * @var type
      */
     protected $attributes = [
         'email' => null, // * unique string,
-        'type' => 'lead', // * string,
+        'type' => self::TYPE_LEAD, // * string,
         'first_name' => null, // * string
         'last_name' => null, // * string
         'ip' => [], // array of strings
