@@ -20,6 +20,7 @@ class OdinCustomer extends Model
     protected $guarded = ['addresses', 'ip', 'phones'];
 
     const TYPE_LEAD = 'lead';
+    const TYPE_BUYER = 'buyer';
 
     /**
      *
