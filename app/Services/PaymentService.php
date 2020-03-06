@@ -386,6 +386,7 @@ class PaymentService
         $is_warranty = (bool)$req->input('product.is_warranty_checked', false);
         $page_checkout = $req->input('page_checkout', $req->header('Referer'));
         $user_agent = utf8_encode($req->header('User-Agent'));
+        $kount_session_id = $req->input('kount_session_id', null);
         $ipqs = $req->input('ipqs', null);
         $card = $req->get('card');
         $fingerprint = $req->get('f', null);
@@ -591,6 +592,7 @@ class PaymentService
                         'currency' => $order->currency,
                         'order_id' => $order->getIdAttribute(),
                         'billing_descriptor' => $order->billing_descriptor,
+                        'kount_session_id' => $kount_session_id,
                         '3ds'  => self::checkIs3dsNeeded(
                             $method,
                             $contact['country'],
@@ -724,9 +726,8 @@ class PaymentService
             return $result;
         }
 
-        $api = PaymentApiService::getById($order_txn['payment_api_id']);
-        $bluesnap = new BluesnapService($api);
-        $payment = $bluesnap->payByVaultedShopperId(
+        $hndl = new BluesnapService(PaymentApiService::getById($order_txn['payment_api_id']));
+        $payment = $hndl->payByVaultedShopperId(
             $order_txn['payer_id'],
             [
                 '3ds_ref'   => $ref,
@@ -1089,18 +1090,19 @@ class PaymentService
                 $result['payment'] = $bluesnap->payByCard(
                     $card,
                     [
-                        'street'            => $order->shipping_street,
-                        'city'              => $order->shipping_city,
-                        'country'           => $order->shipping_country,
-                        'state'             => $order->shipping_state,
-                        'building'          => $order->shipping_building,
-                        'complement'        => $order->shipping_apt,
-                        'zip'               => $order->shipping_zip,
-                        'email'             => $order->customer_email,
-                        'first_name'        => $order->customer_first_name,
-                        'last_name'         => $order->customer_last_name,
-                        'phone'             => $order->customer_phone,
-                        'document_number'   => $order->customer_doc_id
+                        'street'     => $order->shipping_street,
+                        'city'       => $order->shipping_city,
+                        'country'    => $order->shipping_country,
+                        'state'      => $order->shipping_state,
+                        'building'   => $order->shipping_building,
+                        'complement' => $order->shipping_apt,
+                        'zip'        => $order->shipping_zip,
+                        'email'      => $order->customer_email,
+                        'first_name' => $order->customer_first_name,
+                        'last_name'  => $order->customer_last_name,
+                        'phone'      => $order->customer_phone,
+                        'ip'         => $order->ip,
+                        'document_number' => $order->customer_doc_id
                     ],
                     [
                         '3ds' => self::checkIs3dsNeeded(
