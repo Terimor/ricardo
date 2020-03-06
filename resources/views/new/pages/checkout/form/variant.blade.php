@@ -1,4 +1,4 @@
-@if (count($product->skus) > 0 && (!Request::get('variant') || Request::get('variant') === '0'))
+@if (count($product->skus) > 1 && (!Request::get('variant') || Request::get('variant') === '0'))
 
   <div
     class="variant-field scroll-when-error"

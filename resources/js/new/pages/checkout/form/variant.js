@@ -51,7 +51,7 @@ export default {
   methods: {
 
     variant_init() {
-      this.form.variant = !js_data.product.is_choice_required
+      this.form.variant = js_data.product.skus.length === 1 || !js_data.product.is_choice_required
         ? js_data.product.skus[0] && js_data.product.skus[0].code || null
         : null;
     },
