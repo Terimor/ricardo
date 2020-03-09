@@ -182,9 +182,10 @@ class OdinProduct extends Model
     }
 
     /**
-     * Getter prices
-     * Formation process prices array with local values depend on currecy and countries
-     * @param type $value
+     * Getter prices attribute
+     * Formation process prices array with local values depend on currency and countries
+     * @param array $value
+     * @return array
      */
     public function getPricesAttribute($value)
     {
@@ -220,41 +221,13 @@ class OdinProduct extends Model
 
                     $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
                     $value[$key][$quantity]['old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $oldPriceValue, $currency);
-
                     $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
 
-                    if (!empty($this->warranty_percent)) {
-                      $warranty_price = floor(($this->warranty_percent / 100) * $price['price'] * 100)/100;
-                      $value[$key][$quantity]['warranty_price'] = $warranty_price;
-                      $value[$key][$quantity]['warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $warranty_price, $currency);
-                      $installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
-                      $installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
-                      $value[$key][$quantity]['installments3_warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_warranty_price, $currency);
-                      $value[$key][$quantity]['installments6_warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_warranty_price, $currency);
-                    } else {
-                      $value[$key][$quantity]['warranty_price'] = 0;
-                      $value[$key][$quantity]['warranty_price_text'] = null;
-                      $value[$key][$quantity]['installments3_warranty_price_text'] = null;
-                      $value[$key][$quantity]['installments6_warranty_price_text'] = null;
-                    }
+                    // set additional prices (warranty and installments)
+                    $value[$key] = $this->calculateAdditionalPrices($value[$key], $price['price'], $oldPriceValue, $quantity, $numberFormatter, $currency);
+
                     $value[$key][$quantity]['total_amount'] = round($price['price'] + $value[$key][$quantity]['warranty_price'], 2);
                     $value[$key][$quantity]['total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key][$quantity]['total_amount'], $currency);
-
-                    //installments
-                    $installments3_value = CurrencyService::getInstallmentPrice($price['price'], 3);
-                    $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
-                    $installments6_value = CurrencyService::getInstallmentPrice($price['price'], 6);
-                    $installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
-
-                    $value[$key][$quantity]['installments3_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_value, $currency);
-                    $value[$key][$quantity]['installments3_unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_value / $quantity, $currency);
-                    $value[$key][$quantity]['installments3_old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_old_value, $currency);
-                    $value[$key][$quantity]['installments6_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value, $currency);
-                    $value[$key][$quantity]['installments6_unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value / $quantity, $currency);
-                    $value[$key][$quantity]['installments6_old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_old_value, $currency);
-
-                    $value[$key][$quantity]['installments3_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments3_value + ($installments3_warranty_price ?? 0)), $currency);
-                    $value[$key][$quantity]['installments6_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments6_value + ($installments6_warranty_price ?? 0)), $currency);
 
                   } else {
                     logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
@@ -275,6 +248,52 @@ class OdinProduct extends Model
         }
 
         return !empty($value[$returnedKey]) ? $value[$returnedKey] : $value;
+    }
+
+    /**
+     * Calculate and set additional prices (warranty and installments)
+     * @param array $value
+     * @param float $price
+     * @param float $oldPriceValue
+     * @param int $quantity
+     * @param $numberFormatter
+     * @param $currency
+     * @return array
+     */
+    public function calculateAdditionalPrices(array $value, float $price, float $oldPriceValue, int $quantity, $numberFormatter, $currency)
+    {
+        if (!empty($this->warranty_percent)) {
+            $warranty_price = floor(($this->warranty_percent / 100) * $price * 100)/100;
+            $value[$quantity]['warranty_price'] = $warranty_price;
+            $value[$quantity]['warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $warranty_price, $currency);
+            $installments3_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 3);
+            $installments6_warranty_price = CurrencyService::getInstallmentPrice($warranty_price, 6);
+            $value[$quantity]['installments3_warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_warranty_price, $currency);
+            $value[$quantity]['installments6_warranty_price_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_warranty_price, $currency);
+        } else {
+            $value[$quantity]['warranty_price'] = 0;
+            $value[$quantity]['warranty_price_text'] = null;
+            $value[$quantity]['installments3_warranty_price_text'] = null;
+            $value[$quantity]['installments6_warranty_price_text'] = null;
+        }
+
+        //installments
+        $installments3_value = CurrencyService::getInstallmentPrice($price, 3);
+        $installments3_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 3);
+        $installments6_value = CurrencyService::getInstallmentPrice($price, 6);
+        $installments6_old_value = CurrencyService::getInstallmentPrice($oldPriceValue, 6);
+
+        $value[$quantity]['installments3_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_value, $currency);
+        $value[$quantity]['installments3_unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_value / $quantity, $currency);
+        $value[$quantity]['installments3_old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments3_old_value, $currency);
+        $value[$quantity]['installments6_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value, $currency);
+        $value[$quantity]['installments6_unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_value / $quantity, $currency);
+        $value[$quantity]['installments6_old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $installments6_old_value, $currency);
+
+        $value[$quantity]['installments3_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments3_value + ($installments3_warranty_price ?? 0)), $currency);
+        $value[$quantity]['installments6_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments6_value + ($installments6_warranty_price ?? 0)), $currency);
+
+        return $value;
     }
 
     /**
