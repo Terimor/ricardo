@@ -32,13 +32,13 @@ class OdinProduct extends Model
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'is_choice_required', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
         'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'reviews', 'affiliates', 'currency',
-        'image_ids', 'splash_description', 'reduce_percent', 'is_europe_only', 'is_catch_all_hidden', 'countries', 'reducings'
+        'image_ids', 'splash_description', 'reduce_percent', 'is_europe_only', 'is_catch_all_hidden', 'countries', 'reducings', 'price_correction_percents'
     ];
 
     protected $hidden = [
         '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at',
         'image_id', 'logo_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only',
-        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent'
+        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent', 'price_correction_percents'
     ];
 
     /**
@@ -192,6 +192,8 @@ class OdinProduct extends Model
         } else {
             $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
         }
+        // country depends on IP
+        $userCountry = \Utils::getLocationCountryCode();
         $returnedKey = 0; $priceSetFound = false;
 
       //iteration by price sets array
@@ -203,7 +205,7 @@ class OdinProduct extends Model
                 if (!empty($priceSet[$quantity]['value'])) {
                     // val for calculate upsell
                     $value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
-                    $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency);
+                    $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency, $userCountry, $this->price_correction_percents ?? []);
                     $value[$key][$quantity]['value'] = $price['price'];
                     $value[$key][$quantity]['value_text'] = $price['price_text'];
 
@@ -449,6 +451,8 @@ class OdinProduct extends Model
         } else {
             $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
         }
+        // country depends on IP
+        $userCountry = \Utils::getLocationCountryCode();
 
         // if null set quantity 1
         if (!$maxQuantity) {
@@ -467,7 +471,7 @@ class OdinProduct extends Model
 
         if ($fixedPrice) {
             // quantity loop
-            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency);
+            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency, $userCountry, $this->price_correction_percents ?? []);
             // calculate discount percent
             $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : 0;
             $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);
@@ -481,7 +485,7 @@ class OdinProduct extends Model
                 $discountPrice = self::MIN_PRICE;
               }
             }
-            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($discountPrice, $currency);
+            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($discountPrice, $currency, $this->price_correction_percents ?? []);
         }
 
         if (empty($discountLocalPrice['price']) || $discountLocalPrice['price'] <= 0) {

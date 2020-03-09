@@ -183,11 +183,11 @@ class CurrencyService
      * Get local price from USD
      * @param float $price
      * @param string $currency
-     * @param string $countryCode
-     * @param type $ip
+     * @param string|null $userCountry
+     * @param array|null $correctionCountries - array format 'country_code' => percent
      * @return float
      */
-    public static function getLocalPriceFromUsd(float $price, Currency $currency) : array
+    public static function getLocalPriceFromUsd(float $price, Currency $currency, ?string $userCountry = null, ?array $correctionCountries = []) : array
     {
         if (!$currency) {
             $currency = self::getCurrency();
@@ -216,6 +216,11 @@ class CurrencyService
         }
         $exchangedPrice = $price * $rate;
         $exchangedPrice = round($exchangedPrice, 2);
+
+        // price correction depends on countries
+        if ($userCountry && $correctionCountries) {
+            $exchangedPrice = static::correctPriceValue($exchangedPrice, $userCountry, $correctionCountries);
+        }
 
         if (in_array($currencyCode, static::$upToNext500)) {
             $exchangedPrice = ceil($exchangedPrice);
@@ -626,6 +631,21 @@ class CurrencyService
         }
 
         return $priceText;
+    }
+
+    /**
+     * Correct price value using prices correction percents array
+     * @param float $price
+     * @param string $country
+     * @param array|null $correctionCountries
+     * @return float
+     */
+    public static function correctPriceValue(float $price, string $country = null, ?array $correctionCountries = [])
+    {
+        if ($country && $correctionCountries && !empty($correctionCountries[$country])) {
+            $price = $price + $price * $correctionCountries[$country] / 100;
+        }
+        return $price;
     }
 
 }
