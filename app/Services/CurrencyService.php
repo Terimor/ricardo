@@ -215,12 +215,11 @@ class CurrencyService
             }
         }
         $exchangedPrice = $price * $rate;
-        $exchangedPrice = round($exchangedPrice, 2);
-
         // price correction depends on countries
         if ($userCountry && $correctionCountries) {
             $exchangedPrice = static::correctPriceValue($exchangedPrice, $userCountry, $correctionCountries);
         }
+        $exchangedPrice = round($exchangedPrice, 2);
 
         if (in_array($currencyCode, static::$upToNext500)) {
             $exchangedPrice = ceil($exchangedPrice);
