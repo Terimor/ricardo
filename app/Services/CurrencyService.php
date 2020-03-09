@@ -635,11 +635,11 @@ class CurrencyService
     /**
      * Correct price value using prices correction percents array
      * @param float $price
-     * @param string $country
+     * @param string|null $country
      * @param array|null $correctionCountries
      * @return float
      */
-    public static function correctPriceValue(float $price, string $country = null, ?array $correctionCountries = [])
+    public static function correctPriceValue(float $price, ?string $country = null, ?array $correctionCountries = [])
     {
         if ($country && $correctionCountries && !empty($correctionCountries[$country])) {
             $price = $price + $price * $correctionCountries[$country] / 100;
