@@ -471,7 +471,7 @@ class OdinProduct extends Model
 
         if ($fixedPrice) {
             // quantity loop
-            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency, $userCountry, $this->price_correction_percents ?? []);
+            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($fixedPrice, $currency, $userCountry,$this->price_correction_percents ?? []);
             // calculate discount percent
             $priceOld = !empty($this->prices[1]['value']) ? $this->prices[1]['value'] : 0;
             $discountPercent = CurrencyService::getDiscountPercent($priceOld, $discountLocalPrice['price']);
@@ -485,7 +485,7 @@ class OdinProduct extends Model
                 $discountPrice = self::MIN_PRICE;
               }
             }
-            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($discountPrice, $currency, $this->price_correction_percents ?? []);
+            $discountLocalPrice = CurrencyService::getLocalPriceFromUsd($discountPrice, $currency, $userCountry,$this->price_correction_percents ?? []);
         }
 
         if (empty($discountLocalPrice['price']) || $discountLocalPrice['price'] <= 0) {
