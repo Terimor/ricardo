@@ -196,7 +196,7 @@ class OdinProduct extends Model
         $userCountry = \Utils::getLocationCountryCode();
         $returnedKey = 0; $priceSetFound = false;
 
-      //iteration by price sets array
+        //iteration by price sets array
         foreach ($value as $key => $priceSet) {
             $oneItemPrice = 0;
 
