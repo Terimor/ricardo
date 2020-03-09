@@ -324,9 +324,9 @@ class CurrencyService
     /**
      * Function for main rounding by rules
      * @param int $digits
-     * @param type $exchangedPrice
+     * @param float $exchangedPrice
      */
-    private static function mainRounding(int $digits, float $exchangedPrice):int
+    private static function mainRounding(int $digits, float $exchangedPrice): int
     {
         $exchangedPrice = (string) $exchangedPrice;
 
