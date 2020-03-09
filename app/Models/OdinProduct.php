@@ -183,6 +183,7 @@ class OdinProduct extends Model
 
     /**
      * Getter prices
+     * Formation process prices array with local values depend on currecy and countries
      * @param type $value
      */
     public function getPricesAttribute($value)
@@ -192,6 +193,7 @@ class OdinProduct extends Model
         } else {
             $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
         }
+        $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
         // country depends on IP
         $userCountry = \Utils::getLocationCountryCode();
         $returnedKey = 0; $priceSetFound = false;
@@ -213,8 +215,6 @@ class OdinProduct extends Model
                         //save one item price
                         $oneItemPrice = $price['price'];
                     }
-
-                    $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
 
                     $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / $quantity), $currency);
 
@@ -255,7 +255,6 @@ class OdinProduct extends Model
 
                     $value[$key][$quantity]['installments3_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments3_value + ($installments3_warranty_price ?? 0)), $currency);
                     $value[$key][$quantity]['installments6_total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, ($installments6_value + ($installments6_warranty_price ?? 0)), $currency);
-
 
                   } else {
                     logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
