@@ -74,23 +74,23 @@ class BluesnapService
 
     /**
      * Returns CardHolder object
-     * @param  array $contact
+     * @param  array $contacts
      * @return array
      */
-    public static function createCardHolderObj(array $contact): array
+    public static function createCardHolderObj(array $contacts): array
     {
         return array_filter([
-            'address'   => $contact['street'] . (!empty($contact['building']) ? ", {$contact['building']}" : ''),
-            'address2'  => $contact['complement'] ?? null,
-            'city'      => $contact['city'],
-            'country'   => $contact['country'],
-            'email'     => $contact['email'],
-            'firstName' => $contact['first_name'],
-            'lastName'  => $contact['last_name'],
-            'phone'     => is_array($contact['phone']) ? $contact['phone']['country_code'] . $contact['phone']['number'] : $contact['phone'],
-            'zip'       => $contact['zip'],
-            'state'     => $contact['state'] ?? null,
-            'personalIdentificationNumber' => $contact['document_number'] ?? null
+            'address'   => $contacts['street'] . (!empty($contacts['building']) ? ", {$contacts['building']}" : ''),
+            'address2'  => $contacts['complement'] ?? null,
+            'city'      => $contacts['city'],
+            'country'   => $contacts['country'],
+            'email'     => $contacts['email'],
+            'firstName' => $contacts['first_name'],
+            'lastName'  => $contacts['last_name'],
+            'phone'     => is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone'],
+            'zip'       => $contacts['zip'],
+            'state'     => $contacts['state'] ?? null,
+            'personalIdentificationNumber' => $contacts['document_number'] ?? null
         ]);
     }
 
@@ -134,6 +134,7 @@ class BluesnapService
      *   'currency'=>string,
      *   'amount'=>float,
      *   'billing_descriptor'=>string,
+     *   'kount_session_id'=>?string,
      *   'order_id'=>string
      * ]
      * @return array
@@ -195,17 +196,15 @@ class BluesnapService
 
         $result = [];
         try {
-            $threeDSecure = [];
+            $three_d_secure = [];
             if (!empty($details['3ds_ref'])) {
-                $threeDSecure['threeDSecure'] = [
-                    'threeDSecureReferenceId' => $details['3ds_ref']
-                ];
+                $three_d_secure['threeDSecure'] = ['threeDSecureReferenceId' => $details['3ds_ref']];
             }
 
             $res = $client->post('transactions', [
                 'json' => array_merge(
                     $source,
-                    $threeDSecure,
+                    $three_d_secure,
                     [
                         'amount'   => $details['amount'],
                         'currency' => $details['currency'],
@@ -245,7 +244,7 @@ class BluesnapService
      * Creates vaulted shopper and returns its ID
      * @param  array  $card
      * @param  array  $contacts
-     * @param  array  $details
+     * @param  array  $details ['kount_session_id'=>?string, 'currency'=>string]
      * @return array
      */
     private function createVaultedShopperId(array $card, array $contacts, array $details): array
@@ -258,10 +257,29 @@ class BluesnapService
 
         $result = ['payer_id' => null, 'status' => Txn::STATUS_FAILED];
         try {
+            $fraud_info = [];
+            if (!empty($details['kount_session_id'])) {
+                $fraud_info = [
+                    'fraudSessionId'   => $details['kount_session_id'],
+                    'shopperIpAddress' => $contacts['ip'],
+                    'shippingContactInfo' => [
+                        'address'   => $contacts['street'] . (!empty($contact['building']) ? ", {$contact['building']}" : ''),
+                        'address2'  => $contacts['complement'] ?? null,
+                        'city'      => $contacts['city'],
+                        'country'   => strtoupper($contacts['country']),
+                        'firstName' => $contacts['first_name'],
+                        'lastName'  => $contacts['last_name'],
+                        'zip'       => $contacts['zip'],
+                        'state'     => $contacts['state'] ?? null
+                    ]
+                ];
+            }
+
             $res = $client->post('vaulted-shoppers', [
                 'json' => array_merge(
                     self::createCardHolderObj($contacts),
                     [
+                        'transactionFraudInfo' => $fraud_info,
                         'shopperCurrency' => $details['currency'],
                         'paymentSources'  => [
                             'creditCardInfo' => [

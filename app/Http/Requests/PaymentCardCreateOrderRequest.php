@@ -48,6 +48,7 @@ class PaymentCardCreateOrderRequest extends FormRequest
             'product.qty'                   => ['required', 'integer', 'between:1,5'],
             'product.sku'                   => ['required', 'string'],
             'product.is_warranty_checked'   => ['boolean'],
+            'kount_session_id'              => ['nullable', 'string', 'between:1,32'],
             'order'                         => ['string', 'size:24'],
             'ipqs'                          => ['nullable'],
             'f'                             => ['string', 'between:32,32']
