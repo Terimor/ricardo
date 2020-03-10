@@ -566,15 +566,7 @@ class ProductService
         }
 
         // sort products by sales
-        $productsSortedIds = [];
-        foreach ($allSoldProducts as $productId => $sp) {
-            foreach ($products as $product) {
-                if ($product->_id == $productId) {
-                    $productsSortedIds[] = $product->_id;
-                    break;
-                }
-            }
-        }
+        $productsSortedIds = static::sortLocaleSoldProducts($allSoldProducts, $products, true);
         // slice sorted products depends on page
         $productsSortedIds = array_slice($productsSortedIds, $offset, $limit);
 
@@ -643,14 +635,14 @@ class ProductService
      * @param $products
      * @return array
      */
-    public static function sortLocaleSoldProducts(array $soldProducts = [], $products = null): array
+    public static function sortLocaleSoldProducts(array $soldProducts = [], $products = null, $is_return_id = false): array
     {
         $productsSorted = [];
         if ($soldProducts && $products) {
             foreach ($soldProducts as $productId => $sp) {
                 foreach ($products as $localeProduct) {
                     if ($localeProduct->id == $productId) {
-                        $productsSorted[] = $localeProduct;
+                        $productsSorted[] = $is_return_id ? $localeProduct->_id : $localeProduct;
                         break;
                     }
                 }
