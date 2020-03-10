@@ -23,6 +23,9 @@ class ProductService
 
     /**
      * @param Request $request
+     * @param bool $needImages - if true collect all images
+     * @param null $currency
+     * @param bool $isPostback
      * @return OdinProduct
      */
     public function resolveProduct(Request $request, $needImages = false, $currency = null, $isPostback = false)
@@ -189,6 +192,9 @@ class ProductService
 	 * Calculate upsells total
 	 * @param array $ulsells
 	 * @param float $total
+     * @param bool $with_extra
+     * @param null $currency_code
+     * @return array
 	 */
 	public function calculateUpsellsTotal($product, array $upsells, float $total = null, $with_extra = false, $currency_code = null) : array
 	{
@@ -389,8 +395,8 @@ class ProductService
 
     /**
      *
-     * @param type $copId
-     * @param type $country
+     * @param mixed $copId
+     * @param mixed $countryCode
      */
     public function returnPricesByData($copId, $countryCode)
     {
@@ -470,6 +476,7 @@ class ProductService
     /**
      * Prepare data for mini shop product
      * @param OdinProduct $product
+     * @param array $images
      * @return Localize
      */
     public static function getDataForMiniShop(OdinProduct $product, array $images) {
@@ -590,7 +597,7 @@ class ProductService
     }
 
     /**
-     * Returns cached sold producs
+     * Returns cached sold products
      * @return array
      */
     public static function getCachedSoldProducts(): array
