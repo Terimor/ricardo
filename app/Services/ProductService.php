@@ -632,7 +632,7 @@ class ProductService
             }
             // sort
             arsort($allSoldProducts);
-            Cache::put('DomainSoldProductsData', $allSoldProducts, 86400);
+            Cache::put('DomainSoldProductsData', $allSoldProducts, 3600);
         }
         return $allSoldProducts;
     }
