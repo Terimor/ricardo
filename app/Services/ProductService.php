@@ -575,30 +575,16 @@ class ProductService
                     }
                 }
             }
-
             // sort
             arsort($allSoldProducts);
-
-            Cache::put('DomainSoldProductsData', $allSoldProducts);
+            Cache::put('DomainSoldProductsData', $allSoldProducts, 86400);
         }
 
-        if (!$search) {
-            // calculate data for pagination
-            $totalCount = count($allSoldProducts);
-            $totalPages = ceil($totalCount / $limit);
-            $page = max($page, 1); // get 1 page when page <= 0
-            $page = min($page, $totalPages); // get last page when page > $totalPages
-            $offset = ($page - 1) * $limit;
-            if ($offset < 0 ) {
-                $offset = 0;
-            }
-            $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);
-        }
         $productIds = array_keys($allSoldProducts);
         $productCategoryId = $currentDomain->product_category_id ?? null;
-        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId);
-
-        if ($search) {
+        $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, $select);
+        //if ($search) {
             $totalCount = count($products);
             $totalPages = ceil($totalCount / $limit);
             $page = max($page, 1); // get 1 page when page <= 0
@@ -607,7 +593,8 @@ class ProductService
             if ($offset < 0 ) {
                 $offset = 0;
             }
-        }
+            $products = $products->slice($offset, $limit);
+        //}
 
         // get all images
         $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);

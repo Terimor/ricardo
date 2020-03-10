@@ -269,7 +269,7 @@ class OdinProduct extends Model
                 }
         }
 
-        if (request()->has('cop_id') && !$priceSetFound && !$this->hide_cop_id_log && request()->get('cop_id') != '{cop_id}') {
+        if (request()->get('cop_id') && !$priceSetFound && !$this->hide_cop_id_log && request()->get('cop_id') != '{cop_id}') {
             logger()->warning("Invalid cop_id ".request()->get('cop_id')." for {$this->product_name}", ['URL' => url()->full()]);
         }
 
@@ -624,9 +624,11 @@ class OdinProduct extends Model
      * Get products by ids
      * @param type $ids
      * @param $search
-     * @param $hide_catch_all - if true don't return is_catch_all_hidden=true
+     * @param $hide_catch_all - if true don't return is_catch_all_hidden=true\
+     * @param $categoryId
+     * @param array|null $select
      */
-    public static function getActiveByIds(?array $ids, $search = '', bool $hide_catch_all = false, $categoryId = null) {
+    public static function getActiveByIds(?array $ids, $search = '', bool $hide_catch_all = false, $categoryId = null, ?array $select = []) {
         $products = null;
         if ($ids) {
             $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
@@ -642,6 +644,9 @@ class OdinProduct extends Model
             }
             if ($categoryId) {
                 $productsQuery->where('category_id', $categoryId);
+            }
+            if ($select) {
+                $productsQuery->select($select);
             }
             $products = $productsQuery->get();
         }
