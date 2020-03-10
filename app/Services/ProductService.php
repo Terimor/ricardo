@@ -575,14 +575,7 @@ class ProductService
         $products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
 
         // get all images
-        $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
-        $currency = CurrencyService::getCurrency();
-        $productsLocale = [];
-        foreach ($products as $product) {
-            $product->currencyObject = $currency;
-            $product->hide_cop_id_log = true;
-            $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
-        }
+        $productsLocale = static::getLocaleMinishopProducts($products);
 
         // sort products by sold qty on current page
         $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
@@ -673,6 +666,24 @@ class ProductService
             }
         }
         return $imagesArray;
+    }
+
+    /**
+     * Retunr locale products for minishop
+     * @param $products
+     * @return array
+     */
+    public static function getLocaleMinishopProducts($products): array
+    {
+        $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
+        $currency = CurrencyService::getCurrency();
+        $productsLocale = [];
+        foreach ($products as $product) {
+            $product->currencyObject = $currency;
+            $product->hide_cop_id_log = true;
+            $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
+        }
+        return $productsLocale;
     }
 
 }
