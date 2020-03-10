@@ -626,6 +626,7 @@ class ProductService
      * Sort sort products depends on selected products
      * @param array $soldProducts
      * @param $products
+     * @param bool $is_return_id - return _id instead of document collection
      * @return array
      */
     public static function sortLocaleSoldProducts(array $soldProducts = [], $products = null, $is_return_id = false): array
