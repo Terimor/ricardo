@@ -646,7 +646,7 @@ class OdinProduct extends Model
      * Get products by ids
      * @param type $ids
      * @param $search
-     * @param $hide_catch_all - if true don't return is_catch_all_hidden=true\
+     * @param $hide_catch_all - if true don't return is_catch_all_hidden=true
      * @param $categoryId
      * @param array|null $select
      */
