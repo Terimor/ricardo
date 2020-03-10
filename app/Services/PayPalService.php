@@ -492,7 +492,7 @@ class PayPalService
                 return $item['hash'] !== $txn_response['txn']->hash;
             });
             $order->txns = array_merge($txns, [$order_txn_data]);
-
+echo '<pre>'; var_dump($order); echo '</pre>'; exit;
             $this->setPayer($order, $paypal_order);
             $this->setShipping($order, $paypal_order);
             $this->saveCustomer($order, $paypal_order);
@@ -793,9 +793,13 @@ class PayPalService
             'city'          => $order->shipping_city,
             'street'        => $order->shipping_street,
             'street2'       => $order->shipping_street2,
+            'building'      => $order->shipping_building,
             'language'      => $order->language,
             'phone'         => $order->customer_phone,
-            'paypal_payer_id' => optional($paypal_order->payer)->payer_id
+            'paypal_payer_id' => optional($paypal_order->payer)->payer_id,
+            'fingerprint' => $order->fingerprint ?? null,
+            'last_page_checkout' => $order->page_checkout ?? null,
+            'last_viewed_sku_code' => $order->getMainSku()
         ]);
     }
 

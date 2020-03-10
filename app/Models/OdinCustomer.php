@@ -33,7 +33,7 @@ class OdinCustomer extends Model
         'last_name' => null, // * string
         'ip' => [], // array of strings
         'phones' => [], // array of strings
-        'fingerprint' => [], // array of strings
+        'fingerprints' => [], // array of strings
 		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
@@ -43,10 +43,14 @@ class OdinCustomer extends Model
 //            'city' => null, // string
 //            'street' => null, // string
 //            'street2' => null, // string
-//	        'apt' => null, // string
+//	          'apt' => null, // string
+//            'building' => null, // string
         ],
         'paypal_payer_id' => null, // string
 		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
+        'last_page_checkout' => null, // string
+        'last_vieved_sku_code' => null, // string
+        'recovery_way' => null, // enum [email, sms]
     ];
 
     /**
@@ -55,7 +59,8 @@ class OdinCustomer extends Model
     * @var array
     */
    protected $fillable = [
-       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses', 'doc_ids', 'phones'
+       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses', 'doc_ids', 'phones',
+       'last_page_checkout', 'last_viewed_sku_code', 'fingerprints', 'recovery_way'
    ];
 
     /**
@@ -126,7 +131,7 @@ class OdinCustomer extends Model
 
         return $numberString;
     }
-   
+
 
     /**
      *
@@ -142,7 +147,7 @@ class OdinCustomer extends Model
             ->limit($limit)
             ->get();
     }
-    
+
     /**
      * Get public customer name for display
      * @return type
@@ -151,7 +156,7 @@ class OdinCustomer extends Model
     {
         return mb_convert_case(mb_strtolower($this->first_name), MB_CASE_TITLE) . ' ' . mb_strtoupper(mb_substr($this->last_name, 0, 1)).'.';
     }
-    
+
     /**
      * Get public city name for display
      * @return type

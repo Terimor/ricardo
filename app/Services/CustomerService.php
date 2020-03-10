@@ -18,6 +18,8 @@ class CustomerService
     {
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
+        $model->last_page_checkout = $data['page'] ?? null;
+        $model->last_viewed_sku_code = $data['sku'] ?? null;
 
         // if type is buyer, first name and last name should not be changed
         if ($model->type == OdinCustomer::TYPE_BUYER) {
@@ -57,11 +59,11 @@ class CustomerService
 
     /**
      * Prepare addresses field
-     * @param  array  $data
-     * @param  OdinCustomer  $model
+     * @param array $data
+     * @param OdinCustomer $model
      * @return array
      */
-    private function getUpdatedAddresses(array $data, $model) :array {
+    private function getUpdatedAddresses(array $data, $model): array {
         $address = [
             'country' => !empty($data['country']) ? trim($data['country']) : '',
             'zip' => !empty($data['zip']) ? trim($data['zip']) : '',
@@ -87,15 +89,14 @@ class CustomerService
 
     /**
      * Prepare set array fields in model
-     * @param  array  $data
+     * @param array $data
      * @param $model
      * @return bool
      */
-    private function setArrayFields(array $data, $model) :bool {
-
+    private function setArrayFields(array $data, $model): bool {
         // add fingerprint if not in array
-        if (!empty($data['fingerprint']) && !in_array($data['fingerprint'], $model->fingerprint ?? [])) {
-            $model->fingerprint = array_merge($model->fingerprint ?? [], [$data['fingerprint']]);
+        if (!empty($data['fingerprint']) && !in_array($data['fingerprint'], $model->fingerprints ?? [])) {
+            $model->fingerprints = array_merge($model->fingerprints ?? [], [$data['fingerprint']]);
         }
 
         // add phone if not in array
@@ -109,8 +110,8 @@ class CustomerService
         }
 
         // add ip if not in array
-        if (!empty($data['ip']) && !in_array($data['ip'], $model->ip ?? [])) {
-            $model->ip = array_merge($model->ip ?? [], [$data['ip']]);
+        if (!empty($data['ip']) && !in_array($data['ip'], $model->ips ?? [])) {
+            $model->ips = array_merge($model->ips ?? [], [$data['ip']]);
         }
 
         return true;

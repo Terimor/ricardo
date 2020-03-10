@@ -396,7 +396,12 @@ class PaymentService
         $contact = array_merge(
             $req->get('contact'),
             $req->get('address'),
-            ['ip' => $req->ip(), 'email' => strtolower($req->input('contact.email'))]
+            [
+                'ip' => $req->ip(), 'email' => strtolower($req->input('contact.email')),
+                'fingerprint' => $fingerprint,
+                'last_page_checkout' => $page_checkout,
+                'last_viewed_sku_code' => $sku
+            ]
         );
         $method = PaymentMethodMapper::toMethod($card['number']);
 

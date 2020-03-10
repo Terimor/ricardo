@@ -4,19 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
 use App\Services\CustomerService;
-use Illuminate\Http\Request;
+use App\Http\Requests\OdinCustomerRequest;
 
 class OdinCustomerController extends Controller
 {
     /**
-     * Create new Customer or Update existing
-     * @param  Request $request
+     * Create new customer or update existing
+     * @param  OdinCustomerRequest $request
      * @param  CustomerService $customerService
      * @return array
      */
-    public function addOrUpdate(Request $request, CustomerService $customerService) {
-
+    public function addOrUpdate(OdinCustomerRequest $request, CustomerService $customerService) {
         return $customerService->addOrUpdate($request->input());
-
     }
 }
