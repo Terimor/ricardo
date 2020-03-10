@@ -6,7 +6,7 @@
     var txid = js_query_params.txid || '';
 
     if (offer_id > 0 && aff_id > 10 && direct === 1 && txid.length < 20) {
-      var iframe_url = 'https://track.8xgb.com/aff_c?offer_id=' + offer_id + '&aff_id=' + aff_id + '&emptypage=1';
+      var iframe_url = 'https://check.12buyme34.com/aff_c?offer_id=' + offer_id + '&aff_id=' + aff_id + '&emptypage=1';
 
       var params = [
         'aff_sub1',
