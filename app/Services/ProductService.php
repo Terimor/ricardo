@@ -611,9 +611,9 @@ class ProductService
     public static function getCachedSoldProducts(): array
     {
         $allSoldProducts = Cache::get('DomainSoldProductsData');
-
+        $allSoldProducts = null;
         if (!$allSoldProducts) {
-            $domains = Domain::all();
+            $domains = Domain::all(['sold_products']);
             $allSoldProducts = [];
             // collect domain products
             foreach ($domains as $domain) {
