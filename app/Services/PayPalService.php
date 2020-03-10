@@ -492,7 +492,7 @@ class PayPalService
                 return $item['hash'] !== $txn_response['txn']->hash;
             });
             $order->txns = array_merge($txns, [$order_txn_data]);
-echo '<pre>'; var_dump($order); echo '</pre>'; exit;
+
             $this->setPayer($order, $paypal_order);
             $this->setShipping($order, $paypal_order);
             $this->saveCustomer($order, $paypal_order);
