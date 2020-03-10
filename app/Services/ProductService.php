@@ -453,22 +453,14 @@ class ProductService
                 $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
 
                 $currency = CurrencyService::getCurrency();
+                $productsLocale = [];
                 foreach ($products as $product) {
                     $product->currencyObject = $currency;
                     $product->hide_cop_id_log = true;
                     $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
                 }
                 // sort products by sold qty
-                if ($productsLocale) {
-                    $productsLocaleSorted = [];
-                    foreach ($soldProducts as $productId => $sp) {
-                        foreach ($productsLocale as $localeProduct) {
-                            if ($localeProduct->id == $productId) {
-                                $productsLocaleSorted[] = $localeProduct;
-                            }
-                        }
-                    }
-                }
+                $productsLocaleSorted = static::sortLocaleSoldProducts($soldProducts, $productsLocale);
             }
         }
 
@@ -550,7 +542,7 @@ class ProductService
      * @param int $limit
      * @return array
      */
-    public function getAllSoldDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 2): array
+    public function getAllSoldDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 12): array
     {
         if (mb_strlen($search) < 2) {
             $search = '';
@@ -601,17 +593,7 @@ class ProductService
         }
 
         // sort products by sold qty on current page
-        $productsLocaleSorted = [];
-        if ($productsLocale) {
-            foreach ($allSoldProducts as $productId => $sp) {
-                foreach ($productsLocale as $localeProduct) {
-                    if ($localeProduct->id == $productId) {
-                        $productsLocaleSorted[] = $localeProduct;
-                        break;
-                    }
-                }
-            }
-        }
+        $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
 
         return $data = [
             'products' => $productsLocaleSorted,
@@ -654,6 +636,28 @@ class ProductService
             Cache::put('DomainSoldProductsData', $allSoldProducts, 86400);
         }
         return $allSoldProducts;
+    }
+
+    /**
+     * Sort sort products depends on selected products
+     * @param array $soldProducts
+     * @param $products
+     * @return array
+     */
+    public static function sortLocaleSoldProducts(array $soldProducts = [], $products = null): array
+    {
+        $productsSorted = [];
+        if ($soldProducts && $products) {
+            foreach ($soldProducts as $productId => $sp) {
+                foreach ($products as $localeProduct) {
+                    if ($localeProduct->id == $productId) {
+                        $productsSorted[] = $localeProduct;
+                        break;
+                    }
+                }
+            }
+        }
+        return $productsSorted;
     }
 
     /**
