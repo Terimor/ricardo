@@ -20,7 +20,6 @@ class CustomerService
         $model->fill($data);
         $model->last_page_checkout = $data['page'] ?? null;
         $model->last_viewed_sku_code = $data['sku'] ?? null;
-        $model->fingerprint = $data['f'] ?? null;
 
         // if type is buyer, first name and last name should not be changed
         if ($model->type == OdinCustomer::TYPE_BUYER) {
@@ -96,8 +95,8 @@ class CustomerService
      */
     private function setArrayFields(array $data, $model): bool {
         // add fingerprint if not in array
-        if (!empty($data['fingerprint']) && !in_array($data['fingerprint'], $model->fingerprints ?? [])) {
-            $model->fingerprints = array_merge($model->fingerprints ?? [], [$data['fingerprint']]);
+        if (!empty($data['f']) && !in_array($data['f'], $model->fingerprints ?? [])) {
+            $model->fingerprints = array_merge($model->fingerprints ?? [], [$data['f']]);
         }
 
         // add phone if not in array
