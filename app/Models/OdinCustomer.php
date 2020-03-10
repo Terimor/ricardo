@@ -49,7 +49,7 @@ class OdinCustomer extends Model
         'paypal_payer_id' => null, // string
 		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
         'last_page_checkout' => null, // string
-        'last_vieved_sku_code' => null, // string
+        'last_viewed_sku_code' => null, // string
         'recovery_way' => null, // enum [email, sms]
     ];
 
