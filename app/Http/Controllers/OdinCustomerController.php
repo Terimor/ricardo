@@ -15,6 +15,7 @@ class OdinCustomerController extends Controller
      * @return array
      */
     public function addOrUpdate(OdinCustomerRequest $request, CustomerService $customerService) {
-        return $customerService->addOrUpdate($request->input());
+        $result = $customerService->addOrUpdate($request->input());
+        return $result['success'] ?? false;
     }
 }
