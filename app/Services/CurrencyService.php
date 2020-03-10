@@ -183,11 +183,11 @@ class CurrencyService
      * Get local price from USD
      * @param float $price
      * @param string $currency
-     * @param string $countryCode
-     * @param type $ip
+     * @param string|null $userCountry
+     * @param array|null $correctionCountries - array format 'country_code' => percent
      * @return float
      */
-    public static function getLocalPriceFromUsd(float $price, Currency $currency) : array
+    public static function getLocalPriceFromUsd(float $price, Currency $currency, ?string $userCountry = null, ?array $correctionCountries = []) : array
     {
         if (!$currency) {
             $currency = self::getCurrency();
@@ -215,87 +215,52 @@ class CurrencyService
             }
         }
         $exchangedPrice = $price * $rate;
+        // price correction depends on countries
+        if ($userCountry && $correctionCountries) {
+            $exchangedPrice = static::correctPriceValue($exchangedPrice, $userCountry, $correctionCountries);
+        }
         $exchangedPrice = round($exchangedPrice, 2);
 
+        // round rules, as first check currencies for specific rounding
         if (in_array($currencyCode, static::$upToNext500)) {
-            $exchangedPrice = ceil($exchangedPrice);
-            $exchangedPrice = $exchangedPrice/100;
-            $exchangedPrice = (string) $exchangedPrice;
+            $exchangedPrice = static::upToNext500Rounding($exchangedPrice);
+        } elseif (in_array($currencyCode, static::$upToNext10)) {
+            $exchangedPrice = static::upToNext10Rounding($exchangedPrice);
+        } else {
+            // when fraction digits = 0, cut decimals
+            if ($fractionDigits == 0) {
+                $exchangedPrice = (int)$exchangedPrice;
+            }
+
             $digits = strlen((int)$exchangedPrice);
 
-            // if digits[-1] >= 5 than we need to add 1 to 1000 and add next 500
-            if ($exchangedPrice[$digits-1] >= 5) {
-                $exchangedPrice[$digits-1] = 9;
-                $exchangedPrice = (int) $exchangedPrice + 1 + 5;
-            } else {
-                $exchangedPrice[$digits-1] = 5;
+            $exchangedPrice = static::mainRounding($digits, $exchangedPrice);
+
+            // x.99 at the end
+            if ($fractionDigits > 0) {
+                $exchangedPrice += 1;
+                $exchangedPrice -= 0.01;
+                if (in_array($currencyCode, static::$roundTo0_95)) {
+                    $exchangedPrice -= 0.04;
+
+                }
             }
 
-            $exchangedPrice = (int)$exchangedPrice * 100;
-
-            return [
-                'price' => $exchangedPrice,
-                'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
-                'code' => $currencyCode,
-                'exchange_rate' => $currency->usd_rate,
-            ];
-        }
-
-        if (in_array($currencyCode, static::$upToNext10)) {
-            $exchangedPrice = (int)$exchangedPrice;
-            $exchangedPrice = (string) $exchangedPrice;
-            $digits = strlen((int)$exchangedPrice);
-            // if digits[-1 and -2] != 10 than we set 99 + 1 and add next +10
-            if ($exchangedPrice[$digits-1] != 0 && $exchangedPrice[$digits-2] != 1) {
-                $exchangedPrice[$digits-1] = 9;
-                $exchangedPrice[$digits-2] = 9;
-
-                $exchangedPrice = $exchangedPrice + 1 + 10;
+            if (in_array($currencyCode, static::$noDecimals)) {
+                $exchangedPrice = (int)$exchangedPrice;
+                $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
             }
-            $exchangedPrice = (int)$exchangedPrice;
 
-            return [
-                'price' => $exchangedPrice,
-                'price_text' =>  $numberFormatter->formatCurrency($exchangedPrice, $currencyCode),
-                'code' => $currencyCode,
-                'exchange_rate' => $currency->usd_rate,
-            ];
-        }
 
-        // when fraction digits = 0, cut decimals
-        if ($fractionDigits == 0) {
-            $exchangedPrice = (int)$exchangedPrice;
-        }
+            if (in_array($currencyCode, static::$zeroAtTheEnd)) {
+                $exchangedPrice = static::zeroAtTheEndRounding($digits, $exchangedPrice, $numberFormatter);
+            }
 
-        $digits = strlen((int)$exchangedPrice);
-
-        $exchangedPrice = static::mainRounding($digits, $exchangedPrice);
-
-        if ($fractionDigits > 0) {
-            $exchangedPrice += 1;
-            $exchangedPrice -= 0.01;
-
-            if (in_array($currencyCode, static::$roundTo0_95)) {
-                $exchangedPrice -= 0.04;
-
+            // check decimals for logging
+            if (!in_array($currencyCode, static::$zeroAtTheEnd) && $digits >= 5) {
+                logger()->error("Price {$exchangedPrice} has {$digits} digits for currency {$currencyCode}");
             }
         }
-
-        if (in_array($currencyCode, static::$noDecimals)) {
-            $exchangedPrice = (int)$exchangedPrice;
-            $numberFormatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 0);
-        }
-
-
-        if (in_array($currencyCode, static::$zeroAtTheEnd)) {
-            $exchangedPrice = static::zeroAtTheEndRounding($digits, $exchangedPrice, $numberFormatter);
-        }
-
-        // check decimals for logging
-        if (!in_array($currencyCode, static::$zeroAtTheEnd) && $digits >=5) {
-            logger()->error("Price {$exchangedPrice} has {$digits} digits for currency {$currencyCode}");
-        }
-
         return [
             'price' => $exchangedPrice,
             'price_text' =>  CurrencyService::formatCurrency($numberFormatter, $exchangedPrice, $currency),
@@ -359,9 +324,9 @@ class CurrencyService
     /**
      * Function for main rounding by rules
      * @param int $digits
-     * @param type $exchangedPrice
+     * @param float $exchangedPrice
      */
-    private static function mainRounding(int $digits, $exchangedPrice):int
+    private static function mainRounding(int $digits, float $exchangedPrice): int
     {
         $exchangedPrice = (string) $exchangedPrice;
 
@@ -391,6 +356,51 @@ class CurrencyService
             } else {
                 $exchangedPrice[$digits-1] = '4';
             }
+        }
+
+        return (int)$exchangedPrice;
+    }
+
+    /**
+     * Round - up to next 500
+     * @param float $exchangedPrice
+     * @return int
+     */
+    public static function upToNext500Rounding(float $exchangedPrice): int
+    {
+        $exchangedPrice = ceil($exchangedPrice);
+        $exchangedPrice = $exchangedPrice/100;
+        $exchangedPrice = (string) $exchangedPrice;
+        $digits = strlen((int)$exchangedPrice);
+
+        // if digits[-1] >= 5 than we need to add 1 to 1000 and add next 500
+        if ($exchangedPrice[$digits-1] >= 5) {
+            $exchangedPrice[$digits-1] = 9;
+            $exchangedPrice = (int) $exchangedPrice + 1 + 5;
+        } else {
+            $exchangedPrice[$digits-1] = 5;
+        }
+
+        $exchangedPrice = (int)$exchangedPrice * 100;
+        return $exchangedPrice;
+    }
+
+    /**
+     * Round - up to next 10
+     * @param float $exchangedPrice
+     * @return int
+     */
+    public static function upToNext10Rounding(float $exchangedPrice): int
+    {
+        $exchangedPrice = (int)$exchangedPrice;
+        $exchangedPrice = (string) $exchangedPrice;
+        $digits = strlen((int)$exchangedPrice);
+        // if digits[-1 and -2] != 10 than we set 99 + 1 and add next +10
+        if ($exchangedPrice[$digits-1] != 0 || $exchangedPrice[$digits-2] != 1) {
+            $exchangedPrice[$digits-1] = 9;
+            $exchangedPrice[$digits-2] = 9;
+
+            $exchangedPrice = $exchangedPrice + 1 + 10;
         }
 
         return (int)$exchangedPrice;
@@ -626,6 +636,21 @@ class CurrencyService
         }
 
         return $priceText;
+    }
+
+    /**
+     * Correct price value using prices correction percents array
+     * @param float $price
+     * @param string|null $country
+     * @param array|null $correctionCountries
+     * @return float
+     */
+    public static function correctPriceValue(float $price, ?string $country = null, ?array $correctionCountries = [])
+    {
+        if ($country && $correctionCountries && !empty($correctionCountries[$country])) {
+            $price = $price + $price * $correctionCountries[$country] / 100;
+        }
+        return $price;
     }
 
 }
