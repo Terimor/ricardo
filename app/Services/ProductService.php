@@ -446,7 +446,8 @@ class ProductService
                 arsort($soldProducts);
                 $productIds = array_keys($soldProducts);
 
-                $products = OdinProduct::getActiveByIds($productIds, '', true);
+                $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+                $products = OdinProduct::getActiveByIds($productIds, '', true, null, $select);
 
                 // get all images
                 $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
