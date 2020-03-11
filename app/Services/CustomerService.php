@@ -17,7 +17,6 @@ class CustomerService
     public function addOrUpdate(array $data, bool $returnModel = false): array
     {
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
-        // except array parameters
         $model->fill($data);
         $model->last_page_checkout = $data['page'] ?? null;
         $model->last_viewed_sku_code = $data['sku'] ?? null;
