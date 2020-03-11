@@ -21,7 +21,6 @@ use Cache;
 use App\Models\OdinOrder;
 use App\Models\Domain;
 use App\Http\Requests\ZipcodeRequest;
-use Illuminate\Support\Facades\Validator;
 
 class SiteController extends Controller
 {
