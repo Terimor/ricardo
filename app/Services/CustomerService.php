@@ -17,6 +17,7 @@ class CustomerService
     public function addOrUpdate(array $data, bool $returnModel = false): array
     {
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
+        // except array parameters
         $model->fill($data);
         $model->last_page_checkout = $data['page'] ?? null;
         $model->last_viewed_sku_code = $data['sku'] ?? null;
@@ -28,7 +29,7 @@ class CustomerService
         }
 
         // add ip if not in array
-        $data['ip'] = !empty($data['ip']) ? $data['ip'] : request()->ip();
+        $data['ip'] = request()->ip();
 
         // prepare array fields
         $this->setArrayFields($data, $model);
@@ -110,8 +111,8 @@ class CustomerService
         }
 
         // add ip if not in array
-        if (!empty($data['ip']) && !in_array($data['ip'], $model->ips ?? [])) {
-            $model->ips = array_merge($model->ips ?? [], [$data['ip']]);
+        if (!empty($data['ip']) && !in_array($data['ip'], $model->ip ?? [])) {
+            $model->ip = array_merge($model->ips ?? [], [$data['ip']]);
         }
 
         return true;

@@ -8,6 +8,7 @@ use App\Http\Requests\OdinCustomerRequest;
 
 class OdinCustomerController extends Controller
 {
+
     /**
      * Create new customer or update existing
      * @param  OdinCustomerRequest $request
@@ -15,7 +16,7 @@ class OdinCustomerController extends Controller
      * @return array
      */
     public function addOrUpdate(OdinCustomerRequest $request, CustomerService $customerService) {
-        $result = $customerService->addOrUpdate($request->input());
-        return $result['success'] ?? false;
+        $customerService->addOrUpdate($request->except(OdinCustomer::$exceptFromRequest));
+        return '';
     }
 }

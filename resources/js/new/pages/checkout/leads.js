@@ -42,7 +42,7 @@ export default {
               return this.fingerprint_calculate();
             })
             .then(result => {
-              data.fingerprint = result;
+              data.f = result;
             })
             .then(() => {
               return this.fetch_post('/new-customer', data);

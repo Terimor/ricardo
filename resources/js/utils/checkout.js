@@ -204,7 +204,7 @@ export function checkForLeadsRequest(variant, first_name, last_name, email, phon
 
       Promise.resolve()
         .then(fingerprint)
-        .then(result => data.fingerprint = result)
+        .then(result => data.f = result)
         .then(() => fetch('/new-customer', {
           method: 'post',
           credentials: 'same-origin',

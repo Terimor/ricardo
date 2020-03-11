@@ -22,6 +22,8 @@ class OdinCustomer extends Model
     const TYPE_LEAD = 'lead';
     const TYPE_BUYER = 'buyer';
 
+    public static $exceptFromRequest = ['number', 'fingerprints', 'ip', 'phones', 'doc_ids', 'addresses', 'paypal_payer_id'];
+
     /**
      *
      * @var type
@@ -59,8 +61,8 @@ class OdinCustomer extends Model
     * @var array
     */
    protected $fillable = [
-       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses', 'doc_ids', 'phones',
-       'last_page_checkout', 'last_viewed_sku_code', 'fingerprints', 'recovery_way'
+       'email', 'number', 'type', 'first_name', 'last_name', 'fingerprints', 'language', 'paypal_payer_id', 'addresses', 'doc_ids', 'phones',
+       'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'
    ];
 
     /**

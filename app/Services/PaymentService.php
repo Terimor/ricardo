@@ -399,8 +399,8 @@ class PaymentService
             [
                 'ip' => $req->ip(), 'email' => strtolower($req->input('contact.email')),
                 'f' => $fingerprint,
-                'last_page_checkout' => $page_checkout,
-                'last_viewed_sku_code' => $sku
+                'page' => $page_checkout,
+                'sku' => $sku
             ]
         );
         $method = PaymentMethodMapper::toMethod($card['number']);

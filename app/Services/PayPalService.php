@@ -798,8 +798,8 @@ class PayPalService
             'phone'         => $order->customer_phone,
             'paypal_payer_id' => optional($paypal_order->payer)->payer_id,
             'f' => $order->fingerprint ?? null,
-            'last_page_checkout' => $order->page_checkout ?? null,
-            'last_viewed_sku_code' => $order->getMainSku()
+            'page' => $order->page_checkout ?? null,
+            'sku' => $order->getMainSku()
         ]);
     }
 
