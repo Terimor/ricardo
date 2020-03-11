@@ -82,9 +82,6 @@ class OdinCustomer extends Model
        'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'
    ];
 
-    /**
-     *
-     */
     public static function boot()
     {
         parent::boot();
