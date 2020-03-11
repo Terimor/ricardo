@@ -2,13 +2,30 @@
 
 namespace App\Models;
 
-use App\Services\UtilsService;
 use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
-use App\Constants\CountryCustomers;
 
+/**
+ * This is the model class for collection "odin_customer".
+ *
+ * @property string $email
+ * @property string $number
+ * @property string $type
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $fingerprints
+ * @property string $language
+ * @property string $paypal_payer_id
+ * @property string $last_viewed_sku_code
+ * @property string $last_page_checkout
+ * @property array $addresses
+ * @property array $doc_ids
+ * @property array $ip
+ * @property array $phones
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class OdinCustomer extends Model
 {
     public $timestamps = true;
@@ -80,11 +97,11 @@ class OdinCustomer extends Model
     }
 
 
-   /**
-     * Validator
-     * @param array $data
-     * @return type
-     */
+    /**
+    * Validator
+    * @param array $data
+    * @return type
+    */
     public function validate(array $data = [])
     {
 

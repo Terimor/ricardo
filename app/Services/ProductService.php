@@ -23,6 +23,9 @@ class ProductService
 
     /**
      * @param Request $request
+     * @param bool $needImages - if true collect all images
+     * @param null $currency
+     * @param bool $isPostback
      * @return OdinProduct
      */
     public function resolveProduct(Request $request, $needImages = false, $currency = null, $isPostback = false)
@@ -189,6 +192,9 @@ class ProductService
 	 * Calculate upsells total
 	 * @param array $ulsells
 	 * @param float $total
+     * @param bool $with_extra
+     * @param null $currency_code
+     * @return array
 	 */
 	public function calculateUpsellsTotal($product, array $upsells, float $total = null, $with_extra = false, $currency_code = null) : array
 	{
@@ -389,8 +395,8 @@ class ProductService
 
     /**
      *
-     * @param type $copId
-     * @param type $country
+     * @param mixed $copId
+     * @param mixed $countryCode
      */
     public function returnPricesByData($copId, $countryCode)
     {
@@ -446,28 +452,21 @@ class ProductService
                 arsort($soldProducts);
                 $productIds = array_keys($soldProducts);
 
-                $products = OdinProduct::getActiveByIds($productIds, '', true);
+                $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+                $products = OdinProduct::getActiveByIds($productIds, '', true, null, $select);
 
                 // get all images
                 $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
 
                 $currency = CurrencyService::getCurrency();
+                $productsLocale = [];
                 foreach ($products as $product) {
                     $product->currencyObject = $currency;
                     $product->hide_cop_id_log = true;
                     $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
                 }
                 // sort products by sold qty
-                if ($productsLocale) {
-                    $productsLocaleSorted = [];
-                    foreach ($soldProducts as $productId => $sp) {
-                        foreach ($productsLocale as $localeProduct) {
-                            if ($localeProduct->id == $productId) {
-                                $productsLocaleSorted[] = $localeProduct;
-                            }
-                        }
-                    }
-                }
+                $productsLocaleSorted = static::sortLocaleSoldProducts($soldProducts, $productsLocale);
             }
         }
 
@@ -477,6 +476,7 @@ class ProductService
     /**
      * Prepare data for mini shop product
      * @param OdinProduct $product
+     * @param array $images
      * @return Localize
      */
     public static function getDataForMiniShop(OdinProduct $product, array $images) {
@@ -551,13 +551,60 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 12): array
     {
-        $allSoldProducts = Cache::get('DomainSoldProductsData');
         if (mb_strlen($search) < 2) {
             $search = '';
         }
 
+        $allSoldProducts = static::getCachedSoldProducts();
+
+        $productIds = array_keys($allSoldProducts);
+        $productCategoryId = $currentDomain->product_category_id ?? null;
+        $select = ['_id'];
+        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, $select);
+
+        // calculate total pages
+        $totalCount = count($products);
+        $totalPages = ceil($totalCount / $limit);
+        $page = max($page, 1); // get 1 page when page <= 0
+        $page = min($page, $totalPages); // get last page when page > $totalPages
+        $offset = ($page - 1) * $limit;
+        if ($offset < 0 ) {
+            $offset = 0;
+        }
+
+        // sort products by sales
+        $productsSortedIds = static::sortLocaleSoldProducts($allSoldProducts, $products, true);
+        // slice sorted products depends on page
+        $productsSortedIds = array_slice($productsSortedIds, $offset, $limit);
+
+        // get products depends on page
+        $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+        $products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
+
+        // get all locale products with images
+        $productsLocale = static::getLocaleMinishopProducts($products);
+
+        // sort products by sold qty on current page
+        $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
+
+        return $data = [
+            'products' => $productsLocaleSorted,
+            'page' => $page,
+            'total' => $totalCount,
+            'total_pages' => $totalPages,
+            'per_page' => $limit
+        ];
+    }
+
+    /**
+     * Returns cached sold products
+     * @return array
+     */
+    public static function getCachedSoldProducts(): array
+    {
+        $allSoldProducts = Cache::get('DomainSoldProductsData');
         if (!$allSoldProducts) {
-            $domains = Domain::all();
+            $domains = Domain::all(['sold_products']);
             $allSoldProducts = [];
             // collect domain products
             foreach ($domains as $domain) {
@@ -575,73 +622,34 @@ class ProductService
                     }
                 }
             }
-
             // sort
             arsort($allSoldProducts);
-
-            Cache::put('DomainSoldProductsData', $allSoldProducts);
+            Cache::put('DomainSoldProductsData', $allSoldProducts, 3600);
         }
+        return $allSoldProducts;
+    }
 
-        if (!$search) {
-            // calculate data for pagination
-            $totalCount = count($allSoldProducts);
-            $totalPages = ceil($totalCount / $limit);
-            $page = max($page, 1); // get 1 page when page <= 0
-            $page = min($page, $totalPages); // get last page when page > $totalPages
-            $offset = ($page - 1) * $limit;
-            if ($offset < 0 ) {
-                $offset = 0;
-            }
-            $allSoldProducts = array_slice($allSoldProducts, $offset, $limit);
-        }
-        $productIds = array_keys($allSoldProducts);
-        $productCategoryId = $currentDomain->product_category_id ?? null;
-        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId);
-
-        if ($search) {
-            $totalCount = count($products);
-            $totalPages = ceil($totalCount / $limit);
-            $page = max($page, 1); // get 1 page when page <= 0
-            $page = min($page, $totalPages); // get last page when page > $totalPages
-            $offset = ($page - 1) * $limit;
-            if ($offset < 0 ) {
-                $offset = 0;
-            }
-        }
-
-        // get all images
-        $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
-        $currency = CurrencyService::getCurrency();
-        $productsLocale = [];
-        foreach ($products as $product) {
-            $product->currencyObject = $currency;
-            $product->hide_cop_id_log = true;
-            $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
-        }
-
-        // sort products by sold qty
-        $productsLocaleSorted = [];
-        if ($productsLocale) {
-            foreach ($allSoldProducts as $productId => $sp) {
-                foreach ($productsLocale as $localeProduct) {
+    /**
+     * Sort sort products depends on selected products
+     * @param array $soldProducts
+     * @param $products
+     * @param bool $is_return_id - return _id instead of document collection
+     * @return array
+     */
+    public static function sortLocaleSoldProducts(array $soldProducts = [], $products = null, $is_return_id = false): array
+    {
+        $productsSorted = [];
+        if ($soldProducts && $products) {
+            foreach ($soldProducts as $productId => $sp) {
+                foreach ($products as $localeProduct) {
                     if ($localeProduct->id == $productId) {
-                        $productsLocaleSorted[] = $localeProduct;
+                        $productsSorted[] = $is_return_id ? $localeProduct->_id : $localeProduct;
+                        break;
                     }
                 }
             }
         }
-
-        if ($search) {
-            $productsLocaleSorted = array_slice($productsLocaleSorted, $offset, $limit);
-        }
-
-        return $data = [
-            'products' => $productsLocaleSorted,
-            'page' => $page,
-            'total' => $totalCount,
-            'total_pages' => $totalPages,
-            'per_page' => $limit
-        ];
+        return $productsSorted;
     }
 
     /**
@@ -666,6 +674,24 @@ class ProductService
             }
         }
         return $imagesArray;
+    }
+
+    /**
+     * Retunr locale products for minishop
+     * @param $products
+     * @return array
+     */
+    public static function getLocaleMinishopProducts($products): array
+    {
+        $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
+        $currency = CurrencyService::getCurrency();
+        $productsLocale = [];
+        foreach ($products as $product) {
+            $product->currencyObject = $currency;
+            $product->hide_cop_id_log = true;
+            $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
+        }
+        return $productsLocale;
     }
 
 }
