@@ -28,12 +28,13 @@ class OdinCustomer extends Model
      */
     protected $attributes = [
         'email' => null, // * unique string,
+        'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
         'type' => self::TYPE_LEAD, // * string,
         'first_name' => null, // * string
         'last_name' => null, // * string
+        'fingerprints' => [], // array of strings
         'ip' => [], // array of strings
         'phones' => [], // array of strings
-        'fingerprints' => [], // array of strings
 		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
@@ -47,7 +48,6 @@ class OdinCustomer extends Model
 //            'building' => null, // string
         ],
         'paypal_payer_id' => null, // string
-		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
         'last_page_checkout' => null, // string
         'last_viewed_sku_code' => null, // string
         'recovery_way' => null, // enum [email, sms]
