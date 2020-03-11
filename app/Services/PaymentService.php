@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Models\OdinCustomer;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
@@ -90,7 +91,7 @@ class PaymentService
     /**
      * Updates or adds customer
      * @param array $contact
-     * @return void
+     * @return OdinCustomer
      * @throws CustomerUpdateException
      */
     private function addCustomer(array $contact): void
@@ -98,14 +99,18 @@ class PaymentService
         $reply = $this->customerService->addOrUpdate(
             array_merge($contact,
                 [
-                    'doc_id'    => $contact['document_number'] ?? null,
-                    'phone'     => $contact['phone']['country_code'] . $contact['phone']['number']
+                    'doc_id' => $contact['document_number'] ?? null,
+                    'phone'  => $contact['phone']['country_code'] . $contact['phone']['number']
                 ]
-            )
+            ),
+            true
         );
+
         if (isset($reply['errors'])) {
             throw new CustomerUpdateException(json_encode($reply['errors']));
         }
+
+        return $reply['customer'];
     }
 
     /**
@@ -438,7 +443,7 @@ class PaymentService
 
         self::fraudCheck($ipqs, $api->payment_provider, $affid); // throwable
 
-        $this->addCustomer($contact); // throwable
+        $customer = $this->addCustomer($contact); // throwable
 
         if (empty($order)) {
             $price = $this->getLocalizedPrice($product, (int)$qty, $contact['country'], $api->payment_provider); // throwable
@@ -691,6 +696,9 @@ class PaymentService
             $result['status'] = self::STATUS_OK;
             $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
             $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
+
+            $customer->type = OdinCustomer::TYPE_BUYER;
+            $customer->save();
         } else {
             $result['errors'] = $payment['errors'];
             PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
@@ -1479,8 +1487,7 @@ class PaymentService
         $txn = $order->getTxnByHash((string)$data['id'], false);
 
         $api = PaymentApiService::getById($txn['payment_api_id']);
-        $appmax = new AppmaxService($api);
-        $reply = $appmax->validateWebhook($event, $data);
+        $reply = (new AppmaxService($api))->validateWebhook($event, $data);
 
         if ($reply['status']) {
             $this->approveOrder($reply['txn'], PaymentProviders::APPMAX);

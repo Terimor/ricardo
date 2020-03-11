@@ -2,15 +2,35 @@
 
 namespace App\Models;
 
-use App\Services\UtilsService;
 use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
-use App\Constants\CountryCustomers;
 
+/**
+ * This is the model class for collection "odin_customer".
+ *
+ * @property string $email
+ * @property string $number
+ * @property string $type
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $fingerprints
+ * @property string $language
+ * @property string $paypal_payer_id
+ * @property string $last_viewed_sku_code
+ * @property string $last_page_checkout
+ * @property array $addresses
+ * @property array $doc_ids
+ * @property array $ip
+ * @property array $phones
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class OdinCustomer extends Model
 {
+    const TYPE_LEAD = 'lead';
+    const TYPE_BUYER = 'buyer';
+
     public $timestamps = true;
 
     protected $collection = 'odin_customer';
@@ -29,7 +49,7 @@ class OdinCustomer extends Model
         'last_name' => null, // * string
         'ip' => [], // array of strings
         'phones' => [], // array of strings
-		'doc_ids' => [], // array of strings //documents numbers array
+        'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
             //'country' => null, // enum string
@@ -38,24 +58,22 @@ class OdinCustomer extends Model
             //'city' => null, // string
             //'street' => null, // string
             //'street2' => null, // string
-	    //'apt' => null, // string
+	        //'apt' => null, // string
         ],
         'paypal_payer_id' => null, // string
-		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
+        'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
+        'type'  => self::TYPE_LEAD
     ];
 
     /**
-    * The attributes that are mass assignable.
-    *
-    * @var array
-    */
-   protected $fillable = [
-       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses', 'doc_ids', 'phones'
-   ];
-
-    /**
+     * The attributes that are mass assignable.
      *
+     * @var array
      */
+    protected $fillable = [
+        'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses', 'doc_ids', 'phones'
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -68,11 +86,11 @@ class OdinCustomer extends Model
     }
 
 
-   /**
-     * Validator
-     * @param array $data
-     * @return type
-     */
+    /**
+    * Validator
+    * @param array $data
+    * @return type
+    */
     public function validate(array $data = [])
     {
 
@@ -121,7 +139,7 @@ class OdinCustomer extends Model
 
         return $numberString;
     }
-   
+
 
     /**
      *
@@ -137,7 +155,7 @@ class OdinCustomer extends Model
             ->limit($limit)
             ->get();
     }
-    
+
     /**
      * Get public customer name for display
      * @return type
@@ -146,7 +164,7 @@ class OdinCustomer extends Model
     {
         return mb_convert_case(mb_strtolower($this->first_name), MB_CASE_TITLE) . ' ' . mb_strtoupper(mb_substr($this->last_name, 0, 1)).'.';
     }
-    
+
     /**
      * Get public city name for display
      * @return type
