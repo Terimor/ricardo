@@ -793,6 +793,7 @@ class PayPalService
             'city'          => $order->shipping_city,
             'street'        => $order->shipping_street,
             'street2'       => $order->shipping_street2,
+            'apt'           => $order->shipping_apt,
             'building'      => $order->shipping_building,
             'language'      => $order->language,
             'phone'         => $order->customer_phone,
