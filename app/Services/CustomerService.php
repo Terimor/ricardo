@@ -111,7 +111,7 @@ class CustomerService
 
         // add ip if not in array
         if (!empty($data['ip']) && !in_array($data['ip'], $model->ip ?? [])) {
-            $model->ip = array_merge($model->ips ?? [], [$data['ip']]);
+            $model->ip = array_merge($model->ip ?? [], [$data['ip']]);
         }
 
         return true;
