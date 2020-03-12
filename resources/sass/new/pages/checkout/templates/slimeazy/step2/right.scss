@@ -1,0 +1,104 @@
+.right {
+  background-color: #fff;
+  border: solid 1px #e7e7e7;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  padding: 12px 15px 20px;
+
+  .credit-cards {
+    margin-bottom: 10px;
+  }
+
+  .paypal-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+
+  .paypal-payment-error {
+    margin-top: 10px;
+  }
+
+  .payment-info {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 20px 0 10px;
+  }
+
+  .input-field-label,
+  .select-field-label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    padding: 4px 2px;
+  }
+
+  .input-field-input,
+  .select-field-input {
+    border: 1px solid #ccc;
+    border-radius: 0;
+    color: #555;
+    font-size: 14px;
+    height: 34px;
+
+    &:focus {
+      border-color: #66afe9;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+    }
+
+    &::placeholder {
+      color: transparent;
+    }
+  }
+
+  .input-field-error,
+  .select-field-error {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .card_date-field {
+    width: 120px;
+  }
+
+  .card_cvv-field {
+    margin-left: 10px;
+    width: 120px;
+  }
+
+  .terms-field {
+    margin: 10px 0;
+  }
+
+  .terms-field-label {
+    font-family: Oswald, sans-serif;
+    font-size: 16px;
+
+    a {
+      color: #579a2f;
+    }
+  }
+
+  .pay-card-button {
+    background-color: #1771b7;
+    border-radius: 10px;
+    box-shadow: -1px 1px 6px 0px #000;
+    color: #fff;
+    font-family: Oswald, sans-serif;
+    font-size: 40px;
+    font-weight: 500;
+    height: 70px;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 0 6px;
+    text-align: center;
+    text-shadow: 0px 1px 3px #000;
+    width: 100%;
+
+    &:hover {
+      background-color: #579a2f;
+    }
+  }
+}

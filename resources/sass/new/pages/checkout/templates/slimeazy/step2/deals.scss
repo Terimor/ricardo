@@ -1,0 +1,124 @@
+.deal-error {
+  margin-bottom: 10px;
+}
+
+.deals {
+  display: flex;
+  flex-direction: column;
+
+  .deal {
+    border: 1px solid #ccc;
+    border-radius: 5px 5px 0px 0px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    .header {
+      align-items: center;
+      background-color: #1771b7;
+      border-radius: 5px 5px 0px 0px;
+      display: flex;
+      padding: 10px 15px;
+
+      .left {
+        color: #fff;
+        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 18px;
+        line-height: 30px;
+      }
+
+      .right {
+        color: #fff;
+        font-family: Oswald, sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.1;
+        margin-left: auto;
+        text-transform: uppercase;
+      }
+    }
+
+    .content {
+      align-items: flex-start;
+      background-color: #fff;
+      display: flex;
+      padding: 30px 15px 20px;
+
+      .check {
+        flex-shrink: 0;
+      }
+
+      .image {
+        flex-shrink: 0;
+        margin-left: 15px;
+        max-width: 148px;
+      }
+
+      .guarantee {
+        margin: 0 auto;
+        max-width: 80px;
+      }
+
+      .prices {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        max-width: 160px;
+        text-align: center;
+
+        .old-price {
+          color: #000;
+          display: flex;
+          font-family: Oswald, sans-serif;
+          font-size: 18px;
+          text-decoration: line-through;
+        }
+
+        .new-price {
+          color: #1771b7;
+          font-family: Oswald, sans-serif;
+          font-size: 26px;
+          font-weight: 700;
+          margin-bottom: 0 0 8px;
+        }
+
+        .credit-cards-list {
+          justify-content: center;
+          margin: 0 -2px;
+
+          .credit-card-item {
+            margin: 2px;
+
+            img {
+              max-width: 32px;
+            }
+          }
+        }
+
+        .button {
+          background-color: #1771b7;
+          border-radius: 50px;
+          color: #fff;
+          font-family: Oswald, sans-serif;
+          font-size: 16px;
+          margin-top: 10px;
+          padding: 8px 0;
+          text-transform: uppercase;
+          width: 100%;
+
+          &:hover {
+            background-color: #579a2f;
+          }
+        }
+      }
+    }
+
+    &:hover {
+      .content {
+        background-color: #f7e8e7;
+      }
+    }
+  }
+}

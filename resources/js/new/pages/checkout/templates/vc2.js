@@ -19,7 +19,7 @@ js_deps.wait(['vue'], () => {
     },
 
 
-    created() {
+    mounted() {
       this.form.deal = 1;
       this.form.payment_provider = 'credit-card';
     },
