@@ -39,7 +39,7 @@ class OdinCustomer extends Model
     const TYPE_LEAD = 'lead';
     const TYPE_BUYER = 'buyer';
 
-    public static $exceptFromRequest = ['number', 'fingerprints', 'ip', 'phones', 'doc_ids', 'addresses', 'paypal_payer_id'];
+    public static $exceptFromRequest = ['number', 'fingerprints', 'ip', 'phones', 'doc_ids', 'addresses', 'paypal_payer_id', 'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'];
 
     /**
      *
