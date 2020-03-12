@@ -793,9 +793,14 @@ class PayPalService
             'city'          => $order->shipping_city,
             'street'        => $order->shipping_street,
             'street2'       => $order->shipping_street2,
+            'apt'           => $order->shipping_apt,
+            'building'      => $order->shipping_building,
             'language'      => $order->language,
             'phone'         => $order->customer_phone,
-            'paypal_payer_id' => optional($paypal_order->payer)->payer_id
+            'paypal_payer_id' => optional($paypal_order->payer)->payer_id,
+            'f' => $order->fingerprint ?? null,
+            'page' => $order->page_checkout ?? null,
+            'sku' => $order->getMainSku()
         ]);
     }
 

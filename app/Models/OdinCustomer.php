@@ -28,9 +28,6 @@ use Illuminate\Support\Facades\Validator;
  */
 class OdinCustomer extends Model
 {
-    const TYPE_LEAD = 'lead';
-    const TYPE_BUYER = 'buyer';
-
     public $timestamps = true;
 
     protected $collection = 'odin_customer';
@@ -39,40 +36,50 @@ class OdinCustomer extends Model
 
     protected $guarded = ['addresses', 'ip', 'phones'];
 
+    const TYPE_LEAD = 'lead';
+    const TYPE_BUYER = 'buyer';
+
+    public static $exceptFromRequest = ['number', 'fingerprints', 'ip', 'phones', 'doc_ids', 'addresses', 'paypal_payer_id', 'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'];
+
     /**
      *
      * @var type
      */
     protected $attributes = [
         'email' => null, // * unique string,
+        'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
+        'type' => self::TYPE_LEAD, // * string,
         'first_name' => null, // * string
         'last_name' => null, // * string
+        'fingerprints' => [], // array of strings
         'ip' => [], // array of strings
         'phones' => [], // array of strings
-        'doc_ids' => [], // array of strings //documents numbers array
+		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
-            //'country' => null, // enum string
-            //'zip' => null, // string
-            //'state' => null, // string
-            //'city' => null, // string
-            //'street' => null, // string
-            //'street2' => null, // string
-	        //'apt' => null, // string
+//            'country' => null, // enum string
+//            'zip' => null, // string
+//            'state' => null, // string
+//            'city' => null, // string
+//            'street' => null, // string
+//            'street2' => null, // string
+//	          'apt' => null, // string
+//            'building' => null, // string
         ],
         'paypal_payer_id' => null, // string
-        'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
-        'type'  => self::TYPE_LEAD
+        'last_page_checkout' => null, // string
+        'last_viewed_sku_code' => null, // string
+        'recovery_way' => null, // enum [email, sms]
     ];
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses', 'doc_ids', 'phones'
-    ];
+    * The attributes that are mass assignable.
+    *
+    * @var array
+    */
+   protected $fillable = [
+       'email', 'number', 'type', 'first_name', 'last_name', 'language', 'paypal_payer_id'
+   ];
 
     public static function boot()
     {
