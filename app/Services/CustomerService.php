@@ -30,8 +30,6 @@ class CustomerService
             $model->first_name = $model->getOriginal('first_name');
             $model->last_name = $model->getOriginal('last_name');
         }
-
-        // add ip if not in array
         $data['ip'] = request()->ip();
 
         // prepare array fields
