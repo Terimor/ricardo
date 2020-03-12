@@ -94,7 +94,7 @@ class PaymentService
      * @return OdinCustomer
      * @throws CustomerUpdateException
      */
-    private function addCustomer(array $contact): void
+    private function addCustomer(array $contact): OdinCustomer
     {
         $reply = $this->customerService->addOrUpdate(
             array_merge($contact,
