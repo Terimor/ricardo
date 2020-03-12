@@ -485,7 +485,7 @@
           ? this.dialCode + form.phone.replace(/[^0-9]/g, '')
           : '';
 
-        checkForLeadsRequest(this.vmc4Form.variant, form.fname, form.lname, form.email, phone);
+        checkForLeadsRequest(this.vmc4Form.variant, form.fname, form.lname, form.email, phone, !this.$v.form.stepTwo.phone.$invalid);
       },
 			submit() {
         let ipqsResult = null;
