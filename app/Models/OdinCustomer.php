@@ -78,7 +78,7 @@ class OdinCustomer extends Model
     * @var array
     */
    protected $fillable = [
-       'email', 'number', 'type', 'first_name', 'last_name', 'fingerprints', 'language', 'paypal_payer_id', 'addresses', 'doc_ids', 'phones',
+       'email', 'number', 'type', 'first_name', 'last_name', 'language', 'paypal_payer_id',
        'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'
    ];
 
