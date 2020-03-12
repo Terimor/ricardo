@@ -402,7 +402,7 @@ class PaymentService
             $req->get('contact'),
             $req->get('address'),
             [
-                'ip' => $req->ip(), 'email' => strtolower($req->input('contact.email')),
+                'email' => strtolower($req->input('contact.email')),
                 'f' => $fingerprint,
                 'page' => $page_checkout,
                 'sku' => $sku
