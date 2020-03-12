@@ -35,10 +35,7 @@
 
 @section('content_checkout')
   <div class="slimeazy">
-    @include('new.pages.checkout.templates.slimeazy.section1')
-    @include('new.pages.checkout.templates.slimeazy.section2')
-    @include('new.pages.checkout.templates.slimeazy.section3')
-    @include('new.pages.checkout.templates.slimeazy.section4')
-    @include('new.pages.checkout.templates.slimeazy.section5')
+    @include('new.pages.checkout.templates.slimeazy.step1')
+    @include('new.pages.checkout.templates.slimeazy.step2')
   </div>
 @endsection

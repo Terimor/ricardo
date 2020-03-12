@@ -6,6 +6,7 @@
   display: flex;
   padding: 16px 70px;
   position: relative;
+  transition: all .3s ease;
 
   &:hover {
     background-color: rgba(191,191,191,.71);
@@ -28,6 +29,10 @@
         padding: 16px 50px 16px 40px;
       }
     }
+  }
+
+  &.fade-enter, &.fade-leave-to {
+    opacity: 0;
   }
 }
 

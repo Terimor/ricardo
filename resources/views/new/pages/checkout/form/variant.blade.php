@@ -1,10 +1,17 @@
 @if (count($product->skus) > 1 && (!Request::get('variant') || Request::get('variant') === '0'))
 
   <div
-    class="variant-field scroll-when-error"
+    class="variant-field"
     :class="{ opened: variant_opened, up: variant_up, invalid: $v.form.variant.$dirty && $v.form.variant.$invalid }">
 
     <div class="variant-field-label">{{ t('checkout.select_variant') }}</div>
+
+    @include('new.components.error', [
+      'ref' => 'deal_error',
+      'active' => '$v.form.variant.$dirty && $v.form.variant.$invalid',
+      'class' => 'variant-field-error scroll-when-error invalid',
+      'label' => t('checkout.select_variant'),
+    ])
 
     <div class="inside">
 

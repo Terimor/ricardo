@@ -4,11 +4,6 @@ $size2: 992px;
 $size3: 1200px;
 
 @import '../../checkout';
-@import './slimeazy/section1';
-@import './slimeazy/section2';
-@import './slimeazy/section3';
-@import './slimeazy/section4';
-@import './slimeazy/section5';
 
 
 .slimeazy {
@@ -36,6 +31,9 @@ $size3: 1200px;
       text-decoration: underline;
     }
   }
+
+  @import './slimeazy/step1';
+  @import './slimeazy/step2';
 }
 
 .container {
@@ -85,6 +83,7 @@ $size3: 1200px;
 
 .header-logo {
   height: auto;
+  max-height: 48px;
   max-width: 100%;
 }
 

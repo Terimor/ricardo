@@ -1,8 +1,8 @@
 <div
   ref="paypal_button"
   class="paypal-button"
-  v-if="!is_paypal_hidden && (paypal_button_init() || true)"
-  v-show="form.installments === 1">
+  v-if="paypal_button_init() || true"
+  v-show="!is_paypal_hidden">
 
   <div class="paypal-button-original"></div>
 
