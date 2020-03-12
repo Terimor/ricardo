@@ -18,8 +18,12 @@ class CustomerService
     {
         $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
         $model->fill($data);
-        $model->last_page_checkout = $data['page'] ?? null;
-        $model->last_viewed_sku_code = $data['sku'] ?? null;
+        if (!empty($data['page'])) {
+            $model->last_page_checkout = $data['page'];
+        }
+        if (!empty($data['sku'])) {
+            $model->last_viewed_sku_code = $data['sku'];
+        }
 
         // if type is buyer, first name and last name should not be changed
         if ($model->type == OdinCustomer::TYPE_BUYER) {
