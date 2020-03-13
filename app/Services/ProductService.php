@@ -583,10 +583,6 @@ class ProductService
         $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
         $products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
 
-        if (!$products) {
-            logger()->error('EmptyProductsForMinishop', [$products, $productsSortedIds, $page]);
-        }
-
         // get all locale products with images
         $productsLocale = static::getLocaleMinishopProducts($products);
 
