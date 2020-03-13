@@ -16,7 +16,7 @@ class CustomerService
      */
     public function addOrUpdate(array $data, bool $returnModel = false): array
     {
-        $model = OdinCustomer::firstOrNew(['email' => strtolower($data['email'])]);
+        $model = OdinCustomer::firstOrCreate(['email' => strtolower($data['email'])]);
         $model->fill($data);
         if (!empty($data['page'])) {
             $model->last_page_checkout = $data['page'];
@@ -27,8 +27,8 @@ class CustomerService
 
         // if type is buyer, first name and last name should not be changed
         if ($model->type == OdinCustomer::TYPE_BUYER) {
-            $model->first_name = $model->getOriginal('first_name');
-            $model->last_name = $model->getOriginal('last_name');
+            $model->first_name = $model->getOriginal('first_name') ?? $data['first_name'];
+            $model->last_name = $model->getOriginal('last_name') ?? $data['last_name'];
         }
         $data['ip'] = request()->ip();
 
