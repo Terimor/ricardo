@@ -76,11 +76,13 @@ class CustomerService
             'apt' => !empty($data['apt']) ? trim($data['apt']) : '',
             'building' => !empty($data['building']) ? trim($data['building']) : '',
         ];
-
+        if(!array_filter($address)) {
+            $address = [];
+        }
         $addressJson = json_encode($address);
         $modelAddressesJson = json_encode($model->addresses);
         // add address if not in array
-        if (!strstr(' '.$modelAddressesJson, $addressJson)) {
+        if (!strstr(' ' . $modelAddressesJson, $addressJson)) {
             $model_addresses = array_merge($model->addresses, [$address]);
         } else {
             $model_addresses = $model->addresses;
