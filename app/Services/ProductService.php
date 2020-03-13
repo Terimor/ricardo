@@ -460,10 +460,12 @@ class ProductService
 
                 $currency = CurrencyService::getCurrency();
                 $productsLocale = [];
-                foreach ($products as $product) {
-                    $product->currencyObject = $currency;
-                    $product->hide_cop_id_log = true;
-                    $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
+                if ($products) {
+                    foreach ($products as $product) {
+                        $product->currencyObject = $currency;
+                        $product->hide_cop_id_log = true;
+                        $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
+                    }
                 }
                 // sort products by sold qty
                 $productsLocaleSorted = static::sortLocaleSoldProducts($soldProducts, $productsLocale);
@@ -583,6 +585,9 @@ class ProductService
 
         // get all locale products with images
         $productsLocale = static::getLocaleMinishopProducts($products);
+        if (!$products) {
+            logger()->error('EmptyProductsForMinishop', [$products, $productsSortedIds, $page]);
+        }
 
         // sort products by sold qty on current page
         $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
@@ -662,15 +667,17 @@ class ProductService
         // get all images
         $imagesArray = [];
         $imagesIdsArray = [];
-        foreach ($products as $product) {
-            $imagesIds = $product->getLocalMinishopImagesIds();
-            $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
-        }
+        if ($products) {
+            foreach ($products as $product) {
+                $imagesIds = $product->getLocalMinishopImagesIds();
+                $imagesIdsArray = array_merge($imagesIdsArray, $imagesIds);
+            }
 
-        if ($imagesIdsArray) {
-            $images = AwsImage::getByIds($imagesIdsArray);
-            foreach ($images as $image) {
-                $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
+            if ($imagesIdsArray) {
+                $images = AwsImage::getByIds($imagesIdsArray);
+                foreach ($images as $image) {
+                    $imagesArray[$image->id] = !empty($image['urls'][app()->getLocale()]) ? \Utils::replaceUrlForCdn($image['urls'][app()->getLocale()]) : (!empty($image['urls']['en']) ? \Utils::replaceUrlForCdn($image['urls']['en']) : '');
+                }
             }
         }
         return $imagesArray;
@@ -683,13 +690,15 @@ class ProductService
      */
     public static function getLocaleMinishopProducts($products): array
     {
-        $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
-        $currency = CurrencyService::getCurrency();
         $productsLocale = [];
-        foreach ($products as $product) {
-            $product->currencyObject = $currency;
-            $product->hide_cop_id_log = true;
-            $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
+        if ($products) {
+            $imagesArray = ProductService::getProductsImagesIdsForMinishop($products);
+            $currency = CurrencyService::getCurrency();
+            foreach ($products as $product) {
+                $product->currencyObject = $currency;
+                $product->hide_cop_id_log = true;
+                $productsLocale[] = static::getDataForMiniShop($product, $imagesArray);
+            }
         }
         return $productsLocale;
     }
