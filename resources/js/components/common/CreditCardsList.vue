@@ -32,6 +32,7 @@
 
     props: [
       'withPaypal',
+      'withAPM',
     ],
 
 
@@ -57,8 +58,17 @@
       },
 
       paymentMethodsAvailableList() {
-        let paymentMethodNames = Object.keys(this.$root.paymentMethods || [])
-          .filter(name => name !== 'instant_transfer');
+        let paymentMethodNames = Object.keys(this.$root.paymentMethods || []).filter(name => {
+          if (name === 'instant_transfer') {
+            return false;
+          }
+
+          if (this.$root.paymentMethods[name].is_apm && !this.withAPM) {
+            return false;
+          }
+
+          return true;
+        });
 
         if (this.withPaypal && this.$root.paypalEnabled) {
           paymentMethodNames.push('instant_transfer');

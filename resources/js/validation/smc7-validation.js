@@ -13,13 +13,19 @@ export default function() {
     city: validators.getCityRules(),
     zipCode: validators.getZipCodeRules(),
     country: validators.getCountryRules(),
-    cardNumber: validators.getCardNumberRules(),
-    cardDate: validators.getCardDateRules(),
-    cvv: validators.getCVVRules(),
   };
 
+  if (this.form.paymentProvider === 'credit-card') {
+    rules.cardNumber = validators.getCardNumberRules();
+    rules.cardDate = validators.getCardDateRules();
+    rules.cvv = validators.getCVVRules();
+  }
+
   if (this.$root.isAffIDEmpty) {
-    rules.cardHolder = validators.getCardHolderRules();
+    if (this.form.paymentProvider === 'credit-card') {
+      rules.cardHolder = validators.getCardHolderRules();
+    }
+
     rules.terms = validators.getTermsRules();
   }
 

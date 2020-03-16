@@ -65,9 +65,13 @@
             @click="paypalSubmit"
           >{{ paypalRiskFree }}</paypal-button>
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
+          <h3 v-html="textPaySecurelyAPM"></h3>
+          <payment-provider-eps
+            v-model="form.paymentProvider"
+            @input="activateForm" />
           <slot name="warranty" />
           <form v-if="form.paymentProvider && isFormShown">
-            <div class="card-info">
+            <div class="card-info" v-if="form.paymentProvider === 'credit-card'">
               <CardHolder
                 v-if="$root.isAffIDEmpty"
                 :$v="$v.form.stepThree.cardHolder"
@@ -436,6 +440,7 @@
       textContactInformation: () => t('checkout.contact_information'),
       textPaymentMethod: () => t('checkout.payment_method'),
       textPaySecurely: () => t('checkout.pay_securely'),
+      textPaySecurelyAPM: () => t('checkout.pay_securely_apm'),
       textSubmitButton: () => t('checkout.payment_form.submit_button'),
       paypalRiskFree: () => t('checkout.paypal.risk_free'),
       textPaymentError: () => t('checkout.payment_error'),

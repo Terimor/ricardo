@@ -197,13 +197,9 @@ export const tplMixin = {
       }
     },
 
-    setExtraFieldsValidationRules(rules) {
+    setExtraFieldsValidationRules(rules, paymentProvider) {
       if (!rules) {
         return;
-      }
-
-      if (this.extraFields.installments) {
-        rules.installments = validators.getInstallmentsRules();
       }
 
       if (this.extraFields.state) {
@@ -222,24 +218,26 @@ export const tplMixin = {
         rules.district = validators.getDistrictRules();
       }
 
-      if (this.extraFields.card_type) {
-        rules.card_type = validators.getCardTypeRules();
-      }
+      if (paymentProvider === 'credit-card') {
+        if (this.extraFields.installments) {
+          rules.installments = validators.getInstallmentsRules();
+        }
 
-      if (this.extraFields.document_type) {
-        rules.document_type = validators.getDocumentTypeRules();
-      }
+        if (this.extraFields.card_type) {
+          rules.card_type = validators.getCardTypeRules();
+        }
 
-      if (this.extraFields.document_number) {
-        rules.document_number = validators.getDocumentNumberRules();
+        if (this.extraFields.document_type) {
+          rules.document_type = validators.getDocumentTypeRules();
+        }
+
+        if (this.extraFields.document_number) {
+          rules.document_number = validators.getDocumentNumberRules();
+        }
       }
     },
 
-    setExtraFieldsForCardPayment(data) {
-      if (this.extraFields.installments) {
-        data.card.installments = this.form.installments;
-      }
-
+    setExtraFieldsForCardPayment(data, paymentProvider) {
       if (this.extraFields.state) {
         data.address.state = this.form.state;
       }
@@ -256,16 +254,22 @@ export const tplMixin = {
         data.address.district = this.form.district;
       }
 
-      if (this.extraFields.card_type) {
-        data.card.type = this.form.card_type;
-      }
+      if (paymentProvider === 'credit-card') {
+        if (this.extraFields.installments) {
+          data.card.installments = this.form.installments;
+        }
 
-      if (this.extraFields.document_type) {
-        data.contact.document_type = this.form.document_type;
-      }
+        if (this.extraFields.card_type) {
+          data.card.type = this.form.card_type;
+        }
 
-      if (this.extraFields.document_number) {
-        data.contact.document_number = this.form.document_number;
+        if (this.extraFields.document_type) {
+          data.contact.document_type = this.form.document_type;
+        }
+
+        if (this.extraFields.document_number) {
+          data.contact.document_number = this.form.document_number;
+        }
       }
     },
 

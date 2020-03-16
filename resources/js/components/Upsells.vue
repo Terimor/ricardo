@@ -83,13 +83,6 @@
                     id="payment-error"
                     class="error-container"
                     v-html="paymentError"></p>
-                  <green-button
-                    v-if="paymentProvider === 'credit-card'"
-                    class="submit-button"
-                    :isLoading="isSubmitted"
-                    @click="submit">
-                      {{ textBuyAccessories }}
-                    </green-button>
                   <paypal-button
                     v-if="paymentProvider === 'paypal'"
                     class="submit-button"
@@ -98,6 +91,13 @@
                   >
                     {{ textBuyNow }}
                   </paypal-button>
+                  <green-button
+                    v-else
+                    class="submit-button"
+                    :isLoading="isSubmitted"
+                    @click="submit">
+                      {{ textBuyAccessories }}
+                  </green-button>
                 </template>
             </div>
         </template>
@@ -276,7 +276,7 @@
           })),
         };
 
-        send1ClickRequest(data, this.accessoryList)
+        send1ClickRequest(data, this.accessoryList, this.paymentProvider)
           .then(res => {
             if (res.paymentError) {
               this.paymentError = res.paymentError;

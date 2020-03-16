@@ -57,7 +57,7 @@
                     <img id="product-image" class="lazy" :data-src="productImage" alt="">
                     <template v-if="!isPurchasAlreadyExists">
                         <h2><span v-html="textStep"></span> {{ getStepOrder(3) }}: <span v-html="textPaymentMethod"></span></h2>
-                        <h3 v-html="textPaySecurely"></h3>
+                        <div v-html="textPaySecurely"></div>
                         <payment-provider-radio-list
                           v-model="form.paymentProvider"
                           @input="activateForm" />
@@ -71,6 +71,10 @@
                           @click="paypalSubmit"
                         >{{ paypalRiskFree }}</paypal-button>
                         <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
+                        <div v-html="textPaySecurelyAPM"></div>
+                        <payment-provider-eps
+                          v-model="form.paymentProvider"
+                          @input="activateForm" />
                         <transition name="el-zoom-in-top">
                             <payment-form
                               :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"
@@ -349,6 +353,7 @@
       textSelectVariant: () => t('checkout.select_variant'),
       textPaymentMethod: () => t('checkout.payment_method'),
       textPaySecurely: () => t('checkout.pay_securely'),
+      textPaySecurelyAPM: () => t('checkout.pay_securely_apm'),
       textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
       textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),
       textContactInformation: () => t('checkout.contact_information'),
@@ -699,6 +704,10 @@
         .value {
           margin-left: auto;
         }
+      }
+
+      .payment-provider-eps {
+        margin-bottom: 10px;
       }
     }
 

@@ -533,6 +533,7 @@ header {
 
   &__credit-card-switcher {
     max-width: 460px;
+    width: 100%;
   }
 
   &__form-wrapper {
@@ -562,6 +563,9 @@ header {
     box-shadow: none;
   }
 
+  h2 {
+    margin-top: 40px;
+  }
 }
 
 .tpl-vmp42 {
