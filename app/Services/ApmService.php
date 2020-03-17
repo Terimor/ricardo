@@ -43,7 +43,7 @@ class ApmService {
             ['ip' => $req->ip(), 'email' => strtolower($req->input('contact.email'))]
         );
 
-        logger()->info('Apm req', ['data' => $req->getContent()]);
+//        logger()->info('Apm req', ['data' => $req->getContent()]);
 
         $shop_currency = CurrencyService::getCurrency()->code;
 
@@ -289,6 +289,8 @@ class ApmService {
         $hash    = $req->input('transid');
         $status  = $req->input('status');
         $ts      = $req->input('timestamp', '') ?? '';
+
+//        logger()->info('Apm redirect', ['content' => $req->getContent()]);
 
         $order = OdinOrder::getById($order_id); // throwable
         $product = $order->getProductByTxnHash($hash); // throwable

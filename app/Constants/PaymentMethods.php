@@ -15,7 +15,6 @@ class PaymentMethods
     const HIPERCARD     = 'hipercard';
     const AURA          = 'aura';
     const ELO           = 'elo';
-//    const PREZELEWY24   = 'prezelewy24';
     const CARNET        = 'carnet';
     const NARANJA       = 'naranja';
     const CABAL         = 'cabal';
