@@ -117,16 +117,17 @@ class OdinOrder extends OdinModel
          */
         'products' => [],
         'txns' => [ // — array of objects,
-//	        'hash' => null, // string, //link to Txn hash
+//          'hash' => null, // string, //link to Txn hash
 //          'capture_hash' => null, // string, // capture hash (for PayPal capture refunds)
-//	        'value' => null, float, //decreases after refund
-//	        'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
-//	        'fee_usd' => null,// — float, //provider's txn fee in USD
-//	        'payment_provider' => '', // — enum string,
-//	        'payment_method' => '', // — enum string,
-//	        'payer_id' => '', // — string, //payer ID in payment provider system
-//	        'card_type' => '', // — enum string,
-//	        'payment_api_id' => '', // —string,
+//          'value' => null, float, //decreases after refund
+//          'status' => 'new', // — enum, default "new", ["new", "authorized", "captured", "approved", "failed"] //approved should be confirmed by webhook
+//          'fee_usd' => null,// — float, //provider's txn fee in USD
+//          'payment_provider' => '', // — enum string,
+//          'payment_method' => '', // — enum string,
+//          'payer_id' => '', // — string, //payer ID in payment provider system
+//          'card_type' => '', // — enum string,
+//          'payment_api_id' => '', // —string,
+//          'is_fallback' => false
         ],
         'ipqualityscore' => null, // object
         'page_checkout' => null, // string full checkout page address with parameters
@@ -595,7 +596,7 @@ class OdinOrder extends OdinModel
             ->merge([
                 collect($txn)->only([
                     'hash', 'capture_hash', 'value', 'status', 'fee_usd', 'card_type', 'card_number',
-                    'payment_method','payment_provider', 'payment_api_id', 'payer_id'
+                    'payment_method','payment_provider', 'payment_api_id', 'payer_id', 'is_fallback'
                 ])->all()
             ])->all();
     }
