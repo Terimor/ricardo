@@ -1106,7 +1106,7 @@
           ? this.dialCode + form.phone.replace(/[^0-9]/g, '')
           : '';
 
-        checkForLeadsRequest(form.variant, form.fname, form.lname, form.email, phone);
+        checkForLeadsRequest(form.variant, form.fname, form.lname, form.email, phone, !this.$v.form.phone.$invalid);
       },
 
       paypalSubmit() {

@@ -1431,6 +1431,7 @@ class PaymentProviders
                         ],
                         'excl' => ['af', 'ag', 'al', 'ar', 'br', 'bz', 'cf', 'co', 'do', 'gl', 'je', 'jo', 'kz', 'mx', 'sy', 'tt', 'uz']
                     ],
+                    /*
                     PaymentMethods::EPS => [
                         '-3ds' => ['at']
                     ],
@@ -1443,6 +1444,7 @@ class PaymentProviders
                     PaymentMethods::BANCONTACT => [
                         '-3ds' => ['be']
                     ]
+                    */
                 ],
                 'fallback' => [
                     PaymentMethods::VISA => [

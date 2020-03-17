@@ -2,13 +2,30 @@
 
 namespace App\Models;
 
-use App\Services\UtilsService;
 use Illuminate\Database\Eloquent\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
-use App\Constants\CountryCustomers;
 
+/**
+ * This is the model class for collection "odin_customer".
+ *
+ * @property string $email
+ * @property string $number
+ * @property string $type
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $fingerprints
+ * @property string $language
+ * @property string $paypal_payer_id
+ * @property string $last_viewed_sku_code
+ * @property string $last_page_checkout
+ * @property array $addresses
+ * @property array $doc_ids
+ * @property array $ip
+ * @property array $phones
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class OdinCustomer extends Model
 {
     public $timestamps = true;
@@ -19,29 +36,40 @@ class OdinCustomer extends Model
 
     protected $guarded = ['addresses', 'ip', 'phones'];
 
+    const TYPE_LEAD = 'lead';
+    const TYPE_BUYER = 'buyer';
+
+    public static $exceptFromRequest = ['number', 'fingerprints', 'ip', 'phones', 'doc_ids', 'addresses', 'paypal_payer_id', 'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'];
+
     /**
      *
      * @var type
      */
     protected $attributes = [
         'email' => null, // * unique string,
+        'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
+        'type' => self::TYPE_LEAD, // * string,
         'first_name' => null, // * string
         'last_name' => null, // * string
+        'fingerprints' => [], // array of strings
         'ip' => [], // array of strings
         'phones' => [], // array of strings
 		'doc_ids' => [], // array of strings //documents numbers array
         'language' => null, // enum string
         'addresses' => [
-            //'country' => null, // enum string
-            //'zip' => null, // string
-            //'state' => null, // string
-            //'city' => null, // string
-            //'street' => null, // string
-            //'street2' => null, // string
-	    //'apt' => null, // string
+//            'country' => null, // enum string
+//            'zip' => null, // string
+//            'state' => null, // string
+//            'city' => null, // string
+//            'street' => null, // string
+//            'street2' => null, // string
+//	          'apt' => null, // string
+//            'building' => null, // string
         ],
         'paypal_payer_id' => null, // string
-		'number' => null, // *U (UXXXXXXXUS, X = A-Z0-9, US = country),
+        'last_page_checkout' => null, // string
+        'last_viewed_sku_code' => null, // string
+        'recovery_way' => null, // enum [email, sms]
     ];
 
     /**
@@ -50,12 +78,10 @@ class OdinCustomer extends Model
     * @var array
     */
    protected $fillable = [
-       'email', 'first_name', 'last_name', 'language', 'paypal_payer_id', 'number', 'addresses', 'doc_ids', 'phones'
+       'email', 'number', 'type', 'first_name', 'last_name', 'language', 'paypal_payer_id',
+       'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'
    ];
 
-    /**
-     *
-     */
     public static function boot()
     {
         parent::boot();
@@ -68,11 +94,11 @@ class OdinCustomer extends Model
     }
 
 
-   /**
-     * Validator
-     * @param array $data
-     * @return type
-     */
+    /**
+    * Validator
+    * @param array $data
+    * @return type
+    */
     public function validate(array $data = [])
     {
 
@@ -99,6 +125,17 @@ class OdinCustomer extends Model
         $this->attributes['email'] =  strtolower(trim($value));
     }
 
+
+    /**
+     * Switches to buuyer and saves
+     * @return void
+     */
+    public function switchToBuyer(): void
+    {
+        $this->type = self::TYPE_BUYER;
+        $this->save();
+    }
+
     /**
      * Generate customer number
      * @param string $countryCode
@@ -121,7 +158,7 @@ class OdinCustomer extends Model
 
         return $numberString;
     }
-   
+
 
     /**
      *
@@ -137,7 +174,7 @@ class OdinCustomer extends Model
             ->limit($limit)
             ->get();
     }
-    
+
     /**
      * Get public customer name for display
      * @return type
@@ -146,7 +183,7 @@ class OdinCustomer extends Model
     {
         return mb_convert_case(mb_strtolower($this->first_name), MB_CASE_TITLE) . ' ' . mb_strtoupper(mb_substr($this->last_name, 0, 1)).'.';
     }
-    
+
     /**
      * Get public city name for display
      * @return type

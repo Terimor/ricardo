@@ -10,7 +10,6 @@ use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
 use App\Models\Txn;
 use App\Services\OrderService;
-use App\Services\UtilsService;
 use App\Constants\CountryCustomers;
 
 class OdinOrder extends OdinModel
@@ -318,12 +317,16 @@ class OdinOrder extends OdinModel
 
     /**
      * Returns OdinOrder by ID and product info
-     * @param  string   $id
+     * @param  string|null   $id
      * @param  array    $info [sku => string, qty => int, is_warranty_checked => bool]
      * @return OdinOrder|null
      */
-    public static function findExistedOrderForPay(string $id, array $info): ?OdinOrder
+    public static function findExistedOrderForPay(?string $id, array $info): ?OdinOrder
     {
+        if (!$id) {
+            return null;
+        }
+
         $query = OdinOrder::where('_id', $id)
             ->where('status', self::STATUS_NEW)
             ->where('products.sku_code', $info['sku'])
@@ -385,6 +388,34 @@ class OdinOrder extends OdinModel
         } else {
             return 'Unknown';
         }
+    }
+
+    /**
+     * Fills in shipping data
+     * @param array $data
+     * @return void
+     */
+    public function fillShippingData(array $data): void
+    {
+        $phone = $data['phone'];
+        if (is_array($phone)) {
+            $phone = $data['phone']['country_code'] . \Utils::preparePhone($data['phone']['number']);
+        }
+
+        $this->ip = $data['ip'];
+        $this->customer_phone   = $phone;
+        $this->shipping_city    = $data['city'];
+        $this->shipping_street  = $data['street'];
+        $this->shipping_country = $data['country'];
+        $this->shipping_zip     = $data['zip'];
+        $this->customer_email   = $data['email'];
+        $this->customer_doc_id  = $data['document_number'] ?? null;
+        $this->shipping_state   = $data['state'] ?? null;
+        $this->shipping_street2 = $data['district'] ?? null;
+        $this->shipping_apt     = $data['complement'] ?? null;
+        $this->customer_first_name  = $data['first_name'];
+        $this->customer_last_name   = $data['last_name'];
+        $this->shipping_building    = $data['building'] ?? null;
     }
 
     /**
@@ -659,7 +690,7 @@ class OdinOrder extends OdinModel
     public static function getRecentlyBoughtData(string $country_code = null, int $limit = 25): array
     {
         if (!$country_code) {
-            $country_code = UtilsService::getLocationCountryCode();
+            $country_code = \Utils::getLocationCountryCode();
         }
 
         $recentlyBoughtNames = $recentlyBoughtCities = [];

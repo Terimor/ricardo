@@ -35,7 +35,7 @@ class PaymentMethodMapper
 
     /**
      * Map number to card method
-     * @param  string $code
+     * @param  string $number
      * @return string
      */
     public static function toMethod(string $number): string

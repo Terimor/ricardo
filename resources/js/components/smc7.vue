@@ -543,7 +543,7 @@
           ? this.dialCode + this.form.phone.replace(/[^0-9]/g, '')
           : '';
 
-        checkForLeadsRequest(this.form.variant, this.form.fname, this.form.lname, this.form.email, phone);
+        checkForLeadsRequest(this.form.variant, this.form.fname, this.form.lname, this.form.email, phone, !this.$v.form.phone.$invalid);
       },
       submit() {
         let ipqsResult = null;

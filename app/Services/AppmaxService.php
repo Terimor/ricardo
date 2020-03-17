@@ -80,13 +80,8 @@ class AppmaxService
      */
     public static function createCustomerObj(array $contacts): array
     {
-        $phone = '';
-        if (gettype($contacts['phone']) === 'array') {
-            $phone = $contacts['phone']['number'];
-        } else {
-            $phone = substr($contacts['phone'], 2, 11);
-        }
-        $result = [
+
+        return [
             'address_street'    => $contacts['street'],
             'address_city'      => $contacts['city'],
             'address_state'     => $contacts['state'] ?? '',
@@ -97,10 +92,8 @@ class AppmaxService
             'firstname' => $contacts['first_name'],
             'lastname'  => $contacts['last_name'],
             'postcode'  => preg_replace('/\W/','', $contacts['zip']),
-            'telephone' => $phone
+            'telephone' => is_array($contacts['phone']) ? $contacts['phone']['number'] : substr($contacts['phone'], 2, 11)
         ];
-
-        return $result;
     }
 
     /**

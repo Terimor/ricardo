@@ -177,22 +177,25 @@ let leadsLastData = {
   phone: null,
 };
 
-export function checkForLeadsRequest(variant, first_name, last_name, email, phone) {
+export function checkForLeadsRequest(variant, first_name, last_name, email, phone, phone_valid) {
   const data = {
     email,
     first_name,
     last_name,
     sku: variant || js_data.product.skus[0].code,
     page: location.href,
-    phone: phone,
   };
+
+  if (phone_valid) {
+    data.phone = phone;
+  }
 
   if (first_name && last_name && email) {
     const dataUpdated =
       first_name !== leadsLastData.first_name ||
       last_name !== leadsLastData.last_name ||
       email !== leadsLastData.email ||
-      phone !== leadsLastData.phone;
+      (phone_valid && phone !== leadsLastData.phone);
 
     if (dataUpdated) {
       leadsLastData = {
@@ -204,7 +207,7 @@ export function checkForLeadsRequest(variant, first_name, last_name, email, phon
 
       Promise.resolve()
         .then(fingerprint)
-        .then(result => data.fingerprint = result)
+        .then(result => data.f = result)
         .then(() => fetch('/new-customer', {
           method: 'post',
           credentials: 'same-origin',

@@ -1,5 +1,6 @@
 import './resourses/polyfills';
 import * as cookies from './utils/cookies';
+import searchPopulate from './utils/searchPopulate';
 import './services/queryParams';
 import './services/fingerprintjs2';
 import wait from './utils/wait';
@@ -76,6 +77,7 @@ function initFreshChatWidget() {
 function bindStaticTopbarBlock() {
   const parent = document.querySelector('#static-topbar');
   const chatLink = document.querySelector('#static-topbar a.openchat');
+  const contactLink = document.querySelector('#static-topbar a.contact-link');
 
   if (parent) {
     parent.classList.remove('hidden');
@@ -98,6 +100,10 @@ function bindStaticTopbarBlock() {
         fcWidget.open();
       }
     });
+  }
+
+  if (contactLink) {
+    contactLink.href = searchPopulate('/contact-us');
   }
 }
 

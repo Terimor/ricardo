@@ -163,7 +163,7 @@ class MinteService
     /**
      * Provides payment by card
      * @param  array   $card
-     * @param  array   $contact
+     * @param  array   $contacts
      * @param  array   $details
      * [
      *  '3ds'=>boolean,
@@ -176,13 +176,16 @@ class MinteService
      * ]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $details): array
+    public function payByCard(array $card, array $contacts, array $details): array
     {
-        $phone = $contact['phone'];
-        if (is_array($contact['phone'])) {
-            $phone = $contact['phone']['country_code'] . $contact['phone']['number'];
-        }
-        return $this->authorize($card, array_merge($contact, ['phone' => $phone]), $details);
+        return $this->authorize(
+            $card,
+            array_merge(
+                $contacts,
+                ['phone' => is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone']]
+            ),
+            $details
+        );
     }
 
     /**

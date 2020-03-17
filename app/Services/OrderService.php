@@ -63,13 +63,13 @@ class OrderService
             return [
                 'errors' => $validator->errors()->messages(),
                 'success' => false
-             ];
+            ];
         } else {
             return [
                 'success' => $model->save(),
                 'order' => $returnModel ? $model : $model->attributesToArray(),
                 'affiliate' => isset($affiliate) ? $affiliate : null
-             ];
+            ];
         }
     }
 

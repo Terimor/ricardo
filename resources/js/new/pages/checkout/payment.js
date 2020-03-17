@@ -26,6 +26,10 @@ export default {
       return !!js_data.product.is_paypal_hidden || this.form.installments !== 1;
     },
 
+    paypal_payment_method() {
+      return this.payment_methods.instant_transfer || null;
+    },
+
   },
 
 

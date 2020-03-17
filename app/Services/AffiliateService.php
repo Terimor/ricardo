@@ -403,7 +403,7 @@ class AffiliateService
             $priceSet = null;
             // check exists by cop_id parameter
             if ($request->get('cop_id')) {
-                $exists = OdinProduct::getByCopId($request->get('cop_id'), true);
+                $exists = OdinProduct::isExistsByCopId($request->get('cop_id'));
                 if ($exists) {
                     $priceSet = $request->get('cop_id');
                 } else {

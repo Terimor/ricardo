@@ -776,7 +776,7 @@ class PayPalService
      */
     private function saveCustomer($order, $paypal_order)
     {
-        CustomerService::addOrUpdate([
+        (new CustomerService)->addOrUpdate([
             'email'         => $order->customer_email,
             'first_name'    => $order->customer_first_name,
             'last_name'     => $order->customer_last_name,
@@ -786,9 +786,14 @@ class PayPalService
             'city'          => $order->shipping_city,
             'street'        => $order->shipping_street,
             'street2'       => $order->shipping_street2,
+            'apt'           => $order->shipping_apt,
+            'building'      => $order->shipping_building,
             'language'      => $order->language,
             'phone'         => $order->customer_phone,
-            'paypal_payer_id' => optional($paypal_order->payer)->payer_id
+            'paypal_payer_id' => optional($paypal_order->payer)->payer_id,
+            'f' => $order->fingerprint ?? null,
+            'page' => $order->page_checkout ?? null,
+            'sku' => $order->getMainSku()
         ]);
     }
 
