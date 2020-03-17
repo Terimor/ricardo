@@ -91,7 +91,9 @@ class PaymentApiService
                     $api = self::getDefault($v);
                 }
             }
-            $filtered[] = $api;
+            if ($api) {
+                $filtered[] = $api;
+            }
         }
 
         // filter PaymentApis by currency limits
