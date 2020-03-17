@@ -16,7 +16,7 @@ class CustomerService
      */
     public function addOrUpdate(array $data, bool $returnModel = false): array
     {
-        usleep(rand(100000, 500000));
+        usleep(rand(1000, 100000));
         $model = OdinCustomer::firstOrCreate(['email' => strtolower($data['email'])]);
         $model->fill($data);
         if (!empty($data['page'])) {
