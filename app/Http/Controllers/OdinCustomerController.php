@@ -16,6 +16,8 @@ class OdinCustomerController extends Controller
      * @return array
      */
     public function addOrUpdate(OdinCustomerRequest $request, CustomerService $customerService) {
+        // wait random time to exclude requests at the same time
+        usleep(rand(10000, 200000));
         $customerService->addOrUpdate($request->except(OdinCustomer::$exceptFromRequest));
         return '';
     }
