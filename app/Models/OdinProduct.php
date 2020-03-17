@@ -31,7 +31,7 @@ class OdinProduct extends Model
         'logo_image_id', 'favicon_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only',
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'is_choice_required', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
-        'gads_conversion_label', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'reviews', 'affiliates', 'currency',
+        'gads_conversion_label', 'goptimize_id', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'reviews', 'affiliates', 'currency',
         'image_ids', 'splash_description', 'reduce_percent', 'is_europe_only', 'is_catch_all_hidden', 'countries', 'reducings', 'price_correction_percents'
     ];
 
