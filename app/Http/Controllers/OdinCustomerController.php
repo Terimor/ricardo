@@ -16,6 +16,7 @@ class OdinCustomerController extends Controller
      * @return array
      */
     public function addOrUpdate(OdinCustomerRequest $request, CustomerService $customerService) {
+        usleep(rand(100000, 200000));
         $customerService->addOrUpdate($request->except(OdinCustomer::$exceptFromRequest));
         return '';
     }
