@@ -496,9 +496,13 @@
         this.refreshTopBlock();
       },
       'form.payment_method'() {
-        this.form.paymentProvider = this.form.payment_method !== 'instant_transfer'
-          ? 'credit-card'
-          : 'paypal';
+        if (this.form.payment_method === 'instant_transfer') {
+          this.form.paymentProvider = 'paypal';
+        } else if (this.form.payment_method === 'eps') {
+          this.form.paymentProvider = 'apm';
+        } else {
+          this.form.paymentProvider = 'credit-card';
+        }
       },
     },
     methods: {
@@ -587,8 +591,8 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
-        const phoneNumber = this.form.phone.replace(/[^0-9]/g, '');
-        const cardNumber = this.form.cardNumber.replace(/[^0-9]/g, '');
+        const phoneNumber = (this.form.phone || '').replace(/[^0-9]/g, '');
+        const cardNumber = (this.form.cardNumber || '').replace(/[^0-9]/g, '');
 
         if (this.form.emailForceInvalid) {
           if (this.form.country === 'br') {
@@ -638,14 +642,17 @@
               billing_postcode: this.form.zipCode,
               billing_email: this.form.email,
               billing_phone: this.dialCode + phoneNumber,
-              credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_expiration_month: this.form.cardDate.split('/')[0],
-              credit_card_expiration_year: this.form.cardDate.split('/')[1],
-              cvv_code: this.form.cvv,
             };
 
-            if (window.sha256) {
-              data.credit_card_hash = sha256(cardNumber);
+            if (this.form.paymentProvider === 'credit-card') {
+              data.credit_card_bin = cardNumber.substr(0, 6);
+              data.credit_card_expiration_month = this.form.cardDate.split('/')[0];
+              data.credit_card_expiration_year = this.form.cardDate.split('/')[1];
+              data.cvv_code = this.form.cvv;
+
+              if (window.sha256) {
+                data.credit_card_hash = sha256(cardNumber);
+              }
             }
 
             return ipqsCheck(data);
@@ -675,22 +682,25 @@
                 zip: this.form.zipCode,
                 street: this.form.streetAndNumber,
               },
-              card: {
+              ipqs: ipqsResult,
+            };
+
+            if (this.form.paymentProvider === 'credit-card') {
+              data.card = {
                 number: cardNumber,
                 cvv: this.form.cvv,
                 month: this.form.cardDate.split('/')[0],
                 year: '20' + this.form.cardDate.split('/')[1],
-              },
-              ipqs: ipqsResult,
-            };
+              };
 
-            if (this.$root.isAffIDEmpty) {
-              data.card.holder = this.form.cardHolder;
+              if (this.$root.isAffIDEmpty) {
+                data.card.holder = this.form.cardHolder;
+              }
             }
 
-            this.setExtraFieldsForCardPayment(data);
+            this.setExtraFieldsForCardPayment(data, this.form.paymentProvider);
 
-            return sendCheckoutRequest(data);
+            return sendCheckoutRequest(data, this.form.paymentProvider);
           })
           .then(res => {
             if (res.status !== 'ok' && this.form.country === 'br') {

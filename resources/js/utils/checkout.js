@@ -226,17 +226,22 @@ export function checkForLeadsRequest(variant, first_name, last_name, email, phon
 }
 
 
-export function sendCheckoutRequest(data) {
+export function sendCheckoutRequest(data, paymentProvider) {
   localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
 
-  let url_search = '?cur=' + (!js_query_params.cur || js_query_params.cur === '{aff_currency}'
+  let url_payment = paymentProvider === 'credit-card'
+    ? '/pay-by-card'
+    : '/pay-by-apm';
+
+  url_payment += '?cur=' + (!js_query_params.cur || js_query_params.cur === '{aff_currency}'
     ? js_data.product.prices.currency
     : js_query_params.cur);
 
   if (localStorage.getItem('order_failed')) {
-    url_search += '&order=' + localStorage.getItem('odin_order_id');
+    url_payment += '&order=' + localStorage.getItem('odin_order_id');
   }
 
+  data.method = paymentProvider;
   data.page_checkout = location.href;
 
   if (window.kount_params) {
@@ -252,7 +257,7 @@ export function sendCheckoutRequest(data) {
       return Promise.resolve()
         .then(fingerprint)
         .then(hash => data.f = hash)
-        .then(() => fetch('/pay-by-card' + url_search, {
+        .then(() => fetch(url_payment, {
           method: 'post',
           credentials: 'same-origin',
           headers: {

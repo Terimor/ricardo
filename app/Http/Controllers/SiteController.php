@@ -357,6 +357,10 @@ class SiteController extends Controller
             return view('prerender.checkout.txid_iframe');
         }
 
+        if ($request->get('apm') && !$request->get('3ds')) {
+            return redirect($request->fullUrl() . '&3ds=' . $request->get('apm'));
+        }
+
         if ($request->get('3ds') && !$request->get('3ds_restore')) {
             return view('prerender.checkout.3ds_restore');
         }

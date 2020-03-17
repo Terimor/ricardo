@@ -1,7 +1,7 @@
 <div class="credit-cards-list">
   <div
     v-for="(payment_method, name) in payment_methods"
-    v-if="name !== 'instant_transfer'"
+    v-if="true{!! (empty($with_paypal) ? " && name !== 'instant_transfer'" : '') !!}{!! (empty($with_apm) ? " && !payment_method.is_apm" : '') !!}"
     :class="{ ['credit-card-' + name]: true }"
     class="credit-card-item">
 

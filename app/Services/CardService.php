@@ -118,7 +118,21 @@ class CardService {
             $order->fillShippingData($contact);
         } else {
             $order_product = $order->getMainProduct(); // throwable
+
             $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contact['country']);
+            $order->customer_email      = $contact['email'];
+            $order->customer_first_name = $contact['first_name'];
+            $order->customer_last_name  = $contact['last_name'];
+            $order->customer_phone      = $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']);
+            $order->customer_doc_id     = $contact['document_number'] ?? null;
+            $order->shipping_country    = $contact['country'];
+            $order->shipping_zip        = $contact['zip'];
+            $order->shipping_state      = $contact['state'] ?? null;
+            $order->shipping_city       = $contact['city'];
+            $order->shipping_street     = $contact['street'];
+            $order->shipping_street2    = $contact['district'] ?? null;
+            $order->shipping_building   = $contact['building'] ?? null;
+            $order->shipping_apt        = $contact['complement'] ?? null;
             $order->installments        = $installments;
             $order->fillShippingData($contact);
         }
@@ -253,6 +267,7 @@ class CardService {
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
 
+        // check is this fallback
         if (!empty($payment['fallback'])) {
 
             // try to pay with fallback provider

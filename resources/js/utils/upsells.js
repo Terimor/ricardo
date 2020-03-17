@@ -95,13 +95,22 @@ export function paypalOnApprove(data) {
 }
 
 
-export function send1ClickRequest(data, upsells) {
+export function send1ClickRequest(data, upsells, paymentProvider) {
+  data.method = paymentProvider;
   data.page_checkout = location.href;
+
+  let url_payment = paymentProvider === 'credit-card'
+    ? '/pay-by-card-upsells'
+    : '/pay-by-apm-upsells';
+
+  url_payment += '?cur=' + (!js_query_params.cur || js_query_params.cur === '{aff_currency}'
+    ? js_data.product.prices.currency
+    : js_query_params.cur);
 
   return Promise.resolve()
     .then(fingerprint)
     .then(hash => data.f = hash)
-    .then(() => fetch('/pay-by-card-upsells', {
+    .then(() => fetch(url_payment, {
       method: 'post',
       credentials: 'same-origin',
       headers: {
@@ -156,9 +165,13 @@ export function send1ClickRequest(data, upsells) {
 */
       const odin_order_id = res.order_id || localStorage.getItem('odin_order_id');
       const order_currency = res.order_currency || localStorage.getItem('order_currency');
-
       localStorage.setItem('odin_order_created_at', new Date());
-      goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
+
+      if (res.redirect_url) {
+        location.href = res.redirect_url;
+      } else {
+        goTo('/thankyou?order=' + odin_order_id + '&cur=' + order_currency);
+      }
 
       return res;
     })

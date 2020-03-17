@@ -13,6 +13,7 @@ use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Models\OdinCustomer;
 use App\Models\AffiliateSetting;
+use App\Mappers\PaymentMethodMapper;
 use App\Constants\PaymentProviders;
 use App\Constants\PaymentMethods;
 
@@ -221,6 +222,7 @@ class PaymentService
      * @param  array       $price
      * @param  array       $details [is_main => bool, is_plus_one => bool, is_warranty => bool]
      * @return array
+     * @throws InvalidParamsException
      */
     public static function createOrderProduct(string $sku, array $price, array $details = []): array
     {

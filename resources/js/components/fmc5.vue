@@ -308,54 +308,59 @@
                 class="error-container invalid"
                 v-html="paypalPaymentError"></div>
 
+              <payment-provider-eps
+                v-model="form.paymentProvider" />
+
               <transition name="fade">
                 <div
-                  v-if="form.paymentProvider === 'credit-card'"
+                  v-if="form.paymentProvider && form.paymentProvider !== 'paypal'"
                   class="form">
 
-                  <CardHolder
-                    v-if="$root.isAffIDEmpty"
-                    :$v="$v.form.cardHolder"
-                    :placeholder="true"
-                    :form="form"
-                    name="cardHolder" />
+                  <template v-if="form.paymentProvider === 'credit-card'">
+                    <CardHolder
+                      v-if="$root.isAffIDEmpty"
+                      :$v="$v.form.cardHolder"
+                      :placeholder="true"
+                      :form="form"
+                      name="cardHolder" />
 
-                  <CardType
-                    :extraFields="extraFields"
-                    :form="form"
-                    :$v="$v.form" />
+                    <CardType
+                      :extraFields="extraFields"
+                      :form="form"
+                      :$v="$v.form" />
 
-                  <CardNumber
-                    :$v="$v.form.cardNumber"
-                    :paymentMethodURL="paymentMethodURL"
-                    @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
-                    :placeholder="true"
-                    :form="form"
-                    name="cardNumber" />
+                    <CardNumber
+                      :$v="$v.form.cardNumber"
+                      :paymentMethodURL="paymentMethodURL"
+                      @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber"
+                      :placeholder="true"
+                      :form="form"
+                      name="cardNumber" />
 
-                  <CardDate
-                    :$v="$v.form.cardDate"
-                    :form="form"
-                    name="cardDate" />
+                    <CardDate
+                      :$v="$v.form.cardDate"
+                      :form="form"
+                      name="cardDate" />
 
-                  <CVV
-                    :$v="$v.form.cvv"
-                    :placeholder="true"
-                    :form="form"
-                    name="cvv" />
+                    <CVV
+                      :$v="$v.form.cvv"
+                      :placeholder="true"
+                      :form="form"
+                      name="cvv" />
 
-                  <DocumentType
-                    :extraFields="extraFields"
-                    :form="form"
-                    :$v="$v.form" />
+                    <DocumentType
+                      :extraFields="extraFields"
+                      :form="form"
+                      :$v="$v.form" />
 
-                  <DocumentNumber
-                    :extraFields="extraFields"
-                    :form="form"
-                    :$v="$v.form" />
+                    <DocumentNumber
+                      :extraFields="extraFields"
+                      :form="form"
+                      :$v="$v.form" />
+                  </template>
 
                   <Terms
-                    v-if="$root.isAffIDEmpty && form.paymentProvider === 'credit-card'"
+                    v-if="$root.isAffIDEmpty"
                     :$v="$v.form.terms"
                     :form="form"
                     name="terms" />
@@ -391,7 +396,7 @@
             </div>
 
             <div
-              v-if="step === 3 && form.paymentProvider === 'credit-card'"
+              v-if="step === 3 && form.paymentProvider !== 'paypal'"
               :class="{ submitted: isSubmitted }"
               class="button-next multi"
               @click="nextClick">
@@ -647,7 +652,6 @@
     created() {
       this.initDeal();
       this.initVariant();
-      this.initPaymentProvider();
       this.check3dsFailure();
     },
 
@@ -1020,12 +1024,6 @@
           : null;
       },
 
-      initPaymentProvider() {
-        if (!this.$root.paypalEnabled) {
-          this.form.paymentProvider = 'credit-card';
-        }
-      },
-
       onCreditCardSelect() {
         setTimeout(() => this.scrollToSelector('.form'), 100);
       },
@@ -1201,8 +1199,8 @@
         this.isSubmitted = true;
         this.paymentError = false;
 
-        const phoneNumber = this.form.phone.replace(/[^0-9]/g, '');
-        const cardNumber = this.form.cardNumber.replace(/[^0-9]/g, '');
+        const phoneNumber = (this.form.phone || '').replace(/[^0-9]/g, '');
+        const cardNumber = (this.form.cardNumber || '').replace(/[^0-9]/g, '');
 
         if (this.form.emailForceInvalid) {
           if (this.form.country === 'br') {
@@ -1252,14 +1250,17 @@
               billing_postcode: this.form.zipcode,
               billing_email: this.form.email,
               billing_phone: this.dialCode + phoneNumber,
-              credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_expiration_month: this.form.cardDate.split('/')[0],
-              credit_card_expiration_year: this.form.cardDate.split('/')[1],
-              cvv_code: this.form.cvv,
             };
 
-            if (window.sha256) {
-              data.credit_card_hash = sha256(cardNumber);
+            if (this.form.paymentProvider === 'credit-card') {
+              data.credit_card_bin = cardNumber.substr(0, 6);
+              data.credit_card_expiration_month = this.form.cardDate.split('/')[0];
+              data.credit_card_expiration_year = this.form.cardDate.split('/')[1];
+              data.cvv_code = this.form.cvv;
+
+              if (window.sha256) {
+                data.credit_card_hash = sha256(cardNumber);
+              }
             }
 
             return ipqsCheck(data);
@@ -1289,22 +1290,25 @@
                 zip: this.form.zipcode,
                 street: this.form.street,
               },
-              card: {
+              ipqs: ipqsResult,
+            };
+
+            if (this.form.paymentProvider === 'credit-card') {
+              data.card = {
                 number: cardNumber,
                 cvv: this.form.cvv,
                 month: this.form.cardDate.split('/')[0],
                 year: '20' + this.form.cardDate.split('/')[1],
-              },
-              ipqs: ipqsResult,
-            };
+              };
 
-            if (this.$root.isAffIDEmpty) {
-              data.card.holder = this.form.cardHolder;
+              if (this.$root.isAffIDEmpty) {
+                data.card.holder = this.form.cardHolder;
+              }
             }
 
-            this.setExtraFieldsForCardPayment(data);
+            this.setExtraFieldsForCardPayment(data, this.form.paymentProvider);
 
-            return sendCheckoutRequest(data);
+            return sendCheckoutRequest(data, this.form.paymentProvider);
           })
           .then(res => {
             if (res.status !== 'ok' && this.form.country === 'br') {
@@ -1992,6 +1996,10 @@
   }
 
   .paypal-button-container {
+    margin-bottom: 10px;
+  }
+
+  .payment-provider-eps {
     margin-bottom: 30px;
   }
 

@@ -64,7 +64,7 @@
               :form="paymentForm"
               name="city" />
             <State
-              :placeholder="true"
+              :placeholder="stateExtraField.type === 'dropdown'"
               :country="paymentForm.country"
               :stateExtraField="stateExtraField"
               :isLoading="isLoading"
@@ -83,7 +83,7 @@
               :form="paymentForm"
               name="country" />
         </div>
-        <template v-if="paymentForm.paymentProvider !== 'bank-payment'">
+        <template v-if="paymentForm.paymentProvider === 'credit-card'">
             <h2>
               {{ thirdTitle }}
             </h2>
@@ -396,8 +396,8 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
-        const phoneNumber = paymentForm.phone.replace(/[^0-9]/g, '');
-        const cardNumber = paymentForm.cardNumber.replace(/[^0-9]/g, '');
+        const phoneNumber = (paymentForm.phone || '').replace(/[^0-9]/g, '');
+        const cardNumber = (paymentForm.cardNumber || '').replace(/[^0-9]/g, '');
 
         if (paymentForm.emailForceInvalid) {
           if (this.paymentForm.country === 'br') {
@@ -447,14 +447,17 @@
               billing_postcode: paymentForm.zipcode,
               billing_email: paymentForm.email,
               billing_phone: this.dialCode + phoneNumber,
-              credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_expiration_month: paymentForm.cardDate.split('/')[0],
-              credit_card_expiration_year: paymentForm.cardDate.split('/')[1],
-              cvv_code: paymentForm.cvv,
             };
 
-            if (window.sha256) {
-              data.credit_card_hash = sha256(cardNumber);
+            if (paymentForm.paymentProvider === 'credit-card') {
+              data.credit_card_bin = cardNumber.substr(0, 6);
+              data.credit_card_expiration_month = paymentForm.cardDate.split('/')[0];
+              data.credit_card_expiration_year = paymentForm.cardDate.split('/')[1];
+              data.cvv_code = paymentForm.cvv;
+
+              if (window.sha256) {
+                data.credit_card_hash = sha256(cardNumber);
+              }
             }
 
             return ipqsCheck(data);
@@ -484,22 +487,25 @@
                 zip: paymentForm.zipcode,
                 street: paymentForm.street,
               },
-              card: {
+              ipqs: ipqsResult,
+            };
+
+            if (paymentForm.paymentProvider === 'credit-card') {
+              data.card = {
                 number: cardNumber,
                 cvv: paymentForm.cvv,
                 month: paymentForm.cardDate.split('/')[0],
                 year: '20' + paymentForm.cardDate.split('/')[1],
-              },
-              ipqs: ipqsResult,
-            };
+              };
 
-            if (this.$root.isAffIDEmpty) {
-              data.card.holder = paymentForm.cardHolder;
+              if (this.$root.isAffIDEmpty) {
+                data.card.holder = paymentForm.cardHolder;
+              }
             }
 
-            this.$parent.setExtraFieldsForCardPayment(data);
+            this.$parent.setExtraFieldsForCardPayment(data, paymentForm.paymentProvider);
 
-            return sendCheckoutRequest(data);
+            return sendCheckoutRequest(data, paymentForm.paymentProvider);
           })
           .then(res => {
             if (res.status !== 'ok' && this.paymentForm.country === 'br') {

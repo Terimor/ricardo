@@ -81,7 +81,7 @@
       :form="paymentForm"
       :$v="$v.form" />
 
-    <form id="payment-data-form" v-if="paymentForm.paymentProvider !== 'paypal'">
+    <form id="payment-data-form" v-if="paymentForm.paymentProvider === 'credit-card'">
 
       <CardHolder
         v-if="$root.isAffIDEmpty"

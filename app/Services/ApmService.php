@@ -61,6 +61,8 @@ class ApmService {
             $shop_currency
         );
 
+        logger()->info('Apm api', ['api' => $api->toJson()]);
+
         if (empty($api)) {
             logger()->warning('Provider not found', ['country' => $contacts['country'], 'method' => $method]);
             throw new ProviderNotFoundException("Provider not found [{$contacts['country']},{$method}]");
@@ -84,9 +86,36 @@ class ApmService {
                 'currency'              => $price['currency'],
                 'exchange_rate'         => $price['usd_rate'],
                 'fingerprint'           => $fingerprint,
+                'total_paid'            => 0,
+                'total_paid_usd'        => 0,
+                'total_refunded_usd'    => 0,
                 'total_price'           => $order_product['total_price'],
                 'total_price_usd'       => $order_product['total_price_usd'],
+                'txns_fee_usd'          => 0,
+                'installments'          => 0,
+                'is_reduced'            => false,
+                'is_invoice_sent'       => false,
+                'is_survey_sent'        => false,
+                'is_flagged'            => false,
+                'is_refunding'          => false,
+                'is_refunded'           => false,
+                'is_qc_passed'          => false,
+                'customer_email'        => $contacts['email'],
+                'customer_first_name'   => $contacts['first_name'],
+                'customer_last_name'    => $contacts['last_name'],
+                'customer_phone'        => $contacts['phone']['country_code'] . UtilsService::preparePhone($contacts['phone']['number']),
+                'customer_doc_id'       => $contacts['document_number'] ?? null,
+                'ip'                    => $contacts['ip'],
+                'shipping_country'      => $contacts['country'],
+                'shipping_zip'          => $contacts['zip'],
+                'shipping_state'        => $contacts['state'] ?? null,
+                'shipping_city'         => $contacts['city'],
+                'shipping_street'       => $contacts['street'],
+                'shipping_street2'      => $contacts['district'] ?? null,
+                'shipping_building'     => $contacts['building'] ?? null,
+                'shipping_apt'          => $contacts['complement'] ?? null,
                 'language'              => app()->getLocale(),
+                'txns'                  => [],
                 'shop_currency'         => $shop_currency,
                 'warehouse_id'          => $product->warehouse_id,
                 'products'              => [$order_product],
@@ -101,6 +130,7 @@ class ApmService {
             $order->fillShippingData($contacts);
         } else {
             $order_product = $order->getMainProduct(); // throwable
+
             $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contacts['country']);
             $order->fillShippingData($contacts);
         }
