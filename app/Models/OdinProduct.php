@@ -583,18 +583,13 @@ class OdinProduct extends Model
     /**
      * Get by cop_id
      * @param string|null $cop_id - prices.price_set
-     * @param bool $is_exists - if true check in database else get a model
      * @return OdinProduct|null
      */
-    public static function getByCopId(?string $cop_id, bool $is_exists = false): ?OdinProduct
+    public static function getByCopId(?string $cop_id): ?OdinProduct
     {
         $model = null;
         if ($cop_id) {
-            if ($is_exists) {
-                $model = OdinProduct::where('prices.price_set', $cop_id)->exists();
-            } else {
-                $model = OdinProduct::where('prices.price_set', $cop_id)->first();
-            }
+            $model = OdinProduct::where('prices.price_set', $cop_id)->first();
         }
         return $model;
     }
@@ -713,5 +708,15 @@ class OdinProduct extends Model
             $c++;
         }
         return $reviewArray;
+    }
+
+    /**
+     * Check existance by cop_id
+     * @param string $cop_id - prices.price_set
+     * @return bool
+     */
+    public static function isExistsByCopId(string $cop_id): bool
+    {
+        return OdinProduct::where('prices.price_set', $cop_id)->exists();
     }
 }
