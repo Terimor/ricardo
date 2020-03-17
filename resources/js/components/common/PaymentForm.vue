@@ -64,7 +64,7 @@
               :form="paymentForm"
               name="city" />
             <State
-              :placeholder="stateExtraField.type === 'dropdown'"
+              :placeholder="stateExtraField && stateExtraField.type === 'dropdown'"
               :country="paymentForm.country"
               :stateExtraField="stateExtraField"
               :isLoading="isLoading"
