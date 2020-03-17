@@ -11,8 +11,8 @@ use App\Models\Txn;
 use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
+use App\Models\OdinCustomer;
 use App\Models\AffiliateSetting;
-use App\Mappers\PaymentMethodMapper;
 use App\Constants\PaymentProviders;
 use App\Constants\PaymentMethods;
 
@@ -46,7 +46,29 @@ class PaymentService
      */
     public static function addOrder(array $data): OdinOrder
     {
-        $reply = (new OrderService())->addOdinOrder(array_merge(['status' => OdinOrder::STATUS_NEW], $data), true);
+        $reply = (new OrderService())->addOdinOrder(
+            array_merge(
+                ['status' => OdinOrder::STATUS_NEW],
+                [
+                    'total_refunded_usd'    => 0,
+                    'total_chargeback_usd'  => 0,
+                    'total_paid'        => 0,
+                    'total_paid_usd'    => 0,
+                    'total_chargeback'  => 0,
+                    'txns_fee_usd'      => 0,
+                    'is_reduced'        => false,
+                    'is_invoice_sent'   => false,
+                    'is_survey_sent'    => false,
+                    'is_flagged'        => false,
+                    'is_refunding'      => false,
+                    'is_refunded'       => false,
+                    'is_qc_passed'      => false,
+                    'txns'              => [],
+                ],
+                $data
+            ),
+            true
+        );
 
         if (isset($reply['errors'])) {
             throw new OrderUpdateException(json_encode($reply['errors']));
@@ -80,6 +102,53 @@ class PaymentService
             'payment_api_id'    => $data['payment_api_id'] ?? null,
             'payer_id'          => $data['payer_id'] ?? null
         ]);
+    }
+
+    /**
+     * Generates result for createOrder method
+     * @param OdinOrder $order
+     * @param array $payment
+     * @return array
+     */
+    public static function generateCreateOrderResult(OdinOrder $order, array $payment): array
+    {
+        $result = [
+            'order_currency' => $order->currency,
+            'order_number'   => $order->number,
+            'order_amount'   => $payment['value'],
+            'order_id'       => $order->getIdAttribute(),
+            'status'         => self::STATUS_FAIL,
+            'id'             => null
+        ];
+
+        if ($payment['status'] !== Txn::STATUS_FAILED) {
+            $result['id'] = $payment['hash'];
+            $result['status'] = self::STATUS_OK;
+            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
+            $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
+        } else {
+            $result['errors'] = $payment['errors'];
+            self::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+        }
+
+        return array_filter($result);
+    }
+
+    /**
+     * Returns OdinProduct by cop_id or sku
+     * @param string|null $cop_id
+     * @param string|null $sku
+     * @return OdinProduct|null
+     * @throws \App\Exceptions\ProductNotFoundException
+     */
+    public static function getProductByCopIdOrSku(?string $cop_id, ?string $sku): ?OdinProduct
+    {
+        $product = OdinProduct::getByCopId($cop_id);
+
+        if (!$product && $sku) {
+            $product = OdinProduct::getBySku($sku); // throwable
+        }
+        return $product;
     }
 
     /**
@@ -152,7 +221,6 @@ class PaymentService
      * @param  array       $price
      * @param  array       $details [is_main => bool, is_plus_one => bool, is_warranty => bool]
      * @return array
-     * @throws InvalidParamsException
      */
     public static function createOrderProduct(string $sku, array $price, array $details = []): array
     {
@@ -187,10 +255,11 @@ class PaymentService
 
     /**
      * Invokes fallback
-     * @param  OdinOrder $order
-     * @param  array     $card
-     * @param  array     $details ['provider' => string, 'method' => string, 'useragent' => ?string]
+     * @param OdinOrder $order
+     * @param array $card
+     * @param array $details ['provider' => string, 'method' => string, 'useragent' => ?string]
      * @return array
+     * @throws \App\Exceptions\ProductNotFoundException
      */
     public static function fallbackOrder(OdinOrder &$order, array $card, array $details): array
     {
@@ -514,28 +583,32 @@ class PaymentService
 
     /**
      * Updates or adds customer
-     * @param array $contact
-     * @return void
+     * @param array $contacts
+     * @return OdinCustomer
      * @throws CustomerUpdateException
      */
-    public static function addCustomer(array $contacts): void
+    public static function addCustomer(array $contacts): OdinCustomer
     {
-        $reply = CustomerService::addOrUpdate(
+        $reply = (new CustomerService)->addOrUpdate(
             array_merge($contacts,
                 [
                     'doc_id'    => $contacts['document_number'] ?? null,
-                    'phone'     => $contacts['phone']['country_code'] . $contacts['phone']['number']
+                    'phone'     => $contacts['phone']['country_code'] . UtilsService::preparePhone($contacts['phone']['number'])
                 ]
-            )
+            ),
+            true
         );
+
         if (isset($reply['errors'])) {
             throw new CustomerUpdateException(json_encode($reply['errors']));
         }
+
+        return $reply['customer'];
     }
 
     /**
      * Caches webhook errors
-     * @param array  $data
+     * @param array $data
      * @return void
      */
     public static function cacheOrderErrors(array $data = []): void
@@ -550,14 +623,13 @@ class PaymentService
 
     /**
      * Checks payment to fraud
-     * @param  ?array   $ipqs
-     * @param  string   $prv Payment provider
-     * @param  string|null  $affid
-     * @param  bool     $thowable
+     * @param  array $ipqs
+     * @param  string $prv Payment provider
+     * @param  string|null $affid
      * @return void
      * @throws PaymentException
      */
-    public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null, bool $throwable = true): void
+    public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null): void
     {
         if (!empty($ipqs) && \App::environment() === 'production') {
             $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
@@ -601,7 +673,7 @@ class PaymentService
      *   ]
      * ];
      * @param string $country
-     * @param bool   $is_main default=true
+     * @param bool $is_main default=true
      * @return boolean
      */
     public static function getPaymentMethodsByCountry(string $country, bool $is_main = true)

@@ -8,6 +8,7 @@ use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Models\Txn;
 use App\Models\Domain;
 use App\Models\Currency;
+use App\Models\OdinCustomer;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Exceptions\AuthException;
@@ -55,20 +56,11 @@ class CardService {
         );
         $method = PaymentMethodMapper::toMethod($card['number']);
 
-        // find order for update
-        $order = null;
-        if (!empty($order_id)) {
-            $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
-        }
+        $order = OdinOrder::findExistedOrderForPay($order_id, $req->get('product'));
 
-        $product = null;
-        if ($req->get('cop_id')) {
-            $product = OdinProduct::getByCopId($req->get('cop_id'));
-        }
-        if (!$product) {
-            $product = OdinProduct::getBySku($sku); // throwable
-        }
+        $product = PaymentService::getProductByCopIdOrSku($req->get('cop_id'), $sku);
 
+        // get PaymentApi considering domain, product, country and currency
         $domain = Domain::getByName();
         $api = PaymentApiService::getAvailableOne(
             $product->getIdAttribute(),
@@ -92,80 +84,45 @@ class CardService {
         $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
         $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
 
+        // refuse fraudulent payment
         PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid); // throwable
 
-        PaymentService::addCustomer($contact); // throwable
+        $customer = PaymentService::addCustomer($contact); // throwable
 
+        // if order doesn't exist add it
         if (empty($order)) {
             $price = PaymentService::getLocalizedPrice($product, (int)$qty, $contact['country'], $api->payment_provider); // throwable
 
             $order_product = PaymentService::createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
             $order = PaymentService::addOrder([
-                'billing_descriptor'    => $product->getPaymentBillingDescriptor($contact['country']),
-                'currency'              => $price['currency'],
-                'exchange_rate'         => $price['usd_rate'],
-                'fingerprint'           => $fingerprint,
-                'total_paid'            => 0,
-                'total_paid_usd'        => 0,
-                'total_refunded_usd'    => 0,
-                'total_price'           => $order_product['total_price'],
-                'total_price_usd'       => $order_product['total_price_usd'],
-                'txns_fee_usd'          => 0,
-                'installments'          => $installments,
-                'is_reduced'            => false,
-                'is_invoice_sent'       => false,
-                'is_survey_sent'        => false,
-                'is_flagged'            => false,
-                'is_refunding'          => false,
-                'is_refunded'           => false,
-                'is_qc_passed'          => false,
-                'customer_email'        => $contact['email'],
-                'customer_first_name'   => $contact['first_name'],
-                'customer_last_name'    => $contact['last_name'],
-                'customer_phone'        => $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']),
-                'customer_doc_id'       => $contact['document_number'] ?? null,
-                'ip'                    => $contact['ip'],
-                'language'              => app()->getLocale(),
-                'txns'                  => [],
-                'shipping_country'      => $contact['country'],
-                'shipping_zip'          => $contact['zip'],
-                'shipping_state'        => $contact['state'] ?? null,
-                'shipping_city'         => $contact['city'],
-                'shipping_street'       => $contact['street'],
-                'shipping_street2'      => $contact['district'] ?? null,
-                'shipping_building'     => $contact['building'] ?? null,
-                'shipping_apt'          => $contact['complement'] ?? null,
-                'shop_currency'         => CurrencyService::getCurrency()->code,
-                'warehouse_id'          => $product->warehouse_id,
-                'products'              => [$order_product],
-                'page_checkout'         => $page_checkout,
-                'params'                => $params,
-                'offer'                 => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
-                'affiliate'             => AffiliateService::validateAffiliateID($affid) ? $affid : null,
-                'txid'                  => AffiliateService::getValidTxid($params['txid'] ?? null),
-                'ipqualityscore'        => $ipqs
+                'billing_descriptor' => $product->getPaymentBillingDescriptor($contact['country']),
+                'total_price_usd'   => $order_product['total_price_usd'],
+                'ipqualityscore'    => $ipqs,
+                'currency'      => $price['currency'],
+                'exchange_rate' => $price['usd_rate'],
+                'fingerprint'   => $fingerprint,
+                'total_price'   => $order_product['total_price'],
+                'installments'  => $installments,
+                'language'      => app()->getLocale(),
+                'shop_currency' => CurrencyService::getCurrency()->code,
+                'warehouse_id'  => $product->warehouse_id,
+                'products'      => [$order_product],
+                'page_checkout' => $page_checkout,
+                'params'        => $params,
+                'offer'         => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
+                'affiliate'     => AffiliateService::validateAffiliateID($affid) ? $affid : null,
+                'txid'          => AffiliateService::getValidTxid($params['txid'] ?? null),
+                'ip'            => $req->ip()
             ]);
+            $order->fillShippingData($contact);
         } else {
             $order_product = $order->getMainProduct(); // throwable
-
             $order->billing_descriptor  = $product->getPaymentBillingDescriptor($contact['country']);
-            $order->customer_email      = $contact['email'];
-            $order->customer_first_name = $contact['first_name'];
-            $order->customer_last_name  = $contact['last_name'];
-            $order->customer_phone      = $contact['phone']['country_code'] . UtilsService::preparePhone($contact['phone']['number']);
-            $order->customer_doc_id     = $contact['document_number'] ?? null;
-            $order->shipping_country    = $contact['country'];
-            $order->shipping_zip        = $contact['zip'];
-            $order->shipping_state      = $contact['state'] ?? null;
-            $order->shipping_city       = $contact['city'];
-            $order->shipping_street     = $contact['street'];
-            $order->shipping_street2    = $contact['district'] ?? null;
-            $order->shipping_building   = $contact['building'] ?? null;
-            $order->shipping_apt        = $contact['complement'] ?? null;
             $order->installments        = $installments;
+            $order->fillShippingData($contact);
         }
-        // create payment
+        // create transaction using selected provider
         $payment = [];
         switch ($api->payment_provider):
             case PaymentProviders::APPMAX:
@@ -296,15 +253,16 @@ class CardService {
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
 
-        // check is this fallback
         if (!empty($payment['fallback'])) {
 
+            // try to pay with fallback provider
             $reply = PaymentService::fallbackOrder($order, $card, [
                 'method'     => $method,
                 'provider'   => $api->payment_provider,
                 'useragent'  => $user_agent
             ]);
 
+            // when fallback is well done update transaction data
             if ($reply['status']) {
                 $payment = $reply['payment'];
                 $order_product = $order->getMainProduct(); // throwable
@@ -318,7 +276,7 @@ class CardService {
             }
         }
 
-        // cache token
+        // cache token (encrypted card)
         self::setCardToken($order->number, $payment['token'] ?? null);
 
         $order->is_flagged = $payment['is_flagged'];
@@ -333,27 +291,12 @@ class CardService {
         if ($payment['status'] === Txn::STATUS_APPROVED) {
             $order = PaymentService::approveOrder($payment, $payment['payment_provider']);
         }
-
-        $result = [
-            'order_currency' => $order->currency,
-            'order_number'   => $order->number,
-            'order_amount'   => $payment['value'],
-            'order_id'       => $order->getIdAttribute(),
-            'status'         => PaymentService::STATUS_FAIL,
-            'id'             => null
-        ];
-
+        // switch customer to Buyer if transaction isn't failed
         if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['id'] = $payment['hash'];
-            $result['status'] = PaymentService::STATUS_OK;
-            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
-            $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
-        } else {
-            $result['errors'] = $payment['errors'];
-            PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+            $customer->switchToBuyer();
         }
 
-        return array_filter($result);
+        return PaymentService::generateCreateOrderResult($order, $payment);
     }
 
     /**
