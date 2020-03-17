@@ -65,10 +65,12 @@
             @click="paypalSubmit"
           >{{ paypalRiskFree }}</paypal-button>
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
-          <h3 v-html="textPaySecurelyAPM"></h3>
-          <payment-provider-eps
-            v-model="form.paymentProvider"
-            @input="activateForm" />
+          <template v-if="$root.hasAPM">
+            <h3 v-html="textPaySecurelyAPM"></h3>
+            <payment-provider-eps
+              v-model="form.paymentProvider"
+              @input="activateForm" />
+          </template>
           <slot name="warranty" />
           <form v-if="form.paymentProvider && isFormShown">
             <div class="card-info" v-if="form.paymentProvider === 'credit-card'">

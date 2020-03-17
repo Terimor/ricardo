@@ -316,15 +316,17 @@
                         @input="activateForm">
                     </payment-provider-radio-list>
                 </div>
-                <div class="promo__alternative-payment">
-                    {{ t('checkout.pay_securely_apm') }}
-                </div>
-                <div class="promo__row-payments">
-                    <payment-provider-eps
-                        class="promo__credit-card-switcher"
-                        v-model="form.paymentProvider"
-                        @input="activateForm" />
-                </div>
+                <template v-if="$root.hasAPM">
+                    <div class="promo__alternative-payment">
+                        {{ t('checkout.pay_securely_apm') }}
+                    </div>
+                    <div class="promo__row-payments">
+                        <payment-provider-eps
+                            class="promo__credit-card-switcher"
+                            v-model="form.paymentProvider"
+                            @input="activateForm" />
+                    </div>
+                </template>
                 <div class="main__deal promo__form-wrapper payment-form j-payment-form">
                     <payment-form
                         v-if="form && form.paymentProvider && isFormShown"

@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="$root.hasEPS"
     class="payment-provider-eps"
     @click="select"
   >

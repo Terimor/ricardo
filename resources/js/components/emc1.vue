@@ -71,10 +71,12 @@
                           @click="paypalSubmit"
                         >{{ paypalRiskFree }}</paypal-button>
                         <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
-                        <div v-html="textPaySecurelyAPM"></div>
-                        <payment-provider-eps
-                          v-model="form.paymentProvider"
-                          @input="activateForm" />
+                        <template v-if="$root.hasAPM">
+                          <div v-html="textPaySecurelyAPM"></div>
+                          <payment-provider-eps
+                            v-model="form.paymentProvider"
+                            @input="activateForm" />
+                        </template>
                         <transition name="el-zoom-in-top">
                             <payment-form
                               :firstTitle="`${textStep} ${getStepOrder(4)}: ${textContactInformation}`"

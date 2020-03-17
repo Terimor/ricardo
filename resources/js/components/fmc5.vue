@@ -308,8 +308,12 @@
                 class="error-container invalid"
                 v-html="paypalPaymentError"></div>
 
-              <payment-provider-eps
-                v-model="form.paymentProvider" />
+              <template v-if="$root.hasAPM">
+                <payment-provider-eps
+                  v-model="form.paymentProvider" />
+              </template>
+
+              <div class="space-20"></div>
 
               <transition name="fade">
                 <div
@@ -2000,7 +2004,11 @@
   }
 
   .payment-provider-eps {
-    margin-bottom: 30px;
+    margin-bottom: 10px;
+  }
+
+  .space-20 {
+    height: 20px;
   }
 
   #warranty-field-button {

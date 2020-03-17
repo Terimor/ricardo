@@ -40,6 +40,19 @@ export const appMixin = {
     };
   },
 
+
+  computed: {
+
+    hasAPM() {
+      return this.$root.hasEPS;
+    },
+
+    hasEPS() {
+      return this.$root.paymentMethods && !!this.$root.paymentMethods.eps;
+    },
+
+  },
+
 };
 
 
