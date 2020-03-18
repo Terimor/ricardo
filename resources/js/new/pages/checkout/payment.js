@@ -1,7 +1,9 @@
 import bluesnap from './payment/bluesnap';
-import fingerprint from './payment/fingerprint';
 import credit_cards from './payment/credit_cards';
+import eps_button from './payment/eps_button';
+import fingerprint from './payment/fingerprint';
 import ipqualityscore from './payment/ipqualityscore';
+import payment_apm from './payment/payment_apm';
 import payment_credit_card from './payment/payment_credit_card';
 import payment_paypal from './payment/payment_paypal';
 import paypal_button from './payment/paypal_button';
@@ -11,9 +13,11 @@ export default {
 
   mixins: [
     bluesnap,
-    fingerprint,
     credit_cards,
+    eps_button,
+    fingerprint,
     ipqualityscore,
+    payment_apm,
     payment_credit_card,
     payment_paypal,
     paypal_button,
@@ -28,6 +32,14 @@ export default {
 
     paypal_payment_method() {
       return this.payment_methods.instant_transfer || null;
+    },
+
+    is_apm_visible() {
+      return !!this.eps_method;
+    },
+
+    eps_method() {
+      return this.payment_methods.eps || null;
     },
 
   },

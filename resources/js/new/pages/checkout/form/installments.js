@@ -18,7 +18,7 @@ export default {
 
 
   validations() {
-    return this.extra_fields.installments
+    return this.extra_fields.installments && this.form.payment_provider === 'credit-card'
       ? {
           installments: {
             required,

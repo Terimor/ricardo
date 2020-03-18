@@ -16,24 +16,33 @@
       ])
     </div>
 
-     <transition name="fade">
+    <template v-if="is_apm_visible">
+      @include('new.pages.checkout.payment.eps_button')
+    </template>
+
+    <div class="space-20"></div>
+
+    <transition name="fade">
       <div
         ref="form"
-        v-if="form.payment_provider === 'credit-card'"
+        v-if="form.payment_provider && form.payment_provider !== 'paypal'"
         class="form">
 
-        @include('new.pages.checkout.form.card_holder')
-        @include('new.pages.checkout.form.card_type')
-        @include('new.pages.checkout.form.card_number')
-        @include('new.pages.checkout.form.card_date')
-        @include('new.pages.checkout.form.card_cvv')
-        @include('new.pages.checkout.form.document_type')
-        @include('new.pages.checkout.form.document_number')
+        <template v-if="form.payment_provider === 'credit-card'">
+          @include('new.pages.checkout.form.card_holder')
+          @include('new.pages.checkout.form.card_type')
+          @include('new.pages.checkout.form.card_number')
+          @include('new.pages.checkout.form.card_date')
+          @include('new.pages.checkout.form.card_cvv')
+          @include('new.pages.checkout.form.document_type')
+          @include('new.pages.checkout.form.document_number')
+        </template>
+
         @include('new.pages.checkout.form.terms')
 
         @include('new.components.error', [
           'ref' => 'payment_error',
-          'active' => 'payment_error && form.payment_provider === \'credit-card\'',
+          'active' => 'payment_error && form.payment_provider !== \'paypal\'',
           'class' => 'payment-error',
           'label_code' => 'payment_error',
         ])

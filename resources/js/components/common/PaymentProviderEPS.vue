@@ -61,6 +61,13 @@
       transition: all 0.2s linear 0s;
       width: 0;
       z-index: 1;
+
+      [dir="rtl"] & {
+        border-radius: 50% 0 0 50%;
+        content: '\f053';
+        left: auto;
+        right: 0;
+      }
     }
 
     &:hover {
@@ -80,6 +87,11 @@
       margin-left: 16px;
       position: relative;
       width: 18px;
+
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: 16px;
+      }
 
       &:after {
         background-color: #000;
@@ -104,12 +116,22 @@
       font-size: 16px;
       margin-left: 16px;
       margin-top: 2px;
+
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: 16px;
+      }
     }
 
     .image {
       margin-left: auto;
       margin-right: 8px;
       max-width: 72px;
+
+      [dir="rtl"] & {
+        margin-left: 8px;
+        margin-right: auto;
+      }
     }
   }
 </style>

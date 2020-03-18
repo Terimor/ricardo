@@ -30,11 +30,7 @@ export default {
 
 
   validations() {
-    return {
-      payment_method: {
-
-      },
-    };
+    return null;
   },
 
 

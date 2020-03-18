@@ -13,7 +13,7 @@ export default {
 
 
   validations() {
-    return this.extra_fields.document_number
+    return this.extra_fields.document_number && this.form.payment_provider === 'credit-card'
       ? {
           document_number: {
             required(value) {
