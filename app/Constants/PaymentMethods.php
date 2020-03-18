@@ -132,37 +132,37 @@ class PaymentMethods
         ],
         self::EPS => [
             'name'      => 'EPS',
-            'logo'      => '/static/images/eps.png',
+            'logo'      => '/static/images/eps-curved.png',
             'is_active' => true,
             'is_apm'    => true
         ],
         self::P24 => [
             'name'      => 'Prezelewy 24',
-            'logo'      => '/static/images/prezelewy24-curved.png',
+            'logo'      => '/static/images/p24-curved.png',
             'is_active' => true,
             'is_apm'    => true
         ],
         self::BANCONTACT => [
             'name'      => 'Bancontact',
-            'logo'      => '/static/images/bancontact.png',
+            'logo'      => '/static/images/bancontact-curved.png',
             'is_active' => true,
             'is_apm'    => true
         ],
         self::MULTIBANCO => [
             'name'      => 'MultiBanco',
-            'logo'      => '/static/images/multibanco.png',
+            'logo'      => '/static/images/multibanco-curved.png',
             'is_active' => false,
             'is_apm'    => true
         ],
         self::SEPA => [
             'name'      => 'SEPA',
-            'logo'      => '/static/images/sepa-paymentlogo.png',
+            'logo'      => '/static/images/sepa-curved.png',
             'is_active' => false,
             'is_apm'    => true
         ],
         self::RECHNUNG => [
             'name'      => 'Rechnung',
-            'logo'      => '/static/images/rechnung-de-curved.png',
+            'logo'      => '/static/images/rechnung-curved.png',
             'is_active' => false,
             'is_apm'    => true
         ]
