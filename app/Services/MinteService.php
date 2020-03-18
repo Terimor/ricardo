@@ -524,14 +524,14 @@ class MinteService
 
             $body_decoded = json_decode($res->getBody(), true);
 
-            $result['provider_data'] = ['code' => $res->getStatusCode(), 'body' => $res->getBody()];
+            $result['provider_data'] = ['code' => $res->getStatusCode(), 'body' => (string)$res->getBody()];
 
             if ($body_decoded['status'] === self::ST_PENDING) {
                 $result['hash']   = $body_decoded['transid'];
                 $result['status'] = Txn::STATUS_AUTHORIZED;
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
-                logger()->error("Mint-e apm", $result['provider_data']);
+                logger()->warning("Mint-e apm", $result['provider_data']);
 
                 $result['hash'] = "fail_" . UtilsService::randomString(16);
                 $result['status'] = Txn::STATUS_FAILED;
@@ -543,7 +543,7 @@ class MinteService
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
             $result['errors'] = [MinteCodeMapper::toPhrase()];
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
-            logger()->error("Mint-e apm", $result['provider_data']);
+            logger()->warning("Mint-e apm", $result['provider_data']);
         }
         return $result;
     }
