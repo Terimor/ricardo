@@ -132,7 +132,7 @@ class PaymentMethods
         ],
         self::EPS => [
             'name'      => 'EPS',
-            'logo'      => '/static/images/eps-curved.png',
+            'logo'      => '/static/images/eps.png',
             'is_active' => true,
             'is_apm'    => true
         ],
