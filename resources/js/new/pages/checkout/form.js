@@ -101,10 +101,6 @@ export default {
       extra_validation: {
         
       },
-      payment_methods: js_data.payment_methods
-        ? JSON.parse(JSON.stringify(js_data.payment_methods))
-        : {},
-      payment_error: null,
     };
   },
 
@@ -116,42 +112,7 @@ export default {
   },
 
 
-  watch: {
-
-    'form.country'() {
-      this.payment_methods_reload();
-    },
-
-  },
-
-
-  computed: {
-
-    extra_fields() {
-      const payment_method = Object.keys(this.payment_methods)
-        .filter(name => name !== 'instant_transfer')
-        .shift();
-
-      return this.payment_methods[payment_method]
-        ? this.payment_methods[payment_method].extra_fields || {}
-        : {};
-    },
-
-  },
-
-
   methods: {
-
-    payment_methods_reload() {
-      return this.fetch_get('/payment-methods-by-country?country=' + this.form.country)
-        .then(this.fetch_json)
-        .then(body => {
-          this.payment_methods = body;
-        })
-        .catch(err => {
-
-        });
-    },
 
     form_check_fields_valid(fields) {
       let is_valid = true;

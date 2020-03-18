@@ -2,7 +2,7 @@ export default {
 
   computed: {
 
-    eps_button_class_list() {
+    apm_button_class_list() {
       return {
         ['fa-chevron-' + (!this.is_rtl ? 'right' : 'left')]: true,
       };
@@ -13,8 +13,8 @@ export default {
 
   methods: {
 
-    eps_button_click() {
-      this.form.payment_provider = 'eps';
+    apm_button_click(name) {
+      this.form.payment_provider = name;
     },
 
   },

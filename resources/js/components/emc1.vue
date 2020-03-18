@@ -73,7 +73,7 @@
                         <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
                         <template v-if="$root.hasAPM">
                           <div v-html="textPaySecurelyAPM"></div>
-                          <payment-provider-eps
+                          <payment-providers-apm
                             v-model="form.paymentProvider"
                             @input="activateForm" />
                         </template>
@@ -706,10 +706,6 @@
         .value {
           margin-left: auto;
         }
-      }
-
-      .payment-provider-eps {
-        margin-bottom: 10px;
       }
     }
 

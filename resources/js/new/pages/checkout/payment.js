@@ -1,6 +1,6 @@
+import apm_buttons from './payment/apm_buttons';
 import bluesnap from './payment/bluesnap';
 import credit_cards from './payment/credit_cards';
-import eps_button from './payment/eps_button';
 import fingerprint from './payment/fingerprint';
 import ipqualityscore from './payment/ipqualityscore';
 import payment_apm from './payment/payment_apm';
@@ -12,9 +12,9 @@ import paypal_button from './payment/paypal_button';
 export default {
 
   mixins: [
+    apm_buttons,
     bluesnap,
     credit_cards,
-    eps_button,
     fingerprint,
     ipqualityscore,
     payment_apm,
@@ -22,6 +22,25 @@ export default {
     payment_paypal,
     paypal_button,
   ],
+
+
+  data() {
+    return {
+      payment_methods: js_data.payment_methods
+        ? JSON.parse(JSON.stringify(js_data.payment_methods))
+        : {},
+      payment_error: null,
+    };
+  },
+
+
+  watch: {
+
+    'form.country'() {
+      this.payment_methods_reload();
+    },
+
+  },
 
 
   computed: {
@@ -35,17 +54,36 @@ export default {
     },
 
     is_apm_visible() {
-      return !!this.eps_method;
+      return Object.keys(this.payment_methods).reduce((acc, name) => {
+        return acc || this.payment_methods[name].is_apm;
+      }, false);
     },
 
-    eps_method() {
-      return this.payment_methods.eps || null;
+    extra_fields() {
+      const payment_method = Object.keys(this.payment_methods)
+        .filter(name => name !== 'instant_transfer')
+        .shift();
+
+      return this.payment_methods[payment_method]
+        ? this.payment_methods[payment_method].extra_fields || {}
+        : {};
     },
 
   },
 
 
   methods: {
+
+    payment_methods_reload() {
+      return this.fetch_get('/payment-methods-by-country?country=' + this.form.country)
+        .then(this.fetch_json)
+        .then(body => {
+          this.payment_methods = body;
+        })
+        .catch(err => {
+
+        });
+    },
 
     goto_upsells(order, currency) {
       let url = js_data.product.upsells.length > 0

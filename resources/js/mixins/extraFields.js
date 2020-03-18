@@ -44,11 +44,9 @@ export const appMixin = {
   computed: {
 
     hasAPM() {
-      return this.$root.hasEPS;
-    },
-
-    hasEPS() {
-      return this.$root.paymentMethods && !!this.$root.paymentMethods.eps;
+      return Object.keys(this.$root.paymentMethods).reduce((acc, name) => {
+        return acc || this.$root.paymentMethods[name].is_apm;
+      }, false);
     },
 
   },

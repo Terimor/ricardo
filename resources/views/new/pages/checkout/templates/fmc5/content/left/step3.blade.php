@@ -16,9 +16,7 @@
       ])
     </div>
 
-    <template v-if="is_apm_visible">
-      @include('new.pages.checkout.payment.eps_button')
-    </template>
+    @include('new.pages.checkout.payment.apm_buttons')
 
     <div class="space-20"></div>
 

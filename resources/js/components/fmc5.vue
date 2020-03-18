@@ -309,7 +309,7 @@
                 v-html="paypalPaymentError"></div>
 
               <template v-if="$root.hasAPM">
-                <payment-provider-eps
+                <payment-providers-apm
                   v-model="form.paymentProvider" />
               </template>
 
@@ -2000,10 +2000,6 @@
   }
 
   .paypal-button-container {
-    margin-bottom: 10px;
-  }
-
-  .payment-provider-eps {
     margin-bottom: 10px;
   }
 

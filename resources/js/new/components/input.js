@@ -3,7 +3,7 @@ export default {
   methods: {
 
     input_touch($v) {
-      if (!$v.$dirty && (!this.is_ie11 || $v.$model !== '')) {
+      if ($v && !$v.$dirty && (!this.is_ie11 || $v.$model !== '')) {
         $v.$touch();
       }
     },

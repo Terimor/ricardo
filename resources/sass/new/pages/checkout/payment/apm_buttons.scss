@@ -1,10 +1,16 @@
-.eps-button {
+.apm-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.apm-button {
   align-items: center;
   background: linear-gradient(to bottom, #f7f8fa, #e7e9ec);
   border: 2px solid #000;
   cursor: pointer;
   display: flex;
   height: 56px;
+  margin-bottom: 10px;
   position: relative;
 
   &:hover {
@@ -12,7 +18,7 @@
   }
 }
 
-.eps-button-arrow {
+.apm-button-arrow {
   align-items: center;
   background-color: rgba(255,255,255,.3);
   border-radius: 0 50% 50% 0;
@@ -33,13 +39,13 @@
     right: 0;
   }
 
-  .eps-button:hover & {
+  .apm-button:hover & {
     opacity: 1;
     width: 30px;
   }
 }
 
-.eps-button-radio {
+.apm-button-radio {
   margin-left: 16px;
 
   [dir="rtl"] & {
@@ -48,7 +54,7 @@
   }
 }
 
-.eps-button-label {
+.apm-button-label {
   font-weight: bold;
   font-size: 16px;
   margin-left: 16px;
@@ -59,7 +65,7 @@
   }
 }
 
-.eps-button-image {
+.apm-button-image {
   margin-left: auto;
   margin-right: 8px;
   max-width: 72px;
