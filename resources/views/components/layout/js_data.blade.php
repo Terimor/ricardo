@@ -45,6 +45,7 @@
     window.adwordsconvidjs = '{{ $product->gads_conversion_id ?? '' }}';
     window.adwordsconvlabeljs = '{{ $product->gads_conversion_label ?? '' }}';
     window.adwordsconvretargetjs = '{{ $product->gads_retarget_id ?? '' }}';
+    window.jsgoogleoptimize = '{{ $product->goptimize_id ?? '' }}';
   @endif
 
   if (js_query_params.cur === '{aff_currency}') {
