@@ -8,7 +8,6 @@ use App\Http\Requests\PaymentCardMinte3dsRequest;
 use App\Models\Txn;
 use App\Models\Domain;
 use App\Models\Currency;
-use App\Models\OdinCustomer;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
 use App\Exceptions\AuthException;
@@ -236,10 +235,8 @@ class CardService {
                     ),
                     'amount'    => $order->total_price,
                     'currency'  => $order->currency,
-                    'domain'    => optional($domain)->name,
                     'order_id'  => $order->getIdAttribute(),
                     'order_number'  => $order->number,
-                    'product_id'    => $product->getIdAttribute(),
                     'user_agent'    => $user_agent,
                     'descriptor'    => $order->billing_descriptor
                 ]);
@@ -469,7 +466,6 @@ class CardService {
                         ]
                     );
                 } elseif ($api->payment_provider === PaymentProviders::MINTE) {
-                    $domain = Domain::getByName();
                     $minte = new MinteService($api);
                     $payment = $minte->payByToken(
                         $card_token,
@@ -488,12 +484,10 @@ class CardService {
                         [
                             'amount'    => $checkout_price,
                             'currency'  => $order->currency,
-                            'domain'    => optional($domain)->name,
                             'order_id'  => $order->getIdAttribute(),
-                            'descriptor'    => $order->billing_descriptor,
                             'order_number'  => $order->number,
                             'user_agent'    => $user_agent,
-                            'payment_api_id' => $order_main_txn['payment_api_id']
+                            'descriptor'    => $order->billing_descriptor
                         ]
                     );
                     if ($payment['status'] === Txn::STATUS_CAPTURED) {

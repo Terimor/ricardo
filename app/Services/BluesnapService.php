@@ -231,7 +231,7 @@ class BluesnapService
             $res = $ex->hasResponse() ? $ex->getResponse() : null;
             $code = optional($res)->getStatusCode();
             $body = optional($res)->getBody();
-            $result['provider_data'] = ['code'  => $code, 'body'  => $body];
+            $result['provider_data'] = ['code'  => $code, 'body'  => (string)$body];
             $result['status'] = Txn::STATUS_FAILED;
             $result = array_merge($result, $this->parseErrorResponse($body));
             logger()->warning("Bluesnap pay", $result['provider_data']);

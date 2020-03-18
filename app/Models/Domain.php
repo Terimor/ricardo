@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Exceptions\OrderNotFoundException;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
  * Class Category
  * @package App\Models
+ *
+ * @property string $name
  */
 class Domain extends Model
 {
@@ -34,6 +37,16 @@ class Domain extends Model
     public function product()
     {
         return $this->hasOne(OdinProduct::class, '_id', 'odin_product_id');
+    }
+
+    /**
+     * Returns Domain by ID
+     * @param string $id
+     * @return Domain|null
+     */
+    public static function getById(string $id, bool $throwable = true): ?Domain
+    {
+        return self::find($id);
     }
 
     /**

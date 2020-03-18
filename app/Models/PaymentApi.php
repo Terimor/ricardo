@@ -5,7 +5,6 @@ namespace App\Models;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Http\Discovery\NotFoundException;
 use App\Constants\PaymentProviders;
 
 /**
@@ -19,6 +18,7 @@ use App\Constants\PaymentProviders;
  * @property string[] $domain_ids
  * @property string[] $product_category_ids
  * @property string $description
+ * @property string $main_domain_id
  * @property bool $is_active
  * @property bool $is_apm
  * @property mixed $created_at

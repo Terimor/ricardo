@@ -118,7 +118,6 @@ class ApmService {
                 $payment = (new MinteService($api))->payApm($method, $contacts, [
                     'amount'    => $order->total_price,
                     'currency'  => $order->currency,
-                    'domain'    => optional($domain)->name,
                     'order_id'  => $order->getIdAttribute(),
                     'order_number'  => $order->number,
                     'order_desc'    => $product->description,
@@ -208,7 +207,6 @@ class ApmService {
                 $checkout_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
                 switch ($api->payment_provider):
                     case PaymentProviders::MINTE:
-                        $domain = Domain::getByName();
                         $payment = (new MinteService($api))->payApm(
                             $order_main_txn['payment_method'],
                             [
@@ -226,7 +224,6 @@ class ApmService {
                             [
                                 'amount'    => $checkout_price,
                                 'currency'  => $order->currency,
-                                'domain'    => optional($domain)->name,
                                 'order_id'  => $order->getIdAttribute(),
                                 'order_number'  => $order->number,
                                 'order_desc'    => $main_product->description,

@@ -260,9 +260,10 @@ class OdinOrder extends OdinModel
 
     /**
      * Returns OdinOrder by ID
-     * @param  string    $id
-     * @param  boolean   $throwable default=true
+     * @param string $id
+     * @param boolean $throwable default=true
      * @return OdinOrder|null
+     * @throws OrderNotFoundException
      */
     public static function getById(string $id, bool $throwable = true): ?OdinOrder
     {

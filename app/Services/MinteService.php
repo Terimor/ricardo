@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Domain;
 use App\Models\Setting;
 use App\Models\Currency;
 use App\Models\PaymentApi;
 use App\Models\Txn;
-use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\MinteCodeMapper;
-use Illuminate\Http\Request;
 use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
@@ -161,6 +160,19 @@ class MinteService
     }
 
     /**
+     * Returns Domain for current PaymentApi
+     * @return Domain|null
+     */
+    public function getDomain(): ?Domain
+    {
+        $result = null;
+        if (!empty($this->api->main_domain_id)) {
+            $result = Domain::getById($this->api->main_domain_id);
+        }
+        return $result;
+    }
+
+    /**
      * Provides payment by card
      * @param  array   $card
      * @param  array   $contacts
@@ -304,7 +316,6 @@ class MinteService
                     'state'     => $contact['state'] ?? '',
                     'email'     => $contact['email'],
                     'phone'     => $contact['phone'],
-//                    'domain'    => $details['domain'],
                     'amount'    => $details['amount'],
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
@@ -484,6 +495,14 @@ class MinteService
      * @param  string $method
      * @param  array  $contacts
      * @param  array  $details
+     * [
+     *  'currency'=>string,
+     *  'amount'=>float,
+     *  'order_id'=>string,
+     *  'order_number'=>string,
+     *  'order_desc'=>string,
+     *  'user_agent'=>string
+     * ]
      * @return array
      */
     public function payApm(string $method, array $contacts, array $details): array
@@ -494,6 +513,14 @@ class MinteService
         ]);
 
         $result = $this->createPaymentTmpl($details);
+
+        $domain = $this->getDomain();
+        if (!$domain) {
+            $result['errors'] = [MinteCodeMapper::toPhrase()];
+            $result['provider_data'] = ['message' => "PaymentApi [{$this->api->getAttribute()}]. Domain not found"];
+            logger()->warning("Mint-e apm", $result['provider_data']);
+            return $result;
+        }
 
         try {
             $nonce = UtilsService::millitime();
@@ -510,7 +537,7 @@ class MinteService
                     'state'     => $contacts['state'] ?? '',
                     'email'     => $contacts['email'],
                     'phone'     => is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone'],
-                    'domain'    => $details['domain'],
+                    'domain'    => $domain->name,
                     'amount'    => $details['amount'],
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],
