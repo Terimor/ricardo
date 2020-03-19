@@ -670,11 +670,9 @@ class CardService {
      */
     public static function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id): array
     {
-        $errcode    = $req->input('errorcode');
-        $errmsg     = $req->input('errormessage');
+        $input      = $req->all();
         $sign       = $req->input('signature');
         $txn_hash   = $req->input('transid');
-        $txn_status = $req->input('status');
         $txn_ts     = $req->input('timestamp', '') ?? '';
 
         $order = OdinOrder::getById($order_id); // throwable
@@ -687,7 +685,7 @@ class CardService {
             throw new AuthException('Unauthorized');
         }
 
-        $payment = $minte->handle3ds($order_txn, ['errcode' => $errcode, 'errmsg' => $errmsg, 'status' => $txn_status]);
+        $payment = $minte->handle3ds($order_txn, $input);
         if ($payment['status'] === Txn::STATUS_CAPTURED) {
             $capture = $minte->capture($payment['hash'], ['amount' => $order_txn['value'], 'currency' => $order->currency]);
             PaymentService::logTxn(array_merge($capture, ['payment_method' => $order_txn['payment_method']]));

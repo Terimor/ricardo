@@ -103,13 +103,22 @@ class MinteService
     /**
      * @var array
      */
-    private static $fallback_codes = ['05', '621', '622', '625', 'Amount by terminal exceeded', 'Company limits exceeded.', 'ERR-MPI'];
+    private static array $fallback_codes = ['621', '622', '625', 'ERR-MPI'];
+
+    /**
+     * @var array
+     */
+    private static array $fallback_types = ['2', '3'];
+
+    /**
+     * @var array
+     */
+    private static array $fallback_messages = ['Amount by terminal exceeded', 'Company limits exceeded.'];
 
     /**
      * @var string
      */
-    private $endpoint;
-
+    private string $endpoint;
 
     /**
      * MinteService constructor
@@ -157,6 +166,21 @@ class MinteService
             'provider_data'     => null,
             'errors'            => null
         ];
+    }
+
+    /**
+     * Checks is it fallback
+     * @param array $error ['errortype' => string|null, 'errorcode' => string|null, 'errormessage' => string|null]
+     * @return bool
+     */
+    private function checkErrorToFallback(array $error): bool
+    {
+        if (!empty($error['errortype']) && in_array($error['errortype'], self::$fallback_types)) {
+            return true;
+        } elseif (!empty($error['errorcode']) && in_array($error['errorcode'], self::$fallback_codes)) {
+            return true;
+        }
+        return in_array($error['errormessage'] ?? null, self::$fallback_messages);
     }
 
     /**
@@ -346,16 +370,10 @@ class MinteService
             } else {
                 logger()->warning("Mint-e auth", ['body' => $body_decoded]);
 
-                $code = $body_decoded['errorcode'] ?? null;
-                $msg  = $body_decoded['errormessage'] ?? null;
-
-                if (in_array($code ?? $msg, self::$fallback_codes)) {
-                    $result['fallback'] = true;
-                }
-
                 $result['hash'] = "fail_" . UtilsService::randomString(16);
                 $result['status'] = Txn::STATUS_FAILED;
-                $result['errors'] = [MinteCodeMapper::toPhrase($code, $msg)];
+                $result['fallback'] = $this->checkErrorToFallback($body_decoded);
+                $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'] ?? null, $body_decoded['errormessage'] ?? null)];
             }
             $result['provider_data'] = $body_decoded;
         } catch (GuzzReqException $ex) {
@@ -578,7 +596,7 @@ class MinteService
     /**
      * Handles payment after 3ds
      * @param array $payment Order->txns item
-     * @param array $params ['errcode' => ?string, 'errmsg' => ?string, 'status' => string]
+     * @param array $params ['errortype' => ?string, 'errorcode' => ?string, 'errormessage' => ?string, 'status' => string]
      * @return array
      */
     public function handle3ds(array $payment, array $params): array
@@ -586,12 +604,9 @@ class MinteService
         if ($params['status'] === self::ST_SUCCESS) {
             $payment['status'] = Txn::STATUS_CAPTURED;
         } else {
-            $code = !empty($params['errcode']) ? $params['errcode'] : $params['errmsg'];
-            if (in_array($code, self::$fallback_codes)) {
-                $payment['fallback'] = true;
-            }
             $payment['status'] = Txn::STATUS_FAILED;
-            $payment['errors'] = [MinteCodeMapper::toPhrase($params['errcode'], $params['errmsg'])];
+            $payment['fallback'] = $this->checkErrorToFallback($params);
+            $payment['errors'] = [MinteCodeMapper::toPhrase($params['errorcode'] ?? null, $params['errormessage'] ?? null)];
         }
 
         return $payment;
