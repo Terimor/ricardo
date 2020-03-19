@@ -555,6 +555,10 @@ class SiteController extends Controller
         $is_thankyou = $is_thankyou_page || $is_vrtl_thankyou_page;
         $is_smartbell = str_replace('www.', '', $request->getHost()) === 'smartbell.pro';
 
+        if ($request->get('apm') && !$request->get('apm_restore')) {
+            return view('prerender.thankyou.apm_restore');
+        }
+
         return view($viewTemplate, compact(
             'countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo',
             'is_thankyou', 'is_thankyou_page', 'is_vrtl_thankyou_page', 'is_smartbell'
