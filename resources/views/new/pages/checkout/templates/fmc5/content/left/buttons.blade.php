@@ -16,7 +16,7 @@
   </div>
 
   <div
-    v-if="step === 3 && form.payment_provider === 'credit-card'"
+    v-if="step === 3 && form.payment_provider !== 'paypal'"
     class="button-next multi"
     @click.capture.stop="next_click">
     @include('new.pages.checkout.payment.pay_card_button', ['label' => t('fmc5.complete')])

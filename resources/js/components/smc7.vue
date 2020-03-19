@@ -496,10 +496,12 @@
         this.refreshTopBlock();
       },
       'form.payment_method'() {
+        const selected_method = this.$root.paymentMethods[this.form.payment_method];
+
         if (this.form.payment_method === 'instant_transfer') {
           this.form.paymentProvider = 'paypal';
-        } else if (this.form.payment_method === 'eps') {
-          this.form.paymentProvider = 'apm';
+        } else if (selected_method.is_apm) {
+          this.form.paymentProvider = this.form.payment_method;
         } else {
           this.form.paymentProvider = 'credit-card';
         }

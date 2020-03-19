@@ -67,7 +67,7 @@
           <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
           <template v-if="$root.hasAPM">
             <h3 v-html="textPaySecurelyAPM"></h3>
-            <payment-provider-eps
+            <payment-providers-apm
               v-model="form.paymentProvider"
               @input="activateForm" />
           </template>
@@ -525,8 +525,8 @@
         this.paymentError = '';
         this.isSubmitted = true;
 
-        const phoneNumber = this.form.stepTwo.phone.replace(/[^0-9]/g, '');
-        const cardNumber = this.form.stepThree.cardNumber.replace(/[^0-9]/g, '');
+        const phoneNumber = (this.form.stepTwo.phone || '').replace(/[^0-9]/g, '');
+        const cardNumber = (this.form.stepThree.cardNumber || '').replace(/[^0-9]/g, '');
 
         if (this.form.stepTwo.emailForceInvalid) {
           if (this.form.stepThree.country === 'br') {
@@ -577,14 +577,17 @@
               billing_postcode: this.form.stepThree.zipCode,
               billing_email: this.form.stepTwo.email,
               billing_phone: this.dialCode + phoneNumber,
-              credit_card_bin: cardNumber.substr(0, 6),
-              credit_card_expiration_month: this.form.stepThree.cardDate.split('/')[0],
-              credit_card_expiration_year: this.form.stepThree.cardDate.split('/')[1],
-              cvv_code: this.form.stepThree.cvv,
             };
 
-            if (window.sha256) {
-              data.credit_card_hash = sha256(cardNumber);
+            if (this.form.paymentProvider === 'credit-card') {
+              data.credit_card_bin = cardNumber.substr(0, 6);
+              data.credit_card_expiration_month = this.form.stepThree.cardDate.split('/')[0];
+              data.credit_card_expiration_year = this.form.stepThree.cardDate.split('/')[1];
+              data.cvv_code = this.form.stepThree.cvv;
+
+              if (window.sha256) {
+                data.credit_card_hash = sha256(cardNumber);
+              }
             }
 
             return ipqsCheck(data);
@@ -614,22 +617,25 @@
                 zip: this.form.stepThree.zipCode,
                 street: this.form.stepThree.street,
               },
-              card: {
+              ipqs: ipqsResult,
+            };
+
+            if (this.form.paymentProvider === 'credit-card') {
+              data.card = {
                 number: cardNumber,
                 cvv: this.form.stepThree.cvv,
                 month: this.form.stepThree.cardDate.split('/')[0],
                 year: '20' + this.form.stepThree.cardDate.split('/')[1],
-              },
-              ipqs: ipqsResult,
-            };
+              };
 
-            if (this.$root.isAffIDEmpty) {
-              data.card.holder = this.form.stepThree.cardHolder;
+              if (this.$root.isAffIDEmpty) {
+                data.card.holder = this.form.stepThree.cardHolder;
+              }
             }
 
-            this.$parent.setExtraFieldsForCardPayment(data);
+            this.$parent.setExtraFieldsForCardPayment(data, this.form.paymentProvider);
 
-            return sendCheckoutRequest(data);
+            return sendCheckoutRequest(data, this.form.paymentProvider);
           })
           .then(res => {
             if (res.status !== 'ok' && this.form.stepThree.country === 'br') {

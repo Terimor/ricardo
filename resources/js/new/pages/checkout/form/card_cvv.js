@@ -14,14 +14,16 @@ export default {
 
 
   validations() {
-    return {
-      card_cvv: {
-        required,
-        numeric,
-        min_length: minLength(3),
-        max_length: maxLength(4),
-      },
-    };
+    return this.form.payment_provider === 'credit-card'
+      ? {
+          card_cvv: {
+            required,
+            numeric,
+            min_length: minLength(3),
+            max_length: maxLength(4),
+          },
+        }
+      : null;
   },
 
 

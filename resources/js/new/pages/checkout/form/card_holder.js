@@ -13,7 +13,7 @@ export default {
 
 
   validations() {
-    return this.is_affid_empty
+    return this.is_affid_empty && this.form.payment_provider === 'credit-card'
       ? {
           card_holder: {
             required,

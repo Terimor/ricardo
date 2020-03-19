@@ -23,8 +23,14 @@ class ApmService {
 
     /**
      * Creates Apm payment
-     * @param  CreateApmOrderRequest $req
+     * @param CreateApmOrderRequest $req
      * @return array
+     * @throws OrderUpdateException
+     * @throws ProviderNotFoundException
+     * @throws \App\Exceptions\CustomerUpdateException
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\PaymentException
+     * @throws \App\Exceptions\ProductNotFoundException
      */
     public static function createOrder(CreateApmOrderRequest $req)
     {
@@ -142,8 +148,12 @@ class ApmService {
 
     /**
      * Adds upsells to APM order
-     * @param  CreateApmUpsellsOrderRequest $req
+     * @param CreateApmUpsellsOrderRequest $req
      * @return array
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function createUpsellsOrder(CreateApmUpsellsOrderRequest $req): array
     {
@@ -277,9 +287,13 @@ class ApmService {
 
     /**
      * Mint-e apm redirect
-     * @param  ApmRedirectRequest $req
-     * @param  string $order_id
+     * @param ApmRedirectRequest $req
+     * @param string $order_id
      * @return array
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function minteApm(ApmRedirectRequest $req, string $order_id): array
     {

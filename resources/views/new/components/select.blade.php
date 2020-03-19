@@ -1,7 +1,7 @@
 <div
   ref="{{ $name }}_field"
   class="select {{ $name }}-field scroll-when-error"
-  :class="{ invalid: {{ $validation }}.$dirty && {{ $validation }}.$invalid }"
+  :class="{ invalid: {{ $validation }} && {{ $validation }}.$dirty && {{ $validation }}.$invalid }"
   @if (!empty($init)) v-if="{{ $init }}() || true" @endif>
 
   <div class="select-field-label">
@@ -56,7 +56,7 @@
   </div>
 
   <div
-    v-if="{{ $validation }}.$dirty"
+    v-if="{{ $validation }} && {{ $validation }}.$dirty"
     class="select-field-errors">
 
     @foreach ($validation_labels ?? [] as $vname => $vlabel)

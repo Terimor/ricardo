@@ -66,21 +66,23 @@ export default {
         fields.billing_phone = this.form.phone_code + this.form.phone.replace(/[^0-9]/g, '');
       }
 
-      if (this.form.card_number) {
-        fields.credit_card_bin = this.form.card_number.replace(/[^0-9]/g, '').substr(0, 6);
+      if (this.form.payment_provider === 'credit-card') {
+        if (this.form.card_number) {
+          fields.credit_card_bin = this.form.card_number.replace(/[^0-9]/g, '').substr(0, 6);
 
-        if (window.sha256) {
-          fields.credit_card_hash = sha256(this.form.card_number.replace(/[^0-9]/g, ''));
+          if (window.sha256) {
+            fields.credit_card_hash = sha256(this.form.card_number.replace(/[^0-9]/g, ''));
+          }
         }
-      }
 
-      if (this.form.card_date) {
-        fields.credit_card_expiration_month = this.form.card_date.split('/')[0];
-        fields.credit_card_expiration_year = this.form.card_date.split('/')[1];
-      }
+        if (this.form.card_date) {
+          fields.credit_card_expiration_month = this.form.card_date.split('/')[0];
+          fields.credit_card_expiration_year = this.form.card_date.split('/')[1];
+        }
 
-      if (this.form.card_cvv) {
-        fields.cvv_code = this.form.card_cvv;
+        if (this.form.card_cvv) {
+          fields.cvv_code = this.form.card_cvv;
+        }
       }
 
       return new Promise(resolve => {

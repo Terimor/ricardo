@@ -3,8 +3,6 @@ export default {
   methods: {
 
     credit_card_create_order() {
-      this.form.payment_provider = 'credit-card';
-
       let fingerprint_result = null;
       let ipqualityscore_result = null;
 
@@ -128,6 +126,7 @@ export default {
         .then(() => {
           let data = {
             page_checkout: location.href,
+            method: this.form.payment_provider,
             product: {
               qty: this.form.deal,
               sku: this.form.variant,
@@ -148,22 +147,37 @@ export default {
               city: this.form.city,
               country: this.form.country,
             },
-            card: {
-              number: this.form.card_number.replace(/[^0-9]/g, ''),
-              cvv: this.form.card_cvv,
-              month: this.form.card_date.split('/')[0],
-              year: '20' + this.form.card_date.split('/')[1],
-            },
             ipqs: ipqualityscore_result,
             f: fingerprint_result,
           };
 
-          if (this.is_affid_empty) {
-            data.card.holder = this.form.card_holder;
-          }
+          if (this.form.payment_provider === 'credit-card') {
+            data.card = {
+              number: this.form.card_number.replace(/[^0-9]/g, ''),
+              cvv: this.form.card_cvv,
+              month: this.form.card_date.split('/')[0],
+              year: '20' + this.form.card_date.split('/')[1],
+            };
 
-          if (this.extra_fields.installments) {
-            data.card.installments = this.form.installments;
+            if (this.is_affid_empty) {
+              data.card.holder = this.form.card_holder;
+            }
+
+            if (this.extra_fields.installments) {
+              data.card.installments = this.form.installments;
+            }
+
+            if (this.extra_fields.card_type) {
+              data.card.type = this.form.card_type;
+            }
+
+            if (this.extra_fields.document_type) {
+              data.contact.document_type = this.form.document_type;
+            }
+
+            if (this.extra_fields.document_number) {
+              data.contact.document_number = this.form.document_number;
+            }
           }
 
           if (this.extra_fields.state) {
@@ -182,23 +196,14 @@ export default {
             data.address.district = this.form.district;
           }
 
-          if (this.extra_fields.card_type) {
-            data.card.type = this.form.card_type;
-          }
-
-          if (this.extra_fields.document_type) {
-            data.contact.document_type = this.form.document_type;
-          }
-
-          if (this.extra_fields.document_number) {
-            data.contact.document_number = this.form.document_number;
-          }
-
           if (window.kount_params) {
             data.kount_session_id = kount_params.MercSessId;
           }
 
-          let url = '/pay-by-card';
+          let url = this.form.payment_provider === 'credit-card'
+            ? '/pay-by-card'
+            : '/pay-by-apm';
+
           url += '?cur=' + this.price_currency;
 
           if (localStorage.getItem('order_failed')) {

@@ -18,7 +18,7 @@ export default {
 
 
   validations() {
-    return this.extra_fields.document_type
+    return this.extra_fields.document_type && this.form.payment_provider === 'credit-card'
       ? {
           document_type: {
             required,

@@ -61,6 +61,7 @@
       name="zipCode" />
     <h2><span>{{paySecurelyWith}}</span></h2>
     <radio-button-group
+        class="payment-method-cards"
         :withCustomLabels="true"
         v-model="paymentForm.payment_method">
       <div class="card-types">
@@ -238,6 +239,10 @@
 
     .card-icons {
       display: flex;
+    }
+
+    .payment-method-cards {
+      margin-bottom: 10px;
     }
 
     .fa.fa-question-circle {

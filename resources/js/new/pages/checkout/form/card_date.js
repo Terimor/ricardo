@@ -14,31 +14,33 @@ export default {
 
 
   validations() {
-    return {
-      card_date: {
-        required,
-        valid(value) {
-          value = value || '';
+    return this.form.payment_provider === 'credit-card'
+      ? {
+          card_date: {
+            required,
+            valid(value) {
+              value = value || '';
 
-          if (!/^[0-9]{2}\/[0-9]{2}$/.test(value)) {
-            return false;
-          }
+              if (!/^[0-9]{2}\/[0-9]{2}$/.test(value)) {
+                return false;
+              }
 
-          const month = +value.split('/')[0];
-          const year = +value.split('/')[1];
+              const month = +value.split('/')[0];
+              const year = +value.split('/')[1];
 
-          return month >= 1 && month <= 12 && year >= 0 && year <= 99;
-        },
-        not_expired(value) {
-          value = value || '';
+              return month >= 1 && month <= 12 && year >= 0 && year <= 99;
+            },
+            not_expired(value) {
+              value = value || '';
 
-          const month = (+value.split('/')[0] - 1) || 0;
-          const year = 2000 + (+value.split('/')[1] || 0);
+              const month = (+value.split('/')[0] - 1) || 0;
+              const year = 2000 + (+value.split('/')[1] || 0);
 
-          return dateFns.isFuture(new Date(year, month));
-        },
-      },
-    };
+              return dateFns.isFuture(new Date(year, month));
+            },
+          },
+        }
+      : null;
   },
 
 

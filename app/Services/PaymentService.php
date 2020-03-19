@@ -79,9 +79,9 @@ class PaymentService
 
     /**
      * Adds txn data to Order
-     * @param  OdinOrder    &$order
-     * @param  array        $data
-     * @param  array        $details
+     * @param  OdinOrder $order
+     * @param  array    $data
+     * @param  array    $details
      * @return void
      */
     public static function addTxnToOrder(OdinOrder &$order, array $data, array $details): void
@@ -97,6 +97,7 @@ class PaymentService
             'fee_usd'           => 0,
             'card_type'         => $details['card_type'] ?? null,
             'card_number'       => $details['card_number'] ?? null,
+            'is_fallback'       => $details['is_fallback'] ?? false,
             'payment_method'    => $details['payment_method'],
             'payment_provider'  => $data['payment_provider'],
             'payment_api_id'    => $data['payment_api_id'] ?? null,
@@ -109,6 +110,7 @@ class PaymentService
      * @param OdinOrder $order
      * @param array $payment
      * @return array
+     * @throws \Exception
      */
     public static function generateCreateOrderResult(OdinOrder $order, array $payment): array
     {
@@ -260,6 +262,7 @@ class PaymentService
      * @param array $details ['provider' => string, 'method' => string, 'useragent' => ?string]
      * @return array
      * @throws \App\Exceptions\ProductNotFoundException
+     * @throws InvalidParamsException
      */
     public static function fallbackOrder(OdinOrder &$order, array $card, array $details): array
     {
@@ -424,7 +427,11 @@ class PaymentService
     /**
      * Approves order
      * @param array $data ['hash'=>string,'number'=>?string,'value'=>?float,'status'=>string]
+     * @param string|null $provider
      * @return OdinOrder|null
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function approveOrder(array $data, ?string $provider = null): ?OdinOrder
     {
@@ -511,9 +518,11 @@ class PaymentService
 
     /**
      * Checks(Changes) order currency
-     * @param  OdinOrder   $order
-     * @param  string      $prv
+     * @param OdinOrder $order
+     * @param string $provider
      * @return OdinOrder
+     * @throws InvalidParamsException
+     * @throws \App\Exceptions\ProductNotFoundException
      */
     public static function checkOrderCurrency(OdinOrder $order, string $provider = PaymentProviders::MINTE): OdinOrder
     {
@@ -552,7 +561,11 @@ class PaymentService
     /**
      * Reject txn
      * @param array $data
+     * @param string|null $provider
      * @return OdinOrder|null
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function rejectTxn(array $data, ?string $provider = null): ?OdinOrder
     {
@@ -610,6 +623,7 @@ class PaymentService
      * Caches webhook errors
      * @param array $data
      * @return void
+     * @throws \Exception
      */
     public static function cacheOrderErrors(array $data = []): void
     {
@@ -652,6 +666,7 @@ class PaymentService
      * Get Order errors
      * @param string $order_id
      * @return array
+     * @throws \App\Exceptions\OrderNotFoundException
      */
     public static function getCachedOrderErrors(string $order_id): array
     {
@@ -674,9 +689,9 @@ class PaymentService
      * ];
      * @param string $country
      * @param bool $is_main default=true
-     * @return boolean
+     * @return array
      */
-    public static function getPaymentMethodsByCountry(string $country, bool $is_main = true)
+    public static function getPaymentMethodsByCountry(string $country, bool $is_main = true): array
     {
         $country = strtolower($country);
         $result = [];

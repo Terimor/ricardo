@@ -35,6 +35,14 @@ class CardService {
      * Creates a new order
      * @param PaymentCardCreateOrderRequest $req
      * @return array
+     * @throws OrderUpdateException
+     * @throws ProviderNotFoundException
+     * @throws \App\Exceptions\CustomerUpdateException
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\PaymentException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function createOrder(PaymentCardCreateOrderRequest $req): array
     {
@@ -271,7 +279,8 @@ class CardService {
                 PaymentService::addTxnToOrder($order, $payment, [
                     'payment_method' => $method,
                     'card_number' => UtilsService::prepareCardNumber($card['number']),
-                    'card_type' => $card['type'] ?? null
+                    'card_type' => $card['type'] ?? null,
+                    'is_fallback' => true
                 ]);
             }
         }
@@ -301,8 +310,12 @@ class CardService {
 
     /**
      * Adds upsells to order using CardToken
-     * @param  PaymentCardCreateUpsellsOrderRequest $req
+     * @param PaymentCardCreateUpsellsOrderRequest $req
      * @return array
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req): array
     {
@@ -561,9 +574,14 @@ class CardService {
 
     /**
      * Resolves Blusnap 3ds payment
-     * @param  string $order_id
-     * @param  string $ref
+     * @param string $order_id
+     * @param string $ref
      * @return array
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function completeBs3dsOrder(string $order_id, string $ref): array
     {
@@ -621,7 +639,7 @@ class CardService {
                 $order_product = $order->getMainProduct(); // throwable
                 $order_product['txn_hash'] = $payment['hash'];
                 $order->addProduct($order_product, true);
-                PaymentService::addTxnToOrder($order, $payment, $order_txn);
+                PaymentService::addTxnToOrder($order, $payment, array_merge($order_txn, ['is_fallback' => true]));
             }
         }
 
@@ -646,9 +664,15 @@ class CardService {
 
     /**
      * Mint-e 3ds redirect
-     * @param  PaymentCardMinte3dsRequest $req
+     * @param PaymentCardMinte3dsRequest $req
      * @param string $order_id
      * @return array
+     * @throws AuthException
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\InvalidParamsException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function minte3ds(PaymentCardMinte3dsRequest $req, string $order_id): array
     {
@@ -709,7 +733,7 @@ class CardService {
                     $order_product = $order->getMainProduct(); // throwable
                     $order_product['txn_hash'] = $reply['payment']['hash'];
                     $order->addProduct($order_product, true);
-                    PaymentService::addTxnToOrder($order, $reply['payment'], $order_txn);
+                    PaymentService::addTxnToOrder($order, $reply['payment'], array_merge($order_txn, ['is_fallback' => true]));
                     $order->is_flagged = $reply['payment']['is_flagged'];
 
                     if (!$order->save()) {
@@ -732,8 +756,11 @@ class CardService {
 
     /**
      * Approves order by ebanx hashes
-     * @param  array  $hashes
+     * @param array $hashes
      * @return void
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function ebanxNotification(array $hashes): void
     {
@@ -770,8 +797,11 @@ class CardService {
     /**
      * Handles Appmax webhook
      * @param string $event
-     * @param array  $data
+     * @param array $data
      * @return void
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function appmaxWebhook(string $event, array $data): void
     {
@@ -789,9 +819,12 @@ class CardService {
 
     /**
      * Captures payment
-     * @param  string $order_id
-     * @param  string $txn_hash
+     * @param string $order_id
+     * @param string $txn_hash
      * @return bool
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function capture(string $order_id, string $txn_hash): bool
     {
@@ -822,9 +855,12 @@ class CardService {
 
     /**
      * Voids payment
-     * @param  string $order_id
-     * @param  string $txn_hash
+     * @param string $order_id
+     * @param string $txn_hash
      * @return bool
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function void(string $order_id, string $txn_hash): bool
     {
@@ -855,11 +891,13 @@ class CardService {
 
     /**
      * Tries to refund payment
-     * @param  string $order_id
-     * @param  string $txn_hash
-     * @param  string $reason
-     * @param  float|null  $amount
+     * @param string $order_id
+     * @param string $txn_hash
+     * @param string $reason
+     * @param float|null $amount
      * @return array
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function refund(string $order_id, string $txn_hash, string $reason, ?float $amount): array
     {
@@ -917,9 +955,11 @@ class CardService {
 
     /**
      * Returns CheckoutDotComService by order number
-     * @param  string $number
-     * @param  string $hash
+     * @param string $number
+     * @param string $hash
      * @return CheckoutDotComService
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function getCheckoutService(string $number, string $hash): CheckoutDotComService
     {
@@ -931,9 +971,11 @@ class CardService {
 
     /**
      * Returns BluesnapService by order number
-     * @param  string $number
-     * @param  string $hash
+     * @param string $number
+     * @param string $hash
      * @return BluesnapService
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
      */
     public static function getBluesnapService(string $number, string $hash): BluesnapService
     {
@@ -948,6 +990,7 @@ class CardService {
      * @param string $order_number
      * @param string|null $token
      * @return void
+     * @throws \Exception
      */
     public static function setCardToken(string $order_number, ?string $token): void
     {

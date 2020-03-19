@@ -14,7 +14,7 @@ js_deps.wait(['vue'], () => {
 
     data() {
       return {
-        step: 1,
+        step: 3,
       };
     },
 
@@ -104,17 +104,22 @@ js_deps.wait(['vue'], () => {
           return;
         }
 
-        const fields = [
+        let fields = [
           'warranty',
-          'card_holder',
-          'card_type',
-          'card_number',
-          'card_date',
-          'card_cvv',
-          'document_type',
-          'document_number',
           'terms',
         ];
+
+        if (this.form.payment_provider === 'credit-card') {
+          fields = fields.concat([
+            'card_holder',
+            'card_type',
+            'card_number',
+            'card_date',
+            'card_cvv',
+            'document_type',
+            'document_number',
+          ]);
+        }
 
         if (!this.form_check_fields_valid(fields)) {
           return setTimeout(() => this.scroll_to_error(), 100);

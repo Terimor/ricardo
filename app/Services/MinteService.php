@@ -304,7 +304,7 @@ class MinteService
                     'state'     => $contact['state'] ?? '',
                     'email'     => $contact['email'],
                     'phone'     => $contact['phone'],
-                    'domain'    => $details['domain'],
+//                    'domain'    => $details['domain'],
                     'amount'    => $details['amount'],
                     'currency'  => $details['currency'],
                     'orderid'   => $details['order_number'],

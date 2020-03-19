@@ -14,22 +14,24 @@ export default {
 
 
   validations() {
-    return {
-      card_number: {
-        required,
-        valid(value) {
-          value = value || '';
-          value = value.replace(/[^0-9]/g, '');
+    return this.form.payment_provider === 'credit-card'
+      ? {
+          card_number: {
+            required,
+            valid(value) {
+              value = value || '';
+              value = value.replace(/[^0-9]/g, '');
 
-          const credit_card_type_list = credit_card_type(value);
-          const common_rule = value.length > 12 && value.length <= 19;
+              const credit_card_type_list = credit_card_type(value);
+              const common_rule = value.length > 12 && value.length <= 19;
 
-          return credit_card_type_list.length > 0
-            ? credit_card_type_list[0].lengths.indexOf(value.length) !== -1 || common_rule
-            : false;
-        },
-      },
-    };
+              return credit_card_type_list.length > 0
+                ? credit_card_type_list[0].lengths.indexOf(value.length) !== -1 || common_rule
+                : false;
+            },
+          },
+        }
+      : null;
   },
 
 

@@ -259,7 +259,7 @@
                                 {{ t('checkout.pay_securely_apm') }}
                             </div>
                             <div class="promo__row-payments">
-                                <payment-provider-eps
+                                <payment-providers-apm
                                     class="promo__credit-card-switcher"
                                     v-model="form.paymentProvider"
                                     @input="activateForm" />
