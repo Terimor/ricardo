@@ -22,8 +22,8 @@ class CustomerService
         if (!$model) {
             $model = new OdinCustomer();
             $model->email = $email;
-            $model->first_name = $data['first_name'];
-            $model->last_name = $data['last_name'];
+            $model->first_name = $data['first_name'] ?? '';
+            $model->last_name = $data['last_name'] ?? '';
             $model->save();
         }
         //$model = OdinCustomer::firstOrCreate(['email' => strtolower($data['email'])]);
