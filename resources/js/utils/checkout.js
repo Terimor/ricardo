@@ -198,29 +198,35 @@ export function checkForLeadsRequest(variant, first_name, last_name, email, phon
       (phone_valid && phone !== leadsLastData.phone);
 
     if (dataUpdated) {
-      leadsLastData = {
+      const newValue = {
         first_name,
         last_name,
         email,
         phone,
       };
 
-      Promise.resolve()
-        .then(fingerprint)
-        .then(result => data.f = result)
-        .then(() => fetch('/new-customer', {
-          method: 'post',
-          credentials: 'same-origin',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
-          },
-          body: JSON.stringify(data),
-        }))
-        .catch(err => {
+      leadsLastData = newValue;
 
-        });
+      setTimeout(() => {
+        if (newValue === leadsLastData) {
+          Promise.resolve()
+            .then(fingerprint)
+            .then(result => data.f = result)
+            .then(() => fetch('/new-customer', {
+              method: 'post',
+              credentials: 'same-origin',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+              },
+              body: JSON.stringify(data),
+            }))
+            .catch(err => {
+
+            });
+        }
+      }, 1000);
     }
   }
 }

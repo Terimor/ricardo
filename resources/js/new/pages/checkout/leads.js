@@ -33,26 +33,32 @@ export default {
           (!this.$v.form.phone.$invalid && data.phone !== cache.phone);
 
         if (updated) {
-          cache = {
+          const new_value = {
             first_name: data.first_name,
             last_name: data.last_name,
             email: data.email,
             phone: data.phone,
           };
 
-          Promise.resolve()
-            .then(() => {
-              return this.fingerprint_calculate();
-            })
-            .then(result => {
-              data.f = result;
-            })
-            .then(() => {
-              return this.fetch_post('/new-customer', data);
-            })
-            .catch(err => {
+          cache = new_value;
 
-            });
+          setTimeout(() => {
+            if (cache === new_value) {
+              Promise.resolve()
+                .then(() => {
+                  return this.fingerprint_calculate();
+                })
+                .then(result => {
+                  data.f = result;
+                })
+                .then(() => {
+                  return this.fetch_post('/new-customer', data);
+                })
+                .catch(err => {
+
+                });
+            }
+          }, 1000);
         }
       }
     },
