@@ -194,4 +194,11 @@ class OdinCustomer extends Model
         $city = $adresses[0]['city'] ?? null;
         return $city ? mb_convert_case(mb_strtolower($city), MB_CASE_TITLE) : null;
     }
+
+    /**
+     * @param string $email
+     */
+    public static function getByEmail(string $email) {
+        return static::where('email', $email)->first();
+    }
 }

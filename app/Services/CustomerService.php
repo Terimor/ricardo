@@ -16,7 +16,17 @@ class CustomerService
      */
     public function addOrUpdate(array $data, bool $returnModel = false): array
     {
-        $model = OdinCustomer::firstOrCreate(['email' => strtolower($data['email'])]);
+        $email = strtolower($data['email']);
+        // separate firstOrCreate method
+        $model = OdinCustomer::getByEmail($email);
+        if (!$model) {
+            $model = new OdinCustomer();
+            $model->email = $email;
+            $model->first_name = $data['first_name'];
+            $model->last_name = $data['last_name'];
+            $model->save();
+        }
+        //$model = OdinCustomer::firstOrCreate(['email' => strtolower($data['email'])]);
         $model->fill($data);
         if (!empty($data['page'])) {
             $model->last_page_checkout = $data['page'];
