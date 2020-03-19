@@ -1434,7 +1434,6 @@ class PaymentProviders
                     PaymentMethods::EPS => [
                         '-3ds' => ['at']
                     ],
-                    /*
                     PaymentMethods::P24 => [
                         '-3ds' => ['pl']
                     ],
@@ -1444,7 +1443,6 @@ class PaymentProviders
                     PaymentMethods::BANCONTACT => [
                         '-3ds' => ['be']
                     ]
-                    */
                 ],
                 'fallback' => [
                     PaymentMethods::VISA => [
