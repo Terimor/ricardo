@@ -2,16 +2,74 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use App\Exceptions\OrderNotFoundException;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\TxnNotFoundException;
-use App\Models\Txn;
 use App\Services\OrderService;
 use App\Constants\CountryCustomers;
 
+/**
+ * Class OdinOrder
+ * @package App\Models
+ * @property string $currency
+ * @property string $number
+ * @property string $status
+ * @property array  $ipqualityscore
+ * @property string $page_checkout
+ * @property bool   $is_flagged
+ * @property bool   is_survey_sent
+ * @property bool   is_refunding
+ * @property bool   is_refunded
+ * @property bool   is_qc_passed
+ * @property bool   $is_invoice_sent
+ * @property bool   $is_reduced
+ * @property string $offer
+ * @property string $affiliate
+ * @property string $txid
+ * @property int    $installments
+ * @property string $shipping_country
+ * @property string $shipping_street
+ * @property string $shipping_street2
+ * @property string $shipping_city
+ * @property string $shipping_state
+ * @property string $shipping_building
+ * @property string $shipping_apt
+ * @property string $shipping_zip
+ * @property string $customer_email
+ * @property string $customer_first_name
+ * @property string $customer_last_name
+ * @property string $customer_phone
+ * @property string $ip
+ * @property string $customer_doc_id
+ * @property string $billing_descriptor
+ * @property float  $total_price
+ * @property float  $total_price_usd
+ * @property float  $total_paid
+ * @property float  $total_paid_usd
+ * @property float  $exchange_rate
+ * @property array  $txns
+ * @property array  $products
+ * @property string $fingerprint
+ * @property string $device_type
+ * @property string $browser
+ * @property string $user_agent
+ * @property float  $total_chargeback
+ * @property float  $total_chargeback_usd
+ * @property float  $total_refunded_usd
+ * @property float  $txns_fee_usd
+ * @property float  $shipping_cost_usd
+ * @property float  $payout_usd
+ * @property string $shop_currency
+ * @property string $language
+ * @property string $warehouse_id
+ * @property array  $params
+ * @property array  $events
+ * @property array  $pixels
+ * @property array  $postbacks
+ * @property array  $trackings
+ */
 class OdinOrder extends OdinModel
 {
     public $timestamps = true;
@@ -33,7 +91,7 @@ class OdinOrder extends OdinModel
     const DEVICE_PLAYER_FULL = 'portable media player';
     const DEVICE_PHABLET = 'phablet'; // not in use, replace to tablet
 
-    public static $devices = [
+    public static array $devices = [
         self::DEVICE_DESKTOP => 'PC',
         self::DEVICE_SMARTPHONE => 'Mobile',
         self::DEVICE_TABLET => 'Tablet',
@@ -42,8 +100,8 @@ class OdinOrder extends OdinModel
         self::DEVICE_PLAYER => 'Media Player'
     ];
 
-    public static $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];
-    public static $acceptedTxnFlaggedStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED];
+    public static array $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];
+    public static array $acceptedTxnFlaggedStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED];
 
     /**
      * Attributes with default values
@@ -70,8 +128,6 @@ class OdinOrder extends OdinModel
         'shipping_cost_usd' => 0, // float, Total shipping cost in USD
         'payout_usd' => 0, // float, Affiliate payout amount in USD
         'shop_currency' => null, // enum string, //currency was used to display prices
-        //'payment_provider' => null, // enum string
-        //'payment_method' => null, // enum string
         'installments' => 0,
         'customer_email' => null, // * string
         'customer_first_name' => null, // * string
@@ -296,10 +352,11 @@ class OdinOrder extends OdinModel
 
     /**
      * Returns OdinOrder by Txn hash
-     * @param  string    $hash
-     * @param  string|null $provider
-     * @param  boolean   $throwable default=true
+     * @param string $hash
+     * @param string|null $provider
+     * @param boolean $throwable default=true
      * @return OdinOrder|null
+     * @throws OrderNotFoundException
      */
     public static function getByTxnHash(string $hash, ?string $provider = null, bool $throwable = true): ?OdinOrder
     {

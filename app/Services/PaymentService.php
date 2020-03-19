@@ -172,7 +172,7 @@ class PaymentService
     }
 
     /**
-     * Returns localizaed price
+     * Returns localized price
      * @param  OdinProduct $product
      * @param  int         $qty
      * @param  string      $country
@@ -285,19 +285,19 @@ class PaymentService
             $product->getIdAttribute(),
             $details['method'],
             optional($domain)->getIdAttribute(),
-            self::getProvidersForPay($order->shipping_country, $details['method'], false),
+            self::getProvidersForPay($order->shipping_country, $details['method'], false, [$details['provider']]),
             $order->currency
         );
 
         if (!$api) {
-            logger()->info("Fallback api not found [{$order->number}] for provider {$details['provider']}");
+            logger()->info("Fallback api not found [{$order->number}] for provider [{$details['provider']}]");
             return $result;
         } elseif ($api->payment_provider === $details['provider']) {
-            logger()->info("Fallback api cannot be the same as the {$details['provider']}] provider");
+            logger()->info("Fallback api cannot be the same [{$details['provider']}]");
             return $result;
         }
 
-        logger()->info("Fallback [{$order->number}] provider {$api->payment_provider}");
+        logger()->info("Fallback [{$order->number}], [{$api->payment_provider}->{$details['provider']}]");
 
         switch ($api->payment_provider):
             case PaymentProviders::BLUESNAP:
@@ -536,7 +536,7 @@ class PaymentService
             $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
         }
 
-        // NOTE: prevent implicit currency defenition
+        // NOTE: prevent implicit currency definition
         $product->currency = $order->currency;
 
         $price = self::getLocalizedPrice($product, $order_product['quantity'], $order->shipping_country, $provider); // throwable
@@ -736,11 +736,10 @@ class PaymentService
 
     /**
      * Returns available provider for country and payment method
-     * @param   string $country
-     * @param   string $method
-     * @param   bool   $is_main
-     * @param   string $pref default=checkoutcom
-     * @param   array  $excl default=[]
+     * @param string $country
+     * @param string $method
+     * @param bool $is_main
+     * @param array $excl default=[]
      * @return  array
      */
     public static function getProvidersForPay(string $country, string $method, bool $is_main = true, array $excl = []): array
