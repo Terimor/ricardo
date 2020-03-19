@@ -61,6 +61,13 @@
     @endforeach
   </div>
 
+  <!-- No Results -->
+  @if (count($products) === 0)
+    <div class="no-results">
+      <p>{{ t('minishop.home.products.no_results') }}</p>
+    </div>
+  @endif
+
   <!-- Pager -->
   @if ($pagination && $pagination['total_pages'] > 1)
     <div class="pager row">
