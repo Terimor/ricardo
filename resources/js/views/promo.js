@@ -7,6 +7,7 @@ import { paypalCreateOrder, paypalOnApprove } from '../utils/emc1';
 import { preparePurchaseData } from '../utils/checkout';
 import { t } from '../utils/i18n';
 import { scrollTo } from '../utils/common';
+import TimerComponent from '../components/common/Timer';
 import Installments from '../components/common/extra-fields/Installments';
 import { getCountOfInstallments } from '../utils/installments';
 import * as extraFields from '../mixins/extraFields';
@@ -25,7 +26,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
   require('../bootstrap');
 
   const promo = new Vue({
-    el: "#promo",
+    el: "#app",
 
     mixins: [
       globals,
@@ -83,6 +84,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
     validations: emc1Validation,
 
     components: {
+      TimerComponent,
       Installments,
       carousel,
     },
