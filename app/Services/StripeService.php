@@ -112,10 +112,7 @@ class StripeService
      */
     private function createCustomer(array $contacts): Customer
     {
-        $phone = $contacts['phone'];
-        if (gettype($phone) === 'array') {
-            $phone = $contacts['phone']['country_code'] . $contacts['phone']['number'];
-        }
+        $phone = is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone'];
 
         return Customer::create([
             'email' => $contacts['email'],
@@ -151,17 +148,12 @@ class StripeService
      */
     private function createCardPaymentMethod(array $card, array $contacts): PaymentMethod
     {
-        $phone = $contacts['phone'];
-        if (gettype($phone) === 'array') {
-            $phone = $contacts['phone']['country_code'] . $contacts['phone']['number'];
-        }
-
         return PaymentMethod::create([
             'type' => 'card',
             'billing_details' => [
                 'email' => $contacts['email'],
                 'name'  => $contacts['first_name'] . ' ' . $contacts['last_name'],
-                'phone' => $phone,
+                'phone' => is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone'],
                 'address' => [
                     'city'  => $contacts['city'],
                     'line1' => $contacts['street'],
