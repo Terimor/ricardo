@@ -59,7 +59,6 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/stripe-webhook', 'PaymentsController@stripeWebhook');
     $router->post('/minte-3ds/{orderId}', 'PaymentsController@minte3ds');
     $router->post('/minte-apm/{orderId}', 'PaymentsController@minteApm');
-    $router->post('/stripe-3ds/{orderId}', 'PaymentsController@stripe3ds');
     $router->get('/stripe-3ds/{orderId}', 'PaymentsController@stripe3ds');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
