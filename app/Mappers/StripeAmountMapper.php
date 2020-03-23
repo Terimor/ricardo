@@ -5,6 +5,7 @@ namespace App\Mappers;
 class StripeAmountMapper
 {
     /**
+     * Currency multiplier
      * @var array $map
      */
     private static $map = [
