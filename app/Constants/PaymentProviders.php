@@ -1573,7 +1573,7 @@ class PaymentProviders
             ]
         ],
         self::STRIPE => [
-            'name'      => 'Stripe Card',
+            'name'      => 'Stripe',
             'is_active' => false,
             'is_main'   => true,
             'is_fallback' => false,
