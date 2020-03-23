@@ -755,7 +755,7 @@ class OdinOrder extends OdinModel
         $recentlyBoughtNames = $recentlyBoughtCities = [];
 
         // Get customers from a current users country and get their cities.
-        $ordersCollection = OdinOrder::getPaidCustomersByCountry($country_code, $limit);
+        $ordersCollection = [];//OdinOrder::getPaidCustomersByCountry($country_code, $limit); — cache that
         if ($ordersCollection) {
             foreach ($ordersCollection as $order) {
                 $name = $order->getPublicCustomerName();
