@@ -806,7 +806,7 @@ class OdinOrder extends OdinModel
 
         // if we still have < than limit get it from us
         if ($tempNamesCount < $limit) {
-            $ordersCollection = OdinOrder::getPaidCustomersByCountry('us', $limit - $tempNamesCount);
+            $ordersCollection = []; //OdinOrder::getPaidCustomersByCountry('us', $limit - $tempNamesCount); — cache that
             if ($ordersCollection) {
                 foreach ($ordersCollection as $order) {
                     $name = $order->getPublicCustomerName();
