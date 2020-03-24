@@ -500,7 +500,7 @@
 
         if (this.form.payment_method === 'instant_transfer') {
           this.form.paymentProvider = 'paypal';
-        } else if (selected_method.is_apm) {
+        } else if (selected_method && selected_method.is_apm) {
           this.form.paymentProvider = this.form.payment_method;
         } else {
           this.form.paymentProvider = 'credit-card';
