@@ -635,16 +635,17 @@ class UtilsService
      * @param string $ip
      * @return string
      */
-    public static function getLocationCountryCode(string $ip = null) : string
+    public static function getLocationCountryCode(?string $ip = null) : string
     {
-        if ($ip) {
-            $location = \Location::get($ip);
-        } else {
-            // TODO - REMOVE _ip and Location::get('42.112.209.164')
-            $location = request()->get('_ip') ? \Location::get(request()->get('_ip')) : \Location::get(request()->ip());
+        if (!$ip) {
+            $_ip = request()->get('_ip');
+            if (!$_ip) {
+                $ip = request()->ip();
+            }
         }
-
-        return strtolower(!empty($location->countryCode) ? $location->countryCode : 'US');
+        $location = \Location::get($ip);
+        $countryCode = $location->countryCode;
+        return $countryCode ? strtolower($countryCode) : 'us';
     }
 
     /**

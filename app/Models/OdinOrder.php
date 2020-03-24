@@ -753,10 +753,52 @@ class OdinOrder extends OdinModel
             $country_code = \Utils::getLocationCountryCode();
         }
 
-        $recentlyBoughtNames = $recentlyBoughtCities = [];
+        $cache_key = "RecentUsers{$country_code}{$limit}";
+        $cache_sec = 3600; //cache for 1 hour
 
-        // Get customers from a current users country and get their cities.
-        $ordersCollection = [];//OdinOrder::getPaidCustomersByCountry($country_code, $limit); — cache that
+        $recently_bought_data = Cache::get($cache_key);
+
+        if (!$recently_bought_data) {
+            // no data in cache for this country, generate a new one
+            $recentlyBoughtNames = [];
+            $recentlyBoughtCities = [];
+
+            // get customers from a current users country and get their cities.
+            static::fillRecentlyBoughtNamesAndCities($country_code, $recentlyBoughtNames, $recentlyBoughtCities, $limit);
+
+            // if we found customers less than limit then get it from constants and merge
+            if (count($recentlyBoughtNames) < $limit) {
+                static::fillRecentlyBoughtNamesAndCitiesFromConstants($country_code, $recentlyBoughtNames, $recentlyBoughtCities, $limit);
+                $cache_sec = 3600 * 24; //cache for 1 day
+            }
+
+            // if we still have less than limit get it from US
+            if (count($recentlyBoughtNames) < $limit) {
+                static::fillRecentlyBoughtNamesAndCities('us', $recentlyBoughtNames, $recentlyBoughtCities, $limit);
+            }
+
+            $recently_bought_data = [
+                'recentlyBoughtNames' => $recentlyBoughtNames,
+                'recentlyBoughtCities' => $recentlyBoughtCities
+            ];
+
+            // save data to cache
+            Cache::put($cache_key, $recently_bought_data, $cache_sec);
+
+            logger()->warning("Generated {$limit} recently bought users for <{$country_code}>");
+        }
+        return $recently_bought_data;
+    }
+
+    /**
+     * Fills recently bought customer names and cities arrays from real orders
+     * @param string $country_code
+     * @param array $recentlyBoughtNames
+     * @param array $recentlyBoughtCities
+     * @param int $limit
+     */
+    private static function fillRecentlyBoughtNamesAndCities(string $country_code, array &$recentlyBoughtNames, array &$recentlyBoughtCities, int $limit): void {
+        $ordersCollection = static::getRecentlyBoughtCustomersByCountry($country_code, $limit);
         if ($ordersCollection) {
             foreach ($ordersCollection as $order) {
                 $name = $order->getPublicCustomerName();
@@ -770,74 +812,50 @@ class OdinOrder extends OdinModel
                 }
             }
         }
-
-        $tempNamesCount = count($recentlyBoughtNames);
-        $tempCityCount = count($recentlyBoughtCities);
-
-        // get from constants and merge
-        if (count($recentlyBoughtNames) < $limit) {
-            if (isset(CountryCustomers::$list[$country_code]['names']) && is_array(CountryCustomers::$list[$country_code]['names'])) {
-                shuffle(CountryCustomers::$list[$country_code]['names']);
-
-                foreach(CountryCustomers::$list[$country_code]['names'] as $value) {
-                    if (!in_array($value, $recentlyBoughtNames)) {
-                        $recentlyBoughtNames[] = $value;
-                        $tempNamesCount++;
-                        if ($tempNamesCount >= $limit) {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (isset(CountryCustomers::$list[$country_code]['cities']) && is_array(CountryCustomers::$list[$country_code]['cities'])) {
-                shuffle(CountryCustomers::$list[$country_code]['cities']);
-
-                foreach(CountryCustomers::$list[$country_code]['cities'] as $value) {
-                    if (!in_array($value, $recentlyBoughtCities)) {
-                        $recentlyBoughtCities[] = $value;
-                        $tempCityCount++;
-                        if ($tempCityCount >= $limit) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // if we still have < than limit get it from us
-        if ($tempNamesCount < $limit) {
-            $ordersCollection = []; //OdinOrder::getPaidCustomersByCountry('us', $limit - $tempNamesCount); — cache that
-            if ($ordersCollection) {
-                foreach ($ordersCollection as $order) {
-                    $name = $order->getPublicCustomerName();
-                    if (!in_array($name, $recentlyBoughtNames)) {
-                        $recentlyBoughtNames[] = $name;
-                    }
-
-                    $city = $order->getPublicCityName();
-                    if ($city && !in_array($city, $recentlyBoughtCities) && $tempCityCount < $limit) {
-                        $recentlyBoughtCities[] = $city;
-                    }
-                }
-            }
-        }
-
-        $recently_bought_data = [
-            'recentlyBoughtNames' => $recentlyBoughtNames,
-            'recentlyBoughtCities' => $recentlyBoughtCities
-        ];
-
-        return $recently_bought_data;
     }
 
     /**
-     *
-     * @param string|null $country_code
+     * Fill recently bought names and cities from hardcoded data if no enough real data
+     * @param string $country_code
+     * @param array $recentlyBoughtNames
+     * @param array $recentlyBoughtCities
+     * @param int $limit
+     */
+    private static function fillRecentlyBoughtNamesAndCitiesFromConstants(string $country_code, array &$recentlyBoughtNames, array &$recentlyBoughtCities, int $limit): void {
+        if (isset(CountryCustomers::$list[$country_code]['names']) && is_array(CountryCustomers::$list[$country_code]['names'])) {
+            shuffle(CountryCustomers::$list[$country_code]['names']);
+
+            foreach(CountryCustomers::$list[$country_code]['names'] as $value) {
+                if (!in_array($value, $recentlyBoughtNames)) {
+                    $recentlyBoughtNames[] = $value;
+                    if (count($recentlyBoughtNames) >= $limit) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (isset(CountryCustomers::$list[$country_code]['cities']) && is_array(CountryCustomers::$list[$country_code]['cities'])) {
+            shuffle(CountryCustomers::$list[$country_code]['cities']);
+
+            foreach(CountryCustomers::$list[$country_code]['cities'] as $value) {
+                if (!in_array($value, $recentlyBoughtCities)) {
+                    $recentlyBoughtCities[] = $value;
+                    if (count($recentlyBoughtCities) >= $limit) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns recently bought customers
+     * @param string $country_code
      * @param int $limit
      * @return Collection
      */
-    public static function getPaidCustomersByCountry(string $country_code, int $limit = 25)
+    public static function getRecentlyBoughtCustomersByCountry(string $country_code, int $limit = 25)
     {
         return self::select('customer_first_name', 'customer_last_name', 'shipping_city', 'shipping_country')
             ->where('shipping_country', $country_code)
