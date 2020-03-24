@@ -1,16 +1,13 @@
 <?php
 
 namespace App\Services;
-use App\Models\Setting;
+
+use App\Constants\PaymentProviders;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\AffiliateSetting;
-use App\Models\RequestQueue;
-use App\Services\EmailService;
 use App\Models\OdinProduct;
-use Illuminate\Support\Arr;
 use App\Models\Localize;
-use App\Services\AffiliateService;
 
 /**
  * Order Service class
@@ -311,5 +308,31 @@ class OrderService
         }
 
         return $firingPercent;
+    }
+
+    /**
+     * Returns txn report as a percentage
+     * @param int $orders_limit
+     * @return array
+     */
+    public static function getRecentSuccessTxnReportInPct(int $orders_limit = 100): array
+    {
+        $report = OdinOrder::getRecentTxnReport(PaymentProviders::getAllActive(), 5, $orders_limit);
+
+        // split report on approved transactions and no
+        $grouped = [];
+        foreach ($report as $prv => $item) {
+            $grouped[$prv] = ['succeed' => 0, 'failed' => 0];
+            foreach ($item as $st => $cnt) {
+                $grouped[$prv][$st === Txn::STATUS_APPROVED ? 'succeed' : 'failed'] += $cnt;
+            }
+        }
+
+        $result = [];
+        foreach ($grouped as $prv => $item) {
+            $result[$prv] = round($item['succeed'] / ($item['succeed'] + $item['failed']) * 100);
+        }
+
+        return $result;
     }
 }

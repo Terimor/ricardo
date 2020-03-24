@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Services;
-use App\Exceptions\BlockEmailException;
-use App\Exceptions\BaseOdinException;
 use App\Models\Setting;
 use App\Models\Pixel;
 use App\Models\AwsImage;
 use App\Models\Domain;
 use App\Models\OdinOrder;
+use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
@@ -894,6 +893,30 @@ class UtilsService
     public static function getMongoTimeFromTS($ts)
     {
         return new UTCDateTime($ts * 1000);
+    }
+
+    /**
+     * Returns MongoId From Timestamp
+     * @param int $ts
+     * @param int $id it's used for the same timestamp
+     * @return ObjectId
+     */
+    public static function getMongoIdFromTS(int $ts = null, int $id = 1): ObjectId {
+        // Build Binary Id
+        $binTs = pack('N', $ts ?? time()); // unsigned long
+        $hostId = substr(md5(gethostname()), 0, 3); // 3 bit machine identifier
+        $binPid = pack('n', posix_getpid()); // unsigned short
+        $counter = substr(pack('N', $id), 1, 3); // Counter
+        $binId = "{$binTs}{$hostId}{$binPid}{$counter}";
+
+        // Convert to ASCII
+        $id = '';
+        for ($i = 0; $i < 12; $i++) {
+            $id .= sprintf("%02X", ord($binId[$i]));
+        }
+
+        // Return Mongo ID
+        return new ObjectId($id);
     }
 
     /**

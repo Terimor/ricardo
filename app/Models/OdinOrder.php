@@ -895,11 +895,51 @@ class OdinOrder extends OdinModel
 
     /**
      * Get last orders with affiliate parameter
-     * @return $orders
+     * @param int $limit
+     * @return  $orders
      */
     public static function getLastAffiliateOrders($limit = 100)
     {
         $orders = OdinOrder::limit($limit)->where(['affiliate' => ['$ne' => null]])->orderBy('_id', 'desc')->get();
         return $orders;
+    }
+
+    /**
+     * Returns txn report where the txns are grouped by status
+     * @param array $providers
+     * @param int $step_back_in_minutes
+     * @param int $limit
+     * @return array
+     */
+    public static function getRecentTxnReport(array $providers, int $step_back_in_minutes = 5, int $limit = 100): array
+    {
+        $step_back_oid = \Utils::getMongoIdFromTS(strtotime(date("Y-m-d H:i:s", time() - $step_back_in_minutes * 60)));
+
+        $result = [];
+
+        foreach ($providers as $prv) {
+            $col = self::query()
+                ->where(['_id' => ['$lte' => $step_back_oid], 'txns.payment_provider' => $prv])
+                ->select(['txns'])
+                ->orderBy('_id', 'desc')
+                ->limit($limit)
+                ->get();
+
+            // push to result [provider => [status => amount]]
+            $result = $col->reduce(function(array $carry, OdinOrder $item) {
+                foreach ($item->txns as $txn) {
+                    if (empty($carry[$txn['payment_provider']])) {
+                        $carry[$txn['payment_provider']] = [$txn['status'] => 1];
+                    } elseif (empty($carry[$txn['payment_provider']][$txn['status']])) {
+                        $carry[$txn['payment_provider']][$txn['status']] = 1;
+                    } else {
+                        $carry[$txn['payment_provider']][$txn['status']] += 1;
+                    }
+                }
+                return $carry;
+            }, $result);
+        }
+
+        return $result;
     }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Constants;
 
+/**
+ * Class PaymentProviders
+ * @package App\Constants
+ */
 class PaymentProviders
 {
     const PAYPAL        = 'paypal';
@@ -1574,6 +1578,16 @@ class PaymentProviders
             ]
         ]
     ];
+
+
+    /**
+     * Returns list of active providers
+     * @return array
+     */
+    public static function getAllActive(): array
+    {
+        return array_keys(array_filter(self::$list, function(array $item) { return $item['is_active']; }));
+    }
 
     /**
      * Checks is provider active
