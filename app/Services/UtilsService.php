@@ -638,8 +638,8 @@ class UtilsService
     public static function getLocationCountryCode(?string $ip = null) : string
     {
         if (!$ip) {
-            $_ip = request()->get('_ip');
-            if (!$_ip) {
+            $ip = request()->get('_ip');
+            if (!$ip) {
                 $ip = request()->ip();
             }
         }
