@@ -349,7 +349,14 @@ class ProductService
             $lp->is_paypal_hidden = true;
         }
         $lp->countries = $product->countries ?? [];
-
+        // returns labels
+        $labels = [];
+        for ($i = 1; $i <= OdinProduct::QUANTITY_PRICES; $i++) {
+            if (!empty($product->labels[$i])) {
+                $labels[$i] = !empty($product->labels[$i][app()->getLocale()]) ? $product->labels[$i][app()->getLocale()] : (!empty($product->labels[$i]['en']) ? $product->labels[$i]['en'] : '');
+            }
+        }
+        $lp->labels = $labels;
         return $lp;
     }
 
