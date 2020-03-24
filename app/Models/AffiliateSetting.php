@@ -52,6 +52,7 @@ class AffiliateSetting extends Model
 
     public static $approvedNames = ['{aff_id}'];
     const AFFILIATE_ID_LENGTH = 5;
+    public static $transactionReplaceArray = ['transaction_id=#TXID#&', '&transaction_id=#TXID#', 'transaction_id=#TXID#'];
 
     /**
      * [Percent] = [sales count]

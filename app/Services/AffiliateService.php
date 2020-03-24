@@ -52,11 +52,19 @@ class AffiliateService
                 // set params aff_sub and aff_sub1
                 $params = static::replaceAffSubsParams($params);
 
-                // if we have #TXID# in code check it then replace to txid
+                // if we have #TXID# in url check it then replace to txid
+                $txid = null;
                 if (strpos($url, '#TXID#')) {
                     if (!empty($order->txid)) {
-                        $url = str_replace('#TXID#', $order->txid, $url);
+                        $txid = static::getValidTxid($order->txid);
+                        if ($txid) {
+                            $url = str_replace('#TXID#', $txid, $url);
+                        }
                     }
+                }
+                // if txid not valid delete transaction parameter from URL
+                if (!$txid) {
+                    $url = str_replace(AffiliateSetting::$transactionReplaceArray, '', $url);
                 }
 
                 // if we have #OFFER_ID# in code check it then replace to offer
@@ -133,6 +141,13 @@ class AffiliateService
     {
         if ($params){
             foreach ($params as $key => $value) {
+                // check txid validate to replace query params
+                if ($key == 'txid') {
+                    $value = static::getValidTxid($value);
+                    if (!$value) {
+                        continue;
+                    }
+                }
                 $param = '#'.strtoupper($key).'#';
                 $string = str_replace($param, $value, $string);
             }
@@ -234,26 +249,6 @@ class AffiliateService
 
             $code = $pixel->code;
 
-            //if order, replace #AMOUNT#, #TXID#, #OFFER_ID# and check is_reduced and txns
-            if ($order) {
-                $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
-
-                // if we have #TXID# in code check it then replace to txid
-                if (strpos($code, '#TXID#')) {
-                    if (!empty($order->txid)) {
-                        $code = str_replace('#TXID#', $order->txid, $code);
-                    }
-                }
-
-                // if we have #OFFER_ID# in code check it then replace to offer
-                if (strpos($code, '#OFFER_ID#')) {
-                    if (!empty($order->offer)) {
-                        $code = str_replace('#OFFER_ID#', $order->offer, $code);
-                    }
-                }
-
-            }
-
             // check sale logic
             if ($pixel->type == Pixel::TYPE_SALE) {
                 if (isset($order->is_reduced) && $order->is_reduced && (!$events || !in_array(OdinOrder::EVENT_AFF_PIXEL_SHOWN, $events))) {
@@ -269,8 +264,48 @@ class AffiliateService
                 }
             }
 
+            //if order, replace #AMOUNT#, #TXID#, #OFFER_ID# and check is_reduced and txns
+            $txid = null;
+            if ($order) {
+                $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
+
+                // if we have #TXID# in code check it then replace to txid
+                if (strpos($code, '#TXID#')) {
+                    if (!empty($order->txid)) {
+                        $txid = static::getValidTxid($order->txid);
+                        if ($txid) {
+                            $code = str_replace('#TXID#', $txid, $code);
+                        }
+                    }
+                }
+
+                // if we have #OFFER_ID# in code check it then replace to offer
+                if (strpos($code, '#OFFER_ID#')) {
+                    if (!empty($order->offer)) {
+                        $code = str_replace('#OFFER_ID#', $order->offer, $code);
+                    }
+                }
+
+            }
+
+            $query = $request->query();
+            // check txid and replace only if valid
+            if (strpos($code, '#TXID#')) {
+                if (isset($query['txid'])) {
+                    $txid = static::getValidTxid($query['txid']);
+                    if ($txid) {
+                        $code = str_replace('#TXID#', $txid, $code);
+                    }
+                }
+            }
+
+            // if txid not valid delete transaction from URL
+            if (!$txid) {
+                $code = str_replace(AffiliateSetting::$transactionReplaceArray, '', $code);
+            }
+
             // replace query
-            $params = self::replaceAffSubsParams($request->query());
+            $params = self::replaceAffSubsParams($query);
             $code = AffiliateService::replaceQueryParams($code, $params);
 
             // replace country
