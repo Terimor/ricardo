@@ -785,8 +785,6 @@ class OdinOrder extends OdinModel
 
             // save data to cache
             Cache::put($cache_key, $recently_bought_data, $cache_sec);
-
-            logger()->warning("Generated {$limit} recently bought users for <{$country_code}>");
         }
         return $recently_bought_data;
     }
