@@ -644,7 +644,11 @@ class UtilsService
             }
         }
         $location = \Location::get($ip);
-        $countryCode = $location->countryCode;
+        if ($location) {
+            $countryCode = $location->countryCode;
+        } else {
+            $countryCode = 'us';
+        }
         return $countryCode ? strtolower($countryCode) : 'us';
     }
 
