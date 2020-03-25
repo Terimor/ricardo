@@ -398,6 +398,8 @@ class OdinProduct extends Model
 
     /**
      * Getter bg image
+     * @param $value
+     * @return string|null
      */
     public function getBgImageAttribute($value): ?string
     {
