@@ -7,13 +7,7 @@
 
     <div class="paypal-container">
       @include('new.pages.checkout.payment.paypal_button')
-
-      @include('new.components.error', [
-        'ref' => 'paypal_payment_error',
-        'active' => 'payment_error && form.payment_provider === \'paypal\'',
-        'class' => 'paypal-payment-error',
-        'label_code' => 'payment_error',
-      ])
+      @include('new.pages.checkout.form.errors.paypal_error')
     </div>
 
     @include('new.pages.checkout.payment.apm_buttons')
@@ -37,14 +31,7 @@
         </template>
 
         @include('new.pages.checkout.form.terms')
-
-        @include('new.components.error', [
-          'ref' => 'payment_error',
-          'active' => 'payment_error && form.payment_provider !== \'paypal\'',
-          'class' => 'payment-error',
-          'label_code' => 'payment_error',
-        ])
-
+        @include('new.pages.checkout.form.errors.payment_error')
       </div>
     </transition>
 

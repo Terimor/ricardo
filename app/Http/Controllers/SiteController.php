@@ -303,7 +303,9 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
+        $new_engine_checkout_tpls = ['fmc5x', 'amc8'];
         $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+        $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
         $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
         $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
 
@@ -318,6 +320,9 @@ class SiteController extends Controller
             }
             if ($request->get('tpl') == 'fmc5x') {
                 $viewTemplate = 'new.pages.checkout.templates.fmc5';
+            }
+            if ($request->get('tpl') == 'amc8') {
+                $viewTemplate = 'new.pages.checkout.templates.amc8';
             }
         }
 
@@ -413,7 +418,7 @@ class SiteController extends Controller
         $deals_free_quantities = [];
 
         $is_checkout = $is_checkout_page || $is_health_page || $is_vrtl_page;
-        $is_new_engine = ($is_checkout_page && $request->get('tpl') === 'fmc5x') || $is_health_page || $is_vrtl_page;
+        $is_new_engine = $is_checkout_new_engine_page || $is_health_page || $is_vrtl_page;
         $is_smartbell = str_replace('www.', '', $request->getHost()) === 'smartbell.pro';
 
         if ($is_new_engine) {

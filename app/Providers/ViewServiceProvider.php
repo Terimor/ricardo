@@ -42,7 +42,9 @@ class ViewServiceProvider extends ServiceProvider
                 'freshchat_token'
             ]);
 
+            $new_engine_checkout_tpls = ['fmc5x', 'amc8'];
             $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+            $is_checkout_new_engine_page = $is_checkout_page && in_array(Request::get('tpl'), $new_engine_checkout_tpls);
             $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
             $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
             $is_upsells_page = Route::is('upsells');
@@ -70,7 +72,7 @@ class ViewServiceProvider extends ServiceProvider
 
             $view->with('lang_locale', app()->getLocale());
             $view->with('lang_direction', in_array(app()->getLocale(), ['ar', 'he', 'ur']) ? 'rtl' : 'ltr');
-            $view->with('is_new_engine', ($is_checkout_page && Request::get('tpl') === 'fmc5x') || $is_health_page || $is_vrtl_page || $is_vrtl_upsells_page);
+            $view->with('is_new_engine', $is_checkout_new_engine_page || $is_health_page || $is_vrtl_page || $is_vrtl_upsells_page);
         });
 
         View::composer(['layouts.footer', 'new.regions.footer'], function($view) {
@@ -125,7 +127,9 @@ class ViewServiceProvider extends ServiceProvider
             $locale_affiliate = AffiliateSetting::getLocaleAffiliate($affiliate ?? null);
             $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
 
+            $new_engine_checkout_tpls = ['fmc5x', 'amc8'];
             $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+            $is_checkout_new_engine_page = $is_checkout_page && in_array(Request::get('tpl'), $new_engine_checkout_tpls);
             $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
             $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
             $is_vrtl_upsells_page = Route::is('upsells_vrtl');
@@ -144,7 +148,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
             $view->with('company_address', TemplateService::getCompanyAddress($settings['support_address'], $domain));
-            $view->with('is_new_engine', ($is_checkout_page && Request::get('tpl') === 'fmc5x') || $is_health_page || $is_vrtl_page || $is_vrtl_upsells_page || $is_vrtl_thankyou_page);
+            $view->with('is_new_engine', $is_checkout_new_engine_page || $is_health_page || $is_vrtl_page || $is_vrtl_upsells_page || $is_vrtl_thankyou_page);
         });
     }
 }

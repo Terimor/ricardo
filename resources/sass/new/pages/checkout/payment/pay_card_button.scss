@@ -30,7 +30,7 @@
 
   .label {
     &.hidden {
-      display: none;
+      visibility: hidden;
     }
   }
 }

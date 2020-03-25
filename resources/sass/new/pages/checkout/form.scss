@@ -16,4 +16,9 @@
 .form {
   display: flex;
   flex-wrap: wrap;
+  transition: all .3s ease;
+
+  &.fade-enter, &.fade-leave-to {
+    opacity: 0;
+  }
 }

@@ -1,0 +1,26 @@
+.summary {
+  display: flex;
+  flex-direction: column;
+  margin-top: 35px;
+  margin-bottom: 30px;
+
+  .line {
+    color: #000;
+    display: flex;
+    font-size: 14px;
+    justify-content: space-between;
+    line-height: 1.467;
+    padding-top: 15px;
+  }
+
+  .header-line {
+    border-bottom: 1px solid #ddd;
+    font-weight: 700;
+    padding-top: 0;
+    padding-bottom: 5px;
+  }
+
+  .total-line {
+    font-weight: 700;
+  }
+}

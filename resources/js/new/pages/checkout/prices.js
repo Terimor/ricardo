@@ -41,73 +41,117 @@ export default {
     },
 
     price_text() {
-      let result = '';
+      return this.form.deal
+        ? this.price_perdeal_text[this.form.deal]
+        : '';
+    },
 
-      if (this.form.deal) {
-        switch (this.form.installments) {
-          case 1:
-            result = js_data.product.prices[this.form.deal].value_text;
-            break;
-          case 3:
-            result = js_data.product.prices[this.form.deal].installments3_value_text;
-            break;
-          case 6:
-            result = js_data.product.prices[this.form.deal].installments6_value_text;
-            break;
-        }
-      }
+    price_perdeal_text() {
+      return Object.keys(js_data.product.prices)
+        .filter(quantity => !!js_data.product.prices[quantity].value)
+        .reduce((acc, quantity) => {
+          acc[quantity] = this.form.installments === 6
+            ? js_data.product.prices[quantity].installments6_value_text
+            : this.form.installments === 3
+              ? js_data.product.prices[quantity].installments3_value_text
+              : js_data.product.prices[quantity].value_text;
+          return acc;
+        }, {});
+    },
 
-      return result;
+    price_perdeal_old_text() {
+      return Object.keys(js_data.product.prices)
+        .filter(quantity => !!js_data.product.prices[quantity].value)
+        .reduce((acc, quantity) => {
+          acc[quantity] = this.form.installments === 6
+            ? js_data.product.prices[quantity].installments6_old_value_text
+            : this.form.installments === 3
+              ? js_data.product.prices[quantity].installments3_old_value_text
+              : js_data.product.prices[quantity].old_value_text;
+          return acc;
+        }, {});
+    },
+
+    price_perdeal_unit_text() {
+      return Object.keys(js_data.product.prices)
+        .filter(quantity => !!js_data.product.prices[quantity].value)
+        .reduce((acc, quantity) => {
+          acc[quantity] = this.form.installments === 6
+            ? js_data.product.prices[quantity].installments6_unit_value_text
+            : this.form.installments === 3
+              ? js_data.product.prices[quantity].installments3_unit_value_text
+              : js_data.product.prices[quantity].unit_value_text;
+          return acc;
+        }, {});
     },
 
     price_warranty_text() {
-      let result = '';
+      return this.form.deal
+        ? this.price_perdeal_warranty_text[this.form.deal]
+        : '';
+    },
 
-      if (this.form.deal) {
-        switch (this.form.installments) {
-          case 1:
-            result = js_data.product.prices[this.form.deal].warranty_price_text;
-            break;
-          case 3:
-            result = js_data.product.prices[this.form.deal].installments3_warranty_price_text;
-            break;
-          case 6:
-            result = js_data.product.prices[this.form.deal].installments6_warranty_price_text;
-            break;
-        }
-      }
-
-      return result;
+    price_perdeal_warranty_text() {
+      return Object.keys(js_data.product.prices)
+        .filter(quantity => !!js_data.product.prices[quantity].value)
+        .reduce((acc, quantity) => {
+          acc[quantity] = this.form.installments === 6
+            ? js_data.product.prices[quantity].installments6_warranty_price_text
+            : this.form.installments === 3
+              ? js_data.product.prices[quantity].installments3_warranty_price_text
+              : js_data.product.prices[quantity].warranty_price_text;
+          return acc;
+        }, {});
     },
 
     price_total_text() {
-      let result = '';
+      return this.form.deal
+        ? this.price_perdeal_total_text[this.form.deal]
+        : '';
+    },
 
-      if (this.form.deal) {
-        switch (this.form.installments) {
-          case 1:
-            result = this.form.warranty
-              ? js_data.product.prices[this.form.deal].total_amount_text
-              : js_data.product.prices[this.form.deal].value_text;
-            break;
-          case 3:
-            result = this.form.warranty
-              ? js_data.product.prices[this.form.deal].installments3_total_amount_text
-              : js_data.product.prices[this.form.deal].installments3_value_text;
-            break;
-          case 6:
-            result = this.form.warranty
-              ? js_data.product.prices[this.form.deal].installments6_total_amount_text
-              : js_data.product.prices[this.form.deal].installments6_value_text;
-            break;
-        }
-      }
-
-      return result;
+    price_perdeal_total_text() {
+      return Object.keys(js_data.product.prices)
+        .filter(quantity => !!js_data.product.prices[quantity].value)
+        .reduce((acc, quantity) => {
+          acc[quantity] = this.form.installments === 6
+            ? this.form.warranty
+              ? js_data.product.prices[quantity].installments6_total_amount_text
+              : js_data.product.prices[quantity].installments6_value_text
+            : this.form.installments === 3
+              ? this.form.warranty
+                ? js_data.product.prices[quantity].installments3_total_amount_text
+                : js_data.product.prices[quantity].installments3_value_text
+              : this.form.warranty
+                ? js_data.product.prices[quantity].total_amount_text
+                : js_data.product.prices[quantity].value_text;
+          return acc;
+        }, {});
     },
 
     xprice_text() {
       return this.price_multiplier + this.price_text;
+    },
+
+    xprice_perdeal_text() {
+      return Object.keys(this.price_perdeal_text).reduce((acc, quantity) => {
+        acc[quantity] = this.price_multiplier + this.price_perdeal_text[quantity];
+        return acc;
+      }, {});
+    },
+
+    xprice_perdeal_old_text() {
+      return Object.keys(this.price_perdeal_old_text).reduce((acc, quantity) => {
+        acc[quantity] = this.price_multiplier + this.price_perdeal_old_text[quantity];
+        return acc;
+      }, {});
+    },
+
+    xprice_perdeal_unit_text() {
+      return Object.keys(this.price_perdeal_unit_text).reduce((acc, quantity) => {
+        acc[quantity] = this.price_multiplier + this.price_perdeal_unit_text[quantity];
+        return acc;
+      }, {});
     },
 
     xprice_warranty_text() {

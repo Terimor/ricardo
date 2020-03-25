@@ -23,7 +23,7 @@ export default {
   computed: {
 
     paypal_button_valid() {
-      return !!this.form.deal;
+      return !!this.form.deal && !!this.form.variant;
     },
 
     paypal_button_class_list() {
@@ -103,8 +103,9 @@ export default {
 
     paypal_button_click() {
       this.$v.form.deal.$touch();
+      this.$v.form.variant.$touch();
 
-      if (this.$v.form.deal.$invalid) {
+      if (this.$v.form.deal.$invalid || this.$v.form.variant.$invalid) {
         return setTimeout(() => this.scroll_to_error(), 100);
       }
     },

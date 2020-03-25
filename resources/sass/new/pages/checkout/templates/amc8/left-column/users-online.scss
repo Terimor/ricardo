@@ -1,0 +1,38 @@
+.users-online {
+  align-items: center;
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 25px;
+
+  .magnifier {
+    max-width: 100%;
+  }
+
+  .text {
+    color: #2e98f8;
+    display: flex;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.3;
+    padding-left: 10px;
+    position: relative;
+
+    [dir="rtl"] & {
+      padding-left: 0;
+      padding-right: 10px;
+    }
+
+    .value {
+      transition: all 1s ease;
+
+      &.fade-enter,
+      &.fade-leave-to {
+        opacity: 0;
+      }
+
+      &.fade-leave-active {
+        position: absolute;
+      }
+    }
+  }
+}

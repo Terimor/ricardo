@@ -10,7 +10,13 @@
       class="leave-modal-logo lazy"
       alt="" />
 
-    {!! t('exit_popup.text', ['count' => $deals_main_quantities[$deal_promo['quantity']] ?? 0, 'amount' => $deals_free_quantities[$deal_promo['quantity']] ?? 0, 'payment_details' => $deal_promo['value_text'] ?? '']) !!}
+    {!!
+      t('exit_popup.text', [
+        'count' => $deals_main_quantities[$deal_promo['quantity']] ?? 0,
+        'amount' => $deals_free_quantities[$deal_promo['quantity']] ?? 0,
+        'payment_details' => $deal_promo['value_text'] ?? '',
+      ])
+    !!}
 
     <button
       class="leave-modal-offer-btn"
