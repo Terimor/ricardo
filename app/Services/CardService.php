@@ -709,18 +709,23 @@ class CardService {
             throw new AuthException('Unauthorized');
         }
 
+        $result = ['status' => PaymentService::STATUS_FAIL];
+
         $payment = $minte->handle3ds($order_txn, $input);
         if ($payment['status'] === Txn::STATUS_CAPTURED) {
-            $capture = $minte->capture($payment['hash'], ['amount' => $order_txn['value'], 'currency' => $order->currency]);
-            PaymentService::logTxn(array_merge($capture, ['payment_method' => $order_txn['payment_method']]));
-            $payment['status'] = $capture['status'];
-            $payment['capture_hash'] = $capture['hash'];
-        }
-
-        $result = ['status' => PaymentService::STATUS_FAIL];
-        if ($payment['status'] === Txn::STATUS_APPROVED) {
-            $result = ['status' => PaymentService::STATUS_OK];
-            PaymentService::approveOrder($payment, PaymentProviders::MINTE);
+            if ($order_txn['status'] !== Txn::STATUS_APPROVED) {
+                $capture = $minte->capture($payment['hash'], ['amount' => $order_txn['value'], 'currency' => $order->currency]);
+                PaymentService::logTxn(array_merge($capture, ['payment_method' => $order_txn['payment_method']]));
+                $payment['status'] = $capture['status'];
+                $payment['capture_hash'] = $capture['hash'];
+                if ($capture['status'] === Txn::STATUS_APPROVED) {
+                    $result = ['status' => PaymentService::STATUS_OK];
+                    PaymentService::approveOrder($payment, PaymentProviders::MINTE);
+                }
+            } else {
+                $result = ['status' => PaymentService::STATUS_OK];
+                logger()->warning("Minte3ds re-redirect approved [{$order_txn['hash']}]");
+            }
         } else {
             $order = PaymentService::rejectTxn($payment, PaymentProviders::MINTE);
 
