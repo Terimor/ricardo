@@ -245,6 +245,7 @@ class ProductService
         $lp->splash_description = $product->splash_description;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
+        $lp->bg_image = $product->bg_image;
         $lp->favicon_image = $product->favicon_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
         $lp->vimeo_id = $product->vimeo_id;

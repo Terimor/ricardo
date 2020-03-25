@@ -28,7 +28,7 @@ class OdinProduct extends Model
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout',
-        'logo_image_id', 'favicon_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only',
+        'logo_image_id', 'favicon_image_id', 'bg_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only',
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'is_choice_required', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
         'gads_conversion_label', 'goptimize_id', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'reviews', 'affiliates', 'currency',
@@ -37,7 +37,7 @@ class OdinProduct extends Model
 
     protected $hidden = [
         '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at',
-        'image_id', 'logo_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only',
+        'image_id', 'logo_image_id', 'bg_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only',
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent', 'price_correction_percents'
     ];
 
@@ -306,6 +306,9 @@ class OdinProduct extends Model
         if(!empty($this->logo_image_id)) {
             $ids[$this->logo_image_id] = $this->logo_image_id;
         }
+        if(!empty($this->bg_image_id)) {
+            $ids[$this->bg_image_id] = $this->bg_image_id;
+        }
         if(!empty($this->upsell_hero_image_id)) {
             $ids[$this->upsell_hero_image_id] = $this->upsell_hero_image_id;
         }
@@ -388,9 +391,15 @@ class OdinProduct extends Model
      */
     public function getFaviconImageAttribute($value)
     {
-        return (!empty($this->favicon_image_id) && !empty( $this->images[$this->favicon_image_id]))
-            ? $this->images[$this->favicon_image_id]
-            : null;
+        return (!empty($this->favicon_image_id) && !empty( $this->images[$this->favicon_image_id])) ? $this->images[$this->favicon_image_id] : null;
+    }
+
+    /**
+     * Getter bg image
+     */
+    public function getBgImageAttribute($value)
+    {
+        return (!empty($this->bg_image_id) && !empty( $this->images[$this->bg_image_id])) ? $this->images[$this->bg_image_id] : null;
     }
 
     /**
