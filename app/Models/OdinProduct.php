@@ -356,8 +356,9 @@ class OdinProduct extends Model
 
     /**
      * Get local images ids
+     * @return array
      */
-    public function getLocalMinishopImagesIds()
+    public function getLocalMinishopImagesIds(): array
     {
         $ids = [];
         if(!empty($this->logo_image_id)) {
@@ -377,19 +378,20 @@ class OdinProduct extends Model
 
     /**
      * Getter logo image
+     * @param $value
+     * @return string|null
      */
-    public function getLogoImageAttribute($value)
+    public function getLogoImageAttribute($value): ?string
     {
         return (!empty($this->logo_image_id) && !empty( $this->images[$this->logo_image_id])) ? $this->images[$this->logo_image_id] : null;
     }
 
     /**
      * Getter favicon_image
-     *
      * @param $value
-     * @return mixed
+     * @return string|null
      */
-    public function getFaviconImageAttribute($value)
+    public function getFaviconImageAttribute($value): ?string
     {
         return (!empty($this->favicon_image_id) && !empty( $this->images[$this->favicon_image_id])) ? $this->images[$this->favicon_image_id] : null;
     }
@@ -397,15 +399,17 @@ class OdinProduct extends Model
     /**
      * Getter bg image
      */
-    public function getBgImageAttribute($value)
+    public function getBgImageAttribute($value): ?string
     {
         return (!empty($this->bg_image_id) && !empty( $this->images[$this->bg_image_id])) ? $this->images[$this->bg_image_id] : null;
     }
 
     /**
      * Getter upsell_hero_image
+     * @param $value
+     * @return string|null
      */
-    public function getUpsellHeroImageAttribute($value)
+    public function getUpsellHeroImageAttribute($value): ?string
     {
         return (!empty($this->upsell_hero_image_id) && !empty($this->images[$this->upsell_hero_image_id])) ? $this->images[$this->upsell_hero_image_id] : null;
     }
