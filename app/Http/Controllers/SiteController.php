@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OdinCustomer;
 use App\Models\OdinProduct;
+use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Services\ProductService;
@@ -429,13 +430,19 @@ class SiteController extends Controller
             $deals_free_quantities = $data_deals['deals_free_quantities'];
         }
 
+        // get customer by number for autofill
+        $customer = null;
+        if ($request->get('customer')) {
+            $customer = CustomerService::getLocaleCustomerByNumber($request->get('customer'));
+        }
+
         return view(
             $viewTemplate,
             compact(
                 'langCode', 'countryCode', 'product', 'setting', 'countries', 'loadedPhrases',
                 'recentlyBoughtNames', 'recentlyBoughtCities', 'loadedImages', 'priceSet', 'page_title', 'main_logo',
                 'company_address', 'company_descriptor_prefix', 'cdn_url', 'upsells', 'website_name',
-                'deals', 'deal_promo', 'deals_main_quantities', 'deals_free_quantities',
+                'deals', 'deal_promo', 'deals_main_quantities', 'deals_free_quantities', 'customer',
                 'is_checkout', 'is_new_engine', 'is_checkout_page', 'is_health_page', 'is_vrtl_page', 'is_smartbell'
             )
         );

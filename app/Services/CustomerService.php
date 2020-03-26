@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Models\Localize;
 use App\Models\OdinCustomer;
 
 /**
@@ -130,6 +131,25 @@ class CustomerService
         }
 
         return true;
+    }
+
+    /**
+     * Get locale customer by number
+     * @param string $number
+     * @return null
+     */
+    public static function getLocaleCustomerByNumber(string $number) {
+        $customer = OdinCustomer::getByNumber($number);
+        $lp = null;
+        if ($customer) {
+            $lp = new Localize();
+            $lp->email = $customer->email;
+            $lp->first_name = $customer->first_name;
+            $lp->last_name = $customer->last_name;
+            $lp->phone = $customer->getLastPhone();
+            $lp->address = $customer->getLastAddress();
+        }
+        return $lp;
     }
 
 }

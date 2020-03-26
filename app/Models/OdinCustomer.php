@@ -201,4 +201,40 @@ class OdinCustomer extends Model
     public static function getByEmail(string $email) {
         return static::where('email', $email)->first();
     }
+
+    /**
+     * Get by number
+     * @param string $number
+     * @return mixed
+     */
+    public static function getByNumber(string $number)
+    {
+        return static::where('number', $number)->first();
+    }
+
+    /**
+     * Returns last phone
+     * @return string|null
+     */
+    public function getLastPhone(): ?string
+    {
+        $phone = null;
+        if (!empty($this->phones) && is_array($this->phones)) {
+            $phone = $this->phones[count($this->phones)-1] ?? null;
+        }
+        return $phone;
+    }
+
+    /**
+     * Returns last address
+     * @return array|null
+     */
+    public function getLastAddress(): ?array
+    {
+        $address = null;
+        if (!empty($this->addresses) && is_array($this->addresses)) {
+            $address = $this->addresses[count($this->addresses)-1] ?? null;
+        }
+        return $address;
+    }
 }
