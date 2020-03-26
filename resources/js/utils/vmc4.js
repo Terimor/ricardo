@@ -1,10 +1,10 @@
 import { getCountOfInstallments } from './installments';
 
-export const getRadioHtml = ({ discountName, newPrice, textComposite, price, discountText, installments, discountPercent }) =>
+export const getRadioHtml = ({ discountName, newPrice, textComposite, price, discountText, installments, discountPercent, totalQuantity }) =>
   `<div class='main-row'>
     ${discountName.toLowerCase() === 'bestseller' ? "<img class='lazy best-seller' data-src='" + js_data.cdn_url + "/assets/images/best-seller-checkout4.png' alt='best seller' />" : "" }
     <p class="product-name">
-      <span class="product-text">${textComposite}</span> - <span class="discount">${discountText}</span>
+      <span class="product-text">${textComposite}</span>` + (!js_data.product.labels[totalQuantity] ? ` - <span class="discount">${discountText}</span>` : '') + `
     </p>
     <div class='prices'>
       ${discountPercent > 0 ? `

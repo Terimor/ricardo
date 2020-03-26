@@ -154,6 +154,7 @@
         });
       },
       dealList () {
+        console.log(this.purchase);
         return this.purchase.map((it, idx) => ({
           class: `${this.form.deal === it.totalQuantity ? 'isChecked' : ''} ${it.discountName.toLowerCase() === 'bestseller' ? 'bestseller':''}`,
           value: it.totalQuantity,
