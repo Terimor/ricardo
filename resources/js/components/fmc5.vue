@@ -125,18 +125,22 @@
                         <div v-if="deal.quantity === form.deal"></div>
                       </div>
 
-                      <div class="deal-label">
-                        <div class="deal-count">{{ dealsMainQuantities[deal.quantity] }}x</div>
-                        <div class="deal-name">&nbsp;{{ product.product_name }}&nbsp;</div>
-                        <div
-                          v-if="dealsFreeQuantities[deal.quantity]"
-                          class="deal-free">+ {{ dealsFreeQuantities[deal.quantity] }} {{ textFree }}</div>
-                      </div>
-
-                      <div class="deal-discount">
-                        <div class="deal-discount-o">o</div>
-                        <div class="deal-discount-value">{{ deal.discount_percent }}%</div>
-                        <div class="deal-discount-off">&nbsp;{{ textOff }}</div>
+                      <template v-if="!product.labels[deal.quantity]">
+                        <div class="deal-label">
+                          <div class="deal-count">{{ dealsMainQuantities[deal.quantity] }}x</div>
+                          <div class="deal-name">&nbsp;{{ product.product_name }}&nbsp;</div>
+                          <div
+                            v-if="dealsFreeQuantities[deal.quantity]"
+                            class="deal-free">+ {{ dealsFreeQuantities[deal.quantity] }} {{ textFree }}</div>
+                        </div>
+                        <div class="deal-discount">
+                          <div class="deal-discount-o">o</div>
+                          <div class="deal-discount-value">{{ deal.discount_percent }}%</div>
+                          <div class="deal-discount-off">&nbsp;{{ textOff }}</div>
+                        </div>
+                      </template>
+                      <div v-else class="deal-label">
+                        {{ product.labels[deal.quantity] }}
                       </div>
 
                     </div>

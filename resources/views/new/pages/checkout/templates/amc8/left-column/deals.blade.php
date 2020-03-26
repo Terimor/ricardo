@@ -31,22 +31,27 @@
           @endif
         </div>
 
-        <div class="deal-label">
-          <div class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</div>
-          <div class="deal-name">&nbsp;{{ $product->product_name }}&nbsp;</div>
-          @if ($deals_free_quantities[$deal['quantity']])
-            <div class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('checkout.free') }}</div>
-          @endif
-        </div>
-
-        <div class="deal-discount">
-          <div>(</div>
-          <div>{{ $deal['discount_percent'] }}% {{ t('checkout.discount') }}</div>
-          @if ($deal['quantity'] > 1)
-            <div>, <span v-html="xprice_perdeal_unit_text[{{ $deal['quantity'] }}]"></span>/{{ t('checkout.unit') }}</div>
-          @endif
-          <div>)</div>
-        </div>
+        @if (empty($product->labels[$deal['quantity']]))
+          <div class="deal-label">
+            <div class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</div>
+            <div class="deal-name">&nbsp;{{ $product->product_name }}&nbsp;</div>
+            @if ($deals_free_quantities[$deal['quantity']])
+              <div class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('checkout.free') }}</div>
+            @endif
+          </div>
+          <div class="deal-discount">
+            <div>(</div>
+            <div>{{ $deal['discount_percent'] }}% {{ t('checkout.discount') }}</div>
+            @if ($deal['quantity'] > 1)
+              <div>, <span v-html="xprice_perdeal_unit_text[{{ $deal['quantity'] }}]"></span>/{{ t('checkout.unit') }}</div>
+            @endif
+            <div>)</div>
+          </div>
+        @else
+          <div class="deal-label">
+            {{ $product->labels[$deal['quantity']] }}
+          </div>
+        @endif
       </div>
 
       <div class="deal-prices">

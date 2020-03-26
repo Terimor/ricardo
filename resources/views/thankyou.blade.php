@@ -122,12 +122,15 @@
 
             <div class="thank-you__order">
                 <div class="d-flex">
+                    @php $quantity = $orderCustomer->products[0]['quantity'] @endphp
                     <div class="thank-you__order__image">
                         <img src="{{ $product->image[0] }}" alt="">
-                        <div class="quantity">@{{ selectedProductData.quantity || 0 }}</div>
+                        @if (empty($product->labels[$quantity]))
+                            <div class="quantity">@{{ selectedProductData.quantity || 0 }}</div>
+                        @endif
                     </div>
                     <div class="d-flex flex-column justify-content-center">
-                        <div class="thank-you__order__name">{{ $product->long_name }}</div>
+                        <div class="thank-you__order__name">{{ $product->labels[$quantity] ?? $product->long_name }}</div>
                         <div
                             class="thank-you__order__name"
                             v-if="selectedProductData.isWarrantyChecked"

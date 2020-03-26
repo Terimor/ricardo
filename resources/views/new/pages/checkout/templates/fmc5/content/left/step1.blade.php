@@ -63,19 +63,24 @@
                 'class' => 'deal-radio',
               ])
 
-              <div class="deal-label">
-                <div class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</div>
-                <div class="deal-name">&nbsp;{{ $product->product_name }}&nbsp;</div>
-                @if ($deals_free_quantities[$deal['quantity']])
-                  <div class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('fmc5.free') }}</div>
-                @endif
-              </div>
-
-              <div class="deal-discount">
-                <div class="deal-discount-o">o</div>
-                <div class="deal-discount-value">{{ $deal['discount_percent'] }}%</div>
-                <div class="deal-discount-off">&nbsp;{{ t('fmc5.off') }}</div>
-              </div>
+              @if (empty($product->labels[$deal['quantity']]))
+                <div class="deal-label">
+                  <div class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</div>
+                  <div class="deal-name">&nbsp;{{ $product->product_name }}&nbsp;</div>
+                  @if ($deals_free_quantities[$deal['quantity']])
+                    <div class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('fmc5.free') }}</div>
+                  @endif
+                </div>
+                <div class="deal-discount">
+                  <div class="deal-discount-o">o</div>
+                  <div class="deal-discount-value">{{ $deal['discount_percent'] }}%</div>
+                  <div class="deal-discount-off">&nbsp;{{ t('fmc5.off') }}</div>
+                </div>
+              @else
+                <div class="deal-label">
+                  {{ $product->labels[$deal['quantity']] }}
+                </div>
+              @endif
 
             </div>
 
