@@ -125,7 +125,7 @@
                         <div v-if="deal.quantity === form.deal"></div>
                       </div>
 
-                      <template v-if="!product.labels[deal.quantity]">
+                      <template v-if="!product.labels || !product.labels[deal.quantity]">
                         <div class="deal-label">
                           <div class="deal-count">{{ dealsMainQuantities[deal.quantity] }}x</div>
                           <div class="deal-name">&nbsp;{{ product.product_name }}&nbsp;</div>

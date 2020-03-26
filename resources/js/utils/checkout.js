@@ -120,7 +120,7 @@ export function preparePurchaseData({
             it.is_popular ? t('checkout.best_deal') :
               '',
         text: `${mainQuantity + freeQuantity}x ${product_name}`,
-        textComposite: js_data.product.labels[key] || `${mainQuantity}x ${product_name}${isTextComposite(freeQuantity)}`,
+        textComposite: (js_data.product.labels && js_data.product.labels[key]) || `${mainQuantity}x ${product_name}${isTextComposite(freeQuantity)}`,
         newPrice: getNewPrice({
           key,
           valueTexts,

@@ -785,6 +785,10 @@
                 }
             }
 
+            .label-container-radio__best-seller__name {
+              text-transform: uppercase;
+            }
+
             .label-container-radio__best-seller__price {
               color: $red;
             }

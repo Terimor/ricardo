@@ -59,27 +59,25 @@
     }
   }
 
-  .deal-discount-name {
-    color: #e74c3c;
+  .deal-label {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .deal-label-line1 {
+    color: #29af5c;
+    display: flex;
+    flex-direction: column;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.1875;
     text-transform: uppercase;
   }
 
-  .deal-label {
+  .deal-label-line2 {
     color: #000;
     display: flex;
     font-size: 16px;
-    font-weight: 700;
-    line-height: 1.1875;
-  }
-
-  .deal-discount {
-    color: #29af5c;
-    display: flex;
-    font-size: 16px;
-    font-weight: 700;
     line-height: 1.1875;
   }
 
@@ -89,18 +87,46 @@
     flex-direction: column;
   }
 
-  .deal-new-price {
-    color: #e74c3c;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.1875;
+  .deal-discount-name {
+    align-items: center;
+    display: flex;
+  }
+
+  .deal-discount-star {
+    margin-right: 3px;
+    margin-top: -2px;
+    width: 10px;
+
+    [dir="rtl"] & {
+      margin-left: 3px;
+      margin-right: 0;
+    }
+  }
+
+  .deal-bestseller,
+  .deal-popular {
+    text-transform: capitalize;
   }
 
   .deal-old-price {
+    color: #e74c3c;
+    display: flex;
+    font-size: 16px;
+    line-height: 1.1875;
+  }
+
+  .deal-old-price-reg {
+    text-transform: uppercase;
+  }
+
+  .deal-old-price-value {
+    text-decoration: line-through;
+  }
+
+  .deal-new-price {
     color: #000;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.1875;
-    text-decoration: line-through;
   }
 }

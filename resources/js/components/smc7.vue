@@ -916,6 +916,10 @@
         border-radius: 0;
       }
 
+      .label-container-radio__discount-name {
+        text-transform: uppercase;
+      }
+
       .label-container-radio__discount {
         color: #16a085;
       }

@@ -9,6 +9,9 @@
   }
 
   .image-back {
+    display: block;
+    margin: 0 auto;
+    max-height: 400px;
     max-width: 100%;
     position: relative;
   }
@@ -35,6 +38,11 @@
 
   .review {
     display: flex;
+    margin-top: 10px;
+
+    &:first-child {
+      margin-top: 0;
+    }
   }
 
   .image {

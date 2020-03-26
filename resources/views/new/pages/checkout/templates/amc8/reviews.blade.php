@@ -1,6 +1,6 @@
 <div class="reviews">
   <div class="container">
-    <img class="image-back lazy" data-src="{{ $cdn_url }}/assets/images/checkout/amc8/reviews-back.png" />
+    <img class="image-back lazy" data-src="{{ $product->bg_image ?? $cdn_url . '/assets/images/checkout/amc8/reviews-back.png' }}" />
     <div class="inside">
       @foreach (array_slice($product->reviews, 0, 3) as $review)
         <div class="review">

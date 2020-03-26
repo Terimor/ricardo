@@ -22,41 +22,41 @@
       ])
 
       <div class="deal-content">
-        <div class="deal-discount-name">
-          @if ($deal['is_bestseller'])
-            <div class="deal-bestseller">{{ t('checkout.bestseller') }}</div>
+        <div class="deal-label">
+          @if (!empty($product->labels[$deal['quantity']]))
+            <div class="deal-label-line1">
+              {{ $product->labels[$deal['quantity']] }}
+            </div>
           @endif
-          @if ($deal['is_popular'])
-            <div class="deal-popular">{{ t('checkout.best_deal') }}</div>
-          @endif
-        </div>
 
-        @if (empty($product->labels[$deal['quantity']]))
-          <div class="deal-label">
+          <div class="deal-label-line2">
             <div class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</div>
             <div class="deal-name">&nbsp;{{ $product->product_name }}&nbsp;</div>
             @if ($deals_free_quantities[$deal['quantity']])
               <div class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('checkout.free') }}</div>
             @endif
           </div>
-          <div class="deal-discount">
-            <div>(</div>
-            <div>{{ $deal['discount_percent'] }}% {{ t('checkout.discount') }}</div>
-            @if ($deal['quantity'] > 1)
-              <div>, <span v-html="xprice_perdeal_unit_text[{{ $deal['quantity'] }}]"></span>/{{ t('checkout.unit') }}</div>
-            @endif
-            <div>)</div>
-          </div>
-        @else
-          <div class="deal-label">
-            {{ $product->labels[$deal['quantity']] }}
-          </div>
-        @endif
+        </div>
       </div>
 
       <div class="deal-prices">
+        <div class="deal-discount-name">
+          @if ($deal['is_bestseller'])
+            <img class="deal-discount-star lazy" data-src="{{ $cdn_url }}/assets/images/checkout/amc8/star.png" />
+            <div class="deal-bestseller">{{ t('checkout.bestseller') }}</div>
+          @endif
+          @if ($deal['is_popular'])
+            <img class="deal-discount-star lazy" data-src="{{ $cdn_url }}/assets/images/checkout/amc8/star.png" />
+            <div class="deal-popular">{{ t('checkout.best_deal') }}</div>
+          @endif
+        </div>
+
+        <div class="deal-old-price">
+          <div class="deal-old-price-reg">{{ t('checkout.reg') }}&nbsp;</div>
+          <div class="deal-old-price-value" v-html="xprice_perdeal_old_text[{{ $deal['quantity'] }}]"></div>
+        </div>
+
         <div class="deal-new-price" v-html="xprice_perdeal_text[{{ $deal['quantity'] }}]"></div>
-        <div class="deal-old-price" v-html="xprice_perdeal_old_text[{{ $deal['quantity'] }}]"></div>
       </div>
 
     </div>

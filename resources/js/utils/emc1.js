@@ -57,7 +57,7 @@ export const getRadioHtml = ({
             : `${discountName ? '' : currentPrice}`}
         </p>
 
-        ${!js_data.product.labels[totalQuantity]
+        ${!js_data.product.labels || !js_data.product.labels[totalQuantity]
           ? `<p class="label-container-radio__discount">
               <span class="discount-text${idx === 1 ? ' red' : ''}">${discountText}</span>
               <span class="strike">

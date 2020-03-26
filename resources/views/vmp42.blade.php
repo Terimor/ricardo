@@ -169,7 +169,7 @@
                                                     <span class="promo__price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
                                                 </p>
                                             </div>
-                                            <div v-if="!productData.labels[item.totalQuantity]" class="promo__fifty-discount">
+                                            <div v-if="!productData.labels || !productData.labels[item.totalQuantity]" class="promo__fifty-discount">
                                                 <p v-html="item.discountText"></p>
                                             </div>
                                         </div>
