@@ -2,6 +2,7 @@
 
 namespace App\Services;
 use App\Models\I18n;
+use App\Models\Setting;
 
 /**
  * I18n Service class
@@ -128,5 +129,51 @@ class I18nService
     public static function getInternalLanguageByLocaleLanguage(string $language_code): string
     {
         return !empty(I18n::$browser_codes[$language_code]) ? I18n::$browser_codes[$language_code] : $language_code;
+    }
+
+    /**
+     * Translates the phrase
+     * @param string $phrase
+     * @param string $language
+     * @param array $args
+     * @return string
+     */
+    public static function t(string $phrase, string $language = 'en', array $args = []): string
+    {
+        $translation = I18n::getTranslationByPhraseAndLanguage($phrase, $language);
+
+        if (!$translation) {
+            logger()->warning("URGENT: `{$phrase}` not found in translations", ['args' => $args]);
+        }
+
+        if (empty($args['shopname'])) {
+            $args['shopname'] = Setting::getValue('shop_name');
+        }
+
+        if ($phrase !== 'global.support_team' && empty($args['support_team'])) {
+            $args['support_team'] = self::t('global.support_team', $language);
+        }
+
+        if ($args) {
+            foreach ($args as $key => $value) {
+                $placeholderKey = "#".strtoupper($key)."#";
+                $translation = str_replace($placeholderKey, $value, $translation);
+                if (!in_array($placeholderKey, I18n::$placeholders)) {
+                    logger()->warning("Non-registered placeholder {$placeholderKey}. Add it to I18n::placeholders!");
+                }
+                if ($value === null) {
+                    logger()->warning('I18nPlaceholderNull', [$placeholderKey, $phrase, $language, $args]);
+                }
+            }
+        }
+
+        $translation = str_replace("&#39;", "’", $translation);
+        if (substr_count($translation, '#') > 1) {
+            $other_hashes_cnt = substr_count($translation, '/#/');
+            if (substr_count($translation, '#') != $other_hashes_cnt) {
+                logger()->warning('NonTranslatedPlaceholders', [$phrase, $translation, $args]);
+            }
+        }
+        return $translation;
     }
 }

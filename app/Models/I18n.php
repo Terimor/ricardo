@@ -132,4 +132,34 @@ class I18n extends Model
 
         return $langs;
     }
+
+    /**
+     * Translates the phrase
+     * @param string $phrase
+     * @param string $language
+     * @return string|null
+     */
+    public static function getTranslationByPhraseAndLanguage(string $phrase, string $language = 'en'): ?string
+    {
+        $language = $language ? strtolower($language) : 'en';
+
+        if (isset(static::$browser_codes[$language])) {
+            $language = static::$browser_codes[$language];
+        }
+
+        $translation = null;
+
+        $model = self::query()
+            ->where(['phrase' => $phrase])
+            ->select(['phrase', 'en', $language])
+            ->first();
+        if ($model) {
+            if (!empty($model->$language)) {
+                $translation = $model->$language;
+            } else {
+                $translation = $model->en;
+            }
+        }
+        return $translation;
+    }
 }

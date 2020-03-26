@@ -12,7 +12,6 @@ use App\Models\OdinProduct;
 use App\Models\Txn;
 use App\Models\PaymentApi;
 use App\Constants\PaymentMethods;
-use App\Constants\PaymentProviders;
 use BraintreeHttp\HttpException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -20,7 +19,6 @@ use PayPalCheckoutSdk\Core\PayPalHttpClient;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use PayPalCheckoutSdk\Orders\OrdersGetRequest;
-use App\Services\AffiliateService;
 use stdClass;
 
 /**
@@ -230,6 +228,8 @@ class PayPalService
      *
      * @param PayPalCrateOrderRequest $request
      * @return array
+     * @throws PPCurrencyNotSupportedException
+     * @throws PaymentException
      */
     public function createOrder(PayPalCrateOrderRequest $request): array
     {
@@ -290,9 +290,11 @@ class PayPalService
             $response->result->id = $order->txns[0]['hash'];
         } else {
             // If local currency is not supported by PayPal convert to USD. Used for purchase only.
+            $name_for_many = I18nService::t('paypal.product.pack', app()->getLocale(), ['count' => (int)$request->sku_quantity, 'productname' => $product->product_name]);
+            $desc_for_many = I18nService::t('paypal.product.pack', app()->getLocale(), ['count' => (int)$request->sku_quantity, 'productname' => $product->long_name]);
             $items = [[
-                'name' => $product->product_name,
-                'description' => $product->long_name,
+                'name' => (int)$request->sku_quantity > 1 ? $name_for_many : $product->product_name,
+                'description' => (int)$request->sku_quantity > 1 ? $desc_for_many : $product->long_name,
                 'sku' => $request->sku_code,
                 'unit_amount' => [
                     'currency_code' => $pp_currency_code,
@@ -300,6 +302,7 @@ class PayPalService
                 ],
                 'quantity' => 1
             ]];
+
             if ($request->input('is_warranty_checked') && $product->warranty_percent) {
                 $local_warranty_price = CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']);
                 $total_price_usd = CurrencyService::roundValueByCurrencyRules(
@@ -322,7 +325,7 @@ class PayPalService
                 ];
             }
             $unit = [
-                'description' => $product->long_name,
+                'description' => (int)$request->sku_quantity > 1 ? $desc_for_many : $product->long_name,
                 'amount' => [
                     'currency_code' => $pp_currency_code,
                     'value' => !$is_currency_supported ? $total_price_usd : $total_local_price,
