@@ -74,57 +74,63 @@ class EmailService
         $apiKey = Setting::getValue('ipqs_private_api_key');
         $block = false; $suggest = ''; $warning = false; $valid = false; $disposable = false;
         if ($email) {
-            $url =  "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}?timeout=".static::TIMEOUT_IPQS;
-            $timeOut = stream_context_create(
-                ['http'=> ['timeout' => 5]]
-            );
-            for ($i=1; $i<=3; $i++) {
-                try {
-                    $curl = curl_init();
-                    curl_setopt($curl, CURLOPT_URL, $url);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-                    curl_setopt($curl, CURLOPT_TIMEOUT, 5);
-                    $json = curl_exec($curl);
-                    curl_close($curl);
-                    $res = json_decode($json);
-                    //$result = file_get_contents($url, false, $timeOut);
-                } catch (\Exception $ex) {
-                    //logger()->error("Validate email IPQS connection error", ['email' => $email,'code' => $ex->getCode(), 'message' => $ex->getMessage()]);
-                }
-                if(isset($res->success) && $res->success === true){
-                    //$res = json_decode($result);
-                    // check warning
-                    if (!empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
-                        $warning = true;
+            // as first check customer for trusted
+            $isTrusted = OdinCustomer::isTrustedByEmail($email);
+            if ($isTrusted) {
+                $valid = true;
+            } else {
+                $url = "https://www.ipqualityscore.com/api/json/email/{$apiKey}/{$email}?timeout=" . static::TIMEOUT_IPQS;
+                $timeOut = stream_context_create(
+                    ['http' => ['timeout' => 5]]
+                );
+                for ($i = 1; $i <= 3; $i++) {
+                    try {
+                        $curl = curl_init();
+                        curl_setopt($curl, CURLOPT_URL, $url);
+                        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+                        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+                        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+                        $json = curl_exec($curl);
+                        curl_close($curl);
+                        $res = json_decode($json);
+                        //$result = file_get_contents($url, false, $timeOut);
+                    } catch (\Exception $ex) {
+                        //logger()->error("Validate email IPQS connection error", ['email' => $email,'code' => $ex->getCode(), 'message' => $ex->getMessage()]);
                     }
+                    if (isset($res->success) && $res->success === true) {
+                        //$res = json_decode($result);
+                        // check warning
+                        if (!empty($res->timed_out) || $res->deliverability == static::$ipqsLowDeliverability) {
+                            $warning = true;
+                        }
 
-                    if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
-                        $domain = explode('@', $email)[1];
-                        $suggest = str_replace($domain, $res->suggested_domain, $email);
+                        if (!empty($res->suggested_domain) && $res->suggested_domain != static::$NA) {
+                            $domain = explode('@', $email)[1];
+                            $suggest = str_replace($domain, $res->suggested_domain, $email);
+                        }
+
+                        if ((isset($res->overall_score) && $res->overall_score > 0)) {
+                            $valid = true;
+                        }
+
+                        $disposable = $res->disposable ?? false;
+
+                        // block if recent_abuse, leaked or overall_score = 0
+                        if (!empty($res->recent_abuse) || !empty($res->leaked)) {
+                            $block = true;
+                            logger()->info("Blocked email", ['email' => $email, 'res' => $res]);
+                            throw new BlockEmailException([
+                                'block' => $block,
+                                'warning' => $warning,
+                                'suggest' => $suggest,
+                                'valid' => $valid,
+                                'disposable' => $disposable
+                            ], "Email blocked {$email}, answer: " . json_encode($res));
+                        }
+
+                        break;
                     }
-
-                    if ((isset($res->overall_score) && $res->overall_score > 0)) {
-                        $valid = true;
-                    }
-
-                    $disposable = $res->disposable ?? false;
-
-                    // block if recent_abuse, leaked or overall_score = 0
-                    if (!empty($res->recent_abuse) || !empty($res->leaked)) {
-                        $block = true;
-                        logger()->info("Blocked email", ['email' => $email, 'res' => $res]);
-                        throw new BlockEmailException([
-                            'block' => $block,
-                            'warning' => $warning,
-                            'suggest' => $suggest,
-                            'valid' => $valid,
-                            'disposable' => $disposable
-                        ], "Email blocked {$email}, answer: ".json_encode($res));
-                    }
-
-                    break;
                 }
             }
         } else {

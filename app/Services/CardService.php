@@ -114,7 +114,7 @@ class CardService {
         $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
 
         // refuse fraudulent payment
-        PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid); // throwable
+        PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid, $contact['email']); // throwable
 
         $customer = PaymentService::addCustomer($contact); // throwable
 

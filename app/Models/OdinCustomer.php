@@ -70,6 +70,7 @@ class OdinCustomer extends Model
         'last_page_checkout' => null, // string
         'last_viewed_sku_code' => null, // string
         'recovery_way' => null, // enum [email, sms]
+        'is_trusted' => null, // bool True means the customer is trusted and whitelisted for payments, false means the customer is blacklisted
     ];
 
     /**
@@ -79,7 +80,7 @@ class OdinCustomer extends Model
     */
    protected $fillable = [
        'email', 'number', 'type', 'first_name', 'last_name', 'language', 'paypal_payer_id',
-       'last_page_checkout', 'last_viewed_sku_code', 'recovery_way'
+       'last_page_checkout', 'last_viewed_sku_code', 'recovery_way', 'is_trusted'
    ];
 
     public static function boot()
@@ -236,5 +237,15 @@ class OdinCustomer extends Model
             $address = $this->addresses[count($this->addresses)-1] ?? null;
         }
         return $address;
+    }
+
+    /**
+     * Check customer for trusted status
+     * @param string $email
+     * @return bool|null
+     */
+    public static function isTrustedByEmail(string $email): ?bool {
+        $model = static::getByEmail($email);
+        return $model->is_trusted ?? null;
     }
 }
