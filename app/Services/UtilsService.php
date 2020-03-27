@@ -550,6 +550,32 @@ class UtilsService
         'zw' => 'Zimbabwe'
     ];
 
+    public static $excludeShipping = [
+        'cl',
+        'jm',
+        'hk',
+        'uz',
+        'sd',
+        'si',
+        'lk',
+        'cy',
+        'sv',
+        'pe',
+        'sa',
+        'rs',
+        'sv',
+        'md',
+        'mh',
+        'mt',
+        'ro',
+        'lu',
+        'aw',
+        'cr',
+        'ec',
+        'mm',
+        'um'
+    ];
+
     /**
      * EU countries
      * Linked from Saga: GeoConstants::$countries_eu
@@ -686,7 +712,8 @@ class UtilsService
                 $countries = self::$countryCodes;
             }
         }
-
+        // exclude shipping countries from existings
+        $countries = array_values(array_diff($countries, static::$excludeShipping));
         return $countries;
     }
 
