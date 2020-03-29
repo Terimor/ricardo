@@ -60,25 +60,37 @@
   }
 
   .deal-label {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .deal-label-line1 {
     color: #29af5c;
     display: flex;
     flex-direction: column;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.1875;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
-  .deal-label-line2 {
+  .deal-line {
+    color: #29af5c;
+    display: flex;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.1875;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .deal-discount {
     color: #000;
     display: flex;
     font-size: 16px;
     line-height: 1.1875;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .deal-prices {
@@ -90,6 +102,9 @@
   .deal-discount-name {
     align-items: center;
     display: flex;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .deal-discount-star {
