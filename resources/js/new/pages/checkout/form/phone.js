@@ -6,8 +6,10 @@ export default {
   data() {
     return {
       form: {
-        phone: null,
-        phone_country: js_data.country_code,
+        phone: (js_data.customer && js_data.customer.phone) || null,
+        phone_country: js_data.customer && js_data.customer.address && js_data.customer.address.country
+          ? js_data.customer.address.country
+          : js_data.country_code,
         phone_code: '',
       },
     };

@@ -10,6 +10,7 @@
 
 @section('js_data')
   <script type="text/javascript">
+    js_data.customer = @json($customer);
     js_data.lang_code = @json($langCode, JSON_UNESCAPED_UNICODE);
     js_data.country_code = @json($countryCode, JSON_UNESCAPED_UNICODE);
 

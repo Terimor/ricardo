@@ -396,7 +396,7 @@ export function goToThankYou(order, cur) {
 
   localStorage.setItem('odin_order_created_at', new Date());
 
-  goTo(url_pathname + url_search, ['3ds', '3ds_restore']);
+  goTo(url_pathname + url_search, ['apm', '3ds', 'apm_restore', '3ds_restore', 'bs_pf_token', 'redirect_url']);
 }
 
 

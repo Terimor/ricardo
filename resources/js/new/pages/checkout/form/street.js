@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       form: {
-        street: null,
+        street: (js_data.customer && js_data.customer.address && js_data.customer.address.street) || null,
       },
     };
   },

@@ -319,28 +319,34 @@
         },
 				form: {
 					stepTwo: {
-						fname: null,
-						lname: null,
-						email: null,
-						phone: null,
+						fname: (js_data.customer && js_data.customer.first_name) || null,
+						lname: (js_data.customer && js_data.customer.last_name) || null,
+						email: (js_data.customer && js_data.customer.email) || null,
+						phone: (js_data.customer && js_data.customer.phone) || null,
 					},
 					stepThree: {
             cardHolder: null,
 						cardNumber: null,
 						cardDate: null,
 						cvv: null,
-						country: js_data.countries.indexOf(js_data.country_code) !== -1
-              ? js_data.country_code
-              : null,
-            street: null,
-						city: null,
-						zipCode: null,
+						country: js_data.customer && js_data.customer.address && js_data.customer.address.country && js_data.countries.indexOf(js_data.customer.address.country) !== -1
+              ? js_data.customer.address.country
+              : js_data.countries.indexOf(js_data.country_code) !== -1
+                ? js_data.country_code
+                : null,
+            street: (js_data.customer && js_data.customer.address && js_data.customer.address.street) || null,
+						city: (js_data.customer && js_data.customer.address && js_data.customer.address.city) || null,
+						zipCode: (js_data.customer && js_data.customer.address && js_data.customer.address.zip) || null,
             terms: null,
 					},
-					countryCodePhoneField: js_data.country_code,
-          country: js_data.countries.indexOf(js_data.country_code) !== -1
-            ? js_data.country_code
-            : null,
+					countryCodePhoneField: js_data.customer && js_data.customer.address && js_data.customer.address.country
+            ? js_data.customer.address.country
+            : js_data.country_code,
+          country: js_data.customer && js_data.customer.address && js_data.customer.address.country && js_data.countries.indexOf(js_data.customer.address.country) !== -1
+              ? js_data.customer.address.country
+              : js_data.countries.indexOf(js_data.country_code) !== -1
+                ? js_data.country_code
+                : null,
 					paymentProvider: null,
 				},
 			}

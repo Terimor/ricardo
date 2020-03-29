@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       form: {
-        last_name: null,
+        last_name: (js_data.customer && js_data.customer.last_name) || null,
       },
     };
   },
