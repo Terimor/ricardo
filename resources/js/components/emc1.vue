@@ -224,6 +224,11 @@
     created() {
       const openForm = +js_query_params.openform;
 
+      if (js_data.customer) {
+        this.form.paymentProvider = 'credit-card';
+        this.isFormShown = true;
+      }
+
       if (openForm !== 0 && (!this.$root.paypalEnabled || openForm === 1)) {
         this.form.paymentProvider = 'credit-card';
         this.isFormShown = true;
