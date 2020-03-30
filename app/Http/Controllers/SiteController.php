@@ -567,6 +567,10 @@ class SiteController extends Controller
         $is_thankyou = $is_thankyou_page || $is_vrtl_thankyou_page;
         $is_smartbell = str_replace('www.', '', $request->getHost()) === 'smartbell.pro';
 
+        if ($request->get('3ds') && !$request->get('3ds_restore')) {
+            return view('prerender.thankyou.3ds_restore');
+        }
+
         if ($request->get('apm') && !$request->get('apm_restore')) {
             return view('prerender.thankyou.apm_restore');
         }
