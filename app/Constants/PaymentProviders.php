@@ -1150,13 +1150,13 @@ class PaymentProviders
                 ]
             ],
             'extra_fields'  => [
-                'gb' => [
+                'au' => [
                     'state' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$'
                     ]
                 ],
-                'au' => [
+                'be' => [
                     'state' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$'
@@ -1174,19 +1174,19 @@ class PaymentProviders
                         'pattern'   => '^.{1,30}$'
                     ]
                 ],
-                'be' => [
+                'dk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'gb' => [
                     'state' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$'
                     ]
                 ],
                 'nl' => [
-                    'state' => [
-                        'type'      => 'text',
-                        'pattern'   => '^.{1,30}$'
-                    ]
-                ],
-                'dk' => [
                     'state' => [
                         'type'      => 'text',
                         'pattern'   => '^.{1,30}$'
@@ -1558,20 +1558,85 @@ class PaymentProviders
         ],
         self::STRIPE => [
             'name'      => 'Stripe',
-            'is_active' => false,
+            'is_active' => true,
             'is_main'   => true,
             'is_fallback' => false,
             'in_prod'   => false,
             'fraud_setting' => [
-                '3ds_limit' => 101,
-                'fallback_limit' => 99,
-                'refuse_limit' => 101
+                'common' => [
+                    '3ds_limit' => 20,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 99
+                ],
+                'affiliate' => [
+                    '3ds_limit' => 100,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 99
+                ]
             ],
-            'extra_fields'  => [/*...*/],
+            'extra_fields'  => [
+                'at' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'be' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'de' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'dk' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'es' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'gb' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
+                'nl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ]
+            ],
             'methods'   => [
                 'main' => [
                     PaymentMethods::VISA => [
-                        '-3ds' => ['ru']
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::MASTERCARD => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::AMEX => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::DISCOVER => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::DINERSCLUB => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::JCB => [
+                        '-3ds' => ['europe']
                     ],
                 ],
                 'fallback' => []
