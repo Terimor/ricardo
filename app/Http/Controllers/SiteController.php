@@ -304,7 +304,7 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
-        $new_engine_checkout_tpls = ['fmc5x', 'amc8'];
+        $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
         $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
         $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
         $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
@@ -324,6 +324,9 @@ class SiteController extends Controller
             }
             if ($request->get('tpl') == 'amc8') {
                 $viewTemplate = 'new.pages.checkout.templates.amc8';
+            }
+            if ($request->get('tpl') == 'amc81') {
+                $viewTemplate = 'new.pages.checkout.templates.amc81';
             }
         }
 

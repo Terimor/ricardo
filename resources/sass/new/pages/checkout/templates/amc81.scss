@@ -1,0 +1,32 @@
+$size1: 768px;
+
+@import '../../checkout';
+
+
+.amc81 {
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto,sans-serif;
+  font-size: 16px;
+  line-height: 1.467;
+
+  input,
+  select,
+  textarea {
+    color: #000;
+    font-family: Roboto,sans-serif;
+    font-size: 16px;
+    line-height: 1.15;
+  }
+
+  a {
+    color: #29af5c;
+    text-decoration: none;
+
+    &:hover, &:focus {
+      color: #29af5c;
+      text-decoration: underline;
+    }
+  }
+}

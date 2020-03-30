@@ -42,7 +42,7 @@ class ViewServiceProvider extends ServiceProvider
                 'freshchat_token'
             ]);
 
-            $new_engine_checkout_tpls = ['fmc5x', 'amc8'];
+            $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
             $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
             $is_checkout_new_engine_page = $is_checkout_page && in_array(Request::get('tpl'), $new_engine_checkout_tpls);
             $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
@@ -64,7 +64,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('ga_id', optional(Domain::getByName())->ga_id);
             
             $affiliate = null;
-            $affId = AffiliateService::getAffIdFromRequest(Request());            
+            $affId = AffiliateService::getAffIdFromRequest(Request());
             if ($affId) {                
                 $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
@@ -77,7 +77,7 @@ class ViewServiceProvider extends ServiceProvider
 
         View::composer(['layouts.footer', 'new.regions.footer'], function($view) {
             $affiliate = null;
-            $affId = AffiliateService::getAffIdFromRequest(Request());            
+            $affId = AffiliateService::getAffIdFromRequest(Request());
             if ($affId) {                
                 $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
@@ -103,7 +103,7 @@ class ViewServiceProvider extends ServiceProvider
     public static function miniShopBoot()
     {        
         // Layout
-        View::composer('minishop.layout', function($view) {            
+        View::composer('minishop.layout', function($view) {
             $settings = Setting::getValue(['sentry_dsn', 'freshchat_token', 'support_address']);
 
             $lang = app()->getLocale();
@@ -127,7 +127,7 @@ class ViewServiceProvider extends ServiceProvider
             $locale_affiliate = AffiliateSetting::getLocaleAffiliate($affiliate ?? null);
             $is_signup_hidden = $locale_affiliate['is_signup_hidden'] ?? false;
 
-            $new_engine_checkout_tpls = ['fmc5x', 'amc8'];
+            $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
             $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
             $is_checkout_new_engine_page = $is_checkout_page && in_array(Request::get('tpl'), $new_engine_checkout_tpls);
             $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
