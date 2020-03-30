@@ -150,9 +150,9 @@ class StripeAmountMapper
      * Normalize amount for provider
      * @param  float    $amount
      * @param  string   $currency
-     * @return int|null
+     * @return float|null
      */
-    public static function toProvider(float $amount, string $currency): ?int
+    public static function toProvider(float $amount, string $currency): ?float
     {
         $currency = strtoupper($currency);
         if (isset(static::$map[$currency])) {

@@ -1561,16 +1561,16 @@ class PaymentProviders
             'is_active' => true,
             'is_main'   => true,
             'is_fallback' => false,
-            'in_prod'   => false,
+            'in_prod'   => true,
             'fraud_setting' => [
                 'common' => [
                     '3ds_limit' => 20,
-                    'fallback_limit' => 99,
+                    'fallback_limit' => 0,
                     'refuse_limit' => 99
                 ],
                 'affiliate' => [
                     '3ds_limit' => 100,
-                    'fallback_limit' => 99,
+                    'fallback_limit' => 0,
                     'refuse_limit' => 99
                 ]
             ],
