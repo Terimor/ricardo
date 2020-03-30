@@ -543,7 +543,7 @@ class CardService {
                         $payment = $handler->payBySavedCard(
                             $order_main_txn['payer_id'],
                             [
-                                'amount' => $checkout_price,
+                                'amount' => CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency),
                                 'currency' => $order->currency,
                                 'order_id' => $order->getIdAttribute(),
                                 'order_number' => $order->number,
