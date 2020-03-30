@@ -172,7 +172,7 @@ export const tplMixin = {
         ? this.extraFields.installments.default
         : 1;
 
-      this.form.state = js_data.customer && js_data.customer.address.state && js_data.customer.address.state
+      this.form.state = js_data.customer && js_data.customer.address && js_data.customer.address.state
         ? js_data.customer.address.state
         : this.extraFields.state && this.extraFields.state.default !== undefined
           ? this.extraFields.state.default

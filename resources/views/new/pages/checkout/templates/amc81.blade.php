@@ -23,10 +23,8 @@
 @endsection
 
 
-@section('header_checkout')
-  @if (!empty($product->home_name))
-    <div class="home-name">{{ $product->home_name }}</div>
-  @endif
+@section('header_before')
+  <div class="header-discount">Your 50% OFF Discount Has Been Applied!</div>
 @endsection
 
 

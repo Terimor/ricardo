@@ -30,3 +30,203 @@ $size1: 768px;
     }
   }
 }
+
+.container {
+  flex-direction: column;
+  max-width: 970px;
+
+  @media (min-width: $size1) {
+    flex-direction: row;
+  }
+}
+
+.header-discount {
+  background-color: #30BD51;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 20px;
+  line-height: 1.2;
+  padding: 15px;
+  text-align: center;
+}
+
+.header-region {
+  border-bottom: 1px solid #ccc;
+  box-shadow: none;
+  height: auto;
+  padding: 13px 0;
+  z-index: 1;
+
+  .header-logo-link {
+    margin: 0 0 15px;
+
+    @media (min-width: $size1) {
+      margin: 0;
+    }
+  }
+
+  .header-logo {
+    height: 35px;
+  }
+}
+
+.footer-region {
+  background-color: #00324e;
+
+  .footer__link {
+    color: rgba(255,255,255,.4);
+  }
+
+  .footer-company-address {
+    color: #fff;
+  }
+}
+
+.main-content {
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 50px;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: $size1) {
+    padding-right: 20px;
+    width: 50%;
+
+    [dir="rtl"] & {
+      padding-left: 20px;
+      padding-right: 0;
+    }
+  }
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  margin-top: 35px;
+
+  @media (min-width: $size1) {
+    margin-top: 0;
+    padding-left: 20px;
+    width: 50%;
+
+    [dir="rtl"] & {
+      padding-left: 0;
+      padding-right: 20px;
+    }
+  }
+}
+
+.variant-field-label {
+  display: none;
+}
+
+.warranty-field {
+  margin-bottom: 20px;
+}
+
+.paypal-button {
+  margin-top: 10px;
+}
+
+.paypal-payment-error {
+  margin-top: 10px;
+}
+
+.apm-buttons {
+  margin-top: 10px;
+}
+
+.input,
+.select {
+  margin: 0 0 15px;
+}
+
+.input-field-label,
+.select-field-label {
+  display: none;
+}
+
+.input-field-input,
+.select-field-input {
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 3px;
+  color: #000;
+  font-size: 16px;
+  height: 50px;
+  line-height: 1.15;
+  padding: 0 18px;
+
+  &:focus {
+    border-color: rgba(0,0,0,.2);
+    box-shadow: none;
+  }
+}
+
+.input-field-error,
+.select-field-error {
+  font-size: 12px;
+  line-height: 1.2;
+  margin-top: 3px;
+}
+
+.input.invalid,
+.select.invalid {
+  .input-field-input,
+  .select-field-input {
+    animation: none;
+    background-color: #f9ecea;
+    border-color: #cc4b37;
+  }
+
+  .input-field-error,
+  .select-field-error {
+    color: #cc4b37;
+  }
+}
+
+.check {
+  input:focus + & {
+    box-shadow: none;
+  }
+}
+
+.first_name-field, .last_name-field, .card_date-field, .card_cvv-field {
+  width: 48%;
+}
+
+.last_name-field,
+.card_cvv-field {
+  margin-left: auto;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: auto;
+  }
+}
+
+.pay-card-button {
+  background-color: #29af5c;
+  border-radius: 3px;
+  box-shadow: 0 3px 0 #0f6a28;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.467;
+  margin: 15px auto 0;
+  padding: 18px 15px 17px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all .25s ease;
+
+  @media (min-width: $size1) {
+    width: 100%;
+  }
+
+  &:hover {
+    transform: scale(1.025);
+  }
+}
