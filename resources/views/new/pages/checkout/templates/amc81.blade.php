@@ -24,12 +24,12 @@
 
 
 @section('header_before')
-  <div class="header-discount">Your 50% OFF Discount Has Been Applied!</div>
+  @include('new.pages.checkout.templates.amc81.header_before')
 @endsection
 
 
 @section('content_checkout')
   <div class="amc81">
-    AMC81
+    @include('new.pages.checkout.templates.amc81.header_after')
   </div>
 @endsection
