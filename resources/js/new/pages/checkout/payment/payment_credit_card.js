@@ -26,16 +26,10 @@ export default {
         }, 1000);
       }
 
-      localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
+      this.save_form_to_local_storage();
+      this.save_3ds_params_to_local_storage();
 
-      localStorage.setItem('saved_form', JSON.stringify({
-        ...this.form,
-        card_holder: undefined,
-        card_number: undefined,
-        card_type: undefined,
-        card_date: undefined,
-        card_cvv: undefined,
-      }));
+      localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
 
       return Promise.resolve()
         .then(() => {

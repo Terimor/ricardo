@@ -126,7 +126,7 @@
                     <div class="thank-you__order__image">
                         <img src="{{ $product->image[0] }}" alt="">
                         @if (empty($product->labels[$quantity]))
-                            <div class="quantity">@{{ selectedProductData.quantity || 1 }}</div>
+                            <div class="quantity">@{{ selectedProductData.quantity || selectedProductData.deal || 1 }}</div>
                         @else
                             <div class="quantity">1</div>
                         @endif
@@ -135,7 +135,7 @@
                         <div class="thank-you__order__name">{{ $product->labels[$quantity] ?? $product->long_name }}</div>
                         <div
                             class="thank-you__order__name"
-                            v-if="selectedProductData.isWarrantyChecked"
+                            v-if="selectedProductData.isWarrantyChecked || selectedProductData.warranty"
                         >
                             {{ t('thankyou.order.warranty') }}: @{{ orderCustomer.productsText[0].warranty_price_text }}
                         </div>
