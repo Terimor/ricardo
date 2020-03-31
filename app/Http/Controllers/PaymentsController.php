@@ -304,16 +304,15 @@ class PaymentsController extends Controller
     {
         $reply = CardService::minte3ds($req, $order_id);
 
-        $query = array_filter([
-            '3ds'   => $reply['status'] === PaymentService::STATUS_OK ? 'success' : 'failure',
-            'order' => $order_id,
-            'bs_pf_token'   => $reply['bs_pf_token'] ?? null,
-            'redirect_url'  => $reply['redirect_url'] ?? null
-        ]);
+        $query = ['3ds' => $reply['status'] === PaymentService::STATUS_OK ? 'success' : 'failure', 'order' => $order_id];
 
-        if (!empty($query['bs_pf_token']) || !empty($query['redirect_url'])) {
+        if (!empty($reply['bs_pf_token'])) {
+            $query['bs_pf_token'] = $reply['bs_pf_token'];
             $query['amount'] = $reply['amount'];
             $query['cur'] = $reply['currency'];
+            $query['3ds'] = 'pending';
+        } elseif (!empty($reply['redirect_url'])) {
+            $query['redirect_url'] = $reply['redirect_url'];
             $query['3ds'] = 'pending';
         }
 
@@ -372,10 +371,21 @@ class PaymentsController extends Controller
             logger()->warning('Stripe 3ds redirect', ['ip' => $req->ip(), 'body' => $req->getContent()]);
         }
 
-        $path = $reply['is_main'] ? '/checkout' : '/thankyou';
-        $status = $reply['result'] ? 'success' : 'failure';
+        $query = ['3ds' => $reply['result'] === PaymentService::STATUS_OK ? 'success' : 'failure', 'order' => $order_id];
 
-        return redirect("{$path}?order={$order_id}&3ds={$status}");
+        if (!empty($reply['bs_pf_token'])) {
+            $query['bs_pf_token'] = $reply['bs_pf_token'];
+            $query['amount'] = $reply['amount'];
+            $query['cur'] = $reply['currency'];
+            $query['3ds'] = 'pending';
+        } elseif (!empty($reply['redirect_url'])) {
+            $query['redirect_url'] = $reply['redirect_url'];
+            $query['3ds'] = 'pending';
+        }
+
+        $path = $reply['is_main'] ? '/checkout' : '/thankyou';
+
+        return redirect("{$path}?" . http_build_query($query));
     }
 
     public function test(Request $req)

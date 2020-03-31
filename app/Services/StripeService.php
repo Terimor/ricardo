@@ -195,7 +195,16 @@ class StripeService
                 break;
             case self::PI_STATUS_CANCELED:
                 $data['status'] = Txn::STATUS_FAILED;
-                $data['errors'] = [StripeCodeMapper::toPhrase(optional($pi->last_payment_error)['code'])];
+                $data['errors'] = [
+                    StripeCodeMapper::toPhrase(
+                        optional($pi->last_payment_error)['decline_code'] ?? null,
+                        optional($pi->last_payment_error)['code']
+                    )
+                ];
+                $data['fallback'] = StripeCodeMapper::isFallback(
+                    optional($pi->last_payment_error)['decline_code'] ?? null,
+                    optional($pi->last_payment_error)['code']
+                );
                 break;
         endswitch;
 
@@ -229,17 +238,30 @@ class StripeService
                     $result['txn']['status'] = Txn::STATUS_APPROVED;
                     break;
                 case self::PI_STATUS_CANCELED:
-                    $result['txn']['errors'] = [StripeCodeMapper::toPhrase(optional($pi->last_payment_error)['code'])];
+                    $result['txn']['errors'] = [
+                        StripeCodeMapper::toPhrase(
+                            optional($pi->last_payment_error)['decline_code'] ?? null,
+                            optional($pi->last_payment_error)['code']
+                        )
+                    ];
+                    $result['txn']['fallback'] = StripeCodeMapper::toPhrase(
+                        optional($pi->last_payment_error)['decline_code'] ?? null,
+                        optional($pi->last_payment_error)['code']
+                    );
                     break;
             endswitch;
 
         } catch (ApiErrorException $ex) {
             logger()->warning('PaymentIntent retrieve', ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()]);
-
-            $result['txn']['errors'] = [StripeCodeMapper::toPhrase()];
+            $result['txn']['errors'] = [
+                StripeCodeMapper::toPhrase(optional($ex->getError())->decline_code ?? null, optional($ex->getError())->code)
+            ];
+            $result['txn']['fallback'] = StripeCodeMapper::toPhrase(
+                optional($ex->getError())->decline_code ?? null,
+                optional($ex->getError())->code
+            );
         } catch (Exception $ex) {
             logger()->warning('PaymentIntent retrieve', ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
-
             $result['txn']['errors'] = [StripeCodeMapper::toPhrase()];
         }
         return $result;
@@ -272,10 +294,15 @@ class StripeService
             $reply['token'] = self::encrypt(json_encode($card), $details['order_id']);
 
             $reply = $this->preparePaymentResponse($pi, $reply);
-
         } catch (ApiErrorException $ex) {
             $reply['provider_data'] = ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()];
-            $reply['errors'] = [StripeCodeMapper::toPhrase(optional($ex->getError())->code)];
+            $reply['errors'] = [
+                StripeCodeMapper::toPhrase(optional($ex->getError())->decline_code ?? null, optional($ex->getError())->code)
+            ];
+            $reply['fallback'] = StripeCodeMapper::toPhrase(
+                optional($ex->getError())->decline_code ?? null,
+                optional($ex->getError())->code
+            );
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
             $reply['errors'] = [StripeCodeMapper::toPhrase()];
@@ -306,11 +333,7 @@ class StripeService
 
             if (!empty($pms->data)) {
                 // get first PaymentMethod
-//                logger()->info('PaymentMethod ->', ['data' => $pms->data[0]->toJSON()]);
                 $pi = $this->pay($pms->data[0], $customer_id, $details);
-
-//                logger()->info('Paymentintent ->', ['data' => $pi->toJSON()]);
-
                 $reply = $this->preparePaymentResponse($pi, $reply);
             } else {
                 $reply['provider_data'] = ['message' => "Customer [{$customer_id}]. PaymentMethod not found"];
@@ -318,7 +341,13 @@ class StripeService
             }
         } catch (ApiErrorException $ex) {
             $reply['provider_data'] = ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()];
-            $reply['errors'] = [StripeCodeMapper::toPhrase(optional($ex->getError())->code)];
+            $reply['errors'] = [
+                StripeCodeMapper::toPhrase(optional($ex->getError())->decline_code ?? null, optional($ex->getError())->code)
+            ];
+            $reply['fallback'] = StripeCodeMapper::toPhrase(
+                optional($ex->getError())->decline_code ?? null,
+                optional($ex->getError())->code
+            );
 
             logger()->warning('Stripe pay by saved card', $reply['provider_data']);
         } catch (\Exception $ex) {

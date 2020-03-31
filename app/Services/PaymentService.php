@@ -338,7 +338,7 @@ class PaymentService
             return $result;
         }
 
-        logger()->info("Fallback [{$order->number}], [{$api->payment_provider}->{$details['provider']}]");
+        logger()->info("Fallback [{$order->number}], [{$details['provider']}->{$api->payment_provider}]");
 
         switch ($api->payment_provider):
             case PaymentProviders::BLUESNAP:
@@ -461,6 +461,53 @@ class PaymentService
             default:
                 logger()->info("Fallback [{$order->number}] provider not found");
         endswitch;
+
+        return $result;
+    }
+
+    /**
+     * Invokes fallback for failed 3ds transaction
+     * @param OdinOrder $order
+     * @param array $order_txn
+     * @param array $details
+     * @return array
+     * @throws InvalidParamsException
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\ProductNotFoundException
+     */
+    public static function fallback3ds(OdinOrder $order, array $order_txn, array $details = []): array
+    {
+        $cardtk = CardService::getCardToken($order->number, false);
+        $order_product = $order->getMainProduct(false);
+
+        $result = ['status' => Txn::STATUS_FAILED];
+        if (!$cardtk || !$order_product) {
+            logger()->info("Pre-Fallback [{$order->number}]", ['card' => (bool)$cardtk, 'order_product' => (bool)$order_product]);
+            return $result;
+        }
+
+        $card = json_decode(MinteService::decrypt($cardtk, $order->getIdAttribute()), true);
+
+        $reply = self::fallbackOrder($order, $card, array_merge([
+            'provider' => $order_txn['payment_provider'],
+            'method' => $order_txn['payment_method']
+        ], $details));
+
+        if ($reply['status']) {
+            $result = $reply['payment'];
+
+            $order_product['txn_hash'] = $reply['payment']['hash'];
+            $order->addProduct($order_product, true);
+            PaymentService::addTxnToOrder($order, $reply['payment'], array_merge($order_txn, ['is_fallback' => true]));
+            $order->is_flagged = $reply['payment']['is_flagged'];
+
+            if (!$order->save()) {
+                $validator = $order->validate();
+                if ($validator->fails()) {
+                    throw new OrderUpdateException(json_encode($validator->errors()->all()));
+                }
+            }
+        }
 
         return $result;
     }
@@ -887,7 +934,7 @@ class PaymentService
      * @param  string   $prv
      * @param  string|null $affid
      * @param  array|null  $ipqs    default=[]
-     * @param  array|null  $details defaul=[]
+     * @param  array|null  $details default=[]
      * @return bool
      */
     public static function checkIsFallbackAvailable(string $prv, ?string $affid = null, ?array $ipqs = [], ?array $details = []): bool

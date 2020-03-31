@@ -622,8 +622,8 @@ class CardService {
         }
 
         $api = PaymentApiService::getById($order_txn['payment_api_id']);
-        $bluesnap = new BluesnapService($api);
-        $payment = $bluesnap->payByVaultedShopperId(
+        $handler = new BluesnapService($api);
+        $payment = $handler->payByVaultedShopperId(
             $order_txn['payer_id'],
             [
                 '3ds_ref'   => $ref,
@@ -638,28 +638,6 @@ class CardService {
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
 
-        // check is this fallback
-        $cardtk = self::getCardToken($order->number, false);
-        if (!empty($payment['fallback']) && $cardtk) {
-            $reply = PaymentService::fallbackOrder(
-                $order,
-                json_decode(BluesnapService::decrypt($cardtk, $order_id), true),
-                [
-                    'method'     => $order_txn['payment_method'],
-                    'provider'   => PaymentProviders::BLUESNAP,
-                    'useragent'  => $user_agent
-                ]
-            );
-
-            if ($reply['status']) {
-                $payment = $reply['payment'];
-                $order_product = $order->getMainProduct(); // throwable
-                $order_product['txn_hash'] = $payment['hash'];
-                $order->addProduct($order_product, true);
-                PaymentService::addTxnToOrder($order, $payment, array_merge($order_txn, ['is_fallback' => true]));
-            }
-        }
-
         if (!$order->save()) {
             $validator = $order->validate();
             if ($validator->fails()) {
@@ -667,14 +645,24 @@ class CardService {
             }
         }
 
-        if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['id'] = $payment['hash'];
-            $result['status'] = PaymentService::STATUS_OK;
-            $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
-        } else {
-            $result['errors'] = $payment['errors'];
-            PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+        // do fallback if it is a needed
+        if (!empty($payment['fallback'])) {
+            $payment = PaymentService::fallback3ds($order, $order_txn, ['useragent'  => $user_agent]);
         }
+
+        switch ($payment['status']):
+            case Txn::STATUS_FAILED:
+                $result['errors'] = $payment['errors'];
+                PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+                break;
+            case Txn::STATUS_APPROVED:
+                PaymentService::approveOrder($payment, $payment['payment_provider']);
+            case Txn::STATUS_AUTHORIZED:
+                $result['redirect_url'] = $payment['redirect_url'] ?? null;
+            default:
+                $result['id'] = $payment['hash'];
+                $result['status'] = PaymentService::STATUS_OK;
+        endswitch;
 
         return array_filter($result);
     }
@@ -731,44 +719,18 @@ class CardService {
 
             PaymentService::cacheOrderErrors(array_merge($payment, ['number' => $order->number]));
 
-            $cardtk = self::getCardToken($order->number, false);
+            if (!empty($payment['fallback'])) {
+                $payment = PaymentService::fallback3ds($order, $order_txn);
+                $result['amount'] = $payment['value'];
+                $result['currency'] = $order->currency;
+                $result['redirect_url'] = $payment['redirect_url'] ?? null;
+                $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
 
-            logger()->info("Pre-Fallback [{$order->number}]", ['cardtk' => !!$cardtk, 'fallback' => !empty($payment['fallback'])]);
-
-            if (!empty($payment['fallback']) && $cardtk) {
-                $reply = PaymentService::fallbackOrder(
-                    $order,
-                    json_decode(MinteService::decrypt($cardtk, $order_id), true),
-                    ['provider' => PaymentProviders::MINTE, 'method' => $order_txn['payment_method']]
-                );
-
-                if ($reply['status']) {
-                    $result = [
-                        'amount'        => $reply['payment']['value'],
-                        'currency'      => $order->currency,
-                        'status'        => PaymentService::STATUS_OK,
-                        'redirect_url'  => $reply['payment']['redirect_url'] ?? null,
-                        'bs_pf_token'   => $reply['payment']['bs_pf_token'] ?? null
-                    ];
-
-                    $order_product = $order->getMainProduct(); // throwable
-                    $order_product['txn_hash'] = $reply['payment']['hash'];
-                    $order->addProduct($order_product, true);
-                    PaymentService::addTxnToOrder($order, $reply['payment'], array_merge($order_txn, ['is_fallback' => true]));
-                    $order->is_flagged = $reply['payment']['is_flagged'];
-
-                    if (!$order->save()) {
-                        $validator = $order->validate();
-                        if ($validator->fails()) {
-                            throw new OrderUpdateException(json_encode($validator->errors()->all()));
-                        }
-                    }
-
-                    if ($reply['payment']['status'] === Txn::STATUS_FAILED) {
-                        PaymentService::cacheOrderErrors(array_merge($reply['payment'], ['number' => $order->number]));
-                        $result = ['status' => PaymentService::STATUS_FAIL];
-                    }
+                if ($payment['status'] !== Txn::STATUS_FAILED) {
+                    $result['status'] = PaymentService::STATUS_OK;
                 }
+            } else {
+                logger()->info("Minte3ds [{$order->number}] no fallback");
             }
         }
 
@@ -796,7 +758,12 @@ class CardService {
 
         $pinfo = $stripe->getPaymentInfo($pi_id);
 
-        $result = ['status' => false, 'result' => false, 'is_main' => $order_product['is_main']];
+        $result = [
+            'currency' => $order->currency,
+            'status' => false,
+            'result' => PaymentService::STATUS_FAIL,
+            'is_main' => $order_product['is_main']]
+        ;
         if ($pinfo['status']) {
             $result['status'] = true;
             switch ($pinfo['txn']['status']):
@@ -804,11 +771,24 @@ class CardService {
                     PaymentService::approveOrder($pinfo['txn'], PaymentProviders::STRIPE);
                 case Txn::STATUS_AUTHORIZED:
                 case Txn::STATUS_CAPTURED:
-                    $result['result'] = true;
+                    $result['result'] = PaymentService::STATUS_OK;
                     break;
                 case Txn::STATUS_FAILED:
                     PaymentService::rejectTxn($pinfo['txn'], PaymentProviders::STRIPE);
                     PaymentService::cacheOrderErrors(array_merge($pinfo['txn'], ['number' => $order->number]));
+                    // do fallback if it is needed
+                    if (!empty($pinfo['fallback']) && $order_product['is_main']) {
+                        $payment = PaymentService::fallback3ds($order, $order_txn);
+                        if ($payment['status'] !== Txn::STATUS_FAILED) {
+                            $result['result'] = PaymentService::STATUS_OK;
+                            $result['amount'] = $payment['value'];
+                            $result['redirect_url'] = $payment['redirect_url'] ?? null;
+                            $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
+                        }
+                        if ($payment['status'] === Txn::STATUS_APPROVED) {
+                            PaymentService::approveOrder($payment, $payment['payment_provider']);
+                        }
+                    }
                     break;
             endswitch;
         } else {
