@@ -230,7 +230,8 @@
         let selectedProductData = {};
 
         try {
-          selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
+          const data = localStorage.getItem('selectedProductData') || localStorage.getItem('saved_form');
+          selectedProductData = JSON.parse(data) || {};
         }
         catch (err) {
 

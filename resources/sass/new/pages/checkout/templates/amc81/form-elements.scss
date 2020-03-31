@@ -1,0 +1,110 @@
+.variant-field-label {
+  display: none;
+}
+
+.warranty-field {
+  margin-bottom: 20px;
+}
+
+.paypal-button {
+  margin-top: 10px;
+}
+
+.paypal-payment-error {
+  margin-top: 10px;
+}
+
+.apm-buttons {
+  margin-top: 10px;
+}
+
+.input,
+.select {
+  margin: 0 0 15px;
+}
+
+.input-field-label,
+.select-field-label {
+  display: none;
+}
+
+.input-field-input,
+.select-field-input {
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 3px;
+  color: #000;
+  font-size: 16px;
+  height: 50px;
+  line-height: 1.15;
+  padding: 0 18px;
+
+  &:focus {
+    border-color: rgba(0,0,0,.2);
+    box-shadow: none;
+  }
+}
+
+.input-field-error,
+.select-field-error {
+  font-size: 12px;
+  line-height: 1.2;
+  margin-top: 3px;
+}
+
+.input.invalid,
+.select.invalid {
+  .input-field-input,
+  .select-field-input {
+    animation: none;
+    background-color: #f9ecea;
+    border-color: #cc4b37;
+  }
+
+  .input-field-error,
+  .select-field-error {
+    color: #cc4b37;
+  }
+}
+
+.check {
+  input:focus + & {
+    box-shadow: none;
+  }
+}
+
+.first_name-field, .last_name-field, .card_date-field, .card_cvv-field {
+  width: 48%;
+}
+
+.last_name-field,
+.card_cvv-field {
+  margin-left: auto;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: auto;
+  }
+}
+
+.pay-card-button {
+  background-color: #29af5c;
+  border-radius: 3px;
+  box-shadow: 0 3px 0 #0f6a28;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.467;
+  margin: 15px auto 0;
+  padding: 18px 15px 17px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all .25s ease;
+
+  @media (min-width: $size1) {
+    width: 100%;
+  }
+
+  &:hover {
+    transform: scale(1.025);
+  }
+}

@@ -1,0 +1,19 @@
+.header-region {
+  border-bottom: 1px solid #ccc;
+  box-shadow: none;
+  height: auto;
+  padding: 13px 0;
+  z-index: 1;
+
+  .header-logo-link {
+    margin: 0 0 15px;
+
+    @media (min-width: $size1) {
+      margin: 0;
+    }
+  }
+
+  .header-logo {
+    height: 35px;
+  }
+}

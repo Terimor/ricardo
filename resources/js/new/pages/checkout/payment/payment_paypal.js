@@ -15,6 +15,15 @@ export default {
       this.payment_error = null;
       this.is_submitted = true;
 
+      localStorage.setItem('saved_form', JSON.stringify({
+        ...this.form,
+        card_holder: undefined,
+        card_number: undefined,
+        card_type: undefined,
+        card_date: undefined,
+        card_cvv: undefined,
+      }));
+
       return Promise.resolve()
         .then(() => {
           return this.fingerprint_calculate();

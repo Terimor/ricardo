@@ -1,0 +1,45 @@
+.header-region {
+  box-shadow: 0 0 9px rgba(0,0,0,.26);
+  height: auto;
+  padding: 13px 0;
+  z-index: 1;
+
+  > .container {
+    justify-content: flex-start;
+  }
+
+  .header-logo-link {
+    margin: 0 0 15px;
+
+    @media (min-width: $size1) {
+      margin: 0;
+    }
+  }
+
+  .header-logo {
+    height: 35px;
+  }
+
+  .home-name {
+    color: #000;
+    font-family: Roboto,sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    @media (min-width: $size1) {
+      font-size: 16px;
+
+      &:before {
+        background-color: #ccc;
+        content: "";
+        display: inline-block;
+        height: 23px;
+        margin: 0 15px;
+        position: relative;
+        top: 0;
+        vertical-align: bottom;
+        width: 1px;
+      }
+    }
+  }
+}

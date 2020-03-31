@@ -30,7 +30,8 @@ js_deps.wait(['vue', 'element'], () => {
 
         try {
             subOrder = JSON.parse(localStorage.getItem('subOrder')) || [];
-            selectedProductData = JSON.parse(localStorage.getItem('selectedProductData')) || {};
+            const data = localStorage.getItem('selectedProductData') || localStorage.getItem('saved_form');
+            selectedProductData = JSON.parse(data) || {};
         }
         catch (err) {
 

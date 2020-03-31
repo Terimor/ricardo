@@ -28,8 +28,21 @@
 @endsection
 
 
+@section('header_after')
+  @include('new.pages.checkout.templates.amc81.header_after')
+@endsection
+
+
 @section('content_checkout')
   <div class="amc81">
-    @include('new.pages.checkout.templates.amc81.header_after')
+    <div class="main-content">
+      <div class="left-column">
+        @include('new.pages.checkout.templates.amc81.left-column.users-online')
+        @include('new.pages.checkout.templates.amc81.left-column.step1-title')
+      </div>
+      <div class="right-column">
+        @include('new.pages.checkout.templates.amc81.right-column.step3-title')
+      </div>
+    </div>
   </div>
 @endsection

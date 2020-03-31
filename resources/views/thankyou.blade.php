@@ -126,7 +126,7 @@
                     <div class="thank-you__order__image">
                         <img src="{{ $product->image[0] }}" alt="">
                         @if (empty($product->labels[$quantity]))
-                            <div class="quantity">@{{ selectedProductData.quantity || 0 }}</div>
+                            <div class="quantity">@{{ selectedProductData.quantity || 1 }}</div>
                         @else
                             <div class="quantity">1</div>
                         @endif

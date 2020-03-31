@@ -28,7 +28,7 @@ export default {
 
       localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
 
-      localStorage.setItem('3ds_form', JSON.stringify({
+      localStorage.setItem('saved_form', JSON.stringify({
         ...this.form,
         card_holder: undefined,
         card_number: undefined,
@@ -114,7 +114,7 @@ export default {
 
     credit_card_3ds_form_resrote() {
       try {
-        this.form = JSON.parse(localStorage.getItem('3ds_form'));
+        this.form = JSON.parse(localStorage.getItem('saved_form'));
       }
       catch (err) {
 
