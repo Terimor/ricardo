@@ -164,7 +164,7 @@ class ApmService {
         $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
         $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
 
-        $payment = [];
+        $payment = ['status' => Txn::STATUS_FAILED];
         if ((new OrderService())->checkIfUpsellsPossible($order) && PaymentService::isApm($order_main_txn['payment_method'])) {
             $products = [];
             $upsell_products = [];
