@@ -40,10 +40,10 @@ js_deps.wait(['vue'], () => {
         return {
           1: 1,
           2: 2,
-          3: js_data.product.skus.length > 1 ? 3 : 2,
-          4: js_data.product.skus.length > 1 ? 4 : 3,
-          5: js_data.product.skus.length > 1 ? 5 : 4,
-          6: js_data.product.skus.length > 1 ? 6 : 5,
+          3: this.variant_visible ? 3 : 2,
+          4: this.variant_visible ? 4 : 3,
+          5: this.variant_visible ? 5 : 4,
+          6: this.variant_visible ? 6 : 5,
         };
       },
 

@@ -41,11 +41,11 @@
         @include('new.pages.checkout.templates.amc8.left-column.deals')
         @include('new.pages.checkout.templates.amc8.left-column.step2-title')
         @include('new.pages.checkout.form.variant')
-        @include('new.pages.checkout.form.warranty')
         @include('new.pages.checkout.templates.amc8.left-column.summary')
       </div>
       <div class="right-column">
         @include('new.pages.checkout.templates.amc8.right-column.step3-title')
+        @include('new.pages.checkout.form.warranty')
         @include('new.pages.checkout.payment.credit_cards')
         @include('new.pages.checkout.payment.paypal_button')
         @include('new.pages.checkout.form.errors.paypal_error')

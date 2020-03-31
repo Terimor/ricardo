@@ -351,11 +351,18 @@ class ProductService
         $lp->goptimize_id = $product->goptimize_id ?? null;
         $lp->is_europe_only = $product->is_europe_only ?? false;
         $lp->is_choice_required = $product->is_choice_required ?? false;
+
         if ($payment_api) {
             $lp->is_paypal_hidden = $product->is_paypal_hidden ?? false;
         } else {
             $lp->is_paypal_hidden = true;
         }
+        // disable paypal if in excluded shipping countries
+        $countryCode = \Utils::getLocationCountryCode();
+        if (in_array($countryCode, \Utils::$excludeShipping)) {
+            $lp->is_paypal_hidden = true;
+        }
+
         $lp->countries = $product->countries ?? [];
         // returns labels
         $labels = [];

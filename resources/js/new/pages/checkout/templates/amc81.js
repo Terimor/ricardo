@@ -1,0 +1,1 @@
+import './amc8';

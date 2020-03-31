@@ -23,19 +23,7 @@
 
       <div class="deal-content">
         <div class="deal-label">
-          @if (!empty($product->labels[$deal['quantity']]))
-            <div class="deal-label-line1">
-              {{ $product->labels[$deal['quantity']] }}
-            </div>
-          @endif
-
-          <div class="deal-label-line2">
-            <div class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</div>
-            <div class="deal-name">&nbsp;{{ $product->product_name }}&nbsp;</div>
-            @if ($deals_free_quantities[$deal['quantity']])
-              <div class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('checkout.free') }}</div>
-            @endif
-          </div>
+          {!! !empty($product->labels[$deal['quantity']]) ? $product->labels[$deal['quantity']] : t('checkout.common_labels.q' . $deal['quantity']) !!}
         </div>
       </div>
 

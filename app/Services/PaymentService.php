@@ -680,27 +680,34 @@ class PaymentService
 
     /**
      * Checks payment to fraud
-     * @param  array $ipqs
-     * @param  string $prv Payment provider
-     * @param  string|null $affid
+     * @param array $ipqs
+     * @param string $prv Payment provider
+     * @param string|null $affid
+     * @param string|null $email
      * @return void
      * @throws PaymentException
      */
-    public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null): void
+    public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null, ?string $email = null): void
     {
         if (!empty($ipqs) && \App::environment() === 'production') {
-            $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
-            $is_bot = $ipqs['bot_status'] ?? false;
-            $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
-
-            $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting']['common'];
-            if ($affid) {
-                $affiliate = AffiliateSetting::getByHasOfferId($affid);
-                $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+            $isTrusted = false;
+            if ($email) {
+                $isTrusted = OdinCustomer::isTrustedByEmail($email);
             }
+            if (!$isTrusted) {
+                $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
+                $is_bot = $ipqs['bot_status'] ?? false;
+                $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
 
-            if ($fraud_chance > $fraud_setting['refuse_limit'] || $is_bot || $is_valid_email === false) {
-                throw new PaymentException('Payment is refused', 'card.error.refused');
+                $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting']['common'];
+                if ($affid) {
+                    $affiliate = AffiliateSetting::getByHasOfferId($affid);
+                    $fraud_setting = PaymentProviders::$list[$prv]['fraud_setting'][optional($affiliate)->is_3ds_off ? 'affiliate' : 'common'];
+                }
+
+                if ($fraud_chance > $fraud_setting['refuse_limit'] || $is_bot || $is_valid_email === false) {
+                    throw new PaymentException('Payment is refused', 'card.error.refused');
+                }
             }
         }
     }

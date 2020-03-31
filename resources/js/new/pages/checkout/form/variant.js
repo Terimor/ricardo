@@ -8,6 +8,7 @@ export default {
       form: {
         variant: null,
       },
+      variant_visible: js_data.product.skus.length > 1 && (!js_query_params.variant || js_query_params.variant === '0'),
       variant_opened: false,
       variant_up: false,
     };

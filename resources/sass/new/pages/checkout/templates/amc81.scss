@@ -1,22 +1,9 @@
 $size1: 768px;
 
 @import '../../checkout';
-@import './amc8/reviews';
-@import './amc8/yellow-line';
-@import './amc8/left-column/users-online';
-@import './amc8/left-column/step1-title';
-@import './amc8/left-column/deals';
-@import './amc8/left-column/step2-title';
-@import './amc8/left-column/summary';
-@import './amc8/right-column/step3-title';
-@import './amc8/right-column/step4-title';
-@import './amc8/right-column/step5-title';
-@import './amc8/right-column/step6-title';
-@import './amc8/right-column/guarantee';
-@import './amc8/question';
 
 
-.amc8 {
+.amc81 {
   color: #333;
   display: flex;
   flex-direction: column;
@@ -53,15 +40,22 @@ $size1: 768px;
   }
 }
 
+.header-before {
+  background-color: #30BD51;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 20px;
+  line-height: 1.2;
+  padding: 15px;
+  text-align: center;
+}
+
 .header-region {
-  box-shadow: 0 0 9px rgba(0,0,0,.26);
+  border-bottom: 1px solid #ccc;
+  box-shadow: none;
   height: auto;
   padding: 13px 0;
   z-index: 1;
-
-  > .container {
-    justify-content: flex-start;
-  }
 
   .header-logo-link {
     margin: 0 0 15px;
@@ -73,29 +67,6 @@ $size1: 768px;
 
   .header-logo {
     height: 35px;
-  }
-
-  .home-name {
-    color: #000;
-    font-family: Roboto,sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-
-    @media (min-width: $size1) {
-      font-size: 16px;
-
-      &:before {
-        background-color: #ccc;
-        content: "";
-        display: inline-block;
-        height: 23px;
-        margin: 0 15px;
-        position: relative;
-        top: 0;
-        vertical-align: bottom;
-        width: 1px;
-      }
-    }
   }
 }
 

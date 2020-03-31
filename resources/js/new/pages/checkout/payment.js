@@ -107,7 +107,7 @@ export default {
         localStorage.setItem((this.is_vrtl_checkout ? 'vrtl_' : '') + 'show_upsells', true);
       }
 
-      this.goto(url, ['3ds', '3ds_restore']);
+      this.goto(url, ['apm', '3ds', 'apm_restore', '3ds_restore', 'bs_pf_token', 'redirect_url']);
     },
 
   },

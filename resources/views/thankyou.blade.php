@@ -127,6 +127,8 @@
                         <img src="{{ $product->image[0] }}" alt="">
                         @if (empty($product->labels[$quantity]))
                             <div class="quantity">@{{ selectedProductData.quantity || 0 }}</div>
+                        @else
+                            <div class="quantity">1</div>
                         @endif
                     </div>
                     <div class="d-flex flex-column justify-content-center">

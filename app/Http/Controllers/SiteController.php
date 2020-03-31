@@ -2,25 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OdinCustomer;
-use App\Models\OdinProduct;
-use App\Services\CustomerService;
+use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\OdinProduct;
+use App\Models\Setting;
+use App\Models\PaymentApi;
+use App\Models\OdinOrder;
+use App\Models\Domain;
+use App\Services\CustomerService;
 use App\Services\ProductService;
 use App\Services\PaymentService;
 use App\Services\AffiliateService;
-use App\Models\Setting;
-use App\Models\PaymentApi;
 use App\Services\I18nService;
 use App\Services\OrderService;
 use App\Services\ViacepService;
 use App\Services\TemplateService;
 use App\Services\UtilsService;
 use App\Constants\PaymentMethods;
-use Cache;
-use App\Models\OdinOrder;
-use App\Models\Domain;
+use App\Constants\PaymentProviders;
 use App\Http\Requests\ZipcodeRequest;
 
 class SiteController extends Controller
@@ -304,7 +304,7 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
-        $new_engine_checkout_tpls = ['fmc5x', 'amc8'];
+        $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
         $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
         $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
         $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
@@ -324,6 +324,9 @@ class SiteController extends Controller
             }
             if ($request->get('tpl') == 'amc8') {
                 $viewTemplate = 'new.pages.checkout.templates.amc8';
+            }
+            if ($request->get('tpl') == 'amc81') {
+                $viewTemplate = 'new.pages.checkout.templates.amc81';
             }
         }
 
@@ -571,6 +574,10 @@ class SiteController extends Controller
         $is_thankyou = $is_thankyou_page || $is_vrtl_thankyou_page;
         $is_smartbell = str_replace('www.', '', $request->getHost()) === 'smartbell.pro';
 
+        if ($request->get('3ds') && !$request->get('3ds_restore')) {
+            return view('prerender.thankyou.3ds_restore');
+        }
+
         if ($request->get('apm') && !$request->get('apm_restore')) {
             return view('prerender.thankyou.apm_restore');
         }
@@ -616,8 +623,9 @@ class SiteController extends Controller
         $setting = Setting::getValue([
             'prober_firing_percent',
             'prober_firing_orders',
-            'prober_txns_percent',
-            'prober_txns_orders'
+            'prober_orders_count',
+            'prober_orders_success_min',
+            'prober_txn_success_limits'
         ]);
 
         //check Redis
@@ -630,21 +638,41 @@ class SiteController extends Controller
             }
         }
 
-        $txns = OrderService::getLastOrdersTxnSuccessPercent((int)$setting['prober_txns_orders'], (float)$setting['prober_txns_percent']);
+        $success_orders = OrderService::getLastOrdersTxnSuccessPercent(
+            (int)$setting['prober_orders_count'],
+            (float)$setting['prober_orders_success_min']
+        );
 
-        if ($txns <= (float)$setting['prober_txns_percent']) {
+        if ($success_orders <= (float)$setting['prober_orders_success_min']) {
             $result = $bad;
         }
-        $txns.= '%';
 
         $firing = OrderService::getLastOrdersFiringPercent((int)$setting['prober_firing_orders'], (float)$setting['prober_firing_percent']);
 
         if ($firing <= (float)$setting['prober_firing_percent']) {
             $result = $bad;
         }
-        $firing.= '%';
 
-        return view('prober', compact('result', 'redis', 'txns', 'firing', 'setting'));
+        $txn_report = OrderService::getRecentSuccessTxnReportInPct($setting['prober_orders_count']);
+
+        $txn_result = [];
+        $txn_limits = json_decode($setting['prober_txn_success_limits'], true) ?? [];
+        foreach($txn_report as $prv => $pct) {
+            $prv_res = ['name' => PaymentProviders::$list[$prv]['name'], 'percent' => $pct, 'status' => 1];
+            if (isset($txn_limits[$prv])) {
+                if ($pct < $txn_limits[$prv]) {
+//                    $result = $bad;
+                    $prv_res['status'] = 0;
+                }
+            } else {
+                $result = $bad;
+                $prv_res['status'] = 0;
+                logger()->warning("Prober: the setting 'prober_txns_success_limits' must have the provider [{$prv}]");
+            }
+            $txn_result[] = $prv_res;
+        }
+
+        return view('prober', compact('result', 'redis', 'success_orders', 'firing', 'setting', 'txn_result'));
     }
 
     /**

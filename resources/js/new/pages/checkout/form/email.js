@@ -8,7 +8,7 @@ export default {
   data() {
     return {
       form: {
-        email: null,
+        email: (js_data.customer && js_data.customer.email) || null,
       },
       email_validation: null,
       extra_validation: {

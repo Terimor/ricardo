@@ -9,7 +9,7 @@ export default {
   data() {
     return {
       form: {
-        zipcode: null,
+        zipcode: (js_data.customer && js_data.customer.address && js_data.customer.address.zip) || null,
       },
       zipcode_address: null,
     };

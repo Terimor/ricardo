@@ -76,7 +76,7 @@ class ApmService {
         $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
 
         // refuse fraudulent payment
-        PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid); // throwable
+        PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid, $contacts['email']); // throwable
 
         PaymentService::addCustomer($contacts); // throwable
 
