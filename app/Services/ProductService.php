@@ -12,7 +12,6 @@ use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
 use Cache;
-use test\Mockery\Fixtures\MethodWithVoidReturnType;
 
 /**
  * Class ProductService
@@ -152,7 +151,8 @@ class ProductService
             foreach ($productUpsells as $upsell) {
                 $productIds[] = $upsell['product_id'];
             }
-            app()->setLocale('ru');
+
+            // select data only in use
             $select = ['logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en'];
             if (app()->getLocale() != 'en') {
                 $select[] = 'skus.name.'.app()->getLocale();

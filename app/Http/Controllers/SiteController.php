@@ -357,6 +357,7 @@ class SiteController extends Controller
         }
 
         $product = $productService->resolveProduct($request, true);
+        // load upsells only for vrlt templates
         $upsells = [];
         if ($is_vrtl_page) {
             $upsells = $productService->getProductUpsells($product);
