@@ -357,7 +357,10 @@ class SiteController extends Controller
         }
 
         $product = $productService->resolveProduct($request, true);
-        $upsells = $productService->getProductUpsells($product);
+        $upsells = [];
+        if ($is_vrtl_page) {
+            $upsells = $productService->getProductUpsells($product);
+        }
 
         if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
             return view('prerender.checkout.txid_iframe');

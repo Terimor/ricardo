@@ -12,6 +12,7 @@ use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
 use Cache;
+use test\Mockery\Fixtures\MethodWithVoidReturnType;
 
 /**
  * Class ProductService
@@ -151,8 +152,14 @@ class ProductService
             foreach ($productUpsells as $upsell) {
                 $productIds[] = $upsell['product_id'];
             }
+            app()->setLocale('ru');
+            $select = ['logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en'];
+            if (app()->getLocale() != 'en') {
+                $select[] = 'skus.name.'.app()->getLocale();
+                $select[] = 'skus.brief.'.app()->getLocale();
+            }
+            $products = OdinProduct::getActiveByIds($productIds, '', false, null, $select);
 
-            $products = OdinProduct::getActiveByIds($productIds);
             // collect images_ids
             $imagesArray = [];
             foreach ($products as $product) {
