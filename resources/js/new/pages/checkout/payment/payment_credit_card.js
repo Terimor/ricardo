@@ -29,8 +29,6 @@ export default {
       this.save_form_to_local_storage();
       this.save_3ds_params_to_local_storage();
 
-      localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
-
       return Promise.resolve()
         .then(() => {
           return this.fingerprint_calculate();

@@ -85,6 +85,10 @@ export default {
         });
     },
 
+    save_3ds_params_to_local_storage() {
+      localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
+    },
+
     save_form_to_local_storage() {
       localStorage.setItem('saved_form', JSON.stringify({
         ...this.form,
