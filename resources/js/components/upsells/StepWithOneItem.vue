@@ -28,7 +28,7 @@
         </div>
         <div class="upsells-component__bot justify-content-center">
             <green-button
-              @click="addToCart(1)"
+              @click="add(1)"
               :is-loading="isLoading"
             >
               {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
@@ -60,6 +60,7 @@
 
     data() {
       return {
+        description: null,
         upsellPrices: {},
         name: '',
         price: 0,
@@ -80,18 +81,18 @@
             getUppSells(newVal, 1)
               .then(res => {
                 if (res && res.data) {
+                  this.upsellPrices = res.data.upsell.upsellPrices;
                   this.name = res.data.upsell.long_name;
 
                   this.description = newVal === js_data.product.id && res.data.upsell.upsell_plusone_text
                     ? res.data.upsell.upsell_plusone_text
                     : res.data.upsell.description;
-
-                  this.upsellPrices = res.data.upsell.upsellPrices;
+                  
                   this.imageUrl = res.data.upsell.image;
-                  this.priceFormatted = this.currentPrices.price_text;
-                  this.price = this.currentPrices.price;
-                  this.finalPrice = this.currentPrices.price_text;
-                  this.finalPricePure = this.currentPrices.price;
+                  this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
+                  this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price || 0;
+                  this.finalPrice = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
+                  this.finalPricePure = this.upsellPrices['1'] && this.upsellPrices['1'].price || 0;
                 }
               })
               .then(() => {
@@ -109,9 +110,16 @@
       yesText: () => t('upsells.yes'),
       iWantText: () => t('upsells.want_add'),
       toMyOrderTextText: () => t('upsells.to_order'),
+    },
 
-      currentPrices() {
-        return this.upsellPrices['1'] && this.upsellPrices['1'];
+    methods: {
+      add(quantity) {
+        quantity = +quantity;
+
+        this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].price_text || '';
+        this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].price || 0;
+
+        this.addToCart(quantity);
       }
     },
   };
