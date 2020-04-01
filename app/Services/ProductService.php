@@ -31,7 +31,6 @@ class ProductService
     public function resolveProduct(Request $request, $needImages = false, $currency = null, $isPostback = false)
     {
         $product = null;
-        app()->setLocale('ru');
         // prepare select
         $select = ['prices', 'skus', 'product_name', 'description.en', 'long_name.en', 'home_description.en', 'home_name.en',
             'splash_description.en', 'billing_descriptor', 'logo_image_id', 'bg_image_id', 'favicon_image_id', 'upsell_hero_image_id', 'image_ids',
