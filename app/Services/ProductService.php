@@ -40,13 +40,10 @@ class ProductService
             'price_correction_percents'];
 
         if (app()->getLocale() != 'en') {
-            $select = array_merge($select, ['description.'.app()->getLocale(), 'long_name.'.app()->getLocale(),
-                'home_description.'.app()->getLocale(), 'home_name.'.app()->getLocale(), 'splash_description.'.app()->getLocale(),
-                'vimeo_id.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale(), 'upsell_hero_text.'.app()->getLocale(),
-                'labels.1.'.app()->getLocale(), 'labels.2.'.app()->getLocale(), 'labels.3.'.app()->getLocale(), 'labels.4.'.app()->getLocale(),
-                'labels.5.'.app()->getLocale()]);
+            // add .lang
+            $select = \Utils::addLangFieldToSelect($select, app()->getLocale());
         }
-
+echo '<pre>'; var_dump($select); echo '</pre>'; exit;
         if ($request->has('cop_id')) {
             $product = OdinProduct::getResolveProductForLocal(['prices.price_set' => $request->input('cop_id')], $select);
             //$product = OdinProduct::where('prices.price_set', $request->input('cop_id'))->first();

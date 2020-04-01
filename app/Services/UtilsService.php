@@ -1143,4 +1143,20 @@ class UtilsService
         }
         return null;
     }
+
+    /**
+     * Add to select array lang attribute
+     * @param array $select
+     * @param string $lang
+     */
+    public static function addLangFieldToSelect(array $select, string $lang) {
+        $select_lang = [];
+        foreach ($select as $s) {
+            if (strpos($s, '.en')) {
+                $select_lang[] = str_replace('.en', '.'.$lang, $s);
+            }
+        }
+        $select = array_merge($select, $select_lang);
+        return $select;
+    }
 }
