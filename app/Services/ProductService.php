@@ -103,7 +103,13 @@ class ProductService
 			if ($uproduct['product_id'] == $productId) {
 				$fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
 				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
-				$upsell = OdinProduct::getById($productId);
+
+				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image', 'upsell_hero_image', 'skus',
+                    'image_ids', 'prices', 'upsell_plusone_text.en'];
+				if (app()->getLocale() != 'en') {
+				    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
+                }
+				$upsell = OdinProduct::getById($productId, $select);
 			}
 		}
 
@@ -390,6 +396,7 @@ class ProductService
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
+        $lp->upsell_plusone_text = $product->upsell_plusone_text;
 
         $lp->upsell_sku = $product['skus'][0]['code'];
 

@@ -610,11 +610,18 @@ class OdinProduct extends Model
     }
 
     /**
-     * Get by cop_id
+     * Get by ID
+     * @param string $productId
+     * @param array $select
+     * @return mixed
      */
-    public static function getById(string $productId)
+    public static function getById(string $productId, $select = [])
     {
-        return OdinProduct::where('_id', $productId)->first();
+        $query = OdinProduct::where('_id', $productId);
+        if ($select) {
+            $query->select($select);
+        }
+        return $query->first();
     }
 
     /**
