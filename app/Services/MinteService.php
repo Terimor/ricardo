@@ -370,7 +370,7 @@ class MinteService
             } else {
                 logger()->warning("Mint-e auth", ['body' => $body_decoded]);
 
-                $result['hash'] = "fail_" . UtilsService::randomString(16);
+                $result['hash'] = $body_decoded['transid'] ?? "fail_" . UtilsService::randomString(16);
                 $result['status'] = Txn::STATUS_FAILED;
                 $result['fallback'] = $this->checkErrorToFallback($body_decoded);
                 $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'] ?? null, $body_decoded['errormessage'] ?? null)];
