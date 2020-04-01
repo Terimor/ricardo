@@ -105,7 +105,7 @@ class ProductService
 				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
 
 				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image_id', 'upsell_hero_image_id', 'skus',
-                    'image_ids', 'prices', 'upsell_plusone_text.en'];
+                    'image_ids', 'prices', 'price_correction_percents', 'warranty_percent', 'upsell_plusone_text.en'];
 				if (app()->getLocale() != 'en') {
 				    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
                 }
@@ -159,7 +159,7 @@ class ProductService
             }
 
             // select data only in use
-            $select = ['logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en'];
+            $select = ['logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en', 'price_correction_percents', 'warranty_percent'];
             if (app()->getLocale() != 'en') {
                 $select[] = 'skus.name.'.app()->getLocale();
                 $select[] = 'skus.brief.'.app()->getLocale();
@@ -482,7 +482,7 @@ class ProductService
                 arsort($soldProducts);
                 $productIds = array_keys($soldProducts);
 
-                $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+                $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids', 'warranty_percent', 'price_correction_percents'];
                 $products = OdinProduct::getActiveByIds($productIds, '', true, null, $select);
 
                 // get all images
