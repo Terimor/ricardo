@@ -741,4 +741,19 @@ class OdinProduct extends Model
     {
         return OdinProduct::where('prices.price_set', $cop_id)->exists();
     }
+
+    /**
+     * Get product for display local values
+     * Method for ProductService->resolveProduct
+     * @param array $where
+     * @param array $select
+     * @return mixed
+     */
+    public static function getResolveProductForLocal(array $where, array $select = []) {
+        $query = static::where($where);
+        if ($select) {
+            $query->select($select);
+        }
+        return $query->first();
+    }
 }

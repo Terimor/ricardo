@@ -31,20 +31,41 @@ class ProductService
     public function resolveProduct(Request $request, $needImages = false, $currency = null, $isPostback = false)
     {
         $product = null;
+        app()->setLocale('ru');
+        // prepare select
+        $select = ['prices', 'skus', 'product_name', 'description.en', 'long_name.en', 'home_description.en', 'home_name.en',
+            'splash_description.en', 'billing_descriptor', 'logo_image_id', 'bg_image_id', 'favicon_image_id', 'upsell_hero_image_id', 'image_ids',
+            'vimeo_id.en', 'reviews', 'upsell_plusone_text.en', 'upsell_hero_text.en', 'upsells', 'fb_pixel_id', 'gads_retarget_id',
+            'gads_conversion_id','gads_conversion_label', 'goptimize_id', 'is_europe_only','is_choice_required','is_paypal_hidden','countries',
+            'labels.1.en', 'labels.2.en', 'labels.3.en', 'labels.4.en', 'labels.5.en', 'warehouse_id', 'warranty_percent',
+            'price_correction_percents'];
+
+        if (app()->getLocale() != 'en') {
+            $select = array_merge($select, ['description.'.app()->getLocale(), 'long_name.'.app()->getLocale(),
+                'home_description.'.app()->getLocale(), 'home_name.'.app()->getLocale(), 'splash_description.'.app()->getLocale(),
+                'vimeo_id.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale(), 'upsell_hero_text.'.app()->getLocale(),
+                'labels.1.'.app()->getLocale(), 'labels.2.'.app()->getLocale(), 'labels.3.'.app()->getLocale(), 'labels.4.'.app()->getLocale(),
+                'labels.5.'.app()->getLocale()]);
+        }
 
         if ($request->has('cop_id')) {
-            $product = OdinProduct::where('prices.price_set', $request->input('cop_id'))->first();
+            $product = OdinProduct::getResolveProductForLocal(['prices.price_set' => $request->input('cop_id')], $select);
+            //$product = OdinProduct::where('prices.price_set', $request->input('cop_id'))->first();
         }
 
         if (!$product && $request->has('product')) {
-            $product = OdinProduct::where('skus.code', $request->input('product'))->first();
+            $product = OdinProduct::getResolveProductForLocal(['skus.code' => $request->input('product')], $select);
+            //$product = OdinProduct::where('skus.code', $request->input('product'))->first();
         }
 
         // Domain resolve logic
         $domain = Domain::getByName();
         if (!$product) {
             if ($domain && !empty($domain->product)) {
-                $product =  $domain->product;
+                if (!empty($domain->odin_product_id)) {
+                    $product = OdinProduct::getResolveProductForLocal(['_id' => $domain->odin_product_id], $select);
+                }
+                //$product =  $domain->product;
             }
         }
 
@@ -104,8 +125,8 @@ class ProductService
 				$fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
 				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
 
-				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image', 'upsell_hero_image', 'skus',
-                    'image_ids', 'prices', 'upsell_plusone_text.en'];
+				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image_id', 'upsell_hero_image_id', 'skus',
+                    'image_ids', 'prices', 'price_correction_percents', 'warranty_percent', 'upsell_plusone_text.en'];
 				if (app()->getLocale() != 'en') {
 				    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
                 }
@@ -159,7 +180,7 @@ class ProductService
             }
 
             // select data only in use
-            $select = ['logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en'];
+            $select = ['logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en', 'price_correction_percents', 'warranty_percent'];
             if (app()->getLocale() != 'en') {
                 $select[] = 'skus.name.'.app()->getLocale();
                 $select[] = 'skus.brief.'.app()->getLocale();
@@ -482,7 +503,7 @@ class ProductService
                 arsort($soldProducts);
                 $productIds = array_keys($soldProducts);
 
-                $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+                $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids', 'warranty_percent', 'price_correction_percents'];
                 $products = OdinProduct::getActiveByIds($productIds, '', true, null, $select);
 
                 // get all images
