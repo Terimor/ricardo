@@ -117,7 +117,11 @@ export default {
       .then(res => {
         if (res && res.data) {
           this.name = res.data.upsell.long_name;
-          this.description = res.data.upsell.description;
+
+          this.description = this.id === js_data.product.id && res.data.upsell.upsell_plusone_text
+            ? res.data.upsell.upsell_plusone_text
+            : res.data.upsell.description;
+
           this.upsellPrices = res.data.upsell.upsellPrices;
           this.imageUrl = res.data.upsell.upsell_hero_image;
           this.priceFormatted = this.currentPrices.price_text;

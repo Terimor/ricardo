@@ -422,7 +422,13 @@
             }
 
             .image {
+                margin-left: 15px;
                 max-width: 300px;
+
+                [dir="rtl"] & {
+                  margin-left: 0;
+                  margin-right: 15px;
+                }
 
                 img {
                     max-width: 150px;

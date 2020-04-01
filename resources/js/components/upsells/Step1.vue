@@ -98,7 +98,11 @@
           if (res && res.data) {
             this.upsellPrices = res.data.upsell.upsellPrices;
             this.name = res.data.upsell.long_name;
-            this.description = res.data.upsell.description;
+
+            this.description = this.id === js_data.product.id && res.data.upsell.upsell_plusone_text
+              ? res.data.upsell.upsell_plusone_text
+              : res.data.upsell.description;
+
             this.imageUrl = res.data.upsell.image;
             this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text;
             this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price;
