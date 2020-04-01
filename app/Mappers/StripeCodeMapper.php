@@ -62,8 +62,6 @@ class StripeCodeMapper
      */
     public static function isFallback(?string $decline_code = null, ?string $general_code = null): bool
     {
-        $result = in_array($decline_code, self::$fallback_codes);
-
-        return in_array($general_code, self::$fallback_codes);
+        return in_array($decline_code, self::$fallback_codes) || in_array($general_code, self::$fallback_codes);
     }
 }

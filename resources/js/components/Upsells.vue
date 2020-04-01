@@ -27,7 +27,7 @@
                 >
                   <component
                     v-if="upsellsObj.length"
-                    v-bind:is="view"
+                    :is="view"
                     @addAccessory="addAccessory"
                     :discount="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].discount_percent || 0"
                     :id="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].product_id || ''"
@@ -117,11 +117,13 @@
   import { send1ClickRequest, paypalCreateOrder, paypalOnApprove } from '../utils/upsells';
   import upsellsMixin from '../mixins/upsells';
   import { getTotalPrice } from '../services/upsells';
+  import logger from '../mixins/logger';
 
   export default {
     name: 'upsells',
     mixins: [
       upsellsMixin,
+      logger,
     ],
 
     components: {
@@ -168,6 +170,19 @@
           fade('out', 250, node, true)
             .then(() => {
               if (this.accessoryList.length !== 0) {
+                if (!this.totalAccessoryPrice) {
+                  this.log_data('UPSELLS: total=0 - watch', {
+                    force: true,
+                    url: location.href,
+                    accessoryStep: val,
+                    subOrder: localStorage.getItem('subOrder'),
+                    totalAccessoryPrice: this.totalAccessoryPrice,
+                    formattedAccessoryList: this.formattedAccessoryList,
+                    accessoryList: this.accessoryList,
+                    upsellsObj: this.upsellsObj,
+                  });
+                }
+
                 getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
                   .then((total) => {
                     this.total = total;
@@ -313,6 +328,19 @@
         if (this.accessoryList.length === 0) {
           this.redirect();
           return;
+        }
+
+        if (!this.totalAccessoryPrice) {
+          this.log_data('UPSELLS: total=0 - delete', {
+            force: true,
+            url: location.href,
+            accessoryStep: val,
+            subOrder: localStorage.getItem('subOrder'),
+            totalAccessoryPrice: this.totalAccessoryPrice,
+            formattedAccessoryList: this.formattedAccessoryList,
+            accessoryList: this.accessoryList,
+            upsellsObj: this.upsellsObj,
+          });
         }
 
         getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)

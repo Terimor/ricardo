@@ -926,14 +926,16 @@ class OdinOrder extends OdinModel
                 ->get();
 
             // push to result [provider => [status => amount]]
-            $result = $col->reduce(function(array $carry, OdinOrder $item) {
+            $result = $col->reduce(function(array $carry, OdinOrder $item) use ($prv) {
                 foreach ($item->txns as $txn) {
-                    if (empty($carry[$txn['payment_provider']])) {
-                        $carry[$txn['payment_provider']] = [$txn['status'] => 1];
-                    } elseif (empty($carry[$txn['payment_provider']][$txn['status']])) {
-                        $carry[$txn['payment_provider']][$txn['status']] = 1;
-                    } else {
-                        $carry[$txn['payment_provider']][$txn['status']] += 1;
+                    if ($txn['payment_provider'] === $prv) {
+                        if (empty($carry[$prv])) {
+                            $carry[$prv] = [$txn['status'] => 1];
+                        } elseif (empty($carry[$prv][$txn['status']])) {
+                            $carry[$prv][$txn['status']] = 1;
+                        } else {
+                            $carry[$prv][$txn['status']] += 1;
+                        }
                     }
                 }
                 return $carry;
