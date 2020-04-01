@@ -8,7 +8,6 @@ use App\Models\Currency;
 use App\Constants\PaymentProviders;
 use App\Mappers\StripeCodeMapper;
 use App\Mappers\StripeAmountMapper;
-use mysql_xdevapi\Warning;
 use Stripe\Event;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\SignatureVerificationException;
@@ -295,6 +294,8 @@ class StripeService
 
             $reply = $this->preparePaymentResponse($pi, $reply);
         } catch (ApiErrorException $ex) {
+            logger()->info('Stripe Ex class: ' . get_class(optional($ex->getError())->payment_intent));
+
             $reply['provider_data'] = ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()];
             $reply['errors'] = [
                 StripeCodeMapper::toPhrase(optional($ex->getError())->decline_code ?? null, optional($ex->getError())->code)
