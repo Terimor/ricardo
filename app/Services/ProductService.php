@@ -43,7 +43,7 @@ class ProductService
             // add .lang
             $select = \Utils::addLangFieldToSelect($select, app()->getLocale());
         }
-echo '<pre>'; var_dump($select); echo '</pre>'; exit;
+
         if ($request->has('cop_id')) {
             $product = OdinProduct::getResolveProductForLocal(['prices.price_set' => $request->input('cop_id')], $select);
             //$product = OdinProduct::where('prices.price_set', $request->input('cop_id'))->first();
