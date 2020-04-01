@@ -120,11 +120,10 @@ class PaymentService
             'order_amount'   => $payment['value'],
             'order_id'       => $order->getIdAttribute(),
             'status'         => self::STATUS_FAIL,
-            'id'             => null
+            'id'             => $payment['hash'] ?? null
         ];
 
         if ($payment['status'] !== Txn::STATUS_FAILED) {
-            $result['id'] = $payment['hash'];
             $result['status'] = self::STATUS_OK;
             $result['redirect_url'] = !empty($payment['redirect_url']) ? stripslashes($payment['redirect_url']) : null;
             $result['bs_pf_token'] = $payment['bs_pf_token'] ?? null;
