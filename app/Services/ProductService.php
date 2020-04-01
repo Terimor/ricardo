@@ -104,7 +104,7 @@ class ProductService
 				$fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
 				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
 
-				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image', 'upsell_hero_image', 'skus',
+				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image_id', 'upsell_hero_image_id', 'skus',
                     'image_ids', 'prices', 'upsell_plusone_text.en'];
 				if (app()->getLocale() != 'en') {
 				    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
