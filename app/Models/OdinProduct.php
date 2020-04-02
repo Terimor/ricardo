@@ -428,13 +428,14 @@ class OdinProduct extends Model
     /**
      * Getter billing descriptor
      * @param type $value
+     * @return string
      */
-    public function getBillingDescriptorAttribute($value)
+    public function getBillingDescriptorAttribute($value): string
     {
         $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
         $host = str_replace('www.', '', request()->getHost());
-        $value = "/{$host}/{$value}";
-        $value = $billingDescriptorPrefix ? "/{$billingDescriptorPrefix}/{$value}" : $value;
+        $value = "{$host}/{$value}";
+        $value = $billingDescriptorPrefix ? "{$billingDescriptorPrefix}/{$value}" : $value;
         $value = str_replace('//', '/', $value);
         if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
             $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
@@ -450,8 +451,8 @@ class OdinProduct extends Model
     public function getPaymentBillingDescriptor($countryCode = null)
     {
         if ($countryCode && in_array(strtolower($countryCode), PaymentService::BILLING_DESCRIPTOR_COUNTRIES)) {
-            $value = $this->getOriginal()['billing_descriptor'];
-            $value =  '/'.PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.'/'.$value;
+            $value = $this->getOriginal('billing_descriptor');
+            $value = PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.'/'.$value;
         } else {
             $value = $this->billing_descriptor;
         }

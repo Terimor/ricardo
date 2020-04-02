@@ -284,7 +284,7 @@ class CardService {
                     'order_id' => $order->getIdAttribute(),
                     'order_number' => $order->number,
                     'installments' => $installments,
-                    'billing_descriptor' => $order->billing_descriptor
+                    'billing_descriptor' => $product->getOriginal('billing_descriptor')
                 ]);
                 break;
         endswitch;
@@ -548,7 +548,7 @@ class CardService {
                                 'order_id' => $order->getIdAttribute(),
                                 'order_number' => $order->number,
                                 'installments' => $order->installments,
-                                'billing_descriptor' => $order->billing_descriptor
+                                'billing_descriptor' => $main_product->getOriginal('billing_descriptor')
                             ]
                         );
                         break;
