@@ -85,21 +85,6 @@ export default {
         });
     },
 
-    save_3ds_params_to_local_storage() {
-      localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
-    },
-
-    save_form_to_local_storage() {
-      localStorage.setItem('saved_form', JSON.stringify({
-        ...this.form,
-        card_holder: undefined,
-        card_number: undefined,
-        card_type: undefined,
-        card_date: undefined,
-        card_cvv: undefined,
-      }));
-    },
-
     goto_upsells(order, currency) {
       let url = js_data.product.upsells.length > 0
         ? !this.is_vrtl_checkout

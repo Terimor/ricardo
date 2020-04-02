@@ -28,10 +28,6 @@ export default {
 
   watch: {
 
-    payment_methods(value) {
-      this.form.payment_provider = null;
-    },
-
     'form.payment_provider'(value) {
       window.selectedPayment = value;
       history.pushState({}, '', location.href);

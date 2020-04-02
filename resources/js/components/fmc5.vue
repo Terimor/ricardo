@@ -633,21 +633,17 @@
           variant: null,
           isWarrantyChecked: false,
           paymentProvider: null,
-          fname: (js_data.customer && js_data.customer.first_name) || null,
-          lname: (js_data.customer && js_data.customer.last_name) || null,
-          email: (js_data.customer && js_data.customer.email) || null,
-          phone: (js_data.customer && js_data.customer.phone) || null,
-          countryCodePhoneField: js_data.customer && js_data.customer.address && js_data.customer.address.country
-            ? js_data.customer.address.country
-            : js_data.country_code,
-          street: (js_data.customer && js_data.customer.address && js_data.customer.address.street) || null,
-          city: (js_data.customer && js_data.customer.address && js_data.customer.address.city) || null,
-          zipcode: (js_data.customer && js_data.customer.address && js_data.customer.address.zip) || null,
-          country: js_data.customer && js_data.customer.address && js_data.customer.address.country && js_data.countries.indexOf(js_data.customer.address.country) !== -1
-            ? js_data.customer.address.country
-            : js_data.countries.indexOf(js_data.country_code) !== -1
-              ? js_data.country_code
-              : null,
+          fname: null,
+          lname: null,
+          email: null,
+          phone: null,
+          countryCodePhoneField: js_data.country_code,
+          street: null,
+          city: null,
+          zipcode: null,
+          country: js_data.countries.indexOf(js_data.country_code) !== -1
+            ? js_data.country_code
+            : null,
           cardHolder: null,
           cardNumber: null,
           cardDate: null,
@@ -665,6 +661,7 @@
       this.initDeal();
       this.initVariant();
       this.check3dsFailure();
+      this.initCustomer();
     },
 
 
@@ -1109,6 +1106,24 @@
             }
           }, 1000);
         }
+      },
+
+      initCustomer() {
+        this.restore_customer(
+          (fname, lname, email, street, city, zipcode, country) => {
+            this.form.fname = fname;
+            this.form.lname = lname;
+            this.form.email = email;
+            this.form.street = street;
+            this.form.city = city;
+            this.form.zipcode = zipcode;
+            this.form.country = country;
+          },
+          (countryCodePhoneField, phone) => {
+            this.form.countryCodePhoneField = countryCodePhoneField;
+            this.form.phone = phone;
+          },
+        );
       },
 
       check_for_leads_request() {

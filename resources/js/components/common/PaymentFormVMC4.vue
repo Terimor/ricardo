@@ -258,6 +258,7 @@
   import CardType from './extra-fields/CardType';
   import DocumentType from './extra-fields/DocumentType';
   import DocumentNumber from './extra-fields/DocumentNumber';
+  import globals from '../../mixins/globals';
   import logger from '../../mixins/logger';
 
 
@@ -266,6 +267,7 @@
     mixins: [
       queryToComponent,
       purchasMixin,
+      globals,
       logger,
     ],
 		components: {
@@ -319,34 +321,28 @@
         },
 				form: {
 					stepTwo: {
-						fname: (js_data.customer && js_data.customer.first_name) || null,
-						lname: (js_data.customer && js_data.customer.last_name) || null,
-						email: (js_data.customer && js_data.customer.email) || null,
-						phone: (js_data.customer && js_data.customer.phone) || null,
+						fname: null,
+						lname: null,
+						email: null,
+						phone: null,
 					},
 					stepThree: {
             cardHolder: null,
 						cardNumber: null,
 						cardDate: null,
 						cvv: null,
-						country: js_data.customer && js_data.customer.address && js_data.customer.address.country && js_data.countries.indexOf(js_data.customer.address.country) !== -1
-              ? js_data.customer.address.country
-              : js_data.countries.indexOf(js_data.country_code) !== -1
-                ? js_data.country_code
-                : null,
-            street: (js_data.customer && js_data.customer.address && js_data.customer.address.street) || null,
-						city: (js_data.customer && js_data.customer.address && js_data.customer.address.city) || null,
-						zipCode: (js_data.customer && js_data.customer.address && js_data.customer.address.zip) || null,
+						country: js_data.countries.indexOf(js_data.country_code) !== -1
+              ? js_data.country_code
+              : null,
+            street: null,
+						city: null,
+						zipCode: null,
             terms: null,
 					},
-					countryCodePhoneField: js_data.customer && js_data.customer.address && js_data.customer.address.country
-            ? js_data.customer.address.country
-            : js_data.country_code,
-          country: js_data.customer && js_data.customer.address && js_data.customer.address.country && js_data.countries.indexOf(js_data.customer.address.country) !== -1
-              ? js_data.customer.address.country
-              : js_data.countries.indexOf(js_data.country_code) !== -1
-                ? js_data.country_code
-                : null,
+					countryCodePhoneField: js_data.country_code,
+          country: js_data.countries.indexOf(js_data.country_code) !== -1
+            ? js_data.country_code
+            : null,
 					paymentProvider: null,
 				},
 			}
@@ -429,6 +425,22 @@
           }
         }, 1000);
       }
+
+      this.restore_customer(
+        (fname, lname, email, street, city, zipcode, country) => {
+          this.form.stepTwo.fname = fname;
+          this.form.stepTwo.lname = lname;
+          this.form.stepTwo.email = email;
+          this.form.stepThree.street = street;
+          this.form.stepThree.city = city;
+          this.form.stepThree.zipCode = zipcode;
+          this.form.stepThree.country = country;
+        },
+        (countryCodePhoneField, phone) => {
+          this.form.countryCodePhoneField = countryCodePhoneField;
+          this.form.stepTwo.phone = phone;
+        },
+      );
     },
 		computed: {
       isShowVariant() {

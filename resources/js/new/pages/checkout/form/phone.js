@@ -5,11 +5,10 @@ export default {
 
   data() {
     return {
+      country_codes: null,
       form: {
-        phone: (js_data.customer && js_data.customer.phone) || null,
-        phone_country: js_data.customer && js_data.customer.address && js_data.customer.address.country
-          ? js_data.customer.address.country
-          : js_data.country_code,
+        phone: null,
+        phone_country: js_data.country_code,
         phone_code: '',
       },
     };
@@ -42,12 +41,22 @@ export default {
   },
 
 
+  created() {
+    js_deps.wait(['intl_tel_input'], () => {
+      this.country_codes = intlTelInputGlobals.getCountryData().reduce((acc, item) => {
+        acc[item.iso2] = item.dialCode;
+        return acc;
+      }, {});
+    });
+  },
+
+
   methods: {
 
     phone_init() {
       js_deps.wait_for(
         () => {
-          return !!window.intlTelInput && !!window.intlTelInputGlobals
+          return !!window.intlTelInput && !!this.country_codes
             && !!this.$refs.phone_field && !!this.$refs.phone_field.querySelector('input');
         },
         () => {
@@ -65,19 +74,13 @@ export default {
               separateDialCode: true,
             });
 
-            const phone_codes = window.intlTelInputGlobals.getCountryData()
-              .reduce((acc, item) => {
-                acc[item.iso2] = item.dialCode;
-                return acc;
-              }, {});
-
-            this.form.phone_code = phone_codes[js_data.country_code] || '';
+            this.form.phone_code = this.country_codes[js_data.country_code] || '';
 
             element.addEventListener('countrychange', () => {
               const country = intlTelInputGlobals.getInstance(element).getSelectedCountryData();
 
-              this.form.phone_country = country.iso2 || js_data.country_code;
-              this.form.phone_code = country.dialCode || phone_codes[js_data.country_code] || '';
+              this.form.phone_country = (country && country.iso2) || js_data.country_code;
+              this.form.phone_code = (country && country.dialCode) || this.country_codes[js_data.country_code] || '';
 
               this.phone_check_padding();
             });

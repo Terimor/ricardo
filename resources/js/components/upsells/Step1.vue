@@ -120,11 +120,11 @@
         quantity = +quantity;
 
         if (quantity === 1) {
-          this.finalPrice = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
-          this.finalPricePure = this.upsellPrices['1'] && this.upsellPrices['1'].price || 0;
+          this.finalPrice = this.upsellPrices && this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
+          this.finalPricePure = this.upsellPrices && this.upsellPrices['1'] && this.upsellPrices['1'].price || 0;
         } else {
-          this.finalPrice = this.upsellPrices['2'] && this.upsellPrices['2'].price_text || '';
-          this.finalPricePure = this.upsellPrices['2'] && this.upsellPrices['2'].price || 0;
+          this.finalPrice = this.upsellPrices && this.upsellPrices['2'] && this.upsellPrices['2'].price_text || '';
+          this.finalPricePure = this.upsellPrices && this.upsellPrices['2'] && this.upsellPrices['2'].price || 0;
         }
 
         this.addToCart(quantity);
