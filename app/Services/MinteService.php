@@ -263,7 +263,7 @@ class MinteService
 
         $result = ['status' => false];
         try {
-            $nonce = UtilsService::millitime();
+            $nonce = UtilsService::millitime() . mt_rand(0, 999);
             $body = [
                 'mid'       => $this->api->login,
                 'nonce'     => $nonce,
@@ -328,7 +328,7 @@ class MinteService
                 ];
             }
 
-            $nonce = UtilsService::millitime();
+            $nonce = UtilsService::millitime() . mt_rand(0, 999);
             $body = array_merge(
                 [
                     'mid'       => $this->api->login,
@@ -417,7 +417,7 @@ class MinteService
         ];
 
         try {
-            $nonce = UtilsService::millitime();
+            $nonce = UtilsService::millitime() . mt_rand(0, 999);
             $body = [
                 'mid'       => $this->api->login,
                 'nonce'     => $nonce,
@@ -474,7 +474,7 @@ class MinteService
             'errors'            => null
         ];
 
-        $nonce = UtilsService::millitime();
+        $nonce = UtilsService::millitime() . mt_rand(0, 999);
         try {
             $res = $client->put('sale/recurring', [
                 'json' => [
@@ -544,7 +544,7 @@ class MinteService
         }
 
         try {
-            $nonce = UtilsService::millitime();
+            $nonce = UtilsService::millitime() . mt_rand(0, 999);
             $res = $client->put('apm', [
                 'json' => [
                     'mid'       => $this->api->login,
