@@ -136,7 +136,7 @@ class AffiliateSetting extends Model
     }
 
     /**
-     * Calculate is fire
+     * Calculate reduce percent for order by product sales and reduce percents depend on parameters
      * @param string $productId
      * @param \App\Models\AffiliateSetting $affiliate
      * @param string|null $country
@@ -155,10 +155,14 @@ class AffiliateSetting extends Model
             }
             $qty = $qty + 1;
 
+            $product = OdinProduct::getById($productId, ['reducings', 'reduce_percent', 'initial_reduce_percent']);
+            $initialPercent = $product->initial_reduce_percent ?? 0;
+
             // check main rules for all sales
             foreach (static::$mainQtyRules as $salesQty => $percent) {
                 if ($qty <= $salesQty) {
-                    $reducePercent = $percent;
+                    // if initial percent less than global qty percent take a lower percentage
+                    $reducePercent = $initialPercent < $percent ? $initialPercent : $percent;
                     break;
                 }
             }
@@ -177,8 +181,6 @@ class AffiliateSetting extends Model
 
             // if we haven't mainQtyRules percentage check product reduce_percent
             if (!$reducePercent) {
-                $product = OdinProduct::getById($productId);
-
                 // as first check reducing logic from product by affiliate and country
                 if (!empty($product->reducings) && $country) {
                     $reducePercent = static::getReducePercentByProductReducings($product->reducings, $affiliate->ho_affiliate_id, $country);
@@ -189,7 +191,7 @@ class AffiliateSetting extends Model
                 }
             }
 
-            // if we haven't product reduce_percent
+            // if we haven't product reducing logic get it from affiliate or set general default percent
             if (!$reducePercent) {
                 $reducePercent = !empty($affiliate->postback_percent) ? $affiliate->postback_percent : static::$defaultPercent;
             }
