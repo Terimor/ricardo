@@ -447,18 +447,19 @@ class AffiliateService
             }
             // check by product parameter
             if (!$priceSet && $request->get('product')) {
-              $product = OdinProduct::getBySku($request->get('product'), false, ['prices.price_set']);
-              if ($product) {
+                $product = OdinProduct::getBySku($request->get('product'), false, ['prices.price_set']);
+                $product->skip_prices = true;
+                if ($product) {
                   $prices = $product['prices'];
                   $priceSet = $prices['price_set'] ?? null;
-              } else {
+                } else {
                   logger()->warning("CantFindProductApply", ['url' => $url]);
-              }
+                }
             }
 
             // check by domain
             if (!$priceSet) {
-              $priceSet = Domain::getPriceSet();
+                $priceSet = Domain::getPriceSet();
             }
 
             $ip = $request->ip();

@@ -25,6 +25,7 @@ class OdinProduct extends Model
     public $currency;
     public $currencyObject;
     public $hide_cop_id_log = false;
+    public $skip_prices = false; // hide log if we select only prices.price_set and skip prices calculation
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout',
@@ -189,15 +190,19 @@ class OdinProduct extends Model
      */
     public function getPricesAttribute($value)
     {
-        if ($this->currencyObject) {
-            $currency = $this->currencyObject;
-        } else {
-            $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+        // skip prices logic
+        if (!$this->skip_prices) {
+            if ($this->currencyObject) {
+                $currency = $this->currencyObject;
+            } else {
+                $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+            }
+            $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
+            // country depends on IP
+            $userCountry = \Utils::getLocationCountryCode();
+            $returnedKey = 0;
+            $priceSetFound = false;
         }
-        $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
-        // country depends on IP
-        $userCountry = \Utils::getLocationCountryCode();
-        $returnedKey = 0; $priceSetFound = false;
 
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
@@ -230,11 +235,15 @@ class OdinProduct extends Model
                     $value[$key][$quantity]['total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key][$quantity]['total_amount'], $currency);
 
                   } else {
-                    logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
+                    if (!$this->skip_prices) {
+                        logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
+                    }
                   }
                 }
-                $value[$key]['currency'] = $currency->code;
-                $value[$key]['exchange_rate'] = $currency->usd_rate;
+                if (!$this->skip_prices) {
+                    $value[$key]['currency'] = $currency->code;
+                    $value[$key]['exchange_rate'] = $currency->usd_rate;
+                }
 
                 if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
                   $returnedKey = $key;
