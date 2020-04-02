@@ -191,6 +191,7 @@ class OdinProduct extends Model
     public function getPricesAttribute($value)
     {
         // skip prices logic
+        $priceSetFound = false;
         if (!$this->skip_prices) {
             if ($this->currencyObject) {
                 $currency = $this->currencyObject;
@@ -201,7 +202,6 @@ class OdinProduct extends Model
             // country depends on IP
             $userCountry = \Utils::getLocationCountryCode();
             $returnedKey = 0;
-            $priceSetFound = false;
         }
 
         //iteration by price sets array
