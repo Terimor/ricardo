@@ -646,7 +646,7 @@ class CardService {
         }
 
         // do fallback if it is a needed
-        if (!empty($payment['fallback'])) {
+        if (!empty($payment['fallback']) && empty($order_txn['is_fallback'])) {
             $payment = PaymentService::fallback3ds($order, $order_txn, ['useragent'  => $user_agent]);
         }
 
@@ -719,7 +719,7 @@ class CardService {
 
             PaymentService::cacheOrderErrors(array_merge($payment, ['number' => $order->number]));
 
-            if (!empty($payment['fallback'])) {
+            if (!empty($payment['fallback']) && empty($order_txn['is_fallback'])) {
                 $payment = PaymentService::fallback3ds($order, $order_txn);
                 $result['amount'] = $payment['value'];
                 $result['currency'] = $order->currency;
@@ -777,7 +777,7 @@ class CardService {
                     PaymentService::rejectTxn($pinfo['txn'], PaymentProviders::STRIPE);
                     PaymentService::cacheOrderErrors(array_merge($pinfo['txn'], ['number' => $order->number]));
                     // do fallback if it is needed
-                    if (!empty($pinfo['fallback']) && $order_product['is_main']) {
+                    if (!empty($pinfo['fallback']) && empty($order_txn['is_fallback']) && $order_product['is_main']) {
                         $payment = PaymentService::fallback3ds($order, $order_txn);
                         if ($payment['status'] !== Txn::STATUS_FAILED) {
                             $result['result'] = PaymentService::STATUS_OK;

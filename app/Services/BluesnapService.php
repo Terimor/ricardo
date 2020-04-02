@@ -31,19 +31,20 @@ class BluesnapService
     /**
      * @var array
      */
-    private static $fallback_codes = [
-        'THREE_D_SECURE_FAILURE',
-        'DO_NOT_HONOR',
+    private static array $fallback_codes = [
         'AUTHORIZATION_EXPIRED',
-        'VALIDATION_GENERAL_FAILURE',
+        'DO_NOT_HONOR',
+        'INVALID_TRANSACTION',
+        'NO_AVAILABLE_PROCESSORS',
         'PAYMENT_GENERAL_FAILURE',
-        'INVALID_TRANSACTION'
+        'THREE_D_SECURE_FAILURE',
+        'VALIDATION_GENERAL_FAILURE'
     ];
 
     /**
      * @var string
      */
-    private $endpoint;
+    private string $endpoint;
 
     /**
      * BluesnapService constructor
@@ -345,7 +346,7 @@ class BluesnapService
 
     /**
      * Parses error response
-     * @param  ?string $data
+     * @param string|null $data
      * @return array
      */
     private function parseErrorResponse(?string $data): array
