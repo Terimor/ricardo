@@ -221,7 +221,7 @@ class AffiliateService
      */
     public static function getPixelsByData(Request $request, string $hoAffiliateID, $product, string $countryCode, string $route, string $device) : array
     {
-        $pixels = Pixel::getPixels($product, $countryCode, $route, $device);
+        $pixels = Pixel::getPixels($product, $countryCode, $route, $device, $hoAffiliateID);
 
         $pixelsArray = []; $isShown = false;
         $order = null;
