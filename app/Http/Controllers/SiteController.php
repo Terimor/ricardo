@@ -582,9 +582,15 @@ class SiteController extends Controller
             return view('prerender.thankyou.apm_restore');
         }
 
+        $freeFile = null;
+        if (!empty($product->free_file_id)) {
+            // TODO: Enable EBOOK
+            //$freeFile = ProductService::getLocaleFreeFileByFileId($product->free_file_id);
+        }
+
         return view($viewTemplate, compact(
             'countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo',
-            'is_thankyou', 'is_thankyou_page', 'is_vrtl_thankyou_page', 'is_smartbell'
+            'is_thankyou', 'is_thankyou_page', 'is_vrtl_thankyou_page', 'is_smartbell', 'freeFile'
         ));
     }
 

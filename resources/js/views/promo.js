@@ -58,14 +58,15 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
           paymentProvider: null,
           fname: null,
           lname: null,
-          //dateOfBirth: '',
           email: null,
           phone: null,
           street: null,
           city: null,
           state: null,
           zipcode: null,
-          country: js_data.country_code,
+          country: js_data.countries.indexOf(js_data.country_code) !== -1
+            ? js_data.country_code
+            : null,
           cardHolder: null,
           cardNumber: null,
           cardDate: null,
@@ -127,6 +128,22 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         this.setStickyFooter();
         this.slideForm = true;
       }
+
+      this.restore_customer(
+        (fname, lname, email, street, city, zipcode, country) => {
+          this.form.fname = fname;
+          this.form.lname = lname;
+          this.form.email = email;
+          this.form.street = street;
+          this.form.city = city;
+          this.form.zipcode = zipcode;
+          this.form.country = country;
+        },
+        (countryCodePhoneField, phone) => {
+          this.form.countryCodePhoneField = countryCodePhoneField;
+          this.form.phone = phone;
+        },
+      );
     },
 
     mounted() {

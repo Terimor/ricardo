@@ -116,8 +116,8 @@
       add(quantity) {
         quantity = +quantity;
 
-        this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].price_text || '';
-        this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].price || 0;
+        this.finalPrice = this.upsellPrices && this.upsellPrices[quantity] && this.upsellPrices[quantity].price_text || '';
+        this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity] && this.upsellPrices[quantity].price || 0;
 
         this.addToCart(quantity);
       }

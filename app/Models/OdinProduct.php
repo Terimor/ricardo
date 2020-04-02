@@ -25,6 +25,7 @@ class OdinProduct extends Model
     public $currency;
     public $currencyObject;
     public $hide_cop_id_log = false;
+    public $skip_prices = false; // hide log if we select only prices.price_set and skip prices calculation
 
     protected $fillable = [
         'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout',
@@ -38,7 +39,7 @@ class OdinProduct extends Model
     protected $hidden = [
         '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at',
         'image_id', 'logo_image_id', 'bg_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only',
-        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent', 'price_correction_percents'
+        'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent', 'price_correction_percents', 'free_file_id'
     ];
 
     /**
@@ -189,15 +190,19 @@ class OdinProduct extends Model
      */
     public function getPricesAttribute($value)
     {
-        if ($this->currencyObject) {
-            $currency = $this->currencyObject;
-        } else {
-            $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+        // skip prices logic
+        if (!$this->skip_prices) {
+            if ($this->currencyObject) {
+                $currency = $this->currencyObject;
+            } else {
+                $currency = CurrencyService::getCurrency($this->currency ? $this->currency : null);
+            }
+            $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
+            // country depends on IP
+            $userCountry = \Utils::getLocationCountryCode();
+            $returnedKey = 0;
+            $priceSetFound = false;
         }
-        $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
-        // country depends on IP
-        $userCountry = \Utils::getLocationCountryCode();
-        $returnedKey = 0; $priceSetFound = false;
 
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
@@ -230,11 +235,15 @@ class OdinProduct extends Model
                     $value[$key][$quantity]['total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key][$quantity]['total_amount'], $currency);
 
                   } else {
-                    logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
+                    if (!$this->skip_prices) {
+                        logger()->error("No prices for quantity {$quantity} of {$this->product_name}");
+                    }
                   }
                 }
-                $value[$key]['currency'] = $currency->code;
-                $value[$key]['exchange_rate'] = $currency->usd_rate;
+                if (!$this->skip_prices) {
+                    $value[$key]['currency'] = $currency->code;
+                    $value[$key]['exchange_rate'] = $currency->usd_rate;
+                }
 
                 if (!request()->has('cop_id') || $priceSet['price_set'] == request()->get('cop_id')) {
                   $returnedKey = $key;
@@ -419,13 +428,14 @@ class OdinProduct extends Model
     /**
      * Getter billing descriptor
      * @param type $value
+     * @return string
      */
-    public function getBillingDescriptorAttribute($value)
+    public function getBillingDescriptorAttribute($value): string
     {
         $billingDescriptorPrefix = Setting::getValue('billing_descriptor_prefix');
         $host = str_replace('www.', '', request()->getHost());
-        $value = "/{$host}/{$value}";
-        $value = $billingDescriptorPrefix ? "/{$billingDescriptorPrefix}/{$value}" : $value;
+        $value = "{$host}/{$value}";
+        $value = $billingDescriptorPrefix ? "{$billingDescriptorPrefix}/{$value}" : $value;
         $value = str_replace('//', '/', $value);
         if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
             $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
@@ -441,8 +451,8 @@ class OdinProduct extends Model
     public function getPaymentBillingDescriptor($countryCode = null)
     {
         if ($countryCode && in_array(strtolower($countryCode), PaymentService::BILLING_DESCRIPTOR_COUNTRIES)) {
-            $value = $this->getOriginal()['billing_descriptor'];
-            $value =  '/'.PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.'/'.$value;
+            $value = $this->getOriginal('billing_descriptor');
+            $value = PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.'/'.$value;
         } else {
             $value = $this->billing_descriptor;
         }
@@ -583,12 +593,19 @@ class OdinProduct extends Model
     /**
      * Returns product by Sku
      * @param string $sku
+     * @param bool $throwable
+     * @param array $select
      * @return OdinProduct|null
      * @throws ProductNotFoundException
      */
-    public static function getBySku(string $sku, bool $throwable = true): ?OdinProduct
+    public static function getBySku(string $sku, bool $throwable = true, $select = []): ?OdinProduct
     {
-        $product = OdinProduct::where('skus.code', $sku)->first();
+        $query = OdinProduct::where('skus.code', $sku);
+        if ($select) {
+            $query->select($select);
+        }
+        $product = $query->first();
+
         if (!$product && $throwable) {
             throw new ProductNotFoundException("Product {$sku} not found");
         }

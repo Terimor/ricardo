@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       form: {
-        state: (js_data.customer && js_data.customer.address && js_data.customer.address.state) || null,
+        state: null,
       },
     };
   },

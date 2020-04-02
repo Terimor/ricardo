@@ -179,11 +179,12 @@ class Domain extends Model
     {
         $domain = Domain::getByName();
         $priceSet = null;
-        if ($domain && !empty($domain->product)) {
-            $product =  $domain->product;
+        if ($domain && !empty($domain->odin_product_id)) {
+            $product = OdinProduct::getById($domain->odin_product_id, ['prices.price_set']);
+            $product->skip_prices = true;
             if ($product) {
                 $prices = $product['prices'];
-                $priceSet = $prices['price_set'] ?? $price_set;
+                $priceSet = $prices['price_set'] ?? null;
             }
         }
         return $priceSet;

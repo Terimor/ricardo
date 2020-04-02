@@ -106,6 +106,7 @@ export default {
 
 
   created() {
+    this.form_restore_customer();
     this.form_check_3ds_restore();
     this.form_check_3ds_failure();
     this.form_check_3ds_pending();
@@ -146,6 +147,58 @@ export default {
       if (js_query_params['3ds'] === 'pending' && js_query_params.bs_pf_token) {
         this.credit_card_create_order_3ds_bluesnap();
       }
+    },
+
+    form_restore_customer() {
+      if (!js_data.customer) {
+        return;
+      }
+
+      this.form.first_name = js_data.customer.first_name || this.form.first_name;
+      this.form.last_name = js_data.customer.last_name || this.form.last_name;
+      this.form.email = js_data.customer.email || this.form.email;
+      this.form.street = js_data.customer.address && js_data.customer.address.street || this.form.street;
+      this.form.city = js_data.customer.address && js_data.customer.address.city || this.form.city;
+      this.form.state = js_data.customer.address && js_data.customer.address.state || this.form.state;
+      this.form.zipcode = js_data.customer.address && js_data.customer.address.zip || this.form.zipcode;
+
+      this.form.country = js_data.customer.address && js_data.customer.address.country && js_data.countries.indexOf(js_data.customer.address.country) !== -1
+        ? js_data.customer.address.country
+        : this.form.country;
+
+      if (js_data.customer.phone && js_data.customer.address && js_data.customer.address.country) {
+        this.form.phone = js_data.customer.phone;
+
+        js_deps.wait_for(
+          () => !!this.country_codes,
+          () => {
+            const phone_code = this.country_codes[js_data.customer.address.country];
+
+            if (phone_code) {
+              if (js_data.customer.phone.indexOf(phone_code) === 0) {
+                this.form.phone = js_data.customer.phone.substr(phone_code.length);
+                this.form.phone_country = js_data.customer.address.country;
+                this.form.phone_code = phone_code;
+              }
+            }
+          },
+        );
+      }
+    },
+
+    save_3ds_params_to_local_storage() {
+      localStorage.setItem('3ds_params', JSON.stringify(js_query_params));
+    },
+
+    save_form_to_local_storage() {
+      localStorage.setItem('saved_form', JSON.stringify({
+        ...this.form,
+        card_holder: undefined,
+        card_number: undefined,
+        card_type: undefined,
+        card_date: undefined,
+        card_cvv: undefined,
+      }));
     },
 
   },

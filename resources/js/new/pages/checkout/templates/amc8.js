@@ -30,6 +30,7 @@ js_deps.wait(['vue'], () => {
 
 
     created() {
+      this.form_opened_init();
       this.users_online_init();
     },
 
@@ -51,6 +52,12 @@ js_deps.wait(['vue'], () => {
 
 
     methods: {
+
+      form_opened_init() {
+        if (js_data.customer) {
+          this.form.payment_provider = 'credit-card';
+        }
+      },
 
       users_online_init() {
         const duration = Math.floor(Math.random() * (5 - 1 + 1)) + 1;

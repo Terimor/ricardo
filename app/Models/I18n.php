@@ -113,7 +113,8 @@ class I18n extends Model
         '#SURVEY_LINK#',
         '#DATE#',
         '#NUMBER#',
-        '#PHONE#'
+        '#PHONE#',
+        '#FILENAME#'
       ];
 
     /**

@@ -7,6 +7,7 @@ use App\Models\Domain;
 use App\Models\Currency;
 use App\Models\AwsImage;
 use App\Models\PaymentApi;
+use App\Models\File;
 use Illuminate\Http\Request;
 use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
@@ -395,6 +396,10 @@ class ProductService
             }
         }
         $lp->labels = $labels;
+        // TODO: Enable EBOOK
+        //$lp->free_file_id = (string)$product->free_file_id;
+
+
         return $lp;
     }
 
@@ -745,6 +750,23 @@ class ProductService
             }
         }
         return $productsLocale;
+    }
+
+    /**
+     * Returns locale file
+     * @param $id
+     * @return Localize|null
+     */
+    public static function getLocaleFreeFileByFileId($id) {
+        $lp = null;
+        $file = File::getById($id);
+        if ($file) {
+            $lp = new Localize();
+            $lp->name = $file->name;
+            $lp->title = $file->title;
+            $lp->url = $file->getUrl();
+        }
+        return $lp;
     }
 
 }
