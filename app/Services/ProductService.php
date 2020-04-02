@@ -286,7 +286,7 @@ class ProductService
 
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
-                logger()->error("Price is 0 for {$product->product_name}", ['product' => $lp->toArray()]);
+                logger()->error("*Price is 0 for {$product->product_name}", ['quantity' => $quantity,'product' => $product->toArray()]);
                 continue;
             }
             $prices[$quantity]['is_bestseller'] = $pricesOld[$quantity]['is_bestseller'];
@@ -563,7 +563,7 @@ class ProductService
 
         for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
-                logger()->error("Price is 0 for {$product->product_name}", ['product' => $lp->toArray()]);
+                logger()->error("**Price is 0 for {$product->product_name}", ['quantity' => $quantity, 'product' => $product->toArray()]);
                 continue;
             }
             $prices[$quantity]['is_bestseller'] = $pricesOld[$quantity]['is_bestseller'];

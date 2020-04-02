@@ -192,6 +192,7 @@ class OdinProduct extends Model
     {
         // skip prices logic
         $priceSetFound = false;
+        $returnedKey = 0;
         if (!$this->skip_prices) {
             if ($this->currencyObject) {
                 $currency = $this->currencyObject;
@@ -201,7 +202,6 @@ class OdinProduct extends Model
             $numberFormatter = new NumberFormatter($currency->localeString, NumberFormatter::CURRENCY);
             // country depends on IP
             $userCountry = \Utils::getLocationCountryCode();
-            $returnedKey = 0;
         }
 
         //iteration by price sets array
@@ -210,6 +210,7 @@ class OdinProduct extends Model
 
             //iteration by items quantity for selected price set
             for ($quantity = 1; $quantity <= self::QUANTITY_PRICES; $quantity++) {
+                // if skip_prices this value is empty
                 if (!empty($priceSet[$quantity]['value'])) {
                     // val for calculate upsell
                     $value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
