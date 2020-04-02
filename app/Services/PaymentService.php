@@ -479,7 +479,7 @@ class PaymentService
         $cardtk = CardService::getCardToken($order->number, false);
         $order_product = $order->getMainProduct(false);
 
-        $result = ['status' => Txn::STATUS_FAILED, 'errors' => []];
+        $result = ['status' => Txn::STATUS_FAILED, 'errors' => [], 'value' => $order_txn['value']];
         if (!$cardtk || !$order_product) {
             logger()->info("Pre-Fallback [{$order->number}]", ['card' => (bool)$cardtk, 'order_product' => (bool)$order_product]);
             return $result;
