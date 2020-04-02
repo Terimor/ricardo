@@ -583,12 +583,19 @@ class OdinProduct extends Model
     /**
      * Returns product by Sku
      * @param string $sku
+     * @param bool $throwable
+     * @param array $select
      * @return OdinProduct|null
      * @throws ProductNotFoundException
      */
-    public static function getBySku(string $sku, bool $throwable = true): ?OdinProduct
+    public static function getBySku(string $sku, bool $throwable = true, $select = []): ?OdinProduct
     {
-        $product = OdinProduct::where('skus.code', $sku)->first();
+        $query = OdinProduct::where('skus.code', $sku);
+        if ($select) {
+            $query->select($select);
+        }
+        $product = $query->first();
+
         if (!$product && $throwable) {
             throw new ProductNotFoundException("Product {$sku} not found");
         }

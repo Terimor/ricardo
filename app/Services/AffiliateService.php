@@ -447,7 +447,7 @@ class AffiliateService
             }
             // check by product parameter
             if (!$priceSet && $request->get('product')) {
-              $product = OdinProduct::getBySku($request->get('product'), false);
+              $product = OdinProduct::getBySku($request->get('product'), false, ['prices.price_set']);
               if ($product) {
                   $prices = $product['prices'];
                   $priceSet = $prices['price_set'] ?? null;
