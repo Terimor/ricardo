@@ -92,10 +92,6 @@ export default {
       return data;
     },
 
-    currentPrices() {
-      return this.upsellPrices['1'] && this.upsellPrices['1'];
-    },
-
     selectedProductData() {
       let selectedProductData = {};
 
@@ -116,14 +112,18 @@ export default {
     getUppSells(this.id, this.selectedProductData.quantity || this.selectedProductData.deal || 1)
       .then(res => {
         if (res && res.data) {
-          this.name = res.data.upsell.long_name;
-          this.description = res.data.upsell.description;
           this.upsellPrices = res.data.upsell.upsellPrices;
+          this.name = res.data.upsell.long_name;
+
+          this.description = this.id === js_data.product.id && res.data.upsell.upsell_plusone_text
+            ? res.data.upsell.upsell_plusone_text
+            : res.data.upsell.description;
+
           this.imageUrl = res.data.upsell.upsell_hero_image;
-          this.priceFormatted = this.currentPrices.price_text;
-          this.price = this.currentPrices.price;
-          this.finalPrice = this.currentPrices.price_text;
-          this.finalPricePure = this.currentPrices.price;
+          this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
+          this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price || 0;
+          this.finalPrice = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
+          this.finalPricePure = this.upsellPrices['1'] && this.upsellPrices['1'].price || 0;
         }
       })
       .then(() => {
@@ -133,8 +133,10 @@ export default {
 
   methods: {
     add(quantity) {
-      this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].price_text;
-      this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].price;
+      quantity = +quantity;
+
+      this.finalPrice = this.upsellPrices && this.upsellPrices[quantity].price_text || '';
+      this.finalPricePure = this.upsellPrices && this.upsellPrices[quantity].price || 0;
 
       this.addToCart(quantity);
     }

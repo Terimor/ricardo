@@ -661,7 +661,7 @@ class SiteController extends Controller
             $prv_res = ['name' => PaymentProviders::$list[$prv]['name'], 'percent' => $pct, 'status' => 1];
             if (isset($txn_limits[$prv])) {
                 if ($pct < $txn_limits[$prv]) {
-//                    $result = $bad;
+                    $result = $bad;
                     $prv_res['status'] = 0;
                 }
             } else {

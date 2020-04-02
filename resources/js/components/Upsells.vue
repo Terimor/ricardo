@@ -334,7 +334,6 @@
           this.log_data('UPSELLS: total=0 - delete', {
             force: true,
             url: location.href,
-            accessoryStep: val,
             subOrder: localStorage.getItem('subOrder'),
             totalAccessoryPrice: this.totalAccessoryPrice,
             formattedAccessoryList: this.formattedAccessoryList,
@@ -422,7 +421,13 @@
             }
 
             .image {
+                margin-left: 15px;
                 max-width: 300px;
+
+                [dir="rtl"] & {
+                  margin-left: 0;
+                  margin-right: 15px;
+                }
 
                 img {
                     max-width: 150px;

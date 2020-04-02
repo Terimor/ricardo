@@ -8,7 +8,6 @@ use App\Models\Currency;
 use App\Constants\PaymentProviders;
 use App\Mappers\StripeCodeMapper;
 use App\Mappers\StripeAmountMapper;
-use mysql_xdevapi\Warning;
 use Stripe\Event;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Exception\SignatureVerificationException;
@@ -75,7 +74,7 @@ class StripeService
                 $pi = $event->data->object; // contains a PaymentIntent
                 break;
             default:
-                logger()->info('Stripe unknown event', ['payload' => $payload]);
+                logger()->warning('Stripe unknown event', ['payload' => $payload]);
         endswitch;
 
         return $pi;
@@ -194,6 +193,7 @@ class StripeService
                 $data['status'] = Txn::STATUS_APPROVED;
                 break;
             case self::PI_STATUS_CANCELED:
+            default:
                 $data['status'] = Txn::STATUS_FAILED;
                 $data['errors'] = [
                     StripeCodeMapper::toPhrase(
@@ -205,7 +205,6 @@ class StripeService
                     optional($pi->last_payment_error)['decline_code'] ?? null,
                     optional($pi->last_payment_error)['code']
                 );
-                break;
         endswitch;
 
         return $data;
@@ -295,17 +294,14 @@ class StripeService
 
             $reply = $this->preparePaymentResponse($pi, $reply);
         } catch (ApiErrorException $ex) {
-            $reply['provider_data'] = ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()];
-            $reply['errors'] = [
-                StripeCodeMapper::toPhrase(optional($ex->getError())->decline_code ?? null, optional($ex->getError())->code)
-            ];
-            $reply['fallback'] = StripeCodeMapper::toPhrase(
-                optional($ex->getError())->decline_code ?? null,
-                optional($ex->getError())->code
-            );
+            if ($pi = optional($ex->getError())->payment_intent) {
+                $reply = $this->preparePaymentResponse($pi, $reply);
+            }
+            logger()->warning('Stripe pay-by-card', ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()]);
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
             $reply['errors'] = [StripeCodeMapper::toPhrase()];
+            logger()->warning('Stripe pay-by-card', $result['provider_data']);
         }
 
         return $reply;
@@ -340,16 +336,10 @@ class StripeService
                 $reply['errors'] = [StripeCodeMapper::toPhrase()];
             }
         } catch (ApiErrorException $ex) {
-            $reply['provider_data'] = ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()];
-            $reply['errors'] = [
-                StripeCodeMapper::toPhrase(optional($ex->getError())->decline_code ?? null, optional($ex->getError())->code)
-            ];
-            $reply['fallback'] = StripeCodeMapper::toPhrase(
-                optional($ex->getError())->decline_code ?? null,
-                optional($ex->getError())->code
-            );
-
-            logger()->warning('Stripe pay by saved card', $reply['provider_data']);
+            if ($pi = optional($ex->getError())->payment_intent) {
+                $reply = $this->preparePaymentResponse($pi, $reply);
+            }
+            logger()->warning('Stripe pay-by-saved-card', ['code' => $ex->getHttpStatus(), 'message' => $ex->getHttpBody()]);
         } catch (\Exception $ex) {
             $result['provider_data'] = ['code' => $ex->getCode(), 'message' => $ex->getMessage()];
             $reply['errors'] = [StripeCodeMapper::toPhrase()];
@@ -460,7 +450,7 @@ class StripeService
                 ];
                 break;
             default:
-                logger()->info('Stripe unknown event', ['payload' => $payload]);
+                logger()->warning('Stripe unknown event', ['payload' => $payload]);
         endswitch;
 
         return $result;

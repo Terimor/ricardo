@@ -368,9 +368,12 @@ class MinteService
                 $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
-                logger()->warning("Mint-e auth", ['body' => $body_decoded]);
+                logger()->warning("Mint-e auth", [
+                    'req' => array_merge($body, ['cardnumber' => UtilsService::prepareCardNumber($card['number'])]),
+                    'res' => $body_decoded
+                ]);
 
-                $result['hash'] = "fail_" . UtilsService::randomString(16);
+                $result['hash'] = $body_decoded['transid'] ?? "fail_" . UtilsService::randomString(16);
                 $result['status'] = Txn::STATUS_FAILED;
                 $result['fallback'] = $this->checkErrorToFallback($body_decoded);
                 $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'] ?? null, $body_decoded['errormessage'] ?? null)];
@@ -430,7 +433,7 @@ class MinteService
                 $result['status'] = Txn::STATUS_APPROVED;
                 $result['hash'] = $body_decoded['midtransid'];
             } else {
-                logger()->warning("Mint-e capture", ['body' => $body_decoded]);
+                logger()->warning("Mint-e capture", ['req' => $body,'res' => $body_decoded]);
 
                 $result['status'] = Txn::STATUS_FAILED;
                 $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'], $body_decoded['errormessage'])];
@@ -439,11 +442,11 @@ class MinteService
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
 
-            logger()->warning("Mint-e capture", ['res'  => $res]);
-
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
             $result['status']   = Txn::STATUS_FAILED;
+
+            logger()->warning("Mint-e capture", $result['provider_data']);
         }
         return $result;
     }

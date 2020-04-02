@@ -652,8 +652,8 @@ class CardService {
 
         switch ($payment['status']):
             case Txn::STATUS_FAILED:
-                $result['errors'] = $payment['errors'];
                 PaymentService::cacheOrderErrors(['number' => $order->number, 'errors' => $payment['errors']]);
+                $result['errors'] = $payment['errors'];
                 break;
             case Txn::STATUS_APPROVED:
                 PaymentService::approveOrder($payment, $payment['payment_provider']);
