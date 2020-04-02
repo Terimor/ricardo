@@ -23,7 +23,17 @@
 
       <div class="deal-content">
         <div class="deal-label">
-          {!! !empty($product->labels[$deal['quantity']]) ? $product->labels[$deal['quantity']] : t('checkout.common_labels.q' . $deal['quantity']) !!}
+          <span class="deal-label-1">
+            <span class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</span>
+            <span class="deal-name">{{ $product->product_name }}</span>
+            @if ($deals_free_quantities[$deal['quantity']])
+              <span class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('fmc5.free') }}</span>
+            @endif
+          </span>
+          <span>&nbsp;-&nbsp;</span>
+          <span class="deal-label-2">
+            {!! !empty($product->labels[$deal['quantity']]) ? $product->labels[$deal['quantity']] : t('checkout.common_labels.q' . $deal['quantity']) !!}
+          </span>
         </div>
       </div>
 
@@ -40,8 +50,8 @@
         </div>
 
         <div class="deal-old-price">
-          <div class="deal-old-price-reg">{{ t('checkout.reg') }}&nbsp;</div>
-          <div class="deal-old-price-value" v-html="xprice_perdeal_old_text[{{ $deal['quantity'] }}]"></div>
+          <span class="deal-old-price-reg">{{ t('checkout.reg') }}&nbsp;</span>
+          <span class="deal-old-price-value" v-html="xprice_perdeal_old_text[{{ $deal['quantity'] }}]"></span>
         </div>
 
         <div class="deal-new-price" v-html="xprice_perdeal_text[{{ $deal['quantity'] }}]"></div>
