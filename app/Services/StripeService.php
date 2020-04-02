@@ -14,6 +14,7 @@ use Stripe\Exception\SignatureVerificationException;
 use Stripe\Stripe;
 use Stripe\Webhook;
 use Stripe\Customer;
+use Stripe\Refund;
 use Stripe\PaymentMethod;
 use Stripe\PaymentIntent;
 
@@ -24,6 +25,10 @@ use Stripe\PaymentIntent;
 class StripeService
 {
     use ProviderServiceTrait;
+
+    const REFUND_STATUS_SUCCESS = 'succeeded';
+    const REFUND_STATUS_FAILED  = 'failed';
+    const REFUND_STATUS_PENDING = 'pending';
 
     const PI_STATUS_ACTION      = 'requires_action';
     const PI_STATUS_SUCCESSED   = 'succeeded';
@@ -404,6 +409,45 @@ class StripeService
                 'phone' => $pm->billing_details['phone']
             ]
         ]);
+    }
+
+    /**
+     * Invokes refund
+     * @param string $pi_id
+     * @param string $currency
+     * @param float|null $amount
+     * @return array
+     */
+    public function refund(string $pi_id, string $currency, ?float $amount = null): array
+    {
+        $result = ['status' => false];
+        try {
+            $body = ['payment_intent' => $pi_id];
+            if ($amount) {
+                $body['amount'] = StripeAmountMapper::toProvider($amount, $currency);
+            }
+
+            $r = Refund::create($body);
+
+            switch ($r->status):
+                case self::REFUND_STATUS_SUCCESS:
+                    $result['status'] = true;
+                    break;
+                case self::REFUND_STATUS_PENDING:
+                    $result['errors'] = ["Refund pending. Need to check. [{$pi_id}]"];
+                    break;
+                case self::REFUND_STATUS_FAILED:
+                    $result['errors'] = ["Refund reason - {$r->failure_reason} [{$pi_id}]"];
+                    break;
+            endswitch;
+        } catch (ApiErrorException $ex) {
+            $result['errors'] = [(optional($ex->getError())->message ?? 'Something went wrong') . " [{$pi_id}]"];
+            logger()->warning('Stripe refund', ['code' => $ex->getHttpStatus(), 'message' => $ex->getJsonBody()]);
+        } catch (\Exception $ex) {
+            $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " [{$pi_id}]"];
+            logger()->warning("Stripe refund", ['code' => $ex->getCode(), 'message' => $ex->getMessage()]);
+        }
+        return $result;
     }
 
     /**

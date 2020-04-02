@@ -975,6 +975,9 @@ class CardService {
                     }
                     $result = (new MinteService($api))->refund($txn['capture_hash'], $amount ?? $txn['value']);
                     break;
+                case PaymentProviders::STRIPE:
+                    $result = (new StripeService($api))->refund($txn_hash, $order->currency, $amount);
+                    break;
                 default:
                     $result['errors'] = ["Refund for {$txn['payment_provider']} not implemented yet. [$txn_hash]"];
                     logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
