@@ -4,7 +4,7 @@
       name="component-fade"
       mode="out-in"
     >
-      <div v-if="id && !isLoading">
+      <div v-if="id && name">
         <h5>
           {{ thankYouText }}
           <span class="green-up">
@@ -15,25 +15,25 @@
           </span>
         </h5>
         <div class="upsells-component__item">
-            <div
-              class="benefits"
-              v-html="description"
-            />
-            <div class="image">
-              <img
-                :src="imageUrl"
-                :alt="`image for ${name}`"
-              >
-            </div>
-        </div>
-        <div class="upsells-component__bot justify-content-center">
-            <green-button
-              @click="add(1)"
-              :is-loading="isLoading"
+          <div
+            class="benefits"
+            v-html="description"
+          ></div>
+          <div class="image">
+            <img
+              :src="imageUrl"
+              :alt="`image for ${name}`"
             >
-              {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
-            </green-button>
+          </div>
         </div>
+      </div>
+      <div class="upsells-component__bot justify-content-center">
+        <green-button
+          @click="add(1)"
+          :is-loading="isLoading || !upsellPrices['1']"
+        >
+          {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
+        </green-button>
       </div>
     </transition>
   </div>
@@ -71,7 +71,7 @@
             this.isLoading = true;
             getUppSells(newVal, 1, this.accessoryStep)
               .then(res => {
-                window.serverData[this.accessoryStep] = res && res.data || null;
+                window.serverData[this.accessoryStep] = window.serverData[this.accessoryStep] || (res && res.data) || null;
 
                 if (res && res.data) {
                   this.upsellPrices = res.data.upsell.upsellPrices;

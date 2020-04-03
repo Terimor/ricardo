@@ -37,6 +37,11 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
   return fetch(`/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`)
     .then(resp => {
       if (!resp.ok) {
+        window.serverData[accessoryStep] = {
+          status: resp.status,
+          statusText: resp.statusText,
+        };
+
         throw new Error(resp.statusText);
       }
 
@@ -44,9 +49,6 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
     })
     .then(res => ({ data: res }))
     .catch(err => {
-      window.serverData[accessoryStep] = {
-        error: true,
-        message: err.message,
-      };
+
     });
 };
