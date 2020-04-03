@@ -195,6 +195,5 @@ return [
     */
 
     'same_site' => null,
-    'field' => 'id'
 
 ];
