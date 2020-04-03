@@ -34,7 +34,7 @@
         :list="selectList"
       />
       <green-button
-        :is-loading="isLoading || !upsellPrices"
+        :is-loading="isLoading"
         @click="add(quantity)"
       >
         {{ addToCartText }}

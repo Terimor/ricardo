@@ -1,35 +1,16 @@
-<div
-  v-cloak
-  v-if="leave_modal_visible"
-  class="leave-modal">
+<template>
+  <div
+    v-if="leave_modal_visible"
+    class="leave-modal">
 
-  <div class="inside">
-
-    <img
-      data-src="{{ $product->logo_image ?? '' }}"
-      class="leave-modal-logo lazy"
-      alt="" />
-
-    {!!
-      t('exit_popup.text', [
-        'count' => $deals_main_quantities[$deal_promo['quantity']] ?? 0,
-        'amount' => $deals_free_quantities[$deal_promo['quantity']] ?? 0,
-        'payment_details' => $deal_promo['value_text'] ?? '',
-      ])
-    !!}
-
-    <button
-      class="leave-modal-offer-btn"
-      @click="leave_modal_agree_click">
-      {!! t('exit_popup.agree') !!}
-    </button>
-
-    <button
-      class="leave-modal-close-btn"
-      @click="leave_modal_close_click">
-      {!! t('exit_popup.close') !!}
-    </button>
+    <div class="inside">
+      <div class="line1">{!! t('exit_popup.line1') !!}</div>
+      <div class="line2">{!! t('exit_popup.line2') !!}</div>
+      <div class="line3">{!! t('exit_popup.line3') !!}</div>
+      <div class="line4">{!! t('exit_popup.line4', ['product' => $product->product_name]) !!}</div>
+      <div class="button" @click="leave_modal_agree_click">{!! t('exit_popup.button') !!}</div>
+      <div class="link" @click="leave_modal_close_click">{!! t('exit_popup.link') !!}</div>
+    </div>
 
   </div>
-
-</div>
+</template>

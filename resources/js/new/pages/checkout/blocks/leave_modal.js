@@ -20,7 +20,7 @@ export default {
   computed: {
 
     leave_modal_enabled() {
-      return js_query_params.exit === '{exit}' || +js_query_params.exit === 1;
+      return +js_query_params.exit !== 0;
     },
 
   },
@@ -29,7 +29,7 @@ export default {
   methods: {
 
     leave_modal_init() {
-      const timeout = 15000 + (this.preloader_enabled ? 10000 : 0);
+      const timeout = 5000 + (this.preloader_enabled ? 10000 : 0);
 
       setTimeout(() => {
         document.addEventListener('mouseleave', () => {

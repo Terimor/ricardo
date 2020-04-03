@@ -23,7 +23,7 @@
       :countryCode="countryCode"
       :show-preloader.sync="showPreloader"/>
     <leave-modal
-      v-if="+queryParams.exit === 1"
+      v-if="+queryParams.exit !== 0"
       :show-preloader="showPreloader"
     />
   </div>
