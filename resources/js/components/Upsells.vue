@@ -31,6 +31,7 @@
                     @addAccessory="addAccessory"
                     :discount="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].discount_percent || 0"
                     :id="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].product_id || ''"
+                    :accessoryStep="accessoryStep"
                   />
                 </transition>
                 <p class="no">
@@ -151,6 +152,8 @@
     },
 
     beforeCreate() {
+      window.serverData = {};
+
       localStorage.removeItem('subOrder');
 
       if (js_data.product.upsells.length === 0 || (window.performance && performance.navigation && performance.navigation.type == 1)) {
@@ -175,11 +178,13 @@
                     force: true,
                     url: location.href,
                     accessoryStep: val,
+                    serverData: window.serverData,
                     subOrder: localStorage.getItem('subOrder'),
                     totalAccessoryPrice: this.totalAccessoryPrice,
                     formattedAccessoryList: this.formattedAccessoryList,
                     accessoryList: this.accessoryList,
                     upsellsObj: this.upsellsObj,
+                    ua: navigator.userAgent,
                   });
                 }
 
@@ -334,11 +339,13 @@
           this.log_data('UPSELLS: total=0 - delete', {
             force: true,
             url: location.href,
+            serverData: window.serverData,
             subOrder: localStorage.getItem('subOrder'),
             totalAccessoryPrice: this.totalAccessoryPrice,
             formattedAccessoryList: this.formattedAccessoryList,
             accessoryList: this.accessoryList,
             upsellsObj: this.upsellsObj,
+            ua: navigator.userAgent,
           });
         }
 

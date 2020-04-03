@@ -182,11 +182,10 @@ return [
         Stevebauman\Location\LocationServiceProvider::class,
         Sentry\Laravel\ServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
-        //Jenssegers\Mongodb\Session\SessionServiceProvider::class,
+        Jenssegers\Mongodb\Session\SessionServiceProvider::class,
         App\Providers\ViewServiceProvider::class,
         App\Providers\CacheServiceProvider::class,
         Jenssegers\Agent\AgentServiceProvider::class,
-        Jenssegers\Mongodb\Session\SessionServiceProvider::class,
     ],
 
     /*

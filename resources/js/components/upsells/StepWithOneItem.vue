@@ -4,35 +4,37 @@
       name="component-fade"
       mode="out-in"
     >
-      <div v-if="id && !isLoading">
-        <h5>
-          {{ thankYouText }}
-          <span class="green-up">
-            {{ name }}
-          </span>
-          <span v-if="discount">
-            {{ forText }} {{ discount }}% {{ offText }}!
-          </span>
-        </h5>
-        <div class="upsells-component__item">
+      <div v-if="id">
+        <div v-if="name">
+          <h5>
+            {{ thankYouText }}
+            <span class="green-up">
+              {{ name }}
+            </span>
+            <span v-if="discount">
+              {{ forText }} {{ discount }}% {{ offText }}!
+            </span>
+          </h5>
+          <div class="upsells-component__item">
             <div
               class="benefits"
               v-html="description"
-            />
+            ></div>
             <div class="image">
               <img
                 :src="imageUrl"
                 :alt="`image for ${name}`"
               >
             </div>
+          </div>
         </div>
         <div class="upsells-component__bot justify-content-center">
-            <green-button
-              @click="add(1)"
-              :is-loading="isLoading"
-            >
-              {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
-            </green-button>
+          <green-button
+            @click="add(1)"
+            :is-loading="isLoading || !upsellPrices['1']"
+          >
+            {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
+          </green-button>
         </div>
       </div>
     </transition>
@@ -47,16 +49,7 @@
   export default {
     name: 'StepWithOneItem',
     mixins: [upsells],
-    props: {
-      id: {
-        type: String,
-        default: '',
-      },
-      discount: {
-        type: Number,
-        default: 0,
-      },
-    },
+    props: ['id', 'discount', 'accessoryStep'],
 
     data() {
       return {
@@ -77,9 +70,12 @@
         immediate: true,
         handler(newVal) {
           if (newVal) {
+            this.name = null;
             this.isLoading = true;
-            getUppSells(newVal, 1)
+            getUppSells(newVal, 1, this.accessoryStep)
               .then(res => {
+                window.serverData[this.accessoryStep] = window.serverData[this.accessoryStep] || (res && res.data) || null;
+
                 if (res && res.data) {
                   this.upsellPrices = res.data.upsell.upsellPrices;
                   this.name = res.data.upsell.long_name;

@@ -31,12 +31,17 @@ export const getTotalPrice = (data, total) => {
     });
 };
 
-export const getUppSells = (product_id, quantity) => {
+export const getUppSells = (product_id, quantity, accessoryStep) => {
   const cur = localStorage.getItem('order_currency');
 
   return fetch(`/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`)
     .then(resp => {
       if (!resp.ok) {
+        window.serverData[accessoryStep] = {
+          status: resp.status,
+          statusText: resp.statusText,
+        };
+
         throw new Error(resp.statusText);
       }
 

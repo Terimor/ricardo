@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(PayPalHttpClient::class, function () {
             $payment_api = PaymentApi::getActivePaypal();
-            $credentials = Setting::getValue([                                        
+            $credentials = Setting::getValue([
                     'instant_payment_paypal_mode',
             ]);
             $client_id = $payment_api->key;

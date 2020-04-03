@@ -16,7 +16,7 @@
         <div
           class="benefits"
           v-html="description"
-        />
+        ></div>
         <div class="image">
           <img
             :src="imageUrl"
@@ -24,21 +24,21 @@
           >
         </div>
       </div>
-      <div class="upsells-component__bot">
-        <select-field
-          v-if="upsellPrices"
-          :standart="true"
-          :label="`${pleaseChooseText}:`"
-          v-model="quantity"
-          :list="selectList"
-        />
-        <green-button
-          :is-loading="isLoading || !upsellPrices"
-          @click="add(quantity)"
-        >
-          {{ addToCartText }}
-        </green-button>
-      </div>
+    </div>
+    <div class="upsells-component__bot">
+      <select-field
+        v-if="upsellPrices"
+        :standart="true"
+        :label="`${pleaseChooseText}:`"
+        v-model="quantity"
+        :list="selectList"
+      />
+      <green-button
+        :is-loading="isLoading || !upsellPrices"
+        @click="add(quantity)"
+      >
+        {{ addToCartText }}
+      </green-button>
     </div>
   </div>
 </template>
@@ -50,12 +50,7 @@ import { getUppSells } from '../../services/upsells';
 export default {
   name: 'Step3',
   mixins: [upsells],
-  props: {
-    id: {
-      type: String,
-      default: '',
-    },
-  },
+  props: ['id', 'accessoryStep'],
   data () {
     return {
       quantity: 1,
@@ -109,8 +104,10 @@ export default {
 
   mounted() {
     this.isLoading = true;
-    getUppSells(this.id, this.selectedProductData.quantity || this.selectedProductData.deal || 1)
+    getUppSells(this.id, this.selectedProductData.quantity || this.selectedProductData.deal || 1, this.accessoryStep)
       .then(res => {
+        window.serverData[this.accessoryStep] = window.serverData[this.accessoryStep] || (res && res.data) || null;
+
         if (res && res.data) {
           this.upsellPrices = res.data.upsell.upsellPrices;
           this.name = res.data.upsell.long_name;
