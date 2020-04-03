@@ -4,36 +4,38 @@
       name="component-fade"
       mode="out-in"
     >
-      <div v-if="id && name">
-        <h5>
-          {{ thankYouText }}
-          <span class="green-up">
-            {{ name }}
-          </span>
-          <span v-if="discount">
-            {{ forText }} {{ discount }}% {{ offText }}!
-          </span>
-        </h5>
-        <div class="upsells-component__item">
-          <div
-            class="benefits"
-            v-html="description"
-          ></div>
-          <div class="image">
-            <img
-              :src="imageUrl"
-              :alt="`image for ${name}`"
-            >
+      <div v-if="id">
+        <div v-if="name">
+          <h5>
+            {{ thankYouText }}
+            <span class="green-up">
+              {{ name }}
+            </span>
+            <span v-if="discount">
+              {{ forText }} {{ discount }}% {{ offText }}!
+            </span>
+          </h5>
+          <div class="upsells-component__item">
+            <div
+              class="benefits"
+              v-html="description"
+            ></div>
+            <div class="image">
+              <img
+                :src="imageUrl"
+                :alt="`image for ${name}`"
+              >
+            </div>
           </div>
         </div>
-      </div>
-      <div class="upsells-component__bot justify-content-center">
-        <green-button
-          @click="add(1)"
-          :is-loading="isLoading || !upsellPrices['1']"
-        >
-          {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
-        </green-button>
+        <div class="upsells-component__bot justify-content-center">
+          <green-button
+            @click="add(1)"
+            :is-loading="isLoading || !upsellPrices['1']"
+          >
+            {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
+          </green-button>
+        </div>
       </div>
     </transition>
   </div>
@@ -68,6 +70,7 @@
         immediate: true,
         handler(newVal) {
           if (newVal) {
+            this.name = null;
             this.isLoading = true;
             getUppSells(newVal, 1, this.accessoryStep)
               .then(res => {
