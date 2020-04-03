@@ -28,37 +28,10 @@ class I18nService
                 if (strpos($category, '_page')) {
                     $categories[] = 'global_page';
                 }
-                if ($language == 'en') {
-                    $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories'])->get();
-                } else {
-                    $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories', $language])->get();
-                }
+                $phrases = I18n::getPhrases($categories, $language);
 
-                $issetCategory = false;
-                // generate array of en and lang values
-                foreach ($phrases as $phrase) {
-                    if (!$phrase->en) {
-                        logger()->error("Empty EN phrase", ['phrase' => $phrase->phrase]);
-                    }
-                    $loadedPhrases['en'][$phrase->phrase] = $phrase->en;
-                    if ($language != 'en') {
-                        $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
-                    }
+                $loadedPhrases = static::preparePhrases($phrases, $category, $language);
 
-                    // check if one phrase isset for this category
-                    if (!$issetCategory && in_array($category, $phrase->categories)) {
-                        $issetCategory = true;
-                    }
-                }
-
-                if (empty($loadedPhrases[$language])) {
-                    logger()->error('Loaded phrases is empty', ['language' => $language, 'category' => $category]);
-                    $loadedPhrases[$language] = [];
-                }
-
-                if (!$issetCategory) {
-                    logger()->error('0 phrases for category ' . $category);
-                }
                 Cache::put($cacheKey, $loadedPhrases, 600);
             }
 
@@ -66,6 +39,44 @@ class I18nService
         }
 
         return I18n::$loadedPhrases[$language];
+    }
+
+    /**
+     * Prepare loaded phrases to cache
+     * @param $phrases
+     * @param string $category
+     * @param string $language
+     * @return array
+     */
+    public static function preparePhrases($phrases, string $category, string $language): array
+    {
+        $loadedPhrases = [];
+        $issetCategory = false;
+        // generate array of en and lang values
+        foreach ($phrases as $phrase) {
+            if (!$phrase->en) {
+                logger()->error("Empty EN phrase", ['phrase' => $phrase->phrase]);
+            }
+            $loadedPhrases['en'][$phrase->phrase] = $phrase->en;
+            if ($language != 'en') {
+                $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
+            }
+
+            // check if one phrase isset for this category
+            if (!$issetCategory && in_array($category, $phrase->categories)) {
+                $issetCategory = true;
+            }
+        }
+
+        if (empty($loadedPhrases[$language])) {
+            logger()->error('Loaded phrases is empty', ['language' => $language, 'category' => $category]);
+            $loadedPhrases[$language] = [];
+        }
+
+        if (!$issetCategory) {
+            logger()->error('0 phrases for category ' . $category);
+        }
+        return $loadedPhrases;
     }
 
     /**

@@ -163,4 +163,20 @@ class I18n extends Model
         }
         return $translation;
     }
+
+    /**
+     * Get phrases depends on categories and language
+     * @param array $categories
+     * @param string $language
+     * @return mixed
+     */
+    public static function getPhrases(array $categories, string $language)
+    {
+        if ($language == 'en') {
+            $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories'])->get();
+        } else {
+            $phrases = I18n::whereIn('categories', $categories)->select(['phrase', 'en', 'categories', $language])->get();
+        }
+        return $phrases;
+    }
 }
