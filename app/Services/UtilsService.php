@@ -576,6 +576,25 @@ class UtilsService
     ];
 
     /**
+     * Countries which not support has_battery products
+     * @var array
+     */
+    public static $excludeBatteryShipping = [
+        'as',
+        'gu',
+        'mp',
+        'pr',
+        'vi',
+        'um',
+        'ph',
+        'co',
+        'ni',
+        'ar',
+        'pa',
+        'st'
+    ];
+
+    /**
      * EU countries
      * Linked from Saga: GeoConstants::$countries_eu
      */
@@ -680,11 +699,39 @@ class UtilsService
     /**
      * Get list of shipping countries
      * @param bool $code_only
-     * @param bool|null $is_europe_only
-     * @param array|null $countries_codes
+     * @param $product
      * @return array
      */
-    public static function getShippingCountries(bool $code_only = false, ?bool $is_europe_only = false, ?array $countries_codes = []): array
+    public static function getShippingCountries(bool $code_only = false, $product): array
+    {
+        $is_europe_only = $product->is_europe_only ?? null;
+        $countries_codes = $product->countries ?? [];
+        $has_battery = $product->has_battery ?? false;
+        $countries = static::prepareShippingCountriesByCodes($countries_codes, $code_only, $is_europe_only);
+        // exclude shipping countries from existings
+        if ($code_only) {
+            $countries = array_values(array_diff($countries, static::$excludeShipping));
+        } else {
+            $countries = array_diff_key($countries, array_flip(static::$excludeShipping));
+        }
+        if ($has_battery) {
+            if ($code_only) {
+                $countries = array_values(array_diff($countries, static::$excludeBatteryShipping));
+            } else {
+                $countries = array_diff_key($countries, array_flip(static::$excludeBatteryShipping));
+            }
+        }
+        return $countries;
+    }
+
+    /**
+     * Prepare shipping countries by codes
+     * @param array $countries_codes
+     * @param bool $code_only
+     * @param bool $is_europe_only
+     * @param array $countries
+     */
+    public static function prepareShippingCountriesByCodes(array $countries_codes, bool $code_only, bool $is_europe_only): array
     {
         $countries = [];
         if ($code_only) {
@@ -711,8 +758,6 @@ class UtilsService
                 $countries = self::$countryCodes;
             }
         }
-        // exclude shipping countries from existings
-        $countries = array_values(array_diff($countries, static::$excludeShipping));
         return $countries;
     }
 

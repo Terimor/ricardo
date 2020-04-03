@@ -774,4 +774,22 @@ class OdinProduct extends Model
         }
         return $query->first();
     }
+
+    /**
+     * Has battery
+     * @return bool
+     */
+    public function hasBattery(): bool {
+        $skus = $this->skus ?? null;
+        $hasBattery = false;
+        if ($skus) {
+            foreach ($skus as $sku) {
+                if (!empty($sku['has_battery'])) {
+                    $hasBattery = $sku['has_battery'];
+                    break;
+                }
+            }
+        }
+        return $hasBattery;
+    }
 }
