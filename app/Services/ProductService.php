@@ -47,22 +47,17 @@ class ProductService
 
         if ($request->has('cop_id')) {
             $product = OdinProduct::getResolveProductForLocal(['prices.price_set' => $request->input('cop_id')], $select);
-            //$product = OdinProduct::where('prices.price_set', $request->input('cop_id'))->first();
         }
 
         if (!$product && $request->has('product')) {
             $product = OdinProduct::getResolveProductForLocal(['skus.code' => $request->input('product')], $select);
-            //$product = OdinProduct::where('skus.code', $request->input('product'))->first();
         }
 
         // Domain resolve logic
         $domain = Domain::getByName();
         if (!$product) {
-            if ($domain && !empty($domain->product)) {
-                if (!empty($domain->odin_product_id)) {
-                    $product = OdinProduct::getResolveProductForLocal(['_id' => $domain->odin_product_id], $select);
-                }
-                //$product =  $domain->product;
+            if ($domain && !empty($domain->odin_product_id)) {
+                $product = OdinProduct::getResolveProductForLocal(['_id' => $domain->odin_product_id], $select);
             }
         }
 
