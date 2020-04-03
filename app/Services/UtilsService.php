@@ -706,7 +706,7 @@ class UtilsService
     {
         $is_europe_only = $product->is_europe_only ?? null;
         $countries_codes = $product->countries ?? [];
-        $has_battery = $product->is_has_battery ?? false;
+        $has_battery = $product->has_battery ?? false;
         $countries = static::prepareShippingCountriesByCodes($countries_codes, $code_only, $is_europe_only);
         // exclude shipping countries from existings
         if ($code_only) {
