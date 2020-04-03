@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'driver' => 'database',
+    'driver' => 'mongodb',
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
     |
     */
 
-    'lifetime' => 120,
+    'lifetime' => 30,
 
     'expire_on_close' => false,
 
@@ -72,7 +72,7 @@ return [
     |
     */
 
-    'connection' => env('SESSION_CONNECTION', null),
+    'connection' => env('SESSION_CONNECTION', 'mongodb'),
 
     /*
     |--------------------------------------------------------------------------
