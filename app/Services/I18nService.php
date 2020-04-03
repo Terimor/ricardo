@@ -21,7 +21,7 @@ class I18nService
     {
         $language = app()->getLocale();
         if (empty(I18n::$loadedPhrases[$language])) {
-            $cacheKey = str_replace('_', '', "I18N$category$language");
+            $cacheKey = str_replace('_', '', "I18N{$category}{$language}");
             $loadedPhrases = Cache::get($cacheKey);
             if (!$loadedPhrases) {
                 $categories = [$category];
