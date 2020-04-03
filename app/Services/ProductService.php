@@ -331,6 +331,7 @@ class ProductService
             abort(404, 'Product not available');
         }
         $lp->skus = $skus;
+        $lp->is_has_battery = $product->isHasBattery();
 
         $reviews = [];
         $reviewsOld = $product->reviews;
