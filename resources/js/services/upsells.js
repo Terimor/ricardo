@@ -31,7 +31,7 @@ export const getTotalPrice = (data, total) => {
     });
 };
 
-export const getUppSells = (product_id, quantity) => {
+export const getUppSells = (product_id, quantity, accessoryStep) => {
   const cur = localStorage.getItem('order_currency');
 
   return fetch(`/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`)
@@ -44,6 +44,9 @@ export const getUppSells = (product_id, quantity) => {
     })
     .then(res => ({ data: res }))
     .catch(err => {
-
+      window.serverData[accessoryStep] = {
+        error: true,
+        message: err.message,
+      };
     });
 };

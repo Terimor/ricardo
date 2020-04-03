@@ -47,16 +47,7 @@
   export default {
     name: 'StepWithOneItem',
     mixins: [upsells],
-    props: {
-      id: {
-        type: String,
-        default: '',
-      },
-      discount: {
-        type: Number,
-        default: 0,
-      },
-    },
+    props: ['id', 'discount', 'accessoryStep'],
 
     data() {
       return {
@@ -78,8 +69,10 @@
         handler(newVal) {
           if (newVal) {
             this.isLoading = true;
-            getUppSells(newVal, 1)
+            getUppSells(newVal, 1, this.accessoryStep)
               .then(res => {
+                window.serverData[this.accessoryStep] = res && res.data || null;
+
                 if (res && res.data) {
                   this.upsellPrices = res.data.upsell.upsellPrices;
                   this.name = res.data.upsell.long_name;
