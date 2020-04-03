@@ -12,9 +12,10 @@ class ApiKey
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $req
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $req
+     * @param \Closure $next
      * @return mixed
+     * @throws AuthException
      */
     public function handle(Request $req, Closure $next)
     {

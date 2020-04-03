@@ -51,25 +51,22 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    margin-left: 12px;
-
-    [dir="rtl"] & {
-      margin-left: 0;
-      margin-right: 12px;
-    }
+    margin: 0 12px;
   }
 
   .deal-label {
-    color: #29af5c;
-    display: flex;
-    flex-direction: column;
+    color: #000;
     font-size: 16px;
-    font-weight: 700;
     line-height: 1.1875;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  }
+
+  .deal-label-1 {
+    font-weight: 700;
+  }
+
+  .deal-label-2 {
+    color: #18b4fe;
     text-transform: uppercase;
-    white-space: nowrap;
   }
 
   .deal-line {
@@ -115,9 +112,11 @@
 
   .deal-old-price {
     color: #e74c3c;
-    display: flex;
     font-size: 16px;
     line-height: 1.1875;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .deal-old-price-reg {
@@ -133,5 +132,8 @@
     font-size: 16px;
     font-weight: 700;
     line-height: 1.1875;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
