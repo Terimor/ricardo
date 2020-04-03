@@ -35,6 +35,7 @@ class I18nService
                 Cache::put($cacheKey, $loadedPhrases, 600);
             }
 
+            // returns array with key [$lang]
             I18n::$loadedPhrases = $loadedPhrases;
         }
 
@@ -43,6 +44,7 @@ class I18nService
 
     /**
      * Prepare loaded phrases to cache
+     * Returns array with language key, for example ['de'] => [phrases array]
      * @param $phrases
      * @param string $category
      * @param string $language
@@ -57,9 +59,10 @@ class I18nService
             if (!$phrase->en) {
                 logger()->error("Empty EN phrase", ['phrase' => $phrase->phrase]);
             }
-            $loadedPhrases['en'][$phrase->phrase] = $phrase->en;
             if ($language != 'en') {
                 $loadedPhrases[$language][$phrase->phrase] = !empty($phrase->$language) ? $phrase->$language : $phrase->en;
+            } else {
+                $loadedPhrases['en'][$phrase->phrase] = $phrase->en;
             }
 
             // check if one phrase isset for this category
@@ -80,25 +83,22 @@ class I18nService
     }
 
     /**
-     * Get translation phrase
-     * From saga I18n::t
-     *
+     * Get translation phrase virtual variable
+     * From saga I18n::t but uses virtual variable I18n::$loadedPhrases
      * @param string $phrase
      * @param string $language
      * @param array $args
-     *
      * @return string
      */
-    public static function getTranslatedPhrase(string $phrase, string $language = 'en', array $args = []): string
+    public static function getTranslatedPhrase(string $phrase, string $language, array $args = []): string
     {
         $translation = $phrase;
-        $language = $language ? strtolower($language) : 'en';
+        $language = strtolower($language);
 
         if (isset(I18n::$browser_codes[$language])) {
             $language = I18n::$browser_codes[$language];
         }
 
-        //$translated_languages = I18n::getTranslationLanguages(true);
         $loadedPhrases = !empty(I18n::$loadedPhrases[$language]) ? I18n::$loadedPhrases[$language] : (!empty(I18n::$loadedPhrases['en']) ? I18n::$loadedPhrases['en'] : []);
 
         if (!empty($loadedPhrases[$translation])) {
