@@ -29,6 +29,7 @@ export default {
   methods: {
 
     leave_modal_init() {
+return;
       const timeout = 5000 + (this.preloader_enabled ? 10000 : 0);
 
       setTimeout(() => {
