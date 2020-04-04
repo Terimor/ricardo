@@ -84,7 +84,6 @@
                 document.querySelector('#bio_ep_close').dispatchEvent(event);
             }
             window.agreeLeaveModal = () => {
-                console.log('test')
                 window.closeLeaveModal()
 
                 const element = document.querySelector('.main__deal');
