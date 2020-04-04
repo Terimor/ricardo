@@ -24,6 +24,7 @@
         "jean85/pretty-package-versions": "^1.2",
         "jenssegers/agent": "^2.6",
         "jenssegers/mongodb": "^3.6",
+        "jenssegers/mongodb-session": "^1.3",
         "laravel/framework": "^6.16",
         "laravel/tinker": "^2.2.0",
         "maximebf/debugbar": "^1.16.1",

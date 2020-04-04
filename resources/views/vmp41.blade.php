@@ -370,7 +370,7 @@
     </template>
 
     <leave-modal
-        v-if="+queryParams.exit === 1"
+        v-if="+queryParams.exit !== 0"
         :show-preloader="showPreloader">
     </leave-modal>
 </div>

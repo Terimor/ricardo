@@ -10,64 +10,94 @@
   top: 0;
   z-index: 10000;
 
-  p {
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1.7rem;
-    margin: 0;
+  > .inside {
+    background-color: #ff0;
+    border: 3px solid red;
+    color: #212529;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial,'Noto Sans',sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    justify-content: space-between;
+    line-height: 1.5;
+    margin: 0 10px;
+    max-width: 500px;
+    padding: 1rem;
     text-align: center;
+    width: 100%;
 
-    &.green {
-      margin: .2rem 0;
-      color: #0f9b0f;
+    @media (min-width: 1024px) {
+      max-width: 800px;
+      padding: 1.5rem;
     }
   }
 
-  button {
+  .line1 {
+    color: red;
+    font-size: 50px;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+
+    @media only screen and (min-width: 1024px) {
+      font-size: 58px;
+    }
+  }
+
+  .line2 {
+    color: red;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 1rem;
+
+    @media only screen and (min-width: 1024px) {
+      font-size: 35px;
+    }
+  }
+
+  .line3 {
+    margin-bottom: 1rem;
+  }
+
+  .line4 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 1rem;
+
+    @media only screen and (min-width: 1024px) {
+      font-size: 26px;
+    }
+  }
+
+  .button {
+    background-color: #0ca600;
+    border-color: #0ca600;
+    border-radius: .3rem;
+    color: #fff;
     cursor: pointer;
-    outline: none;
+    font-size: 20px;
+    line-height: 1.5;
+    padding: .5rem 1rem;
+    transition: all .15s ease-in-out;
+    width: 100%;
+
+    &:hover {
+      background-color: #098000;
+      border-color: #087300;
+    }
+
+    @media only screen and (min-width: 1024px) {
+      font-size: 30px;
+    }
   }
-}
 
-.leave-modal > .inside {
-  background-color: #fff;
-  box-shadow: 0px 1px 4px 0 rgba(0,0,0,.5);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: auto 15px;
-  max-width: 100%;
-  padding: 58px 76px 96px;
-  width: 450px;
-}
-
-.leave-modal-logo {
-  height: auto;
-  margin: 0 auto 20px;
-  width: 80%;
-}
-
-.leave-modal-offer-btn {
-  background: linear-gradient(180deg, #9fdf23, #6ac800);
-  border: 1px solid #a4a4a4;
-  border-radius: 3px;
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 29px;
-  margin: 15px 0 22px;
-  padding: 7px 5px;
-
-  &:active {
-    transform: translateY(1px);
+  .link {
+    color: #000;
+    cursor: pointer;
+    padding: .5rem 0;
+    text-decoration: underline;
   }
-}
-
-.leave-modal-close-btn {
-  background: transparent;
-  border: 0;
-  color: #a4a4a4;
-  font-size: 1rem;
-  line-height: 24px;
-  text-decoration: underline;
 }

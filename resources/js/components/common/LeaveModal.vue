@@ -77,6 +77,7 @@
         },
 
         mounted() {
+return;
             window.closeLeaveModal = () => {
                 var event = document.createEvent('Events');
                 event.initEvent('click', true, false);
@@ -100,15 +101,19 @@
                 () => bioEp.init({
                     width: 450,
                     html: `
-                        <div class="leave-modal">
-                            <img class="lazy" src="${this.productImage}" alt="" />
-                            ${this.textText}
-                            <button class="offer-btn" onclick="agreeLeaveModal()">${this.textAgree}</button>
-                            <button class="close-btn" onclick="closeLeaveModal()">${this.textClose}</button>
+                        <div class="leave-modal" onclick="closeLeaveModal()">
+                            <div class="inside" onclick="event.stopPropagation()">
+                                <div class="line1">${ this.$t('exit_popup.line1') }</div>
+                                <div class="line2">${ this.$t('exit_popup.line2') }</div>
+                                <div class="line3">${ this.$t('exit_popup.line3') }</div>
+                                <div class="line4">${ this.$t('exit_popup.line4', { product: js_data.product.product_name }) }</div>
+                                <div class="button" onclick="agreeLeaveModal()">${ this.$t('exit_popup.button') }</div>
+                                <div class="link" onclick="closeLeaveModal()">${ this.$t('exit_popup.link') }</div>
+                            </div>
                         </div>
-                        `,
+                    `,
                     cookieExp: 0,
-                    delay: 15,
+                    delay: 5,
                 }),
             );
         }
@@ -117,68 +122,121 @@
 
 <style lang="scss">
 div#bio_ep {
-    padding: 3% 4% 5%;
-    height: auto;
+    background-color: transparent;
+    bottom: 0;
+    box-shadow: none;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transform: none!important;
+    width: 100%;
 
-    & > div {
-        display: flex;
-        flex-direction: column;
-
-        & > img {
-            width: 80%;
-            height: auto;
-            margin: 0 auto 20px;
-            flex-shrink: 0;
-        }
-
-        p {
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-    }
     #bio_ep_close {
         display: none;
     }
 }
 
 .leave-modal {
-    p {
-        line-height: 1.7rem;
-        text-align: center;
-    }
+    align-items: center;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 
-    .green {
-        margin: 0.2rem 0;
+    > .inside {
+        background-color: #ff0;
+        border: 3px solid red;
+        color: #212529;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial,'Noto Sans',sans-serif;
+        font-size: 1rem;
         font-weight: 400;
-        color: #0f9b0f;
+        justify-content: space-between;
+        line-height: 1.5;
+        margin: 0 10px;
+        max-width: 500px;
+        padding: 1rem;
+        text-align: center;
+        width: 100%;
+
+        @media (min-width: 1024px) {
+            max-width: 800px;
+            padding: 1.5rem;
+        }
     }
 
-    .offer-btn {
-        font-size: 1.2rem;
-        background: linear-gradient(180deg, #9fdf23, #6ac800);
-        border: 1px solid #a4a4a4;
-        color: #fff;
-        border-radius: 3px;
-        padding: 7px 5px;
+    .line1 {
+        color: red;
+        font-size: 50px;
         font-weight: 700;
-        margin: 15px 0 22px;
+        line-height: normal;
+        text-transform: uppercase;
+
+        @media only screen and (min-width: 1024px) {
+            font-size: 58px;
+        }
     }
 
-    .close-btn {
-        color: #a4a4a4;
-        background: transparent;
-        border: 0;
-        text-decoration: underline;
-        transform: none !important;
+    .line2 {
+        color: red;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: normal;
+        margin-bottom: 1rem;
+
+        @media only screen and (min-width: 1024px) {
+            font-size: 35px;
+        }
     }
 
-    button {
-        outline: none;
+    .line3 {
+        margin-bottom: 1rem;
+    }
+
+    .line4 {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: normal;
+        margin-bottom: 1rem;
+
+        @media only screen and (min-width: 1024px) {
+            font-size: 26px;
+        }
+    }
+
+    .button {
+        background-color: #0ca600;
+        border-color: #0ca600;
+        border-radius: .3rem;
+        color: #fff;
         cursor: pointer;
+        font-size: 20px;
+        line-height: 1.5;
+        padding: .5rem 1rem;
+        transition: all .15s ease-in-out;
+        width: 100%;
+
+        &:hover {
+            background-color: #098000;
+            border-color: #087300;
+        }
+
+        @media only screen and (min-width: 1024px) {
+            font-size: 30px;
+        }
     }
 
-    button:active {
-        transform: translateY(1px)
+    .link {
+        color: #000;
+        cursor: pointer;
+        padding: .5rem 0;
+        text-decoration: underline;
     }
 }
 </style>
