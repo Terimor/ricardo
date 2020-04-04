@@ -84,6 +84,7 @@
                 document.querySelector('#bio_ep_close').dispatchEvent(event);
             }
             window.agreeLeaveModal = () => {
+                console.log('test')
                 window.closeLeaveModal()
 
                 const element = document.querySelector('.main__deal');
@@ -100,14 +101,14 @@
                 () => bioEp.init({
                     width: 450,
                     html: `
-                        <div class="leave-modal">
-                            <div class="inside">
+                        <div class="leave-modal" onclick="closeLeaveModal()">
+                            <div class="inside" onclick="event.stopPropagation()">
                                 <div class="line1">${ this.$t('exit_popup.line1') }</div>
                                 <div class="line2">${ this.$t('exit_popup.line2') }</div>
                                 <div class="line3">${ this.$t('exit_popup.line3') }</div>
                                 <div class="line4">${ this.$t('exit_popup.line4', { product: js_data.product.product_name }) }</div>
-                                <div class="button" onclick="agreeLeaveModal">${ this.$t('exit_popup.button') }</div>
-                                <div class="link" onclick="closeLeaveModal">${ this.$t('exit_popup.link') }</div>
+                                <div class="button" onclick="agreeLeaveModal()">${ this.$t('exit_popup.button') }</div>
+                                <div class="link" onclick="closeLeaveModal()">${ this.$t('exit_popup.link') }</div>
                             </div>
                         </div>
                     `,
