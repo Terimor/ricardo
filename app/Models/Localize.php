@@ -17,9 +17,7 @@ class Localize extends Model
             $countryCode = \Utils::getLocationCountryCode();
             foreach ($this->reviews as $key => $review) {
                 $reviews[$key] = $review;
-                $reviews[$key]['city'] = $cities[$key] ?? '';
-                $reviews[$key]['country'] = \Utils::$countryCodes[$countryCode] ?? '';
-                $reviews[$key]['country_code'] = strtoupper($countryCode);
+                $reviews[$key]['city'] = strtoupper($countryCode).', '.$cities[$key] ?? '';
             }
             $this->reviews = $reviews;
         }
