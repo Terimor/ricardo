@@ -28,7 +28,7 @@ class OdinProduct extends Model
     public $skip_prices = false; // hide log if we select only prices.price_set and skip prices calculation
 
     protected $fillable = [
-        'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_digital', 'is_hidden_checkout',
+        'type', 'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_hidden_checkout',
         'logo_image_id', 'favicon_image_id', 'bg_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only',
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'is_choice_required', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
@@ -37,8 +37,8 @@ class OdinProduct extends Model
     ];
 
     protected $hidden = [
-        '_id', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at',
-        'image_id', 'logo_image_id', 'bg_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_digital', 'is_hidden_checkout', 'is_shipping_cost_only',
+        '_id', 'type', 'warehouse_id', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id', 'gads_conversion_label', 'created_at', 'updated_at',
+        'image_id', 'logo_image_id', 'bg_image_id', 'vimeo_id', 'upsell_hero_image_id', 'category_id', 'is_hidden_checkout', 'is_shipping_cost_only',
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'reduce_percent', 'price_correction_percents', 'free_file_id'
     ];
 
