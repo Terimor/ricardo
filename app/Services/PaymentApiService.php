@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Constants\PaymentProviders;
 use App\Models\PaymentApi;
 use App\Models\OdinProduct;
 use App\Models\PaymentLimit;
@@ -99,6 +100,17 @@ class PaymentApiService
         // filter PaymentApis by currency limits
         if ($currency) {
             $filtered = PaymentLimit::getAvailableApis($filtered, $currency, self::PAYMENT_HIGH_LIMIT_PCT);
+        }
+
+        /**
+         * @todo Hotfix: reduces Bluesnap chance
+         * mt_rand(0, 100) < 20, where 20 - magic number that gives 10% in the set [minte,bs]
+         * because rand and shuffle are associated chances
+         */
+        if (count($filtered) > 1) {
+            $filtered = array_filter($filtered, function (PaymentApi $api) {
+                return $api->payment_provider !== PaymentProviders::BLUESNAP || mt_rand(0, 100) < 20;
+            });
         }
 
         shuffle($filtered);

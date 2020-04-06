@@ -40,7 +40,6 @@ class PaymentLimit extends Model
         $limits = self::whereIn('payment_api_ids', $api_ids)->where('currency', $currency)->get();
 
         $availables = [];
-        $rest = [];
         foreach ($apis as $v) {
             // get PaymentLimit by PaymentApi id
             $limit = $limits->first(function($vv) use ($v) {

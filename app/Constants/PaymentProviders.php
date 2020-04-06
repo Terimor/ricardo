@@ -774,11 +774,11 @@ class PaymentProviders
             ]
         ],
         self::BLUESNAP => [
-            'name'      => 'Bluesnap',
+            'name' => 'Bluesnap',
             'is_active' => true,
-            'is_main'   => true,
+            'is_main' => true,
             'is_fallback' => true,
-            'in_prod'   => true,
+            'in_prod' => true,
             'fraud_setting' => [
                 'common' => [
                     '3ds_limit' => 20,
@@ -1433,18 +1433,18 @@ class PaymentProviders
                         '+3ds' => ['at', 'bg', 'cy', 'cz', 'gr', 'hr', 'hu', 'mt', 'pl', 'ro', 'sk', 'sl'],
                         '-3ds' => [
                             'ae', 'ar', 'au', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
-                            'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls',
-                            'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pt', 'ro',
-                            'ru', /*'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
+                            'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'id', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li',
+                            'ls', 'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pr',
+                            'pt', 'ro', 'ru', 'sa', 'se', 'sg', 'si', 'sk', 'sm', 'th', 'tk', 'tr', 'tv', 'tw', 'us', 'uy', 'va', 'vn', 'za'
                         ]
                     ],
                     PaymentMethods::MASTERCARD => [
                         '+3ds' => ['at', 'bg', 'cy', 'cz', 'gr', 'hr', 'hu', 'mt', 'pl', 'ro', 'sk', 'sl'],
                         '-3ds' => [
                             'ae', 'ar', 'au', 'at', 'be', 'bg', 'bt', 'ca', 'cc', 'ch', 'ck', 'cl', 'co', 'cx', 'cy', 'cz', 'de', 'dk', 'ee',
-                            'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li', 'ls',
-                            'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pt', 'ro',
-                            'ru', /*'se',*/ 'sg', 'si', 'sk', 'sm', 'tk', 'tr', 'tv', 'tw', 'us', 'va', 'za'
+                            'es', 'fi', 'fr', 'gb', 'gp', 'gr', 'hk', 'hm', 'hr', 'hu', 'ie', 'id', 'il', 'in', 'it', 'jp', 'ki', 'kr', 'li',
+                            'ls', 'lt', 'lu', 'lv', 'mc', 'mt', 'mx', 'my', 'na', 'nf', 'nl', 'no', 'nr', 'nu', 'nz', 'ph', 'pl', 'pn', 'pr',
+                            'pt', 'ro', 'ru', 'sa', 'se', 'sg', 'si', 'sk', 'sm', 'th', 'tk', 'tr', 'tv', 'tw', 'us', 'uy', 'va', 'vn', 'za'
                         ]
                     ]
                 ],
