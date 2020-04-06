@@ -29,7 +29,9 @@ export default {
   methods: {
 
     leave_modal_init() {
-return;
+if (location.hostname !== 'odin.saga-be.host') {
+    return;
+}
       const timeout = 5000 + (this.preloader_enabled ? 10000 : 0);
 
       setTimeout(() => {
