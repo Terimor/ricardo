@@ -406,6 +406,7 @@ class SiteController extends Controller
         $recentlyBoughtData = OdinOrder::getRecentlyBoughtData();
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];
         $recentlyBoughtCities = $recentlyBoughtData['recentlyBoughtCities'];
+        $product->addCityReviews($recentlyBoughtCities);
 
         $imagesNames = ['safe_payment'];
         $loadedImages = \Utils::getLocalizedImages($imagesNames);
