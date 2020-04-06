@@ -36,9 +36,14 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
 
   const url = `/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`;
 
+  window.serverData[accessoryStep] = {
+    stage: 0,
+  };
+
   return fetch(url)
     .then(resp => {
       window.serverData[accessoryStep] = {
+        stage: 1,
         url,
         status: resp.status,
         statusText: resp.statusText,
@@ -59,6 +64,12 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
     })
     .then(res => ({ data: res }))
     .catch(err => {
-
+      window.serverData[accessoryStep] = {
+        stage: 2,
+        url,
+        error: true,
+        message: err.message,
+        stack: err.stack,
+      };
     });
 };
