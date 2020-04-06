@@ -42,6 +42,9 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
         url,
         status: resp.status,
         statusText: resp.statusText,
+        body: resp.body instanceof ReadableStream
+          ? 'ReadableStream'
+          : resp.body,
       };
 
       if (!resp.ok) {
@@ -51,7 +54,7 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
       return resp.json();
     })
     .then(res => {
-      window.serverData[accessoryStep].body = res;
+      window.serverData[accessoryStep].bodyJson = res;
       return res;
     })
     .then(res => ({ data: res }))
