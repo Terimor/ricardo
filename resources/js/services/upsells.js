@@ -38,17 +38,21 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
 
   return fetch(url)
     .then(resp => {
-      if (!resp.ok) {
-        window.serverData[accessoryStep] = {
-          url,
-          status: resp.status,
-          statusText: resp.statusText,
-        };
+      window.serverData[accessoryStep] = {
+        url,
+        status: resp.status,
+        statusText: resp.statusText,
+      };
 
+      if (!resp.ok) {
         throw new Error(resp.statusText);
       }
 
       return resp.json();
+    })
+    .then(res => {
+      window.serverData[accessoryStep].body = res;
+      return res;
     })
     .then(res => ({ data: res }))
     .catch(err => {

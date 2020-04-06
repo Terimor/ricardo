@@ -74,8 +74,6 @@
             this.isLoading = true;
             getUppSells(newVal, 1, this.accessoryStep)
               .then(res => {
-                window.serverData[this.accessoryStep] = window.serverData[this.accessoryStep] || (res && res.data) || null;
-
                 if (res && res.data) {
                   this.upsellPrices = res.data.upsell.upsellPrices;
                   this.name = res.data.upsell.long_name;
