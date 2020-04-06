@@ -331,6 +331,7 @@ class ProductService
             abort(404, 'Product not available');
         }
         $lp->skus = $skus;
+        $lp->has_battery = $product->hasBattery();
 
         $reviews = [];
         $reviewsOld = $product->reviews;
@@ -378,7 +379,7 @@ class ProductService
         }
         // disable paypal if in excluded shipping countries
         $countryCode = \Utils::getLocationCountryCode();
-        if (in_array($countryCode, \Utils::$excludeShipping)) {
+        if (in_array($countryCode, \Utils::$excludeShipping) || in_array($countryCode, \Utils::$excludeBatteryShipping)) {
             $lp->is_paypal_hidden = true;
         }
 

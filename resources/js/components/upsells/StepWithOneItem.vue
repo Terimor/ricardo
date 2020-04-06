@@ -31,7 +31,7 @@
         <div class="upsells-component__bot justify-content-center">
           <green-button
             @click="add(1)"
-            :is-loading="isLoading || !upsellPrices['1']"
+            :is-loading="isLoading"
           >
             {{ yesText }}! {{ iWantText }} 1 {{ name }} {{ toMyOrderTextText }} {{ priceFormatted }}
           </green-button>
