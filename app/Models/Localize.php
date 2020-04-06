@@ -19,6 +19,7 @@ class Localize extends Model
                 $reviews[$key] = $review;
                 $reviews[$key]['city'] = $cities[$key] ?? '';
                 $reviews[$key]['country'] = \Utils::$countryCodes[$countryCode] ?? '';
+                $reviews[$key]['country_code'] = strtoupper($countryCode);
             }
             $this->reviews = $reviews;
         }
