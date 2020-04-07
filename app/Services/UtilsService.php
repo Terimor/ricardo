@@ -44,7 +44,7 @@ class UtilsService
         'af' => 'fa-AF',
         'ag' => 'en-AG',
         'ai' => 'en-AI',
-        'us' => 'en-US',
+        'aq' => 'en-US',
         'al' => 'sq-AL',
         'am' => 'hy-AM',
         'an' => 'nl-NL',
