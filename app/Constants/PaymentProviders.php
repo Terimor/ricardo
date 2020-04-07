@@ -1559,9 +1559,9 @@ class PaymentProviders
         self::STRIPE => [
             'name'      => 'Stripe',
             'is_active' => true,
-            'is_main'   => true,
-            'is_fallback' => false,
-            'in_prod'   => false,
+            'is_main'   => false,
+            'is_fallback' => true,
+            'in_prod'   => true,
             'fraud_setting' => [
                 'common' => [
                     '3ds_limit' => 20,
@@ -1637,9 +1637,28 @@ class PaymentProviders
                     ],
                     PaymentMethods::JCB => [
                         '-3ds' => ['europe']
-                    ],
+                    ]
                 ],
-                'fallback' => []
+                'fallback' => [
+                    PaymentMethods::VISA => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::MASTERCARD => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::AMEX => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::DISCOVER => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::DINERSCLUB => [
+                        '-3ds' => ['europe']
+                    ],
+                    PaymentMethods::JCB => [
+                        '-3ds' => ['europe']
+                    ]
+                ]
             ]
         ]
     ];

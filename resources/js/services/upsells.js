@@ -37,19 +37,25 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
   const url = `/upsell-product/${product_id}/?quantity=${quantity}${cur ? '&cur=' + cur : ''}`;
 
   window.serverData[accessoryStep] = {
-    stage: 0,
+    success: false,
+    error: false,
+    url,
   };
 
-  return fetch(url)
+  return fetch(url, {
+      method: 'get',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
+      },
+    })
     .then(resp => {
       window.serverData[accessoryStep] = {
-        stage: 1,
-        url,
+        success: true,
         status: resp.status,
         statusText: resp.statusText,
-        body: resp.body instanceof ReadableStream
-          ? 'ReadableStream'
-          : resp.body,
       };
 
       if (!resp.ok) {
@@ -65,8 +71,6 @@ export const getUppSells = (product_id, quantity, accessoryStep) => {
     .then(res => ({ data: res }))
     .catch(err => {
       window.serverData[accessoryStep] = {
-        stage: 2,
-        url,
         error: true,
         message: err.message,
         stack: err.stack,

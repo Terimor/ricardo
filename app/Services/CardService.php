@@ -275,7 +275,7 @@ class CardService {
                     '3ds' => PaymentService::checkIs3dsNeeded(
                         $method,
                         $contact['country'],
-                        PaymentProviders::MINTE,
+                        PaymentProviders::STRIPE,
                         $order->affiliate,
                         (array)$ipqs
                     ),

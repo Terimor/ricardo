@@ -2,6 +2,7 @@ import Vuelidate from 'vuelidate';
 import polyfills from './utils/polyfills';
 import mdocument from './utils/document';
 import i18n from './utils/i18n';
+import pixels from './utils/pixels';
 import request from './utils/request';
 import scroll from './utils/scroll';
 import header from './regions/header';
@@ -18,6 +19,7 @@ export default {
   mixins: [
     i18n,
     mdocument,
+    pixels,
     request,
     scroll,
     header,
