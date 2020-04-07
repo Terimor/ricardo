@@ -104,7 +104,7 @@
                             <div class="inside" onclick="event.stopPropagation()">
                                 <div class="line1">${ this.$t('exit_popup.line1') }</div>
                                 <div class="line2">${ this.$t('exit_popup.line2') }</div>
-                                <div class="line3">${ js_data.product.splash_description + ' ' + this.$t('exit_popup.line3') }</div>
+                                <div class="line3">${ js_data.product.splash_description + ' - ' + this.$t('exit_popup.line3') }</div>
                                 <div class="line4">${ this.$t('exit_popup.line4', { product: js_data.product.product_name }) }</div>
                                 <div class="button" onclick="agreeLeaveModal()">${ this.$t('exit_popup.button') }</div>
                                 <div class="link" onclick="closeLeaveModal()">${ this.$t('exit_popup.link') }</div>
