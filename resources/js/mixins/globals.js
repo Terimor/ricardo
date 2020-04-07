@@ -1,3 +1,6 @@
+import { print_pixels } from '../services/pixels';
+
+
 export default {
 
   computed: {
@@ -37,6 +40,8 @@ export default {
   },
 
   methods: {
+
+    print_pixels,
 
     lazyload_update() {
       if (window.js_deps && js_deps.wait_for) {

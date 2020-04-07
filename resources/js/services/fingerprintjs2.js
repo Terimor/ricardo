@@ -48,11 +48,11 @@ function applyDiscount() {
 
 
 if (document.readyState !== 'complete') {
-  document.onreadystatechange = () =>  {
+  document.addEventListener('readystatechange', () =>  {
     if (document.readyState === 'complete') {
       setTimeout(applyDiscount, 1000);
     }
-  }
+  });
 } else {
   setTimeout(applyDiscount, 1000);
 }

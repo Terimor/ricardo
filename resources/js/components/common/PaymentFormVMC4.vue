@@ -486,6 +486,7 @@
       'form.paymentProvider'(value) {
         window.selectedPayment = value;
         history.pushState({}, '', location.href);
+        this.print_pixels('payment');
       },
       'form.stepThree.country'(country) {
         this.form.country = this.form.stepThree.country;

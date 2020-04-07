@@ -1,5 +1,5 @@
 import * as cookies from '../utils/cookies';
-
+import './pixels';
 
 if (location.pathname.startsWith('/checkout')) {
   window.selectedOffer = 0;

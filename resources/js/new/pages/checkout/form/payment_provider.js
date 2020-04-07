@@ -31,6 +31,7 @@ export default {
     'form.payment_provider'(value) {
       window.selectedPayment = value;
       history.pushState({}, '', location.href);
+      this.print_pixels('payment');
     },
 
     'form.installments'(value) {

@@ -237,6 +237,7 @@
       'form.deal'(value) {
         window.selectedOffer = value ? 1 : 0;
         history.pushState({}, '', location.href);
+        this.print_pixels('cart');
       },
       'form.variant'() {
         this.animateProductImage();
