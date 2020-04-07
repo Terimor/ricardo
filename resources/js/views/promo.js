@@ -76,7 +76,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         slideForm: null,
         carouselFormHeight: 'auto',
         slideFormStep: 0,
-        slideFormSteps: 0,
+        slideFormSteps: [],
         isShownFooter: true,
         isShownJumbotron: true,
       };
@@ -147,7 +147,10 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
     },
 
     mounted() {
-      const qty = +this.queryParams.qty;
+      const qty = js_query_params.tpl !== 'vmp42'
+        ? +this.queryParams.qty
+        : null;
+
       const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
 
       if (deal) {
