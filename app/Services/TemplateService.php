@@ -167,4 +167,70 @@ class TemplateService
         ];
     }
 
+    /**
+     * Get checkout page template name from get request
+     * @param $request
+     * @return string
+     */
+    public static function getCheckoutPageTemplate($request): string
+    {
+        $viewTemplate = 'checkout';
+
+        if ($request->get('tpl') == 'vmp41') {
+            $viewTemplate = 'vmp41';
+        }
+        if ($request->get('tpl') == 'vmp42') {
+            $viewTemplate = 'vmp42';
+        }
+        if ($request->get('tpl') == 'fmc5x') {
+            $viewTemplate = 'new.pages.checkout.templates.fmc5';
+        }
+        if ($request->get('tpl') == 'amc8') {
+            $viewTemplate = 'new.pages.checkout.templates.amc8';
+        }
+        if ($request->get('tpl') == 'amc81') {
+            $viewTemplate = 'new.pages.checkout.templates.amc81';
+        }
+        return $viewTemplate;
+    }
+
+    /**
+     * Get health page template by request
+     * @param $request
+     * @return string
+     */
+    public static function getHealthPageTemplate($request): string
+    {
+        $viewTemplate = 'new.pages.checkout.templates.hp01';
+
+        if ($request->get('tpl') == 'thor-power') {
+            $viewTemplate = 'new.pages.checkout.templates.thor-power';
+        }
+        if ($request->get('tpl') == 'hydrolinx') {
+            $viewTemplate = 'new.pages.checkout.templates.hydrolinx';
+        }
+        if ($request->get('tpl') == 'slimeazy') {
+            $viewTemplate = 'new.pages.checkout.templates.slimeazy';
+        }
+        return $viewTemplate;
+    }
+
+    /**
+     * Get virtual page template by request
+     * @param $request
+     * @return string
+     */
+    public static function getVirtualPageTemplate($request): string
+    {
+        $viewTemplate = 'new.pages.checkout.templates.vc1';
+
+        if ($request->get('tpl') == 'vc1') {
+            $viewTemplate = 'new.pages.checkout.templates.vc1';
+        }
+        if ($request->get('tpl') == 'vc2') {
+            $viewTemplate = 'new.pages.checkout.templates.vc2';
+        }
+        return $viewTemplate;
+    }
+
 }
