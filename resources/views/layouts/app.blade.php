@@ -47,6 +47,7 @@
     @include('components.scripts.bluesnap_kount')
     @include('components.scripts.paypal')
     @include('components.scripts.lazyload')
+    @include('components.scripts.axios')
     @include('components.scripts.intl_tel_input')
     @include('components.scripts.libphonenumber')
     @include('components.scripts.sha256')
