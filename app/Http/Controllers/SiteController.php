@@ -310,49 +310,32 @@ class SiteController extends Controller
         $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
         $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
 
-        if ($is_checkout_page) {
-            $viewTemplate = 'checkout';
+        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
+            return view('prerender.checkout.txid_iframe');
+        }
 
-            if ($request->get('tpl') == 'vmp41') {
-                $viewTemplate = 'vmp41';
-            }
-            if ($request->get('tpl') == 'vmp42') {
-                $viewTemplate = 'vmp42';
-            }
-            if ($request->get('tpl') == 'fmc5x') {
-                $viewTemplate = 'new.pages.checkout.templates.fmc5';
-            }
-            if ($request->get('tpl') == 'amc8') {
-                $viewTemplate = 'new.pages.checkout.templates.amc8';
-            }
-            if ($request->get('tpl') == 'amc81') {
-                $viewTemplate = 'new.pages.checkout.templates.amc81';
-            }
+        if ($request->get('apm') && !$request->get('3ds')) {
+            return redirect($request->fullUrl() . '&3ds=' . $request->get('apm'));
+        }
+
+        if ($request->get('3ds') && !$request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_restore');
+        }
+
+        if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
+            return redirect($request->get('redirect_url'));
+        }
+
+        if ($is_checkout_page) {
+            $viewTemplate = TemplateService::getCheckoutPageTemplate($request);
         }
 
         if ($is_health_page) {
-            $viewTemplate = 'new.pages.checkout.templates.hp01';
-
-            if ($request->get('tpl') == 'thor-power') {
-                $viewTemplate = 'new.pages.checkout.templates.thor-power';
-            }
-            if ($request->get('tpl') == 'hydrolinx') {
-                $viewTemplate = 'new.pages.checkout.templates.hydrolinx';
-            }
-            if ($request->get('tpl') == 'slimeazy') {
-                $viewTemplate = 'new.pages.checkout.templates.slimeazy';
-            }
+            $viewTemplate = TemplateService::getHealthPageTemplate($request);
         }
 
         if ($is_vrtl_page) {
-            $viewTemplate = 'new.pages.checkout.templates.vc1';
-
-            if ($request->get('tpl') == 'vc1') {
-                $viewTemplate = 'new.pages.checkout.templates.vc1';
-            }
-            if ($request->get('tpl') == 'vc2') {
-                $viewTemplate = 'new.pages.checkout.templates.vc2';
-            }
+            $viewTemplate = TemplateService::getVirtualPageTemplate($request);
         }
 
         if (!empty($priceSet)) {
@@ -366,24 +349,8 @@ class SiteController extends Controller
             $upsells = $productService->getProductUpsells($product);
         }
 
-        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
-            return view('prerender.checkout.txid_iframe');
-        }
-
-        if ($request->get('apm') && !$request->get('3ds')) {
-            return redirect($request->fullUrl() . '&3ds=' . $request->get('apm'));
-        }
-
-        if ($request->get('3ds') && !$request->get('3ds_restore')) {
-            return view('prerender.checkout.3ds_restore');
-        }
-
         if ($request->get('3ds') === 'success' && $request->get('3ds_restore')) {
             return view('prerender.checkout.3ds_success', compact('product', 'is_vrtl_page'));
-        }
-
-        if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
-            return redirect($request->get('redirect_url'));
         }
 
         $setting = Setting::getValue([
