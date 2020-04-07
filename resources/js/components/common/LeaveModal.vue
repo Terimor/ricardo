@@ -77,9 +77,6 @@
         },
 
         mounted() {
-if (location.hostname !== 'odin.saga-be.host') {
-    return;
-}
             window.closeLeaveModal = () => {
                 var event = document.createEvent('Events');
                 event.initEvent('click', true, false);
