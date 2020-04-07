@@ -33,7 +33,7 @@ export default {
 
       setTimeout(() => {
         document.addEventListener('mouseleave', () => {
-          if (!already_shown) {
+          if (!already_shown && !this.is_submitted) {
             this.leave_modal_visible = true;
             already_shown = true;
           }

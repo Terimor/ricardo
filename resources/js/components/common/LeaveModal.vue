@@ -113,6 +113,11 @@
                     `,
                     cookieExp: 0,
                     delay: 5,
+                    onPopup() {
+                        if (document.querySelector('.paypal-checkout-sandbox')) {
+                            window.closeLeaveModal();
+                        }
+                    },
                 }),
             );
         }
