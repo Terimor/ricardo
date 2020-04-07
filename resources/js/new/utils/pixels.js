@@ -22,13 +22,15 @@ export default {
   methods: {
 
     print_pixels(type) {
-      js_data.pixels
-        .filter(pixel => pixel.type === type)
-        .filter(pixel => cache.indexOf(pixel) === -1)
-        .forEach(pixel => {
-          this.print_pixel(pixel);
-          cache.push(pixel);
-        });
+      if (js_data.pixels) {
+        js_data.pixels
+          .filter(pixel => pixel.type === type)
+          .filter(pixel => cache.indexOf(pixel) === -1)
+          .forEach(pixel => {
+            this.print_pixel(pixel);
+            cache.push(pixel);
+          });
+      }
     },
 
 

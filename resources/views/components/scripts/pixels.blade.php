@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  js_data.pixels = @json($html_to_app['pixels'] ?? []);
+  js_data.pixels = @json($html_to_app['pixels'] ?? [], JSON_UNESCAPED_UNICODE) || [];
 </script>
 
 @if (!empty($html_to_app['pixels']))
