@@ -104,12 +104,14 @@ class PaymentApiService
 
         /**
          * @todo Hotfix: reduces Bluesnap chance
-         * mt_rand(0, 100) < 20, where 20 - magic number that gives 10% in the set [minte,bs]
-         * because rand and shuffle are associated chances
+         * mt_rand(0, 100) < chance_pct, where $p_a, $p_b - chances of events, $p_ab - summary chance
          */
         if (count($filtered) > 1) {
-            $filtered = array_filter($filtered, function (PaymentApi $api) {
-                return $api->payment_provider !== PaymentProviders::BLUESNAP || mt_rand(0, 100) < 20;
+            $p_ab = 0.3;
+            $p_b = 1 / count($filtered);
+            $p_a = $p_ab / $p_b;
+            $filtered = array_filter($filtered, function (PaymentApi $api) use ($p_a) {
+                return $api->payment_provider !== PaymentProviders::BLUESNAP || (mt_rand(0, 100) < $p_a * 100);
             });
         }
 
