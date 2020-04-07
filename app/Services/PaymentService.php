@@ -337,14 +337,14 @@ class PaymentService
             return $result;
         }
 
-        logger()->info("Fallback [{$order->number}], [{$details['provider']}->{$api->payment_provider}]");
+        logger()->info("Fallback [{$order->number}], sequence [{$details['provider']}->{$api->payment_provider}]");
 
         switch ($api->payment_provider):
             case PaymentProviders::BLUESNAP:
                 $result['status']  = true;
                 $order = self::checkOrderCurrency($order, PaymentProviders::BLUESNAP);
-                $bluesnap = new BluesnapService($api);
-                $result['payment'] = $bluesnap->payByCard(
+                $handler = new BluesnapService($api);
+                $result['payment'] = $handler->payByCard(
                     $card,
                     [
                         'street'     => $order->shipping_street,
@@ -378,9 +378,9 @@ class PaymentService
                 break;
             case PaymentProviders::MINTE:
                 $order = self::checkOrderCurrency($order, PaymentProviders::MINTE);
-                $minte = new MinteService($api);
+                $handler = new MinteService($api);
                 $result['status']  = true;
-                $payment = $minte->payByCard(
+                $payment = $handler->payByCard(
                     $card,
                     [
                         'street'        => $order->shipping_street,
@@ -412,7 +412,7 @@ class PaymentService
                     ]
                 );
                 if ($payment['status'] === Txn::STATUS_CAPTURED) {
-                    $capture = $minte->capture($payment['hash'], ['amount' => $order->total_price, 'currency' => $order->currency]);
+                    $capture = $handler->capture($payment['hash'], ['amount' => $order->total_price, 'currency' => $order->currency]);
                     self::logTxn(array_merge($capture, ['payment_method' => $details['method']]));
                     $payment['status'] = $capture['status'];
                     $payment['capture_hash'] = $capture['hash'];
@@ -420,9 +420,9 @@ class PaymentService
                 $result['payment'] = $payment;
                 break;
             case PaymentProviders::EBANX:
-                $ebanx = new EbanxService($api);
-                $result['status']  = true;
-                $result['payment'] = $ebanx->payByCard(
+                $handler = new EbanxService($api);
+                $result['status'] = true;
+                $result['payment'] = $handler->payByCard(
                     $card,
                     [
                         'street'            => $order->shipping_street,
@@ -454,6 +454,41 @@ class PaymentService
                         'currency'      => $order->currency,
                         'number'        => $order->number,
                         'installments'  => $order->installments
+                    ]
+                );
+                break;
+            case PaymentProviders::STRIPE:
+                $result['status'] = true;
+                $order = self::checkOrderCurrency($order, PaymentProviders::STRIPE);
+                $handle = new StripeService($api);
+                $result['payment'] = $handle->payByCard(
+                    $card,
+                    [
+                        'street'        => $order->shipping_street,
+                        'city'          => $order->shipping_city,
+                        'country'       => $order->shipping_country,
+                        'state'         => $order->shipping_state,
+                        'zip'           => $order->shipping_zip,
+                        'email'         => $order->customer_email,
+                        'first_name'    => $order->customer_first_name,
+                        'last_name'     => $order->customer_last_name,
+                        'phone'         => $order->customer_phone,
+                    ],
+                    [
+                        '3ds' => PaymentService::checkIs3dsNeeded(
+                            $details['method'],
+                            $order->shipping_country,
+                            PaymentProviders::STRIPE,
+                            $order->affiliate,
+                            (array)$order->ipqualityscore
+                        ),
+                        'amount'    => $order->total_price,
+                        'currency'  => $order->currency,
+                        'order_id'  => $order->getIdAttribute(),
+                        'order_number'  => $order->number,
+                        'descriptor'    => $order->billing_descriptor,
+                        'installments' => $order->installments,
+                        'billing_descriptor' => $product->getOriginal('billing_descriptor')
                     ]
                 );
                 break;
@@ -957,7 +992,7 @@ class PaymentService
 
     public static function test(\Illuminate\Http\Request $req)
     {
-        return self::getProvidersForPay('at', PaymentMethods::VISA);
+        return self::getProvidersForPay('at', PaymentMethods::VISA, false);
     }
 
 }
