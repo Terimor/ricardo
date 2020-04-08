@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-md-7">
                     <div class="paper main__deal">
-                        <div class="d-flex">
+                        <div>
                             <div class="main__sale">
                                 <SaleBadge />
                             </div>
@@ -771,10 +771,20 @@
             padding-right: 20px;
         }
 
+        &__sale {
+          float: left;
+          margin-right: 20px;
+          margin-bottom: 10px;
+
+          [dir="rtl"] & {
+            margin-left: 20px;
+            margin-right: 0;
+          }
+        }
+
         &__deal__text {
             font-size: 18px;
             font-style: italic;
-            padding-left: 20px;
             margin: 0;
 
             strong {

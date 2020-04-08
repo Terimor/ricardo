@@ -13,7 +13,7 @@
         <div class="review">
           <img class="image lazy" data-src="{{ $review['image'] }}" />
           <div class="content">
-            <div class="name">{{ $review['name'] }}</div>
+            <div class="name">{{ $review['name'] }}<span class="city"> · {{ $review['city'] }}</span></div>
             <div class="text">{{ $review['text'] }}</div>
             <div class="bottom">
               <div class="like">{{ t('checkout.review.like') }}</div>

@@ -28,14 +28,13 @@
             <div class="row">
                 <div class="col-md-7">
                     <div class="paper smc7__deal">
-                        <div class="d-flex">
+                        <div>
                             <div class="smc7__sale">
                                 <SaleBadge />
                             </div>
                             <div class="smc7__deal__text">
                                 <p v-html="freeShippingToday" />
                             </div>
-
                         </div>
 
                         <div class="smc7__step-1">
@@ -1005,12 +1004,28 @@
             text-align: center;
         }
 
+        &__sale {
+          float: left;
+          margin-right: 20px;
+          margin-bottom: 10px;
+
+          [dir="rtl"] & {
+            margin-left: 20px;
+            margin-right: 0;
+          }
+        }
+
         &__deal {
             &__text {
                 font-size: 18px;
                 font-style: italic;
-                padding: 0 20px;
+                margin-right: 20px;
                 margin: 0;
+
+                [dir="rtl"] & {
+                  margin-left: 20px;
+                  margin-right: 0;
+                }
             }
         }
 

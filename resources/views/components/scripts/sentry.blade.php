@@ -15,6 +15,11 @@
   @endif
 
   <script type="text/javascript">
+    function SentryAfterInit() {
+      Sentry.setExtra('date_deployed', @json(date('Y-m-d H:i:s', filemtime(__FILE__))));
+      Sentry.setExtra('date_rendered', @json(date('Y-m-d H:i:s')));
+    }
+
     @if (!empty($HasVueApp) || !empty($is_minishop))
       js_deps.wait(['vue', 'sentry', 'sentry-vue'], function() {
         Sentry.init({
@@ -27,12 +32,16 @@
             }),
           ],
         });
+
+        SentryAfterInit();
       });
     @else
       js_deps.wait(['sentry'], function() {
         Sentry.init({
           dsn: '{{ $sentry_dsn }}',
         });
+
+        SentryAfterInit();
       });
     @endif
   </script>
