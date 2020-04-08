@@ -40,30 +40,30 @@ class ProductController extends Controller
 		$product = $productService->resolveProduct(request());
 
 		$upsell = $productService->getUpsellProductById($product, $productId, request()->get('quantity'));
-        
+
 		return ['upsell' => $upsell];
     }
-	
+
 	/**
 	 * Calculate upsells total
 	 * @param Request $request
 	 * @param ProductService $productService
 	 */
 	public function calculateUpsellsTotal(Request $request, ProductService $productService)
-	{		
+	{
 		$upsells = $request->input('upsells');
 		$total = $request->input('total');
-		
+
 		if ($upsells && $total) {
 			$product = $productService->resolveProduct($request);
-			return $productService->calculateUpsellsTotal($product, $upsells, $total);			
+			return $productService->calculateUpsellsTotal($product, $upsells, $total);
 		} else {
 			logger()->error("Bad data for calculate upsells total", ['request' => $request->all()]);
 			abort(404);
 		}
-		
+
 	}
-    
+
     /**
      * Get product price
      * @param Request $request
@@ -72,7 +72,7 @@ class ProductController extends Controller
      * @throws AuthorizationException
      */
     public function getProductPrice(GetPricesRequest $request, ProductService $productService)
-    {        
+    {
         /**
         * hack hardcode secret
         */
@@ -83,5 +83,5 @@ class ProductController extends Controller
 
        return $productService->returnPricesByData($request->get('cop_id'), $request->get('country'));
     }
-	
+
 }
