@@ -634,11 +634,12 @@ class SiteController extends Controller
                 if ($pct < $txn_limits[$prv]) {
                     $result = $bad;
                     $prv_res['status'] = 0;
+                    logger()->error("Prober: lower limit exceeded", ['prv' => $prv, 'pct' => $pct, 'limit' => $txn_limits[$prv]]);
                 }
             } else {
                 $result = $bad;
                 $prv_res['status'] = 0;
-                logger()->warning("Prober: the setting 'prober_txns_success_limits' must have the provider [{$prv}]");
+                logger()->error("Prober: the setting 'prober_txns_success_limits' must have the provider [{$prv}]");
             }
             $txn_result[] = $prv_res;
         }
