@@ -38,7 +38,7 @@ class ProductService
             'vimeo_id.en', 'reviews', 'upsell_plusone_text.en', 'upsell_hero_text.en', 'upsells', 'fb_pixel_id', 'gads_retarget_id',
             'gads_conversion_id','gads_conversion_label', 'goptimize_id', 'is_europe_only','is_choice_required','is_paypal_hidden','countries',
             'labels.1.en', 'labels.2.en', 'labels.3.en', 'labels.4.en', 'labels.5.en', 'warehouse_id', 'warranty_percent',
-            'price_correction_percents', 'unit_qty'];
+            'price_correction_percents', 'unit_qty', 'is_discount'];
 
         if (app()->getLocale() != 'en') {
             // add .lang
@@ -276,6 +276,7 @@ class ProductService
         $lp->upsell_hero_image = $product->upsell_hero_image;
         $lp->vimeo_id = $product->vimeo_id;
         $lp->unit_qty = $product->unit_qty ?? 1;
+        $lp->is_discount = $product->is_discount ?? false;
 
         $prices = [];
         $pricesOld = $product->prices;
