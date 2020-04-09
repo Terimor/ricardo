@@ -29,7 +29,7 @@ class OdinProduct extends Model
 
     protected $fillable = [
         'type', 'product_name', 'description', 'long_name', 'home_description', 'home_name', 'is_hidden_checkout',
-        'logo_image_id', 'favicon_image_id', 'bg_image_id', 'billing_descriptor', 'qty_default', 'is_shipping_cost_only',
+        'logo_image_id', 'favicon_image_id', 'bg_image_id', 'billing_descriptor', 'unit_qty', 'is_shipping_cost_only',
         'is_3ds_required', 'is_hygiene', 'is_bluesnap_hidden', 'is_paypal_hidden', 'is_choice_required', 'category_id', 'vimeo_id',
         'warehouse_id', 'warranty_percent', 'skus', 'prices', 'fb_pixel_id', 'gads_retarget_id', 'gads_conversion_id',
         'gads_conversion_label', 'goptimize_id', 'upsell_plusone_text', 'upsell_hero_text', 'upsell_hero_image_id', 'upsells', 'reviews', 'affiliates', 'currency',
@@ -203,6 +203,7 @@ class OdinProduct extends Model
             // country depends on IP
             $userCountry = \Utils::getLocationCountryCode();
         }
+        $unitQty = $this->unit_qty ?? 1;
 
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
@@ -223,7 +224,7 @@ class OdinProduct extends Model
                         $oneItemPrice = $price['price'];
                     }
 
-                    $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / $quantity), $currency);
+                    $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / ($quantity * $unitQty)), $currency);
 
                     $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
                     $value[$key][$quantity]['old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $oldPriceValue, $currency);
@@ -658,13 +659,14 @@ class OdinProduct extends Model
                 $skus = [];
                 foreach ($products as $product) {
                     foreach($product->skus as $sku) {
-                      $skus[$sku['code']]['name'] = $sku['name'];
-                      $skus[$sku['code']]['product_id'] = $product->id;
-                      $skus[$sku['code']]['product_name'] = $product->product_name;
+                        $skus[$sku['code']]['name'] = $sku['name'];
+                        $skus[$sku['code']]['product_id'] = $product->id;
+                        $skus[$sku['code']]['product_name'] = $product->product_name;
+                        $skus[$sku['code']]['unit_qty'] = $product->unit_qty ?? 1;
                     }
                 }
 
-                Cache::put('SkuProduct', $skus);
+                Cache::put('SkuProduct', $skus, 600);
             }
         }
         return $skus;

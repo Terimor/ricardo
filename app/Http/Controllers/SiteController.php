@@ -342,6 +342,7 @@ class SiteController extends Controller
             $request->merge(['cop_id' => $priceSet]);
         }
 
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
         $product = $productService->resolveProduct($request, true);
         // load upsells only for vrlt templates
         $upsells = [];
@@ -362,8 +363,6 @@ class SiteController extends Controller
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
 
         $countries =  \Utils::getShippingCountries(true, $product);
-
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
 
         $langCode = substr(app()->getLocale(), 0, 2);
         $countryCode = \Utils::getLocationCountryCode();
@@ -438,6 +437,7 @@ class SiteController extends Controller
         }
 
         $cdn_url = \Utils::getCdnUrl();
+        $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
@@ -455,8 +455,6 @@ class SiteController extends Controller
         }
 
         $countryCode = \Utils::getLocationCountryCode();
-
-        $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
 
         // check aff_id
         $order_aff = null;
@@ -495,6 +493,7 @@ class SiteController extends Controller
             $viewTemplate = 'new.pages.vrtl.thankyou';
         }
 
+        $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 		$product = $productService->resolveProduct($request, true);
 
         $payment_api = PaymentApi::getActivePaypal();
@@ -523,8 +522,6 @@ class SiteController extends Controller
         }
 
         $countryCode = \Utils::getLocationCountryCode();
-
-        $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 
         // check aff_id
         $order_aff = null;

@@ -38,7 +38,7 @@ class ProductService
             'vimeo_id.en', 'reviews', 'upsell_plusone_text.en', 'upsell_hero_text.en', 'upsells', 'fb_pixel_id', 'gads_retarget_id',
             'gads_conversion_id','gads_conversion_label', 'goptimize_id', 'is_europe_only','is_choice_required','is_paypal_hidden','countries',
             'labels.1.en', 'labels.2.en', 'labels.3.en', 'labels.4.en', 'labels.5.en', 'warehouse_id', 'warranty_percent',
-            'price_correction_percents'];
+            'price_correction_percents', 'unit_qty'];
 
         if (app()->getLocale() != 'en') {
             // add .lang
@@ -118,7 +118,7 @@ class ProductService
 				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
 
 				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image_id', 'upsell_hero_image_id', 'skus',
-                    'image_ids', 'prices', 'price_correction_percents', 'warranty_percent', 'upsell_plusone_text.en'];
+                    'image_ids', 'prices', 'price_correction_percents', 'warranty_percent', 'upsell_plusone_text.en', 'unit_qty'];
 				if (app()->getLocale() != 'en') {
 				    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
                 }
@@ -275,6 +275,7 @@ class ProductService
         $lp->favicon_image = $product->favicon_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
         $lp->vimeo_id = $product->vimeo_id;
+        $lp->unit_qty = $product->unit_qty ?? 1;
 
         $prices = [];
         $pricesOld = $product->prices;
@@ -307,6 +308,7 @@ class ProductService
 
             $prices[$quantity]['total_amount'] = $pricesOld[$quantity]['total_amount'];
             $prices[$quantity]['total_amount_text'] = $pricesOld[$quantity]['total_amount_text'];
+            //$prices[$quantity]['total_unit'] = $lp->unit_qty > 1 ? t('product.unit_qty.total', ['count' => $quantity * $lp->unit_qty]) : null;
         }
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
         $prices['exchange_rate'] = $pricesOld['exchange_rate'] ?? 0;

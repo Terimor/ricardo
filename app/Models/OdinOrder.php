@@ -758,7 +758,6 @@ class OdinOrder extends OdinModel
         $cache_sec = 3600; //cache for 1 hour
 
         $recently_bought_data = Cache::get($cache_key);
-
         if (!$recently_bought_data) {
             // no data in cache for this country, generate a new one
             $recentlyBoughtNames = [];
