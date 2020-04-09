@@ -292,6 +292,11 @@ class PayPalService
             // If local currency is not supported by PayPal convert to USD. Used for purchase only.
             $name_for_many = I18nService::t('paypal.product.pack', app()->getLocale(), ['count' => (int)$request->sku_quantity, 'productname' => $product->product_name]);
             $desc_for_many = I18nService::t('paypal.product.pack', app()->getLocale(), ['count' => (int)$request->sku_quantity, 'productname' => $product->long_name]);
+            if (!empty($product->unit_qty) && $product->unit_qty > 1) {
+                $unit_qty_text = I18nService::t('product.unit_qty.total', app()->getLocale(), ['count' => (int)$request->sku_quantity * $product->unit_qty]);
+                $name_for_many .= ' '.$unit_qty_text;
+                $desc_for_many .= ' '.$unit_qty_text;
+            }
             $items = [[
                 'name' => (int)$request->sku_quantity > 1 ? $name_for_many : $product->product_name,
                 'description' => (int)$request->sku_quantity > 1 ? $desc_for_many : $product->long_name,
