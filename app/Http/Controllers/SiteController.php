@@ -101,7 +101,7 @@ class SiteController extends Controller
             $products = $products['products'];
             unset($pagination['products']);
         }
-        return view('minishop/pages/home', compact('products', 'page_title', 'website_name', 'is_catch_all', 'cdn_url', 'pagination'));
+        return view('minishop/pages/home', compact('product', 'products', 'page_title', 'website_name', 'is_catch_all', 'cdn_url', 'pagination'));
     }
 
     /**

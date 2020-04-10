@@ -78,7 +78,7 @@
 @endsection
 
 
-@section('header_before')
+@section('fixed')
   @include('new.pages.checkout.blocks.timer_mobile')
 @endsection
 

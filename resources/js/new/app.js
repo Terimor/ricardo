@@ -5,7 +5,7 @@ import i18n from './utils/i18n';
 import pixels from './utils/pixels';
 import request from './utils/request';
 import scroll from './utils/scroll';
-import header from './regions/header';
+import fixed from './regions/fixed';
 
 
 js_deps.wait(['vue'], () => {
@@ -22,7 +22,7 @@ export default {
     pixels,
     request,
     scroll,
-    header,
+    fixed,
   ],
 
 

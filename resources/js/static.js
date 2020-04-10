@@ -72,38 +72,48 @@ function initFreshChatWidget() {
   );
 }
 
+function bindFixedRegion() {
+  let index = 0;
+
+  function height_calc() {
+    if (document.querySelector('.fixed-region')) {
+      if (document.documentElement.scrollTop > 0) {
+        if (!document.querySelector('.fixed-region').classList.contains('fixed')) {
+          document.querySelector('.fixed-region').classList.add('fixed');
+        }
+
+        document.querySelector('#app').style.marginTop = document.querySelector('.fixed-region').clientHeight + 'px';
+      } else {
+        document.querySelector('.fixed-region').classList.remove('fixed');
+        document.querySelector('#app').style.marginTop = 0;
+      }
+    }
+  }
+
+  addEventListener('resize', height_calc);
+  addEventListener('scroll', height_calc);
+
+  const interval = setInterval(function() {
+    height_calc();
+
+    if (index++ >= 50) {
+      clearInterval(interval);
+    }
+  }, 100);
+}
+
+function bindCovidFixedBlock() {
+  if (document.querySelector('.covid-fixed .close-button')) {
+    document.querySelector('.covid-fixed .close-button').addEventListener('click', function() {
+      document.querySelector('.covid-fixed').style.display = 'none';
+    });
+  }
+}
 
 // bind static topbar events
 function bindStaticTopbarBlock() {
-  const parent = document.querySelector('#static-topbar');
-  const chatLink = document.querySelector('#static-topbar a.openchat');
-  const contactLink = document.querySelector('#static-topbar a.contact-link');
-
-  if (parent) {
-    parent.classList.remove('hidden');
-
-    wait(
-      () => parent.clientHeight > 0,
-      () => document.body.style['padding-top'] = parent.clientHeight + 'px',
-    );
-
-    window.addEventListener('resize', () => {
-      document.body.style['padding-top'] = parent.clientHeight + 'px';
-    });
-  }
-
-  if (chatLink) {
-    chatLink.addEventListener('click', event => {
-      event.preventDefault();
-
-      if (window.fcWidget) {
-        fcWidget.open();
-      }
-    });
-  }
-
-  if (contactLink) {
-    contactLink.href = searchPopulate('/contact-us');
+  if (document.querySelector('#static-topbar a.contact-link')) {
+    document.querySelector('#static-topbar a.contact-link').href = searchPopulate('/contact-us');
   }
 }
 
@@ -147,6 +157,8 @@ function bindReturnsAddressDropdown() {
 
 // document ready
 function documentReady() {
+  bindFixedRegion();
+  bindCovidFixedBlock();
   bindStaticTopbarBlock();
   initFreshChatWidget();
   bindReturnsAddressDropdown();

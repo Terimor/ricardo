@@ -1,0 +1,29 @@
+.covid-fixed {
+  background-color: #000;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 15px 40px;
+  position: relative;
+  text-align: center;
+
+  @media screen and (max-width: 767px) {
+    font-size: 16px;
+    padding: 10px 40px;
+  }
+
+  .close-button {
+    align-items: center;
+    bottom: 0;
+    cursor: pointer;
+    display: flex;
+    font-weight: 400;
+    position: absolute;
+    right: 20px;
+    top: 0;
+
+    @media screen and (max-width: 767px) {
+      right: 12px;
+    }
+  }
+}

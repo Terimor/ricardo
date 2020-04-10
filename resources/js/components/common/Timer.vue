@@ -2,7 +2,10 @@
   <div
     class="timer-component"
     id="timer-component"
-    :class="{ 'is-mobile': isMobile || displayGreenTimer }"
+    :class="{
+      'is-mobile': isMobile || displayGreenTimer,
+      'is-desktop': !isMobile && !displayGreenTimer,
+    }"
   >
     <div v-if="isMobile || displayGreenTimer" class="mobile">
       <template v-if="time === '00:00'">
@@ -82,14 +85,6 @@ export default {
       }
     },
 
-    setHeader() {
-      if (this.displayGreenTimer || this.isMobile) {
-        document.querySelector('#header').style.marginTop = '51px';
-      } else {
-        document.querySelector('#header').style.marginTop = '';
-      }
-    },
-
     isVmpPage() {
       if (this.queryParams.tpl && this.queryParams.tpl.indexOf('vmp') >= 0) {
         this.displayGreenTimer = true
@@ -99,23 +94,21 @@ export default {
 
   mounted () {
     interval = setInterval(this.changeTimeByDifference, 1000)
-
     this.isVmpPage();
-    this.setHeader();
-  },
-
-  watch: {
-
-    isMobile() {
-      this.setHeader();
-    },
-
   },
 }
 </script>
 
 <style lang="scss">
 @import "../../../sass/variables";
+
+.fixed-region #timer-component.is-desktop {
+  display: none;
+}
+
+#header #timer-component.is-mobile {
+  display: none;
+}
 
 .timer-component {
   flex-grow: 1;
@@ -126,21 +119,25 @@ export default {
   left: 0;
 
   &.is-mobile {
-    position: fixed;
-    z-index: 1;
+    position: relative;
+    top: unset;
+    right: unset;
+    left: unset;
   }
 
   .mobile {
-    padding: 15px 0;
+    padding: 15px 40px;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 18px;
     font-weight: bold;
     color: #fff;
     text-align: center;
     background-color: #22ab9f;
+
+    @media screen and ($s-down) {
+      font-size: 16px;
+      padding: 10px 40px;
+    }
 
     & > span {
       margin-left: 5px;

@@ -65,9 +65,10 @@
 
   <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
 
-    <div id="app" ref="app">
-        {{--@include('components.black_friday')--}}
-        {{--@include('components.christmas')--}}
+    <div id="app" ref="app" :style="[fixed_margin_top]">
+        <!-- Fixed Region -->
+        @include('new.regions.fixed')
+
         @if (!$is_new_engine)
             @if (Request::is('splash'))
                 @include('layouts.header_splash', ['product' => $product])
@@ -95,7 +96,6 @@
         @endif
     </div>
 
-    @include('components.static_topbar')
     @include('components.freshchat')
 
     <!-- No Script -->

@@ -467,13 +467,9 @@ h3 {
 }
 
 #static-topbar {
-  position: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
-  right: 0;
-  left: 0;
-  top: 0;
   padding: 16px 24px;
   text-align: center;
   background-color: #248cc8;
@@ -485,10 +481,6 @@ h3 {
       padding: 12px 24px;
       font-size: 15px;
     }
-  }
-
-  &.hidden {
-    visibility: hidden;
   }
 
   a {

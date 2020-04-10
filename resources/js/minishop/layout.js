@@ -1,4 +1,5 @@
 import '../resourses/polyfills';
+import fixed from '../new/regions/fixed';
 import document from './utils/document';
 import request from './utils/request';
 import scroll from './utils/scroll';
@@ -10,6 +11,7 @@ import support from './regions/fixed/support';
 export default {
 
   mixins: [
+    fixed,
     document,
     request,
     scroll,

@@ -1,6 +1,8 @@
 import './resourses/polyfills';
 import './services/globals';
+import fixed from './new/regions/fixed';
 import globals from './mixins/globals';
+import documentMixin from './mixins/document';
 import * as extraFields from './mixins/extraFields';
 
 
@@ -19,7 +21,9 @@ js_deps.wait(deps, () => {
 
 
     mixins: [
+      fixed,
       globals,
+      documentMixin,
       extraFields.appMixin,
     ],
 

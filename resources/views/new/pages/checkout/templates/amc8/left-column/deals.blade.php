@@ -27,7 +27,10 @@
             <span class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</span>
             <span class="deal-name">{{ $product->product_name }}</span>
             @if ($deals_free_quantities[$deal['quantity']])
-              <span class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('fmc5.free') }}</span>
+              <span class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('checkout.free') }}</span>
+            @endif
+            @if ($product->unit_qty > 1)
+              <span class="deal-unit-qty">{!! t('product.unit_qty.total', ['count' => $deal['quantity'] * $product->unit_qty]) !!}</span>
             @endif
           </span>
           <span>&nbsp;-&nbsp;</span>

@@ -74,6 +74,13 @@
 @endsection
 
 
+@section('fixed')
+  @if((Route::is('checkout') || Route::is('checkout_price_set')) && (Request::get('show_timer') === '{timer}' || Request::get('show_timer') === '1'))
+    <timer-component></timer-component>
+  @endif
+@endsection
+
+
 @section('content')
 
 @section('title', isset($product->skus[0]) ? $product->skus[0]['name'] . ' ' . t('checkout.page_title') : '')

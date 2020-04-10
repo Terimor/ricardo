@@ -26,19 +26,22 @@
               @click.stop></div>
           @endif
 
-          @if ($deal['is_bestseller'] || $deal['is_popular'])
+          @if ($deal['is_bestseller'] || $deal['is_popular'] || (isset($product->labels) && isset($product->labels[$deal['quantity']]) && isset($product->unit_qty) && $product->unit_qty > 1))
             <div class="deal-special">
 
               <div class="deal-left">
 
-                @if ($deal['is_bestseller'])
+                @if (isset($product->labels) && isset($product->labels[$deal['quantity']]) && isset($product->unit_qty) && $product->unit_qty > 1)
+                  <div class="deal-popular">
+                    <div class="deal-special-triangle"></div>
+                    <div>{{ $product->labels[$deal['quantity']] }}</div>
+                  </div>
+                @elseif ($deal['is_bestseller'])
                   <div class="deal-bestseller">
                     <div class="deal-special-triangle"></div>
                     <div>{{ t('fmc5.bestseller') }}</div>
                   </div>
-                @endif
-
-                @if ($deal['is_popular'])
+                @elseif ($deal['is_popular'])
                   <div class="deal-popular">
                     <div class="deal-special-triangle"></div>
                     <div>{{ t('fmc5.bestdeal') }}</div>
@@ -63,12 +66,15 @@
                 'class' => 'deal-radio',
               ])
 
-              @if (empty($product->labels[$deal['quantity']]))
+              @if (!isset($product->labels) || !isset($product->labels[$deal['quantity']]) || (isset($product->unit_qty) && $product->unit_qty > 1))
                 <div class="deal-label">
                   <div class="deal-count">{{ $deals_main_quantities[$deal['quantity']] }}x</div>
                   <div class="deal-name">&nbsp;{{ $product->product_name }}&nbsp;</div>
                   @if ($deals_free_quantities[$deal['quantity']])
                     <div class="deal-free">+ {{ $deals_free_quantities[$deal['quantity']] }} {{ t('fmc5.free') }}</div>
+                  @endif
+                  @if ($product->unit_qty > 1)
+                    <span class="deal-unit-qty">&nbsp;{!! t('product.unit_qty.total', ['count' => $deal['quantity'] * $product->unit_qty]) !!}</span>
                   @endif
                 </div>
                 <div class="deal-discount">

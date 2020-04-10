@@ -74,7 +74,7 @@
         return this.quantityOfInstallments + (this.item.newPrice || this.item.price);
       },
       discountTextVisible() {
-        return !js_data.product.labels || !js_data.product.labels[this.item.value];
+        return !js_data.product.labels || !js_data.product.labels[this.item.value] || js_data.product.unit_qty > 1;
       },
     },
     mounted() {

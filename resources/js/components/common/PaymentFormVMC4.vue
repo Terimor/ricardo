@@ -864,9 +864,6 @@
         display: flex;
         position: relative;
       }
-      .discount {
-        margin-left: 4px;
-      }
       .prices {
         margin-left: auto;
         margin-right: 50px;

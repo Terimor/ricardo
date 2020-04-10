@@ -32,6 +32,10 @@ export const getRadioHtml = ({
     ? formattedPrice
     : getCountOfInstallments(installments) + newPrice.toLocaleString();
 
+  if (js_data.product.labels && js_data.product.labels[totalQuantity] && js_data.product.unit_qty > 1) {
+    discountName = js_data.product.labels[totalQuantity];
+  }
+
   return (
     `${discountName
       ? `<p class="label-container-radio__best-seller">
@@ -57,7 +61,7 @@ export const getRadioHtml = ({
             : `${discountName ? '' : currentPrice}`}
         </p>
 
-        ${!js_data.product.labels || !js_data.product.labels[totalQuantity]
+        ${!js_data.product.labels || !js_data.product.labels[totalQuantity] || js_data.product.unit_qty > 1
           ? `<p class="label-container-radio__discount">
               <span class="discount-text${idx === 1 ? ' red' : ''}">${discountText}</span>
               <span class="strike">
@@ -136,15 +140,28 @@ export function * getNotice ({
         }
 
         const arr = [1, 3, 5];
-        const quantity = arr[getRandomInt(0, 2)]
+        const quantity = arr[getRandomInt(0, 2)];
 
         if(users[index] && cities[index]) {
+            let just_bought = t('checkout.notification.just_bought', {
+              first_name: users[index],
+              city: cities[index] || cities[0],
+              count: quantity,
+              product: js_data.product.product_name,
+            });
+
+            if (js_data.product.unit_qty > 1) {
+              just_bought += ' ' + t('product.unit_qty.total', {
+                count: quantity * js_data.product.unit_qty,
+              });
+            }
+
             yield `<div class="recently-notice">
               <div class="recently-notice__left">
                 <img class="lazy" data-src="${js_data.product.image[0]}" alt="">
               </div>
               <div class="recently-notice__right">
-                <p>${t('checkout.notification.just_bought', { first_name: users[index], city: cities[index] || cities[0], count: quantity, product: js_data.product.product_name })}</p>
+                <p>${just_bought}</p>
               </div>
             </div>
             `

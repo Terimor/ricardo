@@ -36,7 +36,6 @@
     @include('components.scripts.analytics')
     @include('components.scripts.sentry')
     @include('components.scripts.vue')
-    {{-- @include('minishop.scripts.freshchat') --}}
     @yield('scripts')
 
   </head>
@@ -46,7 +45,11 @@
 
     <div
       id="app"
-      ref="app">
+      ref="app"
+      :style="[fixed_margin_top]">
+
+      <!-- Fixed Region -->
+      @include('new.regions.fixed')
 
       <!-- Header Region -->
       @include('minishop.regions.header')
@@ -56,10 +59,6 @@
 
       <!-- Footer Region -->
       @include('minishop.regions.footer')
-
-      <!-- Fixed Region -->
-      {{-- @include('minishop.regions.fixed.freshchat') --}}
-      @include('minishop.regions.fixed.support')
 
     </div>
 

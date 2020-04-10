@@ -1,0 +1,13 @@
+@import '../fixed/covid';
+
+
+.fixed-region {
+  z-index: 10000;
+
+  &.fixed {
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+}

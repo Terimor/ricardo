@@ -112,15 +112,28 @@ export function preparePurchaseData({
         ? queryParams().sellout.split(',')
         : [];
 
+      const unit_qty_text = js_data.product.unit_qty > 1
+        ? ' ' + t('product.unit_qty.total', { count: (+key) * js_data.product.unit_qty })
+        : '';
+
+      const discountName = js_data.product.labels && js_data.product.labels[key] && js_data.product.unit_qty > 1
+        ? js_data.product.labels[key]
+        : it.is_bestseller
+          ? t('checkout.bestseller')
+          : it.is_popular
+            ? t('checkout.best_deal')
+            : '';
+
+      const textComposite = !js_data.product.labels || !js_data.product.labels[key] || js_data.product.unit_qty > 1
+        ? `${mainQuantity}x ${product_name}${isTextComposite(freeQuantity)}${unit_qty_text}`
+        : js_data.product.labels[key];
+
       return  {
         discountPercent,
         image: it.image || image,
-        discountName:
-          it.is_bestseller ? t('checkout.bestseller') :
-            it.is_popular ? t('checkout.best_deal') :
-              '',
+        discountName,
         text: `${mainQuantity + freeQuantity}x ${product_name}`,
-        textComposite: (js_data.product.labels && js_data.product.labels[key]) || `${mainQuantity}x ${product_name}${isTextComposite(freeQuantity)}`,
+        textComposite,
         newPrice: getNewPrice({
           key,
           valueTexts,

@@ -90,20 +90,27 @@
                     @click.stop></div>
 
                   <div
-                    v-if="deal.is_bestseller || deal.is_popular"
+                    v-if="deal.is_bestseller || deal.is_popular || (product.labels && product.labels[deal.quantity] && product.unit_qty > 1)"
                     class="deal-special">
 
                     <div class="deal-left">
 
                       <div
-                        v-if="deal.is_bestseller"
+                        v-if="product.labels && product.labels[deal.quantity] && product.unit_qty > 1"
+                        class="deal-popular">
+                        <div class="deal-special-triangle"></div>
+                        <div>{{ product.labels[deal.quantity] }}</div>
+                      </div>
+
+                      <div
+                        v-else-if="deal.is_bestseller"
                         class="deal-bestseller">
                         <div class="deal-special-triangle"></div>
                         <div>{{ textBestseller }}</div>
                       </div>
 
                       <div
-                        v-if="deal.is_popular"
+                        v-else-if="deal.is_popular"
                         class="deal-popular">
                         <div class="deal-special-triangle"></div>
                         <div>{{ textBestdeal }}</div>
@@ -125,13 +132,16 @@
                         <div v-if="deal.quantity === form.deal"></div>
                       </div>
 
-                      <template v-if="!product.labels || !product.labels[deal.quantity]">
+                      <template v-if="!product.labels || !product.labels[deal.quantity] || product.unit_qty > 1">
                         <div class="deal-label">
                           <div class="deal-count">{{ dealsMainQuantities[deal.quantity] }}x</div>
                           <div class="deal-name">&nbsp;{{ product.product_name }}&nbsp;</div>
                           <div
                             v-if="dealsFreeQuantities[deal.quantity]"
                             class="deal-free">+ {{ dealsFreeQuantities[deal.quantity] }} {{ textFree }}</div>
+                          <div
+                            v-if="product.unit_qty > 1"
+                            class="deal-unit-qty">&nbsp;{{ textUnitQtyTotal[deal.quantity] }}</div>
                         </div>
                         <div class="deal-discount">
                           <div class="deal-discount-o">o</div>
@@ -915,6 +925,13 @@
 
       textNextBottom() {
         return this.$t('fmc5.next.bottom');
+      },
+
+      textUnitQtyTotal() {
+        return this.deals.reduce((acc, deal) => {
+          acc[deal.quantity] = this.$t('product.unit_qty.total', { count: deal.quantity * this.product.unit_qty });
+          return acc;
+        }, {});
       },
 
     },

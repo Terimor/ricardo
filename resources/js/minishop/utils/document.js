@@ -4,14 +4,22 @@ export default {
     document: {
       readyState: document.readyState,
     },
+    window_width: window.innerWidth,
+    window_scroll_top: document.documentElement.scrollTop,
   },
 
 
   created() {
     document.addEventListener('readystatechange', () => {
-      if (this.document) {
-        this.document.readyState = document.readyState;
-      }
+      this.readyState = document.readyState;
+    });
+
+    addEventListener('resize', () => {
+      this.window_width = window.innerWidth;
+    });
+
+    addEventListener('scroll', () => {
+      this.window_scroll_top = document.documentElement.scrollTop;
     });
   },
 

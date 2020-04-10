@@ -18,7 +18,9 @@ import blackFriday from '../mixins/blackFriday';
 import christmas from '../mixins/christmas';
 import { ipqsCheck } from '../services/ipqs';
 import { queryParams } from  '../utils//queryParams';
+import documentMixin from '../mixins/document';
 import globals from '../mixins/globals';
+import fixed from '../new/regions/fixed';
 import wait from '../utils/wait';
 
 
@@ -29,7 +31,9 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
     el: "#app",
 
     mixins: [
+      fixed,
       globals,
+      documentMixin,
       notification,
       queryToComponent,
       extraFields.appMixin,

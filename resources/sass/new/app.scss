@@ -6,6 +6,7 @@ $l-down: 'max-width: 1119px';
 $xl-down: 'max-width: 1279px';
 $xxl-down: 'max-width: 1439px';
 
+@import './regions/fixed';
 @import './regions/header';
 @import './regions/footer';
 

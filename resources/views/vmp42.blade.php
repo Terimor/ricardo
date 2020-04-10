@@ -64,6 +64,13 @@
 @endsection
 
 
+@section('fixed')
+  @if((Route::is('checkout') || Route::is('checkout_price_set')) && (Request::get('show_timer') === '{timer}' || Request::get('show_timer') === '1'))
+    <timer-component></timer-component>
+  @endif
+@endsection
+
+
 @section('content')
 
     <div class="promo" id="promo">
@@ -170,7 +177,7 @@
                                                     <span class="promo__price promo__text-red bold">@{{countOfInstallments}} @{{ item.newPrice }}</span>
                                                 </p>
                                             </div>
-                                            <div v-if="!productData.labels || !productData.labels[item.totalQuantity]" class="promo__fifty-discount">
+                                            <div v-if="!productData.labels || !productData.labels[item.totalQuantity] || productData.unit_qty > 1" class="promo__fifty-discount">
                                                 <p v-html="item.discountText"></p>
                                             </div>
                                         </div>

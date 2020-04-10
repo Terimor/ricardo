@@ -1,4 +1,4 @@
-@if (!$HasVueApp && !Route::is('splash'))
+@if (empty($HasVueApp) && !Route::is('splash') && empty($is_minishop) && !$is_new_engine)
   <div
     ref="support_toolbar"
     id="static-topbar"
