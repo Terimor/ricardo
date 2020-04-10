@@ -40,6 +40,10 @@ export default {
       this.payment_methods_reload();
     },
 
+    'form.payment_provider'() {
+      this.payment_error = null;
+    },
+
   },
 
 

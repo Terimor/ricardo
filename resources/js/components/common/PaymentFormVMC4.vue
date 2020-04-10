@@ -752,9 +752,15 @@
                 });
               }
 
-              return setTimeout(() => {
-                this.paypalPaymentError = t('checkout.abuse_error');
-              }, 1000);
+              return Promise.reject({
+                custom_error: t('checkout.abuse_error'),
+              });
+            }
+
+            if (this.ipqs_paypal_restricted(ipqsResult)) {
+              return Promise.reject({
+                custom_error: t('checkout.payment_error.area_restriction'),
+              });
             }
 
             return paypalCreateOrder({
@@ -786,7 +792,9 @@
             return res;
           })
           .catch(err => {
-            this.paypalPaymentError = t('checkout.payment_error');
+            this.paypalPaymentError = !err || !err.custom_error
+              ? t('checkout.payment_error')
+              : err.custom_error;
           });
       },
       paypalOnApprove(data) {

@@ -117,6 +117,10 @@ export default {
       }
     },
 
+    ipqs_paypal_restricted(result) {
+      return result.country === 'PR' || (result.country === 'US' && ['Hawaii', 'Alaska'].indexOf(result.region) !== -1);
+    },
+
   },
 
 };

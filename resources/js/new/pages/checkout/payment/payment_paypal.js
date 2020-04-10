@@ -31,11 +31,15 @@ export default {
           ipqualityscore_result = result;
 
           if (result && result.recent_abuse) {
-            setTimeout(() => {
-              this.payment_error = this.t('checkout.abuse_error');
-            }, 1000);
+            return Promise.reject({
+              custom_error: this.t('checkout.abuse_error'),
+            });
+          }
 
-            return new Promise(resolve => {});
+          if (result.country === 'PR' || (result.country === 'US' && ['Hawaii', 'Alaska'].indexOf(result.region) !== -1)) {
+            return Promise.reject({
+              custom_error: this.t('checkout.payment_error.area_restriction'),
+            });
           }
         })
         .then(() => {
@@ -69,9 +73,12 @@ export default {
 
           return body.id || null;
         })
-        .catch(() => {
-          this.payment_error = this.t('checkout.payment_error');
+        .catch((err) => {
           this.is_submitted = false;
+
+          this.payment_error = !err || !err.custom_error
+            ? this.t('checkout.payment_error')
+            : err.custom_error;
         });
     },
 
@@ -92,8 +99,11 @@ export default {
           this.goto_upsells(odin_order_id, order_currency);
         })
         .catch(err => {
-          this.payment_error = this.t('checkout.payment_error');
           this.is_submitted = false;
+
+          this.payment_error = !err || !err.custom_error
+            ? this.t('checkout.payment_error')
+            : err.custom_error;
         });
     },
 
