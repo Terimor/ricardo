@@ -275,7 +275,7 @@ class ProductService
         $lp->favicon_image = $product->favicon_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
         $lp->vimeo_id = $product->vimeo_id;
-        $lp->unit_qty = $product->unit_qty ?? 1;
+        $lp->unit_qty = !empty($product->unit_qty) ? $product->unit_qty : 1;
         $lp->is_discount = $product->is_discount ?? false;
 
         $prices = [];
