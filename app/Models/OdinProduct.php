@@ -203,7 +203,7 @@ class OdinProduct extends Model
             // country depends on IP
             $userCountry = \Utils::getLocationCountryCode();
         }
-        $unitQty = $this->unit_qty ?? 1;
+        $unitQty = !empty($this->unit_qty) ? $this->unit_qty : 1;
 
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
