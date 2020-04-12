@@ -23,9 +23,40 @@
   margin: 0 0 15px;
 }
 
-.input-field-label,
+.input-field-label {
+  color: #777;
+  font-size: 15px;
+  left: 18px;
+  margin: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 14px;
+  transition: all .1s ease-in;
+  z-index: 1;
+
+  [dir="rtl"] & {
+    left: auto;
+    right: 18px;
+  }
+
+  .phone-field &,
+  .card_number-field &,
+  .card_date-field &,
+  .document_number-field & {
+    display: none;
+  }
+}
+
 .select-field-label {
   display: none;
+}
+
+.input.dirty,
+.input:focus-within {
+  .input-field-label {
+    font-size: 11px;
+    top: 5px;
+  }
 }
 
 .input-field-input,
@@ -42,6 +73,36 @@
     border-color: rgba(0,0,0,.2);
     box-shadow: none;
   }
+
+  &::placeholder {
+    color: transparent;
+
+    .phone-field &,
+    .card_number-field &,
+    .card_date-field &,
+    .document_number-field & {
+      color: #777;
+    }
+  }
+}
+
+.input-field-input {
+  padding-top: 12px;
+
+  .phone-field &,
+  .card_number-field &,
+  .card_date-field &,
+  .document_number-field & {
+    padding-top: 0;
+  }
+}
+
+.select-field-input {
+  padding: 0 14px;
+}
+
+.input-field-mask {
+  padding: 0 18px;
 }
 
 .input-field-error,

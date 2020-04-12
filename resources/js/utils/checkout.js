@@ -116,7 +116,7 @@ export function preparePurchaseData({
         ? ' ' + t('product.unit_qty.total', { count: (+key) * js_data.product.unit_qty })
         : '';
 
-      const discountName = js_data.product.labels && js_data.product.labels[key] && js_data.product.unit_qty > 1
+      const discountName = js_data.product.labels && js_data.product.labels[key]
         ? js_data.product.labels[key]
         : it.is_bestseller
           ? t('checkout.bestseller')
@@ -124,9 +124,7 @@ export function preparePurchaseData({
             ? t('checkout.best_deal')
             : '';
 
-      const textComposite = !js_data.product.labels || !js_data.product.labels[key] || js_data.product.unit_qty > 1
-        ? `${mainQuantity}x ${product_name}${isTextComposite(freeQuantity)}${unit_qty_text}`
-        : js_data.product.labels[key];
+      const textComposite = `${mainQuantity}x ${product_name}${isTextComposite(freeQuantity)}${unit_qty_text}`;
 
       return  {
         discountPercent,

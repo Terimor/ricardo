@@ -4,7 +4,7 @@ export const getRadioHtml = ({ discountName, newPrice, textComposite, price, dis
   `<div class='main-row'>
     ${totalQuantity === 3 ? "<img class='lazy best-seller' data-src='" + js_data.cdn_url + "/assets/images/best-seller-checkout4.png' alt='best seller' />" : "" }
     <p class="product-name">
-      <span class="product-text">${textComposite}</span>` + (!js_data.product.labels || !js_data.product.labels[totalQuantity] || js_data.product.unit_qty > 1 ? ` - <span class="discount">${discountText}</span>` : '') + `
+      <span class="product-text">${textComposite}</span> - <span class="discount">${discountText}</span>
     </p>
     <div class='prices'>
       ${discountPercent > 0 ? `

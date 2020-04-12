@@ -3,6 +3,7 @@ import timer from './checkout/blocks/timer';
 import preloader from './checkout/blocks/preloader';
 import recently_bought from './checkout/blocks/recently_bought';
 import leave_modal from './checkout/blocks/leave_modal';
+import deals from './checkout/deals';
 import form from './checkout/form';
 import payment from './checkout/payment';
 import prices from './checkout/prices';
@@ -17,6 +18,7 @@ export default {
     preloader,
     recently_bought,
     leave_modal,
+    deals,
     form,
     payment,
     prices,

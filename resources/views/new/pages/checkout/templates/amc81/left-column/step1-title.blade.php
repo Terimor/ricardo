@@ -1,3 +1,5 @@
 <div class="step1-title">
-  {{ t('checkout.step') }} @{{ step_numbers[1] }}: {{ t('checkout.choose_deal') }}
+  <span class="step">{{ t('checkout.step') }}</span>
+  &nbsp;@{{ step_numbers[1] }}:&nbsp;
+  <span class="title">{{ t('checkout.choose_deal') }}</span>
 </div>

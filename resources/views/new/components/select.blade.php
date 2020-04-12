@@ -1,7 +1,10 @@
 <div
   ref="{{ $name }}_field"
   class="select {{ $name }}-field scroll-when-error"
-  :class="{ invalid: {{ $validation }} && {{ $validation }}.$dirty && {{ $validation }}.$invalid }"
+  :class="{
+    invalid: {{ $validation }} && {{ $validation }}.$dirty && {{ $validation }}.$invalid,
+    dirty: {{ $validation }} && {{ $validation }}.$model,
+  }"
   @if (!empty($init)) v-if="{{ $init }}() || true" @endif>
 
   <div class="select-field-label">

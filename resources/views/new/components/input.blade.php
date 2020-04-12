@@ -1,7 +1,10 @@
 <div
   ref="{{ $name }}_field"
   class="input {{ $name }}-field scroll-when-error{{ !empty($prefix) ? ' with-prefix' : '' }}{{ !empty($suffix) ? ' with-suffix' : '' }}"
-  :class="{ invalid: {{ $validation }} && {{ $validation }}.$dirty && {{ $validation }}.$invalid }"
+  :class="{
+    invalid: {{ $validation }} && {{ $validation }}.$dirty && {{ $validation }}.$invalid,
+    dirty: {{ $validation }} && {{ $validation }}.$model,
+  }"
   @if (!empty($init)) v-if="{{ $init }}() || true" @endif>
 
   <div class="input-field-label">

@@ -32,7 +32,7 @@ export const getRadioHtml = ({
     ? formattedPrice
     : getCountOfInstallments(installments) + newPrice.toLocaleString();
 
-  if (js_data.product.labels && js_data.product.labels[totalQuantity] && js_data.product.unit_qty > 1) {
+  if (js_data.product.labels && js_data.product.labels[totalQuantity]) {
     discountName = js_data.product.labels[totalQuantity];
   }
 
@@ -61,17 +61,15 @@ export const getRadioHtml = ({
             : `${discountName ? '' : currentPrice}`}
         </p>
 
-        ${!js_data.product.labels || !js_data.product.labels[totalQuantity] || js_data.product.unit_qty > 1
-          ? `<p class="label-container-radio__discount">
-              <span class="discount-text${idx === 1 ? ' red' : ''}">${discountText}</span>
-              <span class="strike">
-                ${!isEmc1b && !discountName
-                    ? getCountOfInstallments(installments) + price.toLocaleString()
-                    : ''
-                }
-              </span>
-            </p>`
-          : ''}
+        <p class="label-container-radio__discount">
+          <span class="discount-text${idx === 1 ? ' red' : ''}">${discountText}</span>
+          <span class="strike">
+            ${!isEmc1b && !discountName
+                ? getCountOfInstallments(installments) + price.toLocaleString()
+                : ''
+            }
+          </span>
+        </p>
       `)
 };
 

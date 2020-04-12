@@ -3,22 +3,26 @@
   flex-direction: column;
 
   .deal {
-    align-items: center;
     border: 1px solid #858585;
     border-radius: 3px;
     cursor: pointer;
     display: flex;
+    flex-direction: column;
     margin-top: 15px;
-    padding: 25px 15px;
+    padding: 15px 15px;
     position: relative;
+
+    @media (min-width: $size2) {
+      padding: 20px 15px;
+    }
 
     &:first-child {
       margin-top: 0;
     }
 
     &.selected {
-      background-color: #e9f4ff;
-      border-color: #36a1f9;
+      border-color: #000;
+      border-width: 3px;
       box-shadow: -1px 2px 4px 1px rgba(0,0,11,.1);
     }
 
@@ -38,20 +42,27 @@
   }
 
   .deal-radio {
-    border-color: #2e98f8;
+    border-color: #979797;
+    border-radius: 0;
+    height: 24px;
+    margin-right: 12px;
+    width: 24px;
+
+    [dir="rtl"] & {
+      margin-left: 12px;
+      margin-right: 0;
+    }
 
     > div {
-      background-color: #2e98f8;
-      height: 10px;
-      width: 10px;
+      background-color: #000;
+      border-radius: 0;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .deal-content {
     display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    margin: 0 12px;
   }
 
   .deal-label {
@@ -80,20 +91,76 @@
     white-space: nowrap;
   }
 
-  .deal-prices {
-    align-items: flex-end;
+  .deal-columns {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+
+    @media (min-width: $size2) {
+      flex-direction: row;
+    }
+  }
+
+  .deal-image {
     display: flex;
     flex-direction: column;
+
+    @media (min-width: $size2) {
+      margin: 20px 0 5px 35px;
+
+      [dir="rtl"] & {
+        margin-left: 0;
+        margin-right: 35px;
+      }
+    }
+
+    img {
+      max-height: 80px;
+      max-width: 100%;
+
+      @media (min-width: $size2) {
+        max-height: 92px;
+      }
+    }
+  }
+
+  .deal-prices {
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    padding-left: 35px;
+
+    [dir="rtl"] & {
+      padding-left: 0;
+      padding-right: 35px;
+    }
+
+    @media (min-width: $size2) {
+      align-items: flex-end;
+      padding-left: 0;
+      padding-right: 30px;
+      padding-bottom: 20px;
+
+      [dir="rtl"] & {
+        padding-left: 30px;
+        padding-right: 0;
+      }
+    }
   }
 
   .deal-discount-name {
     align-items: center;
     display: flex;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.1875;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    @media (min-width: $size2) {
+      font-size: 16px;
+    }
   }
 
   .deal-discount-star {
@@ -113,27 +180,23 @@
   }
 
   .deal-old-price {
-    color: #e74c3c;
+    color: #f00;
     font-size: 16px;
     line-height: 1.1875;
+    margin-top: 5px;
     overflow: hidden;
+    text-decoration: line-through;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .deal-old-price-reg {
-    text-transform: uppercase;
-  }
-
-  .deal-old-price-value {
-    text-decoration: line-through;
-  }
-
   .deal-new-price {
     color: #000;
+    display: flex;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.1875;
+    margin-top: 5px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
