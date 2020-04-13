@@ -84,5 +84,7 @@
         @include('new.pages.checkout.templates.amc81.right-column.guarantee')
       </div>
     </div>
+    @include('new.pages.checkout.templates.amc81.reviews')
+    @include('new.pages.checkout.templates.amc81.question')
   </div>
 @endsection
