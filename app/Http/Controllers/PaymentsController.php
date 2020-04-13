@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\PaymentException;
 use App\Services\ApmService;
 use App\Services\BluesnapService;
 use App\Services\CardService;
@@ -154,11 +153,14 @@ class PaymentsController extends Controller
             throw new AuthException('Unauthorized');
         }
 
-        $order = PaymentService::approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
+        $result = "{$authKey}ok";
+        if (!empty($reply['txn'])) {
+            $order = PaymentService::approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
+            $bs = CardService::getBluesnapService($order->number, $reply['txn']['hash']);
+            $result .= $bs->getDataProtectionKey();
+        }
 
-        $bs = CardService::getBluesnapService($order->number, $reply['txn']['hash']);
-
-        return md5($authKey . 'ok' . $bs->getDataProtectionKey());
+        return md5($result);
     }
 
     /**
