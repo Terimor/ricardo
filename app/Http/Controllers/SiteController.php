@@ -584,7 +584,7 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('abuse_page');
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('abuse_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('abuse.title'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         $placeholders = TemplateService::getCompanyData($domain);

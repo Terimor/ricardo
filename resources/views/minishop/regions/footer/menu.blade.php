@@ -11,5 +11,6 @@
   @endif
 
   <li><a class="nav-link" href="/delivery">{{ t('minishop.menu.delivery') }}</a></li>
+  <li><a class="nav-link" href="/report-abuse">{{ t('abuse.title') }}</a></li>
 
 </ul>

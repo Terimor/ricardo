@@ -17,6 +17,7 @@
     @endif
 
     <li class="footer__row-item"><a href="/delivery" class="footer__link">{!! t('footer.delivery') !!}</a></li>
+    <li class="footer__row-item"><a href="/report-abuse" class="footer__link">{!! t('abuse.title') !!}</a></li>
   </ul>
 
   @if ($is_aff_id_empty)
