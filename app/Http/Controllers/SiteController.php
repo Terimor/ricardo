@@ -573,6 +573,18 @@ class SiteController extends Controller
         return view('splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
     }
 
+    public function reportAbuse(Request $request, ProductService $productService)
+    {
+        $loadedPhrases = (new I18nService())->loadPhrases('delivery_page');
+        $product = $productService->resolveProduct($request, true);
+        $domain = Domain::getByName();
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('delivery_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
+        $placeholders = TemplateService::getCompanyData($domain);
+        return view('report_abuse', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name', 'placeholders'));
+    }
+
     /**
      * Prober
      * @param Request $request
