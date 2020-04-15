@@ -4,7 +4,7 @@
     name="el-zoom-in-top">
 
     <button
-      v-show="warrantyPriceText"
+          v-show="warrantyPriceText && !isHygiene"
       id="warranty-field-button"
       @click="toggle">
 
@@ -21,7 +21,7 @@
     </button>
 
   </transition>
-  
+
 </template>
 
 
@@ -81,6 +81,10 @@
 
         return 0;
       },
+
+       isHygiene() {
+          return js_data.product.is_hygiene;
+       },
 
       textWarranty() {
         return this.$t('checkout.warranty');
@@ -208,7 +212,7 @@
     color: #dc003a;
     top: 20px;
     right: 10px;
-    
+
 
     [dir="rtl"] & {
       display: block;
@@ -226,5 +230,5 @@
       display: none;
     }
   }
-  
+
 </style>

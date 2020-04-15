@@ -27,12 +27,12 @@
                     :variantList="variantList"
                     :extraFields="extraFields"
                     :stateExtraField="stateExtraField"
-                    :paymentMethodURL="paymentMethodURL"
+                    :paymentMethodURxL="paymentMethodURL"
                     @setPaymentMethodByCardNumber="setPaymentMethodByCardNumber">
                     <template slot="warranty">
                       <transition name="el-zoom-in-top">
                         <button
-                          v-show="warrantyPriceText"
+                          v-show="warrantyPriceText && !isHygiene"
                           id="warranty-field-button"
                           @click="warrantyToggle">
                           <div class="label-container-checkbox">
@@ -118,7 +118,7 @@
           this.form.isWarrantyChecked = selectedProductData.isWarrantyChecked || this.form.isWarrantyChecked;
         }
         catch (err) {
-          
+
         }
       }
     },
@@ -191,6 +191,10 @@
 
         return 0;
       },
+
+        isHygiene() {
+            return js_data.product.is_hygiene;
+        },
 
       textSafeSSLEncryption: () => t('checkout.safe_sll_encryption'),
       textCreditCardInvoiced: () => t('checkout.credit_card_invoiced'),

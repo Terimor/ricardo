@@ -140,7 +140,7 @@
                                 </div>
                             </div>
                             <!-- promo__installments end -->
-            
+
                             <div class="col-12">
                                 <h2 class="promo__title j-header-products">{{ t('checkout.secure_deal') }}</h2>
                             </div>
@@ -290,6 +290,7 @@
                                 :country-list="countriesList"
                                 :quantity-of-installments="countOfInstallments"
                                 :warranty-price-text="warrantyPriceText"
+                                :is-hygiene="isHygiene"
                                 :extra-fields="extraFields"
                                 :state-extra-field="stateExtraField"
                                 :payment-method-u-r-l="paymentMethodURL"

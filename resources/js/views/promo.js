@@ -281,6 +281,10 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         return 0;
       },
 
+        isHygiene() {
+            return js_data.product.is_hygiene;
+        },
+
       countOfInstallments() {
         return getCountOfInstallments(this.form.installments);
       },
@@ -312,7 +316,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
       scrollTo: scrollTo,
 
       paypalSubmit() {
-        
+
       },
 
       paypalCreateOrder () {

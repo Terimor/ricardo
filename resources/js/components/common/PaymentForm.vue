@@ -124,7 +124,7 @@
             </div>
         </template>
         <!-- vmp41/42 block -->
-        <span v-show="hasWarranty" class="warranty-field-button">
+        <span v-show="hasWarranty && !isHygiene" class="warranty-field-button">
           <label for="warranty-field" class="label-container-checkbox">
             <i class="fa fa-arrow-left slide-left warranty-field-arrow"></i>
             <i class="fa fa-arrow-right slide-right warranty-field-arrow"></i>
@@ -204,6 +204,7 @@
       'extraFields',
       'stateExtraField',
       'paymentMethodURL',
+      'isHygiene'
     ],
     mixins: [
       globals,
@@ -726,7 +727,7 @@
         right: 10px;
         top: 13px;
         z-index: 2;
-        
+
 
         [dir="rtl"] & {
           display: block;
