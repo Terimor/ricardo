@@ -574,6 +574,24 @@ class SiteController extends Controller
     }
 
     /**
+     * Report abuse page /report-abuse
+     * @param Request $request
+     * @param ProductService $productService
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function reportAbuse(Request $request, ProductService $productService)
+    {
+        $loadedPhrases = (new I18nService())->loadPhrases('abuse_page');
+        $product = $productService->resolveProduct($request, true);
+        $domain = Domain::getByName();
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('abuse_title'));
+        $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
+        $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
+        $placeholders = TemplateService::getCompanyData($domain);
+        return view('report_abuse', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name', 'placeholders'));
+    }
+
+    /**
      * Prober
      * @param Request $request
      * @return string

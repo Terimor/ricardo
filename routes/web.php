@@ -91,6 +91,9 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/support-abc', 'SiteController@support');
     $router->post('/support-abc', 'SiteController@supportRequest')->name('support-request');
 
+    // report-abuse
+    $router->get('/report-abuse', 'SiteController@reportAbuse');
+
     $router->post('/new-customer', 'OdinCustomerController@addOrUpdate');
 
 });
