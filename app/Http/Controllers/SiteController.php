@@ -367,7 +367,10 @@ class SiteController extends Controller
         $langCode = substr(app()->getLocale(), 0, 2);
         $countryCode = \Utils::getLocationCountryCode();
 
-        $setting['payment_methods'] = collect(PaymentService::getPaymentMethodsByCountry($countryCode))->collapse()->all();
+        // get available payment methods
+        $setting['payment_methods'] = collect(
+            PaymentService::getPaymentMethodsByCountry($countryCode, $request->get('cur'))
+        )->collapse()->all();
 
         $recentlyBoughtData = OdinOrder::getRecentlyBoughtData();
         $recentlyBoughtNames = $recentlyBoughtData['recentlyBoughtNames'];

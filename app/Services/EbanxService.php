@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Setting;
-use App\Models\Currency;
 use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Mappers\EbanxCodeMapper;
@@ -159,21 +158,21 @@ class EbanxService
     }
 
     /**
-     * Returns available currency for country
+     * Checks if the currency supported
      * @param  string $country_code
      * @param  string|null $currency
-     * @return string
+     * @return bool
      */
-    public static function getCurrencyByCountry(string $country_code, ?string $currency): ?string
+    public static function isCurrencySupported(string $country_code, ?string $currency): bool
     {
+        $result = false;
         $country = Country::fromIso($country_code);
         if ($country && isset(self::CUR_PER_COUNTRY[$country])) {
-            if ($currency && \in_array($currency, self::CUR_PER_COUNTRY[$country])) {
-                return $currency;
+            if ($currency && in_array($currency, self::CUR_PER_COUNTRY[$country])) {
+                $result = true;
             }
-            return Currency::DEF_CUR;
         }
-        return Currency::DEF_CUR;
+        return $result;
     }
 
     /**

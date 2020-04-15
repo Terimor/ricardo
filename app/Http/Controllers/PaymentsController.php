@@ -125,7 +125,10 @@ class PaymentsController extends Controller
      */
     public function getPaymentMethodsByCountry(GetPaymentMethodsByCountryRequest $req)
     {
-        return collect(PaymentService::getPaymentMethodsByCountry($req->get('country')))->collapse()->all();
+        $country = $req->get('country');
+        $currency = $req->get('cur');
+
+        return collect(PaymentService::getPaymentMethodsByCountry($country, $currency))->collapse()->all();
     }
 
     /**

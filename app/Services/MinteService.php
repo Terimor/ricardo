@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Domain;
 use App\Models\Setting;
-use App\Models\Currency;
 use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Constants\PaymentProviders;
@@ -30,8 +29,8 @@ class MinteService
         'ae' => ['AED', 'USD'],
         'ar' => ['ARS', 'USD'],
         'au' => ['AUD', 'USD'],
-        'at' => ['EUR', 'USD'],
-        'be' => ['EUR', 'USD'],
+        'at' => ['EUR'],
+        'be' => ['EUR'],
         'bg' => ['BGN', 'USD'],
         'bt' => ['INR', 'USD'],
         'ca' => ['CAD', 'USD'],
@@ -75,13 +74,13 @@ class MinteService
         'my' => ['MYR', 'USD'],
         'na' => ['ZAR', 'USD'],
         'nf' => ['AUD', 'USD'],
-        'nl' => ['EUR', 'USD'],
+        'nl' => ['EUR'],
         'no' => ['NOK', 'USD'],
         'nr' => ['AUD', 'USD'],
         'nu' => ['NZD', 'USD'],
         'nz' => ['NZD', 'USD'],
         'ph' => ['PHP', 'USD'],
-        'pl' => ['PLN', 'USD'],
+        'pl' => ['PLN'],
         'pn' => ['NZD', 'USD'],
         'pr' => ['USD'],
         'pt' => ['EUR', 'USD'],
@@ -138,20 +137,20 @@ class MinteService
     }
 
     /**
-     * Returns available currency by country
+     * Checks if the currency is supported
      * @param  string $country
-     * @param  string|null $currency
-     * @return string
+     * @param  string $currency
+     * @return bool
      */
-    public static function getCurrencyByCountry(string $country, ?string $currency): ?string
+    public static function isCurrencySupported(string $country, string $currency): bool
     {
+        $result = false;
         if (isset(self::COUNTRY_CURRENCY[$country])) {
-            return in_array($currency, self::COUNTRY_CURRENCY[$country]) ? $currency : Currency::DEF_CUR;
+            $result = in_array($currency, self::COUNTRY_CURRENCY[$country]);
         } elseif (in_array($currency, self::COUNTRY_CURRENCY['*'])) {
-            return $currency;
-        } else {
-            return Currency::DEF_CUR;
+            $result = true;
         }
+        return $result;
     }
 
     /**
