@@ -221,7 +221,7 @@
                         <img class="lazy promo__carousel-img" data-src="https://static-backend.saratrkr.com/image_assets/NewYourToday_3.png" alt="">
                     </carousel>
                 </section>
-                
+
                 <section class="promo__reviews">
                     <div class="container">
                         <h2 class="promo__title">
@@ -349,6 +349,7 @@
                         :country-list="countriesList"
                         :quantity-of-installments="countOfInstallments"
                         :warranty-price-text="warrantyPriceText"
+                        :is-hygiene="isHygiene"
                         :extra-fields="extraFields"
                         :state-extra-field="stateExtraField"
                         :payment-method-u-r-l="paymentMethodURL"

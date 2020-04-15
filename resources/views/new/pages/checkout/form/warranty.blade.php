@@ -1,4 +1,5 @@
 <transition name="fade">
+  @if (!$product->is_hygiene)
   <div
     ref="warranty_field"
     v-if="form.deal"
@@ -21,6 +22,7 @@
     <div class="warranty-field-label">
       {!! t('checkout.warranty') !!}: @{{ xprice_warranty_text }}
     </div>
-    
+
   </div>
+  @endif
 </transition>

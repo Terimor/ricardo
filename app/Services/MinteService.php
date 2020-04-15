@@ -379,7 +379,7 @@ class MinteService
                     'res' => $body_decoded
                 ]);
 
-                $result['hash'] = $body_decoded['transid'] ?? "fail_" . UtilsService::randomString(16);
+                $result['hash'] = $body_decoded['transid'] ?? ('fail_' . hrtime(true));
                 $result['status'] = Txn::STATUS_FAILED;
                 $result['fallback'] = $this->checkErrorToFallback($body_decoded);
                 $result['errors'] = [MinteCodeMapper::toPhrase($body_decoded['errorcode'] ?? null, $body_decoded['errormessage'] ?? null)];
@@ -388,6 +388,7 @@ class MinteService
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
 
+            $result['hash'] = 'fail_' . hrtime(true);
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
             $result['errors'] = [MinteCodeMapper::toPhrase()];
 
@@ -416,7 +417,7 @@ class MinteService
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::MINTE,
             'payment_api_id'    => (string)$this->api->getIdAttribute(),
-            'hash'              => "fail_" . UtilsService::randomString(16),
+            'hash'              => 'fail_' . hrtime(true),
             'provider_data'     => null,
             'errors'            => null,
             'token'             => null
@@ -475,7 +476,7 @@ class MinteService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::MINTE,
-            'hash'              => "fail_" . UtilsService::randomString(16),
+            'hash'              => 'fail_' . hrtime(true),
             'provider_data'     => null,
             'errors'            => null
         ];
@@ -587,7 +588,7 @@ class MinteService
             } else {
                 logger()->warning("Mint-e apm", $result['provider_data']);
 
-                $result['hash'] = "fail_" . UtilsService::randomString(16);
+                $result['hash'] = 'fail_' . hrtime(true);
                 $result['status'] = Txn::STATUS_FAILED;
                 $result['errors'] = [
                     MinteCodeMapper::toPhrase($body_decoded['errorcode'] ?? null, $body_decoded['errormessage'] ?? null)
@@ -595,8 +596,11 @@ class MinteService
             }
         } catch (GuzzReqException $ex) {
             $res = $ex->hasResponse() ? $ex->getResponse()->getBody() : null;
+
+            $result['hash'] = 'fail_' . hrtime(true);
             $result['errors'] = [MinteCodeMapper::toPhrase()];
             $result['provider_data'] = ['code' => $ex->getCode(), 'res' => (string)$res];
+
             logger()->warning("Mint-e apm", $result['provider_data']);
         }
         return $result;
