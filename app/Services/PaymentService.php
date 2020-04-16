@@ -237,7 +237,7 @@ class PaymentService
         $usd_rate = $currency->usd_rate;
 
         // check currency, if it's not supported switch to default currency
-        $currency_code = self::checkCurrency($country, $currency->code, $provider);
+        $currency_code = self::getSupportedCurrency($country, $currency->code, $provider);
 
         if ($currency_code === Currency::DEF_CUR) {
             $price = $price_usd;
@@ -618,26 +618,43 @@ class PaymentService
     }
 
     /**
-     * Returns supported currency
-     * @param  string $country
-     * @param  string $currency
-     * @param  string $prv default=minte
+     * Returns supported currency or default
+     * @param string $country
+     * @param string $currency
+     * @param string $provider
      * @return string
      */
-    public static function checkCurrency(string $country, string $currency, string $prv = PaymentProviders::MINTE): string
+    public static function getSupportedCurrency(string $country, string $currency, string $provider): string
     {
-        switch ($prv):
+        return self::isCurrencySupported($country, $currency, $provider) ? $currency : Currency::DEF_CUR;
+    }
+
+    /**
+     * Checks is the currency supported
+     * @param  string $country
+     * @param  string $currency
+     * @param  string $provider
+     * @return bool
+     */
+    public static function isCurrencySupported(string $country, string $currency, string $provider): bool
+    {
+        $result = true;
+        switch ($provider):
             case PaymentProviders::EBANX:
-                return EbanxService::getCurrencyByCountry($country, $currency);
+                $result = EbanxService::isCurrencySupported($country, $currency);
+                break;
             case PaymentProviders::MINTE:
-                return MinteService::getCurrencyByCountry($country, $currency);
+                $result = MinteService::isCurrencySupported($country, $currency);
+                break;
             case PaymentProviders::APPMAX:
-                return AppmaxService::getCurrencyByCountry($country, $currency);
+                $result = AppmaxService::isCurrencySupported($country, $currency);
+                break;
             case PaymentProviders::STRIPE:
-                return StripeService::getSupportedCurrency($currency);
-            default:
-                return $currency;
+                $result = StripeService::isCurrencySupported($currency);
+                break;
         endswitch;
+
+        return $result;
     }
 
     /**
@@ -819,15 +836,17 @@ class PaymentService
      *   ]
      * ];
      * @param string $country
+     * @param string|null $currency
      * @param bool $is_main default=true
      * @return array
      */
-    public static function getPaymentMethodsByCountry(string $country, bool $is_main = true): array
+    public static function getPaymentMethodsByCountry(string $country, ?string $currency = null, bool $is_main = true): array
     {
         $country = strtolower($country);
         $result = [];
         foreach (PaymentProviders::$list as $providerId => $provider) {
-            if (PaymentProviders::isActive($providerId, $is_main)) {
+            $is_currency_supported = $currency ? self::isCurrencySupported($country, $currency, $providerId) : true;
+            if (PaymentProviders::isActive($providerId, $is_main) && $is_currency_supported) {
                 $result[$providerId] = [];
 
                 //check every method of provider
@@ -875,7 +894,7 @@ class PaymentService
      */
     public static function getProvidersForPay(string $country, string $method, bool $is_main = true, array $excl = []): array
     {
-        $providers = self::getPaymentMethodsByCountry($country, $is_main);
+        $providers = self::getPaymentMethodsByCountry($country, null, $is_main);
 
         if (!EbanxService::isCountrySupported($country)) {
             $excl[] = PaymentProviders::EBANX;

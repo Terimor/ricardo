@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\PaymentApi;
 use App\Models\Txn;
-use App\Models\Currency;
 use App\Constants\PaymentProviders;
 use App\Mappers\StripeCodeMapper;
 use App\Mappers\StripeAmountMapper;
@@ -46,17 +45,17 @@ class StripeService
     }
 
     /**
-     * Returns supported currency
-     * @param  string|null $currency
-     * @return string
+     * Checks if the currency is supported
+     * @param  string $currency
+     * @return bool
      */
-    public static function getSupportedCurrency(?string $currency = Currency::DEF_CUR): ?string
+    public static function isCurrencySupported(string $currency): bool
     {
+        $result = false;
         if (StripeAmountMapper::toProvider(1, $currency)) {
-            return $currency;
-        } else {
-            return Currency::DEF_CUR;
+            $result = true;
         }
+        return $result;
     }
 
     /**

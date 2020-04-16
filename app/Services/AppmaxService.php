@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Models\Setting;
-use App\Models\Currency;
-use App\Constants\PaymentMethods;
 use App\Constants\PaymentProviders;
 use App\Mappers\AppmaxCodeMapper;
 use GuzzleHttp\Client as GuzzHttpCli;
@@ -97,18 +95,18 @@ class AppmaxService
     }
 
     /**
-     * Returns available currency for country
+     * Checks if the currency is supported
      * @param  string $country_code
-     * @param  string|null $currency
-     * @return string
+     * @param  string $currency
+     * @return bool
      */
-    public static function getCurrencyByCountry(string $country_code, ?string $currency): ?string
+    public static function isCurrencySupported(string $country_code, string $currency): bool
     {
+        $result = false;
         if (isset(self::COUNTRY_CURRENCY[$country_code])) {
-            return in_array($currency, self::COUNTRY_CURRENCY[$country_code]) ? $currency : Currency::DEF_CUR;;
-        } else {
-            return Currency::DEF_CUR;
+            $result = in_array($currency, self::COUNTRY_CURRENCY[$country_code]);
         }
+        return $result;
     }
 
     /**
