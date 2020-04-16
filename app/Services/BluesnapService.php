@@ -405,7 +405,7 @@ class BluesnapService
             if ($ex->getCode() === self::HTTP_CODE_ERROR && $res) {
                 $body_decoded = json_decode($res->getBody(), true);
                 if (!empty($body_decoded['message'])) {
-                    $result['errors'] = array_map(function($v) {
+                    $result['errors'] = array_map(function($v) use ($hash) {
                         return ($v['description'] ?? "Something went wrong") . " [{$hash}]";
                     }, $body_decoded['message']);
                 }
