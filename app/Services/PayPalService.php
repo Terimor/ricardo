@@ -579,7 +579,7 @@ class PayPalService
                 if (!$order) {
                     logger()->error(
                         '***Webhooks.Cant find matching order for txh.hash: ' . $paypal_order->id,
-                        ['paypal_order' => $paypal_order]
+                        ['paypal_order' => $paypal_order, 'txn_response' => $txn_response]
                     );
                     abort(404);
                 }
