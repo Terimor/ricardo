@@ -471,7 +471,7 @@ class PayPalService
 
             if (!$order) {
                 logger()->error(
-                    '***WerifyOrder1.Cant find matching order for txh.hash: ' . $paypal_order->id,
+                    '***VerifyOrder1.Cant find matching order for txh.hash: ' . $paypal_order->id,
                     ['paypal_order' => $paypal_order]
                 );
                 abort(404);
@@ -511,7 +511,7 @@ class PayPalService
                 return ['order_id' => $order->id];
             } else {
                 logger()->error(
-                    '***WerifyOrder2.Cant find matching order for txh.hash: ' . $paypal_order->id,
+                    '***VerifyOrder2.Cant find matching order for txh.hash: ' . $paypal_order->id,
                     ['paypal_order' => $paypal_order]
                 );
                 abort(404);
