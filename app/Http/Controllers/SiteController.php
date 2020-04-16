@@ -305,7 +305,7 @@ class SiteController extends Controller
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
         // hardcode
-        if ($request->server('SERVER_NAME') == 'getsafemask.com') {
+        if ($request->server('SERVER_NAME') == 'getsafemask.com' || $request->server('SERVER_NAME') == 'www.getsafemask.com') {
             return view('blank');
         }
 
@@ -574,7 +574,7 @@ class SiteController extends Controller
     public function splash(Request $request, ProductService $productService)
     {
         // hardcode
-        if ($request->server('SERVER_NAME') == 'getsafemask.com') {
+        if ($request->server('SERVER_NAME') == 'getsafemask.com' || $request->server('SERVER_NAME') == 'www.getsafemask.com') {
             return view('blank');
         }
         $loadedPhrases = (new I18nService())->loadPhrases('splash_page');
