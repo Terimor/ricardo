@@ -982,6 +982,8 @@ class CardService {
                     $result['errors'] = ["Refund for {$txn['payment_provider']} not implemented yet. [$txn_hash]"];
                     logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
             endswitch;
+        } else {
+            $result['errors'] = ["Transaction [$txn_hash] is not approved"];
         }
         return $result;
     }
