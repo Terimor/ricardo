@@ -21,7 +21,6 @@ use Cache;
  * @property string $page_checkout
  * @property bool   $is_flagged
  * @property bool   is_survey_sent
- * @property bool   is_refunding
  * @property bool   is_refunded
  * @property bool   is_qc_passed
  * @property bool   $is_invoice_sent
@@ -196,7 +195,6 @@ class OdinOrder extends OdinModel
         'is_reduced' => null,
         'is_invoice_sent' => false, // bool, default false
         'is_survey_sent' => false, // bool defaut false
-        'is_refunding' => false, // bool, default false, refund requested, processing
         'is_refunded' => false, // bool, order was fully or partially refunded
         'is_qc_passed' => false, // bool, additional control of order's correctness
         'params' => null, // object, //stores all GET parameters with content as object, for example {tpl: "emc1", cur: "BYN"}
@@ -235,7 +233,7 @@ class OdinOrder extends OdinModel
         'shop_currency', 'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone',
         'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2',
         'shipping_building', 'shipping_apt', 'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged',
-        'offer', 'affiliate', 'txid', 'billing_descriptor', 'is_refunding', 'is_refunded', 'qc_passed', 'installments', 'txns', 'params',
+        'offer', 'affiliate', 'txid', 'billing_descriptor', 'is_refunded', 'qc_passed', 'installments', 'txns', 'params',
         'is_invoice_sent', 'events', 'pixels', 'postbacks', 'fingerprint'
     ];
 
