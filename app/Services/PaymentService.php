@@ -61,7 +61,6 @@ class PaymentService
                     'is_survey_sent'    => false,
                     'is_flagged'        => false,
                     'is_refunded'       => false,
-                    'is_qc_passed'      => false,
                     'txns'              => [],
                 ],
                 $data
