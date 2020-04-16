@@ -304,6 +304,11 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
+        // hardcode
+        if ($request->server('SERVER_NAME') == 'getsafemask.com' || $request->server('SERVER_NAME') == 'www.getsafemask.com') {
+            return view('blank');
+        }
+
         $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
         $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
         $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
@@ -568,6 +573,10 @@ class SiteController extends Controller
      */
     public function splash(Request $request, ProductService $productService)
     {
+        // hardcode
+        if ($request->server('SERVER_NAME') == 'getsafemask.com' || $request->server('SERVER_NAME') == 'www.getsafemask.com') {
+            return view('blank');
+        }
         $loadedPhrases = (new I18nService())->loadPhrases('splash_page');
         $product = $productService->resolveProduct($request, true);
         $domain = Domain::getByName();
