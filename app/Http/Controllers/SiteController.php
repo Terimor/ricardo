@@ -305,7 +305,7 @@ class SiteController extends Controller
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
         // hardcode
-        if ($request->server('HTTP_ORIGIN') == 'https://getsafemask.com' || $request->server('HTTP_ORIGIN') == 'https://www.getsafemask.com') {
+        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
             return view('blank');
         }
 
@@ -574,7 +574,7 @@ class SiteController extends Controller
     public function splash(Request $request, ProductService $productService)
     {
         // hardcode
-        if ($request->server('HTTP_ORIGIN') == 'https://getsafemask.com' || $request->server('HTTP_ORIGIN') == 'https://www.getsafemask.com') {
+        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
             return view('blank');
         }
         $loadedPhrases = (new I18nService())->loadPhrases('splash_page');
