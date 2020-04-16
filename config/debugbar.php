@@ -32,7 +32,7 @@ return [
      */
     'storage' => [
         'enabled'    => true,
-        'driver'     => 'sagaredis', // redis, file, pdo, custom
+        'driver'     => 'redis', // redis, file, pdo, custom
         'path'       => storage_path('debugbar'), // For file driver
         'connection' => 'cache',   // Leave null for default connection (Redis/PDO)
         'provider'   => '' // Instance of StorageInterface for custom driver
