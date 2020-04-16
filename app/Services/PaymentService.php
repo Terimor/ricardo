@@ -60,7 +60,6 @@ class PaymentService
                     'is_invoice_sent'   => false,
                     'is_survey_sent'    => false,
                     'is_flagged'        => false,
-                    'is_refunded'       => false,
                     'txns'              => [],
                 ],
                 $data
