@@ -197,6 +197,7 @@ class OdinOrder extends OdinModel
         'events' => null, // enum array, //happened events on order ['aff_postback_sent','aff_pixel_shown']
         'pixels' => [], //array of shown pixels with compiled values
         'postbacks' => [], //array of sent postbacks with compiled values
+        'exported_at' => null, // date of export
     ];
 
     const STATUS_NEW = 'new';
