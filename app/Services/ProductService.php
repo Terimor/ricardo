@@ -382,7 +382,7 @@ class ProductService
             $lp->is_paypal_hidden = true;
         }
 
-        // disable paypal if in excluded shipping countries
+        // disable paypal if not in countries
         $countries =  \Utils::getShippingCountries(true, $product);
         $countryCode = \Utils::getLocationCountryCode();
         if (!in_array($countryCode, $countries)) {
