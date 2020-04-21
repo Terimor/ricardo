@@ -844,7 +844,8 @@ class UtilsService
             if ($is_europe_only) {
                 $countries = self::$countries_eu;
             } else {
-                $countries = array_keys(self::$includeShipping);
+                // select only available countries
+                $countries = self::$includeShipping;
             }
         } else {
             $countries = $countries_codes;
@@ -872,6 +873,7 @@ class UtilsService
                 }
             } else {
                 $countries = [];
+                // select only available countries
                 foreach (self::$includeShipping as $key) {
                     $countries[$key] = self::countryCodes[$key];
                 }
