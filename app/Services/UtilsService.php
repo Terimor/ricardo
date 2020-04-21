@@ -808,7 +808,7 @@ class UtilsService
      */
     public static function getShippingCountries(bool $code_only = false, $product): array
     {
-        $is_europe_only = $product->is_europe_only ?? null;
+        $is_europe_only = $product->is_europe_only ?? false;
         $countries_codes = $product->countries ?? [];
         $has_battery = $product->has_battery ?? false;
         $countries = static::prepareShippingCountriesByCodes($countries_codes, $code_only, $is_europe_only);
