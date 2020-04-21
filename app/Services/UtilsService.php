@@ -832,32 +832,34 @@ class UtilsService
                 } else {
                     $countries = array_keys(self::$countryCodes);
                 }
+                // available only these countries, computes the intersection of countries with an available array
+                $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
             } else {
                 $countries = $countries_codes;
             }
-            // available only these countries, computes the intersection of countries with an available array
-            $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
         } else {
             if ($countries_codes) {
                 foreach ($countries_codes as $key) {
                     $countries[$key] = self::$countryCodes[$key];
                 }
-            } elseif ($is_europe_only) {
-                $countries_keys = self::$countries_eu;
-                foreach ($countries_keys as $key) {
-                    $countries[$key] = self::$countryCodes[$key];
-                }
             } else {
-                $countries = self::$countryCodes;
-            }
-            // available only these countries
-            $tmp = [];
-            foreach ($countries as $code => $country) {
-                if (in_array($code, self::$includeShipping)) {
-                    $tmp[$code] = $country;
+                if ($is_europe_only) {
+                    $countries_keys = self::$countries_eu;
+                    foreach ($countries_keys as $key) {
+                        $countries[$key] = self::$countryCodes[$key];
+                    }
+                } else {
+                    $countries = self::$countryCodes;
                 }
+                // available only these countries
+                $tmp = [];
+                foreach ($countries as $code => $country) {
+                    if (in_array($code, self::$includeShipping)) {
+                        $tmp[$code] = $country;
+                    }
+                }
+                $countries = $tmp;
             }
-            $countries = $tmp;
         }
         return $countries;
     }

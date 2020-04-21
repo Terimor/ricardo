@@ -383,11 +383,15 @@ class ProductService
         }
         // disable paypal if in excluded shipping countries
         $countryCode = \Utils::getLocationCountryCode();
-        if (in_array($countryCode, \Utils::$excludeShipping) || ($lp->has_battery && in_array($countryCode, \Utils::$excludeBatteryShipping)) || !in_array($countryCode, \Utils::$includeShipping)) {
+        if (in_array($countryCode, \Utils::$excludeShipping) || ($lp->has_battery && in_array($countryCode, \Utils::$excludeBatteryShipping))) {
             $lp->is_paypal_hidden = true;
         }
 
         $lp->countries = $product->countries ?? [];
+        // if we haven't special product countries selected, disable paypal if not in include shipping list
+        if (!$lp->countries && !in_array($countryCode, \Utils::$includeShipping)) {
+            $lp->is_paypal_hidden = true;
+        }
         // returns labels
         $labels = [];
         for ($i = 1; $i <= OdinProduct::QUANTITY_PRICES; $i++) {
