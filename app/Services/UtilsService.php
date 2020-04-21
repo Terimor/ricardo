@@ -675,7 +675,7 @@ class UtilsService
         'at',
         'hk',
         'tw',
-        'fl',
+        'li',
         'mc',
         'ch',
         'sg',
