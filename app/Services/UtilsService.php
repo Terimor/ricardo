@@ -844,10 +844,8 @@ class UtilsService
             if ($is_europe_only) {
                 $countries = self::$countries_eu;
             } else {
-                $countries = array_keys(self::$countryCodes);
+                $countries = array_keys(self::$includeShipping);
             }
-            // pick countries that are existing only in both arrays to remove not allowed countries
-            $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
         } else {
             $countries = $countries_codes;
         }
@@ -873,16 +871,11 @@ class UtilsService
                     $countries[$key] = self::$countryCodes[$key];
                 }
             } else {
-                $countries = self::$countryCodes;
-            }
-            // pick countries that are existing only in both arrays to remove not allowed countries
-            $tmp = [];
-            foreach ($countries as $code => $country) {
-                if (in_array($code, self::$includeShipping)) {
-                    $tmp[$code] = $country;
+                $countries = [];
+                foreach (self::$includeShipping as $key) {
+                    $countries[$key] = self::countryCodes[$key];
                 }
             }
-            $countries = $tmp;
         }
         return $countries;
     }
