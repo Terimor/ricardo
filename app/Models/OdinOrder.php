@@ -89,6 +89,9 @@ class OdinOrder extends OdinModel
     const DEVICE_PLAYER_FULL = 'portable media player';
     const DEVICE_PHABLET = 'phablet'; // not in use, replace to tablet
 
+    const TYPE_PHYSICAL = 'physical';
+    const TYPE_VIRTUAL = 'virtual';
+
     public static array $devices = [
         self::DEVICE_DESKTOP => 'PC',
         self::DEVICE_SMARTPHONE => 'Mobile',
@@ -108,6 +111,7 @@ class OdinOrder extends OdinModel
      */
     protected $attributes = [
         'number' => null, // * U (O1908USXXXXXX, X = A-Z0-9)
+        'type' => self::TYPE_PHYSICAL,
         'status' => self::STATUS_NEW, // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled', 'error']
         'currency' => null, // * enum string
         'exchange_rate' => null, // * float
@@ -225,7 +229,7 @@ class OdinOrder extends OdinModel
      * @var array
      */
     protected $fillable = [
-        'number', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'total_refunded_usd',
+        'number', 'type', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'total_refunded_usd',
         'shop_currency', 'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone',
         'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2',
         'shipping_building', 'shipping_apt', 'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged',
@@ -245,7 +249,7 @@ class OdinOrder extends OdinModel
         self::creating(function($model) {
             // generate and check unique order number
             if (!isset($model->number) || !$model->number) {
-                $model->number = !empty($model->shipping_country) ? self::generateOrderNumber($model->shipping_country) : self::generateOrderNumber();
+                $model->number = !empty($model->shipping_country) ? $model->generateOrderNumber($model->shipping_country) : $model->generateOrderNumber();
             }
             if (!isset($model->shop_currency) || !$model->shop_currency) {
                 $model->shop_currency = $model->currency;
@@ -413,12 +417,17 @@ class OdinOrder extends OdinModel
      * @param string $countryCode
      * @return string
      */
-    public static function generateOrderNumber(string $countryCode = null): string
+    public function generateOrderNumber(string $countryCode = null): string
     {
         $countryCode = $countryCode ?? strtoupper(\Utils::getLocationCountryCode());
         $i = 0;
         do {
-            $numberString = strtoupper('O'.date('y').date('m').$countryCode.\Utils::randomString(6));
+            // first O or OV depends on types. Important: number of symbols should have the same counts
+            if ($this->type == self::TYPE_VIRTUAL) {
+                $numberString = strtoupper('OV' . date('y') . date('m') . $countryCode . \Utils::randomString(5));
+            } else {
+                $numberString = strtoupper('O' . date('y') . date('m') . $countryCode . \Utils::randomString(6));
+            }
 
             //check unique
             $model = OdinOrder::where(['number' => $numberString])->first();
