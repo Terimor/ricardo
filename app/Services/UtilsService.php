@@ -683,7 +683,9 @@ class UtilsService
         'ie',
         'lu',
         'pl',
-        'pt'
+        'pt',
+        'hu',
+        'co'
     ];
 
     /**
