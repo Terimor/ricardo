@@ -366,7 +366,6 @@ class ProductService
         $lp->upsells = $product->upsells;
         $lp->image = $product->image;
 
-        $payment_api = PaymentApi::getActivePaypal();
         //FB and GA
         $lp->fb_pixel_id = $product->fb_pixel_id;
         $lp->gads_retarget_id = $product->gads_retarget_id;
@@ -376,6 +375,7 @@ class ProductService
         $lp->is_europe_only = $product->is_europe_only ?? false;
         $lp->is_choice_required = $product->is_choice_required ?? false;
 
+        $payment_api = PaymentApi::getActivePaypal();
         if ($payment_api) {
             $lp->is_paypal_hidden = $product->is_paypal_hidden ?? false;
         } else {
