@@ -685,7 +685,17 @@ class UtilsService
         'pl',
         'pt',
         'hu',
-        'co'
+        'co',
+        'cz',
+        'ir',
+        'hr',
+        'gr',
+        'mt',
+        'sl',
+        'lt',
+        'cy',
+        'ee',
+        'sk',
     ];
 
     /**
