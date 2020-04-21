@@ -645,7 +645,7 @@ class UtilsService
     ];
 
     /**
-     * From this task https://trello.com/c/ZwGepYcu/1368-limit-country-selections-to-only-these-on-all-products-by-tuesday-0001-gmt
+     * Only this countries available to shipping selection.
      * @var array
      */
     public static $includeShipping = [
@@ -835,7 +835,7 @@ class UtilsService
             } else {
                 $countries = $countries_codes;
             }
-            // include only
+            // available only this countries, computes the intersection of arrays, compares data by a callback function
             $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
         } else {
             if ($countries_codes) {
@@ -850,7 +850,7 @@ class UtilsService
             } else {
                 $countries = self::$countryCodes;
             }
-            // include only
+            // available only this countries
             $tmp = [];
             foreach ($countries as $code => $country) {
                 if (in_array($code, self::$includeShipping)) {
