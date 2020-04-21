@@ -846,7 +846,7 @@ class UtilsService
             } else {
                 $countries = array_keys(self::$countryCodes);
             }
-            // available only these countries, computes the intersection of countries with an available array
+            // pick countries that are existing only in both arrays to remove not allowed countries
             $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
         } else {
             $countries = $countries_codes;
@@ -875,7 +875,7 @@ class UtilsService
             } else {
                 $countries = self::$countryCodes;
             }
-            // available only these countries
+            // pick countries that are existing only in both arrays to remove not allowed countries
             $tmp = [];
             foreach ($countries as $code => $country) {
                 if (in_array($code, self::$includeShipping)) {
