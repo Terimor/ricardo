@@ -794,4 +794,12 @@ class OdinProduct extends Model
         }
         return $hasBattery;
     }
+
+    /**
+     * Getter for has battery
+     * @return bool
+     */
+    public function getHasBatteryAttribute(): bool {
+        return $this->hasBattery();
+    }
 }
