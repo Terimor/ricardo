@@ -690,7 +690,7 @@ class UtilsService
      */
     public static $countries_eu = [
 	    //EU
-	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk',
+	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk', 'li',
 	    //other Europe
 	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va', 'ru', 'ua'
     ];
