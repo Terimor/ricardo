@@ -574,41 +574,6 @@ class UtilsService
         'ec',
         'mm',
         'um',
-        // from this task https://trello.com/c/ZwGepYcu/1368-limit-country-selections-to-only-these-on-all-products-by-tuesday-0001-gmt
-        'us',
-        'de',
-        'gb',
-        'it',
-        'es',
-        'fr',
-        'be',
-        'nl',
-        'au',
-        'nz',
-        'il',
-        'my',
-        'dk',
-        'se',
-        'pr',
-        'kr',
-        'jp',
-        'mx',
-        'ca',
-        'hk',
-        'mx',
-        'mo',
-        'no',
-        'at',
-        'hk',
-        'tw',
-        'fl',
-        'mc',
-        'ch',
-        'sg',
-        'br',
-        'ie',
-        'lu',
-        'fl'
     ];
 
     /**
@@ -677,6 +642,47 @@ class UtilsService
         'sr',
         'kp',
         've'
+    ];
+
+    /**
+     * From this task https://trello.com/c/ZwGepYcu/1368-limit-country-selections-to-only-these-on-all-products-by-tuesday-0001-gmt
+     * @var array
+     */
+    public static $includeShipping = [
+        'us',
+        'de',
+        'gb',
+        'it',
+        'es',
+        'fr',
+        'be',
+        'nl',
+        'au',
+        'nz',
+        'il',
+        'my',
+        'dk',
+        'se',
+        'pr',
+        'kr',
+        'jp',
+        'mx',
+        'ca',
+        'hk',
+        'mx',
+        'mo',
+        'no',
+        'at',
+        'hk',
+        'tw',
+        'fl',
+        'mc',
+        'ch',
+        'sg',
+        'br',
+        'ie',
+        'lu',
+        'fl'
     ];
 
     /**
@@ -829,6 +835,8 @@ class UtilsService
             } else {
                 $countries = $countries_codes;
             }
+            // include only
+            $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
         } else {
             if ($countries_codes) {
                 foreach ($countries_codes as $key) {
@@ -842,6 +850,14 @@ class UtilsService
             } else {
                 $countries = self::$countryCodes;
             }
+            // include only
+            $tmp = [];
+            foreach ($countries as $code => $country) {
+                if (in_array($code, self::$includeShipping)) {
+                    $tmp[$code] = $country;
+                }
+            }
+            $countries = $tmp;
         }
         return $countries;
     }
