@@ -108,6 +108,7 @@ class OdinOrder extends OdinModel
      */
     protected $attributes = [
         'number' => null, // * U (O1908USXXXXXX, X = A-Z0-9)
+        'type' => 'physical', // order type enum [physical, virtual]
         'status' => self::STATUS_NEW, // * enum string, default "new", ['new', 'paid', 'exported', 'shipped', 'delivered', 'cancelled', 'error']
         'currency' => null, // * enum string
         'exchange_rate' => null, // * float
