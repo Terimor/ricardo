@@ -681,8 +681,7 @@ class UtilsService
         'sg',
         'br',
         'ie',
-        'lu',
-        'fl'
+        'lu'
     ];
 
     /**
@@ -850,7 +849,7 @@ class UtilsService
         } else {
             $countries = $countries_codes;
         }
-        return $countries;
+        return array_values(array_unique($countries));
     }
 
     /**
