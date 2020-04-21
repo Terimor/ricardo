@@ -835,7 +835,7 @@ class UtilsService
      * @param bool $is_europe_only
      * @param array $countries
      */
-    public static function prepareShippingCountriesByCodes(array $countries_codes, bool $code_only, bool $is_europe_only): array
+    public static function prepareShippingCountriesByCodes(array $countries_codes, bool $code_only, ?bool $is_europe_only): array
     {
         if ($code_only) {
             $countries = static::prepareCountriesCodesOnly($countries_codes, $is_europe_only);
@@ -851,7 +851,7 @@ class UtilsService
      * @param bool $is_europe_only
      * @return array
      */
-    public static function prepareCountriesCodesOnly(array $countries_codes, bool $is_europe_only) {
+    public static function prepareCountriesCodesOnly(array $countries_codes, ?bool $is_europe_only) {
         $countries = [];
         if (!$countries_codes) {
             if ($is_europe_only) {
