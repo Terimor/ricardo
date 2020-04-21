@@ -824,42 +824,65 @@ class UtilsService
      */
     public static function prepareShippingCountriesByCodes(array $countries_codes, bool $code_only, bool $is_europe_only): array
     {
-        $countries = [];
         if ($code_only) {
-            if (!$countries_codes) {
-                if ($is_europe_only) {
-                    $countries = self::$countries_eu;
-                } else {
-                    $countries = array_keys(self::$countryCodes);
-                }
-                // available only these countries, computes the intersection of countries with an available array
-                $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
+            $countries = static::prepareCountriesCodesOnly($countries_codes, $is_europe_only);
+        } else {
+            $countries = static::prepareCountriesArray($countries_codes, $is_europe_only);
+        }
+        return $countries;
+    }
+
+    /**
+     * Prepare countries and return array with codes
+     * @param array $countries_codes
+     * @param bool $is_europe_only
+     * @return array
+     */
+    public static function prepareCountriesCodesOnly(array $countries_codes, bool $is_europe_only) {
+        $countries = [];
+        if (!$countries_codes) {
+            if ($is_europe_only) {
+                $countries = self::$countries_eu;
             } else {
-                $countries = $countries_codes;
+                $countries = array_keys(self::$countryCodes);
+            }
+            // available only these countries, computes the intersection of countries with an available array
+            $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
+        } else {
+            $countries = $countries_codes;
+        }
+        return $countries;
+    }
+
+    /**
+     * Prepare countries and return array ['code'] => Country name
+     * @param array $countries_codes
+     * @param bool $is_europe_only
+     * @return array
+     */
+    public static function prepareCountriesArray(array $countries_codes, bool $is_europe_only) {
+        $countries = [];
+        if ($countries_codes) {
+            foreach ($countries_codes as $key) {
+                $countries[$key] = self::$countryCodes[$key];
             }
         } else {
-            if ($countries_codes) {
-                foreach ($countries_codes as $key) {
+            if ($is_europe_only) {
+                $countries_keys = self::$countries_eu;
+                foreach ($countries_keys as $key) {
                     $countries[$key] = self::$countryCodes[$key];
                 }
             } else {
-                if ($is_europe_only) {
-                    $countries_keys = self::$countries_eu;
-                    foreach ($countries_keys as $key) {
-                        $countries[$key] = self::$countryCodes[$key];
-                    }
-                } else {
-                    $countries = self::$countryCodes;
-                }
-                // available only these countries
-                $tmp = [];
-                foreach ($countries as $code => $country) {
-                    if (in_array($code, self::$includeShipping)) {
-                        $tmp[$code] = $country;
-                    }
-                }
-                $countries = $tmp;
+                $countries = self::$countryCodes;
             }
+            // available only these countries
+            $tmp = [];
+            foreach ($countries as $code => $country) {
+                if (in_array($code, self::$includeShipping)) {
+                    $tmp[$code] = $country;
+                }
+            }
+            $countries = $tmp;
         }
         return $countries;
     }
