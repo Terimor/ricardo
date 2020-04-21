@@ -835,7 +835,7 @@ class UtilsService
             } else {
                 $countries = $countries_codes;
             }
-            // available only this countries, computes the intersection of arrays, compares data by a callback function
+            // available only these countries, computes the intersection of countries with an available array
             $countries = array_values(array_uintersect($countries, self::$includeShipping, 'strcasecmp'));
         } else {
             if ($countries_codes) {
@@ -850,7 +850,7 @@ class UtilsService
             } else {
                 $countries = self::$countryCodes;
             }
-            // available only this countries
+            // available only these countries
             $tmp = [];
             foreach ($countries as $code => $country) {
                 if (in_array($code, self::$includeShipping)) {
