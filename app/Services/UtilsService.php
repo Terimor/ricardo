@@ -681,7 +681,9 @@ class UtilsService
         'sg',
         'br',
         'ie',
-        'lu'
+        'lu',
+        'pl',
+        'pt'
     ];
 
     /**
