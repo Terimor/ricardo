@@ -351,9 +351,9 @@ class AffiliateService
      * @param $order
      * @param string $code
      * @param $txid
-     * @return string|string[]
+     * @return string
      */
-    public static function replacePixelsOrderData($order, string $code, &$txid) {
+    public static function replacePixelsOrderData($order, string $code, &$txid): string {
         $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
 
         // if we have #TXID# in code check it then replace to txid
