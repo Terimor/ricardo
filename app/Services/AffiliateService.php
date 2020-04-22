@@ -267,25 +267,7 @@ class AffiliateService
             //if order, replace #AMOUNT#, #TXID#, #OFFER_ID# and check is_reduced and txns
             $txid = null;
             if ($order) {
-                $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
-
-                // if we have #TXID# in code check it then replace to txid
-                if (strpos($code, '#TXID#')) {
-                    if (!empty($order->txid)) {
-                        $txid = static::getValidTxid($order->txid);
-                        if ($txid) {
-                            $code = str_replace('#TXID#', $txid, $code);
-                        }
-                    }
-                }
-
-                // if we have #OFFER_ID# in code check it then replace to offer
-                if (strpos($code, '#OFFER_ID#')) {
-                    if (!empty($order->offer)) {
-                        $code = str_replace('#OFFER_ID#', $order->offer, $code);
-                    }
-                }
-
+                $code = static::replacePixelsOrderData($order, $code, $txid);
             }
 
             $query = $request->query();
@@ -362,6 +344,39 @@ class AffiliateService
             $order->save();
         }
         return $pixelsArray;
+    }
+
+    /**
+     * Replace pixel placeholders depends on order
+     * @param $order
+     * @param string $code
+     * @param $txid
+     * @return string|string[]
+     */
+    public static function replacePixelsOrderData($order, string $code, &$txid) {
+        $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
+
+        // if we have #TXID# in code check it then replace to txid
+        if (strpos($code, '#TXID#')) {
+            if (!empty($order->txid)) {
+                $txid = static::getValidTxid($order->txid);
+                if ($txid) {
+                    $code = str_replace('#TXID#', $txid, $code);
+                }
+            }
+        }
+        // if we have #OFFER_ID# in code check it then replace to offer
+        if (strpos($code, '#OFFER_ID#')) {
+            if (!empty($order->offer)) {
+                $code = str_replace('#OFFER_ID#', $order->offer, $code);
+            }
+        }
+        if (strpos($code, '#ORDER_NUMBER#')) {
+            if (!empty($order->number)) {
+                $code = str_replace('#ORDER_NUMBER#', $order->number, $code);
+            }
+        }
+        return $code;
     }
 
 
