@@ -28,6 +28,7 @@ export function setCookie(name, value, options = {}) {
     Domain: domain,
     Path: '/',
     SameSite: 'None',
+    Secure: true,
     ...options,
   };
 
