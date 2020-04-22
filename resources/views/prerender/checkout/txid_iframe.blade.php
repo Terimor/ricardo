@@ -5,5 +5,5 @@
     ? '.' + location.hostname.split('.').slice(-2).join('.')
     : '127.0.0.1';
 
-  document.cookie = 'txid=' + txid + '; Domain=' + domain + '; Path=/; SameSite=None';
+  document.cookie = 'txid=' + txid + '; Domain=' + domain + '; Path=/; SameSite=None; Secure';
 </script>
