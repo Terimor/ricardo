@@ -424,10 +424,9 @@ class OdinOrder extends OdinModel
         $i = 0;
         do {
             // first O or OV depends on types. Important: number of symbols should have the same counts
+            $numberString = strtoupper('O' . date('y') . date('m') . $countryCode . \Utils::randomString(6));
             if ($this->type == self::TYPE_VIRTUAL) {
-                $numberString = strtoupper('OV' . date('y') . date('m') . $countryCode . \Utils::randomString(5));
-            } else {
-                $numberString = strtoupper('O' . date('y') . date('m') . $countryCode . \Utils::randomString(6));
+                $numberString[1] = 'V';
             }
 
             //check unique
