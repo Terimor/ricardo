@@ -573,7 +573,7 @@ class UtilsService
         'cr',
         'ec',
         'mm',
-        'um'
+        'um',
     ];
 
     /**
@@ -645,12 +645,66 @@ class UtilsService
     ];
 
     /**
+     * Only this countries available to shipping selection.
+     * @var array
+     */
+    public static $includeShipping = [
+        'us',
+        'de',
+        'gb',
+        'it',
+        'es',
+        'fr',
+        'be',
+        'nl',
+        'au',
+        'nz',
+        'il',
+        'my',
+        'dk',
+        'se',
+        'pr',
+        'kr',
+        'jp',
+        'mx',
+        'ca',
+        'hk',
+        'mx',
+        'mo',
+        'no',
+        'at',
+        'hk',
+        'tw',
+        'li',
+        'mc',
+        'ch',
+        'sg',
+        'br',
+        'ie',
+        'lu',
+        'pl',
+        'pt',
+        'hu',
+        'co',
+        'cz',
+        'ir',
+        'hr',
+        'gr',
+        'mt',
+        'sl',
+        'lt',
+        'cy',
+        'ee',
+        'sk',
+    ];
+
+    /**
      * EU countries
      * Linked from Saga: GeoConstants::$countries_eu
      */
     public static $countries_eu = [
 	    //EU
-	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk',
+	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk', 'li',
 	    //other Europe
 	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va', 'ru', 'ua'
     ];
@@ -754,7 +808,7 @@ class UtilsService
      */
     public static function getShippingCountries(bool $code_only = false, $product): array
     {
-        $is_europe_only = $product->is_europe_only ?? null;
+        $is_europe_only = $product->is_europe_only ?? false;
         $countries_codes = $product->countries ?? [];
         $has_battery = $product->has_battery ?? false;
         $countries = static::prepareShippingCountriesByCodes($countries_codes, $code_only, $is_europe_only);
@@ -781,31 +835,61 @@ class UtilsService
      * @param bool $is_europe_only
      * @param array $countries
      */
-    public static function prepareShippingCountriesByCodes(array $countries_codes, bool $code_only, bool $is_europe_only): array
+    public static function prepareShippingCountriesByCodes(array $countries_codes, bool $code_only, ?bool $is_europe_only): array
     {
-        $countries = [];
         if ($code_only) {
-            if (!$countries_codes) {
-                if ($is_europe_only) {
-                    $countries = self::$countries_eu;
-                } else {
-                    $countries = array_keys(self::$countryCodes);
-                }
+            $countries = static::prepareCountriesCodesOnly($countries_codes, $is_europe_only);
+        } else {
+            $countries = static::prepareCountriesArray($countries_codes, $is_europe_only);
+        }
+        return $countries;
+    }
+
+    /**
+     * Prepare countries and return array with codes
+     * @param array $countries_codes
+     * @param bool $is_europe_only
+     * @return array
+     */
+    public static function prepareCountriesCodesOnly(array $countries_codes, ?bool $is_europe_only) {
+        $countries = [];
+        if (!$countries_codes) {
+            if ($is_europe_only) {
+                $countries = self::$countries_eu;
             } else {
-                $countries = $countries_codes;
+                // select only available countries
+                $countries = self::$includeShipping;
             }
         } else {
-            if ($countries_codes) {
-                foreach ($countries_codes as $key) {
-                    $countries[$key] = self::$countryCodes[$key];
-                }
-            } elseif ($is_europe_only) {
+            $countries = $countries_codes;
+        }
+        return array_values(array_unique($countries));
+    }
+
+    /**
+     * Prepare countries and return array ['code'] => Country name
+     * @param array $countries_codes
+     * @param bool $is_europe_only
+     * @return array
+     */
+    public static function prepareCountriesArray(array $countries_codes, bool $is_europe_only) {
+        $countries = [];
+        if ($countries_codes) {
+            foreach ($countries_codes as $key) {
+                $countries[$key] = self::$countryCodes[$key];
+            }
+        } else {
+            if ($is_europe_only) {
                 $countries_keys = self::$countries_eu;
                 foreach ($countries_keys as $key) {
                     $countries[$key] = self::$countryCodes[$key];
                 }
             } else {
-                $countries = self::$countryCodes;
+                $countries = [];
+                // select only available countries
+                foreach (self::$includeShipping as $key) {
+                    $countries[$key] = self::countryCodes[$key];
+                }
             }
         }
         return $countries;

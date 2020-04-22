@@ -27,7 +27,12 @@ class PaymentApiService
         if ($domain_id) {
             // get PaymentApi by filtering items by domain_id
             // result will be the first element whose domain_ids field contains the search value
-            $result = $apis->filter(function($v) use ($domain_id) { return in_array($domain_id, $v->domain_ids); })->first();
+            $result = $apis
+                ->filter(function($v) use ($domain_id) {
+                    return in_array($domain_id, $v->domain_ids);
+                })
+                ->shuffle()
+                ->first();
         }
         return $result;
     }
@@ -42,13 +47,16 @@ class PaymentApiService
     {
         // get PaymentApi by filtering items by product_id
         // result will be the first element whose product_ids (product_category_ids) field contains the search value
-        return $apis->filter(function($v) use ($product_id) {
-            $product_ids = $v->product_ids;
-            if (!empty($v->product_category_ids)) {
-                $product_ids = OdinProduct::getProductIdsByCategoryIds($v->product_category_ids);
-            }
-            return in_array($product_id, $product_ids);
-        })->first();
+        return $apis
+            ->filter(function($v) use ($product_id) {
+                $product_ids = $v->product_ids;
+                if (!empty($v->product_category_ids)) {
+                    $product_ids = OdinProduct::getProductIdsByCategoryIds($v->product_category_ids);
+                }
+                return in_array($product_id, $product_ids);
+            })
+            ->shuffle()
+            ->first();
     }
 
     /**
@@ -60,9 +68,12 @@ class PaymentApiService
     {
         // get PaymentApi by filtering items by domain_ids and product_ids
         // result will be the first element whose domain_ids and product_ids fields and product_category_ids are empty
-        return $apis->filter(function($v) {
-            return empty($v->product_ids) && empty($v->domain_ids) && empty($v->product_category_ids);
-        })->first();
+        return $apis
+            ->filter(function($v) {
+                return empty($v->product_ids) && empty($v->domain_ids) && empty($v->product_category_ids);
+            })
+            ->shuffle()
+            ->first();
     }
 
     /**

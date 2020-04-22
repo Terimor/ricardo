@@ -366,7 +366,6 @@ class ProductService
         $lp->upsells = $product->upsells;
         $lp->image = $product->image;
 
-        $payment_api = PaymentApi::getActivePaypal();
         //FB and GA
         $lp->fb_pixel_id = $product->fb_pixel_id;
         $lp->gads_retarget_id = $product->gads_retarget_id;
@@ -376,14 +375,17 @@ class ProductService
         $lp->is_europe_only = $product->is_europe_only ?? false;
         $lp->is_choice_required = $product->is_choice_required ?? false;
 
+        $payment_api = PaymentApi::getActivePaypal();
         if ($payment_api) {
             $lp->is_paypal_hidden = $product->is_paypal_hidden ?? false;
         } else {
             $lp->is_paypal_hidden = true;
         }
-        // disable paypal if in excluded shipping countries
+
+        // disable paypal if not in countries
+        $countries =  \Utils::getShippingCountries(true, $product);
         $countryCode = \Utils::getLocationCountryCode();
-        if (in_array($countryCode, \Utils::$excludeShipping) || in_array($countryCode, \Utils::$excludeBatteryShipping)) {
+        if (!in_array($countryCode, $countries)) {
             $lp->is_paypal_hidden = true;
         }
 
