@@ -304,19 +304,10 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
-        // hardcode
-        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
-            return view('blank');
+        $redirect_view = $this->checkoutRequestView($request);
+        if ($redirect_view) {
+            return $redirect_view;
         }
-
-        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
-            return view('prerender.checkout.txid_iframe');
-        }
-
-        if ($request->get('3ds') && !$request->get('3ds_restore')) {
-            return view('prerender.checkout.3ds_restore');
-        }
-
         if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
             return redirect($request->get('redirect_url'));
         }
@@ -427,6 +418,25 @@ class SiteController extends Controller
                 'is_checkout', 'is_new_engine', 'is_checkout_page', 'is_health_page', 'is_vrtl_page', 'is_smartbell'
             )
         );
+    }
+
+    /**
+     * Return view depends on request
+     * @param Request $request
+     * @return bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    private function checkoutRequestView(Request $request) {
+        // hardcode
+        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
+            return view('blank');
+        }
+        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
+            return view('prerender.checkout.txid_iframe');
+        }
+        if ($request->get('3ds') && !$request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_restore');
+        }
+        return false;
     }
 
     /**
