@@ -313,16 +313,16 @@ class SiteController extends Controller
             return view('prerender.checkout.txid_iframe');
         }
 
-        if ($request->get('apm') && !$request->get('3ds')) {
-            return redirect($request->fullUrl() . '&3ds=' . $request->get('apm'));
-        }
-
         if ($request->get('3ds') && !$request->get('3ds_restore')) {
             return view('prerender.checkout.3ds_restore');
         }
 
         if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
             return redirect($request->get('redirect_url'));
+        }
+
+        if ($request->get('apm') && !$request->get('3ds')) {
+            return redirect($request->fullUrl() . '&3ds=' . $request->get('apm'));
         }
 
         $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
@@ -362,15 +362,8 @@ class SiteController extends Controller
         }
 
         // load upsells only for vrlt templates
-        $upsells = [];
-        if ($is_vrtl_page) {
-            $upsells = $productService->getProductUpsells($product);
-        }
-
-        $setting = Setting::getValue([
-            'ipqualityscore_api_hash',
-            'support_address'
-        ]);
+        $upsells = $is_vrtl_page ? $productService->getProductUpsells($product) : [];
+        $setting = Setting::getValue(['ipqualityscore_api_hash', 'support_address']);
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
