@@ -117,7 +117,7 @@ class PaymentApiService
          * @todo Hotfix: reduces Bluesnap chance
          * mt_rand(0, 100) < chance_pct, where $p_a, $p_b - chances of events, $p_ab - summary chance
          */
-        if (count($filtered) > 1) {
+        if (count($filtered) > 1 && $currency !== 'USD') {
             $p_ab = 0.3;
             $p_b = 1 / count($filtered);
             $p_a = $p_ab / $p_b;

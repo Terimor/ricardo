@@ -612,16 +612,15 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 12): array
     {
-        if (mb_strlen($search) < 2) {
-            $search = '';
-        }
+        $search = mb_strlen($search) >= 2 ? $search : '';
 
         $allSoldProducts = static::getCachedSoldProducts();
-
+        // after shuffle we have $key => id, but we need format id => key for saving products sorting
+        $allSoldProducts = array_flip($allSoldProducts);
         $productIds = array_keys($allSoldProducts);
         $productCategoryId = $currentDomain->product_category_id ?? null;
-        $select = ['_id'];
-        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, $select);
+        $product = !empty($currentDomain->odin_product_id) ? OdinProduct::getById($currentDomain->odin_product_id, ['type']) : null;
+        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, ['_id'], $product->type ?? null);
 
         // calculate total pages
         $totalCount = count($products);
@@ -633,7 +632,7 @@ class ProductService
             $offset = 0;
         }
 
-        // sort products by sales
+        // sort products by value(index before flip) for saving products sorting
         $productsSortedIds = static::sortLocaleSoldProducts($allSoldProducts, $products, true);
         // slice sorted products depends on page
         $productsSortedIds = array_slice($productsSortedIds, $offset, $limit);
@@ -645,8 +644,8 @@ class ProductService
         // get all locale products with images
         $productsLocale = static::getLocaleMinishopProducts($products);
 
-        // sort products by sold qty on current page
-        $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
+        // sort products by value(index before flip) for saving products sorting
+         $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
 
         return $data = [
             'products' => $productsLocaleSorted,
@@ -672,6 +671,8 @@ class ProductService
                 if (!empty($domain->sold_products)) {
                     $soldProducts = $domain->sold_products ?? [];
                     if ($soldProducts) {
+                        $allSoldProducts = array_merge(array_keys($soldProducts), $allSoldProducts);
+                        /*
                         // calculate qty by id
                         foreach ($soldProducts as $id => $qty) {
                             if (isset($allSoldProducts[$id])) {
@@ -680,11 +681,15 @@ class ProductService
                                 $allSoldProducts[$id] = $qty;
                             }
                         }
+                        */
                     }
                 }
             }
             // sort
-            arsort($allSoldProducts);
+            //arsort($allSoldProducts);
+            // get keys and shuffle
+            $allSoldProducts = array_values(array_unique($allSoldProducts));
+            shuffle($allSoldProducts);
             Cache::put('DomainSoldProductsData', $allSoldProducts, 3600);
         }
         return $allSoldProducts;
