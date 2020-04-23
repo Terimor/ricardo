@@ -309,12 +309,6 @@ class SiteController extends Controller
             return view('blank');
         }
 
-        $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
-        $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
-        $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
-        $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
-        $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
-
         if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
             return view('prerender.checkout.txid_iframe');
         }
@@ -330,6 +324,22 @@ class SiteController extends Controller
         if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
             return redirect($request->get('redirect_url'));
         }
+
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $product = $productService->resolveProduct($request, true);
+
+        $is_checkout_page = $is_vrtl_page = $is_health_page = false;
+        $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
+        if ($product->type == OdinOrder::TYPE_VIRTUAL) {
+            //$is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+            $is_checkout_page = true;
+        } else {
+            //$is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
+            $is_vrtl_page = true;
+        }
+
+        $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
+        $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
 
         if ($is_checkout_page) {
             $viewTemplate = TemplateService::getCheckoutPageTemplate($request);
@@ -347,8 +357,6 @@ class SiteController extends Controller
             $request->merge(['cop_id' => $priceSet]);
         }
 
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
-        $product = $productService->resolveProduct($request, true);
         // load upsells only for vrlt templates
         $upsells = [];
         if ($is_vrtl_page) {
