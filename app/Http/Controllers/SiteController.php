@@ -403,10 +403,8 @@ class SiteController extends Controller
 
         $cdn_url = \Utils::getCdnUrl();
 
-        $deals = [];
+        $deals = $deals_main_quantities = $deals_free_quantities = [];
         $deal_promo = null;
-        $deals_main_quantities = [];
-        $deals_free_quantities = [];
 
         $is_checkout = $is_checkout_page || $is_health_page || $is_vrtl_page;
         $is_new_engine = $is_checkout_new_engine_page || $is_health_page || $is_vrtl_page;
