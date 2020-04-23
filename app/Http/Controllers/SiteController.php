@@ -25,6 +25,8 @@ use App\Http\Requests\ZipcodeRequest;
 
 class SiteController extends Controller
 {
+    public static $emptyDomains = ['safemask.com', 'safemask.cc'];
+
     /**
      * Create a new controller instance.
      *
@@ -429,7 +431,8 @@ class SiteController extends Controller
      */
     private function checkoutRequestView(Request $request) {
         // hardcode
-        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
+        $host = str_replace('www.', '', $request->getHost());
+        if (in_array($host, static::$emptyDomains)) {
             return view('blank');
         }
         if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
