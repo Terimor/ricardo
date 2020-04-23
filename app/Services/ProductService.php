@@ -625,7 +625,7 @@ class ProductService
         $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, $select, $product->type ?? null);
 
         // calculate total pages
-        $totalCount = count($products); // old
+        $totalCount = count($products);
         $totalPages = ceil($totalCount / $limit);
         $page = max($page, 1); // get 1 page when page <= 0
         $page = min($page, $totalPages); // get last page when page > $totalPages
@@ -641,7 +641,6 @@ class ProductService
 
         // get products depends on page
         $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
-        //$products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
         $products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
 
         // get all locale products with images
