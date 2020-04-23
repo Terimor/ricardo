@@ -690,13 +690,17 @@ class OdinProduct extends Model
      * @param $hide_catch_all - if true don't return is_catch_all_hidden=true
      * @param $categoryId
      * @param array|null $select
+     * @param string|null $type
      */
-    public static function getActiveByIds(?array $ids, $search = '', bool $hide_catch_all = false, $categoryId = null, ?array $select = []) {
+    public static function getActiveByIds(?array $ids, $search = '', bool $hide_catch_all = false, $categoryId = null, ?array $select = [], ?string $type = null) {
         $products = null;
         if ($ids) {
             $productsQuery = OdinProduct::whereIn('_id', $ids)->where('skus.is_published', true);
             if ($hide_catch_all) {
                 $productsQuery->where(['is_catch_all_hidden' => ['$ne' => true]]);
+            }
+            if ($type) {
+                $productsQuery->where(['type' => $type]);
             }
             if ($search) {
                 $productsQuery->where(function ($query) use($search) {

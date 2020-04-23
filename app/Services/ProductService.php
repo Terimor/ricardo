@@ -616,14 +616,15 @@ class ProductService
         }
 
         $allSoldProducts = static::getCachedSoldProducts();
-
+        $allSoldProducts = array_flip($allSoldProducts);
         $productIds = array_keys($allSoldProducts);
         $productCategoryId = $currentDomain->product_category_id ?? null;
+        $product = OdinProduct::getById($currentDomain->odin_product_id, ['type']);
         $select = ['_id'];
-        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, $select);
+        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, $select, $product->type ?? null);
 
         // calculate total pages
-        $totalCount = count($products);
+        $totalCount = count($products); // old
         $totalPages = ceil($totalCount / $limit);
         $page = max($page, 1); // get 1 page when page <= 0
         $page = min($page, $totalPages); // get last page when page > $totalPages
@@ -639,13 +640,14 @@ class ProductService
 
         // get products depends on page
         $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+        //$products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
         $products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
 
         // get all locale products with images
         $productsLocale = static::getLocaleMinishopProducts($products);
 
         // sort products by sold qty on current page
-        $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
+         $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
 
         return $data = [
             'products' => $productsLocaleSorted,
@@ -683,7 +685,10 @@ class ProductService
                 }
             }
             // sort
-            arsort($allSoldProducts);
+            //arsort($allSoldProducts);
+            // get keys and shuffle
+            $allSoldProducts = array_keys($allSoldProducts);
+            shuffle($allSoldProducts);
             Cache::put('DomainSoldProductsData', $allSoldProducts, 3600);
         }
         return $allSoldProducts;
