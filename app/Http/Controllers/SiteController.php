@@ -332,10 +332,10 @@ class SiteController extends Controller
         $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
         if ($product->type == OdinOrder::TYPE_VIRTUAL) {
             //$is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
-            $is_checkout_page = true;
+            $is_vrtl_page = true;
         } else {
             //$is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
-            $is_vrtl_page = true;
+            $is_checkout_page = true;
         }
 
         $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
