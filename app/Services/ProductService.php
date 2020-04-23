@@ -33,7 +33,7 @@ class ProductService
     {
         $product = null;
         // prepare select
-        $select = ['prices', 'skus', 'product_name', 'description.en', 'long_name.en', 'home_description.en', 'home_name.en',
+        $select = ['type','prices', 'skus', 'product_name', 'description.en', 'long_name.en', 'home_description.en', 'home_name.en',
             'splash_description.en', 'billing_descriptor', 'logo_image_id', 'bg_image_id', 'favicon_image_id', 'upsell_hero_image_id', 'image_ids',
             'vimeo_id.en', 'reviews', 'upsell_plusone_text.en', 'upsell_hero_text.en', 'upsells', 'fb_pixel_id', 'gads_retarget_id',
             'gads_conversion_id','gads_conversion_label', 'goptimize_id', 'is_europe_only','is_choice_required','is_paypal_hidden','countries',
@@ -263,6 +263,7 @@ class ProductService
     {
         // prepare localized product
         $lp = new Localize();
+        $lp->type = $product->type;
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $lp->long_name = $product->long_name;

@@ -304,32 +304,33 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
-        // hardcode
-        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
-            return view('blank');
+        $redirect_view = $this->checkoutRequestView($request);
+        if ($redirect_view) {
+            return $redirect_view;
         }
-
-        $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
-        $is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
-        $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
-        $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
-        $is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
-
-        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
-            return view('prerender.checkout.txid_iframe');
+        if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
+            return redirect($request->get('redirect_url'));
         }
 
         if ($request->get('apm') && !$request->get('3ds')) {
             return redirect($request->fullUrl() . '&3ds=' . $request->get('apm'));
         }
 
-        if ($request->get('3ds') && !$request->get('3ds_restore')) {
-            return view('prerender.checkout.3ds_restore');
+        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
+        $product = $productService->resolveProduct($request, true);
+
+        $is_checkout_page = $is_vrtl_page = $is_health_page = false;
+        $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
+        if ($product->type == OdinOrder::TYPE_VIRTUAL) {
+            //$is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
+            $is_vrtl_page = true;
+        } else {
+            //$is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
+            $is_checkout_page = true;
         }
 
-        if ($request->get('3ds') === 'pending' && $request->get('3ds_restore') && $request->get('redirect_url')) {
-            return redirect($request->get('redirect_url'));
-        }
+        $is_checkout_new_engine_page = $is_checkout_page && in_array($request->get('tpl'), $new_engine_checkout_tpls);
+        $is_health_page = Route::is('checkout_health') || Route::is('checkout_health_price_set');
 
         if ($is_checkout_page) {
             $viewTemplate = TemplateService::getCheckoutPageTemplate($request);
@@ -343,26 +344,17 @@ class SiteController extends Controller
             $viewTemplate = TemplateService::getVirtualPageTemplate($request);
         }
 
-        if (!empty($priceSet)) {
-            $request->merge(['cop_id' => $priceSet]);
-        }
-
-        $loadedPhrases = (new I18nService())->loadPhrases('checkout_page');
-        $product = $productService->resolveProduct($request, true);
-        // load upsells only for vrlt templates
-        $upsells = [];
-        if ($is_vrtl_page) {
-            $upsells = $productService->getProductUpsells($product);
-        }
-
         if ($request->get('3ds') === 'success' && $request->get('3ds_restore')) {
             return view('prerender.checkout.3ds_success', compact('product', 'is_vrtl_page'));
         }
 
-        $setting = Setting::getValue([
-            'ipqualityscore_api_hash',
-            'support_address'
-        ]);
+        if (!empty($priceSet)) {
+            $request->merge(['cop_id' => $priceSet]);
+        }
+
+        // load upsells only for vrlt templates
+        $upsells = $is_vrtl_page ? $productService->getProductUpsells($product) : [];
+        $setting = Setting::getValue(['ipqualityscore_api_hash', 'support_address']);
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
@@ -396,9 +388,9 @@ class SiteController extends Controller
         $cdn_url = \Utils::getCdnUrl();
 
         $deals = [];
-        $deal_promo = null;
         $deals_main_quantities = [];
         $deals_free_quantities = [];
+        $deal_promo = null;
 
         $is_checkout = $is_checkout_page || $is_health_page || $is_vrtl_page;
         $is_new_engine = $is_checkout_new_engine_page || $is_health_page || $is_vrtl_page;
@@ -428,6 +420,25 @@ class SiteController extends Controller
                 'is_checkout', 'is_new_engine', 'is_checkout_page', 'is_health_page', 'is_vrtl_page', 'is_smartbell'
             )
         );
+    }
+
+    /**
+     * Return view depends on request
+     * @param Request $request
+     * @return bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    private function checkoutRequestView(Request $request) {
+        // hardcode
+        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
+            return view('blank');
+        }
+        if ($request->get('emptypage') && strlen($request->get('txid')) >= 20) {
+            return view('prerender.checkout.txid_iframe');
+        }
+        if ($request->get('3ds') && !$request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_restore');
+        }
+        return false;
     }
 
     /**
