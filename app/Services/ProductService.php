@@ -620,7 +620,7 @@ class ProductService
         $allSoldProducts = array_flip($allSoldProducts);
         $productIds = array_keys($allSoldProducts);
         $productCategoryId = $currentDomain->product_category_id ?? null;
-        $product = OdinProduct::getById($currentDomain->odin_product_id, ['type']);
+        $product = !empty($currentDomain->odin_product_id) ? OdinProduct::getById($currentDomain->odin_product_id, ['type']) : null;
         $select = ['_id'];
         $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, $select, $product->type ?? null);
 
