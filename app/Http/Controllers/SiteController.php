@@ -353,6 +353,10 @@ class SiteController extends Controller
             $viewTemplate = TemplateService::getVirtualPageTemplate($request);
         }
 
+        if ($request->get('3ds') === 'success' && $request->get('3ds_restore')) {
+            return view('prerender.checkout.3ds_success', compact('product', 'is_vrtl_page'));
+        }
+
         if (!empty($priceSet)) {
             $request->merge(['cop_id' => $priceSet]);
         }
@@ -361,10 +365,6 @@ class SiteController extends Controller
         $upsells = [];
         if ($is_vrtl_page) {
             $upsells = $productService->getProductUpsells($product);
-        }
-
-        if ($request->get('3ds') === 'success' && $request->get('3ds_restore')) {
-            return view('prerender.checkout.3ds_success', compact('product', 'is_vrtl_page'));
         }
 
         $setting = Setting::getValue([
