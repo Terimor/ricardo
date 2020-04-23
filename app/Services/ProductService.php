@@ -632,7 +632,7 @@ class ProductService
             $offset = 0;
         }
 
-        // sort products by index for saving products sorting
+        // sort products by value(index after shuffle) for saving products sorting
         $productsSortedIds = static::sortLocaleSoldProducts($allSoldProducts, $products, true);
         // slice sorted products depends on page
         $productsSortedIds = array_slice($productsSortedIds, $offset, $limit);
@@ -644,7 +644,7 @@ class ProductService
         // get all locale products with images
         $productsLocale = static::getLocaleMinishopProducts($products);
 
-        // sort products by index for saving products sorting
+        // sort products by value(index after shuffle) for saving products sorting
          $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
 
         return $data = [
