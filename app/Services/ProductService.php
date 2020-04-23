@@ -612,7 +612,7 @@ class ProductService
      */
     public function getAllSoldDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 12): array
     {
-        $search = mb_strlen($search) < 2 ? $search : '';
+        $search = mb_strlen($search) >= 2 ? $search : '';
 
         $allSoldProducts = static::getCachedSoldProducts();
         // after shuffle we have $key => id, but we need format id => key for saving products sorting
