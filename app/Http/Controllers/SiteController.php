@@ -387,7 +387,9 @@ class SiteController extends Controller
 
         $cdn_url = \Utils::getCdnUrl();
 
-        $deals = $deals_main_quantities = $deals_free_quantities = [];
+        $deals = [];
+        $deals_main_quantities = [];
+        $deals_free_quantities = [];
         $deal_promo = null;
 
         $is_checkout = $is_checkout_page || $is_health_page || $is_vrtl_page;
