@@ -25,7 +25,7 @@ use App\Http\Requests\ZipcodeRequest;
 
 class SiteController extends Controller
 {
-    public static $emptyDomains = ['safemask.com', 'safemask.cc'];
+    public static $emptyDomains = ['getsafemask.com', 'getsafemask.cc'];
 
     /**
      * Create a new controller instance.
