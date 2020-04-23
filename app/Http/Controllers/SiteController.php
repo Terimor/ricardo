@@ -588,7 +588,8 @@ class SiteController extends Controller
     public function splash(Request $request, ProductService $productService)
     {
         // hardcode
-        if ($request->server('HTTP_HOST') == 'getsafemask.com' || $request->server('HTTP_HOST') == 'www.getsafemask.com') {
+        $host = str_replace('www.', '', $request->getHost());
+        if (in_array($host, static::$emptyDomains)) {
             return view('blank');
         }
         $loadedPhrases = (new I18nService())->loadPhrases('splash_page');
