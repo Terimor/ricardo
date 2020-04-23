@@ -688,7 +688,7 @@ class ProductService
             // sort
             //arsort($allSoldProducts);
             // get keys and shuffle
-            $allSoldProducts = array_unique($allSoldProducts);
+            $allSoldProducts = array_values(array_unique($allSoldProducts));
             shuffle($allSoldProducts);
             Cache::put('DomainSoldProductsData', $allSoldProducts, 3600);
         }
