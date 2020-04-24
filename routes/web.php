@@ -57,9 +57,11 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->post('/bluesnap-webhook', 'PaymentsController@bluesnapWebhook');
     $router->post('/appmax-webhook', 'PaymentsController@appmaxWebhook');
     $router->post('/stripe-webhook', 'PaymentsController@stripeWebhook');
+    $router->post('/novalnet-webhook/{orderId}', 'PaymentsController@novalnetWebhook');
     $router->post('/minte-3ds/{orderId}', 'PaymentsController@minte3ds');
     $router->post('/minte-apm/{orderId}', 'PaymentsController@minteApm');
     $router->get('/stripe-3ds/{orderId}', 'PaymentsController@stripe3ds');
+    $router->get('/novalnet-ret-cli/{orderId}', 'PaymentsController@novalnetRetCli');
     //$router->get('/test-confirmation-email', 'EmailController@testConfirmationEmail');
     //$router->get('/test-satisfaction-email', 'EmailController@testSatisfactionEmail');
     $router->get('/test', 'SiteController@test');

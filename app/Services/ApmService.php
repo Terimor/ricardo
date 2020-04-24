@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
-use App\Http\Requests\ApmRedirectRequest;
-use App\Http\Requests\CreateApmOrderRequest;
-use App\Http\Requests\CreateApmUpsellsOrderRequest;
 use App\Models\Txn;
 use App\Models\Domain;
 use App\Models\Currency;
 use App\Models\OdinOrder;
 use App\Models\OdinProduct;
+use App\Constants\PaymentProviders;
 use App\Exceptions\AuthException;
 use App\Exceptions\OrderUpdateException;
 use App\Exceptions\ProviderNotFoundException;
+use App\Http\Requests\ApmMinteRedirectRequest;
+use App\Http\Requests\CreateApmOrderRequest;
+use App\Http\Requests\CreateApmUpsellsOrderRequest;
 use Http\Client\Exception\HttpException;
-use App\Constants\PaymentProviders;
 
 /**
  * Apm Service class
@@ -31,6 +31,7 @@ class ApmService {
      * @throws \App\Exceptions\InvalidParamsException
      * @throws \App\Exceptions\PaymentException
      * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \Exception
      */
     public static function createOrder(CreateApmOrderRequest $req)
     {
@@ -48,8 +49,6 @@ class ApmService {
             $req->get('address'),
             ['ip' => $req->ip(), 'email' => strtolower($req->input('contact.email'))]
         );
-
-//        logger()->info('Apm req', ['data' => $req->getContent()]);
 
         $shop_currency = CurrencyService::getCurrency()->code;
 
@@ -86,23 +85,23 @@ class ApmService {
             $order_product = PaymentService::createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
             $order = PaymentService::addOrder([
-                'billing_descriptor'    => $product->getPaymentBillingDescriptor($contacts['country']),
-                'currency'              => $price['currency'],
-                'exchange_rate'         => $price['usd_rate'],
-                'fingerprint'           => $fingerprint,
-                'total_price'           => $order_product['total_price'],
-                'total_price_usd'       => $order_product['total_price_usd'],
-                'language'              => app()->getLocale(),
-                'shop_currency'         => $shop_currency,
-                'warehouse_id'          => $product->warehouse_id,
-                'products'              => [$order_product],
-                'page_checkout'         => $page_checkout,
-                'params'                => $params,
-                'offer'                 => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
-                'affiliate'             => AffiliateService::validateAffiliateID($affid) ? $affid : null,
-                'txid'                  => AffiliateService::getValidTxid($params['txid'] ?? null),
-                'ipqualityscore'        => $ipqs,
-                'ip'                    => $req->ip()
+                'billing_descriptor' => $product->getPaymentBillingDescriptor($contacts['country']),
+                'currency'           => $price['currency'],
+                'exchange_rate'      => $price['usd_rate'],
+                'fingerprint'        => $fingerprint,
+                'total_price'        => $order_product['total_price'],
+                'total_price_usd'    => $order_product['total_price_usd'],
+                'language'           => app()->getLocale(),
+                'shop_currency'      => $shop_currency,
+                'warehouse_id'       => $product->warehouse_id,
+                'products'           => [$order_product],
+                'page_checkout'      => $page_checkout,
+                'params'             => $params,
+                'offer'              => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
+                'affiliate'          => AffiliateService::validateAffiliateID($affid) ? $affid : null,
+                'txid'               => AffiliateService::getValidTxid($params['txid'] ?? null),
+                'ipqualityscore'     => $ipqs,
+                'ip'                 => $req->ip()
             ]);
             $order->fillShippingData($contacts);
         } else {
@@ -115,14 +114,30 @@ class ApmService {
         $payment = [];
         switch ($api->payment_provider):
             case PaymentProviders::MINTE:
-                $payment = (new MinteService($api))->payApm($method, $contacts, [
-                    'amount'    => $order->total_price,
-                    'currency'  => $order->currency,
-                    'order_id'  => $order->getIdAttribute(),
-                    'order_number'  => $order->number,
-                    'order_desc'    => $product->description,
-                    'user_agent'    => $user_agent,
-                ]);
+                $payment = (new MinteService($api))->payApm(
+                    $method,
+                    $contacts,
+                    [
+                        'amount' => $order->total_price,
+                        'currency' => $order->currency,
+                        'order_id' => $order->getIdAttribute(),
+                        'order_desc' => $product->description,
+                        'user_agent' => $user_agent,
+                        'order_number' => $order->number
+                    ]
+                );
+                break;
+            case PaymentProviders::NOVALNET:
+                $payment = (new NovalnetService($api))->pay(
+                    $method,
+                    $contacts,
+                    [
+                        'amount' => $order->total_price,
+                        'currency' => $order->currency,
+                        'order_id' => $order->getIdAttribute(),
+                        'order_number' => $order->number
+                    ]
+                );
                 break;
         endswitch;
 
@@ -201,18 +216,7 @@ class ApmService {
                     case PaymentProviders::MINTE:
                         $payment = (new MinteService($api))->payApm(
                             $order_main_txn['payment_method'],
-                            [
-                                'street'        => $order->shipping_street,
-                                'city'          => $order->shipping_city,
-                                'country'       => $order->shipping_country,
-                                'state'         => $order->shipping_state,
-                                'zip'           => $order->shipping_zip,
-                                'email'         => $order->customer_email,
-                                'first_name'    => $order->customer_first_name,
-                                'last_name'     => $order->customer_last_name,
-                                'phone'         => $order->customer_phone,
-                                'ip'            => $req->ip()
-                            ],
+                            $order->getShippingData(),
                             [
                                 'amount'    => $checkout_price,
                                 'currency'  => $order->currency,
@@ -220,6 +224,18 @@ class ApmService {
                                 'order_number'  => $order->number,
                                 'order_desc'    => $main_product->description,
                                 'user_agent'    => $user_agent
+                            ]
+                        );
+                        break;
+                    case PaymentProviders::NOVALNET:
+                        $payment = (new NovalnetService($api))->pay(
+                            $order_main_txn['payment_method'],
+                            $order->getShippingData(),
+                            [
+                                'amount'    => $checkout_price,
+                                'currency'  => $order->currency,
+                                'order_id'  => $order->getIdAttribute(),
+                                'order_number'  => $order->number
                             ]
                         );
                         break;
@@ -257,7 +273,7 @@ class ApmService {
 
     /**
      * Mint-e apm redirect
-     * @param ApmRedirectRequest $req
+     * @param ApmMinteRedirectRequest $req
      * @param string $order_id
      * @return array
      * @throws AuthException
@@ -265,7 +281,7 @@ class ApmService {
      * @throws \App\Exceptions\ProductNotFoundException
      * @throws \App\Exceptions\TxnNotFoundException
      */
-    public static function minteApm(ApmRedirectRequest $req, string $order_id): array
+    public static function minteApm(ApmMinteRedirectRequest $req, string $order_id): array
     {
         $errcode = $req->input('errorcode');
         $errmsg  = $req->input('errormessage');

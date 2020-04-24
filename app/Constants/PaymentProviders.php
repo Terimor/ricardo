@@ -1104,29 +1104,61 @@ class PaymentProviders
         self::NOVALNET => [
             'name'          => 'Novalnet',
             'is_active'     => false,
-            'is_main'       => false,
+            'is_main'       => true,
             'is_fallback'   => false,
             'in_prod'       => false,
             'fraud_setting' => [
                 'common' => [
-                    '3ds_limit' => 101,
-                    'fallback_limit' => 0,
-                    'refuse_limit' => 101
+                    '3ds_limit' => 20,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 99
                 ],
                 'affiliate' => [
-                    '3ds_limit' => 101,
-                    'fallback_limit' => 0,
-                    'refuse_limit' => 101
+                    '3ds_limit' => 100,
+                    'fallback_limit' => 99,
+                    'refuse_limit' => 99
                 ]
+            ],
+            'extra_fields'  => [
+                'at' => [
+                    'state' => [
+                        'type' => 'text',
+                        'pattern' => '^.{1,30}$'
+                    ]
+                ],
+                'de' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ],
+                    'document_number' => [
+                        'type' => 'text',
+                        'pattern' => '[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}',
+                        'schema' => ['\w', '\w', '\d', '\d', '\w', '\w', '\w', '\w', '\d', '\d', '\d', '\d', '\d', '\d', '\d', '\w+'],
+                        'placeholder' => 'IBAN'
+                    ]
+                ],
+                'nl' => [
+                    'state' => [
+                        'type'      => 'text',
+                        'pattern'   => '^.{1,30}$'
+                    ]
+                ],
             ],
             'methods' => [
                 'main' => [
+                    PaymentMethods::EPS => [
+                        '-3ds' => ['at']
+                    ],
+                    PaymentMethods::P24 => [
+                        '-3ds' => ['pl']
+                    ],
                     PaymentMethods::IDEAL => [
                         '-3ds' => ['nl']
                     ],
-                    PaymentMethods::EPS => [
-                        '-3ds' => ['at']
-                    ]
+//                    PaymentMethods::SEPA => [
+//                        '-3ds' => ['de']
+//                    ]
                 ],
                 'fallback' => []
             ]

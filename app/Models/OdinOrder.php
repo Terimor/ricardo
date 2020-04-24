@@ -483,6 +483,30 @@ class OdinOrder extends OdinModel
     }
 
     /**
+     * Returns shipping data
+     * @return array
+     */
+    public function getShippingData(): array
+    {
+        return [
+            'ip' => $this->ip,
+            'phone' => $this->customer_phone,
+            'city' => $this->shipping_city,
+            'street' => $this->shipping_street,
+            'country' => $this->shipping_country,
+            'zip' => $this->shipping_zip,
+            'email' => $this->customer_email,
+            'document_number' => $this->customer_doc_id,
+            'state' => $this->shipping_state,
+            'district' => $this->shipping_street2,
+            'complement' => $this->shipping_apt,
+            'first_name' => $this->customer_first_name,
+            'last_name' => $this->customer_last_name,
+            'building' => $this->shipping_building
+        ];
+    }
+
+    /**
      * @param $value
      */
     public function setShippingCountryAttribute($value)
@@ -590,6 +614,7 @@ class OdinOrder extends OdinModel
      * @param string $hash
      * @param bool $throwable default=true
      * @return array|null
+     * @throws TxnNotFoundException
      */
     public function getTxnByHash(string $hash, bool $throwable = true): ?array
     {
@@ -607,6 +632,7 @@ class OdinOrder extends OdinModel
      * @param string $hash
      * @param bool $throwable default=true
      * @return array|null
+     * @throws TxnNotFoundException
      */
     public function getTxnByCaptureHash(string $hash, bool $throwable = true): ?array
     {
@@ -673,6 +699,20 @@ class OdinOrder extends OdinModel
     public function dropTxn(string $hash): void
     {
         $this->txns = collect($this->txns)->reject(function ($v) use ($hash) { return $v['hash'] === $hash; })->all();
+    }
+
+    /**
+     * Removes products item
+     * @param string $sku
+     * @param string $hash
+     */
+    public function dropProduct(string $sku, string $hash): void
+    {
+        $this->products = collect($this->products)
+            ->reject(function ($v) use ($sku, $hash) {
+                return $v['sku_code'] === $sku && $v['txn_hash'] === $hash;
+            })
+            ->all();
     }
 
     /**

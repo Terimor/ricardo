@@ -404,21 +404,7 @@ class CardService {
                         $handler = new AppmaxService($api);
                         $payment = $handler->payByToken(
                             $card_token,
-                            [
-                                'street'            => $order->shipping_street,
-                                'city'              => $order->shipping_city,
-                                'country'           => $order->shipping_country,
-                                'state'             => $order->shipping_state,
-                                'district'          => $order->shipping_street2,
-                                'building'          => $order->shipping_building,
-                                'complement'        => $order->shipping_apt,
-                                'zip'               => $order->shipping_zip,
-                                'email'             => $order->customer_email,
-                                'first_name'        => $order->customer_first_name,
-                                'last_name'         => $order->customer_last_name,
-                                'phone'             => $order->customer_phone,
-                                'ip'                => $req->ip()
-                            ],
+                            $order->getShippingData(),
                             array_map(function($item) use($products) {
                                 return [
                                     'sku'   => $item['sku_code'],
@@ -442,21 +428,7 @@ class CardService {
                         $handler = new EbanxService($api);
                         $payment = $handler->payByToken(
                         $card_token,
-                        [
-                            'street'            => $order->shipping_street,
-                            'city'              => $order->shipping_city,
-                            'country'           => $order->shipping_country,
-                            'state'             => $order->shipping_state,
-                            'building'          => $order->shipping_building,
-                            'complement'        => $order->shipping_apt,
-                            'zip'               => $order->shipping_zip,
-                            'document_number'   => $order->customer_doc_id,
-                            'email'             => $order->customer_email,
-                            'first_name'        => $order->customer_first_name,
-                            'last_name'         => $order->customer_last_name,
-                            'phone'             => $order->customer_phone,
-                            'ip'                => $req->ip()
-                        ],
+                        $order->getShippingData(),
                         array_map(function($item) use($products) {
                             return [
                                 'sku'   => $item['sku_code'],
@@ -499,18 +471,7 @@ class CardService {
                         $handler = new MinteService($api);
                         $payment = $handler->payByToken(
                             $card_token,
-                            [
-                                'street'        => $order->shipping_street,
-                                'city'          => $order->shipping_city,
-                                'country'       => $order->shipping_country,
-                                'state'         => $order->shipping_state,
-                                'zip'           => $order->shipping_zip,
-                                'email'         => $order->customer_email,
-                                'first_name'    => $order->customer_first_name,
-                                'last_name'     => $order->customer_last_name,
-                                'phone'         => $order->customer_phone,
-                                'ip'            => $req->ip()
-                            ],
+                            $order->getShippingData(),
                             [
                                 'amount'    => $checkout_price,
                                 'currency'  => $order->currency,

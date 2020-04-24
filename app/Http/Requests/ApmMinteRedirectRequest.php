@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 
-class ApmRedirectRequest extends FormRequest
+class ApmMinteRedirectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

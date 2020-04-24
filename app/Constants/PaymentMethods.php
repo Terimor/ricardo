@@ -1,6 +1,10 @@
 <?php
 namespace App\Constants;
 
+/**
+ * Class PaymentMethods
+ * @package App\Constants
+ */
 class PaymentMethods
 {
     const INSTANT_TRANSFER   = 'instant_transfer';
@@ -166,4 +170,19 @@ class PaymentMethods
             'is_apm'    => true
         ]
     ];
+
+    /**
+     * Returns list of active methods
+     * @param bool $is_apm
+     * @return array
+     */
+    public static function getAllActive(bool $is_apm = false): array
+    {
+        return array_keys(array_filter(self::$list, function(array $item) use ($is_apm) {
+            if ($item['is_active'] && $item['is_apm'] === $is_apm) {
+                return true;
+            }
+            return false;
+        }));
+    }
 }
