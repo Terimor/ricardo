@@ -202,6 +202,7 @@ class OdinOrder extends OdinModel
         'pixels' => [], //array of shown pixels with compiled values
         'postbacks' => [], //array of sent postbacks with compiled values
         'exported_at' => null, // date of export
+        'delivered_at' => null, //
     ];
 
     const STATUS_NEW = 'new';

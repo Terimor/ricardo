@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use App\Models\Localize;
+use App\Models\Setting;
 use App\Services\AffiliateService;
 
 class AffiliateSetting extends Model
@@ -36,12 +36,6 @@ class AffiliateSetting extends Model
      * @var type
      */
     public static $maxQtyMainRules = 25;
-
-    /**
-     * Default percent after mainQtyRules
-     * @var type
-     */
-    public static $defaultPercent = 60;
 
     public static $salesQtyInTable = 20;
 
@@ -193,7 +187,7 @@ class AffiliateSetting extends Model
 
             // if we haven't product reducing logic get it from affiliate or set general default percent
             if (!$reducePercent) {
-                $reducePercent = !empty($affiliate->postback_percent) ? $affiliate->postback_percent : static::$defaultPercent;
+                $reducePercent = !empty($affiliate->postback_percent) ? $affiliate->postback_percent : (int)Setting::getValue('default_reducing_percent');
             }
 
             if (isset(static::$percentArray[$reducePercent][$qtyForCalculation])) {
@@ -212,9 +206,9 @@ class AffiliateSetting extends Model
     /**
      * Get locale affiliate id by hasOfferId
      * @param string $hasOfferId
-     * @return Localize
+     * @return null|array
      */
-    public static function getLocaleAffiliate(AffiliateSetting $affiliate = null)
+    public static function getLocaleAffiliate(AffiliateSetting $affiliate = null): ?array
     {
         $al = null;
 
