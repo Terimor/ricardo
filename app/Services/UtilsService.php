@@ -1229,7 +1229,7 @@ class UtilsService
         $address = 'MDE/Hal-Balzan/';
 
         if (str_replace('www.', '', $request->getHost()) === 'gizmoshop.net') {
-            $address = 'BXT';
+            $address = 'BXT/';
         }
 
         return $address;
