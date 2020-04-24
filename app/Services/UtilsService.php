@@ -1226,11 +1226,12 @@ class UtilsService
      */
     public static function getCompanyDescriptorPrefix(Request $request)
     {
-        $address = 'MDE/Hal-Balzan/';
+        $address = 'MDE/Hal-Balzan';
 
         if (str_replace('www.', '', $request->getHost()) === 'gizmoshop.net') {
-            $address = 'BXT/';
+            $address = 'BXT';
         }
+        $address.= '/';
 
         return $address;
     }
