@@ -452,15 +452,11 @@ class SiteController extends Controller
      */
     public function upsells(Request $request, ProductService $productService)
     {
-        $viewTemplate = 'uppsells_funnel';
-
-        if (Route::is('upsells_vrtl')) {
-            $viewTemplate = 'new.pages.vrtl.upsells';
-        }
-
         $cdn_url = \Utils::getCdnUrl();
         $loadedPhrases = (new I18nService())->loadPhrases('upsells_page');
 		$product = $productService->resolveProduct($request, true);
+
+		$viewTemplate = $product->type == OdinOrder::TYPE_VIRTUAL ? 'new.pages.vrtl.upsells' : 'uppsells_funnel';
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
@@ -509,14 +505,10 @@ class SiteController extends Controller
      */
     public function thankyou(Request $request, ProductService $productService)
     {
-        $viewTemplate = 'thankyou';
-
-        if (Route::is('thankyou_vrtl')) {
-            $viewTemplate = 'new.pages.vrtl.thankyou';
-        }
-
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 		$product = $productService->resolveProduct($request, true);
+
+        $viewTemplate = $product->type == OdinOrder::TYPE_VIRTUAL ? 'new.pages.vrtl.thankyou' : 'thankyou';
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
