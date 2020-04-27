@@ -108,7 +108,15 @@ class MinteService
     /**
      * @var array
      */
-    private static array $fallback_codes = ['621', '622', '625', 'ERR-MPI'];
+    private static array $fallback_codes = [
+        '450', // Duplicate transaction
+        '621',
+        '622',
+        '625',
+        '627', // Found CS transaction. Try again later!
+        '910', // Invalid merchant
+        'ERR-MPI'
+    ];
 
     /**
      * @var array
@@ -118,7 +126,11 @@ class MinteService
     /**
      * @var array
      */
-    private static array $fallback_messages = ['Amount by terminal exceeded', 'Company limits exceeded.'];
+    private static array $fallback_messages = [
+        'Amount by terminal exceeded',
+        'Company limits exceeded.',
+        'Unknown Reason'
+    ];
 
     /**
      * @var string
