@@ -108,7 +108,7 @@ class BluesnapService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_NEW,
             'payment_provider'  => PaymentProviders::BLUESNAP,
-            'hash'              => "new_" . UtilsService::randomString(16),
+            'hash'              => 'new_' . hrtime(true),
             'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'payer_id'          => null,
             'provider_data'     => null,
@@ -169,8 +169,8 @@ class BluesnapService
 
     /**
      * Provides payment by vaulted shopper id
-     * @param  array   $shooper_id
-     * @param  array   $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
+     * @param string $shopper_id
+     * @param array $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
      * @return array
      */
     public function payByVaultedShopperId(string $shopper_id, array $details): array

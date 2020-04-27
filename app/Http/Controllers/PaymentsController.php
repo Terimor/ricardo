@@ -145,24 +145,24 @@ class PaymentsController extends Controller
         $authKey = $req->input('authKey', '');
         $type    = $req->input('transactionType');
 
-        if (!in_array($type, [BluesnapService::TYPE_WEBHOOK_CHARGE, BluesnapService::TYPE_WEBHOOK_DECLINE])) {
+        $result = "{$authKey}ok";
+        if (in_array($type, [BluesnapService::TYPE_WEBHOOK_CHARGE, BluesnapService::TYPE_WEBHOOK_DECLINE])) {
+            $reply = BluesnapService::validateWebhook($req);
+
+            if (!$reply['status']) {
+                logger()->error('Bluesnap unauthorized webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+                throw new AuthException('Unauthorized');
+            }
+
+            $result = "{$authKey}ok";
+            if (!empty($reply['txn'])) {
+                $order = PaymentService::approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
+                $bs = CardService::getBluesnapService($order->number, $reply['txn']['hash']);
+                $result .= $bs->getDataProtectionKey();
+            }
+        } else {
             logger()->info('Bluesnap unprocessed webhook', ['content' => $req->getContent()]);
         }
-
-        $reply = BluesnapService::validateWebhook($req);
-
-        if (!$reply['status']) {
-            logger()->error('Bluesnap unauthorized webhook', ['ip' => $req->ip(), 'body' => $req->getContent()]);
-            throw new AuthException('Unauthorized');
-        }
-
-        $result = "{$authKey}ok";
-        if (!empty($reply['txn'])) {
-            $order = PaymentService::approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
-            $bs = CardService::getBluesnapService($order->number, $reply['txn']['hash']);
-            $result .= $bs->getDataProtectionKey();
-        }
-
         return md5($result);
     }
 
