@@ -154,12 +154,9 @@ class PaymentsController extends Controller
                 throw new AuthException('Unauthorized');
             }
 
-            $result = "{$authKey}ok";
-            if (!empty($reply['txn'])) {
-                $order = PaymentService::approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
-                $bs = CardService::getBluesnapService($order->number, $reply['txn']['hash']);
-                $result .= $bs->getDataProtectionKey();
-            }
+            $order = PaymentService::approveOrder($reply['txn'], PaymentProviders::BLUESNAP);
+            $bs = CardService::getBluesnapService($order->number, $reply['txn']['hash']);
+            $result .= $bs->getDataProtectionKey();
         } else {
             logger()->info('Bluesnap unprocessed webhook', ['content' => $req->getContent()]);
         }
