@@ -2,16 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Domain;
-use App\Models\OdinProduct;
-use App\Services\ProductService;
-use StdClass;
 use Illuminate\Http\Request;
-use App\Models\Currency;
-use App\Models\Setting;
-use App\Models\OdinOrder;
-use App\Services\OrderService;
-use App\Services\CurrencyService;
+use App\Models\{OdinOrder, Domain, OdinProduct};
+use App\Services\{OrderService, ProductService};
 
 /* use com\checkout;
   use com\checkout\ApiServices; */
