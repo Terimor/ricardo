@@ -253,8 +253,9 @@ class OrderController extends Controller
      * @param ProductService $productService
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\ProductNotFoundException
+     * @return \Illuminate\View\View
      */
-    public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request) {
+    public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
         $select = ['products.sku_code', 'products.is_paid', 'products.is_main'];
         $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select);
         $sku = $order->getMainSku();
