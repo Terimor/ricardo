@@ -259,14 +259,14 @@ class OrderController extends Controller
         $select = ['products.sku_code', 'products.is_paid', 'products.is_main'];
         $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
         if (!$order) {
-            abort(404, "Order {$orderId} - {$orderNumber} not found");
+            abort(404);
         }
         $sku = $order->getMainSku();
         // add select fields for page
         $select = [];
         $product = OdinProduct::getBySku($sku, false, $select);
         if (!$product) {
-            abort(404, "Product {$sku} not found");
+            abort(404);
         }
         $product = $productService->localizeProduct($product);
         $domain = Domain::getByName();
