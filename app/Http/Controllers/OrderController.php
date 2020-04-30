@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Domain;
+use App\Models\OdinProduct;
+use App\Services\ProductService;
 use StdClass;
 use Illuminate\Http\Request;
 use App\Models\Currency;
@@ -248,6 +251,27 @@ class OrderController extends Controller
     public function orderAmountTotal($orderId)
     {
         return $this->orderService->calculateOrderAmountTotal($orderId);
+    }
+
+    /**
+     * Action for virtual order download page
+     * @param string $orderId
+     * @param string $orderNumber
+     * @param ProductService $productService
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     */
+    public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request) {
+        $select = ['products.sku_code', 'products.is_paid', 'products.is_main'];
+        $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select);
+        $sku = $order->getMainSku();
+        // add select fields for page
+        $select = [];
+        $product = OdinProduct::getBySku($sku, true, $select);
+        $product = $productService->localizeProduct($product);
+        $domain = Domain::getByName();
+        $page_title = \Utils::generatePageTitle($domain, $product);
+        return view('new.pages.vrtl.download', compact('product', 'page_title'));
     }
 
 }

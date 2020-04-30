@@ -947,4 +947,26 @@ class OdinOrder extends OdinModel
 
         return $result;
     }
+
+    /**
+     * Returns OdinOrder by ID and number
+     * @param string $id
+     * @param string $number
+     * @param array $select
+     * @param boolean $throwable default=true
+     * @return OdinOrder|null
+     * @throws OrderNotFoundException
+     */
+    public static function getByIdAndNumber(string $id, string $number, array $select = [], bool $throwable = true): ?OdinOrder
+    {
+        $query = OdinOrder::where(['_id' => $id, 'number' => $number]);
+        if ($select) {
+            $query->select($select);
+        }
+        $order = $query->first();
+        if (!$order && $throwable) {
+            throw new OrderNotFoundException("Order [{$number}][{$id}] not found");
+        }
+        return $order;
+    }
 }
