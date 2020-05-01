@@ -239,7 +239,7 @@ class EbanxService
      */
     public function requestStatusByHash(string $hash): ?array
     {
-        $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
+        $result = ['hash' => $hash, 'status' => Txn::STATUS_FAILED];
 
         $config = new Config([
             'integrationKey'        => $this->api->key,
@@ -250,13 +250,18 @@ class EbanxService
         try {
             $res = EBANX($config)->paymentInfo()->findByHash($hash);
 
-            $result = ['hash'  => $hash, 'status' => Txn::STATUS_FAILED];
+            $result = ['hash' => $hash, 'status' => Txn::STATUS_FAILED];
 
             if ($res['status'] === self::STATUS_OK) {
-                $result['number']   = $res['payment']['order_number'];
+                $result['value'] = $res['payment']['amount_ext'];
+                $result['number'] = $res['payment']['order_number'];
+                $result['status'] = self::mapPaymentStatus($res['payment']['status'], true);
                 $result['currency'] = $res['payment']['currency_ext'];
-                $result['value']    = $res['payment']['amount_ext'];
-                $result['status']   = self::mapPaymentStatus($res['payment']['status'], true);
+
+                // check if it is refund
+                if (!empty($res['payment']['refunds'])) {
+                    logger()->warning("Ebanx try to get refunded txn", ['reply' => json_encode($res)]);
+                }
             } else {
                 logger()->warning("Ebanx cancelled", ['reply' => json_encode($res)]);
             }
@@ -293,10 +298,10 @@ class EbanxService
 
     /**
      * Provides payment by token
-     * @param  array   $token
-     * @param  array   $contact
-     * @param  array   $items
-     * @param  array   $details
+     * @param string $token
+     * @param array $contact
+     * @param array $items
+     * @param array $details
      * [
      *   'currency'=>string,
      *   'amount'=>float,
@@ -407,12 +412,12 @@ class EbanxService
 
             $result['provider_data'] = $res;
             if ($res['status'] === self::STATUS_OK) {
-                $result['hash']             = $res['payment']['hash'];
-                $result['currency']         = $res['payment']['currency_ext'];
-                $result['value']            = $res['payment']['amount_ext'];
-                $result['status']           = self::mapPaymentStatus($res['payment']['status']);
-                $result['is_flagged']       = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING ? true : false;
-                $result['token']            = $res['payment']['token'] ?? null;
+                $result['hash']     = $res['payment']['hash'];
+                $result['currency'] = $res['payment']['currency_ext'];
+                $result['value']    = $res['payment']['amount_ext'];
+                $result['status']   = self::mapPaymentStatus($res['payment']['status']);
+                $result['token']    = $res['payment']['token'] ?? null;
+                $result['is_flagged'] = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING;
             } else {
                 if (!EbanxCodeMapper::getPhrase($res['status_code'])) {
                     $result['fallback'] = true;
