@@ -33,7 +33,7 @@ class ProductService
     {
         $product = null;
         // prepare select
-        $select = ['type','prices', 'skus', 'product_name', 'description.en', 'long_name.en', 'home_description.en', 'home_name.en',
+        $select = ['type', 'prices', 'skus', 'product_name', 'description.en', 'long_name.en', 'home_description.en', 'home_name.en',
             'splash_description.en', 'billing_descriptor', 'logo_image_id', 'bg_image_id', 'favicon_image_id', 'upsell_hero_image_id', 'image_ids',
             'vimeo_id.en', 'reviews', 'upsell_plusone_text.en', 'upsell_hero_text.en', 'upsells', 'fb_pixel_id', 'gads_retarget_id',
             'gads_conversion_id','gads_conversion_label', 'goptimize_id', 'is_europe_only','is_choice_required','is_paypal_hidden','countries',
@@ -272,6 +272,7 @@ class ProductService
         $lp->splash_description = $product->splash_description;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
+        echo '<pre>'; var_dump($product->logo_image); echo '</pre>'; exit;
         $lp->bg_image = $product->bg_image;
         $lp->favicon_image = $product->favicon_image;
         $lp->upsell_hero_image = $product->upsell_hero_image;
@@ -779,6 +780,65 @@ class ProductService
             $lp->url = $file->getUrl();
         }
         return $lp;
+    }
+
+    /**
+     * Get product for download page
+     * @param OdinProduct $product
+     * @param string $orderNumber
+     * @return Localize
+     */
+    public function getLocaleDownloadProduct(OdinProduct $product, string $orderNumber): Localize {
+        $lp = new Localize();
+        $lp->product_name = $product->product_name;
+        $lp->description = $product->description;
+        $lp->free_files = !empty($product->free_file_ids) ? static::getFileUrlsByIds($product->free_file_ids, $orderNumber) : null;
+        $lp->sale_files = !empty($product->sale_file_ids) ? static::getFileUrlsByIds($product->sale_file_ids, $orderNumber) : null;
+        $lp->logo_image = $product->logo_image;
+
+        return $lp;
+    }
+
+    /**
+     * Get file urls for download by ids
+     * @param array|null $file_ids
+     * @param string $orderNumber
+     * @return array
+     */
+    public static function getFileUrlsByIds(?array $file_ids, string $orderNumber): array {
+        $urls = [];
+        if ($file_ids) {
+            $select = ['name', 'url.en', 'title.en'];
+            $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+            $files = File::getByIds($file_ids, $select);
+            if ($files) {
+                foreach ($files as $file) {
+                    $urls[] = [
+                        'name' => $file->name,
+                        'title' => $file->title,
+                        'url' => static::getDownloadFileUrl($file, $orderNumber)
+                    ];
+                }
+            }
+        }
+        return $urls;
+    }
+
+    /**
+     * Get url for download file
+     * @param File|null $file
+     * @param string $orderNumber
+     * @return string|null
+     */
+    public static function getDownloadFileUrl(?File $file, string $orderNumber): ?string {
+        $url = null;
+        if ($file) {
+            if (!empty($file->url)) {
+                $ext = pathinfo($file->url, PATHINFO_EXTENSION);
+                $url = url("/my-files/{$orderNumber}/{$file->name}.{$ext}");
+            }
+        }
+        return $url;
     }
 
 }

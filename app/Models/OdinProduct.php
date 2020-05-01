@@ -9,13 +9,12 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Services\CurrencyService;
 use App\Services\PaymentService;
 use App\Exceptions\ProductNotFoundException;
-use App\Models\Setting;
 
 /**
  * Class OdinProduct
  * @package App\Models
  */
-class OdinProduct extends Model
+class OdinProduct extends OdinModel
 {
     const QUANTITY_PRICES = 5;
     const MIN_PRICE = 4.5;
@@ -548,16 +547,6 @@ class OdinProduct extends Model
         }
 
         return true;
-    }
-
-    /**
-     * Fet field local text
-     * @param type $value
-     * @return type
-     */
-    public function getFieldLocalText($value)
-    {
-        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
     }
 
     /**

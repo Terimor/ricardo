@@ -96,4 +96,14 @@ class OdinModel extends Model
 			});
 		}
     }
+
+    /**
+     * Fet field local text
+     * @param type $value
+     * @return type
+     */
+    public function getFieldLocalText($value)
+    {
+        return !empty($value[app()->getLocale()]) ? $value[app()->getLocale()] : (!empty($value['en']) ? $value['en'] : '');
+    }
 }

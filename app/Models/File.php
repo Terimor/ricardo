@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 
-class File extends Model
+class File extends OdinModel
 {
     protected $collection = 'file';
 
@@ -28,6 +28,22 @@ class File extends Model
     ];
 
     /**
+     * Getter title
+     */
+    public function getTitleAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Getter url
+     */
+    public function getUrlAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
      * Returns File by ID
      * @param $id
      * @return File|null
@@ -37,14 +53,19 @@ class File extends Model
     }
 
     /**
-     * Get images by ids
+     * Get files by ids
      * @param array $ids
+     * @return null|array
      */
-    public static function getByIds(?array $ids)
+    public static function getByIds(?array $ids, array $select = []): ?\Illuminate\Database\Eloquent\Collection
     {
         $files = null;
         if ($ids) {
-            $files = File::whereIn('_id', $ids)->get();
+            $query = File::whereIn('_id', $ids);
+            if ($select) {
+                $query->select($select);
+            }
+            $files = $query->get();
         }
         return $files;
     }

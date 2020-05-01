@@ -256,19 +256,24 @@ class OrderController extends Controller
      * @return \Illuminate\View\View
      */
     public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
-        $select = ['products.sku_code', 'products.is_paid', 'products.is_main'];
+        $select = ['number', 'type', 'products.sku_code', 'products.is_paid', 'products.is_main'];
         $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
-        if (!$order) {
+        if (!$order && $order->type != OdinOrder::TYPE_VIRTUAL) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
         $sku = $order->getMainSku();
         // add select fields for page
-        $select = [];
+        $select = ['type', 'product_name', 'description.en', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id'];
+        $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+
         $product = OdinProduct::getBySku($sku, false, $select);
         if (!$product) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
-        $product = $productService->localizeProduct($product);
+        // prepare product
+        $product->setLocalImages();
+        $product = $productService->getLocaleDownloadProduct($product, $order->number);
+
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product);
         return view('new.pages.vrtl.download', compact('product', 'page_title'));

@@ -1,4 +1,4 @@
-@if (!$product->is_paypal_hidden && (!empty($is_checkout) || !empty($is_upsells)))
+@if (isset($product->is_paypal_hidden) && !$product->is_paypal_hidden && (!empty($is_checkout) || !empty($is_upsells)))
 
   <script
     id="paypal-script"
