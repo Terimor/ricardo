@@ -203,6 +203,7 @@ class OdinOrder extends OdinModel
         'postbacks' => [], //array of sent postbacks with compiled values
         'exported_at' => null, // date of export
         'delivered_at' => null, // date of delivery
+        'packages_count' => null, // packages count for shipping
     ];
 
     const STATUS_NEW = 'new';
