@@ -31,11 +31,12 @@ class VerifyCsrfToken extends Middleware
         'ebanx-webhook',
         'stripe-webhook',
         'paypal-webhooks',
+        'novalnet-webhook/*',
         'minte-3ds/*',
         'minte-apm/*',
         'paypal-create-order',
         'paypal-verify-order',
-		'calculate-upsells-total',
+        'calculate-upsells-total',
         'log-data',
         'apply-discount',
         /* test routes */

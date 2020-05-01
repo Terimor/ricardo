@@ -8,8 +8,10 @@ use App\Services\CardService;
 use App\Services\EbanxService;
 use App\Services\PaymentService;
 use App\Exceptions\AuthException;
+use App\Http\Requests\NovalnetRetCliRequest;
+use App\Http\Requests\NovalnetWebhookRequest;
 use App\Http\Requests\PaymentCardCreateOrderRequest;
-use App\Http\Requests\ApmRedirectRequest;
+use App\Http\Requests\ApmMinteRedirectRequest;
 use App\Http\Requests\CreateApmOrderRequest;
 use App\Http\Requests\PaymentCardBs3dsRequest;
 use App\Http\Requests\PaymentCardMinte3dsRequest;
@@ -323,7 +325,7 @@ class PaymentsController extends Controller
 
     /**
      * Mint-e redirect after APM
-     * @param ApmRedirectRequest $req
+     * @param ApmMinteRedirectRequest $req
      * @param string $order_id
      * @return \Illuminate\Routing\Redirector
      * @throws AuthException
@@ -333,7 +335,7 @@ class PaymentsController extends Controller
      * @throws \App\Exceptions\TxnNotFoundException
      * @throws \Exception
      */
-    public function minteApm(ApmRedirectRequest $req, string $order_id)
+    public function minteApm(ApmMinteRedirectRequest $req, string $order_id)
     {
         $reply = ApmService::minteApm($req, $order_id);
 
@@ -383,6 +385,52 @@ class PaymentsController extends Controller
         } elseif (!empty($reply['redirect_url'])) {
             $query['redirect_url'] = $reply['redirect_url'];
             $query['3ds'] = 'pending';
+        }
+
+        $path = $reply['is_main'] ? '/checkout' : '/thankyou';
+
+        return redirect("{$path}?" . http_build_query($query));
+    }
+
+    /**
+     * Novalnet webhook
+     * @param NovalnetWebhookRequest $req
+     * @param string $order_id
+     * @return void
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     */
+    public function novalnetWebhook(NovalnetWebhookRequest $req, string $order_id): void
+    {
+        logger()->info('Novalnet wh', ['ip' => $req->ip(), 'body' => $req->getContent()]);
+
+        PaymentService::processNovalnetWebhook($req->all(), $order_id);
+    }
+
+    /**
+     * Novalnet client return
+     * @param NovalnetRetCliRequest $req
+     * @param string $order_id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws AuthException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\OrderUpdateException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     */
+    public function novalnetRetCli(NovalnetRetCliRequest $req, string $order_id)
+    {
+        logger()->info('Novalnet retcli', ['ip' => $req->ip(), 'body' => $req->all()]);
+
+        $reply = PaymentService::processNovalnetReturnClient($req->all(), $order_id);
+
+        $query = ['order' => $order_id];
+        if ($reply['status'] === PaymentService::STATUS_OK) {
+            $query[$reply['is_apm'] ? 'apm' : '3ds'] = 'success';
+        } else {
+            $query[$reply['is_apm'] ? 'apm' : '3ds'] = 'failure';
         }
 
         $path = $reply['is_main'] ? '/checkout' : '/thankyou';

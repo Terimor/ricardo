@@ -5,7 +5,6 @@ namespace App\Models;
 use Cache;
 use NumberFormatter;
 use Jenssegers\Mongodb\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
 use App\Services\CurrencyService;
 use App\Services\PaymentService;
 use App\Exceptions\ProductNotFoundException;
@@ -13,6 +12,9 @@ use App\Exceptions\ProductNotFoundException;
 /**
  * Class OdinProduct
  * @package App\Models
+ *
+ * @property string description
+ * @property string warehouse_id
  */
 class OdinProduct extends OdinModel
 {

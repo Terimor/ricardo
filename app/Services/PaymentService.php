@@ -1,12 +1,8 @@
 <?php
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
-use App\Exceptions\CustomerUpdateException;
-use App\Exceptions\InvalidParamsException;
-use App\Exceptions\PaymentException;
-use App\Exceptions\OrderUpdateException;
 use App\Models\Domain;
+use App\Models\PaymentApi;
 use App\Models\Txn;
 use App\Models\Currency;
 use App\Models\OdinOrder;
@@ -15,6 +11,13 @@ use App\Models\OdinCustomer;
 use App\Models\AffiliateSetting;
 use App\Constants\PaymentProviders;
 use App\Constants\PaymentMethods;
+use App\Exceptions\AuthException;
+use App\Exceptions\CustomerUpdateException;
+use App\Exceptions\InvalidParamsException;
+use App\Exceptions\PaymentException;
+use App\Exceptions\OrderUpdateException;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Payment Service class
@@ -649,6 +652,9 @@ class PaymentService
             case PaymentProviders::STRIPE:
                 $result = StripeService::isCurrencySupported($currency);
                 break;
+            case PaymentProviders::NOVALNET:
+                $result = NovalnetService::isCurrencySupported($country, $currency);
+                break;
         endswitch;
 
         return $result;
@@ -1004,6 +1010,87 @@ class PaymentService
         }
 
         return $result;
+    }
+
+    /**
+     * Processes novalnet webhook
+     * @param array $notification
+     * @param string $order_id
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     * @throws AuthException
+     * @throws OrderUpdateException
+     */
+    public static function processNovalnetWebhook(array $notification, string $order_id): void
+    {
+        $order = OdinOrder::getById($order_id); // throwable
+        $order_txn = $order->getTxnByHash(Arr::get($notification, 'transaction.tid')); // throwable
+
+        $handler = new NovalnetService(PaymentApi::getById($order_txn['payment_api_id']));
+
+        if (!$handler->verifyWebhook($notification)) {
+            throw new AuthException('Unauthorized');
+        } elseif (!$handler->verifyWebhookEvent($notification)) {
+            logger()->info('Novalnet wh unprocessed event', $notification);
+        } else {
+            self::approveOrder([
+                'number' => $order->number,
+                'hash' => $order_txn['hash'],
+                'status' => NovalnetService::mapResponseStatus($notification)
+            ]);
+        }
+    }
+
+    /**
+     * Processes client return after redirect
+     * @param array $params
+     * @param string $order_id
+     * @return array
+     * @throws AuthException
+     * @throws OrderUpdateException
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     */
+    public static function processNovalnetReturnClient(array $params, string $order_id): array
+    {
+        $order = OdinOrder::getById($order_id); // throwable
+        $order_txn = $order->getTxnByHash("tsec_{$params['tsec']}"); // throwable
+        $order_product = $order->getProductByTxnHash($order_txn['hash']); // throwable
+
+        $handler = new NovalnetService(PaymentApi::getById($order_txn['payment_api_id']));
+
+        if (!$handler->verifyRetCli($params)) {
+            throw new AuthException('Unauthorized');
+        }
+
+        $payment = $handler->getPayment($params['tid'], $order->currency, $order_txn['value']);
+
+        // rewrite order->txns
+        $order->dropTxn($order_txn['hash']);
+        PaymentService::addTxnToOrder($order, $payment, $order_txn);
+
+        // bind new txn to product
+        $order->dropProduct($order_product['sku_code'], $order_txn['hash']);
+        $order_product['txn_hash'] = $payment['hash'];
+        $order->addProduct($order_product);
+
+        if (!$order->save()) {
+            $validator = $order->validate();
+            if ($validator->fails()) {
+                throw new OrderUpdateException(json_encode($validator->errors()->all()));
+            }
+        }
+
+        if ($payment['status'] == Txn::STATUS_APPROVED) {
+            self::approveOrder(['number' => $order->number, 'hash' => $payment['hash'], 'status' => $payment['status']]);
+        }
+
+        return [
+            'is_apm' => PaymentService::isApm($order_txn['payment_method']),
+            'is_main' => $order_product['is_main'],
+            'status' => $payment['status'] !== Txn::STATUS_FAILED ? PaymentService::STATUS_OK : PaymentService::STATUS_FAIL
+        ];
     }
 
     public static function test(\Illuminate\Http\Request $req)

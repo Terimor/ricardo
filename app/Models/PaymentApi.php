@@ -14,6 +14,7 @@ use App\Constants\PaymentProviders;
  * @property string $key
  * @property string $secret
  * @property string $login
+ * @property string $password
  * @property string[] $product_ids
  * @property string[] $domain_ids
  * @property string[] $product_category_ids
