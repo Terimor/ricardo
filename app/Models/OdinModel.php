@@ -98,7 +98,7 @@ class OdinModel extends Model
     }
 
     /**
-     * Fet field local text
+     * Get field local text
      * @param type $value
      * @return type
      */
