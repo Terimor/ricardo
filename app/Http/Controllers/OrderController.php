@@ -258,7 +258,7 @@ class OrderController extends Controller
     public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
         $select = ['number', 'type', 'products.sku_code', 'products.is_paid', 'products.is_main'];
         $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
-        if (!$order && $order->type != OdinOrder::TYPE_VIRTUAL) {
+        if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
         $sku = $order->getMainSku();
