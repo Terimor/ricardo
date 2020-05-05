@@ -97,7 +97,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/report-abuse', 'SiteController@reportAbuse');
 
     $router->post('/new-customer', 'OdinCustomerController@addOrUpdate');
-    $router->get('/{orderId}/{orderNumber}', 'SiteController@virtualOrderDownload');
+    $router->get('/members/{orderId}/{orderNumber}', 'SiteController@virtualOrderDownload');
 
 });
 

@@ -515,7 +515,7 @@ class SiteController extends Controller
                 return redirect('/checkout'.$params);
             }
             if ($orderCustomer && $orderCustomer->type == OdinOrder::TYPE_VIRTUAL) {
-                return $this->virtualOrderDownload($orderCustomer->_id, $orderCustomer->number, $productService, $request);
+                return $this->getVirtualOrderView($orderCustomer, $productService, $request);
             }
         }
 
@@ -586,8 +586,20 @@ class SiteController extends Controller
      * @return \Illuminate\View\View
      */
     public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
-        $select = ['number', 'type', 'products.sku_code', 'products.is_paid', 'products.is_main'];
+        // after add here, still add to OrderService::getCustomerDataByOrderId();
+        $select = ['number', 'type', 'products', 'customer_email', 'customer_first_name', 'customer_last_name'];
         $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
+        return $this->getVirtualOrderView($order, $productService, $request);
+    }
+
+    /**
+     * @param OdinOrder $order
+     * @param ProductService $productService
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \App\Exceptions\ProductNotFoundException
+     */
+    private function getVirtualOrderView(OdinOrder $order, ProductService $productService, Request $request) {
         if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
