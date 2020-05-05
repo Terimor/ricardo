@@ -791,8 +791,11 @@ class CardService {
             if (!empty($payment['number'])) {
                 // prevention of race condition
                 usleep(mt_rand(0, 2000) * 1000);
-
-                PaymentService::approveOrder($payment, PaymentProviders::EBANX);
+                if ($txn['status'] === Txn::STATUS_APPROVED && $payment['status'] === Txn::STATUS_APPROVED) {
+                    logger()->warning('Ebanx: payment re-approved', ['hash' => $hash]);
+                } else {
+                    PaymentService::approveOrder($payment, PaymentProviders::EBANX);
+                }
             } else {
                 logger()->warning('Ebanx: payment not found', ['hash' => $hash]);
             }
