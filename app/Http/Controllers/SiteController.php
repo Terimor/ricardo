@@ -507,7 +507,6 @@ class SiteController extends Controller
     {
         // if we have order parameter check virtual order to redirect to another view
         if ($request->get('order')) {
-            $select = ['number', 'type'];
             $orderCustomer = $request->get('order') ? OrderService::getCustomerDataByOrderId($request->get('order'), true) : null;
             if (!$orderCustomer) {
                 // generate global get parameters
