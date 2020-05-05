@@ -505,24 +505,27 @@ class SiteController extends Controller
      */
     public function thankyou(Request $request, ProductService $productService)
     {
+        // if we have order parameter check virtual order to redirect to another view
+        if ($request->get('order')) {
+            $select = ['number', 'type'];
+            $orderCustomer = $request->get('order') ? OrderService::getCustomerDataByOrderId($request->get('order'), true) : null;
+            if (!$orderCustomer) {
+                // generate global get parameters
+                $params = \Utils::getGlobalGetParameters($request);
+                return redirect('/checkout'.$params);
+            }
+            if ($orderCustomer && $orderCustomer->type == OdinOrder::TYPE_VIRTUAL) {
+                return $this->virtualOrderDownload($orderCustomer->_id, $orderCustomer->number, $productService, $request);
+            }
+        }
+
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
 		$product = $productService->resolveProduct($request, true);
 
-        $viewTemplate = $product->type == OdinOrder::TYPE_VIRTUAL ? 'new.pages.vrtl.thankyou' : 'thankyou';
+        $viewTemplate = 'thankyou';
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
-
-		$orderCustomer = null;
-		if ($request->get('order')) {
-            $orderCustomer = OrderService::getCustomerDataByOrderId($request->get('order'), true);
-		}
-
-        if (!$orderCustomer) {
-            // generate global get parameters
-            $params = \Utils::getGlobalGetParameters($request);
-            return redirect('/checkout'.$params);
-        }
 
         // get payment method from main txn
         $payment_method = [];
@@ -571,6 +574,40 @@ class SiteController extends Controller
             'countryCode', 'payment_method', 'product' , 'setting', 'orderCustomer', 'loadedPhrases', 'order_aff', 'page_title', 'main_logo',
             'is_thankyou', 'is_thankyou_page', 'is_vrtl_thankyou_page', 'is_smartbell', 'freeFile'
         ));
+    }
+
+    /**
+     * Action for virtual order download page
+     * @param string $orderId
+     * @param string $orderNumber
+     * @param ProductService $productService
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     * @return \Illuminate\View\View
+     */
+    public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
+        $select = ['number', 'type', 'products.sku_code', 'products.is_paid', 'products.is_main'];
+        $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
+        if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {
+            abort(404, 'Sorry, we couldn\'t find your order');
+        }
+        $sku = $order->getMainSku();
+        // add select fields for page
+        $select = ['type', 'product_name', 'description.en', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id'];
+        $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+
+        $product = OdinProduct::getBySku($sku, false, $select);
+        if (!$product) {
+            abort(404, 'Sorry, we couldn\'t find your order');
+        }
+        $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
+        // prepare product
+        $product->setLocalImages();
+        $product = $productService->getLocaleDownloadProduct($product, $order->number);
+
+        $domain = Domain::getByName();
+        $page_title = \Utils::generatePageTitle($domain, $product);
+        return view('new.pages.vrtl.thankyou', compact('product', 'page_title', 'loadedPhrases'));
     }
 
     /**

@@ -323,9 +323,13 @@ class OdinOrder extends OdinModel
      * @return OdinOrder|null
      * @throws OrderNotFoundException
      */
-    public static function getById(string $id, bool $throwable = true): ?OdinOrder
+    public static function getById(string $id, bool $throwable = true, $select = []): ?OdinOrder
     {
-        $order = OdinOrder::find($id);
+        $query = OdinOrder::where(['_id' => $id]);
+        if ($select) {
+            $query->select($select);
+        }
+        $order = $query->first();
         if (!$order && $throwable) {
             throw new OrderNotFoundException("Order [{$id}] not found");
         }

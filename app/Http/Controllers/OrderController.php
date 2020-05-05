@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{OdinOrder, Domain, OdinProduct};
-use App\Services\{OrderService, ProductService};
+use App\Services\{I18nService, OrderService, ProductService};
 
 /* use com\checkout;
   use com\checkout\ApiServices; */
@@ -245,38 +245,4 @@ class OrderController extends Controller
     {
         return $this->orderService->calculateOrderAmountTotal($orderId);
     }
-
-    /**
-     * Action for virtual order download page
-     * @param string $orderId
-     * @param string $orderNumber
-     * @param ProductService $productService
-     * @throws \App\Exceptions\OrderNotFoundException
-     * @throws \App\Exceptions\ProductNotFoundException
-     * @return \Illuminate\View\View
-     */
-    public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
-        $select = ['number', 'type', 'products.sku_code', 'products.is_paid', 'products.is_main'];
-        $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
-        if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {
-            abort(404, 'Sorry, we couldn\'t find your order');
-        }
-        $sku = $order->getMainSku();
-        // add select fields for page
-        $select = ['type', 'product_name', 'description.en', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id'];
-        $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
-
-        $product = OdinProduct::getBySku($sku, false, $select);
-        if (!$product) {
-            abort(404, 'Sorry, we couldn\'t find your order');
-        }
-        // prepare product
-        $product->setLocalImages();
-        $product = $productService->getLocaleDownloadProduct($product, $order->number);
-
-        $domain = Domain::getByName();
-        $page_title = \Utils::generatePageTitle($domain, $product);
-        return view('new.pages.vrtl.download', compact('product', 'page_title'));
-    }
-
 }

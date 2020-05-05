@@ -93,7 +93,8 @@ class OrderService
             'number',
             'currency',
             'products',
-            'txns'
+            'txns',
+            'type'
 		]);
 
         // select products array
