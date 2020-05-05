@@ -67,7 +67,9 @@ class CardService {
         $ciphertext = substr($iv_hash_ciphertext, 48);
         $key = hash('sha256', $password, true);
 
-        if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
+        if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) {
+            return null;
+        }
 
         return openssl_decrypt($ciphertext, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
     }
@@ -135,7 +137,7 @@ class CardService {
     {
         $cc_data = self::getCachedCardWithMeta($cc_sign);
         $counter = Arr::get($cc_data, 'meta.counter', 0);
-        if ($is_check_counter && $counter >= self::CARD_MAX_CACHE_USE) {
+        if ($is_check_counter && $counter >= self::CARD_MAX_CACHE_USE && \App::environment() === 'production') {
             throw new PaymentException('Card is blocked', 'card.error.not_functioning');
         }
         return Arr::get($cc_data, 'card');
