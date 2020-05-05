@@ -593,13 +593,13 @@ class SiteController extends Controller
     }
 
     /**
-     * @param OdinOrder $order
+     * @param OdinOrder|null $order
      * @param ProductService $productService
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws \App\Exceptions\ProductNotFoundException
      */
-    private function getVirtualOrderView(OdinOrder $order, ProductService $productService, Request $request) {
+    private function getVirtualOrderView(?OdinOrder $order, ProductService $productService, Request $request) {
         if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
