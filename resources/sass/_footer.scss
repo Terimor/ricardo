@@ -65,6 +65,11 @@
     }
   }
 
+  &__row-item + br {
+    @media screen and ($s-down) {
+      display: none;
+    }
+  }
 
   &__link {
     color: white;
