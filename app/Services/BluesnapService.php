@@ -14,9 +14,8 @@ use GuzzleHttp\Exception\RequestException as GuzzReqException;
 /**
  * BluesnapService class
  */
-class BluesnapService
+class BluesnapService extends ProviderService
 {
-    use ProviderServiceTrait;
 
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
@@ -53,8 +52,8 @@ class BluesnapService
      */
     public function __construct(PaymentApi $api)
     {
+        parent::__construct($api);
         $environment = Setting::getValue('bluesnap_environment', self::ENV_LIVE);
-        $this->api = $api;
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'ws' : 'sandbox') . '.bluesnap.com/services/2/';
     }
 
@@ -160,11 +159,7 @@ class BluesnapService
             );
         }
 
-        return array_merge(
-            $this->createPaymentTmpl($details),
-            $payment,
-            ['token' => self::encrypt(json_encode($card), $details['order_id'])]
-        );
+        return array_merge($this->createPaymentTmpl($details), $payment);
     }
 
     /**

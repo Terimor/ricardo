@@ -16,37 +16,153 @@ use App\Exceptions\OrderUpdateException;
 use App\Exceptions\ProviderNotFoundException;
 use App\Constants\PaymentProviders;
 use App\Mappers\PaymentMethodMapper;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Http\Client\Exception\HttpException;
 
 /**
- * Card Service class
+ * Class CardService
+ * @package App\Services
  */
 class CardService {
+
+    const CARD_MAX_CACHE_USE = 2;
 
     const CARD_CREDIT = 'credit';
     const CARD_DEBIT  = 'debit';
 
-    const CACHE_TOKEN_PREFIX    = 'CardToken';
+    const CACHE_CC_DATA_PREFIX  = 'CcData';
     const CACHE_ERRORS_PREFIX   = 'PayErrors';
-    const CACHE_TOKEN_TTL_MIN   = 15;
+
+    const CACHE_CC_DATA_TTL_MIN = 1440;
+
+    /**
+     * Encrypts card data
+     * @param  string $plaintext
+     * @param  string $password
+     * @return string
+     */
+    public static function encrypt($plaintext, $password): string
+    {
+        $key = hash('sha256', $password, true);
+        $iv = openssl_random_pseudo_bytes(16);
+
+        $ciphertext = openssl_encrypt($plaintext, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+        $hash = hash_hmac('sha256', $ciphertext . $iv, $key, true);
+
+        return base64_encode($iv . $hash . $ciphertext);
+    }
+
+    /**
+     * Decrypts card data
+     * @param  string $cipherblock
+     * @param  string $password
+     * @return string|null
+     */
+    public static function decrypt($cipherblock, $password): ?string
+    {
+        $iv_hash_ciphertext = base64_decode($cipherblock);
+        $iv = substr($iv_hash_ciphertext, 0, 16);
+        $hash = substr($iv_hash_ciphertext, 16, 32);
+        $ciphertext = substr($iv_hash_ciphertext, 48);
+        $key = hash('sha256', $password, true);
+
+        if (!hash_equals(hash_hmac('sha256', $ciphertext . $iv, $key, true), $hash)) return null;
+
+        return openssl_decrypt($ciphertext, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+    }
+
+    /**
+     * Caches card
+     * @param array $card
+     * @param bool $rewrite
+     * @throws \Exception
+     */
+    private static function cacheCard(array $card, bool $rewrite = false): void
+    {
+        if (!empty($card)) {
+            $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_CC_DATA_TTL_MIN . "M"));
+            $counter = 0;
+
+            $cc_sign = UtilsService::prepareCardNumber($card['number'], '');
+            if (!$rewrite) {
+                $cached = self::getCachedCardWithMeta($cc_sign);
+                if (!empty($cached) ) {
+                    $counter = Arr::get($cached, 'meta.counter', 0);
+                    $dt = (new \DateTime())->setTimestamp(Arr::get($cached, 'meta.ttl', time()));
+                }
+            }
+
+            $cc_data = json_encode([
+                'card' => self::encrypt(json_encode($card), strrev($cc_sign)),
+                'meta' => ['ttl' => $dt->getTimestamp(), 'counter' => ++$counter]
+            ]);
+
+            Cache::put(self::CACHE_CC_DATA_PREFIX . $cc_sign, $cc_data, $dt);
+        }
+    }
+
+    /**
+     * Returns cached card
+     * @param string $cc_sign
+     * @return array|null
+     */
+    private static function getCachedCardWithMeta(string $cc_sign): ?array
+    {
+        $cc_sign = preg_replace('/\D/', '', $cc_sign);
+        $cached = Cache::get(self::CACHE_CC_DATA_PREFIX . $cc_sign);
+        $result = null;
+        if ($cached) {
+            $cc_data = json_decode($cached, true);
+            if ($cc_data) {
+                $result = [
+                    'card' => json_decode(self::decrypt(Arr::get($cc_data, 'card'), strrev($cc_sign)), true),
+                    'meta' => Arr::get($cc_data, 'meta')
+                ];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Returns cached card and checks limit of usage cached card
+     * @param string $cc_sign
+     * @param bool $is_check_counter
+     * @return array|null
+     * @throws PaymentException
+     */
+    private static function getCachedCardAndCheckUsageLimit(string $cc_sign, bool $is_check_counter = true): ?array
+    {
+        $cc_data = self::getCachedCardWithMeta($cc_sign);
+        $counter = Arr::get($cc_data, 'meta.counter', 0);
+        if ($is_check_counter && $counter >= self::CARD_MAX_CACHE_USE) {
+            throw new PaymentException('Card is blocked', 'card.error.not_functioning');
+        }
+        return Arr::get($cc_data, 'card');
+    }
 
     /**
      * @param OdinOrder $order
      * @param string $provider
-     * @param string|null $cc_tkn
+     * @param array|null $card
      * @param string|null $payer_id
      * @return bool
      */
-    private static function isUpsellsAvailable(OdinOrder $order, string $provider, ?string $cc_tkn, ?string $payer_id): bool
+    private static function isUpsellsAvailable(OdinOrder $order, string $provider, ?array $card, ?string $payer_id): bool
     {
         $is_upsells_possible = (new OrderService())->checkIfUpsellsPossible($order);
         if ($is_upsells_possible) {
-            if (!in_array($provider, [PaymentProviders::BLUESNAP, PaymentProviders::STRIPE])) {
-                $is_upsells_possible = !!$cc_tkn;
-            } else {
-                $is_upsells_possible = !!$payer_id;
-            }
+            switch ($provider):
+                case PaymentProviders::CHECKOUTCOM:
+                    $is_upsells_possible = !empty($card) && !!$payer_id;
+                    break;
+                case PaymentProviders::BLUESNAP:
+                case PaymentProviders::STRIPE:
+                    $is_upsells_possible = !!$payer_id;
+                    break;
+                default:
+                    $is_upsells_possible = !empty($card);
+            endswitch;
         }
         return $is_upsells_possible;
     }
@@ -112,6 +228,9 @@ class CardService {
 
         $params = !empty($page_checkout) ? UtilsService::getParamsFromUrl($page_checkout) : null;
         $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
+
+        // check card reuse
+        self::getCachedCardAndCheckUsageLimit(UtilsService::prepareCardNumber($card['number'])); // throwable
 
         // refuse fraudulent payment
         PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid, $contact['email']); // throwable
@@ -220,9 +339,6 @@ class CardService {
                     // TODO: remove city hardcode
                     'billing_descriptor' => ['name' => $order->billing_descriptor, 'city' => 'Msida']
                 ]);
-                if ($payment['status'] !== Txn::STATUS_FAILED) {
-                    $payment['token'] = $checkout->requestToken($card, $contact);
-                }
                 break;
             case PaymentProviders::BLUESNAP:
                 $bluesnap = new BluesnapService($api);
@@ -322,9 +438,6 @@ class CardService {
             }
         }
 
-        // cache token (encrypted card)
-        self::setCardToken($order->number, $payment['token'] ?? null);
-
         $order->is_flagged = $payment['is_flagged'];
         if (!$order->save()) {
             $validator = $order->validate();
@@ -340,19 +453,22 @@ class CardService {
         // switch customer to Buyer if transaction isn't failed
         if ($payment['status'] !== Txn::STATUS_FAILED) {
             $customer->switchToBuyer();
+            // cache card
+            self::cacheCard($card);
         }
 
         return PaymentService::generateCreateOrderResult($order, $payment);
     }
 
     /**
-     * Adds upsells to order using CardToken
+     * Adds upsells to order
      * @param PaymentCardCreateUpsellsOrderRequest $req
      * @return array
      * @throws OrderUpdateException
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\ProductNotFoundException
      * @throws \App\Exceptions\TxnNotFoundException
+     * @throws PaymentException
      */
     public static function createUpsellsOrder(PaymentCardCreateUpsellsOrderRequest $req): array
     {
@@ -364,10 +480,10 @@ class CardService {
         $order_main_txn = $order->getTxnByHash($order_main_product['txn_hash']); //throwable
         $main_product = OdinProduct::getBySku($order_main_product['sku_code']); // throwable
 
-        $card_token = self::getCardToken($order->number);
+        $card = self::getCachedCardAndCheckUsageLimit($order_main_txn['card_number'], false);
 
         $payment = ['status' => Txn::STATUS_FAILED];
-        if (self::isUpsellsAvailable($order, $order_main_txn['payment_provider'], $card_token, $order_main_txn['payer_id'])) {
+        if (self::isUpsellsAvailable($order, $order_main_txn['payment_provider'], $card, $order_main_txn['payer_id'])) {
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
@@ -402,8 +518,8 @@ class CardService {
                 switch ($api->payment_provider):
                     case PaymentProviders::APPMAX:
                         $handler = new AppmaxService($api);
-                        $payment = $handler->payByToken(
-                            $card_token,
+                        $payment = $handler->payByCard(
+                            $card,
                             $order->getShippingData(),
                             array_map(function($item) use($products) {
                                 return [
@@ -417,7 +533,6 @@ class CardService {
                             }, $upsell_products),
                             [
                                 'amount'        => $checkout_price,
-                                'order_id'      => $order->getIdAttribute(),
                                 'currency'      => $order->currency,
                                 'installments'  => $order->installments,
                                 'document_number' => $order->customer_doc_id
@@ -426,8 +541,8 @@ class CardService {
                         break;
                     case PaymentProviders::EBANX:
                         $handler = new EbanxService($api);
-                        $payment = $handler->payByToken(
-                        $card_token,
+                        $payment = $handler->payByCard(
+                        $card,
                         $order->getShippingData(),
                         array_map(function($item) use($products) {
                             return [
@@ -450,14 +565,15 @@ class CardService {
                         break;
                     case PaymentProviders::CHECKOUTCOM:
                         $handler = new CheckoutDotComService($api);
-                        $payment = $handler->payByToken(
-                            $card_token,
-                            ['payer_id' => $order_main_txn['payer_id'], 'ip' => $order->ip],
+                        $payment = $handler->payByCardAndPayerId(
+                            $card,
+                            $order_main_txn['payer_id'],
+                            $order->getShippingData(),
                             [
-                                'amount'    => $checkout_price,
-                                'currency'  => $order->currency,
-                                'id'        => $order->getIdAttribute(),
-                                'number'    => $order->number,
+                                'id' => $order->getIdAttribute(),
+                                'amount' => $checkout_price,
+                                'number' => $order->number,
+                                'currency' => $order->currency,
                                 'description' => implode(', ', array_column($products, 'product_name')),
                                 // TODO: remove city hardcode
                                 'billing_descriptor' => [
@@ -469,8 +585,8 @@ class CardService {
                         break;
                     case PaymentProviders::MINTE:
                         $handler = new MinteService($api);
-                        $payment = $handler->payByToken(
-                            $card_token,
+                        $payment = $handler->payByCard(
+                            $card,
                             $order->getShippingData(),
                             [
                                 'amount'    => $checkout_price,
@@ -953,20 +1069,6 @@ class CardService {
     }
 
     /**
-     * Returns card token from cache
-     * @param string $order_number
-     * @param boolean $is_remove default=true
-     * @return string|null
-     */
-    public static function getCardToken(string $order_number, bool $is_remove = true): ?string
-    {
-        if ($is_remove) {
-            return Cache::pull(self::CACHE_TOKEN_PREFIX . $order_number);
-        }
-        return Cache::get(self::CACHE_TOKEN_PREFIX . $order_number);
-    }
-
-    /**
      * Returns CheckoutDotComService by order number
      * @param string $number
      * @param string $hash
@@ -996,21 +1098,6 @@ class CardService {
         $txn = $order->getTxnByHash($hash, false);
         $api = PaymentApiService::getById($txn['payment_api_id']);
         return new BluesnapService($api);
-    }
-
-    /**
-     * Puts card token to cache
-     * @param string $order_number
-     * @param string|null $token
-     * @return void
-     * @throws \Exception
-     */
-    public static function setCardToken(string $order_number, ?string $token): void
-    {
-        if ($token) {
-            $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_TOKEN_TTL_MIN . "M"));
-            Cache::put(self::CACHE_TOKEN_PREFIX . $order_number, $token, $dt);
-        }
     }
 
     /**

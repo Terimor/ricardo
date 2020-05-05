@@ -12,12 +12,11 @@ use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
 /**
- * MinteService class
+ * Class MinteService
+ * @package App\Services
  */
-class MinteService
+class MinteService extends ProviderService
 {
-    use ProviderServiceTrait;
-
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
@@ -143,7 +142,7 @@ class MinteService
      */
     public function __construct(PaymentApi $api)
     {
-        $this->api = $api;
+        parent::__construct($api);
         $environment = Setting::getValue('mint_environment', self::ENV_LIVE);
         $this->endpoint = 'https://' . ($environment === self::ENV_LIVE ? 'prod' : 'test') . '.mint-e.com/process/v1.0/';
     }
@@ -219,7 +218,7 @@ class MinteService
      * @param  array   $contacts
      * @param  array   $details
      * [
-     *  '3ds'=>boolean,
+     *  '3ds'=>?boolean,
      *  'currency'=>string,
      *  'amount'=>float,
      *  'order_id'=>string,
@@ -231,38 +230,9 @@ class MinteService
      */
     public function payByCard(array $card, array $contacts, array $details): array
     {
-        return $this->authorize(
-            $card,
-            array_merge(
-                $contacts,
-                ['phone' => is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone']]
-            ),
-            $details
-        );
-    }
-
-    /**
-     * Provides payment by token
-     * @param  string  $token
-     * @param  array   $contact
-     * @param  array   $details
-     * [
-     *  'currency'=>string,
-     *  'amount'=>float,
-     *  'order_id'=>string,
-     *  'order_number'=>string,
-     *  'user_agent'=>string,
-     *  'descriptor'=>string
-     * ]
-     * @return array
-     */
-    public function payByToken(string $token, array $contact, array $details): array
-    {
-        return $this->authorize(
-            json_decode(self::decrypt($token, $details['order_id']), true),
-            $contact,
-            array_merge($details, ['3ds' => false])
-        );
+        $contacts['phone'] = is_array($contacts['phone']) ? implode('', $contacts['phone']) : $contacts['phone'];
+        $details['3ds'] = $details['3ds'] ?? false;
+        return $this->authorize($card, $contacts, $details);
     }
 
     /**
@@ -349,7 +319,7 @@ class MinteService
             $body = array_merge(
                 [
                     'mid'       => $this->api->login,
-                    'name'      => $contact['first_name'] . ' ' . $contact['last_name'],
+                    'name'      => "{$contact['first_name']} {$contact['last_name']}",
                     'address'   => $contact['street'],
                     'city'      => $contact['city'],
                     'zip'       => substr($contact['zip'], 0, 15),
@@ -378,11 +348,9 @@ class MinteService
             if ($body_decoded['status'] === self::ST_SUCCESS) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_CAPTURED;
-                $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
             } elseif ($body_decoded['status'] === self::ST_PENDING) {
                 $result['hash']     = $body_decoded['transid'];
                 $result['status']   = Txn::STATUS_AUTHORIZED;
-                $result['token']   = self::encrypt(json_encode($card), $details['order_id']);
                 $result['redirect_url'] = $body_decoded['redirecturl'];
             } else {
                 logger()->warning("Mint-e auth", [
@@ -422,16 +390,15 @@ class MinteService
         ]);
 
         $result = [
-            'is_flagged'        => false,
-            'currency'          => $details['currency'],
-            'value'             => $details['amount'],
-            'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentProviders::MINTE,
-            'payment_api_id'    => (string)$this->api->getIdAttribute(),
-            'hash'              => 'fail_' . hrtime(true),
-            'provider_data'     => null,
-            'errors'            => null,
-            'token'             => null
+            'payment_provider' => PaymentProviders::MINTE,
+            'payment_api_id' => (string)$this->api->getIdAttribute(),
+            'provider_data' => null,
+            'is_flagged' => false,
+            'currency' => $details['currency'],
+            'status' => Txn::STATUS_FAILED,
+            'errors' => null,
+            'value' => $details['amount'],
+            'hash' => 'fail_' . hrtime(true)
         ];
 
         try {

@@ -146,9 +146,6 @@ class ApmService {
         $order_product['txn_hash'] = $payment['hash'];
         $order->addProduct($order_product, true);
 
-        // cache token (encrypted card)
-        CardService::setCardToken($order->number, $payment['token'] ?? null);
-
         $order->is_flagged = $payment['is_flagged'];
         if (!$order->save()) {
             $validator = $order->validate();

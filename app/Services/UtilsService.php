@@ -1212,7 +1212,7 @@ class UtilsService
      * @param type $replaceSymbol
      * @return string
      */
-    public static function prepareCardNumber(string $number, $replaceSymbol = '×'): string
+    public static function prepareCardNumber(string $number, $replaceSymbol = '*'): string
     {
         if (strlen($number) > 10) {
             $number = substr($number, 0, 6) . str_repeat($replaceSymbol, strlen($number) - 10) . substr($number, - 4);

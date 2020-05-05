@@ -24,12 +24,11 @@ use Ebanx\Benjamin\Util\Http as EbanxUtils;
 use Ebanx\Benjamin\Services\Http\Client as EbanxClient;
 
 /**
- * EbanxService class
+ * Class EbanxService
+ * @package App\Services
  */
-class EbanxService
+class EbanxService extends ProviderService
 {
-    use \App\Services\ProviderServiceTrait;
-
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
@@ -54,11 +53,6 @@ class EbanxService
     ];
 
     /**
-     * @var array
-     */
-    private static $fallback_codes = ['BP-DR-83'];
-
-    /**
      * @var string
      */
     private $environment = self::ENV_LIVE;
@@ -69,7 +63,7 @@ class EbanxService
      */
     public function __construct(PaymentApi $api)
     {
-        $this->api = $api;
+        parent::__construct($api);
         $this->environment = Setting::getValue('ebanx_api_environment', self::ENV_LIVE);
     }
 
@@ -121,7 +115,6 @@ class EbanxService
     public static function createCardSource(array $card, array $contact): Card
     {
         return new Card([
-            'createToken'   => true,
             'cvv'           => $card['cvv'],
             'dueDate'       => \DateTime::createFromFormat('n-Y', $card['month'] . '-' . $card['year']),
             'name'          => $contact['first_name'] . ' ' . $contact['last_name'],
@@ -142,8 +135,8 @@ class EbanxService
 
     /**
      * Returns Item
-     * @param   array $data
-     * @return  array Item
+     * @param array $data
+     * @return Item Item
      */
     public static function createItem(array $data): Item
     {
@@ -273,10 +266,10 @@ class EbanxService
 
     /**
      * Provides payment by card
-     * @param  array   $card
-     * @param  array   $contact
-     * @param  array   $items
-     * @param  array   $details
+     * @param array $card
+     * @param array $contacts
+     * @param array $items
+     * @param array $details
      * [
      *   'currency'=>string,
      *   'amount'=>float,
@@ -285,12 +278,12 @@ class EbanxService
      * ]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $items, array $details): array
+    public function payByCard(array $card, array $contacts, array $items, array $details): array
     {
         return $this->pay(
-            self::createCardSource($card, $contact),
-            self::createAddress($contact),
-            self::createPerson($contact),
+            self::createCardSource($card, $contacts),
+            self::createAddress($contacts),
+            self::createPerson($contacts),
             array_map(function($item) { return self::createItem($item); }, $items),
             $details
         );
@@ -373,18 +366,17 @@ class EbanxService
     private function pay(Card $source, Address $address, Person $person, array $items, array $details): array
     {
         $result = [
-            'is_flagged'        => false,
-            'currency'          => $details['currency'],
-            'value'             => $details['amount'],
-            'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentProviders::EBANX,
-            'payment_api_id'    => (string)$this->api->getIdAttribute(),
-            'hash'              => "fail_" . UtilsService::randomString(16),
-            'payer_id'          => null,
-            'provider_data'     => null,
-            'redirect_url'      => null,
-            'errors'            => null,
-            'token'             => null
+            'payment_provider' => PaymentProviders::EBANX,
+            'payment_api_id' => (string)$this->api->getIdAttribute(),
+            'currency' => $details['currency'],
+            'status' => Txn::STATUS_FAILED,
+            'hash' => 'fail_' . hrtime(true),
+            'value' => $details['amount'],
+            'provider_data' => null,
+            'redirect_url' => null,
+            'is_flagged' => false,
+            'payer_id' => null,
+            'errors' => null
         ];
 
         $config = new Config([
@@ -416,7 +408,6 @@ class EbanxService
                 $result['currency'] = $res['payment']['currency_ext'];
                 $result['value']    = $res['payment']['amount_ext'];
                 $result['status']   = self::mapPaymentStatus($res['payment']['status']);
-                $result['token']    = $res['payment']['token'] ?? null;
                 $result['is_flagged'] = $res['payment']['status'] === self::PAYMENT_STATUS_PENDING;
             } else {
                 if (!EbanxCodeMapper::getPhrase($res['status_code'])) {

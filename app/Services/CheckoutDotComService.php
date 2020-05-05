@@ -5,32 +5,35 @@ namespace App\Services;
 use App\Models\Setting;
 use App\Models\PaymentApi;
 use App\Models\Txn;
-use App\Services\PaymentService;
 use App\Mappers\CheckoutDotComCodeMapper;
 use App\Mappers\CheckoutDotComAmountMapper;
 use App\Constants\PaymentProviders;
 use Checkout\CheckoutApi;
+use Checkout\Models\Address;
+use Checkout\Models\Phone;
 use Checkout\Models\Tokens\Card;
 use Checkout\Models\Payments\Capture;
 use Checkout\Models\Payments\Payment;
 use Checkout\Models\Payments\Source;
 use Checkout\Models\Payments\Voids;
 use Checkout\Models\Payments\Refund;
+use Checkout\Models\Payments\CustomerSource;
 use Checkout\Models\Payments\CardSource;
 use Checkout\Models\Payments\TokenSource;
+use Checkout\Models\Payments\Shipping;
 use Checkout\Library\Exceptions\CheckoutHttpException;
 use Checkout\Library\Exceptions\CheckoutException;
 use Illuminate\Http\Request;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
-/**
- * CheckoutDotComService class
- */
-class CheckoutDotComService
-{
-    use \App\Services\ProviderServiceTrait;
 
+/**
+ * Class CheckoutDotComService
+ * @package App\Services
+ */
+class CheckoutDotComService extends ProviderService
+{
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
 
@@ -49,17 +52,17 @@ class CheckoutDotComService
     /**
      * @var array
      */
-    private static $fallback_codes = ['20005','20024','20031','20046','200N0','200T3','20105'];
+    private static array $fallback_codes = ['20005', '20024', '20031', '20046', '200N0', '200T3', '20105'];
 
     /**
      * @var string
      */
-    private $env = self::ENV_LIVE;
+    private string $env;
 
     /**
      * @var CheckoutApi
      */
-    private $checkout;
+    private CheckoutApi $checkout;
 
     /**
      * CheckoutDotComService constructor
@@ -67,25 +70,34 @@ class CheckoutDotComService
      */
      public function __construct(PaymentApi $api)
     {
+        parent::__construct($api);
         $this->env = Setting::getValue('checkout_dot_com_api_env', self::ENV_LIVE);
-        $this->api = $api;
         $this->checkout = new CheckoutApi($this->api->secret, $this->env === self::ENV_SANDBOX);
         $this->checkout->configuration()->setPublicKey($this->api->key);
     }
 
     /**
      * Returns checkout.com CardSource
-     * @param  array      $card
-     * @param  array      $contact
+     * @param  array $card
+     * @param  array|null $contacts
      * @return CardSource
      */
-    public static function createCardSource(array $card, array $contact): CardSource
+    public static function createCardSource(array $card, ?array $contacts = null): CardSource
     {
-        $source = new CardSource($card['number'], $card['month'], $card['year']);
-        $source->cvv = $card['cvv'];
-        $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
-        $source->phone = (object)[$contact['phone']];
-        return $source;
+        $src = new CardSource($card['number'], $card['month'], $card['year']);
+        $src->cvv = $card['cvv'];
+        if (!empty($contacts)) {
+            if (is_array($contacts['phone'])) {
+                $phone = new Phone();
+                $phone->country_code = $contacts['phone']['country_code'];
+                $phone->number = $contacts['phone']['number'];
+
+                $src->phone = $phone;
+            }
+
+            $src->name = "{$contacts['first_name']} {$contacts['last_name']}";
+        }
+        return $src;
     }
 
     /**
@@ -96,6 +108,54 @@ class CheckoutDotComService
     public static function createTokenSource(string $token): TokenSource
     {
         return new TokenSource($token);
+    }
+
+    /**
+     * Returns checkout.com CustomerSource
+     * @param string $id
+     * @return array
+     */
+    public static function createCustomerSourceById(string $id): CustomerSource
+    {
+        return new CustomerSource($id);
+    }
+
+    /**
+     * Returns checkout.com CustomerSource
+     * @param string $email
+     * @param string $fname
+     * @param string $lname
+     * @return CustomerSource
+     */
+    public static function createCustomerSourceByEmail(string $email, string $fname, string $lname): CustomerSource
+    {
+        $cus = new CustomerSource($email);
+        $cus->name = "{$fname} {$lname}";
+        return $cus;
+    }
+
+    /**
+     * Returns Shipping Model
+     * @param array $contacts
+     * @return Shipping
+     */
+    public static function createShippingSource(array $contacts): Shipping
+    {
+        $address = new Address();
+        $address->address_line1 = $contacts['street'];
+        $address->city = $contacts['city'];
+        $address->country = $contacts['country'];
+        $address->state = $contact['state'] ?? '';
+        $address->zip = $contacts['zip'];
+
+        $phone = null;
+        if (is_array($contacts['phone'])) {
+            $phone = new Phone();
+            $phone->country_code = $contacts['phone']['country_code'];
+            $phone->number = $contacts['phone']['number'];
+        }
+
+        return new Shipping($address, $phone);
     }
 
     /**
@@ -152,15 +212,15 @@ class CheckoutDotComService
     /**
      * Tokenizes customer card
      * @param array $card
-     * @param array $contact
+     * @param array $contacts
      * @return string|null
      */
-    public function requestToken(array $card, array $contact): ?string
+    public function requestToken(array $card, array $contacts): ?string
     {
         $source = new Card($card['number'], $card['month'], $card['year']);
         $source->cvv = $card['cvv'];
-        $source->name = $contact['first_name'] . ' ' . $contact['last_name'];
-        $source->phone = (object)[$contact['phone']];
+        $source->name = "{$contacts['first_name']} {$contacts['last_name']}";
+        $source->phone = (object)[$contacts['phone']];
 
         $result = null;
         try {
@@ -245,9 +305,9 @@ class CheckoutDotComService
 
     /**
      * Creates a new payment by card
-     * @param  array $card
-     * @param  array $contact
-     * @param  array $order_details=[
+     * @param array $card
+     * @param array $contacts
+     * @param array $details=[
      *                  'amount'=>float,
      *                  'currency'=>string,
      *                  'billing_descriptor'=>['name'=>string,'city'=>string]
@@ -258,17 +318,47 @@ class CheckoutDotComService
      *              ]
      * @return array
      */
-    public function payByCard(array $card, array $contact, array $order_details): array
+    public function payByCard(array $card, array $contacts, array $details): array
     {
-        return $this->pay(self::createCardSource($card, $contact), $contact, $order_details);
+        return $this->pay(
+            self::createCardSource($card, $contacts),
+            self::createCustomerSourceByEmail($contacts['email'], $contacts['first_name'], $contacts['last_name']),
+            self::createShippingSource($contacts),
+            array_merge($details, ['ip' => $contacts['ip']])
+        );
+    }
+
+    /**
+     * Creates a new payment by card for existing customer
+     * @param array $card
+     * @param string $payer_id
+     * @param array $contacts
+     * @param array $details =[
+     *                  'amount'=>float,
+     *                  'currency'=>string,
+     *                  'billing_descriptor'=>['name'=>string,'city'=>string]
+     *                  'description'=>string,
+     *                  'id'=>string,
+     *                  'number'=>string,
+     *                  '3ds'=>?bool
+     *              ]
+     * @return array
+     */
+    public function payByCardAndPayerId(array $card, string $payer_id, array $contacts, array $details): array
+    {
+        return $this->pay(
+            self::createCardSource($card, $contacts),
+            self::createCustomerSourceById($payer_id),
+            self::createShippingSource($contacts),
+            array_merge($details, ['ip' => $contacts['ip']])
+        );
     }
 
     /**
      * Creates a new payment by token
-     * @param  string $token
-     * @param  array  $contact
-     * @param  array  $order_details
-     * @param  array $order_details=[
+     * @param string $token
+     * @param array $contacts
+     * @param array $details=[
      *                  'amount'=>float,
      *                  'currency'=>string,
      *                  'billing_descriptor'=>['name'=>string,'city'=>string]
@@ -277,64 +367,51 @@ class CheckoutDotComService
      *                  'number'=>string
      *              ]
      */
-    public function payByToken(string $token, array $contact, array $order_details): array
+    public function payByToken(string $token, array $contacts, array $details): array
     {
-        return $this->pay(self::createTokenSource($token), $contact, $order_details);
+        return $this->pay(self::createTokenSource($token), $contacts, $details);
     }
 
     /**
      * Creates a new payment
      * @param Source $source
-     * @param array $contact
-     * @param array $order_details
+     * @param CustomerSource $customer
+     * @param Shipping|null $shipping
+     * @param array $details
      * @return array
      */
-    private function pay(Source $source, array $contact, array $order_details): array
+    private function pay(Source $source, CustomerSource $customer, Shipping $shipping, array $details): array
     {
-        $payment = new Payment($source, $order_details['currency']);
-        $payment->reference = $order_details['number'];
-        $payment->amount = CheckoutDotComAmountMapper::toProvider($order_details['amount'], $order_details['currency']);
-        $payment->description = $order_details['description'];
-        $payment->billing_descriptor = (object)$order_details['billing_descriptor'];
-        if (!empty($contact['payer_id'])) {
-            $payment->customer = (object)['id' => $contact['payer_id']];
-        } else {
-            $payment->customer = (object)['email' => $contact['email'], 'name' => $contact['first_name'] . ' ' . $contact['last_name']];
-            $payment->shipping = (object)[
-                'address' => (object)[
-                    'address_line1' => $contact['street'],
-                    'city' => $contact['city'],
-                    'country' => $contact['country'],
-                    'state' => $contact['state'] ?? '',
-                    'zip' => $contact['zip']
-                ],
-                'phone' => (object)[$contact['phone']]
-            ];
-        }
-        $payment->payment_ip = $contact['ip'];
+        $payment = new Payment($source, $details['currency']);
+        $payment->reference = $details['number'];
+        $payment->amount = CheckoutDotComAmountMapper::toProvider($details['amount'], $details['currency']);
+        $payment->description = $details['description'];
+        $payment->billing_descriptor = (object)$details['billing_descriptor'];
+        $payment->customer = $customer;
+        $payment->shipping = $shipping;
+        $payment->payment_ip = $details['ip'];
 
         // enable 3ds
         if ($source instanceof CardSource) {
-            $qs = http_build_query(['order' => $order_details['id']]);
+            $qs = http_build_query(['order' => $details['id']]);
             $payment->success_url = 'https://' . request()->getHttpHost() . PaymentService::SUCCESS_PATH . '?' . $qs . '&3ds=success';
             $payment->failure_url = 'https://' . request()->getHttpHost() . PaymentService::FAILURE_PATH . '?' . $qs . '&3ds=failure';
-            $payment->{'3ds'} = (object)['enabled' => $order_details['3ds'] ?? false];
+            $payment->{'3ds'} = (object)['enabled' => $details['3ds'] ?? false];
         }
 
         $result = [
-            'fallback'          => false,
-            'is_flagged'        => false,
-            'currency'          => $order_details['currency'],
-            'value'             => $order_details['amount'],
-            'status'            => Txn::STATUS_FAILED,
-            'payment_provider'  => PaymentProviders::CHECKOUTCOM,
-            'payment_api_id'    => (string)$this->api->getIdAttribute(),
-            'hash'              => "fail_" . UtilsService::randomString(16),
-            'payer_id'          => null,
-            'provider_data'     => null,
-            'redirect_url'      => null,
-            'errors'            => null,
-            'token'             => null
+            'payment_provider' => PaymentProviders::CHECKOUTCOM,
+            'payment_api_id' => (string)$this->api->getIdAttribute(),
+            'currency' => $details['currency'],
+            'status' => Txn::STATUS_FAILED,
+            'value' => $details['amount'],
+            'hash' => 'fail_' . hrtime(true),
+            'errors' => null,
+            'fallback' => false,
+            'payer_id' => null,
+            'is_flagged' => false,
+            'redirect_url' => null,
+            'provider_data' => null
         ];
 
         // parse response
@@ -371,7 +448,7 @@ class CheckoutDotComService
                 return CheckoutDotComCodeMapper::toPhrase($code);
             },$ex->getErrors() ?? []);
             logger()->warning("Checkout.com pay", [
-                'order' => $order_details['number'],
+                'order' => $details['number'],
                 'code' => $ex->getCode(),
                 'body' => $ex->getBody()
             ]);
@@ -379,7 +456,7 @@ class CheckoutDotComService
             $result['provider_data'] = ['code' => $ex->getCode(), 'body' => $ex->getBody()];
             $result['errors'] = [CheckoutDotComCodeMapper::toPhrase()];
             logger()->warning("Checkout.com pay", [
-                'order' => $order_details['number'],
+                'order' => $details['number'],
                 'code' => $ex->getCode(),
                 'body' => $ex->getBody()
             ]);

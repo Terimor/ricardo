@@ -11,11 +11,11 @@ use GuzzleHttp\Client as GuzzHttpCli;
 use GuzzleHttp\Exception\RequestException as GuzzReqException;
 
 /**
- * AppmaxService class
+ * Class AppmaxService
+ * @package App\Services
  */
-class AppmaxService
+class AppmaxService extends ProviderService
 {
-    use ProviderServiceTrait;
 
     const ENV_LIVE      = 'live';
     const ENV_SANDBOX   = 'sandbox';
@@ -38,7 +38,7 @@ class AppmaxService
     /**
      * @var string
      */
-    private $endpoint;
+    private string $endpoint;
 
     /**
      * AppmaxService constructor
@@ -46,7 +46,7 @@ class AppmaxService
      */
     public function __construct(PaymentApi $api)
     {
-        $this->api = $api;
+        parent::__construct($api);
         $env = Setting::getValue('appmax_environment', self::ENV_LIVE);
         $this->endpoint = 'https://' . ($env === self::ENV_LIVE ? 'admin' : 'sandbox') . '.appmax.com.br/api/v3/';
     }
@@ -128,7 +128,6 @@ class AppmaxService
      * [
      *   'currency'=>string,
      *   'amount'=>float,
-     *   'order_id'=>?string,
      *   'installments'=>int,
      *   'document_number'=>string
      * ]
@@ -148,35 +147,11 @@ class AppmaxService
             )
         );
 
-        if ($reply['status'] === Txn::STATUS_CAPTURED && !empty($details['order_id'])) {
-            $reply['token'] = self::encrypt(json_encode($card), $details['order_id']);
-        } else {
+        if ($reply['status'] !== Txn::STATUS_CAPTURED) {
             $reply['fallback'] = true;
         }
 
         return $reply;
-    }
-
-    /**
-     * Provides payment by card
-     * @param  string   $token
-     * @param  array   $contacts
-     * @param  array   $items
-     * @param  array   $details
-     * [
-     *   'currency'=>string,
-     *   'amount'=>float,
-     *   'order_id'=>string,
-     *   'installments' => int,
-     *   'document_number' => string
-     * ]
-     * @return array
-     */
-    public function payByToken(string $token, array $contacts, array $items, array $details): array
-    {
-        $cardjs = self::decrypt($token, $details['order_id']);
-        $details['order_id'] = null;
-        return $this->payByCard(json_decode($cardjs, true), $contacts, $items, $details);
     }
 
     /**
@@ -298,11 +273,10 @@ class AppmaxService
             'value'             => $details['amount'],
             'status'            => Txn::STATUS_FAILED,
             'payment_provider'  => PaymentProviders::APPMAX,
-            'hash'              => $details['order_id'] ?? "fail_" . UtilsService::randomString(16),
+            'hash'              => $details['order_id'] ?? ('fail_' . hrtime(true)),
             'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'payer_id'          => $details['customer_id'] ?? null,
             'provider_data'     => null,
-            'token'             => null,
             'errors'            => null
         ];
 

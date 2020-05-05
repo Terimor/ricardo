@@ -21,10 +21,8 @@ use Stripe\PaymentIntent;
  * Class StripeService
  * @package App\Services
  */
-class StripeService
+class StripeService extends ProviderService
 {
-    use ProviderServiceTrait;
-
     const REFUND_STATUS_SUCCESS = 'succeeded';
     const REFUND_STATUS_FAILED  = 'failed';
     const REFUND_STATUS_PENDING = 'pending';
@@ -40,8 +38,8 @@ class StripeService
      */
     public function __construct(PaymentApi $api)
     {
-        Stripe::setApiKey($api->secret);
-        $this->api = $api;
+        parent::__construct($api);
+        Stripe::setApiKey($this->api->secret);
     }
 
     /**
@@ -102,7 +100,6 @@ class StripeService
             'payment_api_id'    => (string)$this->api->getIdAttribute(),
             'payer_id'          => null,
             'provider_data'     => null,
-            'token'             => null,
             'errors'            => null
         ];
     }
@@ -293,8 +290,6 @@ class StripeService
             $customer = $this->createCustomer($contacts);
 
             $pi = $this->pay($this->createCardPaymentMethod($card, $contacts), $customer->id, $details);
-
-            $reply['token'] = self::encrypt(json_encode($card), $details['order_id']);
 
             $reply = $this->preparePaymentResponse($pi, $reply);
         } catch (ApiErrorException $ex) {

@@ -12,12 +12,11 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Arr;
 
 /**
- * NovalnetService class
+ * Class NovalnetService
+ * @package App\Services
  */
-class NovalnetService
+class NovalnetService extends ProviderService
 {
-    use ProviderServiceTrait;
-
     const ST_API_SUCCESS = 'SUCCESS';
     const ST_API_FAILURE = 'FAILURE';
 
@@ -60,7 +59,7 @@ class NovalnetService
      */
     public function __construct(PaymentApi $api)
     {
-        $this->api = $api;
+        parent::__construct($api);
         $this->client = new \GuzzleHttp\Client([
             'base_uri' => $this->endpoint,
             'headers' => [
