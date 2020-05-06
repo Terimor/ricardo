@@ -1207,10 +1207,10 @@ class UtilsService
     /**
      * Prepare card number to format `first 6 digits and last 4 digits, other digits are replaced with × symbol`
      * @param string $number
-     * @param type $replaceSymbol
+     * @param string $replaceSymbol
      * @return string
      */
-    public static function prepareCardNumber(string $number, $replaceSymbol = '*'): string
+    public static function prepareCardNumber(string $number, $replaceSymbol = 'x'): string
     {
         if (strlen($number) > 10) {
             $number = substr($number, 0, 6) . str_repeat($replaceSymbol, strlen($number) - 10) . substr($number, - 4);

@@ -562,7 +562,7 @@ class PaymentService
             $order = OdinOrder::getByTxnHash($data['hash'], $provider); // throwable
         } else {
             logger()->warning('Order approve failed', $data);
-            return $order;
+            return null;
         }
 
         // check webhook reply
@@ -585,6 +585,9 @@ class PaymentService
                 $product['is_paid'] = true;
                 if ($product['is_main']) {
                     $order->is_flagged = false;
+                    if (!self::isApm($txn['payment_method']) && $txn['card_number']) {
+                        CardService::incCachedCardUsageLimit($txn['card_number']);
+                    }
                 }
                 $order->addProduct($product);
             }
