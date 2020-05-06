@@ -127,23 +127,6 @@ class CardService {
     }
 
     /**
-     * Returns cached card and checks limit of usage cached card
-     * @param string $cc_sign
-     * @param bool $is_check_counter
-     * @return array|null
-     * @throws PaymentException
-     */
-    private static function getCachedCardAndCheckUsageLimit(string $cc_sign, bool $is_check_counter = true): ?array
-    {
-        $cc_data = self::getCachedCardWithMeta($cc_sign);
-        $counter = Arr::get($cc_data, 'meta.counter', 0);
-        if ($is_check_counter && $counter >= self::CARD_MAX_CACHE_USE && \App::environment() === 'production') {
-            throw new PaymentException('Card is blocked', 'card.error.not_functioning');
-        }
-        return Arr::get($cc_data, 'card');
-    }
-
-    /**
      * @param OdinOrder $order
      * @param string $provider
      * @param array|null $card
@@ -167,6 +150,23 @@ class CardService {
             endswitch;
         }
         return $is_upsells_possible;
+    }
+
+    /**
+     * Returns cached card and checks limit of usage cached card
+     * @param string $cc_sign
+     * @param bool $is_check_counter
+     * @return array|null
+     * @throws PaymentException
+     */
+    public static function getCachedCardAndCheckUsageLimit(string $cc_sign, bool $is_check_counter = true): ?array
+    {
+        $cc_data = self::getCachedCardWithMeta($cc_sign);
+        $counter = Arr::get($cc_data, 'meta.counter', 0);
+        if ($is_check_counter && $counter >= self::CARD_MAX_CACHE_USE && \App::environment() === 'production') {
+            throw new PaymentException('Card is blocked', 'card.error.not_functioning');
+        }
+        return Arr::get($cc_data, 'card');
     }
 
     /**
