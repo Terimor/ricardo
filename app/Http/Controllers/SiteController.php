@@ -506,16 +506,17 @@ class SiteController extends Controller
     public function thankyou(Request $request, ProductService $productService)
     {
         // if we have order parameter check virtual order to redirect to another view
+        $orderCustomer = null;
         if ($request->get('order')) {
             $orderCustomer = $request->get('order') ? OrderService::getCustomerDataByOrderId($request->get('order'), true) : null;
-            if (!$orderCustomer) {
-                // generate global get parameters
-                $params = \Utils::getGlobalGetParameters($request);
-                return redirect('/checkout'.$params);
-            }
-            if ($orderCustomer && $orderCustomer->type == OdinOrder::TYPE_VIRTUAL) {
-                return $this->getVirtualOrderView($orderCustomer, $productService, $request);
-            }
+        }
+        if (!$orderCustomer) {
+            // generate global get parameters
+            $params = \Utils::getGlobalGetParameters($request);
+            return redirect('/checkout'.$params);
+        }
+        if ($orderCustomer && $orderCustomer->type == OdinOrder::TYPE_VIRTUAL) {
+            return $this->getVirtualOrderView($orderCustomer, $productService, $request);
         }
 
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
