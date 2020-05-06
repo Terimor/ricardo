@@ -511,16 +511,14 @@ class PaymentService
      */
     public static function fallback3ds(OdinOrder $order, array $order_txn, array $details = []): array
     {
-        $cardtk = CardService::getCardToken($order->number, false);
+        $card = CardService::getCachedCardAndCheckUsageLimit($order_txn['card_number'], false);
         $order_product = $order->getMainProduct(false);
 
         $result = ['status' => Txn::STATUS_FAILED, 'errors' => [], 'value' => $order_txn['value']];
-        if (!$cardtk || !$order_product) {
-            logger()->info("Pre-Fallback [{$order->number}]", ['card' => (bool)$cardtk, 'order_product' => (bool)$order_product]);
+        if (!$card || !$order_product) {
+            logger()->info("Pre-Fallback [{$order->number}]", ['card' => (bool)$card, 'order_product' => (bool)$order_product]);
             return $result;
         }
-
-        $card = json_decode(MinteService::decrypt($cardtk, $order->getIdAttribute()), true);
 
         $reply = self::fallbackOrder($order, $card, array_merge([
             'provider' => $order_txn['payment_provider'],
