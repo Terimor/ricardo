@@ -232,7 +232,7 @@ class CardService {
         $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
 
         // check card reuse
-        self::getCachedCardAndCheckUsageLimit(UtilsService::prepareCardNumber($card['number'])); // throwable
+//        self::getCachedCardAndCheckUsageLimit(UtilsService::prepareCardNumber($card['number'])); // throwable
 
         // refuse fraudulent payment
         PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid, $contact['email']); // throwable
