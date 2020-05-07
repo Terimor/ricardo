@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{OdinOrder, Domain, OdinProduct};
+use App\Models\{MediaAccess, OdinOrder, Domain, OdinProduct};
 use App\Services\{I18nService, OrderService, ProductService, S3Service};
 
 /* use com\checkout;
@@ -268,12 +268,15 @@ class OrderController extends Controller
         if (!$product) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
+
         $free_files = !empty($product->free_file_ids) ? ProductService::getFileUrlsByIds($product->free_file_ids, $orderNumber, true) : null;
         $sale_files = !empty($product->sale_file_ids) ? ProductService::getFileUrlsByIds($product->sale_file_ids, $orderNumber, true) : null;
         $files = array_merge($free_files, $sale_files);
-        $s3Url = ProductService::getS3UrlByFilename($files, $filename);
-        if ($s3Url) {
-            $fileData = S3Service::returnFileResponse($s3Url, $filename);
+
+        $accessedFile = ProductService::getFileByFilename($files, $filename);
+        if ($accessedFile) {
+            $fileData = S3Service::returnFileResponse($accessedFile['s3_url'], $filename);
+            MediaAccess::saveByOrderFile($accessedFile, $order->number);
             return response()->download($fileData['tempFilepath'], $fileData['filename'], $fileData['headers'], 'inline')->deleteFileAfterSend();
         }
         abort(404, 'File not found');

@@ -815,6 +815,7 @@ class ProductService
                     // add s3 url to last array element
                     if ($returnS3Url) {
                         $urls[count($urls)-1]['s3_url'] = $file->url;
+                        $urls[count($urls)-1]['id'] = $file->_id;
                     }
                 }
             }
@@ -843,17 +844,17 @@ class ProductService
      * Get s3 url by filename to download from files array
      * @param array|null $files
      * @param string $filename
-     * @return string
+     * @return array
      */
-    public static function getS3UrlByFilename(?array $files, string $filename): string {
-        $s3_url = '';
+    public static function getFileByFilename(?array $files, string $filename): array {
+        $accessedFile = [];
         foreach ($files as $file) {
             if (basename($file['url']) == $filename) {
-                $s3_url = $file['s3_url'];
+                $accessedFile = $file;
                 break;
             }
         }
-        return $s3_url;
+        return $accessedFile;
     }
 
 }
