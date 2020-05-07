@@ -42,7 +42,7 @@ class CardService {
      * @param  string $password
      * @return string
      */
-    public static function encrypt($plaintext, $password): string
+    private static function encrypt($plaintext, $password): string
     {
         $key = hash('sha256', $password, true);
         $iv = openssl_random_pseudo_bytes(16);
@@ -59,7 +59,7 @@ class CardService {
      * @param  string $password
      * @return string|null
      */
-    public static function decrypt($cipherblock, $password): ?string
+    private static function decrypt($cipherblock, $password): ?string
     {
         $iv_hash_ciphertext = base64_decode($cipherblock);
         $iv = substr($iv_hash_ciphertext, 0, 16);
@@ -75,43 +75,51 @@ class CardService {
     }
 
     /**
-     * Caches card
+     * Caches card with meta
      * @param array $card
-     * @param bool $rewrite
+     * @param \DateTime $dt
+     * @param int $counter
+     */
+    private static function cacheCard(array $card, \DateTime $dt, int $counter): void
+    {
+        $cc_sign = UtilsService::prepareCardNumber($card['number'], '');
+        $cc_data = json_encode([
+            'card' => self::encrypt(json_encode($card), strrev($cc_sign)),
+            'meta' => ['ttl' => $dt->getTimestamp(), 'counter' => $counter]
+        ]);
+        Cache::put(self::CACHE_CC_DATA_PREFIX . $cc_sign, $cc_data, $dt);
+    }
+
+    /**
+     * Append a new cached card
+     * @param array $card
+     * @param bool $rewrite default=false
      * @throws \Exception
      */
-    private static function cacheCard(array $card, bool $rewrite = false): void
+    private static function appendCachedCard(array $card, bool $rewrite = false): void
     {
         if (!empty($card)) {
             $dt = (new \DateTime())->add(new \DateInterval("PT" . self::CACHE_CC_DATA_TTL_MIN . "M"));
             $counter = 0;
-
-            $cc_sign = UtilsService::prepareCardNumber($card['number'], '');
             if (!$rewrite) {
-                $cached = self::getCachedCardWithMeta($cc_sign);
-                if (!empty($cached) ) {
+                $cached = self::getCachedCardWithMeta(UtilsService::prepareCardNumber($card['number'], ''));
+                if (!empty($cached)) {
                     $counter = Arr::get($cached, 'meta.counter', 0);
                     $dt = (new \DateTime())->setTimestamp(Arr::get($cached, 'meta.ttl', time()));
                 }
             }
-
-            $cc_data = json_encode([
-                'card' => self::encrypt(json_encode($card), strrev($cc_sign)),
-                'meta' => ['ttl' => $dt->getTimestamp(), 'counter' => ++$counter]
-            ]);
-
-            Cache::put(self::CACHE_CC_DATA_PREFIX . $cc_sign, $cc_data, $dt);
+            self::cacheCard($card, $dt, $counter);
         }
     }
 
     /**
      * Returns cached card
-     * @param string $cc_sign
+     * @param string $cc_mask
      * @return array|null
      */
-    private static function getCachedCardWithMeta(string $cc_sign): ?array
+    private static function getCachedCardWithMeta(string $cc_mask): ?array
     {
-        $cc_sign = preg_replace('/\D/', '', $cc_sign);
+        $cc_sign = preg_replace('/\D/', '', $cc_mask);
         $cached = Cache::get(self::CACHE_CC_DATA_PREFIX . $cc_sign);
         $result = null;
         if ($cached) {
@@ -167,6 +175,23 @@ class CardService {
             throw new PaymentException('Card is blocked', 'card.error.not_functioning');
         }
         return Arr::get($cc_data, 'card');
+    }
+
+    /**
+     * Increases cached card counter
+     * @param string $cc_mask
+     * @return void
+     */
+    public static function incCachedCardUsageLimit(string $cc_mask): void
+    {
+        $cached = self::getCachedCardWithMeta($cc_mask);
+        if (!empty($cached)) {
+            self::cacheCard(
+                Arr::get($cached, 'card'),
+                (new \DateTime())->setTimestamp(Arr::get($cached, 'meta.ttl', time())),
+                Arr::get($cached, 'meta.counter', 0) + 1
+            );
+        }
     }
 
     /**
@@ -232,7 +257,7 @@ class CardService {
         $affid = AffiliateService::getAttributeByPriority($params['aff_id'] ?? null, $params['affid'] ?? null);
 
         // check card reuse
-//        self::getCachedCardAndCheckUsageLimit(UtilsService::prepareCardNumber($card['number'])); // throwable
+        self::getCachedCardAndCheckUsageLimit(UtilsService::prepareCardNumber($card['number'])); // throwable
 
         // refuse fraudulent payment
         PaymentService::fraudCheck($ipqs, $api->payment_provider, $affid, $contact['email']); // throwable
@@ -448,15 +473,16 @@ class CardService {
             }
         }
 
-        // approve order if txn is approved
-        if ($payment['status'] === Txn::STATUS_APPROVED) {
-            $order = PaymentService::approveOrder($payment, $payment['payment_provider']);
-        }
         // switch customer to Buyer if transaction isn't failed
         if ($payment['status'] !== Txn::STATUS_FAILED) {
             $customer->switchToBuyer();
             // cache card
-            self::cacheCard($card);
+            self::appendCachedCard($card);
+        }
+
+        // approve order if txn is approved
+        if ($payment['status'] === Txn::STATUS_APPROVED) {
+            $order = PaymentService::approveOrder($payment, $payment['payment_provider']);
         }
 
         return PaymentService::generateCreateOrderResult($order, $payment);

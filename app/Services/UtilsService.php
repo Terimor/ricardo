@@ -1,13 +1,9 @@
 <?php
 
 namespace App\Services;
-use App\Models\Setting;
-use App\Models\Pixel;
-use App\Models\AwsImage;
-use App\Models\Domain;
-use App\Models\OdinOrder;
-use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\UTCDateTime;
+
+use App\Models\{OdinProduct, Setting, Pixel, AwsImage, Domain, OdinOrder};
+use MongoDB\BSON\{ObjectId, UTCDateTime};
 use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
 use DeviceDetector\DeviceDetector;
@@ -825,6 +821,14 @@ class UtilsService
                 $countries = array_diff_key($countries, array_flip(static::$excludeBatteryShipping));
             }
         }
+        // exclude all eu countries for virtual products
+        if ($product->type == OdinProduct::TYPE_VIRTUAL) {
+            if ($code_only) {
+                $countries = array_values(array_diff($countries, static::$countries_eu));
+            } else {
+                $countries = array_diff_key($countries, array_flip(static::$countries_eu));
+            }
+        }
         return $countries;
     }
 
@@ -903,13 +907,7 @@ class UtilsService
      */
     public static function isEUCountry(string $country_code): bool
     {
-	$eu = [
-	    //EU
-	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'po', 'pt', 'ro', 'se', 'si', 'sk',
-	    //other Europe
-	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va'
-	];
-	return in_array(strtolower(trim($country_code)), $eu);
+	    return in_array(strtolower(trim($country_code)), static::$countries_eu);
     }
 
     /**
@@ -1209,10 +1207,10 @@ class UtilsService
     /**
      * Prepare card number to format `first 6 digits and last 4 digits, other digits are replaced with × symbol`
      * @param string $number
-     * @param type $replaceSymbol
+     * @param string $replaceSymbol
      * @return string
      */
-    public static function prepareCardNumber(string $number, $replaceSymbol = '*'): string
+    public static function prepareCardNumber(string $number, $replaceSymbol = 'x'): string
     {
         if (strlen($number) > 10) {
             $number = substr($number, 0, 6) . str_repeat($replaceSymbol, strlen($number) - 10) . substr($number, - 4);

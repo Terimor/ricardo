@@ -40,7 +40,8 @@
         "sentry/sentry-laravel": "^1.2",
         "srmklive/paypal": "^1.6",
         "stevebauman/location": "^5.0",
-        "stripe/stripe-php": "^7.19"
+        "stripe/stripe-php": "^7.19",
+        "ext-json": "*"
     },
     "require-dev": {
         "facade/ignition": "^1.16.0",
