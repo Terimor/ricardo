@@ -53,7 +53,7 @@ class MediaAccess extends Model
             $accesses[] = [
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
-                'accessed_at' => \Utils::getMongoTimeFromTS(strtotime('now'))
+                'accessed_at' => \Utils::getMongoTimeFromTS(time())
             ];
             $model->accesses = $accesses;
             $saved = $model->save();
