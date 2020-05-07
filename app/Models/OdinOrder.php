@@ -406,13 +406,18 @@ class OdinOrder extends OdinModel
 
     /**
      * Returns OdinOrder by number
-     * @param  string    $number
-     * @param  boolean   $throwable default=true
+     * @param string $number
+     * @param boolean $throwable default=true
+     * @param array $select
      * @return OdinOrder|null
      */
-    public static function getByNumber(string $number, bool $throwable = true): ?OdinOrder
+    public static function getByNumber(string $number, bool $throwable = true, array $select = []): ?OdinOrder
     {
-        $order = OdinOrder::where(['number' => $number])->first();
+        $query = OdinOrder::where(['number' => $number]);
+        if ($select) {
+            $query->select($select);
+        }
+        $order = $query->first();
         if (!$order && $throwable) {
             throw new OrderNotFoundException("Order [{$number}] not found");
         }

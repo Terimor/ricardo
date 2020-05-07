@@ -2,14 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\OdinProduct;
-use App\Models\Domain;
-use App\Models\Currency;
-use App\Models\AwsImage;
-use App\Models\PaymentApi;
-use App\Models\File;
+use App\Models\{OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize};
 use Illuminate\Http\Request;
-use App\Models\Localize;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
 use Cache;
@@ -802,9 +796,10 @@ class ProductService
      * Get file urls for download by ids
      * @param array|null $file_ids
      * @param string $orderNumber
+     * @param bool $returnS3Url
      * @return array
      */
-    public static function getFileUrlsByIds(?array $file_ids, string $orderNumber): array {
+    public static function getFileUrlsByIds(?array $file_ids, string $orderNumber, bool $returnS3Url = false): array {
         $urls = [];
         if ($file_ids) {
             $select = ['name', 'url.en', 'title.en'];
@@ -817,6 +812,10 @@ class ProductService
                         'title' => $file->title,
                         'url' => static::getDownloadFileUrl($file, $orderNumber)
                     ];
+                    // add s3 url to last array element
+                    if ($returnS3Url) {
+                        $urls[count($urls)-1]['s3_url'] = $file->url;
+                    }
                 }
             }
         }
@@ -838,6 +837,23 @@ class ProductService
             }
         }
         return $url;
+    }
+
+    /**
+     * Get s3 url by filename to download from files array
+     * @param array|null $files
+     * @param string $filename
+     * @return string
+     */
+    public static function getS3UrlByFilename(?array $files, string $filename): string {
+        $s3_url = '';
+        foreach ($files as $file) {
+            if (basename($file['url']) == $filename) {
+                $s3_url = $file['s3_url'];
+                break;
+            }
+        }
+        return $s3_url;
     }
 
 }
