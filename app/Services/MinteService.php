@@ -113,6 +113,7 @@ class MinteService extends ProviderService
         '622',
         '625',
         '627', // Found CS transaction. Try again later!
+        '900', // unknown remote error
         '910', // Invalid merchant
         'ERR-MPI'
     ];
@@ -126,9 +127,11 @@ class MinteService extends ProviderService
      * @var array
      */
     private static array $fallback_messages = [
+        'Internal server error, Read timed out.',
         'Amount by terminal exceeded',
         'Company limits exceeded.',
-        'Unknown Reason'
+        'Unknown Reason',
+        'Bad Request'
     ];
 
     /**
