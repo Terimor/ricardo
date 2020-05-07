@@ -21,6 +21,10 @@ class OdinProduct extends OdinModel
     const QUANTITY_PRICES = 5;
     const MIN_PRICE = 4.5;
 
+    const TYPE_PHYSICAL = 'physical';
+    const TYPE_DIGITAL = 'digital';
+    const TYPE_VIRTUAL = 'virtual';
+
     protected $images;
     protected $upsellPrices;
     public $currency;

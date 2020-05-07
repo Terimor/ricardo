@@ -324,10 +324,8 @@ class SiteController extends Controller
         $is_checkout_page = $is_vrtl_page = $is_health_page = false;
         $new_engine_checkout_tpls = ['fmc5x', 'amc8', 'amc81'];
         if ($product->type == OdinOrder::TYPE_VIRTUAL) {
-            //$is_checkout_page = Route::is('checkout') || Route::is('checkout_price_set');
             $is_vrtl_page = true;
         } else {
-            //$is_vrtl_page = Route::is('checkout_vrtl') || Route::is('checkout_vrtl_price_set');
             $is_checkout_page = true;
         }
 

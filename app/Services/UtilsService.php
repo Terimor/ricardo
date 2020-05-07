@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Models\OdinProduct;
 use App\Models\Setting;
 use App\Models\Pixel;
 use App\Models\AwsImage;
@@ -825,6 +826,14 @@ class UtilsService
                 $countries = array_diff_key($countries, array_flip(static::$excludeBatteryShipping));
             }
         }
+        // exclude all eu countries for virtual products
+        if ($product->type == OdinProduct::TYPE_VIRTUAL) {
+            if ($code_only) {
+                $countries = array_values(array_diff($countries, static::$countries_eu));
+            } else {
+                $countries = array_diff_key($countries, array_flip(static::$countries_eu));
+            }
+        }
         return $countries;
     }
 
@@ -903,13 +912,7 @@ class UtilsService
      */
     public static function isEUCountry(string $country_code): bool
     {
-	$eu = [
-	    //EU
-	    'at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lt', 'lu', 'lv', 'mt', 'nl', 'pl', 'po', 'pt', 'ro', 'se', 'si', 'sk',
-	    //other Europe
-	    'al', 'ad', 'ba', 'ch', 'fo', 'gi', 'mc', 'mk', 'no', 'sm', 'va'
-	];
-	return in_array(strtolower(trim($country_code)), $eu);
+	    return in_array(strtolower(trim($country_code)), static::$countries_eu);
     }
 
     /**
