@@ -287,11 +287,9 @@ class ApmService {
         $status  = $req->input('status');
         $ts      = $req->input('timestamp', '') ?? '';
 
-//        logger()->info('Apm redirect', ['content' => $req->getContent()]);
-
         $order = OdinOrder::getById($order_id); // throwable
-        $product = $order->getProductByTxnHash($hash); // throwable
         $txn = $order->getTxnByHash($hash); // throwable
+        $product = $order->getProductByTxnHash($hash, false);
 
         $handler = new MinteService(PaymentApiService::getById($txn['payment_api_id']));
 
@@ -301,7 +299,7 @@ class ApmService {
         }
 
         $result = $handler->handleApm($txn, ['errcode' => $errcode, 'errmsg' => $errmsg, 'status' => $status]);
-        $result['is_main'] = $product['is_main'];
+        $result['is_main'] = $product['is_main'] ?? null;
 
         return $result;
     }

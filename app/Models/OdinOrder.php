@@ -620,6 +620,37 @@ class OdinOrder extends OdinModel
     }
 
     /**
+     * Returns products by txn value
+     * @param float $amount
+     * @return array
+     */
+    public function getProductsByTxnValue(float $amount): array
+    {
+        // first find products by complete match
+        $products = collect($this->products)->filter(function(array $v) use ($amount) {
+            return $v['price'] === $amount;
+        })->all();
+
+        // otherwise check upsells
+        if (empty($products)) {
+            $upsells_amount = collect($this->products)->reduce(function (float $carry, array $item) {
+                return $carry + ($item['is_upsells'] ? $item['value'] : 0);
+            }, 0);
+            // use rage for comparing
+            $upsells_amount_gt = $upsells_amount + ($upsells_amount / 100);
+            $upsells_amount_lt = $upsells_amount - ($upsells_amount / 100);
+            if ($upsells_amount_gt >= $amount && $amount >= $upsells_amount_lt) {
+                //get only products that have upsells
+                $products = collect($this->products)->filter(function(array $v) {
+                    return $v['is_upsells'];
+                })->all();
+            }
+        }
+
+        return $products;
+    }
+
+    /**
      * Returns txn by hash
      * @param string $hash
      * @param bool $throwable default=true

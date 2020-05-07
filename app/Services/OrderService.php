@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\PaymentProviders;
+use App\Models\Currency;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\AffiliateSetting;
@@ -70,37 +71,32 @@ class OrderService
         }
     }
 
-	/**
-	 * Get customer data by order ID
-	 * @param string $orderId
-	 * @return type
-	 */
-	public static function getCustomerDataByOrderId(string $orderId, $calculateProducts = null)
-	{
-		$order = OdinOrder::where('_id', $orderId)->select([
-			'shipping_country',
-			'shipping_zip',
-			'shipping_state',
-			'shipping_city',
-			'shipping_street',
-			'shipping_street2',
-			'shipping_apt',
-			'customer_email',
-			'customer_first_name',
-			'customer_last_name',
-			'customer_phone',
-			'customer_doc_id',
+    /**
+     * Get customer data by order ID
+     * @param string $orderId
+     * @return type
+     */
+    public static function getCustomerDataByOrderId(string $orderId, $calculateProducts = null)
+    {
+        $order = OdinOrder::where('_id', $orderId)->select([
+            'shipping_country',
+            'shipping_zip',
+            'shipping_state',
+            'shipping_city',
+            'shipping_street',
+            'shipping_street2',
+            'shipping_apt',
+            'customer_email',
+            'customer_first_name',
+            'customer_last_name',
+            'customer_phone',
+            'customer_doc_id',
             'number',
             'currency',
             'products',
             'txns',
             'type',
-		]);
-
-        // select products array
-        // if ($calculateProducts) {
-        //     $order->addSelect('products', 'currency');
-        // }
+        ]);
 
         $order = $order->first();
 
@@ -111,8 +107,8 @@ class OrderService
             $order->totalText = $data['total_text'];
         }
 
-		return $order;
-	}
+        return $order;
+    }
 
     /**
      * Calculate order total
@@ -183,8 +179,10 @@ class OrderService
 
     /**
      * Check and return reduced order data
-     * @param type $orderId
-     * @param type $affiliate
+     * @param string $orderId
+     * @param string $hoAffiliateId
+     * @return Localize|null
+     * @throws \App\Exceptions\OrderNotFoundException
      */
     public static function getReducedData(string $orderId, string $hoAffiliateId)
     {
@@ -335,5 +333,27 @@ class OrderService
         }
 
         return $result;
+    }
+
+    /**
+     * Calculates total amount of paid transactions
+     * @param OdinOrder $order
+     * @return OdinOrder
+     */
+    public static function calcTotalPaid(OdinOrder $order): OdinOrder
+    {
+        $currency = CurrencyService::getCurrency($order->currency);
+
+        $total = collect($order->txns)->reduce(function ($carry, $item) {
+            if ($item['status'] === Txn::STATUS_APPROVED) {
+                $carry += $item['value'];
+            }
+            return $carry;
+        }, 0);
+
+        $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total, $currency->code);
+        $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total / $currency->usd_rate, Currency::DEF_CUR);
+
+        return $order;
     }
 }

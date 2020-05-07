@@ -4,6 +4,13 @@ namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
 
+/**
+ * Class Currency
+ * @package App\Models
+ *
+ * @property string code
+ * @property float usd_rate
+ */
 class Currency extends Model
 {
     const DEF_CUR = 'USD';
