@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\{OdinOrder, Domain, OdinProduct};
-use App\Services\{I18nService, OrderService, ProductService};
+use App\Services\{I18nService, OrderService, ProductService, S3Service};
 
 /* use com\checkout;
   use com\checkout\ApiServices; */
@@ -245,4 +245,39 @@ class OrderController extends Controller
     {
         return $this->orderService->calculateOrderAmountTotal($orderId);
     }
+
+    /**
+     * Get order file
+     * Check order and product
+     * @param $orderNumber
+     * @param $filename
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\ProductNotFoundException
+     */
+    public function getOrderFile($orderNumber, $filename) {
+        $select = ['number', 'type', 'products'];
+        $order = OdinOrder::getByNumber($orderNumber, false, $select);
+
+        if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {
+            abort(404, 'Sorry, we couldn\'t find your order');
+        }
+        $sku = $order->getMainSku();
+        $select = ['type', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id'];
+
+        $product = OdinProduct::getBySku($sku, false, $select);
+        if (!$product) {
+            abort(404, 'Sorry, we couldn\'t find your order');
+        }
+        $free_files = !empty($product->free_file_ids) ? ProductService::getFileUrlsByIds($product->free_file_ids, $orderNumber, true) : null;
+        $sale_files = !empty($product->sale_file_ids) ? ProductService::getFileUrlsByIds($product->sale_file_ids, $orderNumber, true) : null;
+        $files = array_merge($free_files, $sale_files);
+        $s3Url = ProductService::getS3UrlByFilename($files, $filename);
+        if ($s3Url) {
+            $fileData = S3Service::returnFileResponse($s3Url, $filename);
+            return response()->download($fileData['tempFilepath'], $fileData['filename'], $fileData['headers'], 'inline')->deleteFileAfterSend();
+        }
+        abort(404, 'File not found');
+    }
+
+
 }
