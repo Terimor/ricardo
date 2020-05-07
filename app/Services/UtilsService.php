@@ -1,14 +1,9 @@
 <?php
 
 namespace App\Services;
-use App\Models\OdinProduct;
-use App\Models\Setting;
-use App\Models\Pixel;
-use App\Models\AwsImage;
-use App\Models\Domain;
-use App\Models\OdinOrder;
-use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\UTCDateTime;
+
+use App\Models\{OdinProduct, Setting, Pixel, AwsImage, Domain, OdinOrder};
+use MongoDB\BSON\{ObjectId, UTCDateTime};
 use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
 use DeviceDetector\DeviceDetector;
