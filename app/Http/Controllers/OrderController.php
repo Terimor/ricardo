@@ -249,12 +249,13 @@ class OrderController extends Controller
     /**
      * Get order file
      * Check order and product
-     * @param $orderNumber
-     * @param $filename
+     * @param string $orderNumber
+     * @param string $fileId
+     * @param string $filename
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\ProductNotFoundException
      */
-    public function getOrderFile($orderNumber, $filename) {
+    public function getOrderFile(string $orderNumber, string $fileId, string $filename, ProductService $productService) {
         $select = ['number', 'type', 'products'];
         $order = OdinOrder::getByNumber($orderNumber, false, $select);
 
@@ -269,14 +270,11 @@ class OrderController extends Controller
             abort(404, 'Sorry, we couldn\'t find your order');
         }
 
-        $free_files = !empty($product->free_file_ids) ? ProductService::getFileUrlsByIds($product->free_file_ids, $orderNumber, true) : null;
-        $sale_files = !empty($product->sale_file_ids) ? ProductService::getFileUrlsByIds($product->sale_file_ids, $orderNumber, true) : null;
-        $files = array_merge($free_files, $sale_files);
+        $file = ProductService::getFileByProduct($product, $fileId);
 
-        $accessedFile = ProductService::getFileByFilename($files, $filename);
-        if ($accessedFile) {
-            $fileData = S3Service::returnFileResponse($accessedFile['s3_url'], $filename);
-            MediaAccess::saveByOrderFile($accessedFile, $order->number);
+        if ($file) {
+            $fileData = S3Service::returnFileResponse($file['url'], $filename);
+            MediaAccess::saveByOrderFile($file, $order->number);
             return response()->download($fileData['tempFilepath'], $fileData['filename'], $fileData['headers'], 'inline')->deleteFileAfterSend();
         }
         abort(404, 'File not found');

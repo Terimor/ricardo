@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\{OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize};
+use App\Models\{MediaAccess, OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize};
 use Illuminate\Http\Request;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
@@ -834,7 +834,7 @@ class ProductService
         if ($file) {
             if (!empty($file->url)) {
                 $ext = pathinfo($file->url, PATHINFO_EXTENSION);
-                $url = url("/my-files/{$orderNumber}/{$file->name}.{$ext}");
+                $url = url("/my-files/{$orderNumber}/{$file->_id}/{$file->name}.{$ext}");
             }
         }
         return $url;
@@ -855,6 +855,71 @@ class ProductService
             }
         }
         return $accessedFile;
+    }
+
+    /**
+     * Get file by product arrays and file ID
+     * @param OdinProduct $product
+     * @param $product
+     * @param string $fileId
+     * @return array
+     */
+    public static function getFileByProduct(OdinProduct $product, string $fileId): array
+    {
+        $file = [];
+        $selectedFileId = null;
+        $type = MediaAccess::TYPE_FILE;
+        $files = !empty($product->free_file_ids) ?  $product->free_file_ids : [];
+        $files = !empty($product->sale_file_ids) ? array_merge($product->sale_file_ids, $files) : [];
+        if ($files) {
+            foreach ($files as $id) {
+                if ($fileId == $id) {
+                    $selectedFileId = $id;
+                    break;
+                }
+            }
+        }
+
+        if (!$selectedFileId) {
+            $videos = !empty($product->sale_video_ids) ?  $product->sale_video_ids : [];
+            if ($videos) {
+                foreach ($videos as $id) {
+                    if ($fileId == $id) {
+                        $selectedFileId = $id;
+                        $type = MediaAccess::TYPE_VIDEO;
+                        break;
+                    }
+                }
+            }
+        }
+        if ($selectedFileId) {
+            $file = static::getDownloadFileById($selectedFileId, $type);
+        }
+        return $file;
+    }
+
+    /**
+     * Get download file by id
+     * @param string $id
+     * @param string $type
+     * @return array
+     */
+    public static function getDownloadFileById(string $id, string $type): array
+    {
+        $file = [];
+        switch ($type) {
+            case MediaAccess::TYPE_FILE:
+                $model = File::getById($id);
+                $file = [
+                    'type' => $type,
+                    'id' => $id,
+                    'url' => $model->url
+                ];
+                break;
+            case MediaAccess::TYPE_VIDEO:
+                break;
+        }
+        return $file;
     }
 
 }

@@ -47,7 +47,7 @@ class MediaAccess extends Model
         $saved = false;
         if ($file && $orderNumber) {
             // check existing, if not - create new
-            $model = static::getByOrderFileDocument($file['id'], $orderNumber);
+            $model = static::getByOrderFileDocument($file, $orderNumber);
             $model->count++;
             $accesses = $model->accesses;
             $accesses[] = [
@@ -64,13 +64,13 @@ class MediaAccess extends Model
     /**
      * Get by file document and order number
      * If not exists create new
-     * @param string $documentId
+     * @param array $file
      * @param string $orderNumber
      * @return MediaAccess
      */
-    public static function getByOrderFileDocument(string $documentId, string $orderNumber): MediaAccess
+    public static function getByOrderFileDocument(array $file, string $orderNumber): MediaAccess
     {
-        return static::firstOrNew(['document_id' => $documentId, 'order_number' => $orderNumber, 'type' => static::TYPE_FILE]);
+        return static::firstOrNew(['document_id' => $file['id'], 'order_number' => $orderNumber, 'type' => $file['type']]);
     }
 
 }
