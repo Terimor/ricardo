@@ -274,7 +274,7 @@ class OrderController extends Controller
 
         if ($file) {
             $fileData = S3Service::returnFileResponse($file['url'], $filename);
-            MediaAccess::saveByOrderFile($file, $order->number);
+            MediaAccess::addAccess($file, $order->number);
             return response()->download($fileData['tempFilepath'], $fileData['filename'], $fileData['headers'], 'inline')->deleteFileAfterSend();
         }
         abort(404, 'File not found');
