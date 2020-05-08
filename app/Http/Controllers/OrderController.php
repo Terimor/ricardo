@@ -255,7 +255,7 @@ class OrderController extends Controller
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\ProductNotFoundException
      */
-    public function getOrderFile(string $orderNumber, string $fileId, string $filename, ProductService $productService) {
+    public function getOrderFile(string $orderNumber, string $fileId, string $filename) {
         $select = ['number', 'type', 'products'];
         $order = OdinOrder::getByNumber($orderNumber, false, $select);
 
