@@ -49,7 +49,7 @@ class File extends OdinModel
      * @return File|null
      */
     public static function getById($id): ?File {
-        return File::where(['_id' => (string)$id])->first();
+        return static::where(['_id' => (string)$id])->first();
     }
 
     /**
@@ -61,7 +61,7 @@ class File extends OdinModel
     {
         $files = null;
         if ($ids) {
-            $query = File::whereIn('_id', $ids);
+            $query = static::whereIn('_id', $ids);
             if ($select) {
                 $query->select($select);
             }

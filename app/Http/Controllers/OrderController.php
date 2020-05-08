@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use App\Models\{MediaAccess, OdinOrder, Domain, OdinProduct};
-use App\Services\{I18nService, OrderService, ProductService, S3Service};
+use App\Services\{I18nService, OrderService, ProductService, MediaService, VimeoService};
 
 /* use com\checkout;
   use com\checkout\ApiServices; */
@@ -247,15 +249,17 @@ class OrderController extends Controller
     }
 
     /**
-     * Get order file
+     * Get order media
      * Check order and product
      * @param string $orderNumber
      * @param string $fileId
      * @param string $filename
+     * @param ProductService $productService
+     * @param MediaService $mediaService
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\ProductNotFoundException
      */
-    public function getOrderFile(string $orderNumber, string $fileId, string $filename) {
+    public function getOrderMedia(string $orderNumber, string $fileId, string $filename, ProductService $productService, MediaService $mediaService) {
         $select = ['number', 'type', 'products'];
         $order = OdinOrder::getByNumber($orderNumber, false, $select);
 
@@ -270,12 +274,22 @@ class OrderController extends Controller
             abort(404, 'Sorry, we couldn\'t find your order');
         }
 
-        $file = ProductService::getFileByProduct($product, $fileId);
+        $file = $productService->getMediaByProduct($product, $fileId);
 
         if ($file) {
-            $fileData = S3Service::returnFileResponse($file['url'], $filename);
-            MediaAccess::addAccess($file, $order->number);
-            return response()->download($fileData['tempFilepath'], $fileData['filename'], $fileData['headers'], 'inline')->deleteFileAfterSend();
+            if ($file['type'] == MediaAccess::TYPE_FILE) {
+                $fileData = $mediaService->getS3FileContent($file['url'], $filename);
+                MediaAccess::addAccess($file, $order->number);
+                return response()->download($fileData['tempFilepath'], $fileData['filename'], $fileData['headers'], 'inline')->deleteFileAfterSend();
+            } else {
+                /*$vimeoUrl = $mediaService->getVimeoDirectUrl($file['url']);
+                if ($vimeoUrl) {
+                    $fileData = $mediaService->getFileContent($vimeoUrl, $filename);
+                } else {
+                    abort(404, 'Video not found');
+                }*/
+                return Redirect::to($file['url']);
+            }
         }
         abort(404, 'File not found');
     }

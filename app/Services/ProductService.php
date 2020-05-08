@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\{MediaAccess, OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize};
+use App\Models\{MediaAccess, OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize, Video};
 use Illuminate\Http\Request;
 use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
@@ -763,7 +763,8 @@ class ProductService
      * @param $id
      * @return Localize|null
      */
-    public static function getLocaleFreeFileByFileId($id) {
+    public static function getLocaleFreeFileByFileId($id)
+    {
         $lp = null;
         $file = File::getById($id);
         if ($file) {
@@ -781,14 +782,15 @@ class ProductService
      * @param string $orderNumber
      * @return Localize
      */
-    public function getLocaleDownloadProduct(OdinProduct $product, string $orderNumber): Localize {
+    public function getLocaleDownloadProduct(OdinProduct $product, string $orderNumber): Localize
+    {
         $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
-        $lp->free_files = !empty($product->free_file_ids) ? static::getFileUrlsByIds($product->free_file_ids, $orderNumber) : null;
-        $lp->sale_files = !empty($product->sale_file_ids) ? static::getFileUrlsByIds($product->sale_file_ids, $orderNumber) : null;
+        $lp->free_files = !empty($product->free_file_ids) ? $this->getFileUrlsByIds($product->free_file_ids, $orderNumber) : null;
+        $lp->sale_files = !empty($product->sale_file_ids) ? $this->getFileUrlsByIds($product->sale_file_ids, $orderNumber) : null;
+        $lp->sale_videos = !empty($product->sale_video_ids) ? $this->getVideoUrlsByIds($product->sale_video_ids, $orderNumber) : null;
         $lp->logo_image = $product->logo_image;
-
         return $lp;
     }
 
@@ -799,7 +801,8 @@ class ProductService
      * @param bool $returnS3Url
      * @return array
      */
-    public static function getFileUrlsByIds(?array $file_ids, string $orderNumber, bool $returnS3Url = false): array {
+    private function getFileUrlsByIds(?array $file_ids, string $orderNumber, bool $returnS3Url = false): array
+    {
         $urls = [];
         if ($file_ids) {
             $select = ['name', 'url.en', 'title.en'];
@@ -812,11 +815,6 @@ class ProductService
                         'title' => $file->title,
                         'url' => static::getDownloadFileUrl($file, $orderNumber)
                     ];
-                    // add s3 url to last array element
-                    if ($returnS3Url) {
-                        $urls[count($urls)-1]['s3_url'] = $file->url;
-                        $urls[count($urls)-1]['id'] = $file->_id;
-                    }
                 }
             }
         }
@@ -824,12 +822,41 @@ class ProductService
     }
 
     /**
-     * Get url for download file
+     * Get video urls for download by ids
+     * @param array|null $video_ids
+     * @param string $orderNumber
+     * @param bool $returnUrl
+     * @return array
+     */
+    private function getVideoUrlsByIds(?array $video_ids, string $orderNumber, bool $returnUrl = false): array
+    {
+        $urls = [];
+
+        if ($video_ids) {
+            $select = ['share_id.en', 'title.en'];
+            $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+            $videos = Video::getByIds($video_ids, $select);
+
+            if ($videos) {
+                foreach ($videos as $video) {
+                    $urls[] = [
+                        'title' => $video->title,
+                        'url' => $this->getDownloadVideoUrl($video, $orderNumber)
+                    ];
+                }
+            }
+        }
+        return $urls;
+    }
+
+    /**
+     * Get download file URL
      * @param File|null $file
      * @param string $orderNumber
      * @return string|null
      */
-    public static function getDownloadFileUrl(?File $file, string $orderNumber): ?string {
+    public function getDownloadFileUrl(?File $file, string $orderNumber): ?string
+    {
         $url = null;
         if ($file) {
             if (!empty($file->url)) {
@@ -841,12 +868,31 @@ class ProductService
     }
 
     /**
+     * Get download video URL
+     * @param Video|null $video
+     * @param string $orderNumber
+     * @return string|null
+     */
+    public function getDownloadVideoUrl(?Video $video, string $orderNumber): ?string
+    {
+        $url = null;
+        if ($video) {
+            if (!empty($video->share_id)) {
+                // TODO: replace last path to something??
+                $url = url("/my-files/{$orderNumber}/{$video->_id}/video");
+            }
+        }
+        return $url;
+    }
+
+    /**
      * Get s3 url by filename to download from files array
      * @param array|null $files
      * @param string $filename
      * @return array
      */
-    public static function getFileByFilename(?array $files, string $filename): array {
+    public static function getFileByFilename(?array $files, string $filename): array
+    {
         $accessedFile = [];
         foreach ($files as $file) {
             if (basename($file['url']) == $filename) {
@@ -858,13 +904,13 @@ class ProductService
     }
 
     /**
-     * Get file by product arrays and file ID
+     * Get media by product arrays and file ID
      * @param OdinProduct $product
      * @param $product
      * @param string $fileId
      * @return array
      */
-    public static function getFileByProduct(OdinProduct $product, string $fileId): array
+    public function getMediaByProduct(OdinProduct $product, string $fileId): array
     {
         $file = [];
         $selectedFileId = null;
@@ -893,23 +939,24 @@ class ProductService
             }
         }
         if ($selectedFileId) {
-            $file = static::getDownloadFileById($selectedFileId, $type);
+            $file = $this->getDownloadMediaById($selectedFileId, $type);
         }
         return $file;
     }
 
     /**
-     * Get download file by id
+     * Get download media by id
      * @param string $id
      * @param string $type
      * @return array
      */
-    public static function getDownloadFileById(string $id, string $type): array
+    public function getDownloadMediaById(string $id, string $type): array
     {
         $file = [];
         switch ($type) {
             case MediaAccess::TYPE_FILE:
-                $model = File::getById($id);
+                $select = \Utils::addLangFieldToSelect(['url.en'], app()->getLocale());
+                $model = File::getById($id, $select);
                 $file = [
                     'type' => $type,
                     'id' => $id,
@@ -917,6 +964,13 @@ class ProductService
                 ];
                 break;
             case MediaAccess::TYPE_VIDEO:
+                $select = \Utils::addLangFieldToSelect(['share_id.en'], app()->getLocale());
+                $model = Video::getById($id, $select);
+                $file = [
+                  'type' => $type,
+                  'id' => $id,
+                  'url' => $model->getVimeoVideo()
+                ];
                 break;
         }
         return $file;
