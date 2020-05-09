@@ -581,7 +581,16 @@ class PaymentService
 
         if ($txn && $txn['status'] === Txn::STATUS_APPROVED) {
             $products = $order->getProductsByTxnHash($txn['hash']);
+            if (empty($products)) {
+                $products = $order->getProductsByTxnValue($txn['value']);
+            }
+
+            $is_order_need_to_check = false;
             foreach ($products as $product) {
+                if ($product['is_paid']) {
+                    $is_order_need_to_check = true;
+                }
+                $product['txn_hash'] = $txn['hash'];
                 $product['is_paid'] = true;
                 if ($product['is_main']) {
                     $order->is_flagged = false;
@@ -592,20 +601,14 @@ class PaymentService
                 $order->addProduct($product);
             }
 
-            $currency = CurrencyService::getCurrency($order->currency);
+           $order = OrderService::calcTotalPaid($order);
 
-            $total = collect($order->txns)->reduce(function ($carry, $item) {
-                if ($item['status'] === Txn::STATUS_APPROVED) {
-                    $carry['value'] += $item['value'];
-                }
-                return $carry;
-            }, ['value' => 0]);
-
-            $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total['value'], $currency->code);
-            $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total['value'] / $currency->usd_rate, Currency::DEF_CUR);
-
-            $price_paid_diff = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
-            $order->status   = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+            if (!$is_order_need_to_check) {
+                $price_paid_diff = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
+                $order->status = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+            } else {
+                $order->status = OdinOrder::STATUS_ERROR;
+            }
         }
 
         if (!$order->save()) {

@@ -257,6 +257,7 @@ class PaymentsController extends Controller
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\OrderUpdateException
      * @throws \App\Exceptions\TxnNotFoundException
+     * @throws \Exception
      */
     public function appmaxWebhook(Request $req): void
     {
@@ -422,8 +423,6 @@ class PaymentsController extends Controller
      */
     public function novalnetRetCli(NovalnetRetCliRequest $req, string $order_id)
     {
-        logger()->info('Novalnet retcli', ['ip' => $req->ip(), 'body' => $req->all()]);
-
         $reply = PaymentService::processNovalnetReturnClient($req->all(), $order_id);
 
         $query = ['order' => $order_id];

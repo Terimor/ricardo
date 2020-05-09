@@ -857,7 +857,7 @@ class CardService {
     {
         $order = OdinOrder::getById($order_id); // throwable
         $order_txn = $order->getTxnByHash($pi_id); // throwable
-        $order_product = $order->getProductByTxnHash($order_txn['hash']); // throwable
+        $order_product = $order->getProductByTxnHash($order_txn['hash'], false);
 
         $stripe = new StripeService(PaymentApiService::getById($order_txn['payment_api_id']));
 
@@ -867,8 +867,9 @@ class CardService {
             'currency' => $order->currency,
             'status' => false,
             'result' => PaymentService::STATUS_FAIL,
-            'is_main' => $order_product['is_main']]
-        ;
+            'is_main' => $order_product['is_main'] ?? null
+        ];
+
         if ($pinfo['status']) {
             $result['status'] = true;
             switch ($pinfo['txn']['status']):

@@ -602,14 +602,20 @@ class PayPalService
                 $order->txns = array_merge($txns, [$order_txn_data]);
 
                 // Set is_paid for order products of captured transaction
-                $order->products = collect($order->products)
-                    ->map(function($item, $key) use ($txn) {
-                        if ($item['txn_hash'] == $txn['hash']) {
-                            $item['is_paid'] = true;
-                        }
-                        return $item;
-                    })
-                    ->toArray();
+                $products = $order->getProductsByTxnHash($txn['hash']);
+                if (empty($products)) {
+                    $products = $order->getProductsByTxnValue($txn['value']);
+                }
+
+                $is_order_need_to_check = false;
+                foreach ($products as $product) {
+                    if ($product['is_paid']) {
+                        $is_order_need_to_check = true;
+                    }
+                    $product['is_paid'] = true;
+                    $product['txn_hash'] = $txn['hash'];
+                    $order->addProduct($product);
+                }
 
                 // reset flagged
                 $main_product = $order->getMainProduct(false);
@@ -617,23 +623,14 @@ class PayPalService
                     $order->is_flagged = false;
                 }
 
-                $total = collect($order->txns)->reduce(function ($carry, $item) {
-                    if ($item['status'] === Txn::STATUS_APPROVED) {
-                        $carry['value'] += $item['value'];
-                    }
-                    return $carry;
-                }, ['value' => 0]);
+                $order = OrderService::calcTotalPaid($order);
 
-                $order->total_paid = CurrencyService::roundValueByCurrencyRules($total['value'], $paypal_order_currency);
-
-                // Setting total_paid_usd value
-                $order->total_paid_usd = $order->total_paid;
-                if ($paypal_order_currency !== self::DEFAULT_CURRENCY) {
-                    $pp_order_currency_rate = CurrencyService::getCurrency($paypal_order_currency)->usd_rate;
-                    $order->total_paid_usd = CurrencyService::roundValueByCurrencyRules($total['value'] / $pp_order_currency_rate, self::DEFAULT_CURRENCY);
+                if (!$is_order_need_to_check) {
+                    $order->status = $this->getOrderStatus($order);
+                } else {
+                    $order->status = OdinOrder::STATUS_ERROR;
                 }
 
-                $order->status = $this->getOrderStatus($order);
                 $order->is_invoice_sent = false;
                 $order->save();
 
