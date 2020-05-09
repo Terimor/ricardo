@@ -763,7 +763,7 @@ class ProductService
      * @param $id
      * @return Localize|null
      */
-    public static function getLocaleFreeFileByFileId($id)
+    public static function getLocaleFreeFileByFileId($id): ?Localize
     {
         $lp = null;
         $file = File::getById($id);

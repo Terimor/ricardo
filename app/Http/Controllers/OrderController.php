@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage;
 use App\Models\{MediaAccess, OdinOrder, Domain, OdinProduct};
 use App\Services\{I18nService, OrderService, ProductService, MediaService, VimeoService};
 
