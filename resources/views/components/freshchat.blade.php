@@ -1,5 +1,5 @@
 @if (Route::is('contact-us') && empty($is_smartbell))
-    <?php /* FreshChat (Live chat) disable
+    <?php /* disable FreshChat (Live chat)
   <script>
     function initFreshChat() {
       if (window.fcWidget) {
