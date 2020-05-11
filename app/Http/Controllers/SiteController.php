@@ -107,6 +107,20 @@ class SiteController extends Controller
     }
 
     /**
+     * Retrieves page 404 if cop_id is ignored
+     * @param string|null $cop_id
+     */
+    private function abortByCopId(?string $cop_id): void
+    {
+        if ($cop_id) {
+            $blocked_list = preg_split("/\r\n|\n/", Setting::getValue('blocked_cop_id', ''));
+            if (in_array($cop_id, $blocked_list)) {
+                abort(404);
+            }
+        }
+    }
+
+    /**
      * Product page
      * @param Request $request
      * @param ProductService $productService
@@ -306,6 +320,9 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
+        // Abort request if cop_id in the list
+        $this->abortByCopId($request->get('cop_id', $priceSet));
+
         $redirect_view = $this->checkoutRequestView($request);
         if ($redirect_view) {
             return $redirect_view;
