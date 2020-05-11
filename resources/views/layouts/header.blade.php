@@ -7,7 +7,7 @@
     "
 >
     <div class="container {{ Request::is('/') ? 'd-flex flex-column flex-sm-row justify-content-between' : '' }}">
-        
+
         <a @if ($HasVueApp) href="/checkout" @else href="/" @endif class="header__logo_link">
             <img data-src="{{$main_logo ?? $product->logo_image}}" class="lazy header__logo" alt="">
         </a>
@@ -28,6 +28,7 @@
                         {{ t('footer.contact') }}<img class="header__menu-icon" src="{{ $cdn_url }}/assets/images/contact.png" />
                     </a>
                 </li>
+                <?php /* disable Call us
                 <li class="header__menu-item">
                     <a class="header__menu-link">
                         {{ t('footer.call') }}<img class="header__menu-icon" src="{{ $cdn_url }}/assets/images/call.png" />
@@ -41,6 +42,7 @@
                         </li>
                     </ul>
                 </li>
+                */ ?>
             </ul>
         @endif
 

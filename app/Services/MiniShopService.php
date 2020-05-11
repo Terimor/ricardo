@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 class MiniShopService
 {
     public static $headerLogoDefaultPath = '/assets/images/minishop/domain_logo.png';
-    
+
     public static $headerMenu = [
       [
         'url' => '/',
@@ -29,7 +29,8 @@ class MiniShopService
         'active' => 'minishop.contact',
         'icon' => 'contact.png',
       ],
-      [
+      // disable Call Us
+      /*[
         'class' => 'call-us',
         'phrase' => 'minishop.menu.call_us',
         'icon' => 'call.png',
@@ -43,7 +44,7 @@ class MiniShopService
             'label' => '(&#127758;) +441782454716',
           ],
         ],
-      ],
+      ],*/
     ];
 
 }
