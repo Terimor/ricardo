@@ -80,8 +80,8 @@ class PaymentService
     /**
      * Adds txn data to Order
      * @param  OdinOrder $order
-     * @param  array    $data
-     * @param  array    $details
+     * @param  array $data
+     * @param  array $details
      * @return void
      */
     public static function addTxnToOrder(OdinOrder &$order, array $data, array $details): void
@@ -601,7 +601,7 @@ class PaymentService
                 $order->addProduct($product);
             }
 
-           $order = OrderService::calcTotalPaid($order);
+            $order = OrderService::calcTotalPaid($order);
 
             if (!$is_order_need_to_check) {
                 $price_paid_diff = floor($order->total_paid * 100 - $order->total_price * 100) / 100;

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Constants\PaymentProviders;
 use App\Exceptions\PaymentException;
 use App\Exceptions\PPCurrencyNotSupportedException;
 use App\Http\Requests\PayPalCrateOrderRequest;
@@ -166,39 +167,24 @@ class PayPalService
         if (isset($response->statusCode) && $response->statusCode === 201) {
             $paypal_order = $response->result;
 
-            // Creating a capture transaction
-            $txn_response = $this->orderService->addTxn([
-                'hash' => $paypal_order->id,
-                'value' => (float)$paypal_order->purchase_units[0]->amount->value,
-                'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
-                'provider_data' => $paypal_order,
-                'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => $payment_api->payment_provider,
-                'payer_id' => '',
-            ], true);
-
-            $txn_attributes = $txn_response['txn']->attributesToArray();
-
-            $order_txn_data = [
-                'hash' => $txn_response['txn']->hash,
-                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id ?? null,
-                'value' => $txn_response['txn']->value,
-                'status' =>  Txn::STATUS_CAPTURED,
-                'fee_usd' => 0,
-                'payment_provider' => $txn_response['txn']->payment_provider,
-                'payment_method' => $txn_response['txn']->payment_method,
-                'payment_api_id' => (string)$payment_api->_id,
-                'payer_id' => $txn_response['txn']->payer_id,
-            ];
-
-            $txns = array_filter($upsell_order['txns'], function($item) use ($txn_response) {
-                return $item['hash'] !== $txn_response['txn']->hash;
-            });
+            PaymentService::addTxnToOrder(
+                $upsell_order,
+                [
+                    'hash' => $paypal_order->id,
+                    'value' => (float)$paypal_order->purchase_units[0]->amount->value,
+                    'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
+                    'status' => Txn::STATUS_AUTHORIZED,
+                    'provider_data' => $paypal_order,
+                    'payment_provider' => $payment_api->payment_provider,
+                    'payment_api_id' => (string)$payment_api->_id
+                ],
+                ['payment_method' => PaymentMethods::INSTANT_TRANSFER]
+            );
 
             // Setting txn_hash for an upsell products
             $upsell_order_products = collect($upsell_order_products)
-                ->transform(function($item, $key) use ($txn_attributes, $product) {
-                    $item['txn_hash'] = $txn_attributes['hash'];
+                ->transform(function($item, $key) use ($paypal_order, $product) {
+                    $item['txn_hash'] = $paypal_order->id;
                     $item['is_plus_one'] = optional($this->findProductBySku($item['sku_code']))->_id === $product->_id;
 
                     return $item;
@@ -210,7 +196,6 @@ class PayPalService
                 $upsell_order->total_price / $upsell_order_exchange_rate,
                 self::DEFAULT_CURRENCY);
             $upsell_order->status = $this->getOrderStatus($upsell_order);
-            $upsell_order->txns = array_merge($txns, [$order_txn_data]);
             $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
             $upsell_order->save();
         }
@@ -354,48 +339,7 @@ class PayPalService
             if (isset($response->statusCode) && $response->statusCode === 201) {
                 $paypal_order = $response->result;
 
-                $txn_response = $this->orderService->addTxn([
-                    'hash' => $paypal_order->id,
-                    'value' => (float)$paypal_order->purchase_units[0]->amount->value,
-                    'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
-                    'provider_data' => $paypal_order,
-                    'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                    'payment_provider' => $payment_api->payment_provider,
-                    'payer_id' => '',
-                ], true);
-                abort_if(!$txn_response['success'], 404);
-
-                $txn = $txn_response['txn']->attributesToArray();
-
-                $odin_order_product = [
-                    'sku_code' => $request->sku_code,
-                    'quantity' => (int)$request->sku_quantity,
-                    'price' => $is_currency_supported ? $local_price : $price_usd,
-                    'price_usd' => $price_usd,
-                    'warranty_price' => $is_currency_supported ? ($local_warranty_price ?? null) : ($local_warranty_usd ?? null),
-                    'warranty_price_usd' => $local_warranty_usd ?? null,
-                    'is_main' => true,
-                    'is_paid' => false,
-                    'is_exported' => false,
-                    'is_plus_one' => false,
-                    'price_set' => $product->prices['price_set'],
-                    'txn_hash' => $txn['hash'],
-                    'is_upsells' => false,
-                ];
-
-                $order_txn_data = [
-                    'hash' => $txn_response['txn']->hash,
-                    'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id ?? null,
-                    'value' => $txn_response['txn']->value,
-                    'status' => Txn::STATUS_CAPTURED,
-                    'fee_usd' => 0,
-                    'payment_provider' => $txn_response['txn']->payment_provider,
-                    'payment_method' => $txn_response['txn']->payment_method,
-                    'payment_api_id' => (string)$payment_api->_id,
-                    'payer_id' => $txn_response['txn']->payer_id,
-                ];
-
-                $order_reponse = $this->orderService->addOdinOrder([
+                $order = new OdinOrder([
                     'fingerprint' => $fingerprint,
                     'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
                     'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
@@ -408,8 +352,8 @@ class PayPalService
                     'language' => app()->getLocale(),
                     'ip' => $request->ip(),
                     'warehouse_id' => $product->warehouse_id,
-                    'products' => [$odin_order_product],
-                    'txns' => [$order_txn_data],
+                    'products' => [/*$odin_order_product*/],
+                    'txns' => [/*$order_txn_data*/],
                     'page_checkout' => $request->page_checkout,
                     'offer' => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
                     'affiliate' => AffiliateService::validateAffiliateID($affId) ? $affId : null,
@@ -417,11 +361,43 @@ class PayPalService
                     'shop_currency' => $shop_currency_code,
                     'params' => $params,
                     'ipqualityscore' => $ipqs
+                ]);
+
+                PaymentService::addTxnToOrder(
+                    $order,
+                    [
+                        'hash' => $paypal_order->id,
+                        'value' => (float)$paypal_order->purchase_units[0]->amount->value,
+                        'currency' => $paypal_order->purchase_units[0]->amount->currency_code,
+                        'status' => Txn::STATUS_AUTHORIZED,
+                        'provider_data' => $paypal_order,
+                        'payment_provider' => $payment_api->payment_provider,
+                        'payment_api_id' => (string)$payment_api->_id
+                    ],
+                    ['payment_method' => PaymentMethods::INSTANT_TRANSFER]
+                );
+
+                $order->addProduct([
+                    'txn_hash' => $paypal_order->id,
+                    'sku_code' => $request->sku_code,
+                    'quantity' => (int)$request->sku_quantity,
+                    'price' => $is_currency_supported ? $local_price : $price_usd,
+                    'price_usd' => $price_usd,
+                    'warranty_price' => $is_currency_supported ? ($local_warranty_price ?? null) : ($local_warranty_usd ?? null),
+                    'warranty_price_usd' => $local_warranty_usd ?? null,
+                    'is_main' => true,
+                    'is_paid' => false,
+                    'is_exported' => false,
+                    'is_plus_one' => false,
+                    'price_set' => $product->prices['price_set'],
+                    'is_upsells' => false
                 ], true);
 
-                $order = $order_reponse['order'];
+                $order_response = $this->orderService->addOdinOrder($order->attributesToArray(), true);
 
-                abort_if(!$order_reponse['success'], 404);
+                $order = $order_response['order'];
+
+                abort_if(!$order_response['success'], 404);
             }
         }
         return [
@@ -437,6 +413,7 @@ class PayPalService
      *
      * @param PayPalVerfifyOrderRequest $request
      * @return array
+     * @throws \App\Exceptions\OrderNotFoundException
      */
     public function verifyOrder(PayPalVerfifyOrderRequest $request)
     {
@@ -449,50 +426,27 @@ class PayPalService
         }
 
         if ($response->statusCode < 300) {
-            $payment_api = PaymentApi::getActivePaypal();
             $paypal_order = $response->result;
 
-            $paypal_order_value = $this->getPayPalOrderValue($paypal_order);
-            $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
+            $payment_api = PaymentApi::getActivePaypal();
 
-            $txn_response = $this->orderService->addTxn([
-                'hash' => $paypal_order->id,
-                'value' => $paypal_order_value,
-                'currency' => $paypal_order_currency,
-                'provider_data' => $paypal_order,
-                'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                'payment_provider' => $payment_api->payment_provider,
-                'payer_id' => optional($paypal_order->payer)->payer_id,
-            ], true);
+            $order = OdinOrder::getByTxnHash($paypal_order->id, $payment_api->payment_provider); // throwable
 
-            $txn = $txn_response['txn']->attributesToArray();
-
-            $order = OdinOrder::where('products.txn_hash', $paypal_order->id)->first();
-
-            if (!$order) {
-                logger()->error(
-                    '***VerifyOrder1.Cant find matching order for txh.hash: ' . $paypal_order->id,
-                    ['paypal_order' => $paypal_order]
-                );
-                abort(404);
-            }
-
-            $order_txn_data = [
-                'hash' => $txn_response['txn']->hash,
-                'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id  ?? null,
-                'value' => $txn_response['txn']->value,
-                'status' => Txn::STATUS_CAPTURED,
-                'fee_usd' => 0,
-                'payment_provider' => $txn_response['txn']->payment_provider,
-                'payment_method' => $txn_response['txn']->payment_method,
-                'payment_api_id' => (string)$payment_api->_id,
-                'payer_id' => $txn_response['txn']->payer_id,
-            ];
-
-            $txns = array_filter($order['txns'], function($item) use ($txn_response) {
-                return $item['hash'] !== $txn_response['txn']->hash;
-            });
-            $order->txns = array_merge($txns, [$order_txn_data]);
+            PaymentService::addTxnToOrder(
+                $order,
+                [
+                    'hash' => $paypal_order->id,
+                    'capture_hash' => $paypal_order->purchase_units[0]->payments->captures[0]->id  ?? null,
+                    'value' => $this->getPayPalOrderValue($paypal_order),
+                    'currency' => $this->getPayPalOrderCurrency($paypal_order),
+                    'status' => Txn::STATUS_CAPTURED,
+                    'provider_data' => $paypal_order,
+                    'payment_provider' => $payment_api->payment_provider,
+                    'payment_api_id' => (string)$payment_api->_id,
+                    'payer_id' => optional($paypal_order->payer)->payer_id
+                ],
+                ['payment_method' => PaymentMethods::INSTANT_TRANSFER]
+            );
 
             $this->setPayer($order, $paypal_order);
             $this->setShipping($order, $paypal_order);
@@ -500,7 +454,7 @@ class PayPalService
 
             // check is flagged
             $main_product = $order->getMainProduct(false);
-            if (!empty($main_product) && $main_product['txn_hash'] === $txn['hash']) {
+            if (!empty($main_product) && $main_product['txn_hash'] === $paypal_order->id) {
                 $order->is_flagged = $this->isPayPalOrderFlagged($paypal_order);
             }
 
@@ -526,6 +480,7 @@ class PayPalService
 
     /**
      * @param Request $request
+     * @throws \App\Exceptions\OrderNotFoundException
      */
     public function webhooks(Request $request)
     {
@@ -553,58 +508,33 @@ class PayPalService
                 }
             }
 
-            $response = $this->payPalHttpClient->execute(
-                new OrdersGetRequest(
-                    $paypal_order_id
-                )
-            );
+            $response = $this->payPalHttpClient->execute(new OrdersGetRequest($paypal_order_id));
 
             if ($response->statusCode === 200 && $response->result->status === self::STATUS_COMPLETED) {
                 $paypal_order = $response->result;
-                $paypal_order_currency = $this->getPayPalOrderCurrency($paypal_order);
-                $txn_response = $this->orderService->addTxn([
-                    'hash' => $paypal_order->id,
-                    'value' => $this->getPayPalOrderValue($paypal_order),
-                    'currency' => $paypal_order_currency,
-                    'provider_data' => $paypal_order,
-                    'payment_method' => PaymentMethods::INSTANT_TRANSFER,
-                    'payment_provider' => $payment_api->payment_provider,
-                    'payer_id' => optional($paypal_order->payer)->payer_id,
-                ], true);
 
-                $txn = $txn_response['txn']->attributesToArray();
+                $order = OdinOrder::getByTxnHash($paypal_order->id, $payment_api->payment_provider); // throwable
 
-                $order = OdinOrder::where('products.txn_hash', $txn['hash'])->first();
-
-                if (!$order) {
-                    logger()->error(
-                        '***Webhooks.Cant find matching order for txh.hash: ' . $paypal_order->id,
-                        ['paypal_order' => $paypal_order, 'txn_response' => $txn_response]
-                    );
-                    abort(404);
-                }
-
-                $order_txn_data = [
-                    'hash' => $txn_response['txn']->hash,
-                    'capture_hash' => $txn_response['txn']->provider_data->purchase_units[0]->payments->captures[0]->id  ?? null,
-                    'value' => $txn_response['txn']->value,
-                    'status' => Txn::STATUS_APPROVED,
-                    'fee_usd' => 0,
-                    'payment_provider' => $txn_response['txn']->payment_provider,
-                    'payment_method' => $txn_response['txn']->payment_method,
-                    'payment_api_id' => (string)$payment_api->_id,
-                    'payer_id' => $txn_response['txn']->payer_id,
-                ];
-
-                $txns = array_filter($order['txns'], function($item) use ($txn_response) {
-                    return $item['hash'] !== $txn_response['txn']->hash;
-                });
-                $order->txns = array_merge($txns, [$order_txn_data]);
+                PaymentService::addTxnToOrder(
+                    $order,
+                    [
+                        'hash' => $paypal_order->id,
+                        'capture_hash' => $paypal_order->purchase_units[0]->payments->captures[0]->id  ?? null,
+                        'value' => $this->getPayPalOrderValue($paypal_order),
+                        'currency' => $this->getPayPalOrderCurrency($paypal_order),
+                        'status' => Txn::STATUS_APPROVED,
+                        'provider_data' => $paypal_order,
+                        'payment_provider' => $payment_api->payment_provider,
+                        'payment_api_id' => (string)$payment_api->_id,
+                        'payer_id' => optional($paypal_order->payer)->payer_id
+                    ],
+                    ['payment_method' => PaymentMethods::INSTANT_TRANSFER]
+                );
 
                 // Set is_paid for order products of captured transaction
-                $products = $order->getProductsByTxnHash($txn['hash']);
+                $products = $order->getProductsByTxnHash($paypal_order->id);
                 if (empty($products)) {
-                    $products = $order->getProductsByTxnValue($txn['value']);
+                    $products = $order->getProductsByTxnValue($this->getPayPalOrderValue($paypal_order));
                 }
 
                 $is_order_need_to_check = false;
@@ -613,13 +543,13 @@ class PayPalService
                         $is_order_need_to_check = true;
                     }
                     $product['is_paid'] = true;
-                    $product['txn_hash'] = $txn['hash'];
+                    $product['txn_hash'] = $paypal_order->id;
                     $order->addProduct($product);
                 }
 
                 // reset flagged
                 $main_product = $order->getMainProduct(false);
-                if (!empty($main_product) && $main_product['txn_hash'] === $txn['hash']) {
+                if (!empty($main_product) && $main_product['txn_hash'] === $paypal_order->id) {
                     $order->is_flagged = false;
                 }
 
