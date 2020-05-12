@@ -130,6 +130,62 @@ class OdinProduct extends OdinModel
     }
 
     /**
+     * Getter upsell_title
+     */
+    public function getUpsellTitleAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Getter upsell_plusone_text
+     */
+    public function getUpsellPlusoneTextAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Getter upsell_plusone_text
+     */
+    public function getUpsellPlusoneTextAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Getter upsell_plusone_text
+     */
+    public function getUpsellPlusoneTextAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Getter upsell_plusone_text
+     */
+    public function getUpsellPlusoneTextAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Getter upsell_plusone_text
+     */
+    public function getUpsellPlusoneTextAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
+     * Getter upsell_plusone_text
+     */
+    public function getUpsellPlusoneTextAttribute($value)
+    {
+        return $this->getFieldLocalText($value);
+    }
+
+    /**
      * Getter upsell_plusone_text
      */
     public function getUpsellPlusoneTextAttribute($value)
