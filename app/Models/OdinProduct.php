@@ -13,7 +13,11 @@ use App\Exceptions\ProductNotFoundException;
  * Class OdinProduct
  * @package App\Models
  *
+ * @property string billing_descriptor
  * @property string description
+ * @property string long_name
+ * @property string logo_image
+ * @property string product_name
  * @property string warehouse_id
  */
 class OdinProduct extends OdinModel
@@ -508,17 +512,12 @@ class OdinProduct extends OdinModel
 
     /**
      * Return payment billing descriptor
-     * @param type $countryCode
+     * @param string $countryCode
      * @return string
      */
-    public function getPaymentBillingDescriptor($countryCode = null)
+    public function getPaymentBillingDescriptor(string $countryCode): string
     {
-        if ($countryCode && in_array(strtolower($countryCode), PaymentService::BILLING_DESCRIPTOR_COUNTRIES)) {
-            $value = $this->getOriginal('billing_descriptor');
-            $value = PaymentService::BILLING_DESCRIPTOR_COUNTRIES_CODE.'/'.$value;
-        } else {
-            $value = $this->billing_descriptor;
-        }
+        $value = PaymentService::getBillingDescriptorCodeByCountry($countryCode) . '/' . $this->getOriginal('billing_descriptor');
         if (strlen($value) >= PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH) {
             $value = substr($value, 0, PaymentService::BILLING_DESCRIPTOR_MAX_LENGTH);
         }

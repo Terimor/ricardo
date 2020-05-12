@@ -376,7 +376,8 @@ class CardService {
                         'amount' => $order->total_price,
                         'currency' => $order->currency,
                         'order_id' => $order->getIdAttribute(),
-                        'billing_descriptor' => $order->billing_descriptor,
+                        'descriptor' => $product->billing_descriptor,
+                        'descriptor_phone' => PaymentService::getBillingDescriptorCodeByCountry($contact['country']),
                         'kount_session_id' => $kount_session_id,
                         '3ds' => PaymentService::checkIs3dsNeeded(
                             $method,
@@ -639,7 +640,8 @@ class CardService {
                             [
                                 'amount'    => $checkout_price,
                                 'currency'  => $order->currency,
-                                'billing_descriptor' => $order->billing_descriptor
+                                'descriptor' => $main_product->billing_descriptor,
+                                'descriptor_phone'=> PaymentService::getBillingDescriptorCodeByCountry($order->shipping_country)
                             ]
                         );
                         break;
@@ -712,6 +714,7 @@ class CardService {
         $order = OdinOrder::getById($order_id); // throwable
         $order_product = $order->getMainProduct(); // throwable
         $order_txn = $order->getTxnByHash($order_product['txn_hash']); // throwable
+        $product = OdinProduct::getBySku($order_product['sku_code']); // throwable
         $order->dropTxn($order_txn['hash']);
 
         $result = [
@@ -734,7 +737,8 @@ class CardService {
                 '3ds_ref'   => $ref,
                 'amount'    => $order_txn['value'],
                 'currency'  => $order->currency,
-                'billing_descriptor' => $order->billing_descriptor
+                'descriptor' => $product->billing_descriptor,
+                'descriptor_phone' => PaymentService::getBillingDescriptorCodeByCountry($order->shipping_country)
             ]
         );
 
