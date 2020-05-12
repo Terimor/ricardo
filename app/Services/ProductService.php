@@ -445,7 +445,7 @@ class ProductService
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
 
-        if ($product->type == OdinProduct::TYPE_VIRTUAL) {
+        if ($product->type === OdinProduct::TYPE_VIRTUAL) {
             $lp->upsell_title = $product->upsell_title;
             $lp->upsell_subtitle = $product->upsell_subtitle;
             $lp->upsell_description = $product->upsell_description;
