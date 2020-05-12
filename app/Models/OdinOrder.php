@@ -519,17 +519,22 @@ class OdinOrder extends OdinModel
     /**
      * @param $value
      */
-    public function setShippingCountryAttribute($value)
+    public function setShippingCountryAttribute(?string $value)
     {
-        $this->attributes['shipping_country'] = strtolower($value);
+        if ($value) {
+            $this->attributes['shipping_country'] = strtolower($value);
+        }
     }
 
     /**
      * Setter customer email
+     * @param $value
      */
-    public function setCustomerEmailAttribute($value)
+    public function setCustomerEmailAttribute(?string $value)
     {
-        $this->attributes['customer_email'] =  strtolower(trim($value));
+        if ($value) {
+            $this->attributes['customer_email'] = strtolower(trim($value));
+        }
     }
 
     /**
