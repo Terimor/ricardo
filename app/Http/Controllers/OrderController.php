@@ -259,7 +259,7 @@ class OrderController extends Controller
      * @throws \App\Exceptions\ProductNotFoundException
      */
     public function getOrderMedia(string $orderNumber, string $fileId, string $filename, ProductService $productService, MediaService $mediaService) {
-        $select = ['number', 'type', 'products'];
+        $select = ['number', 'type', 'products', 'total_paid_usd'];
         $order = OdinOrder::getByNumber($orderNumber, false, $select);
 
         if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {

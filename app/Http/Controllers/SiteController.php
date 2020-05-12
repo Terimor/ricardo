@@ -601,7 +601,7 @@ class SiteController extends Controller
      */
     public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
         // after add here, still add to OrderService::getCustomerDataByOrderId();
-        $select = ['number', 'type', 'products', 'customer_email', 'customer_first_name', 'customer_last_name'];
+        $select = ['number', 'type', 'products', 'customer_email', 'customer_first_name', 'customer_last_name', 'total_paid_usd'];
         $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
         return $this->getVirtualOrderView($order, $productService, $request);
     }
