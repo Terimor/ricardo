@@ -114,6 +114,8 @@ class SiteController extends Controller
     {
         if ($cop_id) {
             $blocked_list = preg_split("/\r\n|\n/", Setting::getValue('blocked_cop_id', ''));
+            // remove special characters
+            $blocked_list = array_map('trim', $blocked_list);
             if (in_array($cop_id, $blocked_list)) {
                 abort(404);
             }
