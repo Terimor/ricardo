@@ -493,7 +493,7 @@ class OdinProduct extends OdinModel
      * @param int $maxQuantity
      * @return boolean
      */
-    public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES)
+    public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES): bool
     {
         $this->hide_cop_id_log = true;
         if ($this->currencyObject) {
@@ -550,6 +550,16 @@ class OdinProduct extends OdinModel
           $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
           $this->attributes['upsellPrices'][$i]['code'] = $discountLocalPrice['code'];
           $this->attributes['upsellPrices'][$i]['exchange_rate'] = $discountLocalPrice['exchange_rate'];
+        }
+        // for virtual product
+        if ($this->type == OdinProduct::TYPE_VIRTUAL) {
+            $additionalPrices = [10, 20];
+            foreach ($additionalPrices as $i) {
+                $this->attributes['upsellPrices'][$i]['price'] = $discountLocalPrice['price']*$i;
+                $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
+                $this->attributes['upsellPrices'][$i]['code'] = $discountLocalPrice['code'];
+                $this->attributes['upsellPrices'][$i]['exchange_rate'] = $discountLocalPrice['exchange_rate'];
+            }
         }
 
         return true;

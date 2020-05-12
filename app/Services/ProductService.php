@@ -25,7 +25,6 @@ class ProductService
      */
     public function resolveProduct(Request $request, $needImages = false, $currency = null, $isPostback = false)
     {
-        $product = null;
         // prepare select
         $select = ['type', 'prices', 'skus', 'product_name', 'description.en', 'long_name.en', 'home_description.en', 'home_name.en',
             'splash_description.en', 'billing_descriptor', 'logo_image_id', 'bg_image_id', 'favicon_image_id', 'upsell_hero_image_id', 'image_ids',
@@ -39,26 +38,8 @@ class ProductService
             $select = \Utils::addLangFieldToSelect($select, app()->getLocale());
         }
 
-        if ($request->has('cop_id')) {
-            $product = OdinProduct::getResolveProductForLocal(['prices.price_set' => $request->input('cop_id')], $select);
-        }
-
-        if (!$product && $request->has('product')) {
-            $product = OdinProduct::getResolveProductForLocal(['skus.code' => $request->input('product')], $select);
-        }
-
-        // Domain resolve logic
         $domain = Domain::getByName();
-        if (!$product) {
-            if ($domain && !empty($domain->odin_product_id)) {
-                $product = OdinProduct::getResolveProductForLocal(['_id' => $domain->odin_product_id], $select);
-            }
-        }
-
-        if (!$product) {
-            logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => $domain]);
-            $product = OdinProduct::orderBy('_id', 'desc')->where('skus.is_published', true)->firstOrFail();
-        }
+        $product = $this->getResolveProductByRequest($request, $domain, $select);
 
         // set local images
         if ($needImages) {
@@ -87,6 +68,49 @@ class ProductService
     }
 
     /**
+     * Get resolve product by Request
+     * @param Request $request
+     * @param null|Domain $domain
+     * @param array $select
+     * @return OdinProduct|null
+     */
+    public function getResolveProductByRequest(Request $request, ?Domain $domain, array $select = []): ?OdinProduct {
+        $product = null;
+        if ($request->has('cop_id')) {
+            $product = OdinProduct::getResolveProductForLocal(['prices.price_set' => $request->input('cop_id')], $select);
+        }
+
+        if (!$product && $request->has('product')) {
+            $product = OdinProduct::getResolveProductForLocal(['skus.code' => $request->input('product')], $select);
+        }
+
+        // Domain resolve logic
+        if (!$product) {
+            if ($domain && !empty($domain->odin_product_id)) {
+                $product = OdinProduct::getResolveProductForLocal(['_id' => $domain->odin_product_id], $select);
+            }
+        }
+
+        if (!$product) {
+            logger()->error("Can't find a product", ['request' => $request->all(), 'domain' => $domain]);
+            $product = OdinProduct::orderBy('_id', 'desc')->where('skus.is_published', true)->firstOrFail();
+        }
+        return $product;
+    }
+
+    /**
+     * Get resolve product for upsell
+     * @param Request $request
+     * @return OdinProduct|null
+     */
+    public function resolveProductForUpsell(Request $request): ?OdinProduct {
+        $select = ['upsells', 'type'];
+        $domain = Domain::getByName();
+        $product = $this->getResolveProductByRequest($request, $domain, $select);
+        return $product;
+    }
+
+    /**
      * Get upsell product by ID
      *
      * @param $product
@@ -112,7 +136,13 @@ class ProductService
 				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
 
 				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image_id', 'upsell_hero_image_id', 'skus',
-                    'image_ids', 'prices', 'price_correction_percents', 'warranty_percent', 'upsell_plusone_text.en', 'unit_qty'];
+                    'image_ids', 'prices', 'price_correction_percents', 'warranty_percent', 'upsell_plusone_text.en', 'unit_qty', 'type'];
+				// get virtual fields
+				if ($product->type == OdinProduct::TYPE_VIRTUAL) {
+				    $select = array_merge($select, ['upsell_title.en','upsell_subtitle.en', 'upsell_description.en', 'upsell_letter.en',
+                        'upsell_lcta_title.en', 'upsell_lcta_description.en', 'upsell_video_id.en']);
+                }
+
 				if (app()->getLocale() != 'en') {
 				    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
                 }
