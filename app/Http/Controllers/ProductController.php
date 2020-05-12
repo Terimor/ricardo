@@ -39,7 +39,8 @@ class ProductController extends Controller
     public function getUpsellProduct(string $productId, Request $request, ProductService $productService): array
     {
 		$product = $productService->resolveProductForUpsell($request);
-		$quantity = $product->type == OdinProduct::TYPE_VIRTUAL ? OdinProduct::QUANTITY_PRICES : $request->get('quantity', OdinProduct::QUANTITY_PRICES);
+		// for virtual product get prices for 1,2,3,10,20
+		$quantity = $product->type == OdinProduct::TYPE_VIRTUAL ? 3 : $request->get('quantity', OdinProduct::QUANTITY_PRICES);
 		$upsell = $productService->getUpsellProductById($product, $productId, $quantity);
 		return ['upsell' => $upsell];
     }

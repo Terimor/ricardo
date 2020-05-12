@@ -306,8 +306,9 @@ class ProductService
 
         $prices = [];
         $pricesOld = $product->prices;
+        $quantityPrices = $product->type == OdinProduct::TYPE_VIRTUAL ? 1 : self::QUANTITY_PRICES;
 
-        for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
+        for ($quantity = 1; $quantity <= $quantityPrices; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
                 logger()->error("*Price is 0 for {$product->product_name}", ['quantity' => $quantity,'product' => $product->toArray()]);
                 continue;

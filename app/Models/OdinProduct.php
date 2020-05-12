@@ -209,13 +209,13 @@ class OdinProduct extends OdinModel
             $userCountry = \Utils::getLocationCountryCode();
         }
         $unitQty = !empty($this->unit_qty) ? $this->unit_qty : 1;
-
+        $quantityPrices = $this->type == static::TYPE_VIRTUAL ? 1 : self::QUANTITY_PRICES;
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
             $oneItemPrice = 0;
 
             //iteration by items quantity for selected price set
-            for ($quantity = 1; $quantity <= self::QUANTITY_PRICES; $quantity++) {
+            for ($quantity = 1; $quantity <= $quantityPrices; $quantity++) {
                 // if skip_prices this value is empty
                 if (!empty($priceSet[$quantity]['value'])) {
                     // val for calculate upsell
