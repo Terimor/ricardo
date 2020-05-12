@@ -306,7 +306,7 @@ class ProductService
 
         $prices = [];
         $pricesOld = $product->prices;
-        $quantityPrices = $product->type == OdinProduct::TYPE_VIRTUAL ? 1 : self::QUANTITY_PRICES;
+        $quantityPrices = $product->type == OdinProduct::TYPE_VIRTUAL ? 1 : OdinProduct::QUANTITY_PRICES;
 
         for ($quantity = 1; $quantity <= $quantityPrices; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {

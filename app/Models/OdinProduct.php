@@ -209,7 +209,7 @@ class OdinProduct extends OdinModel
             $userCountry = \Utils::getLocationCountryCode();
         }
         $unitQty = !empty($this->unit_qty) ? $this->unit_qty : 1;
-        $quantityPrices = $this->type == static::TYPE_VIRTUAL ? 1 : self::QUANTITY_PRICES;
+        $quantityPrices = $this->type === OdinProduct::TYPE_VIRTUAL ? 1 : OdinProduct::QUANTITY_PRICES;
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
             $oneItemPrice = 0;
