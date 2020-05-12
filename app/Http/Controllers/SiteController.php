@@ -322,6 +322,9 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
+        if (!empty($priceSet)) {
+            $request->merge(['cop_id' => $priceSet]);
+        }
         // Abort request if cop_id in the list
         $this->abortByCopId($request->get('cop_id', $priceSet));
 
@@ -365,10 +368,6 @@ class SiteController extends Controller
 
         if ($request->get('3ds') === 'success' && $request->get('3ds_restore')) {
             return view('prerender.checkout.3ds_success', compact('product', 'is_vrtl_page'));
-        }
-
-        if (!empty($priceSet)) {
-            $request->merge(['cop_id' => $priceSet]);
         }
 
         // load upsells only for vrlt templates
