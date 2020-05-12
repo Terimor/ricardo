@@ -138,49 +138,49 @@ class OdinProduct extends OdinModel
     }
 
     /**
-     * Getter upsell_plusone_text
+     * Getter upsell_subtitle
      */
-    public function getUpsellPlusoneTextAttribute($value)
+    public function getUpsellSubtitleAttribute($value)
     {
         return $this->getFieldLocalText($value);
     }
 
     /**
-     * Getter upsell_plusone_text
+     * Getter upsell_description
      */
-    public function getUpsellPlusoneTextAttribute($value)
+    public function getUpsellDescriptionAttribute($value)
     {
         return $this->getFieldLocalText($value);
     }
 
     /**
-     * Getter upsell_plusone_text
+     * Getter upsell_letter
      */
-    public function getUpsellPlusoneTextAttribute($value)
+    public function getUpsellLetterAttribute($value)
     {
         return $this->getFieldLocalText($value);
     }
 
     /**
-     * Getter upsell_plusone_text
+     * Getter upsell_lcta_title
      */
-    public function getUpsellPlusoneTextAttribute($value)
+    public function getUpsellLctaTitleAttribute($value)
     {
         return $this->getFieldLocalText($value);
     }
 
     /**
-     * Getter upsell_plusone_text
+     * Getter upsell_lcta_description
      */
-    public function getUpsellPlusoneTextAttribute($value)
+    public function getUpsellLctaDescriptionAttribute($value)
     {
         return $this->getFieldLocalText($value);
     }
 
     /**
-     * Getter upsell_plusone_text
+     * Getter upsell_vimeo_id
      */
-    public function getUpsellPlusoneTextAttribute($value)
+    public function getUpsellVideoIdAttribute($value)
     {
         return $this->getFieldLocalText($value);
     }

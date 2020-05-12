@@ -175,7 +175,6 @@ class ProductService
         }
 
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
-
         $upsellLocalize = $this->localizeUpsell($upsell);
         return $upsellLocalize;
 		//return $upsell;
@@ -445,6 +444,7 @@ class ProductService
         $lp->long_name = $product->long_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
+
         if ($product->type == OdinProduct::TYPE_VIRTUAL) {
             $lp->upsell_title = $product->upsell_title;
             $lp->upsell_subtitle = $product->upsell_subtitle;
