@@ -115,11 +115,11 @@ class ProductService
      *
      * @param $product
      * @param string $productId
-     * @param null|int $maxQuantity
+     * @param int $maxQuantity
      * @param null|string $currency_code
      * @return stdClass
      */
-    public function getUpsellProductById($product, string $productId, ?int $maxQuantity = 5, ?string $currency_code = null)
+    public function getUpsellProductById($product, string $productId, $maxQuantity = 5, ?string $currency_code = null)
     {
 		// check upsell product by ID
 		$productUpsells = !empty($product->upsells) ? $product->upsells : null;
