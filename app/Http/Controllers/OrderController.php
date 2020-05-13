@@ -266,7 +266,7 @@ class OrderController extends Controller
             abort(404, 'Sorry, we couldn\'t find your order');
         }
         if ($order->total_paid_usd <= 0) {
-            abort(403);
+            //abort(403);
         }
         $sku = $order->getMainSku();
         $select = ['type', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id'];
