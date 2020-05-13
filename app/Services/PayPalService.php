@@ -351,6 +351,7 @@ class PayPalService
                     'customer_phone' => null,
                     'language' => app()->getLocale(),
                     'ip' => $request->ip(),
+                    'type' => OrderService::getOrderTypeByProduct($product),
                     'warehouse_id' => $product->warehouse_id,
                     'products' => [],
                     'txns' => [],

@@ -288,7 +288,7 @@ class CardService {
                 'params' => $params,
                 'offer' => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
                 'txid' => AffiliateService::getValidTxid($params['txid'] ?? null),
-                'type' => $product->type === OdinProduct::TYPE_VIRTUAL ? OdinOrder::TYPE_VIRTUAL : OdinOrder::TYPE_PHYSICAL,
+                'type' => OrderService::getOrderTypeByProduct($product),
                 'ip' => $req->ip()
             ]);
             $order->fillShippingData($contact);

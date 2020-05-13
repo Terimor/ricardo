@@ -85,23 +85,24 @@ class ApmService {
             $order_product = PaymentService::createOrderProduct($sku, $price, ['is_warranty' => $is_warranty]);
 
             $order = PaymentService::addOrder([
+                'affiliate' => AffiliateService::validateAffiliateID($affid) ? $affid : null,
                 'billing_descriptor' => $product->getPaymentBillingDescriptor($contacts['country']),
-                'currency'           => $price['currency'],
-                'exchange_rate'      => $price['usd_rate'],
-                'fingerprint'        => $fingerprint,
-                'total_price'        => $order_product['total_price'],
-                'total_price_usd'    => $order_product['total_price_usd'],
-                'language'           => app()->getLocale(),
-                'shop_currency'      => $shop_currency,
-                'warehouse_id'       => $product->warehouse_id,
-                'products'           => [$order_product],
-                'page_checkout'      => $page_checkout,
-                'params'             => $params,
-                'offer'              => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
-                'affiliate'          => AffiliateService::validateAffiliateID($affid) ? $affid : null,
-                'txid'               => AffiliateService::getValidTxid($params['txid'] ?? null),
-                'ipqualityscore'     => $ipqs,
-                'ip'                 => $req->ip()
+                'currency' => $price['currency'],
+                'exchange_rate' => $price['usd_rate'],
+                'fingerprint' => $fingerprint,
+                'ip' => $req->ip(),
+                'ipqualityscore' => $ipqs,
+                'language' => app()->getLocale(),
+                'offer' => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
+                'products' => [$order_product],
+                'page_checkout' => $page_checkout,
+                'params' => $params,
+                'shop_currency' => $shop_currency,
+                'total_price' => $order_product['total_price'],
+                'total_price_usd' => $order_product['total_price_usd'],
+                'txid' => AffiliateService::getValidTxid($params['txid'] ?? null),
+                'type' => OrderService::getOrderTypeByProduct($product),
+                'warehouse_id' => $product->warehouse_id
             ]);
             $order->fillShippingData($contacts);
         } else {

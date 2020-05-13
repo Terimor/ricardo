@@ -72,6 +72,58 @@ class OrderService
     }
 
     /**
+     * Calculate order total
+     * @param type $orderId
+     * @return type
+     */
+    public function calculateOrderAmountTotal($orderId)
+    {
+        $order = OdinOrder::getById($orderId, false);
+
+        return $this->getOrderProductsText($order);
+    }
+
+    /**
+     * Checks if the upsells are possible in order
+     * @param OdinOrder $order
+     * @return bool
+     */
+    public function checkIfUpsellsPossible(OdinOrder $order): bool
+    {
+        if (!in_array($order->status, [
+            OdinOrder::STATUS_NEW,
+            OdinOrder::STATUS_PAID,
+            OdinOrder::STATUS_HALFPAID,
+        ])) {
+            logger()->error('Trying to add product to order with status: ' . $order->status, ['order_id' => $order->getIdAttribute()]);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Calculates total amount of paid transactions
+     * @param OdinOrder $order
+     * @return OdinOrder
+     */
+    public static function calcTotalPaid(OdinOrder $order): OdinOrder
+    {
+        $currency = CurrencyService::getCurrency($order->currency);
+
+        $total = collect($order->txns)->reduce(function ($carry, $item) {
+            if ($item['status'] === Txn::STATUS_APPROVED) {
+                $carry += $item['value'];
+            }
+            return $carry;
+        }, 0);
+
+        $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total, $currency->code);
+        $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total / $currency->usd_rate, Currency::DEF_CUR);
+
+        return $order;
+    }
+
+    /**
      * Get customer data by order ID
      * @param string $orderId
      * @return type
@@ -113,70 +165,13 @@ class OrderService
     }
 
     /**
-     * Calculate order total
-     * @param type $orderId
-     * @return type
+     * Returns order type by product
+     * @param OdinProduct $product
+     * @return string
      */
-    public function calculateOrderAmountTotal($orderId)
+    public static function getOrderTypeByProduct(OdinProduct $product): string
     {
-        $order = OdinOrder::getById($orderId, false);
-
-        return $this->getOrderProductsText($order);
-    }
-
-    /**
-     * Prepate order products text
-     * @param type $order
-     * @return type
-     */
-    private static function getOrderProductsText($order)
-    {
-        // get order currency
-        $currency = CurrencyService::getCurrency($order->currency);
-
-        $total = 0;
-        // calculate total
-        $productsTexts = []; $skuCodes = [];
-        foreach ($order->products as $key => $product)
-        {
-            $productsTexts[$key]['sku_code'] = $product['sku_code'];
-            $skuCodes[$product['sku_code']] = $product['sku_code'];
-
-            $total += $product['price'];
-            $productsTexts[$key]['price_text'] = CurrencyService::getLocalTextValue($product['price'], $currency);
-            // if main add flag and check warranty
-            if (isset($product['is_main']) && $product['is_main'])
-            {
-                $productsTexts[$key]['is_main'] = true;
-
-                // check warranty price
-                if (isset($product['warranty_price']) && $product['warranty_price'] > 0 ) {
-                    $total += $product['warranty_price'];
-                    $productsTexts[$key]['warranty_price_text'] = CurrencyService::getLocalTextValue($product['warranty_price'], $currency);
-                }
-            } else {
-                $productsTexts[$key]['is_main'] = false;
-            }
-        }
-
-        // get products by skus
-        $productsData = OdinProduct::whereIn('skus.code', $skuCodes)->select('_id', 'skus')->pluck('skus', '_id');
-
-        // collect _id to array
-        foreach ($order->products as $key => $product) {
-            foreach ($productsData as $id => $data) {
-                $dataJson = json_encode($data);
-                if (strpos($dataJson, $product['sku_code'])) {
-                    $productsTexts[$key]['_id'] = $id;
-                    break;
-                }
-            }
-        }
-
-        return [
-            'products' => $productsTexts,
-            'total_text' => CurrencyService::getLocalTextValue($total, $currency)
-        ];
+        return $product->type === OdinProduct::TYPE_VIRTUAL ? OdinOrder::TYPE_VIRTUAL : OdinOrder::TYPE_PHYSICAL;
     }
 
     /**
@@ -231,24 +226,6 @@ class OrderService
             }
         }
         return $ol;
-    }
-
-    /**
-     * Checks if the upsells are possible in order
-     * @param OdinOrder $order
-     * @return bool
-     */
-    public function checkIfUpsellsPossible(OdinOrder $order): bool
-    {
-        if (!in_array($order->status, [
-            OdinOrder::STATUS_NEW,
-            OdinOrder::STATUS_PAID,
-            OdinOrder::STATUS_HALFPAID,
-        ])) {
-            logger()->error('Trying to add product to order with status: ' . $order->status, ['order_id' => $order->getIdAttribute()]);
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -338,24 +315,58 @@ class OrderService
     }
 
     /**
-     * Calculates total amount of paid transactions
-     * @param OdinOrder $order
-     * @return OdinOrder
+     * Prepate order products text
+     * @param type $order
+     * @return type
      */
-    public static function calcTotalPaid(OdinOrder $order): OdinOrder
+    private static function getOrderProductsText($order)
     {
+        // get order currency
         $currency = CurrencyService::getCurrency($order->currency);
 
-        $total = collect($order->txns)->reduce(function ($carry, $item) {
-            if ($item['status'] === Txn::STATUS_APPROVED) {
-                $carry += $item['value'];
+        $total = 0;
+        // calculate total
+        $productsTexts = []; $skuCodes = [];
+        foreach ($order->products as $key => $product)
+        {
+            $productsTexts[$key]['sku_code'] = $product['sku_code'];
+            $skuCodes[$product['sku_code']] = $product['sku_code'];
+
+            $total += $product['price'];
+            $productsTexts[$key]['price_text'] = CurrencyService::getLocalTextValue($product['price'], $currency);
+            // if main add flag and check warranty
+            if (isset($product['is_main']) && $product['is_main'])
+            {
+                $productsTexts[$key]['is_main'] = true;
+
+                // check warranty price
+                if (isset($product['warranty_price']) && $product['warranty_price'] > 0 ) {
+                    $total += $product['warranty_price'];
+                    $productsTexts[$key]['warranty_price_text'] = CurrencyService::getLocalTextValue($product['warranty_price'], $currency);
+                }
+            } else {
+                $productsTexts[$key]['is_main'] = false;
             }
-            return $carry;
-        }, 0);
+        }
 
-        $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total, $currency->code);
-        $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total / $currency->usd_rate, Currency::DEF_CUR);
+        // get products by skus
+        $productsData = OdinProduct::whereIn('skus.code', $skuCodes)->select('_id', 'skus')->pluck('skus', '_id');
 
-        return $order;
+        // collect _id to array
+        foreach ($order->products as $key => $product) {
+            foreach ($productsData as $id => $data) {
+                $dataJson = json_encode($data);
+                if (strpos($dataJson, $product['sku_code'])) {
+                    $productsTexts[$key]['_id'] = $id;
+                    break;
+                }
+            }
+        }
+
+        return [
+            'products' => $productsTexts,
+            'total_text' => CurrencyService::getLocalTextValue($total, $currency)
+        ];
     }
+
 }
