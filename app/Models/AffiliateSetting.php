@@ -104,7 +104,9 @@ class AffiliateSetting extends Model
         'name' => null,
         'is_signup_hidden' => false,
         'product_sales' => null,
-        'postback_percent' => 0
+        'postback_percent' => 0,
+        'user_id' => '',
+        'is_3ds_off' => false
     ];
 
     /**
