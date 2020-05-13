@@ -509,10 +509,11 @@ class PaymentService
                             $order->affiliate,
                             (array)$order->ipqualityscore
                         ),
-                        'amount'        => $order->total_price,
-                        'currency'      => $order->currency,
-                        'order_id'      => $order->getIdAttribute(),
-                        'billing_descriptor'   => $order->billing_descriptor
+                        'amount' => $order->total_price,
+                        'currency' => $order->currency,
+                        'order_id' => $order->getIdAttribute(),
+                        'descriptor' => $product->billing_descriptor,
+                        'descriptor_phone' => self::getBillingDescriptorCodeByCountry($order->shipping_country)
                     ]
                 );
                 break;
