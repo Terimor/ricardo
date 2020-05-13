@@ -401,7 +401,7 @@ class SiteController extends Controller
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
 
         $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain);
-        $company_descriptor_prefix = \Utils::getCompanyDescriptorPrefix($request);
+        $company_descriptor_prefix = '';
 
         $cdn_url = \Utils::getCdnUrl();
 
@@ -618,7 +618,7 @@ class SiteController extends Controller
         }
         $sku = $order->getMainSku();
         // add select fields for page
-        $select = ['type', 'product_name', 'description.en', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id'];
+        $select = ['type', 'product_name', 'description.en', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id', 'billing_description'];
         $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
 
         $product = OdinProduct::getBySku($sku, false, $select);

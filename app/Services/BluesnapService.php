@@ -133,7 +133,8 @@ class BluesnapService extends ProviderService
      *   '3ds'=>boolean,
      *   'currency'=>string,
      *   'amount'=>float,
-     *   'billing_descriptor'=>string,
+     *   'descriptor'=>string,
+     *   'descriptor_phone'=>string,
      *   'kount_session_id'=>?string,
      *   'order_id'=>string
      * ]
@@ -165,7 +166,14 @@ class BluesnapService extends ProviderService
     /**
      * Provides payment by vaulted shopper id
      * @param string $shopper_id
-     * @param array $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
+     * @param array $details
+     * [
+     *   '3ds_ref'=>?string,
+     *   'currency'=>string,
+     *   'amount'=>float,
+     *   'descriptor'=>string,
+     *   'descriptor_phone'=>string
+     * ]
      * @return array
      */
     public function payByVaultedShopperId(string $shopper_id, array $details): array
@@ -179,7 +187,14 @@ class BluesnapService extends ProviderService
     /**
      * Provides payment
      * @param  array   $source
-     * @param  array   $details ['3ds_ref'=>?string, 'currency'=>string, 'amount'=>float, 'billing_descriptor'=>string]
+     * @param  array   $details
+     * [
+     *   '3ds_ref'=>?string,
+     *   'currency'=>string,
+     *   'amount'=>float,
+     *   'descriptor'=>string,
+     *   'descriptor_phone'=>string
+     * ]
      * @return array
      */
     private function pay(array $source, array $details): array
@@ -205,7 +220,8 @@ class BluesnapService extends ProviderService
                         'amount'   => $details['amount'],
                         'currency' => $details['currency'],
                         'cardTransactionType' => 'AUTH_CAPTURE',
-                        'softDescriptor' =>  $details['billing_descriptor'],
+                        'softDescriptor' =>  $details['descriptor'],
+                        'descriptorPhoneNumber' => $details['descriptor_phone'],
                         'storeCard' => true
                     ]
                 )

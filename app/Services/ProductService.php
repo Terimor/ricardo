@@ -175,7 +175,6 @@ class ProductService
         }
 
 		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
-
         $upsellLocalize = $this->localizeUpsell($upsell);
         return $upsellLocalize;
 		//return $upsell;
@@ -445,8 +444,19 @@ class ProductService
         $lp->long_name = $product->long_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
-        $lp->upsell_hero_image = $product->upsell_hero_image;
-        $lp->upsell_plusone_text = $product->upsell_plusone_text;
+
+        if ($product->type === OdinProduct::TYPE_VIRTUAL) {
+            $lp->upsell_title = $product->upsell_title;
+            $lp->upsell_subtitle = $product->upsell_subtitle;
+            $lp->upsell_description = $product->upsell_description;
+            $lp->upsell_letter = $product->upsell_letter;
+            $lp->upsell_lcta_title = $product->upsell_lcta_title;
+            $lp->upsell_lcta_description = $product->upsell_lcta_description;
+            $lp->upsell_video_id = $product->upsell_video_id;
+        } else {
+            $lp->upsell_hero_image = $product->upsell_hero_image;
+            $lp->upsell_plusone_text = $product->upsell_plusone_text;
+        }
 
         $lp->upsell_sku = $product['skus'][0]['code'];
 
