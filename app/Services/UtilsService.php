@@ -1218,22 +1218,6 @@ class UtilsService
     }
 
     /**
-     * Get company address
-     * @param Request $request
-     */
-    public static function getCompanyDescriptorPrefix(Request $request)
-    {
-        $address = 'MDE/Hal-Balzan';
-
-        if (str_replace('www.', '', $request->getHost()) === 'gizmoshop.net') {
-            $address = 'BXT';
-        }
-        $address.= '/';
-
-        return $address;
-    }
-
-    /**
      * Get user data from user agent
      * https://github.com/matomo-org/device-detector
      * @return array

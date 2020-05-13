@@ -401,7 +401,7 @@ class SiteController extends Controller
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
 
         $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain);
-        $company_descriptor_prefix = ''; //\Utils::getCompanyDescriptorPrefix($request);
+        $company_descriptor_prefix = '';
 
         $cdn_url = \Utils::getCdnUrl();
 
