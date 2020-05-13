@@ -13,6 +13,7 @@ use App\Exceptions\ProductNotFoundException;
  * Class OdinProduct
  * @package App\Models
  *
+ * @property string type
  * @property string billing_descriptor
  * @property string description
  * @property string long_name

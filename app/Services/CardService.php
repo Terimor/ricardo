@@ -272,23 +272,24 @@ class CardService {
 
             $order = PaymentService::addOrder([
                 'billing_descriptor' => $product->getPaymentBillingDescriptor($contact['country']),
-                'total_price_usd'   => $order_product['total_price_usd'],
-                'ipqualityscore'    => $ipqs,
-                'currency'      => $price['currency'],
+                'total_price_usd' => $order_product['total_price_usd'],
+                'ipqualityscore' => $ipqs,
                 'exchange_rate' => $price['usd_rate'],
-                'fingerprint'   => $fingerprint,
-                'total_price'   => $order_product['total_price'],
-                'installments'  => $installments,
-                'language'      => app()->getLocale(),
+                'fingerprint' => $fingerprint,
+                'total_price' => $order_product['total_price'],
+                'installments' => $installments,
                 'shop_currency' => CurrencyService::getCurrency()->code,
-                'warehouse_id'  => $product->warehouse_id,
-                'products'      => [$order_product],
+                'warehouse_id' => $product->warehouse_id,
                 'page_checkout' => $page_checkout,
-                'params'        => $params,
-                'offer'         => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
-                'affiliate'     => AffiliateService::validateAffiliateID($affid) ? $affid : null,
-                'txid'          => AffiliateService::getValidTxid($params['txid'] ?? null),
-                'ip'            => $req->ip()
+                'currency' => $price['currency'],
+                'language' => app()->getLocale(),
+                'products' => [$order_product],
+                'affiliate' => AffiliateService::validateAffiliateID($affid) ? $affid : null,
+                'params' => $params,
+                'offer' => AffiliateService::getAttributeByPriority($params['offer_id'] ?? null, $params['offerid'] ?? null),
+                'txid' => AffiliateService::getValidTxid($params['txid'] ?? null),
+                'type' => $product->type === OdinProduct::TYPE_VIRTUAL ? OdinOrder::TYPE_VIRTUAL : OdinOrder::TYPE_PHYSICAL,
+                'ip' => $req->ip()
             ]);
             $order->fillShippingData($contact);
         } else {
