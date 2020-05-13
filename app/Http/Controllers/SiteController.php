@@ -613,8 +613,11 @@ class SiteController extends Controller
      * @throws \App\Exceptions\ProductNotFoundException
      */
     private function getVirtualOrderView(?OdinOrder $order, ProductService $productService, Request $request) {
-        if (!$order || !$order->hasMediaAccess()) {
+        if (!$order) {
             abort(404, 'Sorry, we couldn\'t find your order');
+        }
+        if (!$order->hasMediaAccess()) {
+            abort(403);
         }
         $sku = $order->getMainSku();
         // add select fields for page

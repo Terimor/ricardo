@@ -262,8 +262,11 @@ class OrderController extends Controller
         $select = ['number', 'type', 'products', 'txns.status', 'total_paid_usd', 'total_refunded_usd'];
         $order = OdinOrder::getByNumber($orderNumber, false, $select);
 
-        if (!$order || !$order->hasMediaAccess()) {
+        if (!$order) {
             abort(404, 'Sorry, we couldn\'t find your order');
+        }
+        if (!$order->hasMediaAccess()) {
+            abort(403);
         }
         $sku = $order->getMainSku();
         $select = ['type', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id'];
