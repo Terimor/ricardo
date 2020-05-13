@@ -96,6 +96,8 @@ class OrderService
             'products',
             'txns',
             'type',
+            'total_paid_usd',
+            'total_refunded_usd'
         ]);
 
         $order = $order->first();
@@ -192,7 +194,7 @@ class OrderService
 
         if ($order){
             // check if order has the same affiliate and txn status captured, approved
-            if ($order->affiliate == $hoAffiliateId && $order->isTxnForReduce()) {
+            if ($order->affiliate == $hoAffiliateId && $order->isAcceptedTxn()) {
                 // check or create affiliate
                 $affiliate = AffiliateSetting::getByHasOfferId($hoAffiliateId);
 

@@ -801,17 +801,17 @@ class OdinOrder extends OdinModel
      * Check if txn has status for reduce
      * @return boolean
      */
-    public function isTxnForReduce()
+    public function isAcceptedTxn()
     {
         $txns = $this->txns;
-        $isReduce = false;
+        $isAccepted = false;
         foreach ($txns as $txn) {
             if (in_array($txn['status'], static::$acceptedTxnStatuses)) {
-                $isReduce = true;
+                $isAccepted = true;
                 break;
             }
         }
-        return $isReduce;
+        return $isAccepted;
     }
 
     /**
@@ -1054,5 +1054,20 @@ class OdinOrder extends OdinModel
             throw new OrderNotFoundException("Order [{$number}][{$id}] not found");
         }
         return $order;
+    }
+
+    /**
+     * Check if order has access to media resources
+     * @return bool
+     */
+    public function hasMediaAccess(): bool
+    {
+        $hasMedia = false;
+        if ($this->type === OdinOrder::TYPE_VIRTUAL) {
+            if (($this->isAcceptedTxn() && $this->total_refunded_usd == 0) || ($this->total_refunded_usd != 0 && $this->total_paid_usd > 0)) {
+                $hasMedia = true;
+            }
+        }
+        return $hasMedia;
     }
 }

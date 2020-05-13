@@ -600,7 +600,7 @@ class SiteController extends Controller
      */
     public function virtualOrderDownload(string $orderId, string $orderNumber, ProductService $productService, Request $request): \Illuminate\View\View {
         // after add here, still add to OrderService::getCustomerDataByOrderId();
-        $select = ['number', 'type', 'products', 'customer_email', 'customer_first_name', 'customer_last_name'];
+        $select = ['number', 'type', 'products', 'customer_email', 'customer_first_name', 'customer_last_name', 'txns.status', 'total_paid_usd', 'total_refunded_usd'];
         $order = OdinOrder::getByIdAndNumber($orderId, $orderNumber, $select, false);
         return $this->getVirtualOrderView($order, $productService, $request);
     }
@@ -613,7 +613,7 @@ class SiteController extends Controller
      * @throws \App\Exceptions\ProductNotFoundException
      */
     private function getVirtualOrderView(?OdinOrder $order, ProductService $productService, Request $request) {
-        if (!$order || $order->type != OdinOrder::TYPE_VIRTUAL) {
+        if (!$order || !$order->hasMediaAccess()) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
         $sku = $order->getMainSku();
