@@ -20,7 +20,10 @@ export default {
     },
 
     image_style() {
-      return {
+      return document.dir === 'rtl' ? {
+        'margin-right': '-' + (100 * this.image_index) + '%',
+        'margin-left': (100 * this.image_index) + '%',
+      } : {
         'margin-left': '-' + (100 * this.image_index) + '%',
         'margin-right': (100 * this.image_index) + '%',
       };

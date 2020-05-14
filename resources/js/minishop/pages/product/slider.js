@@ -24,7 +24,10 @@ export default {
     },
 
     slider_style() {
-      return {
+      return document.dir === 'rtl' ? {
+        'margin-right': '-' + (25 * this.slider_offset) + '%',
+        'margin-left': (25 * this.slider_offset) + '%',
+      } : {
         'margin-left': '-' + (25 * this.slider_offset) + '%',
         'margin-right': (25 * this.slider_offset) + '%',
       };
