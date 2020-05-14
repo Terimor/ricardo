@@ -44,7 +44,22 @@ class Setting extends Model
             }
         }
         return $returnedValues;
-	}
+    }
+
+    /**
+     * Returns multiline value as array
+     * @param string $key
+     * @return array
+     */
+    public static function getMultilineValueAsArray(string $key): array
+    {
+        $result = [];
+        $value = self::getValue($key);
+        if ($value) {
+            $result = array_map('trim', preg_split("/\r\n|\n/", $value));
+        }
+        return $result;
+    }
 
     /**
      * Increments integer value

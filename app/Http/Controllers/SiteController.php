@@ -107,19 +107,36 @@ class SiteController extends Controller
     }
 
     /**
-     * Retrieves page 404 if cop_id is ignored
+     * Redirects to 404 page if value in setting
+     * @param string|null $value
+     * @param string $setting_key
+     */
+    private function abortIfValueInSettingList(?string $value, string $setting_key): void
+    {
+        if ($value) {
+            $list = Setting::getMultilineValueAsArray($setting_key);
+            if (in_array($value, $list)) {
+                abort(404);
+            }
+        }
+    }
+
+    /**
+     * Redirects to 404 page if cop_id is ignored
      * @param string|null $cop_id
      */
     private function abortByCopId(?string $cop_id): void
     {
-        if ($cop_id) {
-            $blocked_list = preg_split("/\r\n|\n/", Setting::getValue('blocked_cop_id', ''));
-            // remove special characters
-            $blocked_list = array_map('trim', $blocked_list);
-            if (in_array($cop_id, $blocked_list)) {
-                abort(404);
-            }
-        }
+        $this->abortIfValueInSettingList($cop_id, 'blocked_cop_id');
+    }
+
+    /**
+     * Redirects to 404 page if aff_id is ignored
+     * @param string|null $aff_id
+     */
+    private function abortByAffId(?string $aff_id): void
+    {
+        $this->abortIfValueInSettingList($aff_id, 'blocked_aff_id');
     }
 
     /**
@@ -318,6 +335,7 @@ class SiteController extends Controller
      * Checkout page
      * @param Request $request
      * @param ProductService $productService
+     * @param string $priceSet
      * @return mixed
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
@@ -327,6 +345,9 @@ class SiteController extends Controller
         }
         // Abort request if cop_id in the list
         $this->abortByCopId($request->get('cop_id', $priceSet));
+
+        // Abort request if aff_id in the list
+        $this->abortByAffId($request->get('aff_id'));
 
         $redirect_view = $this->checkoutRequestView($request);
         if ($redirect_view) {
