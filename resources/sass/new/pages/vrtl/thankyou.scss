@@ -1,1 +1,337 @@
 @import '../../app';
+
+body {
+  overflow-y: scroll;
+  background-color: #E3E3E3;
+}
+
+.header {
+  position: relative;
+  background-color: #263454;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 80%;
+    top: 100%;
+    left: 50%;
+    opacity: .3;
+    z-index: 10;
+    transform: translateX(-50%);
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+main {
+  &.pt-4 {
+    padding-top: 0 !important;
+  }
+}
+
+.vrtl-thank-you-page {
+  position: relative;
+
+  &-header {
+    position: relative;
+    background-color: #263454;
+    text-align: center;
+
+    .header-product-image {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: 290px;
+      height: 100%;
+      opacity: .3;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+
+    .header-main {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 35px 20px 45px;
+
+      .header-product-title {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 38px;
+        font-weight: 100;
+      }
+
+      .header-product-payment-msg {
+        margin-top: 60px;
+        font-weight: bold;
+        color: #fff;
+      }
+
+      .header-product-video-info-msg {
+        margin-top: 20px;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 18px;
+      }
+    }
+
+    .header-main-down-icon {
+      bottom: -15px;
+    }
+  }
+
+  &-main {
+    padding: 60px 20px 40px;
+    background-color: #E3E3E3;
+    text-align: center;
+
+    .main-section-content {
+      max-width: 576px;
+      margin: 0 auto;
+    }
+
+    .main-section-title {
+      margin-bottom: 15px;
+      color: #666;
+      font-size: 29px;
+      font-weight: 600;
+    }
+
+    .section-tabs {
+      .nav-tabs .nav-link {
+        padding: 0;
+
+        &.active {
+          .section-tab {
+            background-color: #04A8D4;
+            color: #fff;
+          }
+        }
+      }
+    }
+
+    .section-tab {
+      display: inline-block;
+      padding: 10px 15px;
+      color: #666;
+      font-size: 12px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .2s ease;
+
+      &:hover {
+        background-color: #04A8D4;
+        color: #fff;
+      }
+    }
+
+    .section-content {
+      padding: 30px 20px;
+      background-color: #fff;
+    }
+  }
+
+  .product-files-title {
+    font-weight: 600;
+    color: #666;
+    font-size: 15px;
+    line-height: 23px;
+  }
+
+  .product-videos-title {
+    margin-top: 20px;
+    text-transform: uppercase;
+    font-size: 25px;
+    font-weight: 300;
+    color: #666;
+    opacity: .7;
+  }
+
+  .product-videos-descr {
+    margin-top: 20px;
+    font-weight: 300;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .product-videos-collapse-help-msg {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #666;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .product-file-collapse-head {
+    background-color: #E3E3E3;
+    color: #666;
+    font-weight: bold;
+    padding: 10px 20px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    transition: all .2s ease;
+
+    &:hover {
+      opacity: .9;
+    }
+
+    svg {
+      transition: all .2s ease;
+    }
+
+    &[aria-expanded="true"] {
+      svg {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .product-file-collapse-content {
+    padding: 10px;
+  }
+
+  .product-files-list {
+    .product-file {
+      font-weight: bold;
+      font-size: 14px;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 15px;
+      }
+    }
+  }
+
+  .thank-you-page-email {
+    margin-top: 25px;
+    color: #666;
+
+    &-link {
+      color: #CD2654;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+  
+  .product-files-title {
+    font-weight: 600;
+    color: #666;
+    font-size: 15px;
+    line-height: 23px;
+  }
+
+  .product-videos-title {
+    margin-top: 20px;
+    text-transform: uppercase;
+    font-size: 25px;
+    font-weight: 300;
+    color: #666;
+    opacity: .7;
+  }
+
+  .product-videos-descr {
+    margin-top: 20px;
+    font-weight: 300;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .product-videos-collapse-help-msg {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #666;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .product-file-collapse-head {
+    background-color: #E3E3E3;
+    color: #666;
+    font-weight: bold;
+    padding: 10px 20px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    transition: all .2s ease;
+
+    &:hover {
+      opacity: .9;
+    }
+
+    svg {
+      transition: all .2s ease;
+    }
+
+    &[aria-expanded="true"] {
+      svg {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .product-file-collapse-content {
+    padding: 10px 0;
+  }
+
+  .product-files-list {
+    .product-file {
+      font-weight: bold;
+      font-size: 14px;
+      text-align: left;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 15px;
+      }
+    }
+  }
+
+  .thank-you-page-email {
+    margin-top: 25px;
+    color: #666;
+
+    &-link {
+      color: #CD2654;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+
+  .header-main-down-icon, .footer-main-down-icon {
+    position: absolute;
+    left: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-color: #E3E3E3;
+    box-shadow: 1px 0px 5px 5px rgba(102, 102, 102, .2);
+  }
+
+  .footer-main-down-icon {
+    bottom: -5px;
+  }
+}

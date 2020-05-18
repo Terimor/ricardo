@@ -834,6 +834,7 @@ class ProductService
         $lp->logo_image = $product->logo_image;
         $lp->bg_image = $product->bg_image;
         $lp->image = $product->image;
+        $lp->billing_descriptor = $product->billing_descriptor;
         return $lp;
     }
 
