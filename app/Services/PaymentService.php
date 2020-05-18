@@ -194,8 +194,8 @@ class PaymentService
         $reply = (new CustomerService)->addOrUpdate(
             array_merge($contacts,
                 [
-                    'doc_id'    => $contacts['document_number'] ?? null,
-                    'phone'     => $contacts['phone']['country_code'] . UtilsService::preparePhone($contacts['phone']['number'])
+                    'doc_id' => $contacts['document_number'] ?? null,
+                    'phone' => $contacts['phone']['country_code'] . UtilsService::preparePhone($contacts['phone']['number'])
                 ]
             ),
             true
@@ -656,7 +656,7 @@ class PaymentService
             if ($email) {
                 $isTrusted = OdinCustomer::isTrustedByEmail($email);
             }
-            if (!$isTrusted) {
+            if ($isTrusted === null) {
                 $fraud_chance = $ipqs['fraud_chance'] ?? PaymentService::FRAUD_CHANCE_MAX;
                 $is_bot = $ipqs['bot_status'] ?? false;
                 $is_valid_email = !empty($ipqs['transaction_details']) ? $ipqs['transaction_details']['valid_billing_email'] ?? null : null;
@@ -670,6 +670,8 @@ class PaymentService
                 if ($fraud_chance > $fraud_setting['refuse_limit'] || $is_bot || $is_valid_email === false) {
                     throw new PaymentException('Payment is refused', 'card.error.refused');
                 }
+            } elseif ($isTrusted === false) {
+                throw new PaymentException('Payment is refused', 'card.error.refused');
             }
         }
     }
