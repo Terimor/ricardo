@@ -671,6 +671,7 @@ class PaymentService
                     throw new PaymentException('Payment is refused', 'card.error.refused');
                 }
             } elseif ($isTrusted === false) {
+                logger()->info("Payment is refused for blocked customer [{$email}]");
                 throw new PaymentException('Payment is refused', 'card.error.refused');
             }
         }
