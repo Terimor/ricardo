@@ -642,7 +642,8 @@ class SiteController extends Controller
         }
         $sku = $order->getMainSku();
         // add select fields for page
-        $select = ['type', 'product_name', 'description.en', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id', 'billing_description'];
+        $select = ['type', 'product_name', 'description.en', 'free_file_ids', 'sale_file_ids', 'sale_video_ids', 'logo_image_id',
+            'billing_description', 'image_ids', 'bg_image_id'];
         $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
 
         $product = OdinProduct::getBySku($sku, false, $select);

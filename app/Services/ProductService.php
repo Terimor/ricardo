@@ -832,6 +832,8 @@ class ProductService
         $lp->sale_files = !empty($product->sale_file_ids) ? $this->getFileUrlsByIds($product->sale_file_ids, $orderNumber) : null;
         $lp->sale_videos = !empty($product->sale_video_ids) ? $this->getVideoUrlsByIds($product->sale_video_ids, $orderNumber) : null;
         $lp->logo_image = $product->logo_image;
+        $lp->bg_image = $product->bg_image;
+        $lp->image = $product->image;
         return $lp;
     }
 
