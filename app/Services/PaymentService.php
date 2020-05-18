@@ -652,7 +652,7 @@ class PaymentService
     public static function fraudCheck(?array $ipqs, string $prv, ?string $affid = null, ?string $email = null): void
     {
         if (!empty($ipqs) && \App::environment() === 'production') {
-            $isTrusted = false;
+            $isTrusted = null;
             if ($email) {
                 $isTrusted = OdinCustomer::isTrustedByEmail($email);
             }
