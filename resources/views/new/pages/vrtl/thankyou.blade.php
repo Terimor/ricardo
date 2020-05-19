@@ -36,18 +36,14 @@
       <div class="header-product-image" style="background-image: url({{ $product->image && count($product->image) > 0 ? $product->image[0] : '' }})"></div>
       
       <div class="header-main">
-        <h2 class="header-product-title">{{ t('thankyou.vrtl.congratulations') }} <br/>"{{ $product->product_name }}"</h2>
+        <h2 class="header-product-title">{{ t('thankyou.vrtl.congratulations', ['product' => $product->product_name]) }}</h2>
 
-        <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg') }} {{ $product->billing_descriptor }}"</p>
+        <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg', ['descriptor' => $product->product_name]) }}"</p>
 
         <p class="header-product-video-info-msg">
-          {{ t('thankyou.vrtl.video_msg.welcome') }}
+          @php $courses_count = $product->sale_videos && count($product->sale_videos) > 0 ? count($product->sale_videos) : ''; @endphp
 
-          @if($product->sale_videos && count($product->sale_videos) > 0)
-            {{ count($product->sale_videos) }}
-          @endif
-          
-          {{ t('thankyou.vrtl.video_msg.course_presented') }} {{ $product->product_name }}. {{ t('thankyou.vrtl.video_msg.recommend') }}
+          {{ t('thankyou.vrtl.video_msg', ['courses' => $courses_count, 'product' => $product->product_name]) }} 
         </p>
       </div>
 
@@ -71,7 +67,7 @@
               <div class="section-content">
                 @if($product->sale_files && count($product->sale_files) > 0)
                   <div class="product-files-sect">
-                    <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro') }} {{ $product->product_name }} {{ t('thankyou.vrtl.setup') }}</h6>
+                    <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
                   </div>
 
                   @foreach($product->sale_files as $index => $file)
@@ -93,7 +89,7 @@
                 @if($product->sale_videos && count($product->sale_videos) > 0)
                   <div class="product-videos-sect">
                     <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
-                    <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_msg') }} {{ $product->product_name }}</p>
+                    <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_subtitle', ['product' => $product->product_name]) }}</p>
 
                     <div class="product-videos-collapse-help-msg">{{ t('thankyou.vrtl.toggle_videos') }}</div>
 
@@ -113,7 +109,7 @@
                 @endif
               </div>
             </b-tab>
-            
+
             @if($product->free_files && count($product->free_files) > 0)
               <b-tab>
                 <template v-slot:title>
