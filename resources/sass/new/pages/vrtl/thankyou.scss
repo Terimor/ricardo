@@ -99,16 +99,7 @@ main {
     }
 
     .section-tabs {
-      .nav-tabs .nav-link {
-        padding: 0;
-
-        &.active {
-          .section-tab {
-            background-color: #04A8D4;
-            color: #fff;
-          }
-        }
-      }
+      text-align: left;
     }
 
     .section-tab {
@@ -120,7 +111,7 @@ main {
       cursor: pointer;
       transition: all .2s ease;
 
-      &:hover {
+      &:hover, &-active {
         background-color: #04A8D4;
         color: #fff;
       }
@@ -164,10 +155,12 @@ main {
   }
 
   .product-file-collapse-head {
+    position: relative;
     background-color: #E3E3E3;
     color: #666;
     font-weight: bold;
     padding: 10px 20px;
+    padding-left: 30px;
     text-align: left;
     font-size: 15px;
     font-weight: bold;
@@ -175,23 +168,41 @@ main {
     cursor: pointer;
     transition: all .2s ease;
 
-    &:hover {
-      opacity: .9;
+    &.active {
+      &::before {
+        transform: rotate(90deg);
+      }
     }
 
-    svg {
+    &::before {
+      position: absolute;
+      top: 15px;
+      left: 10px;
+      content: '';
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 5px 0 5px 10px;
+      border-color: transparent transparent transparent #666;
       transition: all .2s ease;
     }
 
-    &[aria-expanded="true"] {
-      svg {
-        transform: rotate(90deg);
-      }
+    &:hover {
+      opacity: .9;
     }
   }
 
   .product-file-collapse-content {
-    padding: 10px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.2s ease-out, padding 0.2s ease-out;
+    box-sizing: content-box;
+
+    iframe {
+      &:not(:last-child) {
+        margin-bottom: 20px;
+      }
+    }
   }
 
   .product-files-list {
@@ -255,37 +266,6 @@ main {
     font-size: 15px;
   }
 
-  .product-file-collapse-head {
-    background-color: #E3E3E3;
-    color: #666;
-    font-weight: bold;
-    padding: 10px 20px;
-    text-align: left;
-    font-size: 15px;
-    font-weight: bold;
-    outline: none;
-    cursor: pointer;
-    transition: all .2s ease;
-
-    &:hover {
-      opacity: .9;
-    }
-
-    svg {
-      transition: all .2s ease;
-    }
-
-    &[aria-expanded="true"] {
-      svg {
-        transform: rotate(90deg);
-      }
-    }
-  }
-
-  .product-file-collapse-content {
-    padding: 10px 0;
-  }
-
   .product-files-list {
     .product-file {
       font-weight: bold;
@@ -329,6 +309,19 @@ main {
     border-radius: 100%;
     background-color: #E3E3E3;
     box-shadow: 1px 0px 5px 5px rgba(102, 102, 102, .2);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 8.5px;
+      left: 9.5px;
+      width: 9px;
+      height: 9px;
+      background-color: transparent;
+      transform: rotate(45deg);
+      border-bottom: 2px solid #666;
+      border-right: 2px solid #666;
+    }
   }
 
   .footer-main-down-icon {

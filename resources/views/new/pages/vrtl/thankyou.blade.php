@@ -47,9 +47,7 @@
         </p>
       </div>
 
-      <div class="header-main-down-icon">
-        <font-awesome-icon :icon="angleDown" :style="{ color: '#666' }" />
-      </div>
+      <div class="header-main-down-icon"></div>
 
     </div>
 
@@ -58,90 +56,71 @@
         <h3 class="main-section-title">{{ t('thankyou.vrtl.download') }}</h3>
         
         <div class="section-tabs">
-          <b-tabs>
-            <b-tab active>
-              <template v-slot:title>
-                <div class="section-tab section-tab-active">{{ $product->product_name }}</div>
-              </template>
+          <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT')">{{ $product->product_name }}</div>
 
-              <div class="section-content">
-                @if($product->sale_files && count($product->sale_files) > 0)
-                  <div class="product-files-sect">
-                    <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
-                  </div>
-
-                  @foreach($product->sale_files as $index => $file)
-                    <div class="product-file-collapse-head" v-b-toggle="'product-file-collapse-{{ $index }}'">
-                      <span><font-awesome-icon :icon="caretRight" /></span>
-                      <span>{{ $file['title'] }}</span>
-                    </div>
-
-                    <b-collapse id="product-file-collapse-{{ $index }}">
-                      <div class="product-file-collapse-content">
-                        <div class="product-files-list">
-                          <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
-                        </div>
-                      </div>
-                    </b-collapse>
-                  @endforeach
-                @endif
-                
-                @if($product->sale_videos && count($product->sale_videos) > 0)
-                  <div class="product-videos-sect">
-                    <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
-                    <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_subtitle', ['product' => $product->product_name]) }}</p>
-
-                    <div class="product-videos-collapse-help-msg">{{ t('thankyou.vrtl.toggle_videos') }}</div>
-
-                    @foreach($product->sale_videos as $index => $video)
-                      <div class="product-file-collapse-head" v-b-toggle="'product-video-collapse-{{ $index }}'">
-                        <span><font-awesome-icon :icon="caretRight" /></span>
-                        <span>{{ @$video['title'] }}</span>
-                      </div>
-
-                      <b-collapse id="product-video-collapse-{{ $index }}">
-                        <div class="product-file-collapse-content">
-                          <iframe width="100%" height="300" src="{{ $video['url'] }}" frameborder="0" allow="autoplay;fullscreen" allowfullscreen></iframe>
-                        </div>
-                      </b-collapse>
-                    @endforeach
-                  </div>
-                @endif
-              </div>
-            </b-tab>
-
-            @if($product->free_files && count($product->free_files) > 0)
-              <b-tab>
-                <template v-slot:title>
-                  <div class="section-tab">{{ t('thankyou.vrtl.bonuses') }}</div>
-                </template>
-
-                <div class="section-content">
-                  @foreach($product->free_files as $index => $file)
-                    <div class="product-file-collapse-head" v-b-toggle="'product-file-collapse-{{ $index }}'">
-                      <span><font-awesome-icon :icon="caretRight" /></span>
-                      <span>{{ $file['title'] }}</span>
-                    </div>
-
-                    <b-collapse id="product-file-collapse-{{ $index }}">
-                      <div class="product-file-collapse-content">
-                        <div class="product-files-list">
-                          <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
-                        </div>
-                      </div>
-                    </b-collapse>
-                  @endforeach
-                </div>
-              </b-tab>
-            @endif
-          </b-tabs>
+          @if($product->free_files && count($product->free_files) > 0)
+            <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES')">{{ t('thankyou.vrtl.bonuses') }}</div>
+          @endif
         </div>
+
+        <div class="section-content" v-if="tabActive === 'PRODUCT'">
+          @if($product->sale_files && count($product->sale_files) > 0)
+            <div class="product-files-sect">
+              <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
+            </div>
+
+            @foreach($product->sale_files as $index => $file)
+              <div @click="collapseHeadClick" class="product-file-collapse-head">
+                {{ $file['title'] }}
+              </div>
+
+              <div class="product-file-collapse-content">
+                <div class="product-files-list">
+                  <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
+                </div>
+              </div>
+            @endforeach
+          @endif
+          
+          @if($product->sale_videos && count($product->sale_videos) > 0)
+            <div class="product-videos-sect">
+              <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
+              <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_subtitle', ['product' => $product->product_name]) }}</p>
+
+              <div class="product-videos-collapse-help-msg">{{ t('thankyou.vrtl.toggle_videos') }}</div>
+
+              @foreach($product->sale_videos as $index => $video)
+                <div @click="collapseHeadClick" class="product-file-collapse-head">
+                  {{ $video['title'] }}
+                </div>
+
+                <div class="product-file-collapse-content">
+                  <iframe width="100%" height="300" src="{{ $video['url'] }}" frameborder="0" allow="autoplay;fullscreen" allowfullscreen></iframe>
+                </div>
+              @endforeach
+            </div>
+          @endif
+        </div>
+
+        @if($product->free_files && count($product->free_files) > 0)
+          <div class="section-content" v-if="tabActive === 'BONUSES'">
+            @foreach($product->free_files as $index => $file)
+              <div @click="collapseHeadClick" class="product-file-collapse-head">
+                {{ $file['title'] }}
+              </div>
+
+              <div class="product-file-collapse-content">
+                <div class="product-files-list">
+                  <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        @endif
 
         <div class="thank-you-page-email">{{ t('thankyou.vrtl.email') }}: <a class="thank-you-page-email-link" href="mailto:support@freepowersecret.com">support@freepowersecret.com</a></div>
 
-        <div class="footer-main-down-icon">
-          <font-awesome-icon :icon="angleDown" :style="{ color: '#666' }" />
-        </div>
+        <div class="footer-main-down-icon"></div>
       </div>
     </div>
   </div>
