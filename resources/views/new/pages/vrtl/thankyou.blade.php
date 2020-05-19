@@ -36,19 +36,18 @@
       <div class="header-product-image" style="background-image: url({{ $product->image && count($product->image) > 0 ? $product->image[0] : '' }})"></div>
       
       <div class="header-main">
-        <h2 class="header-product-title">Congratulations On Your Purchase Of<br/>"{{ $product->product_name }}"</h2>
+        <h2 class="header-product-title">{{ t('thankyou.vrtl.congratulations') }} <br/>"{{ $product->product_name }}"</h2>
 
-        <p class="header-product-payment-msg">"Your credit card statement will show a charge from {{ $product->billing_descriptor }}"</p>
+        <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg') }} {{ $product->billing_descriptor }}"</p>
 
         <p class="header-product-video-info-msg">
-          Welcome to this
+          {{ t('thankyou.vrtl.video_msg.welcome') }}
 
           @if($product->sale_videos && count($product->sale_videos) > 0)
             {{ count($product->sale_videos) }}
           @endif
           
-          part course presented by {{ $product->product_name }}. We recommend that you turn off all notifications and distractions and take notes while 
-          watching the videos below. Putting into practice what you learn here will be well worth your time and attention.
+          {{ t('thankyou.vrtl.video_msg.course_presented') }} {{ $product->product_name }}. {{ t('thankyou.vrtl.video_msg.recommend') }}
         </p>
       </div>
 
@@ -60,7 +59,7 @@
 
     <div class="vrtl-thank-you-page-main">
       <div class="main-section-content">
-        <h3 class="main-section-title">Download Section</h3>
+        <h3 class="main-section-title">{{ t('thankyou.vrtl.download') }}</h3>
         
         <div class="section-tabs">
           <b-tabs>
@@ -72,7 +71,7 @@
               <div class="section-content">
                 @if($product->sale_files && count($product->sale_files) > 0)
                   <div class="product-files-sect">
-                    <h6 class="product-files-title">In the following guide you learn about getting started with the regular {{ $product->product_name }} Setup</h6>
+                    <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro') }} {{ $product->product_name }} {{ t('thankyou.vrtl.setup') }}</h6>
                   </div>
 
                   @foreach($product->sale_files as $index => $file)
@@ -93,10 +92,10 @@
                 
                 @if($product->sale_videos && count($product->sale_videos) > 0)
                   <div class="product-videos-sect">
-                    <h6 class="product-videos-title">Online Video</h6>
-                    <p class="product-videos-descr">In these videos you will learn how to build and setup {{ $product->product_name }}</p>
+                    <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
+                    <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_msg') }} {{ $product->product_name }}</p>
 
-                    <div class="product-videos-collapse-help-msg">(Click on chapters to toggle them)</div>
+                    <div class="product-videos-collapse-help-msg">{{ t('thankyou.vrtl.toggle_videos') }}</div>
 
                     @foreach($product->sale_videos as $index => $video)
                       <div class="product-file-collapse-head" v-b-toggle="'product-video-collapse-{{ $index }}'">
@@ -114,14 +113,14 @@
                 @endif
               </div>
             </b-tab>
+            
+            @if($product->free_files && count($product->free_files) > 0)
+              <b-tab>
+                <template v-slot:title>
+                  <div class="section-tab">{{ t('thankyou.vrtl.bonuses') }}</div>
+                </template>
 
-            <b-tab>
-              <template v-slot:title>
-                <div class="section-tab">Bonuses</div>
-              </template>
-
-              <div class="section-content">
-                @if($product->free_files && count($product->free_files) > 0)
+                <div class="section-content">
                   @foreach($product->free_files as $index => $file)
                     <div class="product-file-collapse-head" v-b-toggle="'product-file-collapse-{{ $index }}'">
                       <span><font-awesome-icon :icon="caretRight" /></span>
@@ -136,15 +135,13 @@
                       </div>
                     </b-collapse>
                   @endforeach
-                @else
-                  <div>No bonuses found</div>
-                @endif
-              </div>
-            </b-tab>
+                </div>
+              </b-tab>
+            @endif
           </b-tabs>
         </div>
 
-        <div class="thank-you-page-email">Email support: <a class="thank-you-page-email-link" href="mailto:support@freepowersecret.com">support@freepowersecret.com</a></div>
+        <div class="thank-you-page-email">{{ t('thankyou.vrtl.email') }}: <a class="thank-you-page-email-link" href="mailto:support@freepowersecret.com">support@freepowersecret.com</a></div>
 
         <div class="footer-main-down-icon">
           <font-awesome-icon :icon="angleDown" :style="{ color: '#666' }" />
