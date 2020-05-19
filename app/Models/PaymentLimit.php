@@ -3,10 +3,6 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Http\Discovery\NotFoundException;
-use App\Constants\PaymentProviders;
 
 /**
  * This is the model class for collection "payment_limit".

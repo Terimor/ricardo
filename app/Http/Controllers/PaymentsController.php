@@ -443,7 +443,7 @@ class PaymentsController extends Controller
             throw new AuthException('Unauthorized');
         }
 
-        return PaymentService::test($req);
+        return PaymentService::test($req->all());
     }
 
 }

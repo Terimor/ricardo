@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Models\CustomerBlacklist;
 use App\Models\Domain;
 use App\Models\PaymentApi;
 use App\Models\Txn;
@@ -54,17 +55,18 @@ class PaymentService
             array_merge(
                 ['status' => OdinOrder::STATUS_NEW],
                 [
-                    'total_refunded_usd'    => 0,
-                    'total_chargeback_usd'  => 0,
-                    'total_paid'        => 0,
-                    'total_paid_usd'    => 0,
-                    'total_chargeback'  => 0,
-                    'txns_fee_usd'      => 0,
-                    'is_reduced'        => false,
-                    'is_invoice_sent'   => false,
-                    'is_survey_sent'    => false,
-                    'is_flagged'        => false,
-                    'txns'              => [],
+                    'total_chargeback_usd' => 0,
+                    'total_refunded_usd' => 0,
+                    'total_chargeback' => 0,
+                    'total_paid_usd' => 0,
+                    'txns_fee_usd' => 0,
+                    'total_paid' => 0,
+                    'is_invoice_sent' => false,
+                    'is_survey_sent' => false,
+                    'is_reduced' => false,
+                    'is_flagged' => false,
+                    'is_paused' => false,
+                    'txns' => []
                 ],
                 $data
             ),
@@ -135,13 +137,11 @@ class PaymentService
             return $order;
         }
 
-        $txn = $order->getTxnByHash($data['hash'], false);
-        if ($txn) {
-            $txn = array_merge($txn, $data);
-            $order->addTxn($txn);
-        }
+        $txn = $order->getTxnByHash($data['hash']); // throwable
+        $txn = array_merge($txn, $data);
+        $order->addTxn($txn);
 
-        if ($txn && $txn['status'] === Txn::STATUS_APPROVED) {
+        if ($txn['status'] === Txn::STATUS_APPROVED) {
             $products = $order->getProductsByTxnHash($txn['hash']);
             if (empty($products)) {
                 $products = $order->getProductsByTxnValue($txn['value']);
@@ -159,18 +159,13 @@ class PaymentService
                     if (!self::isApm($txn['payment_method']) && $txn['card_number']) {
                         CardService::incCachedCardUsageLimit($txn['card_number']);
                     }
+                    $order->addNoteAndSetPause(CustomerBlacklistService::getOrderPauseReason($order));
                 }
                 $order->addProduct($product);
             }
 
             $order = OrderService::calcTotalPaid($order);
-
-            if (!$is_order_need_to_check) {
-                $price_paid_diff = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
-                $order->status = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
-            } else {
-                $order->status = OdinOrder::STATUS_ERROR;
-            }
+            $order->status = self::getOrderStatus($order, $is_order_need_to_check);
         }
 
         if (!$order->save()) {
@@ -399,6 +394,7 @@ class PaymentService
      * @throws InvalidParamsException
      * @throws OrderUpdateException
      * @throws \App\Exceptions\ProductNotFoundException
+     * @throws PaymentException
      */
     public static function fallback3ds(OdinOrder $order, array $order_txn, array $details = []): array
     {
@@ -940,6 +936,23 @@ class PaymentService
     }
 
     /**
+     * Determines the order status by the total amount
+     * @param OdinOrder $order
+     * @return string
+     */
+    public static function getOrderStatus(OdinOrder $order, bool $need_to_check = false): string
+    {
+        $status = OdinOrder::STATUS_NEW;
+        if ($need_to_check) {
+            $status = OdinOrder::STATUS_ERROR;
+        } elseif ($order->total_paid) {
+            $price_paid_diff = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
+            $status = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
+        }
+        return $status;
+    }
+
+    /**
      * Checks if it's APM
      * @param string $method
      * @return bool [description]
@@ -1115,9 +1128,12 @@ class PaymentService
         return $order;
     }
 
-    public static function test(\Illuminate\Http\Request $req)
+    public static function test(array $params)
     {
-        return self::getProvidersForPay('at', PaymentMethods::VISA, false);
+        $model = CustomerBlacklist::searchOne($params);
+        return optional($model)->toArray();
+//        return (string) CustomerBlacklist::addOrUpdateOne($params);
+//        return self::getProvidersForPay('at', PaymentMethods::VISA, false);
     }
 
 }

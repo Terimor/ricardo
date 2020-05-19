@@ -195,7 +195,7 @@ class PayPalService
             $upsell_order->total_price_usd = CurrencyService::roundValueByCurrencyRules(
                 $upsell_order->total_price / $upsell_order_exchange_rate,
                 self::DEFAULT_CURRENCY);
-            $upsell_order->status = $this->getOrderStatus($upsell_order);
+            $upsell_order->status = PaymentService::getOrderStatus($upsell_order);
             $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
             $upsell_order->save();
         }
@@ -459,7 +459,7 @@ class PayPalService
                 $order->is_flagged = $this->isPayPalOrderFlagged($paypal_order);
             }
 
-            $order->status = $this->getOrderStatus($order);
+            $order->status = PaymentService::getOrderStatus($order);
 
             $order->save();
             if ($order) {
@@ -555,13 +555,7 @@ class PayPalService
                 }
 
                 $order = OrderService::calcTotalPaid($order);
-
-                if (!$is_order_need_to_check) {
-                    $order->status = $this->getOrderStatus($order);
-                } else {
-                    $order->status = OdinOrder::STATUS_ERROR;
-                }
-
+                $order->status = PaymentService::getOrderStatus($order, $is_order_need_to_check);
                 $order->is_invoice_sent = false;
                 $order->save();
 
@@ -680,27 +674,6 @@ class PayPalService
         ])) {
             logger()->error('Trying to add product to order with status: ' . $order->status, ['order' => $order]);
             abort(404);
-        }
-    }
-
-    /**
-     * Get order status
-     *
-     * @param $order
-     * @return string
-     */
-    private function getOrderStatus($order)
-    {
-        switch (true) {
-            case ($order->total_paid == 0):
-                return OdinOrder::STATUS_NEW;
-            case (
-                number_format($order->total_paid, 2) === number_format($order->total_price, 2)
-                && number_format($order->total_paid_usd, 2) === number_format($order->total_price_usd, 2)
-            ):
-                return OdinOrder::STATUS_PAID;
-            default:
-                return OdinOrder::STATUS_HALFPAID;
         }
     }
 

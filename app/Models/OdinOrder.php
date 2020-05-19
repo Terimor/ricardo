@@ -23,6 +23,7 @@ use Cache;
  * @property bool   is_survey_sent
  * @property bool   $is_invoice_sent
  * @property bool   $is_reduced
+ * @property bool   $is_paused
  * @property string $offer
  * @property string $affiliate
  * @property string $txid
@@ -49,6 +50,7 @@ use Cache;
  * @property float  $exchange_rate
  * @property array  $txns
  * @property array  $products
+ * @property array  $notes
  * @property string $fingerprint
  * @property string $device_type
  * @property string $browser
@@ -187,6 +189,7 @@ class OdinOrder extends OdinModel
 //          'payment_api_id' => '', // —string,
 //          'is_fallback' => false
         ],
+        'notes' => null,
         'ipqualityscore' => null, // object
         'page_checkout' => null, // string full checkout page address with parameters
         'is_flagged' => false, // bool, default false
@@ -194,6 +197,7 @@ class OdinOrder extends OdinModel
         'affiliate' => null, // string
         'txid' => null, // string
         'billing_descriptor' => null,
+        'is_paused' => false,
         'is_reduced' => null,
         'is_invoice_sent' => false, // bool, default false
         'is_survey_sent' => false, // bool defaut false
@@ -232,11 +236,11 @@ class OdinOrder extends OdinModel
      * @var array
      */
     protected $fillable = [
-        'number', 'type', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd', 'total_refunded_usd',
-        'shop_currency', 'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name', 'customer_phone',
-        'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street', 'shipping_street2',
-        'shipping_building', 'shipping_apt', 'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore', 'page_checkout', 'flagged',
-        'offer', 'affiliate', 'txid', 'billing_descriptor', 'installments', 'txns', 'params',
+        'number', 'type', 'status', 'currency', 'exchange_rate', 'total_paid', 'total_paid_usd', 'total_price', 'total_price_usd',
+        'total_refunded_usd', 'shop_currency', 'customer_id', 'customer_doc_id', 'customer_email', 'customer_first_name', 'customer_last_name',
+        'customer_phone', 'language', 'ip', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
+        'shipping_street2', 'shipping_building', 'shipping_apt', 'exported', 'warehouse_id', 'trackings', 'products', 'ipqualityscore',
+        'page_checkout', 'flagged', 'offer', 'affiliate', 'txid', 'billing_descriptor', 'installments', 'txns', 'params', 'is_paused',
         'is_invoice_sent', 'events', 'pixels', 'postbacks', 'fingerprint'
     ];
 
@@ -829,6 +833,21 @@ class OdinOrder extends OdinModel
             }
         }
         return $isNotFlagged;
+    }
+
+    /**
+     * Adds note and set is_paused=true
+     * @param string|null $note
+     */
+    public function addNoteAndSetPause(?string $note): void
+    {
+        if ($note) {
+            $this->is_paused = true;
+            if (empty($this->notes)) {
+                $this->notes = [];
+            }
+            $this->notes = array_merge($this->notes, [$note]);
+        }
     }
 
     /**
