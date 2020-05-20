@@ -1,5 +1,4 @@
 import app from '../../app';
-import { faCaretRight, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
 
 js_deps.wait(['vue'], () => {
@@ -12,16 +11,6 @@ js_deps.wait(['vue'], () => {
     data () {
       return {
         tabActive: 'PRODUCT'
-      }
-    },
-
-    computed: {
-      caretRight () {
-        return faCaretRight
-      },
-
-      angleDown () {
-        return faAngleDown
       }
     },
 
