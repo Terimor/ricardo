@@ -13,10 +13,9 @@ export default function calculateHash() {
     return Promise.resolve(hash);
   }
 
-  return fingerprintjs2.getPromise().then(components => {
+  return fingerprintjs2.getPromise({fonts: {extendedJsFonts: true} }).then(components => {
     const values = components.map(component => component.value);
     hash = fingerprintjs2.x64hash128(values.join(''), 31);
-
     return hash;
   });
 }
