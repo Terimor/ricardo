@@ -179,15 +179,17 @@ class ApmService {
 
         $payment = ['status' => Txn::STATUS_FAILED];
         if ((new OrderService())->checkIfUpsellsPossible($order) && PaymentService::isApm($order_main_txn['payment_method'])) {
+            $product_srv = new ProductService();
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
             foreach ($upsells as $key => $item) {
                 try {
-                    $product = (new ProductService())->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
-                    $upsell_price = $product->upsellPrices[$item['qty']];
+                    $upsell = $product_srv->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
+                    $upsell = $product_srv->localizeUpsell($upsell, $order_main_product['sku_code']);
+                    $upsell_price = $upsell->upsellPrices[$item['qty']];
                     $upsell_product = PaymentService::createOrderProduct(
-                        $product->upsell_sku,
+                        $upsell->upsell_sku,
                         [
                             'currency'  => $upsell_price['code'],
                             'quantity'  => (int)$item['qty'],
@@ -200,7 +202,7 @@ class ApmService {
                         ]
                     );
                     $checkout_price += $upsell_price['price'];
-                    $products[$product->upsell_sku] = $product;
+                    $products[$upsell->upsell_sku] = $upsell;
                     $upsell_products[] = $upsell_product;
                 } catch (HttpException $e) {
                     $upsells[$key]['status'] = PaymentService::STATUS_FAIL;

@@ -23,7 +23,8 @@ use App\Exceptions\ProductNotFoundException;
  */
 class OdinProduct extends OdinModel
 {
-    const QUANTITY_PRICES = 5;
+    const VIRTUAL_QUANTITY_PRICES = 1;
+    const PHYSICAL_QUANTITY_PRICES = 10;
     const MIN_PRICE = 4.5;
 
     const TYPE_PHYSICAL = 'physical';
@@ -217,7 +218,7 @@ class OdinProduct extends OdinModel
 
             // images
             $value[$key]['quantity_image'] = [];
-            for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
+            for ($i = 1; $i <= self::PHYSICAL_QUANTITY_PRICES; $i++) {
                 if (!empty($value[$key]['quantity_image_ids'][$i])) {
                     $imgId = $value[$key]['quantity_image_ids'][$i];
                     $value[$key]['quantity_image'][$i] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
@@ -270,12 +271,12 @@ class OdinProduct extends OdinModel
             $userCountry = \Utils::getLocationCountryCode();
         }
         $unitQty = !empty($this->unit_qty) ? $this->unit_qty : 1;
-        $quantityPrices = $this->type === OdinProduct::TYPE_VIRTUAL ? 1 : OdinProduct::QUANTITY_PRICES;
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
             $oneItemPrice = 0;
 
             //iteration by items quantity for selected price set
+            $quantityPrices = $this->castPriceQuantity();
             for ($quantity = 1; $quantity <= $quantityPrices; $quantity++) {
                 // if skip_prices this value is empty
                 if (!empty($priceSet[$quantity]['value'])) {
@@ -407,7 +408,7 @@ class OdinProduct extends OdinModel
         if (!$isUpsell) {
             if (!empty($this->attributes['skus'])) {
                 foreach ($this->attributes['skus'] as $key => $sku) {
-                    for ($i = 1; $i <= self::QUANTITY_PRICES; $i++) {
+                    for ($i = 1; $i <= self::PHYSICAL_QUANTITY_PRICES; $i++) {
                         if (!empty($sku['quantity_image_ids'][$i])) {
                             $ids[$sku['quantity_image_ids'][$i]] = $sku['quantity_image_ids'][$i];
                         }
@@ -543,13 +544,30 @@ class OdinProduct extends OdinModel
     }
 
     /**
+     * Returns correct price quantity
+     * @param int|null $quantity
+     * @return int
+     */
+    public function castPriceQuantity(?int $quantity = null): int
+    {
+        if ($this->type === self::TYPE_VIRTUAL) {
+            if (!$quantity || $quantity < 1 || $quantity > self::VIRTUAL_QUANTITY_PRICES) {
+                $quantity = self::VIRTUAL_QUANTITY_PRICES;
+            }
+        } elseif (!$quantity || $quantity < 1 || $quantity > self::PHYSICAL_QUANTITY_PRICES) {
+            $quantity = self::PHYSICAL_QUANTITY_PRICES;
+        }
+        return $quantity;
+    }
+
+    /**
      * Set upsell prices
      * @param float $fixedPrice
      * @param float $discountPercent
-     * @param int $maxQuantity
+     * @param int|null $quantity
      * @return boolean
      */
-    public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, $maxQuantity = self::QUANTITY_PRICES): bool
+    public function setUpsellPrices(float $fixedPrice = null, float $discountPercent = null, ?int $quantity = null): bool
     {
         $this->hide_cop_id_log = true;
         if ($this->currencyObject) {
@@ -559,16 +577,6 @@ class OdinProduct extends OdinModel
         }
         // country depends on IP
         $userCountry = \Utils::getLocationCountryCode();
-
-        // if null set quantity 1
-        if (!$maxQuantity) {
-          $maxQuantity = 1;
-        }
-
-        // max 5
-        if ($maxQuantity > self::QUANTITY_PRICES) {
-          $maxQuantity = self::QUANTITY_PRICES;
-        }
 
         if (!$fixedPrice && !$discountPercent) {
           logger()->error("Fixed price and discount percent empty {$this->_id}", ['fixedPrice' => $fixedPrice, 'discountPercent' => $discountPercent]);
@@ -601,7 +609,8 @@ class OdinProduct extends OdinModel
 
         // quantity loop
         $this->attributes['upsellPrices']['discount_percent'] = $discountPercent;
-        for ($i=1; $i <= $maxQuantity; $i++) {
+        $quantity = $this->castPriceQuantity($quantity);
+        for ($i=1; $i <= $quantity; $i++) {
           $this->attributes['upsellPrices'][$i]['price'] = $discountLocalPrice['price']*$i;
           $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
           $this->attributes['upsellPrices'][$i]['code'] = $discountLocalPrice['code'];

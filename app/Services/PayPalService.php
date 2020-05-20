@@ -60,7 +60,12 @@ class PayPalService
         $this->orderService = $orderService;
     }
 
-
+    /**
+     * Processes upsells payment
+     * @param PayPalCrateOrderRequest $request
+     * @return array
+     * @throws PPCurrencyNotSupportedException
+     */
     public function createUpsellOrder(PayPalCrateOrderRequest $request): array
     {
         $upsell_order = OdinOrder::find($request->get('order'));
@@ -91,11 +96,14 @@ class PayPalService
         $total_upsell_price = 0;
         $upsell_order_exchange_rate = null;
         $pp_items = $upsell_order_products = [];
+        $order_main_product = $upsell_order->getMainProduct(); // throwable
 
-        foreach ($request->get('upsells') as $upsell_product_id => $upsell_product_quantity) {
-            $temp_upsell_product = (new ProductService())->getUpsellProductById($product, $upsell_product_id, $upsell_product_quantity, $upsell_order->currency);
-            $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['price'];
-            $upsell_order_exchange_rate = $temp_upsell_product['upsellPrices'][$upsell_product_quantity]['exchange_rate'];
+        foreach ($request->get('upsells') as $upsell_id => $upsell_quantity) {
+            $product_srv = new ProductService();
+            $temp_upsell_product = $product_srv->getUpsellProductById($product, $upsell_id, $upsell_quantity, $upsell_order->currency);
+            $temp_upsell_product = $product_srv->localizeUpsell($temp_upsell_product, $order_main_product['sku_code']);
+            $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_quantity]['price'];
+            $upsell_order_exchange_rate = $temp_upsell_product['upsellPrices'][$upsell_quantity]['exchange_rate'];
 
             // Converting to USD.
             $temp_upsell_item_usd_price = CurrencyService::roundValueByCurrencyRules(
@@ -110,15 +118,15 @@ class PayPalService
                 'description' => $temp_upsell_product->long_name,
                 'unit_amount' => [
                     'currency_code' => $upsell_order->currency,
-                    'value' => $temp_upsell_item_price / $upsell_product_quantity,
+                    'value' => $temp_upsell_item_price / $upsell_quantity,
                 ],
-                'quantity' => $upsell_product_quantity
+                'quantity' => $upsell_quantity
             ];
 
             // Creating array of an order upsell products.
             $upsell_order_products[] = [
                 'sku_code' => $temp_upsell_product['upsell_sku'],
-                'quantity' => (int)$upsell_product_quantity,
+                'quantity' => (int)$upsell_quantity,
                 'price' => $temp_upsell_item_price,
                 'price_usd' => $temp_upsell_item_usd_price,
                 'warranty_price' => null,
@@ -721,7 +729,7 @@ class PayPalService
             abort_if(!$order, 404);
             $upsells_array = $request->get('upsells');
 
-            $upsells_price_data = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, null, true, $order->currency);
+            $upsells_price_data = (new ProductService())->calculateUpsellsTotal($product, $upsells_array, true, $order->currency);
 
             return [
                 'price' => $upsells_price_data['value'],

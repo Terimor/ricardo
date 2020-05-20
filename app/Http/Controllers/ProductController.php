@@ -28,7 +28,6 @@ class ProductController extends Controller
         ]);
     }
 
-
     /**
      * Get upsell product by ID
      * @param string $productId
@@ -38,32 +37,32 @@ class ProductController extends Controller
      */
     public function getUpsellProduct(string $productId, Request $request, ProductService $productService): array
     {
-		$product = $productService->resolveProductForUpsell($request);
-		// for virtual product get prices for 1,2,3,10,20
-		$quantity = $product->type === OdinProduct::TYPE_VIRTUAL ? 3 : OdinProduct::QUANTITY_PRICES;
-		$upsell = $productService->getUpsellProductById($product, $productId, $quantity);
-		return ['upsell' => $upsell];
+        $product = $productService->resolveProductForUpsell($request);
+        // for virtual product get prices for 1,2,3,10,20
+        // @TODO: magic number '3'
+        $quantity = $product->type === OdinProduct::TYPE_VIRTUAL ? 3 : OdinProduct::PHYSICAL_QUANTITY_PRICES;
+        $upsell = $productService->getUpsellProductById($product, $productId, $quantity);
+        return ['upsell' => $productService->localizeUpsell($upsell)];
     }
 
-	/**
-	 * Calculate upsells total
-	 * @param Request $request
-	 * @param ProductService $productService
-	 */
-	public function calculateUpsellsTotal(Request $request, ProductService $productService)
-	{
-		$upsells = $request->input('upsells');
-		$total = $request->input('total');
+    /**
+     * Calculate upsells total
+     * @param Request $request
+     * @param ProductService $productService
+     */
+    public function calculateUpsellsTotal(Request $request, ProductService $productService)
+    {
+        $upsells = $request->input('upsells');
 
-		if ($upsells && $total) {
-			$product = $productService->resolveProduct($request);
-			return $productService->calculateUpsellsTotal($product, $upsells, $total);
-		} else {
-			logger()->error("Bad data for calculate upsells total", ['request' => $request->all()]);
-			abort(404);
-		}
+        if ($upsells) {
+            $product = $productService->resolveProduct($request);
+            return $productService->calculateUpsellsTotal($product, $upsells);
+        } else {
+            logger()->error("Bad data for calculate upsells total", ['request' => $request->all()]);
+            abort(404);
+        }
 
-	}
+    }
 
     /**
      * Get product price

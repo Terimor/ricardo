@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\{MediaAccess, OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize, Video};
 use Illuminate\Http\Request;
-use App\Exceptions\ProductNotFoundException;
 use NumberFormatter;
 use Cache;
 
@@ -14,7 +13,7 @@ use Cache;
  */
 class ProductService
 {
-    public static $amountValues = [10, 15, 20];
+    public static array $amountValues = [10, 15, 20];
 
     /**
      * @param Request $request
@@ -106,78 +105,76 @@ class ProductService
     public function resolveProductForUpsell(Request $request): ?OdinProduct {
         $select = ['upsells', 'type'];
         $domain = Domain::getByName();
-        $product = $this->getResolveProductByRequest($request, $domain, $select);
-        return $product;
+        return $this->getResolveProductByRequest($request, $domain, $select);
     }
 
     /**
      * Get upsell product by ID
      *
-     * @param $product
+     * @param OdinProduct $product
      * @param string $productId
-     * @param int $maxQuantity
-     * @param null|string $currency_code
-     * @return stdClass
+     * @param int|null $quantity
+     * @param string|null $currency
+     * @return OdinProduct
      */
-    public function getUpsellProductById($product, string $productId, $maxQuantity = 5, ?string $currency_code = null)
+    public function getUpsellProductById($product, string $productId, ?int $quantity = null, ?string $currency = null)
     {
-		// check upsell product by ID
-		$productUpsells = !empty($product->upsells) ? $product->upsells : null;
-		if (!$productUpsells) {
-			logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'product' => $product->toArray()]);
-			abort(404);
-		}
+        // check upsell product by ID
+        $productUpsells = !empty($product->upsells) ? $product->upsells : null;
+        if (!$productUpsells) {
+            logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'product' => $product->toArray()]);
+            abort(404);
+        }
 
         // check product upsells and get dicounts/prices for setUpsellPrices
-		$upsell = null;
-		foreach ($productUpsells as $uproduct) {
-			if ($uproduct['product_id'] == $productId) {
-				$fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
-				$discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
+        $upsell = null;
+        foreach ($productUpsells as $uproduct) {
+            if ($uproduct['product_id'] == $productId) {
+                $fixedPrice = !empty($uproduct['fixed_price']) ? $uproduct['fixed_price'] : null;
+                $discountPercent = !empty($uproduct['discount_percent']) ? $uproduct['discount_percent'] : null;
 
-				$select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image_id', 'upsell_hero_image_id', 'skus',
+                $select = ['product_name', 'description.en', 'long_name.en', 'billing_description', 'logo_image_id', 'upsell_hero_image_id', 'skus',
                     'image_ids', 'prices', 'price_correction_percents', 'warranty_percent', 'upsell_plusone_text.en', 'unit_qty', 'type'];
-				// get virtual fields
-				if ($product->type == OdinProduct::TYPE_VIRTUAL) {
-				    $select = array_merge($select, ['upsell_title.en','upsell_subtitle.en', 'upsell_description.en', 'upsell_letter.en',
+                // get virtual fields
+                if ($product->type == OdinProduct::TYPE_VIRTUAL) {
+                    $select = array_merge($select, ['upsell_title.en','upsell_subtitle.en', 'upsell_description.en', 'upsell_letter.en',
                         'upsell_lcta_title.en', 'upsell_lcta_description.en', 'upsell_video_id.en']);
                 }
 
-				if (app()->getLocale() != 'en') {
-				    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
+                if (app()->getLocale() != 'en') {
+                    $select = array_merge($select, ['description.'.app()->getLocale(),'long_name.'.app()->getLocale(), 'upsell_plusone_text.'.app()->getLocale()]);
                 }
-				$upsell = OdinProduct::getById($productId, $select);
-			}
-		}
-
-		if (!$upsell) {
-			logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'product' => $product->toArray()]);
-			abort(404);
-		}
-
-		if (!$fixedPrice && !$discountPercent) {
-			logger()->error("fixedPrice and discountPercent is null for productID {$product->id}", ['product' => $product, 'upsell_id' => $productId]);
-			abort(409);
-		}
-
-		if ($fixedPrice && $fixedPrice < OdinProduct::MIN_PRICE) {
-			$fixedPrice = OdinProduct::MIN_PRICE;
-			logger()->error("UPSELL Price < ".OdinProduct::MIN_PRICE, ['product' => $product->toArray()]);
-		}
-
-		if (!$upsell->skus) {
-			logger()->error("UPSELL skus empty or not published", ['product' => $product->toArray()]);
-			abort(405, 'Method Not Allowed');
-		}
-
-		if ($currency_code) {
-		    $upsell->currency = $currency_code;
+                $upsell = OdinProduct::getById($productId, $select);
+            }
         }
 
-		$upsell->setUpsellPrices($fixedPrice, $discountPercent, $maxQuantity);
-        $upsellLocalize = $this->localizeUpsell($upsell);
-        return $upsellLocalize;
-		//return $upsell;
+        if (!$upsell) {
+            logger()->error("Can't find a upsell products", ['request' => request()->all(), 'productId' => $productId, 'product' => $product->toArray()]);
+            abort(404);
+        }
+
+        if (!$fixedPrice && !$discountPercent) {
+            logger()->error("fixedPrice and discountPercent is null for productID {$product->id}", ['product' => $product, 'upsell_id' => $productId]);
+            abort(409);
+        }
+
+        if ($fixedPrice && $fixedPrice < OdinProduct::MIN_PRICE) {
+            $fixedPrice = OdinProduct::MIN_PRICE;
+            logger()->error("UPSELL Price < ".OdinProduct::MIN_PRICE, ['product' => $product->toArray()]);
+        }
+
+        if (!$upsell->skus) {
+            logger()->error("UPSELL skus empty or not published", ['product' => $product->toArray()]);
+            abort(405, 'Method Not Allowed');
+        }
+
+        if ($currency) {
+            $upsell->currency = $currency;
+        }
+
+        $upsell->setUpsellPrices($fixedPrice, $discountPercent, $quantity);
+
+        return $upsell;
     }
 
     /**
@@ -237,45 +234,39 @@ class ProductService
         return $productUpsellsArray;
     }
 
-	/**
-	 * Calculate upsells total
-	 * @param array $ulsells
-	 * @param float $total
+    /**
+     * Calculate upsells total
+     * @param $product
+     * @param array $upsells
      * @param bool $with_extra
-     * @param null $currency_code
+     * @param string|null $currency_code
      * @return array
-	 */
-	public function calculateUpsellsTotal($product, array $upsells, float $total = null, $with_extra = false, $currency_code = null) : array
-	{
-		// TODO: modify WHERE IN
-		$upsellProducts = [];
-		$totalSumCalc = 0;
-		$exchange_rate = null;
-		foreach ($upsells as $id => $quantity) {
-			$upsellProduct = $this->getUpsellProductById($product, $id, $quantity, $currency_code);
-			$totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['price']) ? $upsellProduct->upsellPrices[$quantity]['price'] : 0;
-		    $currency_code = $upsellProduct->upsellPrices[$quantity]['code'];
-		    $exchange_rate = $upsellProduct->upsellPrices[$quantity]['exchange_rate'];
-		}
+     */
+    public function calculateUpsellsTotal($product, array $upsells, bool $with_extra = false, ?string $currency_code = null) : array
+    {
+        // TODO: modify WHERE IN
+        $totalSumCalc = 0;
+        $exchange_rate = null;
+        foreach ($upsells as $id => $quantity) {
+            $upsellProduct = $this->getUpsellProductById($product, $id, $quantity, $currency_code);
+            $totalSumCalc += !empty($upsellProduct->upsellPrices[$quantity]['price']) ? $upsellProduct->upsellPrices[$quantity]['price'] : 0;
+            $currency_code = $upsellProduct->upsellPrices[$quantity]['code'];
+            $exchange_rate = $upsellProduct->upsellPrices[$quantity]['exchange_rate'];
+        }
 
-		/*if ($totalSumCalc != $total) {
-			logger()->error("Total summs not equally", ['total' => $total, 'totalSumCalc' => $totalSumCalc, 'product' => $product->toArray()]);
-			abort(409);
-		}*/
-
-		$extra_result = [
+        $extra_result = [
             'value' => $totalSumCalc,
             'code' => $currency_code,
             'exchange_rate' => $exchange_rate
         ];
-		$result = [
+        $result = [
             'value_text' => CurrencyService::getLocalTextValue($totalSumCalc),
         ];
         $result = $with_extra ? array_merge($result, $extra_result) : $result;
 
-		return $result;
+        return $result;
 
-	}
+    }
 
     /**
      *
@@ -305,7 +296,7 @@ class ProductService
 
         $prices = [];
         $pricesOld = $product->prices;
-        $quantityPrices = $product->type == OdinProduct::TYPE_VIRTUAL ? 1 : OdinProduct::QUANTITY_PRICES;
+        $quantityPrices = $product->castPriceQuantity();
 
         for ($quantity = 1; $quantity <= $quantityPrices; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
@@ -417,7 +408,7 @@ class ProductService
         $lp->countries = $product->countries ?? [];
         // returns labels
         $labels = [];
-        for ($i = 1; $i <= OdinProduct::QUANTITY_PRICES; $i++) {
+        for ($i = 1; $i <= OdinProduct::PHYSICAL_QUANTITY_PRICES; $i++) {
             if (!empty($product->labels[$i])) {
                 $labels[$i] = !empty($product->labels[$i][app()->getLocale()]) ? $product->labels[$i][app()->getLocale()] : (!empty($product->labels[$i]['en']) ? $product->labels[$i]['en'] : '');
             }
@@ -426,16 +417,16 @@ class ProductService
         // TODO: Enable EBOOK
         //$lp->free_file_id = (string)$product->free_file_id;
 
-
         return $lp;
     }
 
     /**
      * Localize upsell
-     * @param OdinProduct $upsell
-     * @return stdClass
+     * @param OdinProduct $product
+     * @param string|null $main_sku
+     * @return Localize
      */
-    public function localizeUpsell(OdinProduct $product)
+    public function localizeUpsell(OdinProduct $product, ?string $main_sku = null): Localize
     {
         $product->setLocalImages(true);
         $lp = new Localize();
@@ -458,7 +449,11 @@ class ProductService
             $lp->upsell_plusone_text = $product->upsell_plusone_text;
         }
 
-        $lp->upsell_sku = $product['skus'][0]['code'];
+        if ($main_sku && collect($product['skus'])->contains('code', $main_sku)) {
+            $lp->upsell_sku = $main_sku;
+        } else {
+            $lp->upsell_sku = $product['skus'][0]['code'];
+        }
 
         $lp->image = !empty($product->image[0]) ? $product->image[0] : null;
         $lp->upsellPrices = $product->upsellPrices ?? null;
@@ -504,7 +499,7 @@ class ProductService
         $numberFormatter = new NumberFormatter($localeString, NumberFormatter::CURRENCY);
         $symbol = $numberFormatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
 
-        for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
+        for ($quantity = 1; $quantity <= OdinProduct::PHYSICAL_QUANTITY_PRICES; $quantity++) {
             if (!empty($pricesOld[$quantity]['value'])) {
                 $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
                 $prices[$quantity]['2xvalue'] = $pricesOld[$quantity]['value'] * 2;
@@ -603,7 +598,7 @@ class ProductService
         $prices = [];
         $pricesOld = $product->prices;
 
-        for ($quantity = 1; $quantity <= OdinProduct::QUANTITY_PRICES; $quantity++) {
+        for ($quantity = 1; $quantity <= OdinProduct::PHYSICAL_QUANTITY_PRICES; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
                 logger()->error("**Price is 0 for {$product->product_name}", ['quantity' => $quantity, 'product' => $product->toArray()]);
                 continue;
