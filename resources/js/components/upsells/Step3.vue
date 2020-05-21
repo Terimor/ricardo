@@ -50,7 +50,7 @@ import { getUppSells } from '../../services/upsells';
 export default {
   name: 'Step3',
   mixins: [upsells],
-  props: ['id', 'accessoryStep'],
+  props: ['id', 'accessoryStep', 'accessoryList'],
   data () {
     return {
       quantity: 1,
@@ -74,7 +74,7 @@ export default {
     pleaseChooseText: () => t('upsells.choose'),
 
     selectList() {
-      const data = Array(Number(this.selectedProductData.quantity || this.selectedProductData.deal || 1)).fill('').map((item, index) => {
+      const data = Array(Number(this.selectedProductData.quantity || this.selectedProductData.deal || 1) + this.selectedProductUpsellsQuantity).fill('').slice(0, 5).map((item, index) => {
         const value = index + 1
 
         return item = {
@@ -85,6 +85,20 @@ export default {
       });
 
       return data;
+    },
+
+    selectedProductUpsellsQuantity() {
+      let productUpsellsQuantity = 0;
+
+      if (this.id === js_data.product.id) {
+        return 0;
+      }
+
+      if (this.accessoryList.length > 0) {
+        productUpsellsQuantity = this.accessoryList.filter(order => order.id === js_data.product.id).length;
+      }
+
+      return productUpsellsQuantity;
     },
 
     selectedProductData() {

@@ -32,6 +32,7 @@
                     :discount="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].discount_percent || 0"
                     :id="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].product_id || ''"
                     :accessoryStep="accessoryStep"
+                    :accessoryList="accessoryList"
                   />
                 </transition>
                 <p class="no">
