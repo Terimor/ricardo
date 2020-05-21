@@ -74,6 +74,7 @@ export default {
     pleaseChooseText: () => t('upsells.choose'),
 
     selectList() {
+      // (Main product amount + Upsell amount) - upsells select negth. Max upsells available 5
       const data = Array(Number(this.selectedProductData.quantity || this.selectedProductData.deal || 1) + this.selectedProductUpsellsQuantity).fill('').slice(0, 5).map((item, index) => {
         const value = index + 1
 
@@ -88,13 +89,15 @@ export default {
     },
 
     selectedProductUpsellsQuantity() {
-      let productUpsellsQuantity = 0;
+      let productUpsellsQuantity = 0; // Upsell amount === main_product_id
 
-      if (this.id === js_data.product.id) {
+      // not adding extra amount upsells if current upsell type === main_product_type
+      if (this.id === js_data.product.id) { 
         return 0;
       }
 
       if (this.accessoryList.length > 0) {
+        // Get upsells added before and filter upsells === main_product_id
         productUpsellsQuantity = this.accessoryList.filter(order => order.id === js_data.product.id).length;
       }
 
