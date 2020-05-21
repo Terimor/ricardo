@@ -38,12 +38,12 @@
       <div class="header-main">
         <h2 class="header-product-title">{{ t('thankyou.vrtl.congratulations', ['product' => $product->product_name]) }}</h2>
 
-        <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg', ['descriptor' => $product->product_name]) }}"</p>
+        <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg', ['code' => $product->product_name]) }}"</p>
 
         <p class="header-product-video-info-msg">
           @php $courses_count = $product->sale_videos && count($product->sale_videos) > 0 ? count($product->sale_videos) : ''; @endphp
 
-          {{ t('thankyou.vrtl.video_msg', ['courses' => $courses_count, 'product' => $product->product_name]) }} 
+          {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count, 'product' => $product->product_name]) }} 
         </p>
       </div>
 
