@@ -61,6 +61,10 @@
           @if($product->free_files && count($product->free_files) > 0)
             <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES')">{{ t('thankyou.vrtl.bonuses') }}</div>
           @endif
+
+          @if($product->free_files && count($product->free_files) > 0)
+            <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'UPSELLS' }" @click="setTab('UPSELLS')">{{ t('thankyou.vrtl.upsells') }}</div>
+          @endif
         </div>
 
         <div class="section-content" v-if="tabActive === 'PRODUCT'">
@@ -104,6 +108,22 @@
 
         @if($product->free_files && count($product->free_files) > 0)
           <div class="section-content" v-if="tabActive === 'BONUSES'">
+            @foreach($product->free_files as $index => $file)
+              <div @click="collapseHeadClick" class="product-file-collapse-head">
+                {{ $file['title'] }}
+              </div>
+
+              <div class="product-file-collapse-content">
+                <div class="product-files-list">
+                  <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        @endif
+
+        @if($product->free_files && count($product->free_files) > 0)
+          <div class="section-content" v-if="tabActive === 'UPSELLS'">
             @foreach($product->free_files as $index => $file)
               <div @click="collapseHeadClick" class="product-file-collapse-head">
                 {{ $file['title'] }}
