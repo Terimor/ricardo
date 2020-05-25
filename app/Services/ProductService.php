@@ -485,7 +485,8 @@ class ProductService
      */
     public function returnPricesByData($copId, $countryCode)
     {
-        $product = OdinProduct::getByCopId($copId);
+        $select = ['type', 'prices', 'skus', 'warranty_percent', 'price_correction_percents', 'unit_qty'];
+        $product = OdinProduct::getByCopId($copId, $select);
         if (!$product) {
             abort(404);
         }

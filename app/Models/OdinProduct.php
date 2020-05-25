@@ -685,13 +685,18 @@ class OdinProduct extends OdinModel
     /**
      * Get by cop_id
      * @param string|null $cop_id - prices.price_set
+     * @param array $select
      * @return OdinProduct|null
      */
-    public static function getByCopId(?string $cop_id): ?OdinProduct
+    public static function getByCopId(?string $cop_id, array $select = []): ?OdinProduct
     {
         $model = null;
         if ($cop_id) {
-            $model = OdinProduct::where('prices.price_set', $cop_id)->first();
+            $query = OdinProduct::where('prices.price_set', $cop_id);
+            if ($select) {
+                $query = $query->select($select);
+            }
+            $model = $query->first();
         }
         return $model;
     }
