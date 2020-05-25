@@ -70,6 +70,7 @@ mix
   .sass('resources/sass/new/pages/vrtl/upsells.scss', 'public/assets/css/new/pages/vrtl')
   .sass('resources/sass/new/pages/vrtl/thankyou.scss', 'public/assets/css/new/pages/vrtl')
   .sass('resources/sass/new/pages/vrtl/download.scss', 'public/assets/css/new/pages/vrtl')
+  .sass('resources/sass/new/pages/vrtl/splash.scss', 'public/assets/css/new/pages/vrtl')
   .sass('resources/sass/minishop/pages/home.scss', 'public/assets/css/minishop')
   .sass('resources/sass/minishop/pages/product.scss', 'public/assets/css/minishop')
   .copyDirectory('resources/images', 'public/assets/images')

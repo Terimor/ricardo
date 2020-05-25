@@ -23,6 +23,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/terms', 'SiteController@terms')->name('terms');
     $router->get('/about', 'SiteController@about')->name('about');
     $router->get('/splash', 'SiteController@splash')->name('splash');
+    $router->get('/splashvirtual', 'SiteController@splash')->name('splashvirtual');
     $router->get('/checkout', 'SiteController@checkout')->name('checkout');
     $router->get('/checkout/{priceSet}', 'SiteController@checkout')->name('checkout_price_set');
     $router->get('/health', 'SiteController@checkout')->name('checkout_health');

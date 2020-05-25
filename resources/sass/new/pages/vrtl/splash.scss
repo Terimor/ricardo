@@ -1,0 +1,254 @@
+.header {
+  display: none;
+}
+
+body {
+  main.pt-4 {
+    padding-top: 0 !important;
+  }
+}
+
+.underlined {
+  text-decoration: underline;
+}
+
+.italic {
+  font-style: italic;
+}
+
+#static-topbar{
+  display: none;
+}
+
+p {
+  margin: 20px 0;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.splash-virtual {
+  &-page {
+    color: #000;
+    background-color: #fff;
+
+    &-main {
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 0 30px;
+    }
+
+    &-footer {
+      position: relative;
+      padding-top: 70px;
+      padding-bottom: 15px;
+      background-color: #323232;
+      color: #929292;
+
+      &-content {
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 0 30px;
+      }
+    }
+  }
+
+  &-header-notification {
+    max-width: 1200px;
+    margin: 0 auto;
+    line-height: 27px;
+    padding: 10px 70px;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+  }
+
+  &-wait {
+    margin-top: 30px;
+    font-size: 95px;
+    text-align: center;
+    color: #12678F;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-style: italic;
+  }
+
+  &-save {
+    background-color: #FBE938;
+    color: #12678F;
+    display: inline-block;
+    font-size: 70px;
+    line-height: 83px;
+    font-style: italic;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  &-add-msg {
+    margin-top: 45px;
+    margin-bottom: 15px;
+    font-size: 35px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  &-product-image {
+    max-width: 350px;
+  }
+
+  &-discount-text {
+    margin-top: 50px;
+    font-size: 35px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  &-timer {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 30px;
+  }
+
+  &-discount {
+    color: #267A00;
+    text-align: center;
+    margin-top: 25px;
+    font-size: 27px;
+    font-weight: 600;
+  }
+
+  &-discount-btn {
+    margin-top: 15px;
+    padding: 15px 50px;
+    font-size: 38px;
+    display: inline-block;
+    background-color: #F76100;
+    color: #fff;
+    text-transform: uppercase;
+    box-shadow: 1px 3px 5px #5F5F5F;
+    flex: 25px;
+    font-weight: 700;
+  }
+
+  &-discount-link {
+    margin-top: 5px;
+    color: #CF315B;
+    text-decoration: underline;
+    font-size: 22px;
+    line-height: 27px;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &-discount-secure-text {
+    margin-top: 10px;
+    font-size: 15px;
+  }
+
+  &-guarantee-block {
+    display: flex;
+    padding: 20px;
+    border: 1px dashed #77BF77;
+    background-color: #F3F3F3;
+
+    .guarantee-img-wrap {
+      padding: 15px;
+      margin-right: 20px;
+    }
+  }
+
+  &-what-getting-block {
+    border: 1px dashed #D81E1E;
+    margin: 25px;
+    padding: 20px;
+
+    .getting-block-title {
+      margin-bottom: 25px;
+      text-align: center;
+      color: #D81E1E;
+      text-align: center;
+      font-size: 35px;
+    }
+  }
+
+  &-materials-notification {
+    display: flex;
+    align-items: center;
+    margin-top: 50px;
+    color: #A1A1A1;
+
+    &-img {
+      max-width: 100px;
+    }
+
+    &-title {
+      margin: 0 -110px;
+      padding: 10px 20px;
+      border-left: 1px solid #A1A1A1;
+      border-right: 1px solid #A1A1A1;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-size: 25px;
+      flex: 0 0 60%;
+      transform: scaleX(0.6);
+      letter-spacing: -0.5px;
+      line-height: 25px;
+    }
+
+    &-descr {
+      margin-left: 15px;
+      font-size: 14px;
+      line-height: 19px;
+      letter-spacing: -0.5px;
+      font-weight: 600;
+    }
+  }
+
+  &-secure-imgs {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 90px;
+    border: 1px solid #929292;
+  }
+
+  &-footer-text {
+    margin-top: 15px;
+    padding: 0 20px 20px;
+    border: 1px dashed #929292;
+    text-align: center;
+  }
+
+  &-footer-copyright {
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px solid #929292;
+    font-size: 13px;
+  }
+}
+
+#spalshVirtualPrice {
+  color: #C60000;
+}
+
+#splashVirtualProductName {
+  color: #C30000;
+}
+
+#splashVirtualImportant {
+  text-transform: uppercase;
+  color: #009C0A;
+}
+
+#splashVirtualFooterClickbank {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 150px;
+}
