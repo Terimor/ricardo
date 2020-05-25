@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Cache;
+use Illuminate\Support\Facades\Route;
 use NumberFormatter;
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Services\CurrencyService;
@@ -291,6 +292,11 @@ class OdinProduct extends OdinModel
                     if ($quantity == 1) {
                         //save one item price
                         $oneItemPrice = $price['price'];
+                        // 25 percent for splash pages
+                        if ((Route::is('splashvirtual') || Route::is('splash')) && $this->type === self::TYPE_VIRTUAL) {
+                            $value[$key]['25-percent']['value'] = round($price['price'] * 0.25, 2);
+                            $value[$key]['25-percent']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['25-percent']['value'], $currency);
+                        }
                     }
 
                     $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / ($quantity * $unitQty)), $currency);

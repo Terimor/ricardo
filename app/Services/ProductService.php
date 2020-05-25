@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Route;
 use App\Models\{MediaAccess, OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize, Video};
 use Illuminate\Http\Request;
 use NumberFormatter;
@@ -328,6 +329,12 @@ class ProductService
             $prices[$quantity]['total_amount_text'] = $pricesOld[$quantity]['total_amount_text'];
             //$prices[$quantity]['total_unit'] = $lp->unit_qty > 1 ? t('product.unit_qty.total', ['count' => $quantity * $lp->unit_qty]) : null;
         }
+
+        if ((Route::is('splashvirtual') || Route::is('splash')) && $product->type === OdinProduct::TYPE_VIRTUAL) {
+            $prices['25-percent']['value'] = $pricesOld['25-percent']['value'] ?? 0;
+            $prices['25-percent']['value_text'] = $pricesOld['25-percent']['value_text'] ?? '';
+        }
+
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
         $prices['exchange_rate'] = $pricesOld['exchange_rate'] ?? 0;
         $lp->prices = $prices;
