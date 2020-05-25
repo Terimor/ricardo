@@ -294,8 +294,8 @@ class OdinProduct extends OdinModel
                         $oneItemPrice = $price['price'];
                         // 25 percent for splash pages
                         if ((Route::is('splashvirtual') || Route::is('splash')) && $this->type === self::TYPE_VIRTUAL) {
-                            $value[$key]['25-percent']['value'] = round($price['price'] * 0.25, 2);
-                            $value[$key]['25-percent']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['25-percent']['value'], $currency);
+                            $value[$key]['25p']['value'] = round($price['price'] * 0.25, 2);
+                            $value[$key]['25p']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['25-percent']['value'], $currency);
                         }
                     }
 

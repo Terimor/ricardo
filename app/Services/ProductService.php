@@ -331,8 +331,8 @@ class ProductService
         }
 
         if ((Route::is('splashvirtual') || Route::is('splash')) && $product->type === OdinProduct::TYPE_VIRTUAL) {
-            $prices['25-percent']['value'] = $pricesOld['25-percent']['value'] ?? 0;
-            $prices['25-percent']['value_text'] = $pricesOld['25-percent']['value_text'] ?? '';
+            $prices['25p']['value'] = $pricesOld['25p']['value'] ?? 0;
+            $prices['25p']['value_text'] = $pricesOld['25p']['value_text'] ?? '';
         }
 
         $prices['currency'] = $pricesOld['currency'] ?? 'USD';
