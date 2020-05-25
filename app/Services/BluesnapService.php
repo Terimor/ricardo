@@ -447,9 +447,9 @@ class BluesnapService extends ProviderService
                 'status' => true,
                 'txn' => [
                     'currency'  => $currency,
-                    'hash'      => $hash,
-                    'status'    => $type === self::TYPE_WEBHOOK_CHARGE ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
-                    'value'     => preg_replace('/[^\d.]/', '', $value)
+                    'status' => $type === self::TYPE_WEBHOOK_CHARGE ? Txn::STATUS_APPROVED : Txn::STATUS_FAILED,
+                    'value' => (float) preg_replace('/[^\d.]/', '', $value),
+                    'hash' => $hash,
                 ]
             ];
         }
