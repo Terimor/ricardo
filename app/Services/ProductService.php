@@ -500,7 +500,7 @@ class ProductService
         $numberFormatter = new NumberFormatter($localeString, NumberFormatter::CURRENCY);
         $symbol = $numberFormatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
 
-        for ($quantity = 1; $quantity <= $product->castPriceQuantity(); $quantity++) {
+        for ($quantity = 1; $quantity <= OdinProduct::PHYSICAL_QUANTITY_PRICES; $quantity++) {
             if (!empty($pricesOld[$quantity]['value'])) {
                 $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
                 $prices[$quantity]['2xvalue'] = $pricesOld[$quantity]['value'] * 2;
