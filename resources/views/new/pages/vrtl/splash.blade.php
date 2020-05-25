@@ -42,7 +42,7 @@
       <div class="splash-virtual-add-msg">Get the entire <span id="splashVirtualProductName">"Free power secrets"</span> package + Free Support for <span class="underlined">Only $37</span></div>
       
       <div class="text-center">
-        <img src="../assets/images/splash/product.png" alt="" class="splash-virtual-product-img">
+        <img src="{{ $cdn_url }}/assets/images/splash/product.png" alt="" class="splash-virtual-product-img">
         
         <div class="splash-virtual-discount-text">Discount Guaranteed For The Next</div>
 
@@ -61,7 +61,7 @@
 
       <div class="splash-virtual-guarantee-block">
         <div class="guarantee-img-wrap">
-          <img src="../assets/images/splash/guarantee.png" alt="" class="guarantee-img">
+          <img src="{{ $cdn_url }}/assets/images/splash/guarantee.png" alt="" class="guarantee-img">
         </div>
 
         <div class="guarantee-text">
@@ -76,17 +76,17 @@
         <h4 class="getting-block-title">Here's What You're Getting:</h4>
         
         <div class="text-center">
-          <img class="img-fluid" src="../assets/images/splash/product-use.png" alt="">
+          <img class="img-fluid" src="{{ $cdn_url }}/assets/images/splash/product-use.png" alt="">
         </div>
         
         <div class="px-5">
           <p class="mt-5"><b>The Step-By-Step Guide To Build Your Fuel Generator In Any Spacee - </b> Everything you need to build free power secret guaranteed! - Video Guides and PDF blueprints, step-bt-step, how to instructions, advice, strategies.</p>
 
-          <p class="mt-4"><img src="../assets/images/splash/check-icon.png" alt=""> <b>Comprehensive materials list covering exactly what you nee, and where you ca get it.</b></p>
+          <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""> <b>Comprehensive materials list covering exactly what you nee, and where you ca get it.</b></p>
 
           <p class="mt-4"><b>You'll find out where you should build your Free Power Secret,</b> and now one MICROSCOPIC adjustment can doule the amount of fuel it produces...</p>
 
-          <p class="mt-4"><img src="../assets/images/splash/check-icon.png" alt=""><b>Get instant access.</b> You can download everything immediatly after purchase.</p>
+          <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""><b>Get instant access.</b> You can download everything immediatly after purchase.</p>
 
           <p class="mt-4">A time-sensitive discount price when you order now. (I reserve to <span class="underlined">end this discount price and the bonus at anytime.</span> If you want this deal, you'll have to order today)</p>
 
@@ -110,7 +110,7 @@
 
       <div class="splash-virtual-materials-notification">
         <div class="materials-notification-img-wrap">
-          <img src="../assets/images/splash/file-types-icon.png" alt="" class="materials-notification-img">
+          <img src="{{ $cdn_url }}/assets/images/splash/file-types-icon.png" alt="" class="materials-notification-img">
         </div>
 
         <div class="splash-virtual-materials-notification-title">No shipping costs saves you money</div>
@@ -119,13 +119,13 @@
     </div>
 
     <div class="splash-virtual-page-footer">
-      <img src="../assets/images/splash/clickbank.png" alt="" id="splashVirtualFooterClickbank">
+      <img src="{{ $cdn_url }}/assets/images/splash/clickbank.png" alt="" id="splashVirtualFooterClickbank">
 
       <div class="splash-virtual-page-footer-content">
         <div class="splash-virtual-secure-imgs">
-          <div class="secure-img-wrap"><img src="../assets/images/splash/ssl-checkout.png" alt=""></div>
-          <div class="secure-img-wrap"><img src="../assets/images/splash/dmca-protected.png" alt=""></div>
-          <div class="secure-img-wrap"><img src="../assets/images/splash/ssl-security.png" alt=""></div>
+          <div class="secure-img-wrap"><img src="{{ $cdn_url }}/assets/images/splash/ssl-checkout.png" alt=""></div>
+          <div class="secure-img-wrap"><img src="{{ $cdn_url }}/assets/images/splash/dmca-protected.png" alt=""></div>
+          <div class="secure-img-wrap"><img src="{{ $cdn_url }}/assets/images/splash/ssl-security.png" alt=""></div>
         </div>
 
         <div class="splash-virtual-footer-text">
