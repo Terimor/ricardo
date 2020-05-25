@@ -220,7 +220,7 @@ class OdinProduct extends OdinModel
 
             // images
             $value[$key]['quantity_image'] = [];
-            for ($i = 1; $i <= self::PHYSICAL_QUANTITY_PRICES; $i++) {
+            for ($i = 1; $i <= $this->castPriceQuantity(); $i++) {
                 if (!empty($value[$key]['quantity_image_ids'][$i])) {
                     $imgId = $value[$key]['quantity_image_ids'][$i];
                     $value[$key]['quantity_image'][$i] = ($imgId && !empty($this->images[$imgId])) ? $this->images[$imgId] : null;
@@ -410,7 +410,7 @@ class OdinProduct extends OdinModel
         if (!$isUpsell) {
             if (!empty($this->attributes['skus'])) {
                 foreach ($this->attributes['skus'] as $key => $sku) {
-                    for ($i = 1; $i <= self::PHYSICAL_QUANTITY_PRICES; $i++) {
+                    for ($i = 1; $i <= $this->castPriceQuantity(); $i++) {
                         if (!empty($sku['quantity_image_ids'][$i])) {
                             $ids[$sku['quantity_image_ids'][$i]] = $sku['quantity_image_ids'][$i];
                         }

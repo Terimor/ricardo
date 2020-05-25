@@ -408,7 +408,7 @@ class ProductService
         $lp->countries = $product->countries ?? [];
         // returns labels
         $labels = [];
-        for ($i = 1; $i <= OdinProduct::PHYSICAL_QUANTITY_PRICES; $i++) {
+        for ($i = 1; $i <= $product->castPriceQuantity(); $i++) {
             if (!empty($product->labels[$i])) {
                 $labels[$i] = !empty($product->labels[$i][app()->getLocale()]) ? $product->labels[$i][app()->getLocale()] : (!empty($product->labels[$i]['en']) ? $product->labels[$i]['en'] : '');
             }
@@ -499,7 +499,7 @@ class ProductService
         $numberFormatter = new NumberFormatter($localeString, NumberFormatter::CURRENCY);
         $symbol = $numberFormatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
 
-        for ($quantity = 1; $quantity <= OdinProduct::PHYSICAL_QUANTITY_PRICES; $quantity++) {
+        for ($quantity = 1; $product->castPriceQuantity(); $quantity++) {
             if (!empty($pricesOld[$quantity]['value'])) {
                 $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
                 $prices[$quantity]['2xvalue'] = $pricesOld[$quantity]['value'] * 2;
@@ -597,8 +597,8 @@ class ProductService
 
         $prices = [];
         $pricesOld = $product->prices;
-
-        for ($quantity = 1; $quantity <= OdinProduct::PHYSICAL_QUANTITY_PRICES; $quantity++) {
+        $quantities = $product->castPriceQuantity();
+        for ($quantity = 1; $quantity <= $quantities; $quantity++) {
             if (empty($pricesOld[$quantity]['value']) || $pricesOld[$quantity]['value'] <= 0) {
                 logger()->error("**Price is 0 for {$product->product_name}", ['quantity' => $quantity, 'product' => $product->toArray()]);
                 continue;
