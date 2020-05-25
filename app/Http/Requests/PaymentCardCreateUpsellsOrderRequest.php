@@ -26,7 +26,7 @@ class PaymentCardCreateUpsellsOrderRequest extends FormRequest
         return [
             'order'         => ['required', 'string', 'size:24'],
             'upsells.*.id'  => ['required', 'string', 'size:24'],
-            'upsells.*.qty' => ['required', 'integer', 'between:1,5']
+            'upsells.*.qty' => ['required', 'integer', 'between:1,10']
         ];
     }
 }
