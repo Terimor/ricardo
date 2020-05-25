@@ -680,10 +680,8 @@ class SiteController extends Controller
 
         if ($product->type === OdinProduct::TYPE_PHYSICAL) {
             return view('splash', compact('loadedPhrases', 'product', 'cdn_url', 'page_title', 'main_logo'));
-            return view('splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
         } else {
             return view('new.pages.vrtl.splash', compact('loadedPhrases', 'product', 'cdn_url', 'page_title', 'main_logo'));
-            return view('new.pages.vrtl.splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
         }
     }
 
