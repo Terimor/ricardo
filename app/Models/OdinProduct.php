@@ -24,7 +24,9 @@ use App\Exceptions\ProductNotFoundException;
 class OdinProduct extends OdinModel
 {
     const VIRTUAL_QUANTITY_PRICES = 1;
-    const PHYSICAL_QUANTITY_PRICES = 10;
+    const VIRTUAL_UPSELLS_QUANTITY_PRICES = 3;
+    const PHYSICAL_QUANTITY_PRICES = 5;
+    const PHYSICAL_UPSELLS_QUANTITY_PRICES = 10;
     const MIN_PRICE = 4.5;
 
     const TYPE_PHYSICAL = 'physical';
@@ -550,12 +552,8 @@ class OdinProduct extends OdinModel
      */
     public function castPriceQuantity(?int $quantity = null): int
     {
-        if ($this->type === self::TYPE_VIRTUAL) {
-            if (!$quantity || $quantity < 1 || $quantity > self::VIRTUAL_QUANTITY_PRICES) {
-                $quantity = self::VIRTUAL_QUANTITY_PRICES;
-            }
-        } elseif (!$quantity || $quantity < 1 || $quantity > self::PHYSICAL_QUANTITY_PRICES) {
-            $quantity = self::PHYSICAL_QUANTITY_PRICES;
+        if (!$quantity || $quantity < 1) {
+            $quantity = $this->type === self::TYPE_PHYSICAL ? self::PHYSICAL_QUANTITY_PRICES : self::VIRTUAL_QUANTITY_PRICES;
         }
         return $quantity;
     }
