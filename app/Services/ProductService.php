@@ -489,6 +489,7 @@ class ProductService
         if (!$product) {
             abort(404);
         }
+
         $currency = Currency::getByCountry(strtolower($countryCode));
 
         $product->currency = $currency->code;
@@ -499,7 +500,7 @@ class ProductService
         $numberFormatter = new NumberFormatter($localeString, NumberFormatter::CURRENCY);
         $symbol = $numberFormatter->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
 
-        for ($quantity = 1; $product->castPriceQuantity(); $quantity++) {
+        for ($quantity = 1; $quantity <= $product->castPriceQuantity(); $quantity++) {
             if (!empty($pricesOld[$quantity]['value'])) {
                 $prices[$quantity]['value'] = $pricesOld[$quantity]['value'];
                 $prices[$quantity]['2xvalue'] = $pricesOld[$quantity]['value'] * 2;
