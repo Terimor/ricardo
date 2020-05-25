@@ -676,7 +676,13 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), '');
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
-        return view('splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
+
+        if ($product->type === OdinProduct::TYPE_PHYSICAL) {
+            return view('splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
+        } else {
+            // TODO: change path to virtual template
+            return view('splash', compact('loadedPhrases', 'product', 'page_title', 'main_logo'));
+        }
     }
 
     /**
