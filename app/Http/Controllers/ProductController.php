@@ -39,7 +39,11 @@ class ProductController extends Controller
     {
         $product = $productService->resolveProductForUpsell($request);
         // for virtual product get prices for 1,2,3,10,20
-        $quantity = $product->type === OdinProduct::TYPE_VIRTUAL ? OdinProduct::VIRTUAL_UPSELLS_QUANTITY_PRICES : OdinProduct::PHYSICAL_UPSELLS_QUANTITY_PRICES;
+        $quantity = $request->get('quantity');
+        $maxQuantity = $product->type === OdinProduct::TYPE_VIRTUAL ? OdinProduct::VIRTUAL_UPSELLS_QUANTITY_PRICES : OdinProduct::PHYSICAL_UPSELLS_QUANTITY_PRICES;
+        if (!$quantity || $quantity < 1 || $quantity > $maxQuantity) {
+            $quantity = $maxQuantity;
+        }
         $upsell = $productService->getUpsellProductById($product, $productId, $quantity);
         return ['upsell' => $productService->localizeUpsell($upsell)];
     }
