@@ -836,13 +836,17 @@ class OdinOrder extends OdinModel
     }
 
     /**
-     * Adds note and set is_paused=true
+     * Adds note
      * @param string|null $note
+     * @param bool $is_paused - if yes set is_paused = true
+     * @return void
      */
-    public function addNoteAndSetPause(?string $note): void
+    public function addNote(?string $note, bool $is_paused = false): void
     {
         if ($note) {
-            $this->is_paused = true;
+            if ($is_paused) {
+                $this->is_paused = true;
+            }
             if (empty($this->notes)) {
                 $this->notes = [];
             }
