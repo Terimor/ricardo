@@ -891,7 +891,8 @@ class ProductService
                     $urls[] = [
                         'name' => $file->name,
                         'title' => $file->title,
-                        'url' => static::getDownloadFileUrl($file, $orderNumber)
+                        'url' => static::getDownloadFileUrl($file, $orderNumber),
+                        'image' => 'https://odin-img-dev.s3.eu-central-1.amazonaws.com/images/file/BLOG-min-2.jpg'
                     ];
                 }
             }
@@ -919,7 +920,8 @@ class ProductService
                 foreach ($videos as $video) {
                     $urls[] = [
                         'title' => $video->title,
-                        'url' => $this->getDownloadVideoUrl($video, $orderNumber)
+                        'url' => $this->getDownloadVideoUrl($video, $orderNumber),
+                        'image' => 'https://odin-img-dev.s3.eu-central-1.amazonaws.com/images/file/BLOG-min-2.jpg'
                     ];
                 }
             }
