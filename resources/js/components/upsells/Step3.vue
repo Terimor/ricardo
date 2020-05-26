@@ -98,7 +98,7 @@ export default {
 
       if (this.accessoryList.length > 0) {
         // Get upsells added before and filter upsells === main_product_id, reduce quantity
-        productUpsellsQuantity = this.accessoryList.filter(order => order.id === js_data.product.id).map(order => order.quantity).reduce((q1, q2) => q1 + q2, 0);
+        productUpsellsQuantity = this.accessoryList.filter(order => order.id === js_data.product.id).map(order => order.quantity).reduce((q1, q2) => parseInt(q1) + parseInt(q2), 0);
       }
 
       return productUpsellsQuantity;
@@ -121,7 +121,7 @@ export default {
 
   mounted() {
     this.isLoading = true;
-    getUppSells(this.id, (this.selectedProductData.quantity || this.selectedProductData.deal || 1) + this.selectedProductUpsellsQuantity, this.accessoryStep)
+    getUppSells(this.id, parseInt(this.selectedProductData.quantity || this.selectedProductData.deal || 1) + parseInt(this.selectedProductUpsellsQuantity), this.accessoryStep)
       .then(res => {
         if (res && res.data) {
           this.upsellPrices = res.data.upsell.upsellPrices;
