@@ -58,13 +58,13 @@
         <div class="section-tabs">
           <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT')">{{ $product->product_name }}</div>
 
-          @if(is_array($product->free_files) && !empty($product->free_files) > 0)
+          @if(is_array($product->free_files) && !empty($product->free_files))
             <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES')">{{ t('thankyou.vrtl.bonuses') }}</div>
           @endif
         </div>
 
         <div class="section-content" v-if="tabActive === 'PRODUCT'">
-          @if((is_array($product->sale_files) && !empty($product->sale_files) > 0) || )
+          @if(is_array($product->sale_files) && !empty($product->sale_files))
             <div class="product-files-sect">
               <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
             </div>
@@ -82,7 +82,7 @@
             @endforeach
           @endif
           
-          @if(is_array($product->sale_videos) && !empty($product->sale_videos) > 0)
+          @if(is_array($product->sale_videos) && !empty($product->sale_videos))
             <div class="product-videos-sect">
               <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
               <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_subtitle', ['product' => $product->product_name]) }}</p>
@@ -102,7 +102,7 @@
           @endif
         </div>
 
-        @if(is_array($product->free_files) && !empty($product->free_files) > 0)
+        @if(is_array($product->free_files) && !empty($product->free_files))
           <div class="section-content" v-if="tabActive === 'BONUSES'">
             @foreach($product->free_files as $index => $file)
               <div @click="collapseHeadClick" class="product-file-collapse-head">
