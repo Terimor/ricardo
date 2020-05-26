@@ -76,7 +76,18 @@
 
               <div class="product-file-collapse-content">
                 <div class="product-files-list">
-                  <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
+                  <div class="product-file">
+                    @php $fileName = explode(".", $file['url']); @endphp
+                    @if(end($fileName) === 'pdf')
+                      <div @click="productFilePreviewClick" class="product-file-image-preview" style="background-image: url({{ $file['image'] }})"></div>
+                      
+                      <div class="product-file-pdf-preview">
+                        <embed src= "{{ $file['url'] }}" width= "100%" height= "350">
+                      </div>
+                    @endif
+
+                    <a href="{{ $file['url'] }}" target="_blank">{{ $file['title'] }}</a>
+                  </div>
                 </div>
               </div>
             @endforeach
@@ -111,7 +122,18 @@
 
               <div class="product-file-collapse-content">
                 <div class="product-files-list">
-                  <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
+                  <div class="product-file">
+                    @php $fileName = explode(".", $file['url']); @endphp
+                    @if(end($fileName) === 'pdf')
+                      <div @click="productFilePreviewClick" class="product-file-image-preview" style="background-image: url({{ $file['image'] }})"></div>
+                      
+                      <div class="product-file-pdf-preview">
+                        <embed src= "{{ $file['url'] }}" width= "100%" height= "350">
+                      </div>
+                    @endif
+
+                    <a href="{{ $file['url'] }}" target="_blank">{{ $file['title'] }}</a>
+                  </div>
                 </div>
               </div>
             @endforeach

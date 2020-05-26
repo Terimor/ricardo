@@ -213,6 +213,7 @@ main {
       font-weight: bold;
       font-size: 14px;
       text-decoration: none;
+      text-align: center;
 
       &:hover {
         text-decoration: underline;
@@ -220,6 +221,23 @@ main {
 
       &:not(:last-child) {
         margin-bottom: 15px;
+      }
+
+      .product-file-image-preview {
+        width: 100%;
+        height: 350px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        cursor: pointer;
+      }
+
+      .product-file-pdf-preview {
+        display: none;
+
+        &.active {
+          display: block;
+        }
       }
     }
   }
@@ -267,23 +285,6 @@ main {
     color: #666;
     font-weight: 600;
     font-size: 15px;
-  }
-
-  .product-files-list {
-    .product-file {
-      font-weight: bold;
-      font-size: 14px;
-      text-align: left;
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-
-      &:not(:last-child) {
-        margin-bottom: 15px;
-      }
-    }
   }
 
   .thank-you-page-email {
