@@ -33,7 +33,7 @@
   <div id="thank-you-vrtl" class="vrtl-thank-you-page">
     <div class="vrtl-thank-you-page-header">
 
-      <div class="header-product-image" style="background-image: url({{ $product->image && count($product->image) > 0 ? $product->image[0] : '' }})"></div>
+      <div class="header-product-image" style="background-image: url({{ is_array($product->image) && !empty($product->image) ? $product->image[0] : '' }})"></div>
       
       <div class="header-main">
         <h2 class="header-product-title">{{ t('thankyou.vrtl.congratulations', ['product' => $product->product_name]) }}</h2>
@@ -41,7 +41,7 @@
         <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg', ['code' => $product->product_name]) }}"</p>
 
         <p class="header-product-video-info-msg">
-          @php $courses_count = $product->sale_videos && count($product->sale_videos) > 0 ? count($product->sale_videos) : ''; @endphp
+          @php $courses_count = is_array($product->sale_videos) && !empty($product->sale_videos) ? count($product->sale_videos) : ''; @endphp
 
           {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count, 'product' => $product->product_name]) }} 
         </p>
@@ -58,17 +58,13 @@
         <div class="section-tabs">
           <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT')">{{ $product->product_name }}</div>
 
-          @if($product->free_files && count($product->free_files) > 0)
+          @if(is_array($product->free_files) && !empty($product->free_files) > 0)
             <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES')">{{ t('thankyou.vrtl.bonuses') }}</div>
-          @endif
-
-          @if($product->free_files && count($product->free_files) > 0)
-            <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'UPSELLS' }" @click="setTab('UPSELLS')">{{ t('thankyou.vrtl.upsells') }}</div>
           @endif
         </div>
 
         <div class="section-content" v-if="tabActive === 'PRODUCT'">
-          @if($product->sale_files && count($product->sale_files) > 0)
+          @if((is_array($product->sale_files) && !empty($product->sale_files) > 0) || )
             <div class="product-files-sect">
               <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
             </div>
@@ -86,7 +82,7 @@
             @endforeach
           @endif
           
-          @if($product->sale_videos && count($product->sale_videos) > 0)
+          @if(is_array($product->sale_videos) && !empty($product->sale_videos) > 0)
             <div class="product-videos-sect">
               <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
               <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_subtitle', ['product' => $product->product_name]) }}</p>
@@ -106,24 +102,8 @@
           @endif
         </div>
 
-        @if($product->free_files && count($product->free_files) > 0)
+        @if(is_array($product->free_files) && !empty($product->free_files) > 0)
           <div class="section-content" v-if="tabActive === 'BONUSES'">
-            @foreach($product->free_files as $index => $file)
-              <div @click="collapseHeadClick" class="product-file-collapse-head">
-                {{ $file['title'] }}
-              </div>
-
-              <div class="product-file-collapse-content">
-                <div class="product-files-list">
-                  <a href="{{ $file['url'] }}" target="_blank" class="product-file">{{ $file['title'] }}</a>
-                </div>
-              </div>
-            @endforeach
-          </div>
-        @endif
-
-        @if($product->free_files && count($product->free_files) > 0)
-          <div class="section-content" v-if="tabActive === 'UPSELLS'">
             @foreach($product->free_files as $index => $file)
               <div @click="collapseHeadClick" class="product-file-collapse-head">
                 {{ $file['title'] }}
@@ -144,4 +124,5 @@
       </div>
     </div>
   </div>
+  @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
 @endsection

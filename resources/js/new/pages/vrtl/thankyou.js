@@ -2,8 +2,6 @@ import app from '../../app';
 
 
 js_deps.wait(['vue'], () => {
-  require('../../../bootstrap');
-
   new Vue({
 
     el: '#thank-you-vrtl',

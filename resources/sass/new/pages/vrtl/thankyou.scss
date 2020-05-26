@@ -2,7 +2,6 @@
 
 body {
   overflow-y: scroll;
-  background-color: #E3E3E3;
 }
 
 .header {
@@ -21,6 +20,10 @@ body {
     height: 1px;
     background-color: rgba(255, 255, 255, 0.8);
   }
+}
+
+#static-topbar {
+  display: none;
 }
 
 main {
@@ -70,9 +73,9 @@ main {
 
       .header-product-video-info-msg {
         margin-top: 20px;
-        font-size: 10px;
+        font-size: 14px;
         color: rgba(255, 255, 255, 0.8);
-        line-height: 18px;
+        line-height: 23px;
       }
     }
 
@@ -325,6 +328,6 @@ main {
   }
 
   .footer-main-down-icon {
-    bottom: -5px;
+    bottom: -15px;
   }
 }
