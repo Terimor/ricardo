@@ -130,8 +130,11 @@ class PaymentService
         }
 
         // check webhook reply
+        $is_order_need_to_check = false;
         if ($order->status === OdinOrder::STATUS_CANCELLED) {
             logger()->info("Webhook cancelled order [{$order->number}]", ['data' => $data]);
+            $is_order_need_to_check = true;
+            $order->addNote('Odin: Payment confirmation is received when the order was already canceled');
         } elseif (!in_array($order->status, [OdinOrder::STATUS_NEW, OdinOrder::STATUS_HALFPAID])) {
             logger()->info("Webhook ignored, order [{$order->number}] status [{$order->status}]", ['data' => $data]);
             return $order;
@@ -147,7 +150,6 @@ class PaymentService
                 $products = $order->getProductsByTxnValue($txn['value']);
             }
 
-            $is_order_need_to_check = false;
             foreach ($products as $product) {
                 if ($product['is_paid']) {
                     $is_order_need_to_check = true;
@@ -159,7 +161,7 @@ class PaymentService
                     if (!self::isApm($txn['payment_method']) && $txn['card_number']) {
                         CardService::incCachedCardUsageLimit($txn['card_number']);
                     }
-                    $order->addNoteAndSetPause(CustomerBlacklistService::getOrderPauseReason($order));
+                    $order->addNote(CustomerBlacklistService::getOrderPauseReason($order), true);
                 }
                 $order->addProduct($product);
             }

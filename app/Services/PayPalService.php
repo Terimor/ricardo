@@ -556,6 +556,11 @@ class PayPalService
                     $order->addProduct($product);
                 }
 
+                if ($order->status === OdinOrder::STATUS_CANCELLED) {
+                    $is_order_need_to_check = true;
+                    $order->addNote('Odin: Payment confirmation is received when the order was already canceled');
+                }
+
                 // reset flagged
                 $main_product = $order->getMainProduct(false);
                 if (!empty($main_product) && $main_product['txn_hash'] === $paypal_order->id) {
