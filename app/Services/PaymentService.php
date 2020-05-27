@@ -161,8 +161,8 @@ class PaymentService
                     if (!self::isApm($txn['payment_method']) && $txn['card_number']) {
                         CardService::incCachedCardUsageLimit($txn['card_number']);
                     }
-                    $order->addNote(CustomerBlacklistService::getOrderPauseReason($order), true);
                 }
+                $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $product['is_main']), true);
                 $order->addProduct($product);
             }
 

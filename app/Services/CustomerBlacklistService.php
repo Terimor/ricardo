@@ -18,9 +18,10 @@ class CustomerBlacklistService
     /**
      * Checks if order needs a pause
      * @param OdinOrder $order
+     * @param bool|null $is_main
      * @return string|null
      */
-    public static function getOrderPauseReason(OdinOrder $order): ?string
+    public static function getOrderPauseReason(OdinOrder $order, ?bool $is_main = false): ?string
     {
         if ($order->is_paused) {
             return null;
@@ -28,29 +29,31 @@ class CustomerBlacklistService
 
         $reason = null;
         if ($order->total_paid_usd < self::ORDER_PAUSE_AMOUNT_USD) {
-            if (!optional($order->ipqualityscore)['tor']) {
-                // create address string
-                $address = implode(' ', array_filter([
-                    $order->shipping_zip,
-                    $order->shipping_country,
-                    $order->shipping_state,
-                    $order->shipping_city,
-                    $order->shipping_street,
-                    $order->shipping_building,
-                    $order->shipping_apt
-                ]));
-                $address = preg_replace('/[^\w\s]+/u', '', $address);
+            if ($is_main) {
+                if (!optional($order->ipqualityscore)['tor']) {
+                    // create address string
+                    $address = implode(' ', array_filter([
+                        $order->shipping_zip,
+                        $order->shipping_country,
+                        $order->shipping_state,
+                        $order->shipping_city,
+                        $order->shipping_street,
+                        $order->shipping_building,
+                        $order->shipping_apt
+                    ]));
+                    $address = preg_replace('/[^\w\s]+/u', '', $address);
 
-                $cus_blst = CustomerBlacklist::addOne([
-                    'fingerprint' => $order->fingerprint,
-                    'address' => trim(strtolower($address)),
-                    'email' => $order->customer_email,
-                    'phone' => $order->customer_phone,
-                    'ip' => $order->ip
-                ]);
-                $reason = self::getPauseReason($cus_blst, $order);
-            } else {
-                $reason = 'customer uses Tor.';
+                    $cus_blst = CustomerBlacklist::addOne([
+                        'fingerprint' => $order->fingerprint,
+                        'address' => trim(strtolower($address)),
+                        'email' => $order->customer_email,
+                        'phone' => $order->customer_phone,
+                        'ip' => $order->ip
+                    ]);
+                    $reason = self::getPauseReason($cus_blst, $order);
+                } else {
+                    $reason = 'customer uses Tor.';
+                }
             }
         } else {
             $reason = 'too expensive order.';
