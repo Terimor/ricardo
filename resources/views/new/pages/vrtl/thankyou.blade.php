@@ -34,7 +34,7 @@
     <div class="vrtl-thank-you-page-header">
 
       <div class="header-product-image" style="background-image: url({{ !empty($product->image)  && is_array($product->image)? $product->image[0] : '' }})"></div>
-      
+
       <div class="header-main">
         <h2 class="header-product-title">{{ t('thankyou.vrtl.congratulations', ['product' => $product->product_name]) }}</h2>
 
@@ -43,7 +43,7 @@
         <p class="header-product-video-info-msg">
           @php $courses_count = !empty($product->sale_videos) && is_array($product->sale_videos) ? count($product->sale_videos) : ''; @endphp
 
-          {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count, 'product' => $product->product_name]) }} 
+          {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count, 'product' => $product->product_name]) }}
         </p>
       </div>
 
@@ -54,7 +54,7 @@
     <div class="vrtl-thank-you-page-main">
       <div class="main-section-content">
         <h3 class="main-section-title">{{ t('thankyou.vrtl.download') }}</h3>
-        
+
         <div class="section-tabs">
           <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT')">{{ $product->product_name }}</div>
 
@@ -80,7 +80,7 @@
                     @php $fileName = explode(".", $file['url']); @endphp
                     @if(end($fileName) === 'pdf')
                       <div @click="productFilePreviewClick" class="product-file-image-preview" style="background-image: url({{ $file['image'] }})"></div>
-                      
+
                       <div class="product-file-pdf-preview">
                         <embed src= "{{ $file['url'] }}" width= "100%" height= "350">
                       </div>
@@ -92,7 +92,7 @@
               </div>
             @endforeach
           @endif
-          
+
           @if(!empty($product->sale_videos) && is_array($product->sale_videos))
             <div class="product-videos-sect">
               <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
@@ -126,7 +126,7 @@
                     @php $fileName = explode(".", $file['url']); @endphp
                     @if(end($fileName) === 'pdf')
                       <div @click="productFilePreviewClick" class="product-file-image-preview" style="background-image: url({{ $file['image'] ?? $file['image'] }})"></div>
-                      
+
                       <div class="product-file-pdf-preview">
                         <embed src= "{{ $file['url'] }}" width= "100%" height= "350">
                       </div>

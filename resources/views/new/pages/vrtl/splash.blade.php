@@ -1,4 +1,4 @@
-@extends('layouts.app', ['product' => $product])
+@extends('layouts.app', ['product' => $product, 'loadVue' => true])
 
 @section('title', $page_title)
 
@@ -91,7 +91,7 @@
                     <p class="mt-5">@php echo $product->description; @endphp</p>
 
                     <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""> <b>{{ t('splash.vrtl.product_descr1') }}</b></p>
-                    
+
                     @if($product->splash_description)
                     <p class="mt-5">{{ $product->splash_description }}</p>
                     @endif

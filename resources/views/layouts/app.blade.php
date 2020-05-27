@@ -52,7 +52,7 @@
     @include('components.scripts.libphonenumber')
     @include('components.scripts.sha256')
     @include('components.scripts.bioep')
-    @include('components.scripts.vue', ['defer' => true])
+    @include('components.scripts.vue', ['defer' => true, 'loadVue' => $loadVue ?? null])
     @include('components.scripts.element')
     @include('components.scripts.static')
     @yield('scripts')
