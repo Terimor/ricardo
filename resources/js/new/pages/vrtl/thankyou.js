@@ -35,6 +35,20 @@ js_deps.wait(['vue'], () => {
           content.style.maxHeight = content.scrollHeight + "px";
           content.style.padding = "10px 0";
         }
+      },
+
+      productFilePreviewClick: e => {
+        let target = e.target;
+
+        while (!target.classList.contains('product-file-image-preview')) {
+          target = target.parentNode;
+        }
+
+        target.style.display = 'none';
+
+        var content = target.nextElementSibling;
+
+        content.classList.add('active');
       }
     },
 
