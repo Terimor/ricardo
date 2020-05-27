@@ -653,7 +653,8 @@ class SiteController extends Controller
         $loadedPhrases = (new I18nService())->loadPhrases('thankyou_page');
         // prepare product
         $product->setLocalImages();
-        $product = $productService->getLocaleDownloadProduct($product, $order->number);
+        $upsells = OdinProduct::getBySkus($order->getUpsellsSkus(), ['sale_file_ids', 'sale_video_ids']);
+        $product = $productService->getLocaleDownloadProduct($product, $order->number, $upsells);
 
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product);

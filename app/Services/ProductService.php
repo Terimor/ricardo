@@ -855,15 +855,18 @@ class ProductService
      * Get product for download page
      * @param OdinProduct $product
      * @param string $orderNumber
+     * @param mixed $upsells
      * @return Localize
      */
-    public function getLocaleDownloadProduct(OdinProduct $product, string $orderNumber): Localize
+    public function getLocaleDownloadProduct(OdinProduct $product, string $orderNumber, $upsells = null): Localize
     {
         $lp = new Localize();
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
-        $lp->free_files = !empty($product->free_file_ids) ? $this->getFileUrlsByIds($product->free_file_ids, $orderNumber) : null;
-        $lp->sale_files = !empty($product->sale_file_ids) ? $this->getFileUrlsByIds($product->sale_file_ids, $orderNumber) : null;
+        $files = $this->getVirtualFiles($product, $upsells);
+        $videos = $this->getVirtualVideos($product, $upsells);
+        $lp->free_files = !empty($product->free_file_ids) ? $this->getFileUrlsByIds($product->free_file_ids, $orderNumber, $files) : null;
+        $lp->sale_files = !empty($product->sale_file_ids) ? $this->getFileUrlsByIds($product->sale_file_ids, $orderNumber, $files) : null;
         $lp->sale_videos = !empty($product->sale_video_ids) ? $this->getVideoUrlsByIds($product->sale_video_ids, $orderNumber) : null;
         $lp->logo_image = $product->logo_image;
         $lp->bg_image = $product->bg_image;
@@ -874,27 +877,73 @@ class ProductService
     }
 
     /**
-     * Get file urls for download by ids
-     * @param array|null $file_ids
-     * @param string $orderNumber
-     * @param bool $returnS3Url
+     * Get all virtual files except upsells
+     * @param OdinProduct $product
+     * @param mixed $upsells
      * @return array
      */
-    private function getFileUrlsByIds(?array $file_ids, string $orderNumber, bool $returnS3Url = false): array
+    public function getVirtualFiles(OdinProduct $product, $upsells = null)
     {
-        $urls = [];
+        $files = null;
+        $file_ids = !empty($product->free_file_ids) ?  array_merge($product->free_file_ids, []) : [];
+        $file_ids = !empty($product->sale_file_ids) ?  array_merge($product->sale_file_ids, $file_ids) : $file_ids;
+
+        if ($upsells) {
+            foreach ($upsells as $upsell) {
+                $file_ids = !empty($upsell->sale_file_ids) ?  array_merge($upsell->sale_file_ids, $file_ids) : $file_ids;
+            }
+        }
         if ($file_ids) {
             $select = ['name', 'url.en', 'title.en', 'image_id'];
             $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
-            $files = File::getByIds($file_ids, $select);
+            $files = File::getByIds(array_unique($file_ids), $select);
+        }
+
+        return $files;
+    }
+
+    public function getVirtualVideos(OdinProduct $product, $upsells = null)
+    {
+        $videos = null;
+        $video_ids = !empty($product->sale_video_ids) ? array_merge($product->sale_video_ids, []) : [];
+
+        if ($upsells) {
+            foreach ($upsells as $upsell) {
+                $video_ids = !empty($upsell->sale_video_ids) ?  array_merge($upsell->sale_video_ids, $video_ids) : $video_ids;
+            }
+        }
+    }
+
+    /**
+     * Get file urls for download by ids
+     * @param array|null $file_ids
+     * @param string $orderNumber
+     * @param mixed $files
+     * @return array
+     */
+    private function getFileUrlsByIds(?array $file_ids, string $orderNumber, $files = null): array
+    {
+        $urls = [];
+        if ($file_ids) {
+            // if we haven't files get a files from ids
+            if (!$files) {
+                $select = ['name', 'url.en', 'title.en', 'image_id'];
+                $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+                $files = File::getByIds($file_ids, $select);
+            }
             if ($files) {
-                foreach ($files as $file) {
-                    $urls[] = [
-                        'name' => $file->name,
-                        'title' => $file->title,
-                        'url' => static::getDownloadFileUrl($file, $orderNumber),
-                        'image_id' => (string)$file->image_id,
-                    ];
+                foreach ($file_ids as $id) {
+                    foreach ($files as $file) {
+                        if ((string)$id === (string)$file->_id) {
+                            $urls[] = [
+                                'name' => $file->name,
+                                'title' => $file->title,
+                                'url' => static::getDownloadFileUrl($file, $orderNumber),
+                                'image_id' => (string)$file->image_id,
+                            ];
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -905,17 +954,19 @@ class ProductService
      * Get video urls for download by ids
      * @param array|null $video_ids
      * @param string $orderNumber
-     * @param bool $returnUrl
+     * @param mixed $videos - if empty get
      * @return array
      */
-    private function getVideoUrlsByIds(?array $video_ids, string $orderNumber, bool $returnUrl = false): array
+    private function getVideoUrlsByIds(?array $video_ids, string $orderNumber, $videos = null): array
     {
         $urls = [];
 
         if ($video_ids) {
-            $select = ['share_id.en', 'title.en', 'image_id'];
-            $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
-            $videos = Video::getByIds($video_ids, $select);
+            if (!$videos) {
+                $select = ['share_id.en', 'title.en', 'image_id'];
+                $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+                $videos = Video::getByIds($video_ids, $select);
+            }
 
             if ($videos) {
                 foreach ($videos as $video) {

@@ -1093,4 +1093,22 @@ class OdinOrder extends OdinModel
         }
         return $hasMedia;
     }
+
+    /**
+     * Get upsells skus array
+     * @return array
+     */
+    public function getUpsellsSkus(): array
+    {
+        $skus = [];
+        if ($this->products) {
+            $products = $this->products;
+            foreach ($products as $product) {
+                if (!empty($product['is_upsells'])) {
+                    $skus[] = $product['sku_code'];
+                }
+            }
+        }
+        return $skus;
+    }
 }

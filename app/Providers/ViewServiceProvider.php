@@ -35,7 +35,7 @@ class ViewServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {       
+    {
         View::composer('layouts.app', function($view) {
             $settings = Setting::getValue([
                 'sentry_dsn',
@@ -62,10 +62,10 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('sentry_dsn', $settings['sentry_dsn']);
             $view->with('FreshchatToken', $settings['freshchat_token']);
             $view->with('ga_id', optional(Domain::getByName())->ga_id);
-            
+
             $affiliate = null;
             $affId = AffiliateService::getAffIdFromRequest(Request());
-            if ($affId) {                
+            if ($affId) {
                 $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
             $view->with('html_to_app', AffiliateService::getHtmlToApp(Request(), $affiliate));
@@ -78,7 +78,7 @@ class ViewServiceProvider extends ServiceProvider
         View::composer(['layouts.footer', 'new.regions.footer'], function($view) {
             $affiliate = null;
             $affId = AffiliateService::getAffIdFromRequest(Request());
-            if ($affId) {                
+            if ($affId) {
                 $affiliate = AffiliateSetting::getByHasOfferId($affId);
             }
             $domain = Domain::getByName();
@@ -96,12 +96,12 @@ class ViewServiceProvider extends ServiceProvider
             static::miniShopBoot();
         }
     }
-    
+
     /**
      * Mini shop boot
      */
     public static function miniShopBoot()
-    {        
+    {
         // Layout
         View::composer('minishop.layout', function($view) {
             $settings = Setting::getValue(['sentry_dsn', 'freshchat_token', 'support_address']);

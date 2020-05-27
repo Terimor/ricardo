@@ -885,4 +885,23 @@ class OdinProduct extends OdinModel
     public function getHasBatteryAttribute(): bool {
         return $this->hasBattery();
     }
+
+    /**
+     * Returns products by sku_codes
+     * @param array $skus
+     * @param array $select
+     * @return null|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getBySkus(array $skus, $select = []): ?\Illuminate\Database\Eloquent\Collection
+    {
+        $products = null;
+        if ($skus) {
+            $query = OdinProduct::whereIn('skus.code', $skus);
+            if ($select) {
+                $query->select($select);
+            }
+            $products = $query->get();
+        }
+        return $products;
+    }
 }
