@@ -1,4 +1,4 @@
-@if (!empty($HasVueApp) || !empty($is_minishop))
+@if (!empty($HasVueApp) || !empty($is_minishop) || !empty($loadVue))
 
   @if (config('app.env') !== 'local' && config('app.env') !== 'development')
 
