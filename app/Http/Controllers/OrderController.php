@@ -279,11 +279,14 @@ class OrderController extends Controller
         $file = $productService->getMediaByProduct($product, $fileId);
 
         if ($file) {
+            MediaAccess::addAccess($file, $order->number);
             if ($file['type'] == MediaAccess::TYPE_FILE) {
+                // Uncomment to redirect
+                //return Redirect::to($file['url']);
                 $fileData = $mediaService->getS3FileContent($file['url'], $filename);
-                MediaAccess::addAccess($file, $order->number);
                 return response()->download($fileData['tempFilepath'], $fileData['filename'], $fileData['headers'], 'inline')->deleteFileAfterSend();
             } else {
+                // Code for download video
                 /*$vimeoUrl = $mediaService->getVimeoDirectUrl($file['url']);
                 if ($vimeoUrl) {
                     $fileData = $mediaService->getFileContent($vimeoUrl, $filename);

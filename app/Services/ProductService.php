@@ -869,6 +869,7 @@ class ProductService
         $lp->bg_image = $product->bg_image;
         $lp->image = $product->image;
         $lp->billing_descriptor = $product->billing_descriptor;
+        $lp->collectVirtualMediaImages();
         return $lp;
     }
 
@@ -883,7 +884,7 @@ class ProductService
     {
         $urls = [];
         if ($file_ids) {
-            $select = ['name', 'url.en', 'title.en'];
+            $select = ['name', 'url.en', 'title.en', 'image_id'];
             $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
             $files = File::getByIds($file_ids, $select);
             if ($files) {
@@ -892,7 +893,7 @@ class ProductService
                         'name' => $file->name,
                         'title' => $file->title,
                         'url' => static::getDownloadFileUrl($file, $orderNumber),
-                        'image' => 'https://odin-img-dev.s3.eu-central-1.amazonaws.com/images/file/BLOG-min-2.jpg'
+                        'image_id' => (string)$file->image_id,
                     ];
                 }
             }
@@ -912,7 +913,7 @@ class ProductService
         $urls = [];
 
         if ($video_ids) {
-            $select = ['share_id.en', 'title.en'];
+            $select = ['share_id.en', 'title.en', 'image_id'];
             $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
             $videos = Video::getByIds($video_ids, $select);
 
@@ -921,7 +922,7 @@ class ProductService
                     $urls[] = [
                         'title' => $video->title,
                         'url' => $this->getDownloadVideoUrl($video, $orderNumber),
-                        'image' => 'https://odin-img-dev.s3.eu-central-1.amazonaws.com/images/file/BLOG-min-2.jpg'
+                        'image_id' => (string)$video->image_id,
                     ];
                 }
             }
