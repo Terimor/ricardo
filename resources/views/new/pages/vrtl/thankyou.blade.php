@@ -70,7 +70,7 @@
             </div>
 
             @foreach($product->sale_files as $index => $file)
-              <div @click="collapseHeadClick" class="product-file-collapse-head">
+              <div @click="collapseHeadClick" class="product-file-collapse-head active">
                 {{ $file['title'] }}
               </div>
 
@@ -86,7 +86,7 @@
                       </div>
                     @endif
 
-                    <a href="{{ $file['url'] }}" target="_blank">{{ $file['title'] }}</a>
+                    <a href="{{ $file['url'] }}" target="_blank">{{ t('thankyou.vrtl.download_file') }}: {{ $file['title'] }}</a>
                   </div>
                 </div>
               </div>
@@ -101,7 +101,7 @@
               <div class="product-videos-collapse-help-msg">{{ t('thankyou.vrtl.toggle_videos') }}</div>
 
               @foreach($product->sale_videos as $index => $video)
-                <div @click="collapseHeadClick" class="product-file-collapse-head">
+                <div @click="collapseHeadClick" class="product-file-collapse-head active">
                   {{ $video['title'] }}
                 </div>
 
@@ -116,7 +116,7 @@
         @if(!empty($product->free_files) && is_array($product->free_files))
           <div class="section-content" v-if="tabActive === 'BONUSES'">
             @foreach($product->free_files as $index => $file)
-              <div @click="collapseHeadClick" class="product-file-collapse-head">
+              <div @click="collapseHeadClick" class="product-file-collapse-head active">
                 {{ $file['title'] }}
               </div>
 
@@ -132,7 +132,7 @@
                       </div>
                     @endif
 
-                    <a href="{{ $file['url'] }}" target="_blank">{{ $file['title'] }}</a>
+                    <a href="{{ $file['url'] }}" target="_blank">{{ t('thankyou.vrtl.download_file') }}: {{ $file['title'] }}</a>
                   </div>
                 </div>
               </div>

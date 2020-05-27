@@ -197,7 +197,8 @@ main {
 
   .product-file-collapse-content {
     overflow: hidden;
-    max-height: 0;
+    //max-height: 0;
+    padding: 10px 0;
     transition: max-height 0.2s ease-out, padding 0.2s ease-out;
     box-sizing: content-box;
 

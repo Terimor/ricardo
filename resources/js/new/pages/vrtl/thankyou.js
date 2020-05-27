@@ -24,17 +24,17 @@ js_deps.wait(['vue'], () => {
           target = target.parentNode;
         }
 
-        target.classList.toggle('active');
-
         var content = target.nextElementSibling;
     
-        if (content.style.maxHeight){
-          content.style.maxHeight = null;
-          content.style.padding = null;
+        if (target.classList.contains('active')){
+          content.style.maxHeight = '0';
+          content.style.padding = '0';
         } else {
           content.style.maxHeight = content.scrollHeight + "px";
           content.style.padding = "10px 0";
         }
+
+        target.classList.toggle('active');
       },
 
       productFilePreviewClick: e => {
