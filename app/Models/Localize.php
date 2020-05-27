@@ -36,18 +36,7 @@ class Localize extends Model
      */
     public function collectVirtualMediaImages(): void
     {
-        $image_ids = [];
-        if (!empty($this->free_files)) {
-            $image_ids = array_merge(array_column($this->free_files, 'image_id'), $image_ids);
-        }
-        if (!empty($this->sale_files)) {
-            $image_ids = array_merge(array_column($this->sale_files, 'image_id'), $image_ids);
-        }
-        if (!empty($this->sale_videos)) {
-            $image_ids = array_merge(array_column($this->sale_videos, 'image_id'), $image_ids);
-        }
-        // remove empty values and duplicates
-        $image_ids = array_filter(array_unique($image_ids));
+        $image_ids = $this->collectImageIds();
         $images = AwsImage::getByIds($image_ids);
         // prepare images array and fill image for medias
         if ($images) {
@@ -58,7 +47,40 @@ class Localize extends Model
             $this->free_files = $this->setImagesVirtualMediaField('free_files', $image_urls);
             $this->sale_files = $this->setImagesVirtualMediaField('sale_files', $image_urls);
             $this->sale_videos = $this->setImagesVirtualMediaField('sale_videos', $image_urls);
+            if (!empty($this->upsells_files)) {
+                $this->upsells_files = $this->setImagesVirtualMediaField('upsells_files', $image_urls);
+            }
+            if (!empty($this->upsells_videos)) {
+                $this->upsells_videos = $this->setImagesVirtualMediaField('upsells_videos', $image_urls);
+            }
         }
+    }
+
+    /**
+     * Collect image ids for virtual product
+     * @return array
+     */
+    private function collectImageIds(): array
+    {
+        $image_ids = [];
+        if (!empty($this->free_files)) {
+            $image_ids = array_merge(array_column($this->free_files, 'image_id'), $image_ids);
+        }
+        if (!empty($this->sale_files)) {
+            $image_ids = array_merge(array_column($this->sale_files, 'image_id'), $image_ids);
+        }
+        if (!empty($this->sale_videos)) {
+            $image_ids = array_merge(array_column($this->sale_videos, 'image_id'), $image_ids);
+        }
+        if (!empty($this->upsells_files)) {
+            $image_ids = array_merge(array_column($this->upsells_files, 'image_id'), $image_ids);
+        }
+        if (!empty($this->upsells_videos)) {
+            $image_ids = array_merge(array_column($this->upsells_videos, 'image_id'), $image_ids);
+        }
+        // remove empty values and duplicates
+        $image_ids = array_filter(array_unique($image_ids));
+        return $image_ids;
     }
 
     /**

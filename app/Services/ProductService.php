@@ -867,17 +867,19 @@ class ProductService
         $videos = $this->getVirtualVideos($product, $upsells);
         $lp->free_files = !empty($product->free_file_ids) ? $this->getFileUrlsByIds($product->free_file_ids, $orderNumber, $files) : null;
         $lp->sale_files = !empty($product->sale_file_ids) ? $this->getFileUrlsByIds($product->sale_file_ids, $orderNumber, $files) : null;
-        $lp->sale_videos = !empty($product->sale_video_ids) ? $this->getVideoUrlsByIds($product->sale_video_ids, $orderNumber) : null;
+        $lp->sale_videos = !empty($product->sale_video_ids) ? $this->getVideoUrlsByIds($product->sale_video_ids, $orderNumber, $videos) : null;
         $lp->logo_image = $product->logo_image;
         $lp->bg_image = $product->bg_image;
         $lp->image = $product->image;
         $lp->billing_descriptor = $product->billing_descriptor;
+        $lp->upsells_files = $this->collectUpsellsFiles($upsells, $orderNumber, $files);
+        $lp->upsells_videos = $this->collectUpsellsVideos($upsells, $orderNumber, $videos);
         $lp->collectVirtualMediaImages();
         return $lp;
     }
 
     /**
-     * Get all virtual files except upsells
+     * Get all virtual files including upsells
      * @param OdinProduct $product
      * @param mixed $upsells
      * @return array
@@ -902,6 +904,12 @@ class ProductService
         return $files;
     }
 
+    /**
+     * Get all virtual videos including upsells
+     * @param OdinProduct $product
+     * @param null $upsells
+     * @return array|\Illuminate\Database\Eloquent\Collection|null
+     */
     public function getVirtualVideos(OdinProduct $product, $upsells = null)
     {
         $videos = null;
@@ -912,6 +920,14 @@ class ProductService
                 $video_ids = !empty($upsell->sale_video_ids) ?  array_merge($upsell->sale_video_ids, $video_ids) : $video_ids;
             }
         }
+
+        if (!$videos) {
+            $select = ['share_id.en', 'title.en', 'image_id'];
+            $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+            $videos = Video::getByIds($video_ids, $select);
+        }
+
+        return $videos;
     }
 
     /**
@@ -967,18 +983,55 @@ class ProductService
                 $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
                 $videos = Video::getByIds($video_ids, $select);
             }
-
             if ($videos) {
-                foreach ($videos as $video) {
-                    $urls[] = [
-                        'title' => $video->title,
-                        'url' => $this->getDownloadVideoUrl($video, $orderNumber),
-                        'image_id' => (string)$video->image_id,
-                    ];
+                foreach ($video_ids as $id) {
+                    foreach ($videos as $video) {
+                        if ((string)$id === (string)$video->_id) {
+                            $urls[] = [
+                                'title' => $video->title,
+                                'url' => $this->getDownloadVideoUrl($video, $orderNumber),
+                                'image_id' => (string)$video->image_id,
+                            ];
+                        }
+                    }
                 }
             }
         }
         return $urls;
+    }
+
+    /**
+     * Collect files for upsells
+     * @param $upsells
+     * @param string $orderNumber
+     * @param null $files
+     * @return array
+     */
+    public function collectUpsellsFiles($upsells, string $orderNumber, $files = null): array
+    {
+        $upsellFiles = [];
+        foreach ($upsells as $upsell) {
+            $upsellFiles = !empty($upsell['sale_file_ids']) ? array_merge($upsellFiles, $upsell['sale_file_ids']) : $upsellFiles;
+        }
+        $upsellFiles = !empty($upsellFiles) ? $this->getFileUrlsByIds($upsellFiles, $orderNumber, $files) : null;
+        return $upsellFiles;
+    }
+
+    /**
+     * Collect videos and videos for upsells
+     * @param $upsells
+     * @param string $orderNumber
+     * @param null $videos
+     * @return array
+     */
+    public function collectUpsellsVideos($upsells, string $orderNumber, $videos = null): array
+    {
+        $upsellVideos = [];
+        foreach ($upsells as $upsell) {
+            $upsellVideos = !empty($upsell['sale_video_ids']) ? array_merge($upsellVideos, $upsell['sale_video_ids']) : $upsellVideos;
+        }
+        $upsellVideos = !empty($upsellVideos) ? $this->getVideoUrlsByIds($upsellVideos, $orderNumber, $videos) : null;
+        return $upsellVideos;
     }
 
     /**
