@@ -150,23 +150,28 @@ class PaymentService
                 $products = $order->getProductsByTxnValue($txn['value']);
             }
 
+            $is_main = true;
             foreach ($products as $product) {
+                $is_main = $product['is_main'];
                 if ($product['is_paid']) {
                     $is_order_need_to_check = true;
                 }
                 $product['txn_hash'] = $txn['hash'];
                 $product['is_paid'] = true;
-                if ($product['is_main']) {
-                    $order->is_flagged = false;
-                    if (!self::isApm($txn['payment_method']) && $txn['card_number']) {
-                        CardService::incCachedCardUsageLimit($txn['card_number']);
-                    }
-                }
-                $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $product['is_main']), true);
                 $order->addProduct($product);
             }
 
+            if ($is_main) {
+                $order->is_flagged = false;
+                if (!self::isApm($txn['payment_method']) && $txn['card_number']) {
+                    CardService::incCachedCardUsageLimit($txn['card_number']);
+                }
+            }
+
             $order = OrderService::calcTotalPaid($order);
+
+            $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $is_main), true);
+
             $order->status = self::getOrderStatus($order, $is_order_need_to_check);
         }
 
