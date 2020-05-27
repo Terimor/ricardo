@@ -72,9 +72,7 @@ class Localize extends Model
         if ($images) {
             if (!empty($this->$field)) {
                 foreach ($this->$field as $file) {
-                    if (!empty($file['image_id'])) {
-                        $file['image'] = !empty($images[$file['image_id']]) ? $images[$file['image_id']] : '';
-                    }
+                    $file['image'] = !empty($images[$file['image_id']]) ? $images[$file['image_id']] : '';
                     $medias[] = $file;
                 }
             }
