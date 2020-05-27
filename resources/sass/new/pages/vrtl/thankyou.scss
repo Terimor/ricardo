@@ -209,6 +209,11 @@ main {
     }
   }
 
+  .product-videos-sect {
+    max-height: unset !important;
+    padding: unset !important;
+  }
+
   .product-files-list {
     .product-file {
       font-weight: bold;
