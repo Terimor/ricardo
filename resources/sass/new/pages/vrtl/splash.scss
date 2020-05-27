@@ -123,6 +123,7 @@ p {
   }
 
   &-discount-btn {
+    display: block;
     margin-top: 15px;
     padding: 15px 50px;
     font-size: 38px;
@@ -133,6 +134,14 @@ p {
     box-shadow: 1px 3px 5px #5F5F5F;
     flex: 25px;
     font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      background: linear-gradient(180deg, #F76100 0, #F5A623);
+      color: #fff;
+      text-decoration: none;
+    }
   }
 
   &-discount-link {
@@ -141,10 +150,6 @@ p {
     text-decoration: underline;
     font-size: 22px;
     line-height: 27px;
-
-    &:hover {
-      text-decoration: none;
-    }
   }
 
   &-discount-secure-text {

@@ -48,6 +48,7 @@ mix
   .js('resources/js/new/pages/vrtl/upsells.js', 'public/assets/js/new/pages/vrtl')
   .js('resources/js/new/pages/vrtl/thankyou.js', 'public/assets/js/new/pages/vrtl')
   .js('resources/js/new/pages/vrtl/download.js', 'public/assets/js/new/pages/vrtl')
+  .js('resources/js/new/pages/vrtl/splash.js', 'public/assets/js/new/pages/vrtl')
   .sass('resources/sass/app.scss', 'public/assets/css')
   .sass('resources/sass/views/promo.scss', 'public/assets/css')
   .sass('resources/sass/views/contact-us.scss', 'public/assets/css')

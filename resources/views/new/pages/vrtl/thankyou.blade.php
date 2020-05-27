@@ -33,7 +33,7 @@
   <div id="thank-you-vrtl" class="vrtl-thank-you-page">
     <div class="vrtl-thank-you-page-header">
 
-      <div class="header-product-image" style="background-image: url({{ is_array($product->image) && !empty($product->image) ? $product->image[0] : '' }})"></div>
+      <div class="header-product-image" style="background-image: url({{ !empty($product->image)  && is_array($product->image)? $product->image[0] : '' }})"></div>
       
       <div class="header-main">
         <h2 class="header-product-title">{{ t('thankyou.vrtl.congratulations', ['product' => $product->product_name]) }}</h2>
@@ -41,7 +41,7 @@
         <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg', ['code' => $product->product_name]) }}"</p>
 
         <p class="header-product-video-info-msg">
-          @php $courses_count = is_array($product->sale_videos) && !empty($product->sale_videos) ? count($product->sale_videos) : ''; @endphp
+          @php $courses_count = !empty($product->sale_videos) && is_array($product->sale_videos) ? count($product->sale_videos) : ''; @endphp
 
           {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count, 'product' => $product->product_name]) }} 
         </p>
@@ -58,13 +58,13 @@
         <div class="section-tabs">
           <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT')">{{ $product->product_name }}</div>
 
-          @if(is_array($product->free_files) && !empty($product->free_files))
+          @if(!empty($product->free_files) && is_array($product->free_files))
             <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES')">{{ t('thankyou.vrtl.bonuses') }}</div>
           @endif
         </div>
 
         <div class="section-content" v-if="tabActive === 'PRODUCT'">
-          @if(is_array($product->sale_files) && !empty($product->sale_files))
+          @if(!empty($product->sale_files) && is_array($product->sale_files))
             <div class="product-files-sect">
               <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
             </div>
@@ -93,7 +93,7 @@
             @endforeach
           @endif
           
-          @if(is_array($product->sale_videos) && !empty($product->sale_videos))
+          @if(!empty($product->sale_videos) && is_array($product->sale_videos))
             <div class="product-videos-sect">
               <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
               <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_subtitle', ['product' => $product->product_name]) }}</p>
@@ -113,7 +113,7 @@
           @endif
         </div>
 
-        @if(is_array($product->free_files) && !empty($product->free_files))
+        @if(!empty($product->free_files) && is_array($product->free_files))
           <div class="section-content" v-if="tabActive === 'BONUSES'">
             @foreach($product->free_files as $index => $file)
               <div @click="collapseHeadClick" class="product-file-collapse-head">
@@ -125,7 +125,7 @@
                   <div class="product-file">
                     @php $fileName = explode(".", $file['url']); @endphp
                     @if(end($fileName) === 'pdf')
-                      <div @click="productFilePreviewClick" class="product-file-image-preview" style="background-image: url({{ $file['image'] }})"></div>
+                      <div @click="productFilePreviewClick" class="product-file-image-preview" style="background-image: url({{ $file['image'] ?? $file['image'] }})"></div>
                       
                       <div class="product-file-pdf-preview">
                         <embed src= "{{ $file['url'] }}" width= "100%" height= "350">
