@@ -54,7 +54,7 @@
 
                 <div class="splash-virtual-discount-text">{{ t('splash.vrtl.discount_fornext') }}</div>
 
-                <div class="splash-virtual-timer">7:36</div>
+                <div class="splash-virtual-timer" v-html="countdownValue"></div>
 
                 <div class="splash-virtual-discount">{{ t('splash.vrtl.discount_price', ['amount' => '$'.$product->prices[1]['value']]) }}</div>
 
@@ -93,10 +93,10 @@
                     <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""> <b>{{ t('splash.vrtl.product_descr1') }}</b></p>
 
                     @if($product->splash_description)
-                    <p class="mt-5">{{ $product->splash_description }}</p>
+                        <p class="mt-5">{{ $product->splash_description }}</p>
                     @endif
 
-                    <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt="">{{ t('splash.vrtl.product_descr2') }}</p>
+                    <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""><b>{{ t('splash.vrtl.product_descr2') }}</b></p>
 
                     <p class="mt-4">{{ t('splash.vrtl.product_descr_discount') }}</p>
 
@@ -106,7 +106,7 @@
                 <div class="text-center">
                     <div class="splash-virtual-discount-text mt-4">{{ t('splash.vrtl.discount_fornext') }}</div>
 
-                    <div class="splash-virtual-timer">7:36</div>
+                    <div class="splash-virtual-timer" v-html="countdownValue"></div>
 
                     <div class="splash-virtual-discount">{{ t('splash.vrtl.discount_price', ['amount' => '$'.$product->prices[1]['value']]) }}</div>
 
