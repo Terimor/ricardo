@@ -970,7 +970,7 @@ class ProductService
      * Get video urls for download by ids
      * @param array|null $video_ids
      * @param string $orderNumber
-     * @param mixed $videos - if empty get
+     * @param mixed $videos
      * @return array
      */
     private function getVideoUrlsByIds(?array $video_ids, string $orderNumber, $videos = null): array
@@ -1010,8 +1010,10 @@ class ProductService
     public function collectUpsellsFiles($upsells, string $orderNumber, $files = null): array
     {
         $upsellFiles = [];
-        foreach ($upsells as $upsell) {
-            $upsellFiles = !empty($upsell['sale_file_ids']) ? array_merge($upsellFiles, $upsell['sale_file_ids']) : $upsellFiles;
+        if ($upsells) {
+            foreach ($upsells as $upsell) {
+                $upsellFiles = !empty($upsell['sale_file_ids']) ? array_merge($upsellFiles, $upsell['sale_file_ids']) : $upsellFiles;
+            }
         }
         $upsellFiles = !empty($upsellFiles) ? $this->getFileUrlsByIds($upsellFiles, $orderNumber, $files) : null;
         return $upsellFiles;
@@ -1027,8 +1029,10 @@ class ProductService
     public function collectUpsellsVideos($upsells, string $orderNumber, $videos = null): array
     {
         $upsellVideos = [];
-        foreach ($upsells as $upsell) {
-            $upsellVideos = !empty($upsell['sale_video_ids']) ? array_merge($upsellVideos, $upsell['sale_video_ids']) : $upsellVideos;
+        if ($upsells) {
+            foreach ($upsells as $upsell) {
+                $upsellVideos = !empty($upsell['sale_video_ids']) ? array_merge($upsellVideos, $upsell['sale_video_ids']) : $upsellVideos;
+            }
         }
         $upsellVideos = !empty($upsellVideos) ? $this->getVideoUrlsByIds($upsellVideos, $orderNumber, $videos) : null;
         return $upsellVideos;
