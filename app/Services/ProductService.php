@@ -1015,7 +1015,7 @@ class ProductService
                 $upsellFiles = !empty($upsell['sale_file_ids']) ? array_merge($upsellFiles, $upsell['sale_file_ids']) : $upsellFiles;
             }
         }
-        $upsellFiles = !empty($upsellFiles) ? $this->getFileUrlsByIds($upsellFiles, $orderNumber, $files) : null;
+        $upsellFiles = !empty($upsellFiles) ? $this->getFileUrlsByIds($upsellFiles, $orderNumber, $files) : [];
         return $upsellFiles;
     }
 
@@ -1034,7 +1034,7 @@ class ProductService
                 $upsellVideos = !empty($upsell['sale_video_ids']) ? array_merge($upsellVideos, $upsell['sale_video_ids']) : $upsellVideos;
             }
         }
-        $upsellVideos = !empty($upsellVideos) ? $this->getVideoUrlsByIds($upsellVideos, $orderNumber, $videos) : null;
+        $upsellVideos = !empty($upsellVideos) ? $this->getVideoUrlsByIds($upsellVideos, $orderNumber, $videos) : [];
         return $upsellVideos;
     }
 
