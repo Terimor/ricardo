@@ -99,7 +99,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
 
     $router->post('/new-customer', 'OdinCustomerController@addOrUpdate');
     $router->get('/members/{orderId}/{orderNumber}', 'SiteController@virtualOrderDownload');
-    $router->get('/my-files/{orderId}/{fileId}/{filename}', 'OrderController@getOrderMedia');
+    $router->get('/my-files/{orderId}/{mediaId}/{filename}', 'OrderController@getOrderMedia');
 
 });
 

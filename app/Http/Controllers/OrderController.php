@@ -251,14 +251,14 @@ class OrderController extends Controller
      * Get order media
      * Check order and product
      * @param string $orderNumber
-     * @param string $fileId
+     * @param string $mediaId
      * @param string $filename
      * @param ProductService $productService
      * @param MediaService $mediaService
      * @throws \App\Exceptions\OrderNotFoundException
      * @throws \App\Exceptions\ProductNotFoundException
      */
-    public function getOrderMedia(string $orderNumber, string $fileId, string $filename, ProductService $productService, MediaService $mediaService) {
+    public function getOrderMedia(string $orderNumber, string $mediaId, string $filename, ProductService $productService, MediaService $mediaService) {
         $select = ['number', 'type', 'products', 'txns.status', 'total_paid_usd', 'total_refunded_usd'];
         $order = OdinOrder::getByNumber($orderNumber, false, $select);
 
@@ -275,8 +275,8 @@ class OrderController extends Controller
         if (!$product) {
             abort(404, 'Sorry, we couldn\'t find your order');
         }
-
-        $file = $productService->getMediaByProduct($product, $fileId);
+        $upsells = OdinProduct::getBySkus($order->getUpsellsSkus(), ['sale_file_ids', 'sale_video_ids']);
+        $file = $productService->getMediaByProduct($product, $mediaId, $upsells);
 
         if ($file) {
             MediaAccess::addAccess($file, $order->number);

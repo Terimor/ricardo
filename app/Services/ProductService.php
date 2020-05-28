@@ -1096,41 +1096,86 @@ class ProductService
      * Get media by product arrays and file ID
      * @param OdinProduct $product
      * @param $product
-     * @param string $fileId
+     * @param string $mediaId
+     * @param mixed $upsells
      * @return array
      */
-    public function getMediaByProduct(OdinProduct $product, string $fileId): array
+    public function getMediaByProduct(OdinProduct $product, string $mediaId, $upsells = null): array
     {
-        $file = [];
+        $media = [];
+        $selectedFileId = $this->checkFileAccess($product, $mediaId, $upsells);
+
+        if (!$selectedFileId) {
+            $selectedFileId = $this->checkVideoAccess($product, $mediaId, $upsells);
+            if ($selectedFileId) {
+                $type = MediaAccess::TYPE_VIDEO;
+            }
+        } else {
+            $type = MediaAccess::TYPE_FILE;
+        }
+        if ($selectedFileId) {
+            $media = $this->getDownloadMediaById($selectedFileId, $type);
+        }
+        return $media;
+    }
+
+    /**
+     * Check file access
+     * @param OdinProduct $product
+     * @param $mediaId
+     * @param $upsells
+     * @return null|string
+     */
+    private function checkFileAccess(OdinProduct $product, $mediaId, $upsells): ?string
+    {
         $selectedFileId = null;
-        $type = MediaAccess::TYPE_FILE;
+        // collect all possible files
         $files = !empty($product->free_file_ids) ?  $product->free_file_ids : [];
-        $files = !empty($product->sale_file_ids) ? array_merge($product->sale_file_ids, $files) : [];
+        $files = !empty($product->sale_file_ids) ? array_merge($product->sale_file_ids, $files) : $files;
+        if ($upsells) {
+            foreach ($upsells as $upsell) {
+                $files = !empty($upsell->sale_file_ids) ? array_merge($upsell->sale_file_ids, $files) : $files;
+            }
+        }
+        // check access
         if ($files) {
             foreach ($files as $id) {
-                if ($fileId == $id) {
+                if ($mediaId == $id) {
                     $selectedFileId = $id;
                     break;
                 }
             }
         }
+        return $selectedFileId;
+    }
 
-        if (!$selectedFileId) {
-            $videos = !empty($product->sale_video_ids) ?  $product->sale_video_ids : [];
-            if ($videos) {
-                foreach ($videos as $id) {
-                    if ($fileId == $id) {
-                        $selectedFileId = $id;
-                        $type = MediaAccess::TYPE_VIDEO;
-                        break;
-                    }
+    /**
+     * Check video access
+     * @param OdinProduct $product
+     * @param $mediaId
+     * @param $upsells
+     * @return string|null
+     */
+    private function checkVideoAccess(OdinProduct $product, $mediaId, $upsells): ?string
+    {
+        $selectedFileId = null;
+        // collect all possible videos
+        $videos = !empty($product->sale_video_ids) ?  $product->sale_video_ids : [];
+        if ($upsells) {
+            foreach ($upsells as $upsell) {
+                $videos = !empty($upsell->sale_video_ids) ? array_merge($upsell->sale_video_ids, $videos) : $videos;
+            }
+        }
+        // check access
+        if ($videos) {
+            foreach ($videos as $id) {
+                if ($mediaId == $id) {
+                    $selectedFileId = $id;
+                    break;
                 }
             }
         }
-        if ($selectedFileId) {
-            $file = $this->getDownloadMediaById($selectedFileId, $type);
-        }
-        return $file;
+        return $selectedFileId;
     }
 
     /**
