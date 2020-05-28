@@ -43,7 +43,7 @@ js_deps.wait(['vue'], () => {
           // If the count down is over, write some text 
           if (distance < 0) {
             clearInterval(countdownInterval);
-            this.countdownString = "EXPIRED";
+            this.countdownString = "";
           }
         }, 1000);
       }
