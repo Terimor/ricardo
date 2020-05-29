@@ -472,7 +472,7 @@ class SiteController extends Controller
         if (in_array($host, static::$emptyDomains)) {
             return view('blank');
         }
-        if ($request->get('emptypage') !== null) {
+        if ($request->get('emptypage')) {
             if (strlen($request->get('txid')) >= 20) {
                 return view('prerender.checkout.txid_iframe');
             } else {
