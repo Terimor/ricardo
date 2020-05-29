@@ -161,11 +161,10 @@ main {
     position: relative;
     background-color: #E3E3E3;
     max-height: unset !important;
-    padding: 0 !important;
     color: #666;
     font-weight: bold;
-    padding: 10px 20px;
-    padding-left: 30px;
+    padding: 10px 20px !important;
+    padding-left: 30px !important;
     text-align: left;
     font-size: 15px;
     font-weight: bold;
