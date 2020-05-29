@@ -56,10 +56,10 @@
         <h3 class="main-section-title">{{ t('thankyou.vrtl.download') }}</h3>
 
         <div class="section-tabs">
-          <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT')">{{ $product->product_name }}</div>
+          <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT', $event)">{{ $product->product_name }}</div>
 
           @if(!empty($product->free_files) && is_array($product->free_files))
-            <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES')">{{ t('thankyou.vrtl.bonuses') }}</div>
+            <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES', $event)">{{ t('thankyou.vrtl.bonuses') }}</div>
           @endif
         </div>
 

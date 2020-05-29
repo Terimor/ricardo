@@ -160,6 +160,8 @@ main {
   .product-file-collapse-head {
     position: relative;
     background-color: #E3E3E3;
+    max-height: unset !important;
+    padding: 0 !important;
     color: #666;
     font-weight: bold;
     padding: 10px 20px;
