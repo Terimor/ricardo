@@ -546,8 +546,10 @@ class PayPalService
                     $products = $order->getProductsByTxnValue($this->getPayPalOrderValue($paypal_order));
                 }
 
+                $is_main = true;
                 $is_order_need_to_check = false;
                 foreach ($products as $product) {
+                    $is_main = $product['is_main'];
                     if ($product['is_paid']) {
                         $is_order_need_to_check = true;
                     }
@@ -562,14 +564,16 @@ class PayPalService
                 }
 
                 // reset flagged
-                $main_product = $order->getMainProduct(false);
-                if (!empty($main_product) && $main_product['txn_hash'] === $paypal_order->id) {
+                if ($is_main) {
                     $order->is_flagged = false;
                 }
 
                 $order = OrderService::calcTotalPaid($order);
                 $order->status = PaymentService::getOrderStatus($order, $is_order_need_to_check);
                 $order->is_invoice_sent = false;
+
+                $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $is_main), true);
+
                 $order->save();
 
                 return response(null, 200);

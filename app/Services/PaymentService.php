@@ -945,6 +945,7 @@ class PaymentService
     /**
      * Determines the order status by the total amount
      * @param OdinOrder $order
+     * @param bool $need_to_check
      * @return string
      */
     public static function getOrderStatus(OdinOrder $order, bool $need_to_check = false): string
