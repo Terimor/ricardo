@@ -954,7 +954,7 @@ class PaymentService
         if ($need_to_check) {
             $status = OdinOrder::STATUS_ERROR;
         } elseif ($order->total_paid) {
-            $price_paid_diff = floor($order->total_paid * 100 - $order->total_price * 100) / 100;
+            $price_paid_diff = (floor($order->total_paid * 100) - floor($order->total_price * 100)) / 100;
             $status = $price_paid_diff >= 0 ? OdinOrder::STATUS_PAID : OdinOrder::STATUS_HALFPAID;
         }
         return $status;
