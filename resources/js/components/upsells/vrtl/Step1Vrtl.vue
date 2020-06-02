@@ -43,7 +43,7 @@
 
     <div v-if="!isLoading">
       <div class="upsell-subtitle">{{ subtitle }}</div>
-      <div class="upsell-title">Congrats on your purchase of {{ product.product_name }}.</div>
+      <div class="upsell-title">{{ vc_upsells_congrats_title }}</div>
       <div class="upsell-subtitle2">{{ subtitle }}</div>
       <div class="upsell-letter" v-html="letter_content"></div>
 
@@ -152,6 +152,10 @@
     }),
 
     computed: {
+      vc_upsells_congrats_title () {
+        const name = this.product.product_name || '';
+        return t('vc_upsells.congrats_title', {'product': name});
+      },
       vc_upsells_title: () => t('vc_upsells.title'),
       vc_upsells_note: () => t('vc_upsells.note'),
       vc_upsells_guarantee_title: () => t('vc_upsells.guarantee.title'),
