@@ -193,7 +193,7 @@ class ProductService
             }
 
             // select data only in use
-            $select = ['logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en', 'price_correction_percents', 'warranty_percent'];
+            $select = ['type','logo_image_id', 'image_ids', 'prices', 'skus.code', 'skus.is_published', 'skus.name.en', 'skus.brief.en', 'price_correction_percents', 'warranty_percent'];
             if (app()->getLocale() != 'en') {
                 $select[] = 'skus.name.'.app()->getLocale();
                 $select[] = 'skus.brief.'.app()->getLocale();
@@ -472,6 +472,7 @@ class ProductService
         $lp->long_name = $product->long_name;
         $lp->billing_descriptor = $product->billing_descriptor;
         $lp->logo_image = $product->logo_image;
+        $lp->type = $product->type ?? OdinProduct::TYPE_PHYSICAL;
 
         if ($product->type === OdinProduct::TYPE_VIRTUAL) {
             $lp->upsell_title = $product->upsell_title;
@@ -512,6 +513,7 @@ class ProductService
         $lp->upsell_sku = $product['skus'][0]['code'];
         $lp->image = (!empty($product['image_ids'][0]) && !empty($images[$product['image_ids'][0]])) ? $images[$product['image_ids'][0]] : null;
         $lp->upsellPrices = $product->upsellPrices ?? null;
+        $lp->type = $product->type ?? OdinProduct::TYPE_PHYSICAL;
         return $lp->toArray();
     }
 
