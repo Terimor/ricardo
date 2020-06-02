@@ -185,10 +185,10 @@
               ? res.data.upsell.upsell_plusone_text
               : res.data.upsell.description;
 
-            this.letter_content = res.data.upsell_letter;
-            this.subtitle = res.data.upsell_subtitle;
-            this.title = res.data.upsell_title;
-            this.vimeo_id = res.data.upsell_video_id;
+            this.letter_content = res.data.upsell.upsell_letter;
+            this.subtitle = res.data.upsell.upsell_subtitle;
+            this.title = res.data.upsell.upsell_title;
+            this.vimeo_id = res.data.upsell.upsell_video_id;
 
             this.imageUrl = res.data.upsell.image;
             this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
