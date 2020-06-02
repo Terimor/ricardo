@@ -9,6 +9,7 @@
           <component
             v-if="upsellsObj.length"
             :is="view"
+            :nextAccessoryStep="nextAccessoryStep"
             @addAccessory="addAccessory"
             :discount="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].discount_percent || 0"
             :id="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].product_id || ''"
@@ -16,13 +17,6 @@
             :accessoryList="accessoryList"
           />
         </transition>
-
-        <div
-          class="last-call-card-label-3"
-          @click="accessoryStep++"
-        >
-          {{ vc_upsells_last_call_card_label_3 }}
-        </div>
       </div>
     </template>
 
@@ -207,7 +201,6 @@
       textOriginalOrder: () => t('upsells.original_order'),
       textTotalAccessoryOrder: () => t('upsells.accessory_order'),
       textBuyAccessories: () => t('upsells.step_3.buy_accessories'),
-      vc_upsells_last_call_card_label_3: () => t('vc_upsells.last_call_card.label_3'),
       textBuyNow: () => t('upsells.paypal_button_text'),
       textQuantity: () => t('upsells.quantity'),
       textAccessoryCart: () => t('upsells.accessory_cart'),
@@ -262,6 +255,10 @@
     },
 
     methods: {
+      nextAccessoryStep () {
+        this.accessoryStep = this.accessoryStep + 1;
+      },
+
       submit() {
         if (this.isSubmitted) {
           return;
