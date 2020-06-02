@@ -74,6 +74,13 @@
           </div>
         </div>
       </div>
+
+      <div
+        class="last-call-card-label-3"
+        @click="nextAccessoryStep"
+      >
+        {{ vc_upsells_last_call_card_label_3 }}
+      </div>
     </div>
   </div>
 </template>
@@ -88,7 +95,12 @@
 
     mixins: [upsells],
 
-    props: ['id', 'discount', 'accessoryStep'],
+    props: {
+      id: String, 
+      discount: Number, 
+      accessoryStep: Number, 
+      nextAccessoryStep: { type: Function }
+    },
 
     data: () => ({
       cdn_url: js_data.cdn_url,
@@ -116,7 +128,11 @@
       vc_upsells_last_call_card_download: () => t('vc_upsells.last_call_card.download'),
       vc_upsells_last_call_card_label_1: () => t('vc_upsells.last_call_card.label_1'),
       vc_upsells_last_call_card_submit: () => t('vc_upsells.last_call_card.submit'),
-      vc_upsells_last_call_card_label_2: () => t('vc_upsells.last_call_card.label_2')
+      vc_upsells_last_call_card_label_2: () => t('vc_upsells.last_call_card.label_2'),
+      vc_upsells_last_call_card_label_3 () {
+        const productName = this.name || '';
+        return t('vc_upsells.last_call_card.label_3', {'product': productName})
+      }
     },
 
     mounted() {
