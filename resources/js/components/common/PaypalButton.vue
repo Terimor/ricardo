@@ -4,7 +4,7 @@
     <div class="paypal-shim" :class="{ 'active': !isSubmitted }">
       <div v-if="isSubmitted" class="disabled"></div>
       <div class="title"><slot /></div>
-      <img class="lazy image" :data-src="$root.cdn_url + '/assets/images/paypal-highq.png'" />
+      <img class="lazy image" :data-src="cdn_url + '/assets/images/paypal-highq.png'" />
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@
     data() {
       return {
         isSubmitted: false,
-        action: null,
+        action: null
       };
     },
 

@@ -1,4 +1,4 @@
-@extends('layouts.app', ['product' => $product])
+@extends('layouts.app', ['product' => $product, 'loadVue' => true])
 
 @section('title', $page_title)
 

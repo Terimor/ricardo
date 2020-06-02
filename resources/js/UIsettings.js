@@ -29,6 +29,7 @@ Vue.component('preloader-3', require('./components/common/preloaders/Preloader3'
 
 // upsells
 Vue.component('upsells-component', require('./components/Upsells').default)
+Vue.component('upsells-virtual', require('./components/UpsellsVirtual').default)
 
 // common
 Vue.component('green-button', require('./components/common/GreenButton').default)
