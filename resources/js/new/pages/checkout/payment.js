@@ -91,12 +91,8 @@ export default {
 
     goto_upsells(order, currency) {
       let url = js_data.product.upsells.length > 0
-        ? !this.is_vrtl_checkout
-          ? '/thankyou-promos'
-          : '/vrtl/upsells'
-        : !this.is_vrtl_checkout
-          ? '/thankyou'
-          : '/vrtl/thankyou';
+        ? '/thankyou-promos'
+        : '/thankyou';
 
       url += '?order=' + encodeURIComponent(order);
       url += '&cur=' + encodeURIComponent(currency);

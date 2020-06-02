@@ -42,6 +42,7 @@
 </template>
 
 <script>
+    import { t } from '../../utils/i18n';
     import { fade } from '../../utils/common';
     import upsellsMixin from '../../mixins/upsells';
 
@@ -72,15 +73,15 @@
             },
 
             textSubtotal() {
-                return this.$t('upsells.subtotal');
+                return t('upsells.subtotal');
             },
 
             textWarranty() {
-                return this.$t('upsells.warranty');
+                return t('upsells.warranty');
             },
 
             textRemove() {
-                return this.$t('upsells.remove');
+                return t('upsells.remove');
             },
         },
 
