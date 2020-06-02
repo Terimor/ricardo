@@ -43,7 +43,7 @@
 
     <div v-if="!isLoading">
       <div class="upsell-subtitle">{{ subtitle }}</div>
-      <div class="upsell-title">Congrats on your purchase of {{ name }}.</div>
+      <div class="upsell-title">Congrats on your purchase of {{ product.product_name }}.</div>
       <div class="upsell-subtitle2">{{ subtitle }}</div>
       <div class="upsell-letter" v-html="letter_content"></div>
 
