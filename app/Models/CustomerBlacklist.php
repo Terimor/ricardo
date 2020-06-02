@@ -21,7 +21,7 @@ use App\Services\UtilsService;
 class CustomerBlacklist extends \Jenssegers\Mongodb\Eloquent\Model
 {
     const ROW_LIFETIME_HRS = 72;
-    const ADDRESS_SIMILARITY_PCT = 80;
+    const ADDRESS_SIMILARITY_PCT = 90;
 
     protected $collection = 'customer_blacklist';
 

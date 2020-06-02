@@ -31,15 +31,18 @@ class CustomerBlacklistService
         if ($order->total_paid_usd < self::ORDER_PAUSE_AMOUNT_USD) {
             if ($is_main) {
                 if (!optional($order->ipqualityscore)['tor']) {
+                    // remove spaces, explode and sort willful fields
+                    $adrs_chars = mb_str_split(
+                        preg_replace('/\s/', '', $order->shipping_street . $order->shipping_building . $order->shipping_apt)
+                    );
+                    sort($adrs_chars);
                     // create address string
                     $address = implode(' ', array_filter([
                         $order->shipping_zip,
                         $order->shipping_country,
                         $order->shipping_state,
                         $order->shipping_city,
-                        $order->shipping_street,
-                        $order->shipping_building,
-                        $order->shipping_apt
+                        implode('', $adrs_chars)
                     ]));
                     $address = preg_replace('/[^\w\s]+/u', '', $address);
 
