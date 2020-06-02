@@ -60,7 +60,7 @@
 
                 <a href="/checkout" class="splash-virtual-discount-btn">{{ t('splash.vrtl.claim_discount') }}</a>
 
-                <div class="splash-virtual-discount-link">{{ t('splash.vrtl.claim_discount_now', ['amount' => '$'.$product->prices['25p']['value']]) }}</div>
+                <a href="/checkout" class="splash-virtual-discount-link">{{ t('splash.vrtl.claim_discount_now', ['amount' => '$'.$product->prices['25p']['value']]) }}</a>
 
                 <div class="splash-virtual-discount-secure-text">{{ t('splash.vrtl.discount_secure_txt') }}</div>
             </div>
@@ -112,7 +112,7 @@
 
                     <a href="/checkout" class="splash-virtual-discount-btn">{{ t('splash.vrtl.claim_discount') }}</a>
 
-                    <div class="splash-virtual-discount-secure-text"><div class="italic">{{ t('splash.vrtl.launch_offer_txt') }}</div></div>
+                    <a href="/checkout" class="splash-virtual-discount-secure-text"><div class="italic">{{ t('splash.vrtl.launch_offer_txt') }}</div></a>
                 </div>
             </div>
 
