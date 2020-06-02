@@ -145,11 +145,16 @@ p {
   }
 
   &-discount-link {
+    display: block;
     margin-top: 5px;
     color: #CF315B;
     text-decoration: underline;
     font-size: 22px;
     line-height: 27px;
+
+    &:hover {
+      text-decoration: none;
+    }
   }
 
   &-discount-secure-text {

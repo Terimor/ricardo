@@ -111,8 +111,10 @@
                     <div class="splash-virtual-discount">{{ t('splash.vrtl.discount_price', ['amount' => '$'.$product->prices[1]['value']]) }}</div>
 
                     <a href="/checkout" class="splash-virtual-discount-btn">{{ t('splash.vrtl.claim_discount') }}</a>
+                    
+                    <a href="/checkout" class="splash-virtual-discount-link">{{ t('splash.vrtl.get_instant_access') }}</a>
 
-                    <a href="/checkout" class="splash-virtual-discount-secure-text"><div class="italic">{{ t('splash.vrtl.launch_offer_txt') }}</div></a>
+                    <div class="splash-virtual-discount-secure-text italic">{{ t('splash.vrtl.launch_offer_txt') }}</div>
                 </div>
             </div>
 

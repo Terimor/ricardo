@@ -312,6 +312,10 @@ main {
   font-size: 32px;
   margin-top: 2px;
   text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .last-call-card-label-3 {
