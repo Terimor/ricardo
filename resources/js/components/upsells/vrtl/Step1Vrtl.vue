@@ -43,7 +43,7 @@
 
     <div v-if="!isLoading">
       <div class="upsell-subtitle">{{ subtitle }}</div>
-      <div class="upsell-title">Congrats on your purchase of {{ name }}.</div>
+      <div class="upsell-title">{{ vc_upsells_congrats_title }}</div>
       <div class="upsell-subtitle2">{{ subtitle }}</div>
       <div class="upsell-letter" v-html="letter_content"></div>
 
@@ -152,6 +152,10 @@
     }),
 
     computed: {
+      vc_upsells_congrats_title () {
+        const name = this.product.product_name || '';
+        return t('vc_upsells.congrats_title', {'product': name});
+      },
       vc_upsells_title: () => t('vc_upsells.title'),
       vc_upsells_note: () => t('vc_upsells.note'),
       vc_upsells_guarantee_title: () => t('vc_upsells.guarantee.title'),
@@ -162,11 +166,11 @@
       vc_upsells_last_call_card_label_2: () => t('vc_upsells.last_call_card.label_2'),
       vc_upsells_last_call_card_label_3: () => t('vc_upsells.last_call_card.label_3'),
       vc_upsells_last_call_card_title () { 
-        const name = this.name;
+        const name = this.name || '';
         return t('vc_upsells.last_call_card.title', {'PRODUCT': name})
       },
       vc_upsells_last_call_card_old_price () {
-        const price3 = this.price3Formatted;
+        const price3 = this.price3Formatted || '';
         return t('vc_upsells.last_call_card.old_price', {'amount': `<span class="value">${price3}</span>`});
       }
     },
@@ -185,10 +189,10 @@
               ? res.data.upsell.upsell_plusone_text
               : res.data.upsell.description;
 
-            this.letter_content = res.data.upsell_letter;
-            this.subtitle = res.data.upsell_subtitle;
-            this.title = res.data.upsell_title;
-            this.vimeo_id = res.data.upsell_video_id;
+            this.letter_content = res.data.upsell.upsell_letter;
+            this.subtitle = res.data.upsell.upsell_subtitle;
+            this.title = res.data.upsell.upsell_title;
+            this.vimeo_id = res.data.upsell.upsell_video_id;
 
             this.imageUrl = res.data.upsell.image;
             this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';
