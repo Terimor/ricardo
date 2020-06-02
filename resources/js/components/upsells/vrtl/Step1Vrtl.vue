@@ -162,11 +162,11 @@
       vc_upsells_last_call_card_label_2: () => t('vc_upsells.last_call_card.label_2'),
       vc_upsells_last_call_card_label_3: () => t('vc_upsells.last_call_card.label_3'),
       vc_upsells_last_call_card_title () { 
-        const name = this.name;
+        const name = this.name || '';
         return t('vc_upsells.last_call_card.title', {'PRODUCT': name})
       },
       vc_upsells_last_call_card_old_price () {
-        const price3 = this.price3Formatted;
+        const price3 = this.price3Formatted || '';
         return t('vc_upsells.last_call_card.old_price', {'amount': `<span class="value">${price3}</span>`});
       }
     },

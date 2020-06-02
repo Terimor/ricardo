@@ -110,7 +110,7 @@
     computed: {
       vc_upsells_order_upgraded: () => t('vc_upsells.order_upgraded'),
       vc_upsells_last_call_card_title () {
-        const title = this.title;
+        const title = this.title || '';
         return t('vc_upsells.last_call_card.title', {'product': title});
       },
       vc_upsells_last_call_card_download: () => t('vc_upsells.last_call_card.download'),
