@@ -44,7 +44,7 @@ export default {
   computed: {
 
     is_vrtl_checkout() {
-      return false;
+      return js_data.product && js_data.product.type === 'virtual';
     },
 
   },
