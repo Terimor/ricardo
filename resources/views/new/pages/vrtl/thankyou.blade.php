@@ -63,7 +63,7 @@
           @endif
         </div>
 
-        <div class="section-content" v-if="tabActive === 'PRODUCT'">
+        <div class="section-content" v-show="tabActive === 'PRODUCT'">
           @if(!empty($product->sale_files) && is_array($product->sale_files))
             <div class="product-files-sect">
               <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
@@ -114,7 +114,7 @@
         </div>
 
         @if(!empty($product->free_files) && is_array($product->free_files))
-          <div class="section-content" v-if="tabActive === 'BONUSES'">
+          <div class="section-content" v-show="tabActive === 'BONUSES'">
             @foreach($product->free_files as $index => $file)
               <div @click="collapseHeadClick" class="product-file-collapse-head active">
                 {{ $file['title'] }}
