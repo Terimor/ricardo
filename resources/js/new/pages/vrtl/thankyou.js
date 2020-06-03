@@ -8,7 +8,8 @@ js_deps.wait(['vue'], () => {
 
     data () {
       return {
-        tabActive: 'PRODUCT'
+        tabActive: 'PRODUCT',
+        mediaShow: {}
       }
     },
 
@@ -39,20 +40,15 @@ js_deps.wait(['vue'], () => {
         target.classList.toggle('active');
       },
 
-      productFilePreviewClick: e => {
+      productFilePreviewClick (e, mediaId) {
         e.preventDefault();
 
-        let target = e.target;
+        console.log(mediaId)
 
-        while (!target.classList.contains('product-file-image-preview')) {
-          target = target.parentNode;
-        }
-
-        target.style.display = 'none';
-
-        var content = target.nextElementSibling;
-
-        content.classList.add('active');
+        this.mediaShow = {
+          ...this.mediaShow,
+          [mediaId]: true
+        };
       }
     },
 

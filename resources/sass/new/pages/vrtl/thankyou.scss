@@ -229,24 +229,16 @@ main {
       &:not(:last-child) {
         margin-bottom: 15px;
       }
-
-      .product-file-image-preview {
-        width: 100%;
-        height: 350px;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center center;
-        cursor: pointer;
-      }
-
-      .product-file-pdf-preview {
-        display: none;
-
-        &.active {
-          display: block;
-        }
-      }
     }
+  }
+
+  .product-file-image-preview {
+    width: 100%;
+    height: 350px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    cursor: pointer;
   }
 
   .thank-you-page-email {
