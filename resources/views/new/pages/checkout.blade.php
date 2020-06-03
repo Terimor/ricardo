@@ -94,4 +94,5 @@
   @include('new.pages.checkout.blocks.recently_bought')
   @include('new.pages.checkout.blocks.leave_modal')
   @yield('content_checkout')
+  @include('layouts.footer', ['isWhite' => true])
 @endsection
