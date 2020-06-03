@@ -283,7 +283,6 @@ class OrderController extends Controller
             // get and set 5 sec hash for IP document_id and order number
             $hash = hash('md5',request()->ip().$mediaId.$orderNumber);
             if (!Cache::has($hash)) {
-                logger()->warning($hash);
                 MediaAccess::addAccess($file, $order->number);
             }
             Cache::put($hash, 1, 5);
