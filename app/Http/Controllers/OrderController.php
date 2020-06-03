@@ -284,8 +284,8 @@ class OrderController extends Controller
             $cacheKey = 'FAccess'.$orderNumber.hash('crc32',request()->ip().$mediaId.$orderNumber);
             if (!Cache::has($cacheKey)) {
                 MediaAccess::addAccess($file, $order->number);
+                Cache::put($cacheKey, 1, 5);
             }
-            Cache::put($cacheKey, 1, 5);
 
             if ($file['type'] == MediaAccess::TYPE_FILE) {
                 // Uncomment to redirect
