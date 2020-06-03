@@ -281,11 +281,11 @@ class OrderController extends Controller
 
         if ($file) {
             // get and set 5 sec hash for IP document_id and order number
-            $hash = hash('md5',request()->ip().$mediaId.$orderNumber);
-            if (!Cache::has($hash)) {
+            $cacheKey = 'FAccess'.$orderNumber.hash('crc32',request()->ip().$mediaId.$orderNumber);
+            if (!Cache::has($cacheKey)) {
                 MediaAccess::addAccess($file, $order->number);
             }
-            Cache::put($hash, 1, 5);
+            Cache::put($cacheKey, 1, 5);
 
             if ($file['type'] == MediaAccess::TYPE_FILE) {
                 // Uncomment to redirect
