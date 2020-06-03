@@ -41,9 +41,25 @@
         <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg', ['code' => $product->product_name]) }}"</p>
 
         <p class="header-product-video-info-msg">
-          @php $courses_count = !empty($product->sale_videos) && is_array($product->sale_videos) ? count($product->sale_videos) : ''; @endphp
+          @php 
+          
+          $courses_count = !empty($product->sale_videos) && is_array($product->sale_videos) ? count($product->sale_videos) : 0; 
 
-          {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count, 'product' => $product->product_name]) }}
+          if (!empty($product->sale_files) && is_array($product->sale_files)) {
+           $courses_count = $courses_count + count($product->sale_files);
+          }
+
+          if (!empty($product->free_files) && is_array($product->free_files)) {
+           $courses_count = $courses_count + count($product->free_files);
+          }
+
+          if (!empty($product->free_videos) && is_array($product->free_videos)) {
+           $courses_count = $courses_count + count($product->free_videos);
+          }
+          
+          @endphp
+
+          {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count > 0 ? $courses_count : '', 'product' => $product->product_name]) }}
         </p>
       </div>
 
