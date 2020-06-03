@@ -392,7 +392,8 @@ class SiteController extends Controller
         }
 
         // load upsells only for vrlt templates
-        $upsells = $is_vrtl_page ? $productService->getProductUpsells($product) : [];
+        //$upsells = $is_vrtl_page ? $productService->getProductUpsells($product) : [];
+        $upsells = [];
         $setting = Setting::getValue(['ipqualityscore_api_hash', 'support_address']);
 
         $payment_api = PaymentApi::getActivePaypal();

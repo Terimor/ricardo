@@ -31,12 +31,10 @@ class ProductService
             'vimeo_id.en', 'reviews', 'upsell_plusone_text.en', 'upsell_hero_text.en', 'upsells', 'fb_pixel_id', 'gads_retarget_id',
             'gads_conversion_id','gads_conversion_label', 'goptimize_id', 'is_europe_only','is_choice_required','is_paypal_hidden','countries',
             'labels.1.en', 'labels.2.en', 'labels.3.en', 'labels.4.en', 'labels.5.en', 'warehouse_id', 'warranty_percent',
-            'price_correction_percents', 'unit_qty', 'is_discount', 'is_hygiene'];
+            'price_correction_percents', 'unit_qty', 'is_discount', 'is_hygiene', 'free_file_ids'];
 
-        if (app()->getLocale() != 'en') {
-            // add .lang
-            $select = \Utils::addLangFieldToSelect($select, app()->getLocale());
-        }
+        // add .lang
+        $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
 
         $domain = Domain::getByName();
         $product = $this->getResolveProductByRequest($request, $domain, $select);
@@ -344,8 +342,10 @@ class ProductService
             }
         }
         $lp->labels = $labels;
-        // TODO: Enable EBOOK
-        //$lp->free_file_id = (string)$product->free_file_id;
+        // enable only for virtual for now
+        if ($product->type === OdinProduct::TYPE_VIRTUAL) {
+            $lp->free_files = !empty($product->free_file_ids) ? $this->getFreeFiles($product->free_file_ids) : null;
+        }
 
         return $lp;
     }
@@ -1210,6 +1210,41 @@ class ProductService
                 break;
         }
         return $file;
+    }
+
+    /**
+     * Get free files to display
+     * @param array $file_ids
+     * @return array
+     */
+    public function getFreeFiles(array $file_ids): array {
+        $select = ['title.en', 'image_id'];
+        $select = app()->getLocale() != 'en' ? \Utils::addLangFieldToSelect($select, app()->getLocale()) : $select;
+        $files = File::getByIds($file_ids, $select);
+        $files_array = [];
+        foreach ($files as $file) {
+            $files_array[] = [
+                'title' => $file->title,
+                'image_id' => $file->image_id
+            ];
+        }
+        // collect images and remove empty values and duplicates
+        $image_ids = array_column($files_array, 'image_id');
+        $image_ids = array_filter(array_unique($image_ids));
+        if ($image_ids) {
+            $images = AwsImage::getByIds($image_ids);
+            if ($images) {
+                foreach ($files_array as $key => $file) {
+                    foreach ($images as $image) {
+                        if ((string)$image->_id == (string)$file['image_id']) {
+                            $files_array[$key]['image'] = $image->getFieldLocalText($image->urls);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return $files_array;
     }
 
 }
