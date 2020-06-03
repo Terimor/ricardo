@@ -43,15 +43,13 @@
 
     <div v-if="!isLoading">
       <div class="upsell-subtitle">{{ subtitle }}</div>
-      <div class="upsell-title">Congrats on your purchase of {{ name }}.</div>
-      <div class="upsell-subtitle2">{{ subtitle }}</div>
-      <div class="upsell-letter" v-html="letter_content"></div>
+      <div class="upsell-title">{{ vc_upsells_congrats_title }}</div>
+      <div class="upsell-subtitle2">{{ lcta_title }}</div>
+      <!-- <div class="upsell-letter" v-html="description"></div> -->
 
       <div class="upsell-letter2">
-        <center><strong>OK, I Want To Save Money On Electricity And Gas ... But How Do I Get Started?</strong></center><br>
+        <center v-html="description"></center><br>
 
-        <center>Normally you'd then have to go out and buy your own biodiesel kit which can cost up to $3000 but not anymore... With this step by step video guide, I'll show you how to set up your own kit at home and get mixing and saving money straight away.</center>
-        
         <iframe
           v-if="vimeo_id"
           class="upsell-vimeo"
@@ -60,14 +58,7 @@
           allowfullscreen=""
           frameborder="0"></iframe>
         
-        <strong>So you see this guide is actually worth hundreds, maybe thousands of dollars because of the amount you'll save in the long run.</strong><br><br>
-        But you won't have to pay {{ price20Formatted }}.<br><br>
-        Not even {{ price10Formatted }}.<br><br>
-        If you download this guide right now, I can let you have it for only <strong>{{ priceFormatted }}</strong><br><br>
-        <strong>Why the discount?</strong> Because I have been in your shoes, and now that I have gotten off the grid... I made it my life's mission to spread this method to every family that needs it.<br><br>
-        This price is just to cover the research and development costs (this method you are about to discover is refined over 13 months), production and distribution costs.<br><br>
-        This investment is tiny considering thousands of dollars you'll be able to save.<br><br>
-        And of course, you have absolutely no risk because you are protected by our...
+        <div v-html="lcta_description"></div>
       </div>
     </div>
 
@@ -82,7 +73,6 @@
   
     <div v-if="!isLoading">
       <div class="last-call-title">{{ lcta_title }}</div>
-      <div class="last-call-text" v-html="lcta_description"></div>
 
       <div class="last-call-card">
         <div class="last-call-card-title">{{ vc_upsells_last_call_card_title }}</div>
@@ -108,6 +98,13 @@
             {{ vc_upsells_last_call_card_label_2 }}
           </div>
         </div>
+
+        <div
+          class="last-call-card-label-3"
+          @click="nextAccessoryStep"
+        >
+          {{ vc_upsells_last_call_card_label_3 }}
+        </div>
       </div>
     </div>
   </div>
@@ -123,7 +120,12 @@
 
     mixins: [upsells],
 
-    props: ['id', 'discount', 'accessoryStep'],
+    props: {
+      id: String, 
+      discount: Number, 
+      accessoryStep: Number, 
+      nextAccessoryStep: { type: Function }
+    },
 
     data: () => ({
       cdn_url: js_data.cdn_url,
@@ -152,6 +154,10 @@
     }),
 
     computed: {
+      vc_upsells_congrats_title () {
+        const name = this.product.product_name || '';
+        return t('vc_upsells.congrats_title', {'product': name});
+      },
       vc_upsells_title: () => t('vc_upsells.title'),
       vc_upsells_note: () => t('vc_upsells.note'),
       vc_upsells_guarantee_title: () => t('vc_upsells.guarantee.title'),
@@ -162,12 +168,16 @@
       vc_upsells_last_call_card_label_2: () => t('vc_upsells.last_call_card.label_2'),
       vc_upsells_last_call_card_label_3: () => t('vc_upsells.last_call_card.label_3'),
       vc_upsells_last_call_card_title () { 
-        const name = this.name;
+        const name = this.name || '';
         return t('vc_upsells.last_call_card.title', {'PRODUCT': name})
       },
       vc_upsells_last_call_card_old_price () {
-        const price3 = this.price3Formatted;
+        const price3 = this.price3Formatted || '';
         return t('vc_upsells.last_call_card.old_price', {'amount': `<span class="value">${price3}</span>`});
+      },
+      vc_upsells_last_call_card_label_3 () {
+        const productName = this.name || '';
+        return t('vc_upsells.last_call_card.label_3', {'product': productName})
       }
     },
 
@@ -185,10 +195,10 @@
               ? res.data.upsell.upsell_plusone_text
               : res.data.upsell.description;
 
-            this.letter_content = res.data.upsell_letter;
-            this.subtitle = res.data.upsell_subtitle;
-            this.title = res.data.upsell_title;
-            this.vimeo_id = res.data.upsell_video_id;
+            this.letter_content = res.data.upsell.upsell_letter;
+            this.subtitle = res.data.upsell.upsell_subtitle;
+            this.title = res.data.upsell.upsell_title;
+            this.vimeo_id = res.data.upsell.upsell_video_id;
 
             this.imageUrl = res.data.upsell.image;
             this.priceFormatted = this.upsellPrices['1'] && this.upsellPrices['1'].price_text || '';

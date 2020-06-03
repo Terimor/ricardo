@@ -312,6 +312,10 @@ main {
   font-size: 32px;
   margin-top: 2px;
   text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .last-call-card-label-3 {
@@ -322,6 +326,10 @@ main {
   padding: 20px 20px 0;
   text-align: center;
   text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .order-upgraded {

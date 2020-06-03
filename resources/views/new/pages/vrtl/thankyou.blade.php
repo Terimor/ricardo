@@ -56,19 +56,25 @@
         <h3 class="main-section-title">{{ t('thankyou.vrtl.download') }}</h3>
 
         <div class="section-tabs">
-          <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT', $event)">{{ $product->product_name }}</div>
+          <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'PRODUCT' }" @click="setTab('PRODUCT', $event)">{{ t('thankyou.vrtl.your_content') }}</div>
+
+          @if((!empty($product->upsells_files) && is_array($product->upsells_files)) || (!empty($product->upsells_videos) && is_array($product->upsells_videos)))
+            <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'UPSELLS' }" @click="setTab('UPSELLS', $event)">{{ t('thankyou.vrtl.upsells') }}</div>
+          @endif
 
           @if(!empty($product->free_files) && is_array($product->free_files))
             <div class="section-tab" :class="{ 'section-tab-active': tabActive === 'BONUSES' }" @click="setTab('BONUSES', $event)">{{ t('thankyou.vrtl.bonuses') }}</div>
           @endif
         </div>
 
-        <div class="section-content" v-if="tabActive === 'PRODUCT'">
+        <div class="section-content" v-show="tabActive === 'PRODUCT'">
           @if(!empty($product->sale_files) && is_array($product->sale_files))
             <div class="product-files-sect">
               <h6 class="product-files-title">{{ t('thankyou.vrtl.files_intro', ['product' => $product->product_name]) }}</h6>
             </div>
+          @endif
 
+          @if(!empty($product->sale_files) && is_array($product->sale_files))
             @foreach($product->sale_files as $index => $file)
               <div @click="collapseHeadClick" class="product-file-collapse-head active">
                 {{ $file['title'] }}
@@ -92,14 +98,16 @@
               </div>
             @endforeach
           @endif
-
+          
           @if(!empty($product->sale_videos) && is_array($product->sale_videos))
             <div class="product-videos-sect">
               <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
               <p class="product-videos-descr">{{ t('thankyou.vrtl.videos_subtitle', ['product' => $product->product_name]) }}</p>
 
               <div class="product-videos-collapse-help-msg">{{ t('thankyou.vrtl.toggle_videos') }}</div>
+            @endif
 
+            @if(!empty($product->sale_videos) && is_array($product->sale_videos))
               @foreach($product->sale_videos as $index => $video)
                 <div @click="collapseHeadClick" class="product-file-collapse-head active">
                   {{ $video['title'] }}
@@ -114,7 +122,7 @@
         </div>
 
         @if(!empty($product->free_files) && is_array($product->free_files))
-          <div class="section-content" v-if="tabActive === 'BONUSES'">
+          <div class="section-content" v-show="tabActive === 'BONUSES'">
             @foreach($product->free_files as $index => $file)
               <div @click="collapseHeadClick" class="product-file-collapse-head active">
                 {{ $file['title'] }}
@@ -137,6 +145,45 @@
                 </div>
               </div>
             @endforeach
+          </div>
+        @endif
+
+        @if((!empty($product->upsells_files) && is_array($product->upsells_files)) || (!empty($product->upsells_videos) && is_array($product->upsells_videos)))
+          <div class="section-content" v-show="tabActive === 'UPSELLS'">
+            @foreach($product->upsells_files as $index => $file)
+              <div @click="collapseHeadClick" class="product-file-collapse-head active">
+                {{ $file['title'] }}
+              </div>
+
+              <div class="product-file-collapse-content">
+                <div class="product-files-list">
+                  <div class="product-file">
+                    @php $fileName = explode(".", $file['url']); @endphp
+                    @if(end($fileName) === 'pdf')
+                      <div @click="productFilePreviewClick" class="product-file-image-preview" style="background-image: url({{ $file['image'] ?? $file['image'] }})"></div>
+
+                      <div class="product-file-pdf-preview">
+                        <embed src= "{{ $file['url'] }}" width= "100%" height= "350">
+                      </div>
+                    @endif
+
+                    <a href="{{ $file['url'] }}" target="_blank">{{ t('thankyou.vrtl.download_file') }}: {{ $file['title'] }}</a>
+                  </div>
+                </div>
+              </div>
+            @endforeach
+
+            @if(!empty($product->upsells_videos) && is_array($product->upsells_videos))
+              @foreach($product->upsells_videos as $index => $video)
+                <div @click="collapseHeadClick" class="product-file-collapse-head active">
+                  {{ $video['title'] }}
+                </div>
+
+                <div class="product-file-collapse-content">
+                  <iframe width="100%" height="300" src="{{ $video['url'] }}" frameborder="0" allow="autoplay;fullscreen" allowfullscreen></iframe>
+                </div>
+              @endforeach
+            @endif
           </div>
         @endif
 

@@ -18,6 +18,8 @@ js_deps.wait(['vue'], () => {
       },
 
       collapseHeadClick: e => {
+        e.preventDefault();
+
         let target = e.target;
 
         while (!target.classList.contains('product-file-collapse-head')) {
@@ -38,6 +40,8 @@ js_deps.wait(['vue'], () => {
       },
 
       productFilePreviewClick: e => {
+        e.preventDefault();
+
         let target = e.target;
 
         while (!target.classList.contains('product-file-image-preview')) {
