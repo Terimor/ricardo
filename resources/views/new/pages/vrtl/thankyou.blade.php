@@ -30,7 +30,6 @@
 
 
 @section('content')
-{{$product}}
   <div id="thank-you-vrtl" class="vrtl-thank-you-page">
     <div class="vrtl-thank-you-page-header">
 
