@@ -43,8 +43,6 @@ js_deps.wait(['vue'], () => {
       productFilePreviewClick (e, mediaId) {
         e.preventDefault();
 
-        console.log(mediaId)
-
         this.mediaShow = {
           ...this.mediaShow,
           [mediaId]: true
