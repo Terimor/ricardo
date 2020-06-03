@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\{MediaAccess, OdinOrder, Domain, OdinProduct};
 use App\Services\{I18nService, OrderService, ProductService, MediaService, VimeoService};
+use Cache;
 
 /* use com\checkout;
   use com\checkout\ApiServices; */
@@ -279,7 +280,14 @@ class OrderController extends Controller
         $file = $productService->getMediaByProduct($product, $mediaId, $upsells);
 
         if ($file) {
-            MediaAccess::addAccess($file, $order->number);
+            // get and set 5 sec hash for IP document_id and order number
+            $hash = hash('md5',request()->ip().$mediaId.$orderNumber);
+            if (!Cache::has($hash)) {
+                logger()->warning($hash);
+                MediaAccess::addAccess($file, $order->number);
+            }
+            Cache::put($hash, 1, 5);
+
             if ($file['type'] == MediaAccess::TYPE_FILE) {
                 // Uncomment to redirect
                 //return Redirect::to($file['url']);
