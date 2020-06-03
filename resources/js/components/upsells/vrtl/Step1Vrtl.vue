@@ -72,7 +72,7 @@
     </div>
   
     <div v-if="!isLoading">
-      <div class="last-call-title">{{ lcta_title }}</div>
+      <div class="last-call-title">{{ title }}</div>
 
       <div class="last-call-card">
         <div class="last-call-card-title">{{ vc_upsells_last_call_card_title }}</div>
