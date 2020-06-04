@@ -183,11 +183,16 @@ class ApmService {
             $products = [];
             $upsell_products = [];
             $checkout_price = 0;
+            $is_discount = $req->input('is_discount');
             foreach ($upsells as $key => $item) {
                 try {
                     $upsell = $product_srv->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
                     $upsell = $product_srv->localizeUpsell($upsell, $order_main_product['sku_code']);
-                    $upsell_price = $upsell->upsellPrices[$item['qty']];
+                    if ($is_discount && $order->type === OdinOrder::TYPE_VIRTUAL && $key == 0) {
+                        $upsell_price = $upsell->upsellPrices['30p'] ?? $upsell->upsellPrices['30p'][$item['qty']];
+                    } else {
+                        $upsell_price = $upsell->upsellPrices[$item['qty']];
+                    }
                     $upsell_product = PaymentService::createOrderProduct(
                         $upsell->upsell_sku,
                         [

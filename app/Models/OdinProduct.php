@@ -297,6 +297,11 @@ class OdinProduct extends OdinModel
                             $value[$key]['25p']['value'] = round($price['price'] * 0.25, 2);
                             $value[$key]['25p']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['25p']['value'], $currency);
                         }
+                        // 30 percent for virtual product
+                        if ($this->type === self::TYPE_VIRTUAL) {
+                            $value[$key]['30p']['value'] = round($price['price'] - $price['price'] * 0.3, 2);
+                            $value[$key]['30p']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['30p']['value'], $currency);
+                        }
                     }
 
                     $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / ($quantity * $unitQty)), $currency);
@@ -612,24 +617,29 @@ class OdinProduct extends OdinModel
         }
 
         // quantity loop
-        $this->attributes['upsellPrices']['discount_percent'] = $discountPercent;
+        $upsellPrices = [];
         $quantity = $this->castPriceQuantity($quantity);
         for ($i=1; $i <= $quantity; $i++) {
-          $this->attributes['upsellPrices'][$i]['price'] = $discountLocalPrice['price']*$i;
-          $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
-          $this->attributes['upsellPrices'][$i]['code'] = $discountLocalPrice['code'];
-          $this->attributes['upsellPrices'][$i]['exchange_rate'] = $discountLocalPrice['exchange_rate'];
+            $upsellPrices[$i]['price'] = $discountLocalPrice['price']*$i;
+            $upsellPrices[$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
         }
         // for virtual product
         if ($this->type == OdinProduct::TYPE_VIRTUAL) {
             $additionalPrices = [10, 20];
             foreach ($additionalPrices as $i) {
-                $this->attributes['upsellPrices'][$i]['price'] = $discountLocalPrice['price']*$i;
-                $this->attributes['upsellPrices'][$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
-                $this->attributes['upsellPrices'][$i]['code'] = $discountLocalPrice['code'];
-                $this->attributes['upsellPrices'][$i]['exchange_rate'] = $discountLocalPrice['exchange_rate'];
+                $upsellPrices[$i]['price'] = $discountLocalPrice['price']*$i;
+                $upsellPrices[$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
             }
+            // 30% discount
+            $upsellPrices['30p']['price'] = round($discountLocalPrice['price'] - $discountLocalPrice['price'] * 0.3, 2);
+            $upsellPrices['30p']['price_text'] = CurrencyService::getLocalTextValue($upsellPrices['30p']['price'], $currency);
         }
+        foreach ($upsellPrices as $key => $value) {
+            $upsellPrices[$key]['code'] = $discountLocalPrice['code'];
+            $upsellPrices[$key]['exchange_rate'] = $discountLocalPrice['exchange_rate'];
+        }
+        $upsellPrices['discount_percent'] = $discountPercent;
+        $this->attributes['upsellPrices'] = $upsellPrices;
 
         return true;
     }

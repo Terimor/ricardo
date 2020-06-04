@@ -98,11 +98,18 @@ class PayPalService
         $pp_items = $upsell_order_products = [];
         $order_main_product = $upsell_order->getMainProduct(); // throwable
 
-        foreach ($request->get('upsells') as $upsell_id => $upsell_quantity) {
+        $is_discount = $request->input('is_discount');
+        $c = 0; // for check index 0 for discount
+        foreach ($request->input('upsells') as $upsell_id => $upsell_quantity) {
             $product_srv = new ProductService();
             $temp_upsell_product = $product_srv->getUpsellProductById($product, $upsell_id, $upsell_quantity, $upsell_order->currency);
             $temp_upsell_product = $product_srv->localizeUpsell($temp_upsell_product, $order_main_product['sku_code']);
-            $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_quantity]['price'];
+            // check discount for first upsell
+            if ($is_discount && $upsell_order->type === OdinOrder::TYPE_VIRTUAL && $c === 0) {
+                $temp_upsell_item_price = $temp_upsell_product['upsellPrices']['30p']['price'] ?? $temp_upsell_product['upsellPrices'][$upsell_quantity]['price'];
+            } else {
+                $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_quantity]['price'];
+            }
             $upsell_order_exchange_rate = $temp_upsell_product['upsellPrices'][$upsell_quantity]['exchange_rate'];
 
             // Converting to USD.
@@ -139,7 +146,7 @@ class PayPalService
                 'txn_hash' => null,
                 'is_upsells' => true,
             ];
-
+            $c++;
         }
 
         $pp_purchase_unit = [
