@@ -90,7 +90,6 @@
 
 
 @section('content')
-  @include('new.pages.checkout.blocks.preloader')
   @include('new.pages.checkout.blocks.recently_bought')
   @include('new.pages.checkout.blocks.leave_modal')
   @yield('content_checkout')

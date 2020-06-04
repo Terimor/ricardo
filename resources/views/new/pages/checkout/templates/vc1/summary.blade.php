@@ -16,13 +16,6 @@
         <div class="col col-quantity">@{{ form.deal }}</div>
         <div class="col col-price">@{{ xprice_text }}</div>
       </div>
-      <div
-        v-if="form.warranty"
-        class="row row-warranty">
-        <div class="col col-item">{!! t('vc1.summary.table.warranty') !!}</div>
-        <div class="col col-quantity">@{{ form.deal }}</div>
-        <div class="col col-price">@{{ xprice_warranty_text }}</div>
-      </div>
       <div class="total">
         <div class="label">{!! t('vc1.summary.table.total') !!}</div>
         <div class="value">@{{ xprice_total_text }}</div>
@@ -30,7 +23,6 @@
     </div>
   </div>
 
-  @include('new.pages.checkout.form.warranty')
   @include('new.pages.checkout.form.terms')
 
   @include('new.components.error', [

@@ -20,7 +20,6 @@
     {!! t('vc2.product.access') !!}
   </div>
 
-  @include('new.pages.checkout.form.warranty')
   @include('new.pages.checkout.form.terms')
 
   <div
