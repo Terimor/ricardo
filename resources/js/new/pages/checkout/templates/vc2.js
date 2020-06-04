@@ -21,7 +21,6 @@ js_deps.wait(['vue'], () => {
 
     mounted() {
       this.form.deal = 1;
-      this.form.payment_provider = 'credit-card';
     },
 
   });

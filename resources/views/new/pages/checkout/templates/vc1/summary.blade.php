@@ -1,4 +1,4 @@
-<div class="summary">
+<div class="summary" >
 
   <div class="title">{!! t('vc1.summary.title') !!}</div>
 
@@ -22,21 +22,25 @@
       </div>
     </div>
   </div>
+  
+  <template
+    v-if="form.payment_provider && form.payment_provider !== 'paypal'"
+  >
+    @include('new.pages.checkout.form.terms')
 
-  @include('new.pages.checkout.form.terms')
+    @include('new.components.error', [
+      'ref' => 'payment_error',
+      'active' => 'payment_error && form.payment_provider === \'credit-card\'',
+      'class' => 'payment-error',
+      'label_code' => 'payment_error',
+    ])
 
-  @include('new.components.error', [
-    'ref' => 'payment_error',
-    'active' => 'payment_error && form.payment_provider === \'credit-card\'',
-    'class' => 'payment-error',
-    'label_code' => 'payment_error',
-  ])
+    @include('new.pages.checkout.payment.pay_card_button', ['image' => '<img alt="" class="lazy" data-src="' . $cdn_url . '/assets/images/checkout/vc1/buy.gif" />'])
 
-  @include('new.pages.checkout.payment.pay_card_button', ['image' => '<img alt="" class="lazy" data-src="' . $cdn_url . '/assets/images/checkout/vc1/buy.gif" />'])
-
-  <img
-    alt=""
-    class="secure lazy"
-    data-src="{{ $cdn_url }}/assets/images/checkout/vc1/secure2.png" />
+    <img
+      alt=""
+      class="secure lazy"
+      data-src="{{ $cdn_url }}/assets/images/checkout/vc1/secure2.png" />
+  </template>
 
 </div>

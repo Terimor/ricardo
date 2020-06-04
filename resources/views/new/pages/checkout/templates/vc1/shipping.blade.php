@@ -1,8 +1,16 @@
-<div class="shipping">
+<div 
+    class="shipping" 
+    v-if="form.payment_provider"
+    v-show="form.payment_provider !== 'paypal'"
+>
 
   <div class="title">{!! t('vc1.shipping.title') !!}</div>
 
-  <div class="form">
+  <div
+    class="form"
+    v-if="form.payment_provider" 
+    v-show="form.payment_provider !== 'paypal'"
+  >
     @include('new.pages.checkout.form.first_name')
     @include('new.pages.checkout.form.last_name')
     @include('new.pages.checkout.form.email')
@@ -16,11 +24,15 @@
     @include('new.pages.checkout.form.state')
     @include('new.pages.checkout.form.zipcode')
     @include('new.pages.checkout.form.country')
-    @include('new.pages.checkout.form.card_holder')
-    @include('new.pages.checkout.form.card_type')
-    @include('new.pages.checkout.form.card_number')
-    @include('new.pages.checkout.form.card_date')
-    @include('new.pages.checkout.form.card_cvv')
+
+    <template v-if="form.payment_provider && form.payment_provider === 'credit-card'">
+        @include('new.pages.checkout.form.card_holder')
+        @include('new.pages.checkout.form.card_type')
+        @include('new.pages.checkout.form.card_number')
+        @include('new.pages.checkout.form.card_date')
+        @include('new.pages.checkout.form.card_cvv')
+    </template>
+
     @include('new.pages.checkout.form.document_type')
     @include('new.pages.checkout.form.document_number')
   </div>

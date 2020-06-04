@@ -19,12 +19,18 @@
   <div class="access">
     {!! t('vc2.product.access') !!}
   </div>
-
-  @include('new.pages.checkout.form.terms')
+  
+  <div
+    v-if="form.payment_provider && form.payment_provider !== 'paypal'" 
+  >
+    @include('new.pages.checkout.form.terms')
+  </div>
 
   <div
+    v-if="form.payment_provider" 
     v-show="form.payment_provider === 'paypal'"
-    class="paypal-payment-block">
+    class="paypal-payment-block"
+  >
 
     @include('new.components.error', [
       'ref' => 'paypal_payment_error',
@@ -37,8 +43,10 @@
   </div>
 
   <div
-    v-show="form.payment_provider === 'credit-card'"
-    class="payment-block">
+    v-if="form.payment_provider" 
+    v-show="form.payment_provider !== 'paypal'"
+    class="payment-block"
+  >
 
     @include('new.components.error', [
       'ref' => 'payment_error',

@@ -81,6 +81,7 @@ $size2: 905px;
 
   @media only screen and (min-width: $size2) {
     flex-direction: row;
+    align-items: flex-start;
   }
 }
 
@@ -105,4 +106,8 @@ $size2: 905px;
     margin-top: 12px;
     width: 280px;
   }
+}
+
+[v-cloak] {
+  display: none !important;
 }

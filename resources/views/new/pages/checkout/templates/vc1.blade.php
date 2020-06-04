@@ -25,7 +25,7 @@
 
 
 @section('content_checkout')
-  <div class="vc1">
+  <div class="vc1" v-cloak>
     @include('new.pages.checkout.templates.vc1.header')
     <div class="content">
       <div class="left-column">

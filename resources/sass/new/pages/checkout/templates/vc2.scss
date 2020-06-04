@@ -125,3 +125,11 @@ main {
 .timer-seconds > div {
   font-size: 44px;
 }
+
+.paypal-button {
+  margin: 20px 0;
+}
+
+[v-cloak] {
+  display: none !important;
+}

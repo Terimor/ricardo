@@ -47,7 +47,7 @@ export default {
 
     payment_provider_init() {
       if (this.is_paypal_hidden) {
-        this.form.payment_provider = 'credit-card';
+        //this.form.payment_provider = 'credit-card';
       }
     },
 

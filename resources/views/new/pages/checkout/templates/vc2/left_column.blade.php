@@ -19,17 +19,22 @@
 
   @include('new.pages.checkout.templates.vc2.payment_provider')
 
-  <div class="form">
-    <template v-if="form.payment_provider === 'credit-card'">
+  <div 
+    class="form"
+    v-if="form.payment_provider" 
+    v-show="form.payment_provider !== 'paypal'"
+  >
+    <template v-if="form.payment_provider && form.payment_provider === 'credit-card'">
       @include('new.pages.checkout.form.card_holder')
       @include('new.pages.checkout.form.card_type')
       @include('new.pages.checkout.payment.credit_cards_list')
       @include('new.pages.checkout.form.card_number')
       @include('new.pages.checkout.form.card_date')
       @include('new.pages.checkout.form.card_cvv')
-      @include('new.pages.checkout.form.document_type')
-      @include('new.pages.checkout.form.document_number')
     </template>
+    
+    @include('new.pages.checkout.form.document_type')
+    @include('new.pages.checkout.form.document_number')
     @include('new.pages.checkout.form.zipcode', ['br' => true])
     @include('new.pages.checkout.form.street')
     @include('new.pages.checkout.form.building')

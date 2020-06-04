@@ -50,7 +50,7 @@
   .buttons {
     display: flex;
     flex-direction: column;
-    margin: 21px 24px 0;
+    margin: 21px 24px 15px;
 
     .or {
       align-items: center;
@@ -61,6 +61,10 @@
       font-weight: 700;
       margin: 10px 0 13px;
     }
+  }
+
+  .paypal-button {
+    margin: 15px 0 5px;
   }
 
   .paypal-button-shim {
