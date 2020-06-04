@@ -189,7 +189,7 @@ class ApmService {
                     $upsell = $product_srv->getUpsellProductById($main_product, $item['id'], $item['qty'], $order->currency); // throwable
                     $upsell = $product_srv->localizeUpsell($upsell, $order_main_product['sku_code']);
                     if ($is_discount && $order->type === OdinOrder::TYPE_VIRTUAL && $key == 0) {
-                        $upsell_price = $upsell->upsellPrices['30p'] ?? $upsell->upsellPrices['30p'][$item['qty']];
+                        $upsell_price = $upsell->upsellPrices['30d'] ?? $upsell->upsellPrices[$item['qty']];
                     } else {
                         $upsell_price = $upsell->upsellPrices[$item['qty']];
                     }

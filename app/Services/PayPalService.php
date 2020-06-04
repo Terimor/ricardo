@@ -106,7 +106,7 @@ class PayPalService
             $temp_upsell_product = $product_srv->localizeUpsell($temp_upsell_product, $order_main_product['sku_code']);
             // check discount for first upsell
             if ($is_discount && $upsell_order->type === OdinOrder::TYPE_VIRTUAL && $c === 0) {
-                $temp_upsell_item_price = $temp_upsell_product['upsellPrices']['30p']['price'] ?? $temp_upsell_product['upsellPrices'][$upsell_quantity]['price'];
+                $temp_upsell_item_price = $temp_upsell_product['upsellPrices']['30d']['price'] ?? $temp_upsell_product['upsellPrices'][$upsell_quantity]['price'];
             } else {
                 $temp_upsell_item_price = $temp_upsell_product['upsellPrices'][$upsell_quantity]['price'];
             }

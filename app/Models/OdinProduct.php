@@ -299,8 +299,8 @@ class OdinProduct extends OdinModel
                         }
                         // 30 percent for virtual product
                         if ($this->type === self::TYPE_VIRTUAL) {
-                            $value[$key]['30p']['value'] = round($price['price'] - $price['price'] * 0.3, 2);
-                            $value[$key]['30p']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['30p']['value'], $currency);
+                            $value[$key]['30d']['value'] = round($price['price'] - $price['price'] * 0.3, 2);
+                            $value[$key]['30d']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['30d']['value'], $currency);
                         }
                     }
 
@@ -631,8 +631,8 @@ class OdinProduct extends OdinModel
                 $upsellPrices[$i]['price_text'] = CurrencyService::getLocalTextValue($discountLocalPrice['price'] * $i, $currency);
             }
             // 30% discount
-            $upsellPrices['30p']['price'] = round($discountLocalPrice['price'] - $discountLocalPrice['price'] * 0.3, 2);
-            $upsellPrices['30p']['price_text'] = CurrencyService::getLocalTextValue($upsellPrices['30p']['price'], $currency);
+            $upsellPrices['30d']['price'] = round($discountLocalPrice['price'] - $discountLocalPrice['price'] * 0.3, 2);
+            $upsellPrices['30d']['price_text'] = CurrencyService::getLocalTextValue($upsellPrices['30d']['price'], $currency);
         }
         foreach ($upsellPrices as $key => $value) {
             $upsellPrices[$key]['code'] = $discountLocalPrice['code'];
