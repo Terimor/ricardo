@@ -1,4 +1,4 @@
-<transition name="recently_bought_transition" appear>
+<transition name="recently_bought_transition" appear v-cloak>
 
   <div
     v-if="recently_bought_active"

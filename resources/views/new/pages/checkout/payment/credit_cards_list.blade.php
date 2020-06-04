@@ -6,8 +6,7 @@
     class="credit-card-item">
 
     <img
-      class="lazy"
-      :data-src="payment_method.logo"
+      :src="payment_method.logo"
       :title="payment_method.name" />
 
   </div>
@@ -18,8 +17,7 @@
       class="credit-card-item credit-card-paypal">
 
       <img
-        class="lazy"
-        :data-src="paypal_payment_method.logo"
+        :src="paypal_payment_method.logo"
         :title="paypal_payment_method.name" />
 
     </div>
