@@ -128,24 +128,6 @@
             </div>
         </div>
 
-        <div class="splash-virtual-page-footer">
-            <img src="{{ $cdn_url }}/assets/images/splash/clickbank.png" alt="" id="splashVirtualFooterClickbank">
-
-            <div class="splash-virtual-page-footer-content">
-                <div class="splash-virtual-secure-imgs">
-                    <div class="secure-img-wrap"><img src="{{ $cdn_url }}/assets/images/splash/ssl-checkout.png" alt=""></div>
-                    <div class="secure-img-wrap"><img src="{{ $cdn_url }}/assets/images/splash/dmca-protected.png" alt=""></div>
-                    <div class="secure-img-wrap"><img src="{{ $cdn_url }}/assets/images/splash/ssl-security.png" alt=""></div>
-                </div>
-
-                <div class="splash-virtual-footer-text">
-                    <p>{{ t('splash.vrtl.clickbank_descr') }}</p>
-
-                    <p>{{ t('splash.vrtl.testimonials_notification') }}</p>
-                </div>
-
-                <div class="splash-virtual-footer-copyright">{{ $product->product_name }}</div>
-            </div>
-        </div>
+        @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
     </div>
 @endsection
