@@ -6,19 +6,19 @@
 @section('js_data')
 
   <script type="text/javascript">
-    js_data.customer = @json($customer);
-    js_data.company_address = @json($company_address);
-    js_data.company_descriptor_prefix = @json($company_descriptor_prefix);
-    js_data.ipqualityscore_api_hash = @json($setting['ipqualityscore_api_hash']);
-    js_data.recently_bought_names = @json($recentlyBoughtNames);
-    js_data.recently_bought_cities = @json($recentlyBoughtCities);
-    js_data.i18n.phrases = @json($loadedPhrases);
-    js_data.i18n.images = @json($loadedImages);
-    js_data.lang_code = @json($langCode);
-    js_data.country_code = @json($countryCode);
-    js_data.countries = @json($countries);
-    js_data.payment_methods = @json($setting['payment_methods']);
-    js_data.product = @json($product);
+    js_data.customer = @json($customer, JSON_UNESCAPED_UNICODE);
+    js_data.company_address = @json($company_address, JSON_UNESCAPED_UNICODE);
+    js_data.company_descriptor_prefix = @json($company_descriptor_prefix, JSON_UNESCAPED_UNICODE);
+    js_data.ipqualityscore_api_hash = @json($setting['ipqualityscore_api_hash'], JSON_UNESCAPED_UNICODE);
+    js_data.recently_bought_names = @json($recentlyBoughtNames, JSON_UNESCAPED_UNICODE);
+    js_data.recently_bought_cities = @json($recentlyBoughtCities, JSON_UNESCAPED_UNICODE);
+    js_data.i18n.phrases = @json($loadedPhrases, JSON_UNESCAPED_UNICODE);
+    js_data.i18n.images = @json($loadedImages, JSON_UNESCAPED_UNICODE);
+    js_data.lang_code = @json($langCode, JSON_UNESCAPED_UNICODE);
+    js_data.country_code = @json($countryCode, JSON_UNESCAPED_UNICODE);
+    js_data.countries = @json($countries, JSON_UNESCAPED_UNICODE);
+    js_data.payment_methods = @json($setting['payment_methods'], JSON_UNESCAPED_UNICODE);
+    js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
   </script>
 
 @endsection

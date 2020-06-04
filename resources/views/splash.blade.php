@@ -6,7 +6,7 @@
 @section('js_data')
 
   <script type="text/javascript">
-    js_data.product = @json($product);
+    js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
   </script>
 
 @endsection
@@ -114,7 +114,7 @@
                             <div class="for-img">
                                 <img src="{{ $product->image[2] }}" alt="{{ $product->product_name }}">
                             </div>
-                        @endif                        
+                        @endif
                     </div>
 
                 </div>

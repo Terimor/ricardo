@@ -6,8 +6,8 @@
 @section('js_data')
 
   <script type="text/javascript">
-    js_data.i18n.phrases = @json($loadedPhrases);
-    js_data.product = @json($product);
+    js_data.i18n.phrases = @json($loadedPhrases, JSON_UNESCAPED_UNICODE);
+    js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
   </script>
 
 @endsection

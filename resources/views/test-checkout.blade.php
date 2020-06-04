@@ -8,7 +8,7 @@
 <script src="https://www.paypal.com/sdk/js?disable-card=visa,mastercard,amex&client-id={{ $paypal_client }}"></script> <!-- PAYPAL required  -->
 
 <div>Product</div>
-<pre id="json" :product="@json($product)">{{ json_encode($product, JSON_PRETTY_PRINT) }}</pre>
+<pre id="json" :product="@json($product, JSON_PRETTY_PRINT)">{{ json_encode($product, JSON_PRETTY_PRINT) }}</pre>
 
 
 <div>Test checkout</div>

@@ -6,7 +6,7 @@
 
 @section('js_data')
   <script type="text/javascript">
-    js_data.product = @json($product);
+    js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
   </script>
 @endsection
 

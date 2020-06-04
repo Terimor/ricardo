@@ -7,10 +7,10 @@
   <script type="text/javascript">
     js_data.upsells = @json($product->upsells, JSON_UNESCAPED_UNICODE);
 
-    js_data.i18n.phrases = @json($loadedPhrases);
-    js_data.country_code = @json($countryCode);
-    js_data.order_customer = @json($orderCustomer);
-    js_data.product = @json($product);
+    js_data.i18n.phrases = @json($loadedPhrases, JSON_UNESCAPED_UNICODE);
+    js_data.country_code = @json($countryCode, JSON_UNESCAPED_UNICODE);
+    js_data.order_customer = @json($orderCustomer, JSON_UNESCAPED_UNICODE);
+    js_data.product = @json($product, JSON_UNESCAPED_UNICODE);
 
     var products_success = js_data.order_customer.products
         .filter(function(product) {
