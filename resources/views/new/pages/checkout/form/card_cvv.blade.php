@@ -17,7 +17,7 @@
 
 <div
   v-if="card_cvv_dialog_visible"
-  class="dialog card_cvv-dialog"
+  :class="[{ active: card_cvv_dialog_visible }, 'dialog', 'card_cvv-dialog']"
   @click="card_cvv_dialog_close">
 
   <div

@@ -1,5 +1,11 @@
 .card_cvv-dialog {
+  display: none;
+
   img {
     align-self: center;
+  }
+
+  &.active {
+    display: flex;
   }
 }
