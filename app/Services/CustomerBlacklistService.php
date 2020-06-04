@@ -46,7 +46,7 @@ class CustomerBlacklistService
                     ]));
                     $address = preg_replace('/[^\w\s]+/u', '', $address);
 
-                    $cus_blst = CustomerBlacklist::addOne([
+                    $cus_blst = CustomerBlacklist::addOne($order->number, [
                         'fingerprint' => $order->fingerprint,
                         'address' => trim(strtolower($address)),
                         'email' => $order->customer_email,
@@ -84,6 +84,7 @@ class CustomerBlacklistService
             } else {
                 $result = 'a few recent orders to the same postal address';
             }
+            $result .= ' (' . join(', ', array_diff($cus_blst->orders, [$order->number])) . ')';
         }
         return $result;
     }

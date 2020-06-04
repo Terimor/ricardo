@@ -14,6 +14,7 @@ use App\Services\UtilsService;
  * @property string|null phone
  * @property string|null address
  * @property int orders_count
+ * @property string[] orders
  * @property mixed expire_at
  * @property mixed created_at
  * @property mixed updated_at
@@ -27,9 +28,7 @@ class CustomerBlacklist extends \Jenssegers\Mongodb\Eloquent\Model
 
     protected $dates = ['created_at', 'expire_at', 'updated_at'];
 
-    protected $attributes = [
-        'orders_count' => 0
-    ];
+    protected $attributes = ['orders' => [], 'orders_count' => 0];
 
     /**
      * The attributes that are mass assignable.
@@ -98,10 +97,11 @@ class CustomerBlacklist extends \Jenssegers\Mongodb\Eloquent\Model
 
     /**
      * Appends a new or increments an existing one
+     * @param string $order_number
      * @param array $cus_data
      * @return CustomerBlacklist
      */
-    public static function addOne(array $cus_data): CustomerBlacklist
+    public static function addOne(string $order_number, array $cus_data): CustomerBlacklist
     {
         $model = self::searchOne($cus_data);
 
@@ -110,6 +110,7 @@ class CustomerBlacklist extends \Jenssegers\Mongodb\Eloquent\Model
             $model->expire_at = UtilsService::getMongoTimeFromTS(time() + CustomerBlacklist::ROW_LIFETIME_HRS * 3600);
         }
 
+        $model->orders = [...$model->orders, $order_number];
         $model->orders_count ++;
 
         if (!$model->save()) {
