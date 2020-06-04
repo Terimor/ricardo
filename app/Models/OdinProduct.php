@@ -273,48 +273,16 @@ class OdinProduct extends OdinModel
             // country depends on IP
             $userCountry = \Utils::getLocationCountryCode();
         }
-        $unitQty = !empty($this->unit_qty) ? $this->unit_qty : 1;
+
+        $oneItemPrice = 0;
         //iteration by price sets array
         foreach ($value as $key => $priceSet) {
-            $oneItemPrice = 0;
-
             //iteration by items quantity for selected price set
             $quantityPrices = $this->castPriceQuantity();
             for ($quantity = 1; $quantity <= $quantityPrices; $quantity++) {
                 // if skip_prices this value is empty
                 if (!empty($priceSet[$quantity]['value'])) {
-                    // val for calculate upsell
-                    $value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
-                    $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency, $userCountry, $this->price_correction_percents ?? []);
-                    $value[$key][$quantity]['value'] = $price['price'];
-                    $value[$key][$quantity]['value_text'] = $price['price_text'];
-
-                    if ($quantity == 1) {
-                        //save one item price
-                        $oneItemPrice = $price['price'];
-                        // 25 percent for splash pages
-                        if ((Route::is('splashvirtual') || Route::is('splash')) && $this->type === self::TYPE_VIRTUAL) {
-                            $value[$key]['25p']['value'] = round($price['price'] * 0.25, 2);
-                            $value[$key]['25p']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['25p']['value'], $currency);
-                        }
-                        // 30 percent for virtual product
-                        if ($this->type === self::TYPE_VIRTUAL) {
-                            $value[$key]['30d']['value'] = round($price['price'] - $price['price'] * 0.3, 2);
-                            $value[$key]['30d']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['30d']['value'], $currency);
-                        }
-                    }
-
-                    $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / ($quantity * $unitQty)), $currency);
-
-                    $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
-                    $value[$key][$quantity]['old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $oldPriceValue, $currency);
-                    $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
-
-                    // set additional prices (warranty and installments)
-                    $value[$key] = $this->calculateAdditionalPrices($value[$key], $price['price'], $oldPriceValue, $quantity, $numberFormatter, $currency);
-
-                    $value[$key][$quantity]['total_amount'] = round($price['price'] + $value[$key][$quantity]['warranty_price'], 2);
-                    $value[$key][$quantity]['total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key][$quantity]['total_amount'], $currency);
+                    $value = $this->preparePricesForQty($value, $key, $priceSet, $quantity, $currency, $userCountry, $numberFormatter, $oneItemPrice);
 
                   } else {
                     if (!$this->skip_prices) {
@@ -342,6 +310,57 @@ class OdinProduct extends OdinModel
     }
 
     /**
+     * Prepare prices for quantity 1 to N depends on price set
+     * @param $value
+     * @param $key
+     * @param array $priceSet
+     * @param int $quantity
+     * @param Currency $currency
+     * @param string|null $userCountry
+     * @param NumberFormatter $numberFormatter
+     * @param float $oneItemPrice
+     * @return array
+     */
+    private function preparePricesForQty($value, $key, array $priceSet, int $quantity, Currency $currency, ?string $userCountry, NumberFormatter $numberFormatter, &$oneItemPrice): array
+    {
+        $unitQty = !empty($this->unit_qty) ? $this->unit_qty : 1;
+        // val for calculate upsell
+        $value[$key][$quantity]['val'] = $priceSet[$quantity]['value'];
+        $price = CurrencyService::getLocalPriceFromUsd($priceSet[$quantity]['value'], $currency, $userCountry, $this->price_correction_percents ?? []);
+        $value[$key][$quantity]['value'] = $price['price'];
+        $value[$key][$quantity]['value_text'] = $price['price_text'];
+
+        if ($quantity == 1) {
+            //save one item price
+            $oneItemPrice = $price['price'];
+            // 25 percent for splash pages
+            if ((Route::is('splashvirtual') || Route::is('splash')) && $this->type === self::TYPE_VIRTUAL) {
+                $value[$key]['25p']['value'] = round($price['price'] * 0.25, 2);
+                $value[$key]['25p']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['25p']['value'], $currency);
+            }
+            // 30 percent discount for virtual product
+            if ($this->type === self::TYPE_VIRTUAL) {
+                $value[$key]['30d']['value'] = round($price['price'] - $price['price'] * 0.3, 2);
+                $value[$key]['30d']['value_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key]['30d']['value'], $currency);
+            }
+        }
+
+        $value[$key][$quantity]['unit_value_text'] = CurrencyService::formatCurrency($numberFormatter, ($price['price'] / ($quantity * $unitQty)), $currency);
+
+        $oldPriceValue = CurrencyService::getOldPrice($oneItemPrice, $quantity);
+        $value[$key][$quantity]['old_value_text'] = CurrencyService::formatCurrency($numberFormatter, $oldPriceValue, $currency);
+        $value[$key][$quantity]['discount_percent'] = CurrencyService::getDiscountPercent($oldPriceValue, $price['price']);
+
+        // set additional prices (warranty and installments)
+        $value[$key] = $this->calculateAdditionalPrices($value[$key], $price['price'], $oldPriceValue, $quantity, $numberFormatter, $currency);
+
+        $value[$key][$quantity]['total_amount'] = round($price['price'] + $value[$key][$quantity]['warranty_price'], 2);
+        $value[$key][$quantity]['total_amount_text'] = CurrencyService::formatCurrency($numberFormatter, $value[$key][$quantity]['total_amount'], $currency);
+
+        return $value;
+    }
+
+    /**
      * Calculate and set additional prices (warranty and installments)
      * @param array $value
      * @param float $price
@@ -351,7 +370,7 @@ class OdinProduct extends OdinModel
      * @param $currency
      * @return array
      */
-    public function calculateAdditionalPrices(array $value, float $price, float $oldPriceValue, int $quantity, $numberFormatter, $currency)
+    private function calculateAdditionalPrices(array $value, float $price, float $oldPriceValue, int $quantity, $numberFormatter, $currency)
     {
         if (!empty($this->warranty_percent)) {
             $warranty_price = floor(($this->warranty_percent / 100) * $price * 100)/100;
