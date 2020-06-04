@@ -1,64 +1,68 @@
 <template>
   <div v-if="$v" class="d-flex flex-wrap payment-form-smc7">
-    <Country
-      :$v="$v.form.country"
-      :form="paymentForm"
-      :placeholder="true"
-      name="country" />
-    <ZipCode
-      v-if="paymentForm.country === 'br'"
-      :$v="$v.form.zipCode"
-      :isLoading="isLoading"
-      @setBrazilAddress="setBrazilAddress"
-      :country="paymentForm.country"
-      :form="paymentForm"
-      :placeholder="true"
-      name="zipCode" />
-    <Street
-      :$v="$v.form.streetAndNumber"
-      :placeholder="true"
-      :isLoading="isLoading"
-      :form="paymentForm"
-      name="streetAndNumber" />
-    <Building
-      :extraFields="extraFields"
-      :placeholder="true"
-      :form="paymentForm"
-      :$v="$v.form" />
-    <Complement
-      :isLoading="isLoading"
-      :extraFields="extraFields"
-      :placeholder="true"
-      :form="paymentForm"
-      :$v="$v.form" />
-    <District
-      :isLoading="isLoading"
-      :extraFields="extraFields"
-      :placeholder="true"
-      :form="paymentForm"
-      :$v="$v.form" />
-    <City
-      :$v="$v.form.city"
-      :placeholder="true"
-      :isLoading="isLoading"
-      :form="paymentForm"
-      name="city" />
-    <State
-      :country="paymentForm.country"
-      :stateExtraField="stateExtraField"
-      :isLoading="isLoading"
-      :placeholder="true"
-      :form="paymentForm"
-      :$v="$v.form" />
-    <ZipCode
-      v-if="paymentForm.country !== 'br'"
-      :$v="$v.form.zipCode"
-      :isLoading="isLoading"
-      @setBrazilAddress="setBrazilAddress"
-      :country="paymentForm.country"
-      :form="paymentForm"
-      :placeholder="true"
-      name="zipCode" />
+
+    <template v-show="form.paymentProvider !== 'paypal'">
+      <Country
+        :$v="$v.form.country"
+        :form="paymentForm"
+        :placeholder="true"
+        name="country" />
+      <ZipCode
+        v-if="paymentForm.country === 'br'"
+        :$v="$v.form.zipCode"
+        :isLoading="isLoading"
+        @setBrazilAddress="setBrazilAddress"
+        :country="paymentForm.country"
+        :form="paymentForm"
+        :placeholder="true"
+        name="zipCode" />
+      <Street
+        :$v="$v.form.streetAndNumber"
+        :placeholder="true"
+        :isLoading="isLoading"
+        :form="paymentForm"
+        name="streetAndNumber" />
+      <Building
+        :extraFields="extraFields"
+        :placeholder="true"
+        :form="paymentForm"
+        :$v="$v.form" />
+      <Complement
+        :isLoading="isLoading"
+        :extraFields="extraFields"
+        :placeholder="true"
+        :form="paymentForm"
+        :$v="$v.form" />
+      <District
+        :isLoading="isLoading"
+        :extraFields="extraFields"
+        :placeholder="true"
+        :form="paymentForm"
+        :$v="$v.form" />
+      <City
+        :$v="$v.form.city"
+        :placeholder="true"
+        :isLoading="isLoading"
+        :form="paymentForm"
+        name="city" />
+      <State
+        :country="paymentForm.country"
+        :stateExtraField="stateExtraField"
+        :isLoading="isLoading"
+        :placeholder="true"
+        :form="paymentForm"
+        :$v="$v.form" />
+      <ZipCode
+        v-if="paymentForm.country !== 'br'"
+        :$v="$v.form.zipCode"
+        :isLoading="isLoading"
+        @setBrazilAddress="setBrazilAddress"
+        :country="paymentForm.country"
+        :form="paymentForm"
+        :placeholder="true"
+        name="zipCode" />
+    </template>
+
     <h2><span>{{paySecurelyWith}}</span></h2>
     <radio-button-group
         class="payment-method-cards"
@@ -82,8 +86,11 @@
       :form="paymentForm"
       :$v="$v.form" />
 
-    <form id="payment-data-form" v-if="paymentForm.paymentProvider === 'credit-card'">
-
+    <form 
+      id="payment-data-form" 
+      v-if="paymentForm.paymentProvider === 'credit-card'" 
+      v-show="form.paymentProvider !== 'paypal'"
+    >
       <CardHolder
         v-if="$root.isAffIDEmpty"
         :$v="$v.form.cardHolder"
@@ -124,7 +131,6 @@
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v.form" />
-
     </form>
 
   </div>

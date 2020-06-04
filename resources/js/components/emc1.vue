@@ -83,6 +83,7 @@
                               :secondTitle="`${textStep} ${getStepOrder(5)}: ${textDeliveryAddress}`"
                               :thirdTitle="`${textStep} ${getStepOrder(6)}: ${textPaymentDetails}`"
                               v-if="form.paymentProvider && isFormShown"
+                              v-show="form.paymentProvider !== 'paypal'"
                               :$v="$v"
                               :paymentForm="form"
                               :extraFields="extraFields"
