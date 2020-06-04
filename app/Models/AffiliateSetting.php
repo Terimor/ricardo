@@ -106,7 +106,9 @@ class AffiliateSetting extends Model
         'product_sales' => null,
         'postback_percent' => 0,
         'user_id' => '',
-        'is_3ds_off' => false
+        'is_3ds_off' => false,
+        'products' => null,
+        'blocked_products' => null
     ];
 
     /**
@@ -133,13 +135,14 @@ class AffiliateSetting extends Model
 
     /**
      * Calculate reduce percent for order by product sales and reduce percents depend on parameters
-     * @param string $productId
-     * @param \App\Models\AffiliateSetting $affiliate
+     * @param OdinProduct $product;
+     * @param AffiliateSetting $affiliate
      * @param string|null $country
      * @return bool $isReduce
      */
-    public static function calculateIsReduced(string $productId, AffiliateSetting $affiliate, ?string $country): ?bool
+    public static function calculateIsReduced(OdinProduct $product, AffiliateSetting $affiliate, ?string $country): ?bool
     {
+        $productId = (string)$product->_id;
         $isReduce = false;
         if ($affiliate) {
             $reducePercent = 0;
@@ -151,7 +154,6 @@ class AffiliateSetting extends Model
             }
             $qty = $qty + 1;
 
-            $product = OdinProduct::getById($productId, ['reducings', 'reduce_percent', 'initial_reduce_percent']);
             $initialPercent = $product->initial_reduce_percent ?? 0;
 
             // check main rules for all sales
@@ -262,5 +264,31 @@ class AffiliateSetting extends Model
         }
 
         return $percent;
+    }
+
+    /**
+     * Check access affiliate to product
+     * @param OdinProduct $product
+     * @return bool
+     */
+    public function hasProductAccess(OdinProduct $product): bool
+    {
+        // TODO: Enable product affiliate access (delete next row)
+        return true;
+        $productId = (string)$product->_id;
+        $isPublic = $product->is_public ?? false;
+        $hasAccess = true;
+
+        // if product in block list disable access
+        if (!empty($this->blocked_products) && in_array($productId, $this->blocked_products)) {
+            $hasAccess = false;
+        } else {
+            // if product is private check in available products, if not - access denied for affiliate
+            if (!$isPublic && (empty($this->products) || !in_array($productId, $this->products))) {
+                $hasAccess = false;
+            }
+        }
+
+        return $hasAccess;
     }
 }

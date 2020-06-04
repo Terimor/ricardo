@@ -192,16 +192,20 @@ class OrderService
             if ($order->affiliate == $hoAffiliateId && $order->isAcceptedTxn()) {
                 // check or create affiliate
                 $affiliate = AffiliateSetting::getByHasOfferId($hoAffiliateId);
-
                  // if not flagged check fired logic
                 if ($affiliate && empty($order->is_flagged)) {
                     // get first main product
                     $productId = $order->getFirstProductId();
+                    // allow reducing only if is_reduced is null
                     if ($order->is_reduced === null && $productId) {
-                        // check in affiliate product list
-                        $isReduced = AffiliateSetting::calculateIsReduced($productId, $affiliate, $order->shipping_country);
-                        $order->is_reduced = $isReduced;
-                        $order->save();
+                        // if affiliate has access to product
+                        $product = OdinProduct::getById($productId, ['reducings', 'reduce_percent', 'initial_reduce_percent', 'is_public']);
+                        if ($affiliate->hasProductAccess($product)) {
+                            // check in affiliate product list
+                            $isReduced = AffiliateSetting::calculateIsReduced($product, $affiliate, $order->shipping_country);
+                            $order->is_reduced = $isReduced;
+                            $order->save();
+                        }
                     }
                     $events = $order->events ?? [];
                     // txid and postback logic
@@ -212,9 +216,7 @@ class OrderService
 
                         // save postback
                         AffiliateService::checkAffiliatePostback($hoAffiliateId, $order, $validTxid);
-                        $events[] = OdinOrder::EVENT_AFF_POSTBACK_SENT;
-                        $order->events = $events;
-                        $order->save();
+                        $order->addEvent(OdinOrder::EVENT_AFF_POSTBACK_SENT, true);
                     }
                 }
 

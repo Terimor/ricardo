@@ -1111,4 +1111,19 @@ class OdinOrder extends OdinModel
         }
         return $skus;
     }
+
+    /**
+     * Add to events array
+     * @param string $name
+     * @param bool $is_save
+     * @return void
+     */
+    public function addEvent(string $name, bool $is_save = false):void {
+        $events = $this->events ?? [];
+        $events[] = $name;
+        $this->events = array_unique($events);
+        if ($is_save) {
+            $this->save();
+        }
+    }
 }
