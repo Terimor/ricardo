@@ -273,19 +273,20 @@ class AffiliateSetting extends Model
      */
     public function hasProductAccess(OdinProduct $product): bool
     {
-        // TODO: Enable product affiliate access (delete next row)
-        return true;
-        $productId = (string)$product->_id;
-        $isPublic = $product->is_public ?? false;
+        // TODO: Enable product affiliate access (delete if)
         $hasAccess = true;
+        if (\App::environment() !== 'production') {
+            $productId = (string)$product->_id;
+            $isPublic = $product->is_public ?? false;
 
-        // if product in block list disable access
-        if (!empty($this->blocked_products) && in_array($productId, $this->blocked_products)) {
-            $hasAccess = false;
-        } else {
-            // if product is private check in available products, if not - access denied for affiliate
-            if (!$isPublic && (empty($this->products) || !in_array($productId, $this->products))) {
+            // if product in block list disable access
+            if (!empty($this->blocked_products) && in_array($productId, $this->blocked_products)) {
                 $hasAccess = false;
+            } else {
+                // if product is private check in available products, if not - access denied for affiliate
+                if (!$isPublic && (empty($this->products) || !in_array($productId, $this->products))) {
+                    $hasAccess = false;
+                }
             }
         }
 
