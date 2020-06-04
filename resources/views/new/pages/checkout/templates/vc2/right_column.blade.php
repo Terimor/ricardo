@@ -13,7 +13,7 @@
       <i class="fa fa-download"></i>
       {!! t('vc2.product.text') !!}
     </div>
-    <div class="total">@{{ xprice_total_text }}</div>
+    <div class="total"><span v-cloak>@{{ xprice_total_text }}</span></div>
   </div>
 
   <div class="access">
