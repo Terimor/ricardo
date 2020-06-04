@@ -72,7 +72,7 @@
               @input="activateForm" />
           </template>
           <slot name="warranty" />
-          <form v-if="form.paymentProvider && isFormShown">
+          <form v-if="form.paymentProvider && isFormShown" v-show="form.paymentProvider !== 'paypal'">
             <div class="card-info" v-if="form.paymentProvider === 'credit-card'">
               <CardHolder
                 v-if="$root.isAffIDEmpty"
