@@ -73,10 +73,7 @@
                 </div>
 
                 <div class="guarantee-text">
-                    <p>{{ t('splash.vrtl.guarantee_txt1') }}</p>
-                    <p>{{ t('splash.vrtl.guarantee_txt2') }}</p>
-                    <p>{{ t('splash.vrtl.guarantee_txt3') }}</p>
-                    <p>{{ t('splash.vrtl.guarantee_txt4') }}</p>
+                    @php echo t('splash.vrtl.guarantee_txt'); @endphp
                 </div>
             </div>
 
