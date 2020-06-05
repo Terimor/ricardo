@@ -8,6 +8,9 @@ import form from './checkout/form';
 import payment from './checkout/payment';
 import prices from './checkout/prices';
 import leads from './checkout/leads';
+import purchasMixin from '../../mixins/purchas';
+
+import PurchasAlreadyExists from '../../components/common/PurchasAlreadyExists';
 
 
 export default {
@@ -23,8 +26,12 @@ export default {
     payment,
     prices,
     leads,
+    purchasMixin
   ],
 
+  components: {
+    PurchasAlreadyExists
+  },
 
   created() {
     this.set_browser_title();

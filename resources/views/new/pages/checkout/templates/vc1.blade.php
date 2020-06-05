@@ -36,9 +36,13 @@
         @include('new.pages.checkout.templates.vc1.upsells')
       </div>
       <div class="right-column">
-        @include('new.pages.checkout.templates.vc1.providers')
-        @include('new.pages.checkout.templates.vc1.shipping')
-        @include('new.pages.checkout.templates.vc1.summary')
+        <template v-if="!isPurchasAlreadyExists">
+          @include('new.pages.checkout.templates.vc1.providers')
+          @include('new.pages.checkout.templates.vc1.shipping')
+          @include('new.pages.checkout.templates.vc1.summary')
+        </template>
+
+        <purchas-already-exists v-else />
       </div>
     </div>
     @include('new.pages.checkout.templates.vc1.upsells')

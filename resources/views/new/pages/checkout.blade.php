@@ -69,6 +69,12 @@
 
 
 @section('styles')
+  <link
+    href="{{ mix_cdn('assets/js/app.vue.css') }}"
+    onload="js_deps.ready.call(this, 'page-styles')"
+    rel="stylesheet"
+    media="none" />
+
   @yield('styles_checkout')
 @endsection
 

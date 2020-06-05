@@ -108,6 +108,20 @@ $size2: 905px;
   }
 }
 
+.credit-card-item img {
+  max-width: 25px;
+}
+
+.credit-cards .credit-cards-list {
+  margin-top: 3px;
+}
+
+.alert {
+  width: calc(100% - 10px);
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 [v-cloak] {
   display: none !important;
 }
