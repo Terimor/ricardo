@@ -15,7 +15,7 @@
         <img
           alt=""
           class="image lazy"
-          data-src="{{ $file['image'] }}" />
+          data-src="{{ $file['image'] ?? $file['image'] }}" />
 
         <div class="text">
           <div class="name">{{ $file['title'] }}</div>
