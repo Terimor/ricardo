@@ -1,7 +1,7 @@
 <template>
   <div v-if="$v" class="d-flex flex-wrap payment-form-smc7">
 
-    <template v-show="form.paymentProvider !== 'paypal'">
+    <template v-show="paymentForm.paymentProvider !== 'paypal'">
       <Country
         :$v="$v.form.country"
         :form="paymentForm"
@@ -89,7 +89,7 @@
     <form 
       id="payment-data-form" 
       v-if="paymentForm.paymentProvider === 'credit-card'" 
-      v-show="form.paymentProvider !== 'paypal'"
+      v-show="paymentForm.paymentProvider !== 'paypal'"
     >
       <CardHolder
         v-if="$root.isAffIDEmpty"
