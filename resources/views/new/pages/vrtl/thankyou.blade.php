@@ -41,9 +41,9 @@
         <p class="header-product-payment-msg">"{{ t('thankyou.vrtl.charge_msg', ['code' => $product->product_name]) }}"</p>
 
         <p class="header-product-video-info-msg">
-          @php 
+          @php
 
-          $courses_count = !empty($product->sale_videos) && is_array($product->sale_videos) ? count($product->sale_videos) : 0; 
+          $courses_count = !empty($product->sale_videos) && is_array($product->sale_videos) ? count($product->sale_videos) : 0;
 
           if (!empty($product->sale_files) && is_array($product->sale_files)) {
            $courses_count = $courses_count + count($product->sale_files);
@@ -56,7 +56,7 @@
           if (!empty($product->free_videos) && is_array($product->free_videos)) {
            $courses_count = $courses_count + count($product->free_videos);
           }
-          
+
           @endphp
 
           {{ t('thankyou.vrtl.video_msg', ['count' => $courses_count > 0 ? $courses_count : '', 'product' => $product->product_name]) }}
@@ -101,10 +101,10 @@
                   <div class="product-file">
                     @php $fileName = explode(".", $file['url']); @endphp
                     @if(end($fileName) === 'pdf')
-                      <div 
-                        v-if="!mediaShow['bonuspdf' + {{ $index }}]" 
-                        @click="productFilePreviewClick($event, 'bonuspdf' + {{ $index }})" 
-                        class="product-file-image-preview" 
+                      <div
+                        v-if="!mediaShow['bonuspdf' + {{ $index }}]"
+                        @click="productFilePreviewClick($event, 'bonuspdf' + {{ $index }})"
+                        class="product-file-image-preview"
                         style="background-image: url({{ $file['image'] }})"
                       ></div>
 
@@ -119,7 +119,7 @@
               </div>
             @endforeach
           @endif
-          
+
           @if(!empty($product->sale_videos) && is_array($product->sale_videos))
             <div class="product-videos-sect">
               <h6 class="product-videos-title">{{ t('thankyou.vrtl.videos') }}</h6>
@@ -135,20 +135,20 @@
                 </div>
 
                 <div class="product-file-collapse-content">
-                  <div 
-                    v-if="!mediaShow['salevideo' + {{ $index }}]" 
-                    @click="productFilePreviewClick($event, 'salevideo' + {{ $index }})" 
-                    class="product-file-image-preview" 
+                  <div
+                    v-if="!mediaShow['salevideo' + {{ $index }}]"
+                    @click="productFilePreviewClick($event, 'salevideo' + {{ $index }})"
+                    class="product-file-image-preview"
                     style="background-image: url({{ $video['image'] ?? $video['image'] }})"
                   ></div>
 
-                  <iframe 
-                    v-if="mediaShow['salevideo' + {{ $index }}]" 
-                    width="100%" 
-                    height="300" 
-                    src="{{ $video['url'] }}" 
-                    frameborder="0" 
-                    allow="autoplay;fullscreen" 
+                  <iframe
+                    v-if="mediaShow['salevideo' + {{ $index }}]"
+                    width="100%"
+                    height="300"
+                    src="{{ $video['url'] }}"
+                    frameborder="0"
+                    allow="autoplay;fullscreen"
                     allowfullscreen
                   ></iframe>
                 </div>
@@ -169,10 +169,10 @@
                   <div class="product-file">
                     @php $fileName = explode(".", $file['url']); @endphp
                     @if(end($fileName) === 'pdf')
-                      <div 
-                        v-if="!mediaShow['bonuspdf' + {{ $index }}]" 
-                        @click="productFilePreviewClick($event, 'bonuspdf' + {{ $index }})" 
-                        class="product-file-image-preview" 
+                      <div
+                        v-if="!mediaShow['bonuspdf' + {{ $index }}]"
+                        @click="productFilePreviewClick($event, 'bonuspdf' + {{ $index }})"
+                        class="product-file-image-preview"
                         style="background-image: url({{ $file['image'] ?? $file['image'] }})"
                       ></div>
 
@@ -201,10 +201,10 @@
                   <div class="product-file">
                     @php $fileName = explode(".", $file['url']); @endphp
                     @if(end($fileName) === 'pdf')
-                      <div 
-                        v-if="!mediaShow['upsellpdf' + {{ $index }}]" 
-                        @click="productFilePreviewClick($event, 'upsellpdf' + {{ $index }})" 
-                        class="product-file-image-preview" 
+                      <div
+                        v-if="!mediaShow['upsellpdf' + {{ $index }}]"
+                        @click="productFilePreviewClick($event, 'upsellpdf' + {{ $index }})"
+                        class="product-file-image-preview"
                         style="background-image: url({{ $file['image'] ?? $file['image'] }})"
                       ></div>
 
@@ -226,20 +226,20 @@
                 </div>
 
                 <div class="product-file-collapse-content">
-                  <div 
-                    v-if="!mediaShow['upsellvideo' + {{ $index }}]" 
-                    @click="productFilePreviewClick($event, 'upsellvideo' + {{ $index }})" 
-                    class="product-file-image-preview" 
+                  <div
+                    v-if="!mediaShow['upsellvideo' + {{ $index }}]"
+                    @click="productFilePreviewClick($event, 'upsellvideo' + {{ $index }})"
+                    class="product-file-image-preview"
                     style="background-image: url({{ $video['image'] ?? $video['image'] }})"
                   ></div>
 
-                  <iframe 
-                    v-if="mediaShow['upsellvideo' + {{ $index }}]" 
-                    width="100%" 
-                    height="300" 
-                    src="{{ $video['url'] }}" 
-                    frameborder="0" 
-                    allow="autoplay;fullscreen" 
+                  <iframe
+                    v-if="mediaShow['upsellvideo' + {{ $index }}]"
+                    width="100%"
+                    height="300"
+                    src="{{ $video['url'] }}"
+                    frameborder="0"
+                    allow="autoplay;fullscreen"
                     allowfullscreen
                   ></iframe>
                 </div>
@@ -248,7 +248,7 @@
           </div>
         @endif
 
-        <div class="thank-you-page-email">{{ t('thankyou.vrtl.email') }}: <a class="thank-you-page-email-link" href="mailto:support@freepowersecret.com">support@freepowersecret.com</a></div>
+        <div class="thank-you-page-email">{{ t('thankyou.vrtl.email') }}: <a class="thank-you-page-email-link" href="mailto:{{ $support_email }}">{{ $support_email }}</a></div>
 
         <div class="footer-main-down-icon"></div>
       </div>

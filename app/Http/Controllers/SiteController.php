@@ -663,7 +663,9 @@ class SiteController extends Controller
 
         $domain = Domain::getByName();
         $page_title = \Utils::generatePageTitle($domain, $product);
-        return view('new.pages.vrtl.thankyou', compact('product', 'page_title', 'loadedPhrases'));
+        $support_email = Setting::getValue('support_email');
+
+        return view('new.pages.vrtl.thankyou', compact('product', 'page_title', 'loadedPhrases', 'support_email'));
     }
 
     /**
