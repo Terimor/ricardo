@@ -13,12 +13,12 @@
       <div class="upsell">
         
         <img
-          alt=""
+          alt="{{ $file['title'] ?? '' }}"
           class="image lazy"
-          data-src="{{ $file['image'] ?? $file['image'] }}" />
+          data-src="{{ $file['image'] ?? '' }}" />
 
         <div class="text">
-          <div class="name">{{ $file['title'] ?? $file['title'] }}</div>
+          <div class="name">{{ $file['title'] ?? '' }}</div>
         </div>
 
       </div>
