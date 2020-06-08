@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Constants\PaymentProviders;
-use App\Models\Currency;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\AffiliateSetting;
@@ -108,8 +107,6 @@ class OrderService
      */
     public static function calcTotalPaid(OdinOrder $order): OdinOrder
     {
-        $currency = CurrencyService::getCurrency($order->currency);
-
         $total = collect($order->txns)->reduce(function ($carry, $item) {
             if ($item['status'] === Txn::STATUS_APPROVED) {
                 $carry += $item['value'];
@@ -117,8 +114,8 @@ class OrderService
             return $carry;
         }, 0);
 
-        $order->total_paid      = CurrencyService::roundValueByCurrencyRules($total, $currency->code);
-        $order->total_paid_usd  = CurrencyService::roundValueByCurrencyRules($total / $currency->usd_rate, Currency::DEF_CUR);
+        $order->total_paid = CurrencyService::roundValueByCurrencyRules($total, $order->currency);
+        $order->total_paid_usd = CurrencyService::convertAndRoundValueToUsd($total, $order->currency);
 
         return $order;
     }

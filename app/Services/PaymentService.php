@@ -170,7 +170,8 @@ class PaymentService
 
             $order = OrderService::calcTotalPaid($order);
 
-            $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $txn['value']), true);
+            $txn_amount_usd = CurrencyService::convertAndRoundValueToUsd($txn['value'], $order->currency);
+            $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $txn_amount_usd), true);
 
             $order->status = self::getOrderStatus($order, $is_order_need_to_check);
         }
