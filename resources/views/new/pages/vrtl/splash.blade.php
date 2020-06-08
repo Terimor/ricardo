@@ -41,12 +41,12 @@
 
             <div class="text-center">
                 <div class="splash-virtual-save">
-                    @php echo t('splash.vrtl.save_now', ['amount' => '<span id="spalshVirtualPrice">$'.$product->prices['25p']['value'].'</span>']) @endphp
+                    @php echo t('splash.vrtl.save_now', ['amount' => '<span id="spalshVirtualPrice">'.$product->prices['25p']['value_text'].'</span>']) @endphp
                 </div>
             </div>
 
             <div class="splash-virtual-add-msg">
-                @php echo t('splash.vrtl.get_entire_product_txt', ['product' => '<span id="splashVirtualProductName">"'.$product['product_name'].'"</span>', 'amount' => '<span class="underlined">$'.$product->prices[1]['value'].'</span>']) @endphp
+                @php echo t('splash.vrtl.get_entire_product_txt', ['product' => '<span id="splashVirtualProductName">"'.$product['product_name'].'"</span>', 'amount' => '<span class="underlined">'.$product->prices[1]['value_text'].'</span>']) @endphp
             </div>
 
             <div class="text-center">
@@ -56,11 +56,11 @@
 
                 <div class="splash-virtual-timer" v-html="countdownValue"></div>
 
-                <div class="splash-virtual-discount">{{ t('splash.vrtl.discount_price', ['amount' => '$'.$product->prices[1]['value']]) }}</div>
+                <div class="splash-virtual-discount">{{ t('splash.vrtl.discount_price', ['amount' => $product->prices[1]['value_text']]) }}</div>
 
                 <a href="/checkout" class="splash-virtual-discount-btn">{{ t('splash.vrtl.claim_discount') }}</a>
 
-                <a href="/checkout" class="splash-virtual-discount-link">{{ t('splash.vrtl.claim_discount_now', ['amount' => '$'.$product->prices['25p']['value']]) }}</a>
+                <a href="/checkout" class="splash-virtual-discount-link">{{ t('splash.vrtl.claim_discount_now', ['amount' => $product->prices['25p']['value_text']]) }}</a>
 
                 <div class="splash-virtual-discount-secure-text">{{ t('splash.vrtl.discount_secure_txt') }}</div>
             </div>
@@ -84,7 +84,7 @@
                     <img class="img-fluid" src="{{ !empty($product->image) && is_array($product->image) ? $product->image[0] : '' }}" alt="">
                 </div>
 
-                <div class="px-5">
+                <div class="px-md-5">
                     <p class="mt-5">@php echo $product->description; @endphp</p>
 
                     <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""> <b>{{ t('splash.vrtl.product_descr1') }}</b></p>
@@ -105,7 +105,7 @@
 
                     <div class="splash-virtual-timer" v-html="countdownValue"></div>
 
-                    <div class="splash-virtual-discount">{{ t('splash.vrtl.discount_price', ['amount' => '$'.$product->prices[1]['value']]) }}</div>
+                    <div class="splash-virtual-discount">{{ t('splash.vrtl.discount_price', ['amount' => $product->prices[1]['value_text']]) }}</div>
 
                     <a href="/checkout" class="splash-virtual-discount-btn">{{ t('splash.vrtl.claim_discount') }}</a>
                     

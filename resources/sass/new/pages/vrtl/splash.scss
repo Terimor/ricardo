@@ -41,6 +41,10 @@ p {
       max-width: 950px;
       margin: 0 auto;
       padding: 0 30px;
+
+      @media only screen and (max-width : 768px) {
+        padding: 0 10px;
+      }
     }
 
     &-footer {
@@ -76,6 +80,10 @@ p {
     font-weight: 900;
     text-transform: uppercase;
     font-style: italic;
+
+    @media only screen and (max-width : 576px) {
+      font-size: 70px;
+    }
   }
 
   &-save {
@@ -87,6 +95,11 @@ p {
     font-style: italic;
     font-weight: 700;
     text-transform: uppercase;
+
+    @media only screen and (max-width : 576px) {
+      font-size: 50px;
+      line-height: 60px;
+    }
   }
 
   &-add-msg {
@@ -97,7 +110,7 @@ p {
     font-weight: 700;
   }
 
-  &-product-image {
+  &-product-img {
     max-width: 350px;
   }
 
@@ -125,7 +138,8 @@ p {
   &-discount-btn {
     display: block;
     margin-top: 15px;
-    padding: 15px 50px;
+    padding: 15px;
+    text-align: center;
     font-size: 38px;
     display: inline-block;
     background-color: #F76100;
@@ -142,6 +156,14 @@ p {
       color: #fff;
       text-decoration: none;
     }
+
+    @media only screen and (max-width : 768px) {
+      font-size: 24px;
+    }
+
+    @media only screen and (max-width : 576px) {
+      font-size: 18px;
+    }
   }
 
   &-discount-link {
@@ -154,6 +176,10 @@ p {
 
     &:hover {
       text-decoration: none;
+    }
+
+    @media only screen and (max-width : 576px) {
+      font-size: 18px;
     }
   }
 
@@ -171,6 +197,15 @@ p {
     .guarantee-img-wrap {
       padding: 15px;
       margin-right: 20px;
+
+      @media only screen and (max-width : 768px) {
+        margin-right: 0;
+      }
+    }
+
+    @media only screen and (max-width : 768px) {
+      flex-wrap: wrap;
+      justify-content: center;
     }
   }
 
@@ -178,6 +213,11 @@ p {
     border: 1px dashed #D81E1E;
     margin: 25px;
     padding: 20px;
+
+    @media only screen and (max-width : 768px) {
+      margin: 0;
+      margin-top: 25px;
+    }
 
     .getting-block-title {
       margin-bottom: 25px;
@@ -193,6 +233,15 @@ p {
     align-items: center;
     margin-top: 50px;
     color: #A1A1A1;
+
+    @media only screen and (max-width : 992px) {
+      flex-wrap: wrap;
+    }
+
+    @media only screen and (max-width : 480px) {
+      justify-content: center;
+      text-align: center;
+    }
 
     &-img {
       max-width: 100px;
@@ -210,6 +259,17 @@ p {
       transform: scaleX(0.6);
       letter-spacing: -0.5px;
       line-height: 25px;
+
+      @media only screen and (max-width : 992px) {
+        transform: scaleX(1);
+        margin: 0;
+        border-right: 0;
+      }
+
+      @media only screen and (max-width : 480px) {
+        flex: 0 0 100%;
+        border: none;
+      }
     }
 
     &-descr {
@@ -218,6 +278,12 @@ p {
       line-height: 19px;
       letter-spacing: -0.5px;
       font-weight: 600;
+
+      @media only screen and (max-width : 992px) {
+        flex: 0 0 100%;
+        margin: 0;
+        margin-top: 15px;
+      }
     }
   }
 
