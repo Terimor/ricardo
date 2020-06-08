@@ -39,9 +39,20 @@
   .product {
     border-bottom: 1px solid #eee;
     display: flex;
-    flex-direction: column;
     margin: 0 5px;
     padding-bottom: 5px;
+
+    &-summary {
+      flex: 0 0 60%;
+    }
+
+    &-image {
+      max-width: 100%;
+
+      &-wrap {
+        margin-left: 15px;
+      }
+    }
 
     .name {
       font-size: 20px;
@@ -62,7 +73,7 @@
     }
 
     .total {
-      align-self: flex-end;
+      align-self: flex-start;
       font-size: 18px;
       font-weight: 700;
       margin-top: 5px;
@@ -83,54 +94,54 @@
       margin-top: 1px;
     }
   }
+}
 
-  .terms-field {
-    margin-top: 20px;
+.terms-field {
+  margin-top: 20px;
 
-    .terms-field-label {
-      font-size: 14.4px;
-      line-height: 1.42857143;
-    }
-
-    .terms-field-check {
-      margin-top: 0;
-    }
+  .terms-field-label {
+    font-size: 14.4px;
+    line-height: 1.42857143;
   }
 
-  .payment-block,
-  .paypal-payment-block {
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
+  .terms-field-check {
+    margin-top: 0;
+  }
+}
+
+.payment-block,
+.paypal-payment-block {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.payment-error,
+.paypal-payment-error {
+  margin-bottom: 20px;
+}
+
+.pay-card-button {
+  align-items: center;
+  background-color: #e5202e;
+  border: 1px solid #e1e1e1;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  height: 50px;
+  justify-content: center;
+
+  &.active:hover {
+    background-color: #d41d2a;
+    border-color: transparent;
   }
 
-  .payment-error,
-  .paypal-payment-error {
-    margin-bottom: 20px;
+  .disabled .spinner {
+    transform: scale(.6);
   }
+}
 
-  .pay-card-button {
-    align-items: center;
-    background-color: #e5202e;
-    border: 1px solid #e1e1e1;
-    border-radius: 3px;
-    color: #fff;
-    font-size: 20px;
-    font-weight: 700;
-    height: 50px;
-    justify-content: center;
-
-    &.active:hover {
-      background-color: #d41d2a;
-      border-color: transparent;
-    }
-
-    .disabled .spinner {
-      transform: scale(.6);
-    }
-  }
-
-  .safe-payment {
-    margin-top: 20px;
-  }
+.safe-payment {
+  margin-top: 20px;
 }
