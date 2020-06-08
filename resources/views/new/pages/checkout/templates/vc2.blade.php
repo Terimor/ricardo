@@ -20,6 +20,10 @@
 
 @section('content_checkout')
   <div class="vc2" v-cloak>
+    @if ($product->bg_image)
+      <div class="page-header-image" style="background-image: url('{{ $product->bg_image ?? ''  }}')"></div>
+    @endif
+
     @include('new.pages.checkout.templates.vc2.htitle')
     
     <div class="content">

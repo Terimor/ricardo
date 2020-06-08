@@ -35,10 +35,10 @@ main {
   font-size: 16px;
   line-height: 1.5;
   max-width: 1140px;
-  padding: 24px 16px 40px;
+  padding: 24px 0 40px;
   width: 100%;
 
-  @media (min-width: $size1) {
+  @media (min-width: $size2) {
     padding-left: 32px;
     padding-right: 32px;
   }
@@ -63,6 +63,12 @@ main {
     display: flex;
     flex-direction: column;
     transition: opacity .3s ease;
+  }
+}
+
+.upsells-component {
+  @media (max-width: $size1) {
+    border: 0;
   }
 }
 
@@ -238,6 +244,10 @@ main {
   font-size: 56px;
   font-weight: 700;  
   padding: 4px 16px 0;
+
+  @media (max-width: $size2) {
+    font-size: 32px;
+  }
 }
 
 .last-call-card-inside {
@@ -290,6 +300,10 @@ main {
   font-weight: 900;
   margin-top: -22px;
   text-decoration: underline;
+
+  @media (max-width: $size2) {
+    font-size: 50px;
+  }
 }
 
 .last-call-card-submit {
@@ -307,6 +321,10 @@ main {
 
   &:hover {
     background: linear-gradient(180deg, #F76100 0, #F5A623);
+  }
+
+  @media (max-width: $size2) {
+    font-size: 38px;
   }
 }
 
