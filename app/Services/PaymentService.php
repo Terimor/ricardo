@@ -170,7 +170,7 @@ class PaymentService
 
             $order = OrderService::calcTotalPaid($order);
 
-            $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $is_main), true);
+            $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $txn['value']), true);
 
             $order->status = self::getOrderStatus($order, $is_order_need_to_check);
         }

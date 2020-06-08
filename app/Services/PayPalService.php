@@ -579,7 +579,7 @@ class PayPalService
                 $order->status = PaymentService::getOrderStatus($order, $is_order_need_to_check);
                 $order->is_invoice_sent = false;
 
-                $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $is_main), true);
+                $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $this->getPayPalOrderValue($paypal_order)), true);
 
                 $order->save();
 
