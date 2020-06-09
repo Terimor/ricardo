@@ -17,6 +17,13 @@ export default {
 
       this.save_form_to_local_storage();
 
+      this.setDataToLocalStorage({
+        deal: this.form.deal,
+        variant: this.form.variant,
+        isWarrantyChecked: this.form.isWarrantyChecked,
+        paymentProvider: 'paypal',
+      });
+
       return Promise.resolve()
         .then(() => {
           return this.fingerprint_calculate();
