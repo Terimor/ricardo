@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
             // create a log Telegram
             try {
                 $log = new Logger('Odin');
-                $handler = new TelegramBotHandler('896776756:AAFUu5a9lbMizty2IXKyfG7bMy988Vm0NmU', '377215568');
+                $handler = new TelegramBotHandler(env('TG_BOT_KEY'), env('TG_CHANNEL'));
                 $handler->setFormatter(new \Monolog\Formatter\LineFormatter(
                     null, // Format of message in log, default [%datetime%] %channel%.%level_name%: %message% %context% %extra%\n
                     null, // Datetime format
