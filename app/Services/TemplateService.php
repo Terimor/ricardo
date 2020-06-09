@@ -179,9 +179,6 @@ class TemplateService
         if ($request->get('tpl') == 'vmp41') {
             $viewTemplate = 'vmp41';
         }
-        if ($request->get('tpl') == 'vmp42') {
-            $viewTemplate = 'vmp42';
-        }
         if ($request->get('tpl') == 'fmc5x') {
             $viewTemplate = 'new.pages.checkout.templates.fmc5';
         }
