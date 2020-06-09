@@ -273,7 +273,7 @@ class MinteService extends ProviderService
                 $result['errors'] = [($body_decoded['errormessage'] ?? 'Something went wrong') . " [{$hash}]"];
             }
         } catch (GuzzReqException $ex) {
-            logger()->warning("Mint-e capture", ['res' => $ex->hasResponse() ? $ex->getResponse()->getBody() : null]);
+            logger()->warning("Mint-e refund", ['res' => $ex->hasResponse() ? $ex->getResponse()->getBody() : null]);
 
             $result['errors'] = [($ex->getMessage() ?? 'Something went wrong') . " [{$hash}]"];
         }
