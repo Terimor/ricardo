@@ -38,6 +38,27 @@ class Handler extends ExceptionHandler
     ];
 
     /**
+     * Returns error message from exeption for sending notification
+     * @param \Exception $exception
+     * @return string
+     */
+    protected function getErrorLogMessageForNotify(\Exception $exception): string
+    {
+        $message = "\n";
+        $message .= 'Url: '.request()->fullUrl()."\n";
+        $message .= 'Error: '.$exception->getMessage()."\n\n";
+        $message .= 'Error Code: '.$exception->getCode()."\n";
+        $message .= 'File: '.$exception->getFile()."\n";
+        $message .= 'Line: '.$exception->getLine()."\n\n";
+        $message .= 'UserAgent: '.request()->userAgent()."\n";
+        $message .= 'IP: '.request()->getClientIp()."\n\n";
+        $message .= "Request data \n".json_encode(request()->all())."\n\n";
+        $message .= "Trace: \n".implode("\n\n", array_slice(explode("\n", $exception->getTraceAsString()), 0, 3))."\n";
+        $message = substr($message, 0, 4000);
+        return $message;
+    }
+
+    /**
      * Report or log an exception.
      *
      * @param  \Exception  $exception
@@ -51,27 +72,15 @@ class Handler extends ExceptionHandler
             // create a log Telegram
             try {
                 $log = new Logger('Odin');
-                $handler = new TelegramBotHandler(env('TG_BOT_KEY'), env('TG_CHANNEL'));
+                $handler = new TelegramBotHandler(env('TG_BOT_KEY'), config('logging.TG_CHANNEL'));
                 $handler->setFormatter(new \Monolog\Formatter\LineFormatter(
                     null, // Format of message in log, default [%datetime%] %channel%.%level_name%: %message% %context% %extra%\n
                     null, // Datetime format
                     true, // allowInlineLineBreaks option, default false
                     true  // ignoreEmptyContextAndExtra option, default false
                 ));
-
                 $log->pushHandler($handler);
-                $message = "\n";
-                $message .= 'Url: '.request()->fullUrl()."\n";
-                $message .= 'Error: '.$exception->getMessage()."\n\n";
-                $message .= 'Error Code: '.$exception->getCode()."\n";
-                $message .= 'File: '.$exception->getFile()."\n";
-                $message .= 'Line: '.$exception->getLine()."\n\n";
-                $message .= 'UserAgent: '.request()->userAgent()."\n";
-                $message .= 'IP: '.request()->getClientIp()."\n\n";
-                $message .= "Request data \n".json_encode(request()->all())."\n\n";
-                $message .= "Trace: \n".implode("\n\n", array_slice(explode("\n", $exception->getTraceAsString()), 0, 3))."\n";
-                $message = substr($message, 0, 4000);
-                $log->error($message);
+                $log->error($this->getErrorLogMessageForNotify($exception));
             } catch (\Exception $e) {
                 logger()->warning($e->getMessage());
             }

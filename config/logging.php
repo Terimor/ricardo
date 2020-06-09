@@ -16,6 +16,8 @@ return [
     |
     */
 
+    'TG_CHANNEL' => '-1001271143925',
+
     'default' => 'stack',
 
     /*
