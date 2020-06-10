@@ -128,10 +128,10 @@
     display: flex;
     flex-direction: column;
     margin-top: 6px;
-    padding: 12px 12px;
+    padding: 15px;
 
     > .inside {
-      width: 240px;
+      width: 100%;
     }
 
     .row {
@@ -178,6 +178,7 @@
         font-size: 14px;
         font-style: italic;
         line-height: 20px;
+        text-align: center;
       }
 
       .col-quantity {
