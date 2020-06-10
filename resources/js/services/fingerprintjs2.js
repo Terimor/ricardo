@@ -1,4 +1,5 @@
 import fingerprintjs2 from 'fingerprintjs2';
+import { queryParams } from  '../utils/queryParams';
 
 let hash = null;
 
@@ -49,9 +50,13 @@ function applyDiscount() {
 if (document.readyState !== 'complete') {
   document.addEventListener('readystatechange', () =>  {
     if (document.readyState === 'complete') {
-      setTimeout(applyDiscount, 1000);
+      if (!queryParams['3ds']) {
+        setTimeout(applyDiscount, 1000);
+      }
     }
   });
 } else {
-  setTimeout(applyDiscount, 1000);
+  if (!queryParams['3ds']) {
+    setTimeout(applyDiscount, 1000);
+  }
 }
