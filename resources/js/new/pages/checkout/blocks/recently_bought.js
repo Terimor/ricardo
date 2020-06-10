@@ -82,7 +82,11 @@ export default {
 
       const quantity = quantities[Math.floor(Math.random() * 3)];
 
-      let just_bought = this.t('checkout.notification.just_bought', {
+      let just_bought = this.is_vrtl_checkout ? this.t('checkout.vrtl.notification.just_bought', {
+        first_name: js_data.recently_bought_names[user_index],
+        city: js_data.recently_bought_cities[user_index] || js_data.recently_bought_cities[0],
+        product: js_data.product.product_name,
+      }) : this.t('checkout.notification.just_bought', {
         first_name: js_data.recently_bought_names[user_index],
         city: js_data.recently_bought_cities[user_index] || js_data.recently_bought_cities[0],
         count: this.is_vrtl_checkout ? '' : quantity + 'x',
