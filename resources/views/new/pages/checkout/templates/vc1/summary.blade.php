@@ -12,7 +12,7 @@
         <div class="col col-price">{!! t('vc1.summary.table.price') !!}</div>
       </div>
       <div class="row row-product">
-        <div class="col col-item">{{ $product->long_name }}</div>
+        <div class="col col-item">{{ $product->product_name }}</div>
         <div class="col col-quantity">@{{ form.deal }}</div>
         <div class="col col-price">@{{ xprice_text }}</div>
       </div>

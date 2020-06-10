@@ -7,7 +7,6 @@
       {{ $product->prices[1]['old_value_text'] }}
     </div>
     <div class="price-new-value">{{ $product->prices[1]['value_text'] }}</div>
-    <div class="sh">{!! t('vc1.product.sh') !!}</div>
   </div>
 
   <div class="triangles">

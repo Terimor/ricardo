@@ -61,6 +61,10 @@ body {
 
 main {
   background-color: #fff;
+
+  &.pt-4 {
+    padding-top: 0 !important;
+  }
 }
 
 .content {
@@ -157,6 +161,7 @@ main {
 .page-header-image {
   width: 100%;
   height: 180px;
+  margin-bottom: 15px;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: top center;

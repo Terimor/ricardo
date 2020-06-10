@@ -43,6 +43,16 @@ $size2: 905px;
   }
 }
 
+#header {
+  display: none;
+}
+
+main {
+  &.pt-4 {
+    padding-top: 0 !important;
+  }
+}
+
 .header-region {
   display: none;
 }
