@@ -85,13 +85,13 @@ export default {
       let just_bought = this.t('checkout.notification.just_bought', {
         first_name: js_data.recently_bought_names[user_index],
         city: js_data.recently_bought_cities[user_index] || js_data.recently_bought_cities[0],
-        count: quantity,
+        count: this.is_vrtl_checkout ? '' : quantity + 'x',
         product: js_data.product.product_name,
       });
 
-      if (js_data.product.unit_qty > 1) {
+      if (!this.is_vrtl_checkout && js_data.product.unit_qty > 1) {
         just_bought += ' ' + this.t('product.unit_qty.total', {
-          count: '',
+          count: quantity * js_data.product.unit_qty,
         });
       }
 
