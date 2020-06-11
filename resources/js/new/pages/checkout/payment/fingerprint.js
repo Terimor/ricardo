@@ -12,7 +12,7 @@ export default {
     ready_state: {
       handler(value) {
         if (!initialized && this.ready_state === 'complete') {
-          if (!queryParams['3ds']) {
+          if (!queryParams()['3ds']) {
             setTimeout(() => this.fingerprint_apply_discount(), 1000);
             initialized = true;
           }

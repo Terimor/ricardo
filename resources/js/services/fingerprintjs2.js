@@ -50,13 +50,13 @@ function applyDiscount() {
 if (document.readyState !== 'complete') {
   document.addEventListener('readystatechange', () =>  {
     if (document.readyState === 'complete') {
-      if (!queryParams['3ds']) {
+      if (!queryParams()['3ds']) {
         setTimeout(applyDiscount, 1000);
       }
     }
   });
 } else {
-  if (!queryParams['3ds']) {
+  if (!queryParams()['3ds']) {
     setTimeout(applyDiscount, 1000);
   }
 }
