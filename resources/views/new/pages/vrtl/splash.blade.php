@@ -1,6 +1,6 @@
 @extends('layouts.app', ['product' => $product, 'loadVue' => true])
 
-@section('title', $page_title)
+@section('title', t('splash.page_title', ['product' => $product->product_name]))
 
 
 @section('js_deps')

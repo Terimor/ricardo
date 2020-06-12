@@ -171,6 +171,15 @@ main {
   }
 }
 
+.zipcode-field {
+  max-width: calc(50% - 7px);
+}
+
+.country-field {
+  max-width: calc(50% - 7px);
+  margin-left: 14px;
+}
+
 [v-cloak] {
   display: none !important;
 }
