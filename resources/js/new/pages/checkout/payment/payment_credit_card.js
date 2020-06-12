@@ -29,6 +29,22 @@ export default {
       this.save_form_to_local_storage();
       this.save_3ds_params_to_local_storage();
 
+      this.setDataToLocalStorage({
+        deal: this.form.deal,
+        variant: this.form.variant,
+        isWarrantyChecked: this.form.isWarrantyChecked,
+        paymentProvider: this.form.paymentProvider,
+        fname: this.form.fname,
+        lname: this.form.lname,
+        email: this.form.email,
+        phone: this.form.phone,
+        countryCodePhoneField: this.form.countryCodePhoneField,
+        street: this.form.street,
+        city: this.form.city,
+        zipcode: this.form.zipcode,
+        country: this.form.country,
+      });
+
       return Promise.resolve()
         .then(() => {
           return this.fingerprint_calculate();

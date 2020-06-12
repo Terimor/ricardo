@@ -1,4 +1,5 @@
 import fingerprintjs2 from 'fingerprintjs2';
+import { queryParams } from  '../../../../utils/queryParams';
 
 let cache = null;
 let initialized = false;
@@ -11,8 +12,10 @@ export default {
     ready_state: {
       handler(value) {
         if (!initialized && this.ready_state === 'complete') {
-          setTimeout(() => this.fingerprint_apply_discount(), 1000);
-          initialized = true;
+          if (!queryParams()['3ds']) {
+            setTimeout(() => this.fingerprint_apply_discount(), 1000);
+            initialized = true;
+          }
         }
       },
       immediate: true,

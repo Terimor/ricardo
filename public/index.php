@@ -18,6 +18,10 @@ if (!in_array($ODIN_HTTP_HOST, ['127.0.0.1', '192.168.1.101', '192.168.1.3']) &&
     exit;
 }
 
+if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+}
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader

@@ -3,9 +3,15 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use App\Models\Setting;
 use App\Services\AffiliateService;
 
+/**
+ * Class AffiliateSetting
+ * @package App\Models
+ *
+ * @property string[] products
+ * @property string[] blocked_products
+ */
 class AffiliateSetting extends Model
 {
     protected $collection = 'affiliate_setting';
@@ -107,8 +113,8 @@ class AffiliateSetting extends Model
         'postback_percent' => 0,
         'user_id' => '',
         'is_3ds_off' => false,
-        'products' => null,
-        'blocked_products' => null
+        'products' => [],
+        'blocked_products' => []
     ];
 
     /**
