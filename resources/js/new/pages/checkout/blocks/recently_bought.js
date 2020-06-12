@@ -95,7 +95,7 @@ export default {
 
       if (!this.is_vrtl_checkout && js_data.product.unit_qty > 1) {
         just_bought += ' ' + this.t('product.unit_qty.total', {
-          count: quantity * js_data.product.unit_qty,
+          count: '',
         });
       }
 

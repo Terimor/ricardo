@@ -46,8 +46,8 @@ export default {
   methods: {
 
     payment_provider_init() {
-      if (this.is_paypal_hidden) {
-        //this.form.payment_provider = 'credit-card';
+      if (this.is_paypal_hidden && !this.is_apm_visible) {
+        this.form.payment_provider = 'credit-card';
       }
     },
 
