@@ -33,7 +33,7 @@
     <div id="splash-vrtl" class="splash-virtual-page">
         <div class="splash-virtual-header-notification">
             <span id="splashVirtualImportant">{{ t('splash.vrtl.top_notification_important') }}:</span>
-            {{ t('splash.vrtl.top_notification_text') }}
+            @php echo t('splash.vrtl.top_notification_text'); @endphp
         </div>
 
         <div class="splash-virtual-page-main">
@@ -90,14 +90,14 @@
                     <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""> <b>{{ t('splash.vrtl.product_descr1') }}</b></p>
 
                     @if($product->splash_description)
-                        <p class="mt-5">{{ $product->splash_description }}</p>
+                        <p class="mt-5">@php echo $product->splash_description @endphp</p>
                     @endif
 
                     <p class="mt-4"><img src="{{ $cdn_url }}/assets/images/splash/check-icon.png" alt=""><b>{{ t('splash.vrtl.product_descr2') }}</b></p>
 
-                    <p class="mt-4">{{ t('splash.vrtl.product_descr_discount') }}</p>
+                    <p class="mt-4">@php echo t('splash.vrtl.product_descr_discount') @endphp</p>
 
-                    <p class="mt-4">{{ t('splash.vrtl.money_back_txt') }}</p>
+                    <p class="mt-4">@php echo t('splash.vrtl.money_back_txt') @endphp</p>
                 </div>
 
                 <div class="text-center">
