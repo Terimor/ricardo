@@ -274,6 +274,8 @@ class AffiliateSetting extends Model
 
     /**
      * Check access affiliate to product
+     * Required to select is_public attribute
+     * SAGA: AffiliateSetting:hasProductAccess()
      * @param OdinProduct $product
      * @return bool
      */
