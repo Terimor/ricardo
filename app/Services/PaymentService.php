@@ -63,7 +63,6 @@ class PaymentService
                     'total_paid' => 0,
                     'is_invoice_sent' => false,
                     'is_survey_sent' => false,
-                    'is_reduced' => false,
                     'is_flagged' => false,
                     'is_paused' => false,
                     'txns' => []
