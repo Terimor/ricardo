@@ -1101,6 +1101,63 @@ class PaymentService
     }
 
     /**
+     * Tries to refund payment
+     * @param string $order_id
+     * @param string $txn_hash
+     * @param string $reason
+     * @param float|null $amount
+     * @return array
+     * @throws \App\Exceptions\OrderNotFoundException
+     * @throws \App\Exceptions\TxnNotFoundException
+     */
+    public static function refund(string $order_id, string $txn_hash, string $reason, ?float $amount): array
+    {
+        $order = OdinOrder::getById($order_id); // throwable
+        $txn = $order->getTxnByHash($txn_hash); // throwable
+
+        $result = ['status' => false];
+        if ($txn['status'] === Txn::STATUS_APPROVED) {
+            $api = PaymentApiService::getById($txn['payment_api_id']);
+            switch (optional($api)->payment_provider):
+                case PaymentProviders::APPMAX:
+                    $type = AppmaxService::TYPE_REFUND_FULL;
+                    if ($amount && $amount < $txn['value']) {
+                        $type = AppmaxService::TYPE_REFUND_PART;
+                    }
+                    $result = (new AppmaxService($api))->refund($txn_hash, $type, $amount ?? $txn['value']);
+                    break;
+                case PaymentProviders::CHECKOUTCOM:
+                    $result = (new CheckoutDotComService($api))->refund($txn_hash, $order->number, $order->currency, $amount);
+                    break;
+                case PaymentProviders::BLUESNAP:
+                    $result = (new BluesnapService($api))->refund($txn_hash, $amount);
+                    break;
+                case PaymentProviders::EBANX:
+                    $result = (new EbanxService($api))->refund($txn_hash, $order->currency, $amount ?? $txn['value'], $reason);
+                    break;
+                case PaymentProviders::MINTE:
+                    if (self::isApm($txn['payment_method'])) {
+                        $result = (new MinteService($api))->refund($txn_hash, $amount ?? $txn['value']);
+                    } elseif (!empty($txn['capture_hash'])) {
+                        $result = (new MinteService($api))->refund($txn['capture_hash'], $amount ?? $txn['value']);
+                    } else {
+                        $result['errors'] = ["Transaction [$txn_hash] cannot be refunded"];
+                    }
+                    break;
+                case PaymentProviders::STRIPE:
+                    $result = (new StripeService($api))->refund($txn_hash, $order->currency, $amount);
+                    break;
+                default:
+                    $result['errors'] = ["Refund for {$txn['payment_provider']} not implemented yet. [$txn_hash]"];
+                    logger()->info("PaymentService: refund for {$txn['payment_provider']} not implemented yet");
+            endswitch;
+        } else {
+            $result['errors'] = ["Transaction [$txn_hash] is not approved"];
+        }
+        return $result;
+    }
+
+    /**
      * Reject txn
      * @param array $data
      * @param string|null $provider
