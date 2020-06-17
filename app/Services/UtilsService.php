@@ -645,6 +645,7 @@ class UtilsService
      * @var array
      */
     public static $includeShipping = [
+        'ae',
         'at',
         'au',
         'be',
@@ -685,12 +686,15 @@ class UtilsService
         'pl',
         'pr',
         'pt',
+        'sa',
         'se',
         'sg',
         'sk',
         'sl',
+        'tr',
         'tw',
         'us',
+        'za'
     ];
 
     /**
