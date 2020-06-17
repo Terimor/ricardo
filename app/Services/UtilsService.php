@@ -557,7 +557,6 @@ class UtilsService
         'cy',
         'sv',
         'pe',
-        'sa',
         'rs',
         'sv',
         'md',
