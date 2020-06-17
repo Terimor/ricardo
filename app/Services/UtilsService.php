@@ -546,6 +546,11 @@ class UtilsService
         'zw' => 'Zimbabwe'
     ];
 
+    /**
+     * Exclude countries from this list
+     * Works after include countries list or is_europe flag
+     * @var string[]
+     */
     public static $excludeShipping = [
         'cl',
         'jm',
@@ -573,6 +578,7 @@ class UtilsService
 
     /**
      * Countries which not support has_battery products
+     * Exclude from shipping
      * @var array
      */
     public static $excludeBatteryShipping = [
@@ -640,7 +646,8 @@ class UtilsService
     ];
 
     /**
-     * Only this countries available to shipping selection.
+     * Countries list available to select on frontend for shipping
+     * If flag is_europe ignore this list
      * @var array
      */
     public static $includeShipping = [
