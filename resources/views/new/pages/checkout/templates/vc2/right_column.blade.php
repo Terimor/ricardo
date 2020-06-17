@@ -21,7 +21,7 @@
       </div>
 
       <div class="product-image-wrap">
-        <img src="{{ !empty($product->image) && is_array($product->image) ? $product->image[0] : '' }}" alt="" class="product-image">
+        <img :src="productImage" alt="" class="product-image">
       </div>
     </div>
 

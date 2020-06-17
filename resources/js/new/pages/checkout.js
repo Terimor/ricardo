@@ -39,6 +39,13 @@ export default {
   },
 
 
+  data () {
+    return {
+      productImage: this.getProductImage(),
+    }
+  },
+
+
   validations() {
     return {
       form: {
@@ -74,6 +81,23 @@ export default {
         setTimeout(() => this.scroll_to_ref('terms_field'), 1000);
       }
     },
+
+    getProductImage() {
+      const isInitial = !this.productImage;
+      const quantity = /*this.form && +this.form.deal || */1;
+
+      const skus = Array.isArray(js_data.product.skus)
+        ? js_data.product.skus
+        : [];
+
+      const variant = (this.form && this.form.variant) || (skus[0] && skus[0].code) || null;
+      const skuVariant = skus.find && skus.find(sku => variant === sku.code) || null;
+
+      const productImage = js_data.product.image[+(js_query_params.image || null) - 1] || js_data.product.image[0];
+      const skuImage = skuVariant && (skuVariant.quantity_image[quantity] || skuVariant.quantity_image[1]) || productImage;
+
+      return isInitial ? productImage : skuImage;
+    }
 
   },
 
