@@ -38,8 +38,18 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => ['daily', 'telegram'],
             'ignore_exceptions' => false,
+        ],
+
+        'telegram' => [
+            'driver' => 'monolog',
+            'level' => 'error',
+            'handler' => \App\Logging\TelegramHandler::class,
+            'handler_with' => [
+                'apiKey' => env('TG_BOT_KEY'),
+                'channel' => '-1001271143925',
+            ],
         ],
 
         'single' => [
