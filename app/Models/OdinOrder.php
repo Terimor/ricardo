@@ -92,6 +92,8 @@ class OdinOrder extends OdinModel
     const DEVICE_PHABLET = 'phablet'; // not in use, replace to tablet
     const DEVICE_CAR = 'car';
     const DEVICE_CAR_FULL = 'car browser';
+    const DEVICE_CAMERA = 'camera';
+    const DEVICE_FEATUREPHONE = 'feature phone'; // not in use, replace to smartphone
 
     const TYPE_PHYSICAL = 'physical';
     const TYPE_VIRTUAL = 'virtual';
@@ -103,7 +105,8 @@ class OdinOrder extends OdinModel
         self::DEVICE_CONSOLE => 'Console',
         self::DEVICE_TV => 'TV',
         self::DEVICE_PLAYER => 'Media player',
-        self::DEVICE_CAR => 'Car'
+        self::DEVICE_CAR => 'Car',
+        self::DEVICE_CAMERA => 'Camera'
     ];
 
     public static array $acceptedTxnStatuses = [Txn::STATUS_CAPTURED, Txn::STATUS_APPROVED, Txn::STATUS_AUTHORIZED];

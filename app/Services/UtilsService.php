@@ -1249,6 +1249,10 @@ class UtilsService
             $deviceType = OdinOrder::DEVICE_TABLET;
         }
 
+        if ($deviceType === OdinOrder::DEVICE_FEATUREPHONE) {
+            $deviceType = OdinOrder::DEVICE_SMARTPHONE;
+        }
+
         if ($deviceType == OdinOrder::DEVICE_PLAYER_FULL) {
             $deviceType = OdinOrder::DEVICE_PLAYER;
         }
