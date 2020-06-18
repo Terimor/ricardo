@@ -8,6 +8,8 @@ export default {
         finalPricePure,
         imageUrl,
         price,
+        price30d,
+        price30dFormatted,
         name,
         id,
       } = this;
@@ -21,6 +23,8 @@ export default {
         quantity,
         name,
         price,
+        price30d,
+        price30dFormatted,
         id,
       }
 

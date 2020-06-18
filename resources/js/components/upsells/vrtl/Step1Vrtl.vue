@@ -1,9 +1,10 @@
 <template>
   <div>
-    <div class="page-title">{{ vc_upsells_title }}</div>
+    <div class="page-title" v-if="!upsellDiscountOffered">{{ vc_upsells_title }}</div>
+    <div class="page-title" v-if="upsellDiscountOffered">{{ vc_upsells_title2 }}</div>
     <div class="page-note" v-html="vc_upsells_note"></div>
     
-    <el-main v-if="isLoading" v-loading.fullscreen.lock="isLoading">
+    <el-main v-if="isLoading || isRootLoading" v-loading.fullscreen.lock="isLoading || isRootLoading">
       <el-row :gutter="20">
         <el-col :span="16"><div class="grid-content bg-purple"></div></el-col>
         <el-col :span="8"><div class="grid-content bg-purple"></div></el-col>
@@ -82,7 +83,8 @@
           <div class="last-call-card-download">{{ vc_upsells_last_call_card_download }}</div>
           <div class="last-call-card-old-price" v-html="vc_upsells_last_call_card_old_price"></div>
           <div class="last-call-card-label-1">{{ vc_upsells_last_call_card_label_1 }}</div>
-          <div class="last-call-card-price">{{ priceFormatted }}</div>
+          <div class="last-call-card-price" v-if="!upsellDiscountOffered">{{ priceFormatted }}</div>
+          <div class="last-call-card-price" v-if="upsellDiscountOffered">{{ price30dFormatted }}</div>
 
           <div
             class="last-call-card-submit"
@@ -124,7 +126,11 @@
       id: String, 
       discount: Number, 
       accessoryStep: Number, 
-      nextAccessoryStep: { type: Function }
+      nextAccessoryStep: { type: Function },
+      setUpsellDiscountAdded: { type: Function },
+      upsellDiscount: Boolean,
+      upsellDiscountOffered: Boolean,
+      isRootLoading: Boolean
     },
 
     data: () => ({
@@ -144,10 +150,12 @@
       price: null,
       price3: null,
       price20: null,
+      price30d: null,
       price10: null,
       priceFormatted: null,
       price3Formatted: null,
       price20Formatted: null,
+      price30dFormatted: null,
       price10Formatted: null,
       imageUrl: null,
       isLoading: false,
@@ -159,6 +167,12 @@
         return t('vc_upsells.congrats_title', {'product': name});
       },
       vc_upsells_title: () => t('vc_upsells.title'),
+      vc_upsells_title2 () {
+        const price30d = this.price30dFormatted || '';
+        const price = this.priceFormatted || '';
+
+        return t('vc_upsells.title2', {'count': price30d, 'amount': price})
+      },
       vc_upsells_note: () => t('vc_upsells.note'),
       vc_upsells_guarantee_title: () => t('vc_upsells.guarantee.title'),
       vc_upsells_guarantee_text: () => t('vc_upsells.guarantee.text'),
@@ -205,6 +219,8 @@
             this.price = this.upsellPrices['1'] && this.upsellPrices['1'].price || 0;
             this.price20 = this.upsellPrices['20'] && this.upsellPrices['20'].price || 0;
             this.price20Formatted = this.upsellPrices['20'] && this.upsellPrices['20'].price_text || 0;
+            this.price30d = this.upsellPrices['30d'] && this.upsellPrices['30d'].price || 0;
+            this.price30dFormatted = this.upsellPrices['30d'] && this.upsellPrices['30d'].price_text || 0;
             this.price10 = this.upsellPrices['10'] && this.upsellPrices['10'].price || 0;
             this.price10Formatted = this.upsellPrices['10'] && this.upsellPrices['10'].price_text || 0;
             this.price3 = this.upsellPrices['3'] && this.upsellPrices['3'].price || 0;
@@ -228,6 +244,10 @@
         } else {
           this.finalPrice = this.upsellPrices && this.upsellPrices['2'] && this.upsellPrices['2'].price_text || '';
           this.finalPricePure = this.upsellPrices && this.upsellPrices['2'] && this.upsellPrices['2'].price || 0;
+        }
+
+        if (this.upsellDiscountOffered) {
+          this.setUpsellDiscountAdded();
         }
 
         this.addToCart(quantity);

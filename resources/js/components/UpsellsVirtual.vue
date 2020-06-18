@@ -9,8 +9,12 @@
           <component
             v-if="upsellsObj.length"
             :is="view"
+            :isRootLoading="isRootLoading"
             :nextAccessoryStep="nextAccessoryStep"
             @addAccessory="addAccessory"
+            :upsellDiscount="upsellDiscount"
+            :upsellDiscountOffered="upsellDiscountOffered"
+            :setUpsellDiscountAdded="setUpsellDiscountAdded"
             :discount="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].discount_percent || 0"
             :id="upsellsObj && upsellsObj[getEntity] && upsellsObj[getEntity].product_id || ''"
             :accessoryStep="accessoryStep"
@@ -52,8 +56,10 @@
               ]"
               :item-data="it"
               :price="it.price"
+              :upsellDiscount="upsellDiscount"
               :quantity="it.quantity"
               :final-price="it.finalPrice"
+              :price-d="it.price30dFormatted"
               :withRemoveButton="true"
             />
 
@@ -120,6 +126,9 @@
       activeTab: 1,
       accessoryStep: 0,
       accessoryList: [],
+      isRootLoading: false,
+      upsellDiscount: false,
+      upsellDiscountOffered: false,
       product: js_data.product,
       upsellsObj: js_data.product.upsells,
       orderCustomer: js_data.order_customer,
@@ -166,33 +175,43 @@
                   });
                 }
 
+                this.isRootLoading = true;
+
                 getTotalPrice(this.formattedAccessoryList, this.totalAccessoryPrice)
                   .then((total) => {
                     this.total = total;
                     this.activeTab = 2;
+                    this.isRootLoading = false;
+
+                    if (val === 0) {
+                      this.view = 'Step1Vrtl';
+                    } else {
+                      this.view = 'Step3Vrtl';
+                    }
                   })
                   .catch(() => {
                     this.activeTab = 2;
+                    this.isRootLoading = false;
+
+                    if (val === 0) {
+                      this.view = 'Step1Vrtl';
+                    } else {
+                      this.view = 'Step3Vrtl';
+                    }
                   });
               } else {
+                this.isRootLoading = true;
                 this.redirect();
               }
 
               setTimeout(() => fade('in', 250, node, true));
             });
-        }
-
-        if (val === 0) {
-          this.view = 'Step1Vrtl';
-        }
-
-        if (val === this.upsellsObj.length - 1) {
-          this.view = 'Step3Vrtl';
-        }
-
-        else {
-          // this.view = 'StepWithOneItem';
-          this.view = 'Step3Vrtl';
+        } else {
+          if (val === 0) {
+            this.view = 'Step1Vrtl';
+          } else {
+            this.view = 'Step3Vrtl';
+          }
         }
       }
     },
@@ -255,8 +274,24 @@
     },
 
     methods: {
-      nextAccessoryStep () {
-        this.accessoryStep = this.accessoryStep + 1;
+      nextAccessoryStep () {        
+        if (this.accessoryStep === 0 && !this.upsellDiscountOffered) {
+          this.upsellDiscountOffered = true;
+          this.isRootLoading = true;
+          console.log('DISCOUNT')
+
+          setTimeout(() => {
+            this.isRootLoading = false;
+            window.scrollTo(0,0);
+          }, 300);
+        } else {
+          this.accessoryStep = this.accessoryStep + 1;
+          window.scrollTo(0,0);
+        }
+      },
+
+      setUpsellDiscountAdded () {
+        this.upsellDiscount = true;
       },
 
       submit() {
@@ -269,6 +304,7 @@
 
         const data = {
           order: this.getOriginalOrderId,
+          is_discount: this.upsellDiscount,
           upsells: this.accessoryList.map(upsell => ({
             id: upsell.id,
             qty: upsell.quantity,
@@ -294,6 +330,7 @@
           page_checkout: document.location.href,
           offer: js_query_params.offer || null,
           affiliate: js_query_params.affiliate || null,
+          is_discount: this.upsellDiscount,
           upsells: groupBy(this.accessoryList, 'id', 'quantity')
         })
       },
