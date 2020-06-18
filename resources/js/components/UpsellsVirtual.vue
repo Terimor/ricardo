@@ -278,7 +278,6 @@
         if (this.accessoryStep === 0 && !this.upsellDiscountOffered) {
           this.upsellDiscountOffered = true;
           this.isRootLoading = true;
-          console.log('DISCOUNT')
 
           setTimeout(() => {
             this.isRootLoading = false;
