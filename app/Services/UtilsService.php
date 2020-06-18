@@ -552,7 +552,6 @@ class UtilsService
      * @var string[]
      */
     public static $excludeShipping = [
-        'cl',
         'jm',
         'uz',
         'sd',
@@ -654,6 +653,7 @@ class UtilsService
         'br',
         'ca',
         'ch',
+        'cl',
         'co',
         'cy',
         'cz',
@@ -672,6 +672,7 @@ class UtilsService
         'il',
         'ir',
         'it',
+        'is',
         'jp',
         'kr',
         'li',
