@@ -18,16 +18,21 @@
                         {{ t('footer.home') }}
                     </a>
                 </li>
+                
                 <li class="header__menu-item">
                     <a href="/about" class="header__menu-link">
                         {{ t('footer.about') }}
                     </a>
                 </li>
-                <li class="header__menu-item">
-                    <a href="/contact-us" class="header__menu-link">
-                        {{ t('footer.contact') }}<img class="header__menu-icon" src="{{ $cdn_url }}/assets/images/contact.png" />
-                    </a>
-                </li>
+
+                @if ($product->type != 'virtual')
+                    <li class="header__menu-item">
+                        <a href="/contact-us" class="header__menu-link">
+                            {{ t('footer.contact') }}<img class="header__menu-icon" src="{{ $cdn_url }}/assets/images/contact.png" />
+                        </a>
+                    </li>
+                @endif
+
                 <?php /* disable Call us
                 <li class="header__menu-item">
                     <a class="header__menu-link">
