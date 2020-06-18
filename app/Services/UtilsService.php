@@ -1253,8 +1253,12 @@ class UtilsService
             $deviceType = OdinOrder::DEVICE_PLAYER;
         }
 
+        if ($deviceType === OdinOrder::DEVICE_CAR_FULL) {
+            $deviceType = OdinOrder::DEVICE_CAR;
+        }
+
         if ($deviceType && !isset(OdinOrder::$devices[$deviceType])) {
-            logger()->error(str_repeat('*', 50)." Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType, 'user_agent' => $userAgent]);
+            logger()->error("Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType, 'user_agent' => $userAgent]);
         }
 
         return [
