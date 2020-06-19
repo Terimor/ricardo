@@ -10,6 +10,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @package App\Models
  *
  * @property string $name
+ * @property string $product_type
  */
 class Domain extends Model
 {
@@ -28,7 +29,7 @@ class Domain extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'email', 'phone', 'phone_us', 'address', 'product_category_id', 'sold_products', 'is_multiproduct', 'is_catch_all'
+        'name', 'logo', 'odin_product_id', 'ga_id', 'display_name', 'email', 'phone', 'phone_us', 'address', 'product_category_id', 'product_type', 'sold_products', 'is_multiproduct', 'is_catch_all'
     ];
 
     /**

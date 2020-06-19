@@ -18,6 +18,7 @@
       alt=""
       class="image lazy"
       data-src="{{ $product->image[0] }}"
+      :data-src="productImage"
     />
   </div>
 

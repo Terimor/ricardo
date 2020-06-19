@@ -5,7 +5,7 @@
       {{ vc_upsells_order_upgraded }}
     </div>
 
-    <el-main v-if="isLoading" v-loading.fullscreen.lock="isLoading">
+    <el-main v-if="isLoading || isRootLoading" v-loading.fullscreen.lock="isLoading || isRootLoading">
       <el-row :gutter="20">
         <el-col :span="16"><div class="grid-content bg-purple"></div></el-col>
         <el-col :span="8"><div class="grid-content bg-purple"></div></el-col>
@@ -99,7 +99,8 @@
       id: String, 
       discount: Number, 
       accessoryStep: Number, 
-      nextAccessoryStep: { type: Function }
+      nextAccessoryStep: { type: Function },
+      isRootLoading: Boolean
     },
 
     data: () => ({

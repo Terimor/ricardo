@@ -19,7 +19,7 @@
                     {{ benefit }}
                 </li>
                 <li>{{ textSubtotal }}:
-                    {{ finalPrice || subtotal }}
+                    {{ idx === 0 && upsellDiscount ? priceD : (finalPrice || subtotal) }}
                 </li>
                 <li v-if="warranty">
                     {{ textWarranty }}:
@@ -52,6 +52,8 @@
         props: [
             'name',
             'benefitList',
+            'upsellDiscount',
+            'priceD',
             'withRemoveButton',
             'imageUrl',
             'idx',

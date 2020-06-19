@@ -552,7 +552,6 @@ class UtilsService
      * @var string[]
      */
     public static $excludeShipping = [
-        'cl',
         'jm',
         'uz',
         'sd',
@@ -654,6 +653,7 @@ class UtilsService
         'br',
         'ca',
         'ch',
+        'cl',
         'co',
         'cy',
         'cz',
@@ -672,6 +672,7 @@ class UtilsService
         'il',
         'ir',
         'it',
+        'is',
         'jp',
         'kr',
         'li',
@@ -1248,12 +1249,20 @@ class UtilsService
             $deviceType = OdinOrder::DEVICE_TABLET;
         }
 
+        if ($deviceType === OdinOrder::DEVICE_FEATUREPHONE) {
+            $deviceType = OdinOrder::DEVICE_SMARTPHONE;
+        }
+
         if ($deviceType == OdinOrder::DEVICE_PLAYER_FULL) {
             $deviceType = OdinOrder::DEVICE_PLAYER;
         }
 
+        if ($deviceType === OdinOrder::DEVICE_CAR_FULL) {
+            $deviceType = OdinOrder::DEVICE_CAR;
+        }
+
         if ($deviceType && !isset(OdinOrder::$devices[$deviceType])) {
-            logger()->error(str_repeat('*', 50)." Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType, 'user_agent' => $userAgent]);
+            logger()->error("Wrong device type {$deviceType} - {$ip}", ['ip' => $ip, 'device' => $deviceType, 'user_agent' => $userAgent]);
         }
 
         return [
