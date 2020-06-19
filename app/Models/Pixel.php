@@ -31,6 +31,8 @@ class Pixel extends Model
     const TYPE_SALE  = 'sale';
     const TYPE_VIEW  = 'view';
 
+    const ALL_PRODUCTS = 'all';
+
     /**
      * Return pixels by params
      * @param string $hoAffiliateID
@@ -46,7 +48,8 @@ class Pixel extends Model
             // if we have empty product_ids it's mean ALL
             where(function ($query) use ($product) {
                 $query->where('product_ids', '=', $product->id)
-                      ->orWhere('product_ids', '=', '');
+                      ->orWhere('product_ids', '=', '')
+                      ->orWhere('product_ids', '=', self::ALL_PRODUCTS);
             }) // if we have empty placements it's mean on ALL pages
             ->where(function ($query) use ($route) {
                 $query->where('placements', '=', $route)
