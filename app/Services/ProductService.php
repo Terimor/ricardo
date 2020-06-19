@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Route;
 use App\Models\{MediaAccess, OdinProduct, Domain, Currency, AwsImage, PaymentApi, File, Localize, Video};
 use Illuminate\Http\Request;
@@ -674,25 +675,15 @@ class ProductService
     }
 
     /**
-     * Get all sold domains products
-     * @param $currentDomain
+     * Return sorted and paginated data from cached and searched products arrays
+     * @param array $allProducts
+     * @param array $products
      * @param int $page
-     * @param string $search - search string
      * @param int $limit
      * @return array
      */
-    public function getAllSoldDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 12): array
+    public function getSortedAndPaginatedData(array $allProducts, Collection $products, int $page, int $limit): array
     {
-        $search = mb_strlen($search) >= 2 ? $search : '';
-
-        $allSoldProducts = static::getCachedSoldProducts();
-        // after shuffle we have $key => id, but we need format id => key for saving products sorting
-        $allSoldProducts = array_flip($allSoldProducts);
-        $productIds = array_keys($allSoldProducts);
-        $productCategoryId = $currentDomain->product_category_id ?? null;
-        $product = !empty($currentDomain->odin_product_id) ? OdinProduct::getById($currentDomain->odin_product_id, ['type']) : null;
-        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, ['_id'], $product->type ?? null);
-
         // calculate total pages
         $totalCount = count($products);
         $totalPages = ceil($totalCount / $limit);
@@ -704,7 +695,7 @@ class ProductService
         }
 
         // sort products by value(index before flip) for saving products sorting
-        $productsSortedIds = static::sortLocaleSoldProducts($allSoldProducts, $products, true);
+        $productsSortedIds = static::sortLocaleSoldProducts($allProducts, $products, true);
         // slice sorted products depends on page
         $productsSortedIds = array_slice($productsSortedIds, $offset, $limit);
 
@@ -716,15 +707,68 @@ class ProductService
         $productsLocale = static::getLocaleMinishopProducts($products);
 
         // sort products by value(index before flip) for saving products sorting
-         $productsLocaleSorted = static::sortLocaleSoldProducts($allSoldProducts, $productsLocale);
+        $productsLocaleSorted = static::sortLocaleSoldProducts($allProducts, $productsLocale);
 
-        return $data = [
+        return [
             'products' => $productsLocaleSorted,
             'page' => $page,
             'total' => $totalCount,
             'total_pages' => $totalPages,
             'per_page' => $limit
         ];
+    }
+
+    /**
+     * Get all sold domains products
+     * @param $currentDomain
+     * @param int $page
+     * @param string $search - search string
+     * @param int $limit
+     * @return array
+     */
+    public function getAllBySoldOrTypeDomainsProducts(Domain $currentDomain, int $page = 1, $search = '', ?int $limit = 12): array
+    {
+        $search = mb_strlen($search) >= 2 ? $search : '';
+
+        if ($currentDomain->product_type) {
+            $type = $currentDomain->product_type ?? null;
+            $allProducts = static::getCachedProductsByType($type);
+        } else {
+            $allProducts = static::getCachedSoldProducts();
+
+        }
+
+        // after shuffle we have $key => id, but we need format id => key for saving products sorting
+        $allProducts = array_flip($allProducts);
+        $productIds = array_keys($allProducts);
+
+        $productCategoryId = $currentDomain->product_category_id ?? null;
+        if (empty($type)) {
+            $product = !empty($currentDomain->odin_product_id) ? OdinProduct::getById($currentDomain->odin_product_id, ['type']) : null;
+            $type = $product->type ?? null;
+        }
+
+        $products = OdinProduct::getActiveByIds($productIds, $search, true, $productCategoryId, ['_id'], $type);
+
+        return static::getSortedAndPaginatedData($allProducts, $products, $page, $limit);
+    }
+
+
+    /**
+     * Returns cached products by type
+     * @param string $type
+     * @return array
+     */
+    public static function getCachedProductsByType(string $type): array
+    {
+        $cacheKey = 'DomainProductsData'.ucfirst($type);
+        $allProducts = Cache::get($cacheKey);
+        if (!$allProducts) {
+            $allProducts = OdinProduct::getProductIdsByType($type);
+            shuffle($allProducts);
+            Cache::put($cacheKey, $allProducts, 3600);
+        }
+        return $allProducts;
     }
 
     /**
