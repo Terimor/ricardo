@@ -829,6 +829,21 @@ class OdinProduct extends OdinModel
     }
 
     /**
+     * Return array of product ids by given type
+     * @param string $type
+     * @return array
+     */
+    public static function getProductIdsByType(string $type)
+    {
+        return OdinProduct::query()
+            ->where('type', $type)
+            ->where('skus.is_published', true)
+            ->select(['_id'])
+            ->pluck('_id')
+            ->toArray();
+    }
+
+    /**
      * Returns products ids by categories
      * @param array $category_ids
      * @return array
