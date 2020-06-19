@@ -9,6 +9,7 @@
           <component
             v-if="upsellsObj.length"
             :is="view"
+            :buttonKey="buttonKey"
             :isRootLoading="isRootLoading"
             :nextAccessoryStep="nextAccessoryStep"
             @addAccessory="addAccessory"
@@ -121,6 +122,7 @@
     },
 
     data: () => ({
+      buttonKey: 0,
       total: 0,
       view: 'Step1Vrtl',
       activeTab: 1,
@@ -188,6 +190,8 @@
                     } else {
                       this.view = 'Step3Vrtl';
                     }
+
+                    this.buttonKey++;
                   })
                   .catch(() => {
                     this.activeTab = 2;
@@ -198,6 +202,8 @@
                     } else {
                       this.view = 'Step3Vrtl';
                     }
+
+                    this.buttonKey++;
                   });
               } else {
                 this.isRootLoading = true;
@@ -282,6 +288,7 @@
           setTimeout(() => {
             this.isRootLoading = false;
             window.scrollTo(0,0);
+            this.buttonKey++;
           }, 300);
         } else {
           this.accessoryStep = this.accessoryStep + 1;

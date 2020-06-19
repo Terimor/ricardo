@@ -88,14 +88,16 @@
 
           <div
             class="last-call-card-submit"
-            @click="addProduct(1)"
+            @click.once="addProduct(1)"
+            :key="buttonKey"
           >
             {{ vc_upsells_last_call_card_submit }}
           </div>
           
           <div
             class="last-call-card-label-2"
-            @click="addProduct(1)"
+            @click.once="addProduct(1)"
+            :key="buttonKey"
           >
             {{ vc_upsells_last_call_card_label_2 }}
           </div>
@@ -103,7 +105,8 @@
 
         <div
           class="last-call-card-label-3"
-          @click="nextAccessoryStep"
+          @click.once="nextAccessoryStep"
+          :key="buttonKey"
         >
           {{ vc_upsells_last_call_card_label_3 }}
         </div>
@@ -130,7 +133,8 @@
       setUpsellDiscountAdded: { type: Function },
       upsellDiscount: Boolean,
       upsellDiscountOffered: Boolean,
-      isRootLoading: Boolean
+      isRootLoading: Boolean,
+      buttonKey: Number
     },
 
     data: () => ({
