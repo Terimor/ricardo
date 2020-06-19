@@ -913,6 +913,7 @@ class ProductService
     public function getLocaleDownloadProduct(OdinProduct $product, string $orderNumber, $upsells = null): Localize
     {
         $lp = new Localize();
+        $lp->type = $product->type;
         $lp->product_name = $product->product_name;
         $lp->description = $product->description;
         $files = $this->getVirtualFiles($product, $upsells);
