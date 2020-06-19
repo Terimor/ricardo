@@ -25,7 +25,7 @@
         @endif
 
         @foreach ($links as $item)
-            @if (!$item['isHidden'])
+            @if (!isset($item['isHidden']) || !$item['isHidden'])
                 <li class="footer__row-item">
                     <a href="{{ $item['link'] }}" class="footer__link">{{ $item['text'] }}</a>
                 </li>
