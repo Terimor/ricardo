@@ -48,6 +48,7 @@ class Pixel extends Model
             // if we have empty product_ids it's mean ALL
             where(function ($query) use ($product) {
                 $query->where('product_ids', '=', $product->id)
+                    // TODO Pixels all logic (remove next row after implementation)
                       ->orWhere('product_ids', '=', '')
                       ->orWhere('product_ids', '=', self::ALL_PRODUCTS);
             }) // if we have empty placements it's mean on ALL pages
