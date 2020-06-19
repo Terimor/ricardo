@@ -677,37 +677,43 @@ class ProductService
     /**
      * Return sorted and paginated data from cached and searched products arrays
      * @param array $allProducts
-     * @param array $products
+     * @param Collection|null $products
      * @param int $page
      * @param int $limit
      * @return array
      */
-    public function getSortedAndPaginatedData(array $allProducts, Collection $products, int $page, int $limit): array
+    public function getSortedAndPaginatedData(array $allProducts, ?Collection $products, int $page, int $limit): array
     {
         // calculate total pages
-        $totalCount = count($products);
-        $totalPages = ceil($totalCount / $limit);
-        $page = max($page, 1); // get 1 page when page <= 0
-        $page = min($page, $totalPages); // get last page when page > $totalPages
-        $offset = ($page - 1) * $limit;
-        if ($offset < 0 ) {
-            $offset = 0;
+        if ($products) {
+            $totalCount = count($products);
+            $totalPages = ceil($totalCount / $limit);
+            $page = max($page, 1); // get 1 page when page <= 0
+            $page = min($page, $totalPages); // get last page when page > $totalPages
+            $offset = ($page - 1) * $limit;
+            if ($offset < 0 ) {
+                $offset = 0;
+            }
+
+            // sort products by value(index before flip) for saving products sorting
+            $productsSortedIds = static::sortLocaleSoldProducts($allProducts, $products, true);
+            // slice sorted products depends on page
+            $productsSortedIds = array_slice($productsSortedIds, $offset, $limit);
+
+            // get products depends on page
+            $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
+            $products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
+
+            // get all locale products with images
+            $productsLocale = static::getLocaleMinishopProducts($products);
+
+            // sort products by value(index before flip) for saving products sorting
+            $productsLocaleSorted = static::sortLocaleSoldProducts($allProducts, $productsLocale);
+        } else {
+            $productsLocaleSorted = [];
+            $totalCount = $totalPages = 0;
         }
 
-        // sort products by value(index before flip) for saving products sorting
-        $productsSortedIds = static::sortLocaleSoldProducts($allProducts, $products, true);
-        // slice sorted products depends on page
-        $productsSortedIds = array_slice($productsSortedIds, $offset, $limit);
-
-        // get products depends on page
-        $select = ['product_name', 'description', 'long_name', 'skus', 'prices', 'image_ids'];
-        $products = OdinProduct::getActiveByIds($productsSortedIds, '', false, null, $select);
-
-        // get all locale products with images
-        $productsLocale = static::getLocaleMinishopProducts($products);
-
-        // sort products by value(index before flip) for saving products sorting
-        $productsLocaleSorted = static::sortLocaleSoldProducts($allProducts, $productsLocale);
 
         return [
             'products' => $productsLocaleSorted,
