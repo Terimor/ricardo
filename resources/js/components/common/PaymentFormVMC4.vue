@@ -24,180 +24,186 @@
             :form="vmc4Form"
             name="variant" />
         </div>
-        <div class="step step-2" v-if="step === 2">
-          <div class="full-name">
-            <FirstName
+        
+        <form @submit.stop.prevent="isAllowNext(step)">
+          <div class="step step-2" v-if="step === 2">
+            <div class="full-name">
+              <FirstName
+                @check_for_leads_request="check_for_leads_request"
+                :$v="$v.form.stepTwo.fname"
+                :form="form.stepTwo"
+                name="fname" />
+              <LastName
+                @check_for_leads_request="check_for_leads_request"
+                :$v="$v.form.stepTwo.lname"
+                :form="form.stepTwo"
+                name="lname" />
+            </div>
+            <Email
               @check_for_leads_request="check_for_leads_request"
-              :$v="$v.form.stepTwo.fname"
+              :$v="$v.form.stepTwo.email"
               :form="form.stepTwo"
-              name="fname" />
-            <LastName
+              name="email" />
+            <Phone
               @check_for_leads_request="check_for_leads_request"
-              :$v="$v.form.stepTwo.lname"
+              :$v="$v.form.stepTwo.phone"
+              :ccform="form"
+              ccname="countryCodePhoneField"
               :form="form.stepTwo"
-              name="lname" />
+              name="phone" />
           </div>
-          <Email
-            @check_for_leads_request="check_for_leads_request"
-            :$v="$v.form.stepTwo.email"
-            :form="form.stepTwo"
-            name="email" />
-          <Phone
-            @check_for_leads_request="check_for_leads_request"
-            :$v="$v.form.stepTwo.phone"
-            :ccform="form"
-            ccname="countryCodePhoneField"
-            :form="form.stepTwo"
-            name="phone" />
-        </div>
-        <div class="step step-3" v-if="step === 3">
-          <h3 v-html="textPaySecurely"></h3>
-          <payment-provider-radio-list
-            v-model="form.paymentProvider"
-            @input="activateForm" />
-          <paypal-button
-            v-if="$root.paypalEnabled"
-            v-show="vmc4Form.installments === 1"
-            :createOrder="paypalCreateOrder"
-            :onApprove="paypalOnApprove"
-            :$vvariant="$v.vmc4Form.variant"
-            :$vdeal="$v.vmc4Form.deal"
-            @click="paypalSubmit"
-          >{{ paypalRiskFree }}</paypal-button>
-          <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
-          <template v-if="$root.hasAPM">
-            <h3 v-html="textPaySecurelyAPM"></h3>
-            <payment-providers-apm
+      
+          <div class="step step-3" v-if="step === 3">
+            <h3 v-html="textPaySecurely"></h3>
+            <payment-provider-radio-list
               v-model="form.paymentProvider"
               @input="activateForm" />
-          </template>
-          <slot name="warranty" />
-          <form v-if="form.paymentProvider && isFormShown" v-show="form.paymentProvider !== 'paypal'">
-            <div class="card-info" v-if="form.paymentProvider === 'credit-card'">
-              <CardHolder
+            <paypal-button
+              v-if="$root.paypalEnabled"
+              v-show="vmc4Form.installments === 1"
+              :createOrder="paypalCreateOrder"
+              :onApprove="paypalOnApprove"
+              :$vvariant="$v.vmc4Form.variant"
+              :$vdeal="$v.vmc4Form.deal"
+              @click="paypalSubmit"
+            >{{ paypalRiskFree }}</paypal-button>
+            <p v-if="paypalPaymentError" id="paypal-payment-error" class="error-container" v-html="paypalPaymentError"></p>
+            <template v-if="$root.hasAPM">
+              <h3 v-html="textPaySecurelyAPM"></h3>
+              <payment-providers-apm
+                v-model="form.paymentProvider"
+                @input="activateForm" />
+            </template>
+            <slot name="warranty" />
+            <div v-if="form.paymentProvider && isFormShown" v-show="form.paymentProvider !== 'paypal'">
+              <div class="card-info" v-if="form.paymentProvider === 'credit-card'">
+                <CardHolder
+                  v-if="$root.isAffIDEmpty"
+                  :$v="$v.form.stepThree.cardHolder"
+                  :form="form.stepThree"
+                  :placeholder="true"
+                  name="cardHolder" />
+                <CardType
+                  class="input-container"
+                  :extraFields="extraFields"
+                  :form="vmc4Form"
+                  :$v="$v.vmc4Form" />
+                <CardNumber
+                  :$v="$v.form.stepThree.cardNumber"
+                  :placeholder="true"
+                  placeholderText="**** **** **** ****"
+                  :paymentMethodURL="paymentMethodURL"
+                  @setPaymentMethodByCardNumber="value => $emit('setPaymentMethodByCardNumber', value)"
+                  :form="form.stepThree"
+                  name="cardNumber" />
+                <CardDate
+                  :$v="$v.form.stepThree.cardDate"
+                  :form="form.stepThree"
+                  name="cardDate" />
+                <CVV
+                  :$v="$v.form.stepThree.cvv"
+                  :form="form.stepThree"
+                  name="cvv" />
+                <DocumentType
+                  class="input-container"
+                  :extraFields="extraFields"
+                  :form="vmc4Form"
+                  :$v="$v.vmc4Form" />
+                <DocumentNumber
+                  :extraFields="extraFields"
+                  :form="vmc4Form"
+                  :$v="$v.vmc4Form" />
+              </div>
+              <div class="d-flex flex-wrap">
+                <ZipCode
+                  v-if="form.stepThree.country === 'br'"
+                  :$v="$v.form.stepThree.zipCode"
+                  :isLoading="isLoading"
+                  @setBrazilAddress="setBrazilAddress"
+                  :country="form.stepThree.country"
+                  :form="form.stepThree"
+                  :placeholder="true"
+                  name="zipCode" />
+                <Street
+                  :$v="$v.form.stepThree.street"
+                  :isLoading="isLoading"
+                  :form="form.stepThree"
+                  :placeholder="true"
+                  name="street" />
+                <Building
+                  :extraFields="extraFields"
+                  :placeholder="true"
+                  :form="vmc4Form"
+                  :$v="$v.vmc4Form" />
+                <Complement
+                  :isLoading="isLoading"
+                  :extraFields="extraFields"
+                  :placeholder="true"
+                  :form="vmc4Form"
+                  :$v="$v.vmc4Form" />
+                <District
+                  :isLoading="isLoading"
+                  :extraFields="extraFields"
+                  :placeholder="true"
+                  :form="vmc4Form"
+                  :$v="$v.vmc4Form" />
+                <City
+                  :$v="$v.form.stepThree.city"
+                  :placeholder="true"
+                  :isLoading="isLoading"
+                  :form="form.stepThree"
+                  name="city" />
+                <State
+                  class="input-container"
+                  :country="form.stepThree.country"
+                  :stateExtraField="stateExtraField"
+                  :isLoading="isLoading"
+                  :placeholder="true"
+                  :form="vmc4Form"
+                  :$v="$v.vmc4Form" />
+                <ZipCode
+                  v-if="form.stepThree.country !== 'br'"
+                  :$v="$v.form.stepThree.zipCode"
+                  :isLoading="isLoading"
+                  @setBrazilAddress="setBrazilAddress"
+                  :country="form.stepThree.country"
+                  :form="form.stepThree"
+                  :placeholder="true"
+                  name="zipCode" />
+                <Country
+                  :$v="$v.form.stepThree.country"
+                  :form="form.stepThree"
+                  :placeholder="true"
+                  name="country" />
+              </div>
+              <Terms
                 v-if="$root.isAffIDEmpty"
-                :$v="$v.form.stepThree.cardHolder"
+                :$v="$v.form.stepThree.terms"
                 :form="form.stepThree"
-                :placeholder="true"
-                name="cardHolder" />
-              <CardType
-                class="input-container"
-                :extraFields="extraFields"
-                :form="vmc4Form"
-                :$v="$v.vmc4Form" />
-              <CardNumber
-                :$v="$v.form.stepThree.cardNumber"
-                :placeholder="true"
-                placeholderText="**** **** **** ****"
-                :paymentMethodURL="paymentMethodURL"
-                @setPaymentMethodByCardNumber="value => $emit('setPaymentMethodByCardNumber', value)"
-                :form="form.stepThree"
-                name="cardNumber" />
-              <CardDate
-                :$v="$v.form.stepThree.cardDate"
-                :form="form.stepThree"
-                name="cardDate" />
-              <CVV
-                :$v="$v.form.stepThree.cvv"
-                :form="form.stepThree"
-                name="cvv" />
-              <DocumentType
-                class="input-container"
-                :extraFields="extraFields"
-                :form="vmc4Form"
-                :$v="$v.vmc4Form" />
-              <DocumentNumber
-                :extraFields="extraFields"
-                :form="vmc4Form"
-                :$v="$v.vmc4Form" />
+                name="terms" />
+              <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
+              <button
+                @click="submit"
+                :disabled="isSubmitted"
+                :class="{ 'btn-active': !isSubmitted }"
+                class="submit-btn"
+                type="button"
+              >
+                <Spinner v-if="isSubmitted" />
+                <div v-if="isSubmitted" class="btn-disabled"></div>
+                <span :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }" v-html="textSubmitButton"></span>
+              </button>
             </div>
-            <div class="d-flex flex-wrap">
-              <ZipCode
-                v-if="form.stepThree.country === 'br'"
-                :$v="$v.form.stepThree.zipCode"
-                :isLoading="isLoading"
-                @setBrazilAddress="setBrazilAddress"
-                :country="form.stepThree.country"
-                :form="form.stepThree"
-                :placeholder="true"
-                name="zipCode" />
-              <Street
-                :$v="$v.form.stepThree.street"
-                :isLoading="isLoading"
-                :form="form.stepThree"
-                :placeholder="true"
-                name="street" />
-              <Building
-                :extraFields="extraFields"
-                :placeholder="true"
-                :form="vmc4Form"
-                :$v="$v.vmc4Form" />
-              <Complement
-                :isLoading="isLoading"
-                :extraFields="extraFields"
-                :placeholder="true"
-                :form="vmc4Form"
-                :$v="$v.vmc4Form" />
-              <District
-                :isLoading="isLoading"
-                :extraFields="extraFields"
-                :placeholder="true"
-                :form="vmc4Form"
-                :$v="$v.vmc4Form" />
-              <City
-                :$v="$v.form.stepThree.city"
-                :placeholder="true"
-                :isLoading="isLoading"
-                :form="form.stepThree"
-                name="city" />
-              <State
-                class="input-container"
-                :country="form.stepThree.country"
-                :stateExtraField="stateExtraField"
-                :isLoading="isLoading"
-                :placeholder="true"
-                :form="vmc4Form"
-                :$v="$v.vmc4Form" />
-              <ZipCode
-                v-if="form.stepThree.country !== 'br'"
-                :$v="$v.form.stepThree.zipCode"
-                :isLoading="isLoading"
-                @setBrazilAddress="setBrazilAddress"
-                :country="form.stepThree.country"
-                :form="form.stepThree"
-                :placeholder="true"
-                name="zipCode" />
-              <Country
-                :$v="$v.form.stepThree.country"
-                :form="form.stepThree"
-                :placeholder="true"
-                name="country" />
-            </div>
-            <Terms
-              v-if="$root.isAffIDEmpty"
-              :$v="$v.form.stepThree.terms"
-              :form="form.stepThree"
-              name="terms" />
-            <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
-            <button
-              @click="submit"
-              :disabled="isSubmitted"
-              :class="{ 'btn-active': !isSubmitted }"
-              class="submit-btn"
-              type="button"
-            >
-              <Spinner v-if="isSubmitted" />
-              <div v-if="isSubmitted" class="btn-disabled"></div>
-              <span :style="{ visibility: isSubmitted ? 'hidden' : 'visible' }" v-html="textSubmitButton"></span>
-            </button>
-          </form>
-        </div>
-        <div class="buttons">
-          <div class="form-navigation">
-            <button @click="isAllowNext(step)" v-if="step !== 3" v-html="textNext" class="next-btn btn-active"></button>
-            <button v-if="step > 1" class="back-btn" @click="animatePrevStep">&lt;&lt; <span v-html="textBack"></span></button>
           </div>
-        </div>
+
+          <div class="buttons">
+            <div class="form-navigation">
+              <button type="submit" v-if="step !== 3" v-html="textNext" class="next-btn btn-active"></button>
+              <button type="button" v-if="step > 1" class="back-btn" @click="animatePrevStep">&lt;&lt; <span v-html="textBack"></span></button>
+            </div>
+          </div>
+        </form>
+
       </div>
     </div>
     <el-dialog
@@ -995,6 +1001,7 @@
       position: relative;
       padding: 18px 30px;
       margin: 10px 1px;
+      text-align: center;
       font-size: 16px;
       font-weight: 400;
       text-transform: uppercase;

@@ -38,8 +38,11 @@
       <div class="right-column">
         <template v-if="!isPurchasAlreadyExists">
           @include('new.pages.checkout.templates.vc1.providers')
-          @include('new.pages.checkout.templates.vc1.shipping')
-          @include('new.pages.checkout.templates.vc1.summary')
+          
+          <form @submit.stop.prevent="credit_card_create_order">
+            @include('new.pages.checkout.templates.vc1.shipping')
+            @include('new.pages.checkout.templates.vc1.summary')
+          </form>
         </template>
 
         <purchas-already-exists v-else />

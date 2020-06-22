@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <form class="row" @submit.prevent.stop="submit">
                 <div class="col-md-7">
                     <div class="paper smc7__deal">
                         <div>
@@ -146,9 +146,8 @@
                             <button
                               :disabled="isSubmitted"
                               v-if="form.paymentProvider !== 'paypal'"
-                              @click="submit"
                               id="purchase-button"
-                              type="button"
+                              type="submit"
                               class="green-button-animated"
                               :class="{ 'green-button-active': !isSubmitted }">
                               <Spinner v-if="isSubmitted" />
@@ -181,7 +180,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
         <el-dialog
                 @click="isOpenPromotionModal = false"

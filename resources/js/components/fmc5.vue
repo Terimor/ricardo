@@ -45,7 +45,7 @@
 
         </div>
         
-        <div class="content-left">
+        <form class="content-left" @submit.stop.prevent="nextClick">
 
           <div class="step">
             <img class="lazy" :data-src="imageStep" />
@@ -402,11 +402,20 @@
               @click="backClick" />
 
             <div
-              v-if="step === 1 || step === 2"
+              v-if="step === 1"
+              type="button"
               class="button-next"
               @click="nextClick">
               <div>{{ textNext }}</div>
             </div>
+
+            <button
+              v-if="step === 2"
+              type="submit"
+              class="button-next"
+            >
+              <div>{{ textNext }}</div>
+            </button>
 
             <div
               v-if="step === 3 && form.paymentProvider !== 'paypal'"
@@ -428,7 +437,7 @@
 
           </div>
 
-        </div>
+        </form>
 
         <div class="content-right">
           

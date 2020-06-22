@@ -86,7 +86,7 @@
       :form="paymentForm"
       :$v="$v.form" />
 
-    <form 
+    <div 
       id="payment-data-form" 
       v-if="paymentForm.paymentProvider === 'credit-card'" 
       v-show="paymentForm.paymentProvider !== 'paypal'"
@@ -131,7 +131,7 @@
         :extraFields="extraFields"
         :form="paymentForm"
         :$v="$v.form" />
-    </form>
+    </div>
 
   </div>
 </template>

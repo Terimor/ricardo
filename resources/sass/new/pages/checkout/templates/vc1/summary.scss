@@ -219,6 +219,9 @@
   .pay-card-button {
     margin-top: 25px;
     width: 240px;
+    border: none;
+    background: none;
+    outline: none;
 
     .disabled .spinner {
       margin-top: -18px;

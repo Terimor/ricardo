@@ -1,5 +1,5 @@
 <template>
-    <form v-if="$v" class="flex-wrap payment-form">
+    <form v-if="$v" @submit.prevent.stop="submit" class="flex-wrap payment-form">
         <h2>
           {{ firstTitle }}
         </h2>
@@ -143,10 +143,9 @@
           name="terms" />
         <p v-if="paymentError" id="payment-error" class="error-container" v-html="paymentError"></p>
         <button
-            @click="submit"
             :disabled="isSubmitted"
             id="purchase-button"
-            type="button"
+            type="submit"
             class="green-button-animated"
             :class="{ 'green-button-active': !isSubmitted }">
             <Spinner v-if="isSubmitted" />
