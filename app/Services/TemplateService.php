@@ -10,14 +10,19 @@ class TemplateService
     /**
      * Get company address
      * @param string $settingValue
-     * @param mixed $domain
-     * @param mixed $line_break
+     * @param null|Domain $domain
+     * @param bool $line_break
+     * @param $privacy_off
      * @return string
      */
-    public static function getCompanyAddress(?string $settingValue, ?Domain $domain = null, bool $line_break = false): string
+    public static function getCompanyAddress(?string $settingValue, ?Domain $domain = null, bool $line_break = false, $privacyOff = 0): string
     {
         $address = !empty($domain->address) ? $domain->address : $settingValue;
         $address = $line_break ? str_replace("\n", '<br>', $address) : str_replace("\n", ' - ', $address);
+        // if privacy = 0 address is empty
+        if ($privacyOff == 0) {
+            $address = '';
+        }
         return $address ?? '';
     }
 
@@ -61,11 +66,15 @@ class TemplateService
      * Get company name
      * @param string|null $settingValue
      * @param Domain|null $domain
+     * @param $privacy_off
      * @return string
      */
-    public static function getCompanyName(?string $settingValue, ?Domain $domain = null) : string
+    public static function getCompanyName(?string $settingValue, ?Domain $domain = null, $privacy_off = 0) : string
     {
         $name = !empty($domain->company_name) ? $domain->company_name : $settingValue;
+        if ($privacy_off == 0) {
+            $name = $domain->getDisplayedName();
+        }
         return $name ?? '';
     }
 
@@ -81,15 +90,16 @@ class TemplateService
             'support_email',
             'support_phone',
             'support_phone_us',
-            'company_name'
+            'company_name',
+            'privacy_off'
         ]);
 
         $data = [
-            'address' => TemplateService::getCompanyAddress($setting['support_address'], $domain, true),
+            'address' => TemplateService::getCompanyAddress($setting['support_address'], $domain, true, $setting['privacy_off'] ?? 0),
             'phone' => TemplateService::getCompanyPhone($setting['support_phone'], $domain),
             'number' => TemplateService::getCompanyNumber($setting['support_phone_us'], $domain),
             'email' => TemplateService::getCompanyEmail($setting['support_email'], $domain),
-            'company' => TemplateService::getCompanyName($setting['company_name'], $domain)
+            'company' => TemplateService::getCompanyName($setting['company_name'], $domain, $setting['privacy_off'] ?? 0)
         ];
         return $data;
     }

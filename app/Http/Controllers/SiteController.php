@@ -392,7 +392,7 @@ class SiteController extends Controller
         // load upsells only for vrlt templates
         //$upsells = $is_vrtl_page ? $productService->getProductUpsells($product) : [];
         $upsells = [];
-        $setting = Setting::getValue(['ipqualityscore_api_hash', 'support_address']);
+        $setting = Setting::getValue(['ipqualityscore_api_hash', 'support_address', 'privacy_off']);
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
@@ -420,7 +420,7 @@ class SiteController extends Controller
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
 
-        $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain);
+        $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain, true, $setting['privacy_off']);
         $company_descriptor_prefix = '';
 
         $cdn_url = \Utils::getCdnUrl();
