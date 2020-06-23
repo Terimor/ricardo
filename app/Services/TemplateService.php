@@ -47,7 +47,7 @@ class TemplateService
     public static function getCompanyNumber(?string $settingValue, ?Domain $domain = null, $privacyOff = 0): string
     {
         $phone = !empty($domain->phone_us) ? $domain->phone_us : $settingValue;
-        if ($privacyOff) {
+        if ($privacyOff == 0) {
             $phone = '';
         }
         return $phone ?? '';
