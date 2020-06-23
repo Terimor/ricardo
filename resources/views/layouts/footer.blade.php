@@ -17,7 +17,7 @@
             ],
         ];
         @endphp
-        
+
         @if (isset($hasHome) && $hasHome == true)
             <li class="footer__row-item">
                 <a href="/" class="footer__link">{{ t('footer.home') }}</a>
@@ -31,9 +31,9 @@
                 </li>
             @endif
         @endforeach
-        
+
         <br/>
-        
+
         @if (!isset($aff['is_signup_hidden']) || !$aff['is_signup_hidden'])
             <li class="footer__row-item">
                 <a href="https://www.h8m8.com" target="_blank" class="footer__link">{{ t('footer.affiliate') }}</a>

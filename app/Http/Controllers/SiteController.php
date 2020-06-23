@@ -420,7 +420,7 @@ class SiteController extends Controller
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
 
-        $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain, true, $setting['privacy_off']);
+        $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain, false, $setting['privacy_off']);
         $company_descriptor_prefix = '';
 
         $cdn_url = \Utils::getCdnUrl();
