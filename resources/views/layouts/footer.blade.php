@@ -50,7 +50,7 @@
             <a href="/report-abuse" class="footer__link">{{ t('abuse.title') }}</a>
         </li>
     </ul>
-    @if ($is_aff_id_empty && (!isset($isCompanyHidden) || $isCompanyHidden == false))
+    @if ($is_aff_id_empty && (!isset($isCompanyHidden) || $isCompanyHidden == false) && !empty($company_address))
         <div class="company-address">{{ $company_address }}</div>
     @endif
 </footer>
