@@ -169,7 +169,7 @@ class PaymentService
 
             $order = OrderService::calcTotalPaid($order);
 
-            $txn_amount_usd = CurrencyService::convertAndRoundValueToUsd($txn['value'], $order->currency);
+            $txn_amount_usd = CurrencyService::roundValueByCurrencyRules($txn['value'] / $order->exchange_rate);
             $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $txn_amount_usd), true);
 
             $order->status = self::getOrderStatus($order, $is_order_need_to_check);
@@ -368,7 +368,7 @@ class PaymentService
             'sku_code'              => $sku,
             'quantity'              => $price['quantity'],
             'price'                 => CurrencyService::roundValueByCurrencyRules($price['value'], $price['currency']),
-            'price_usd'             => CurrencyService::roundValueByCurrencyRules($price['value_usd'], Currency::DEF_CUR),
+            'price_usd'             => CurrencyService::roundValueByCurrencyRules($price['value_usd']),
             'price_set'             => $price['price_set'] ?? null,
             'is_main'               => $is_main,
             'is_upsells'            => !$is_main,
@@ -379,15 +379,15 @@ class PaymentService
             'warranty_price'        => 0,
             'warranty_price_usd'    => 0,
             'total_price'           => CurrencyService::roundValueByCurrencyRules($price['value'], $price['currency']),
-            'total_price_usd'       => CurrencyService::roundValueByCurrencyRules($price['value_usd'], Currency::DEF_CUR)
+            'total_price_usd'       => CurrencyService::roundValueByCurrencyRules($price['value_usd'])
         ];
 
         $is_warranty = $details['is_warranty'] ?? false;
         if ($is_warranty) {
             $order_product['warranty_price']        = CurrencyService::roundValueByCurrencyRules($price['warranty_value'], $price['currency']);
-            $order_product['warranty_price_usd']    = CurrencyService::roundValueByCurrencyRules($price['warranty_value_usd'], Currency::DEF_CUR);
+            $order_product['warranty_price_usd']    = CurrencyService::roundValueByCurrencyRules($price['warranty_value_usd']);
             $order_product['total_price']           = CurrencyService::roundValueByCurrencyRules($price['value'] + $price['warranty_value'], $price['currency']);
-            $order_product['total_price_usd']       = CurrencyService::roundValueByCurrencyRules($order_product['total_price'] / $price['usd_rate'], Currency::DEF_CUR);
+            $order_product['total_price_usd']       = CurrencyService::roundValueByCurrencyRules($order_product['total_price'] / $price['usd_rate']);
         }
         return $order_product;
     }

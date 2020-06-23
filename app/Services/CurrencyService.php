@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\Currency;
 use App\Models\OdinProduct;
 use Cache;
@@ -178,17 +179,6 @@ class CurrencyService
     ];
 
     public static $currencyObject = null;
-
-    /**
-     * Returns converted to USD and round value
-     * @param float $value
-     * @param string $currency_code
-     * @return float
-     */
-    public static function convertAndRoundValueToUsd(float $value, string $currency_code): float {
-        $currency = self::getCurrency($currency_code);
-        return self::roundValueByCurrencyRules($value / $currency->usd_rate, Currency::DEF_CUR);
-    }
 
     /**
      * Get local price from USD
@@ -577,10 +567,10 @@ class CurrencyService
     /**
      * Returns rounded value depending on currency rules
      * @param float $value
-     * @param string $currencyCode
+     * @param string|null $currencyCode default=USD
      * @return float
      */
-    public static function roundValueByCurrencyRules(float $value, string $currencyCode): float
+    public static function roundValueByCurrencyRules(float $value, ?string $currencyCode = Currency::DEF_CUR): float
     {
         // cache culture code
         $localeString = self::getCultureCodeByCurrency($currencyCode);

@@ -1,5 +1,6 @@
 import { required } from 'vuelidate/lib/validators';
 import credit_card_type from 'credit-card-type';
+import Cleave from 'cleave.js';
 
 
 export default {
@@ -10,6 +11,20 @@ export default {
         card_number: null,
       },
     };
+  },
+
+
+  mounted() {
+    js_deps.wait_for(() => {
+      return !!document.querySelector('.card_number-field input');
+    }, () => {
+      var cleave = new Cleave('.card_number-field input', {
+        creditCard: true,
+        onCreditCardTypeChanged: function (type) {
+            // update UI ...
+        }
+      });
+    });
   },
 
 

@@ -65,6 +65,7 @@
 
 @section('fonts')
   @yield('fonts_checkout')
+  @include('components.fonts.pathway_gothic')
 @endsection
 
 

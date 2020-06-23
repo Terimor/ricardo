@@ -50,6 +50,8 @@
     @include('components.fonts.lato')
   @endif
 
+  @include('components.fonts.pathway_gothic')
+
 @endsection
 
 

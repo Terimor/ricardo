@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Constants\PaymentProviders;
 use App\Exceptions\PaymentException;
 use App\Exceptions\PPCurrencyNotSupportedException;
 use App\Http\Requests\PayPalCrateOrderRequest;
@@ -28,8 +27,6 @@ use stdClass;
  */
 class PayPalService
 {
-    const DEFAULT_CURRENCY = 'USD';
-
     const STATUS_COMPLETED  = 'COMPLETED';
     const STATUS_PENDING    = 'PENDING';
     const STATUS_DECLINED   = 'DECLINED';
@@ -42,12 +39,22 @@ class PayPalService
     /**
      * @var OrderService
      */
-    protected $orderService;
+    protected OrderService $orderService;
 
-    public static $supported_currencies = [
-            'AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'INR', 'ILS', 'JPY', 'MXN', 'TWD', 'NZD',
-            'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD'
-        ];
+    public static array $supported_currencies = [
+        'AUD', 'BRL', 'CAD', 'CZK', 'DKK', 'EUR', 'HKD', 'HUF', 'INR', 'ILS', 'JPY', 'MXN', 'TWD', 'NZD',
+        'NOK', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'SEK', 'CHF', 'THB', 'USD'
+    ];
+
+    /**
+     * Checks if the country is supported
+     * @param  string $country_code
+     * @return bool
+     */
+    public static function isCurrencySupported(string $country_code): bool
+    {
+        return in_array($country_code, self::$supported_currencies);
+    }
 
     /**
      * PayPalService constructor.
@@ -113,9 +120,7 @@ class PayPalService
             $upsell_order_exchange_rate = $temp_upsell_product['upsellPrices'][$upsell_quantity]['exchange_rate'];
 
             // Converting to USD.
-            $temp_upsell_item_usd_price = CurrencyService::roundValueByCurrencyRules(
-                $temp_upsell_item_price / $upsell_order_exchange_rate,
-                self::DEFAULT_CURRENCY);
+            $temp_upsell_item_usd_price = CurrencyService::roundValueByCurrencyRules($temp_upsell_item_price / $upsell_order_exchange_rate);
 
             $total_upsell_price += $temp_upsell_item_price;
 
@@ -207,9 +212,7 @@ class PayPalService
 
             // Update main order
             $upsell_order->total_price += $total_upsell_price;
-            $upsell_order->total_price_usd = CurrencyService::roundValueByCurrencyRules(
-                $upsell_order->total_price / $upsell_order_exchange_rate,
-                self::DEFAULT_CURRENCY);
+            $upsell_order->total_price_usd = CurrencyService::roundValueByCurrencyRules($upsell_order->total_price / $upsell_order_exchange_rate);
             $upsell_order->status = PaymentService::getOrderStatus($upsell_order);
             $upsell_order->products = array_merge($upsell_order->products, $upsell_order_products);
             $upsell_order->save();
@@ -256,7 +259,7 @@ class PayPalService
             $product = $this->findProductBySku($request->get('sku_code'));
         }
         $priceData = $this->getPrice($request, $product);
-        $price_usd = CurrencyService::roundValueByCurrencyRules($priceData['price'] / $priceData['exchange_rate'], self::DEFAULT_CURRENCY);
+        $price_usd = CurrencyService::roundValueByCurrencyRules($priceData['price'] / $priceData['exchange_rate']);
 
         // Currency of the prices show on the shop page
         $shop_currency = CurrencyService::getCurrency();
@@ -266,15 +269,24 @@ class PayPalService
         $local_price = $priceData['price'];
         $total_price_usd = $price_usd;
         $total_local_price = $local_price;
-        $is_currency_supported = in_array($priceData['code'], self::$supported_currencies);
-        $pp_currency_code = !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency;
-        $local_warranty_price = ($request->input('is_warranty_checked') && $product->warranty_percent) ? CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']) : 0;
-        $local_warranty_usd = ($request->input('is_warranty_checked') && $product->warranty_percent) ? CurrencyService::roundValueByCurrencyRules(CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $price_usd),self::DEFAULT_CURRENCY): 0;
+        $local_warranty_price = 0;
+        $local_warranty_usd = 0;
 
-        if ($is_currency_supported) {
+        if ($request->input('is_warranty_checked') && $product->warranty_percent) {
+            $local_warranty_price = CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']);
+            $local_warranty_usd = CurrencyService::roundValueByCurrencyRules(
+                CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $price_usd)
+            );
+        }
+
+        $is_currency_supported = false;
+        if (self::isCurrencySupported($local_currency)) {
+            $is_currency_supported = true;
             $subTotal = $total_local_price + $local_warranty_price;
+            $pp_currency_code = $local_currency;
         } else {
             $subTotal = $price_usd + $local_warranty_usd;
+            $pp_currency_code = Currency::DEF_CUR;
         }
 
         // create new order and transaction after 1 hour
@@ -311,12 +323,10 @@ class PayPalService
             if ($request->input('is_warranty_checked') && $product->warranty_percent) {
                 $local_warranty_price = CurrencyService::roundValueByCurrencyRules($priceData['warranty'], $priceData['code']);
                 $total_price_usd = CurrencyService::roundValueByCurrencyRules(
-                    ($priceData['price'] + $priceData['warranty']) / $priceData['exchange_rate'],
-                    self::DEFAULT_CURRENCY
+                    ($priceData['price'] + $priceData['warranty']) / $priceData['exchange_rate']
                 );
                 $local_warranty_usd = CurrencyService::roundValueByCurrencyRules(
-                    CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $price_usd),
-                    self::DEFAULT_CURRENCY
+                    CurrencyService::calculateWarrantyPrice((float)$product->warranty_percent, $price_usd)
                 );
                 $total_local_price += $local_warranty_price;
                 $items[] = [
@@ -356,7 +366,7 @@ class PayPalService
 
                 $order = new OdinOrder([
                     'fingerprint' => $fingerprint,
-                    'currency' => !$is_currency_supported ? self::DEFAULT_CURRENCY : $local_currency,
+                    'currency' => $pp_currency_code,
                     'exchange_rate' => $is_currency_supported ? $priceData['exchange_rate'] : 1, // 1 - USD to USD exchange rate
                     'total_paid' => 0,
                     'total_paid_usd' => 0,
@@ -531,12 +541,13 @@ class PayPalService
 
                 $order = OdinOrder::getByTxnHash($paypal_order->id, $payment_api->payment_provider); // throwable
 
+                $txn_amount = $this->getPayPalOrderValue($paypal_order);
                 PaymentService::addTxnToOrder(
                     $order,
                     [
                         'hash' => $paypal_order->id,
                         'capture_hash' => $paypal_order->purchase_units[0]->payments->captures[0]->id  ?? null,
-                        'value' => $this->getPayPalOrderValue($paypal_order),
+                        'value' => $txn_amount,
                         'currency' => $this->getPayPalOrderCurrency($paypal_order),
                         'status' => Txn::STATUS_APPROVED,
                         'provider_data' => $paypal_order,
@@ -550,7 +561,7 @@ class PayPalService
                 // Set is_paid for order products of captured transaction
                 $products = $order->getProductsByTxnHash($paypal_order->id);
                 if (empty($products)) {
-                    $products = $order->getProductsByTxnValue($this->getPayPalOrderValue($paypal_order));
+                    $products = $order->getProductsByTxnValue($txn_amount);
                 }
 
                 $is_main = true;
@@ -579,7 +590,7 @@ class PayPalService
                 $order->status = PaymentService::getOrderStatus($order, $is_order_need_to_check);
                 $order->is_invoice_sent = false;
 
-                $txn_amount_usd = CurrencyService::convertAndRoundValueToUsd($this->getPayPalOrderValue($paypal_order), $order->currency);
+                $txn_amount_usd = CurrencyService::roundValueByCurrencyRules($txn_amount / $order->exchange_rate);
                 $order->addNote(CustomerBlacklistService::getOrderPauseReason($order, $txn_amount_usd), true);
 
                 $order->save();
@@ -587,20 +598,6 @@ class PayPalService
                 return response(null, 200);
             }
         }
-    }
-
-    /**
-     * @param OdinOrder $order
-     */
-    public function calculateTotalPaid(OdinOrder $order)
-    {
-        $total_pad = 0;
-        foreach ($order->products as $product) {
-            if ($product['is_txn_approved']) {
-                $total_pad += $product['txn_value'];
-            }
-        }
-        $order->total_paid = $total_pad;
     }
 
     /**
