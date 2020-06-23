@@ -127,12 +127,6 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
         this.slideForm = false;
       }
 
-      if (js_query_params.tpl === 'vmp42') {
-        document.body.classList.add('tpl-vmp42');
-        this.setStickyFooter();
-        this.slideForm = true;
-      }
-
       this.restore_customer(
         (fname, lname, email, street, city, zipcode, country) => {
           this.form.fname = fname;
@@ -151,9 +145,7 @@ js_deps.wait(['vue', 'element', 'intl_tel_input'], () => {
     },
 
     mounted() {
-      const qty = js_query_params.tpl !== 'vmp42'
-        ? +this.queryParams.qty
-        : null;
+      const qty = this.queryParams.qty;
 
       const deal = this.purchase.find(({ totalQuantity }) => qty === totalQuantity);
 

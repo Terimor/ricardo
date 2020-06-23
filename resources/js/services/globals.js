@@ -114,7 +114,7 @@ window.txid = window.txidjs = txidFromGet.length >= 20
 function documentReady() {
   // add tpl body class for checkout
   if (location.pathname.startsWith('/checkout')) {
-    const allowed_templates = ['emc1', 'emc1b', 'vmc4', 'smc7', 'smc7p', 'fmc5', 'vmp41', 'vmp42'];
+    const allowed_templates = ['emc1', 'emc1b', 'vmc4', 'smc7', 'smc7p', 'fmc5', 'vmp41'];
 
     const tpl = allowed_templates.indexOf(js_query_params.tpl) !== -1
       ? js_query_params.tpl
