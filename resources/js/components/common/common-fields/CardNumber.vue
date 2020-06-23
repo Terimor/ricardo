@@ -2,6 +2,7 @@
 
   <text-field
     id="card-number-field"
+    class="card_number-field"
     v-model="form[name]"
     :validation="$v"
     :validationMessage="textRequired"
@@ -28,6 +29,7 @@
 <script>
 
   import globals from '../../../mixins/globals';
+  import Cleave from 'cleave.js';
 
 
   export default {
@@ -58,6 +60,17 @@
 
     mounted() {
       this.lazyload_update();
+
+      js_deps.wait_for(() => {
+        return !!document.querySelector('#card-number-field input');
+      }, () => {
+        var cleave = new Cleave('#card-number-field input', {
+          creditCard: true,
+          onCreditCardTypeChanged: function (type) {
+              // update UI ...
+          }
+        });
+      });
     },
 
 
@@ -109,6 +122,11 @@
     :global(.prefix > img) {
       height: 22px;
       width: auto;
+    }
+
+    :global(input) {
+      font-family: 'Pathway Gothic One', sans-serif !important;
+      font-size: 19px !important
     }
 
   }
