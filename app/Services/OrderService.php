@@ -115,7 +115,7 @@ class OrderService
         }, 0);
 
         $order->total_paid = CurrencyService::roundValueByCurrencyRules($total, $order->currency);
-        $order->total_paid_usd = CurrencyService::convertAndRoundValueToUsd($total, $order->currency);
+        $order->total_paid_usd = CurrencyService::roundValueByCurrencyRules($total / $order->exchange_rate);
 
         return $order;
     }

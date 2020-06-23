@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\{OdinProduct, Setting, Pixel, AwsImage, Domain, OdinOrder};
+use App\Models\{Currency, OdinProduct, Setting, Pixel, AwsImage, Domain, OdinOrder};
 use MongoDB\BSON\{ObjectId, UTCDateTime};
 use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
@@ -913,20 +913,19 @@ class UtilsService
      */
     public static function isEUCountry(string $country_code): bool
     {
-	    return in_array(strtolower(trim($country_code)), static::$countries_eu);
+        return in_array(strtolower(trim($country_code)), static::$countries_eu);
     }
 
     /**
      * Return paypal currency code
-     * @return type
+     * @return string
      */
-    public static function getPayPalCurrencyCode()
+    public static function getPayPalCurrencyCode(): string
     {
         $local_currency = optional(CurrencyService::getCurrency())->code;
-        if (!in_array($local_currency, PayPalService::$supported_currencies)) {
-            $local_currency = PayPalService::DEFAULT_CURRENCY;
+        if (!PayPalService::isCurrencySupported($local_currency)) {
+            $local_currency = Currency::DEF_CUR;
         }
-
         return $local_currency;
     }
 

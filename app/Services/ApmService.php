@@ -262,7 +262,7 @@ class ApmService {
 
                 $checkout_price += $order_main_product['price'] + $order_main_product['warranty_price'];
                 $order->total_price = CurrencyService::roundValueByCurrencyRules($checkout_price, $order->currency);
-                $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($order->total_price / $order->exchange_rate, Currency::DEF_CUR);
+                $order->total_price_usd = CurrencyService::roundValueByCurrencyRules($order->total_price / $order->exchange_rate);
 
                 if (!$order->save()) {
                     $validator = $order->validate();

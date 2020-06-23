@@ -68,9 +68,9 @@ class PaymentApi extends Model
 
     /**
      * Returns active PayPal account
-     * @return type
+     * @return PaymentApi|null
      */
-    public static function getActivePaypal()
+    public static function getActivePaypal(): ?PaymentApi
     {
         $provider = self::whereIn('payment_provider', [PaymentProviders::PAYPAL, PaymentProviders::PAYPAL_HK])
             ->where(['is_active' => true])
