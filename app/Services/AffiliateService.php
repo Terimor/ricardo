@@ -66,12 +66,8 @@ class AffiliateService
                 }
 
                 // if we have #OFFER_ID# in code check it then replace to offer
-                if (!empty($order->offer)) {
-                    $url = str_replace('#OFFER_ID#', $order->offer, $url);
-                }
-                if (!empty($order->affiliate)) {
-                    $url = str_replace('#AFF_ID#', $order->affiliate, $url);
-                }
+                $url = !empty($order->offer) ? str_replace('#OFFER_ID#', $order->offer, $url) : $url;
+                $url = !empty($order->affiliate) ? str_replace('#AFF_ID#', $order->affiliate, $url) : $url;
                 $url = static::replaceQueryParams($url, $params);
 
                 // replace order currency
