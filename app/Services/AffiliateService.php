@@ -66,8 +66,11 @@ class AffiliateService
                 }
 
                 // if we have #OFFER_ID# in code check it then replace to offer
-                if (!empty($order->offer) && strpos($url, '#OFFER_ID#')) {
+                if (!empty($order->offer)) {
                     $url = str_replace('#OFFER_ID#', $order->offer, $url);
+                }
+                if (!empty($order->affiliate)) {
+                    $url = str_replace('#AFF_ID#', $order->affiliate, $url);
                 }
                 $url = static::replaceQueryParams($url, $params);
 
@@ -115,7 +118,7 @@ class AffiliateService
                  // replace all #tag# after processing
                 $url = str_replace('=#', '={', $url);
                 $url = str_replace('#', '}', $url);
-
+echo '<pre>'; var_dump($url); echo '</pre>'; exit;
                 // send request query
                 RequestQueue::saveNewRequestQuery($url, $postback->delay);
                 $postbacksArray[] = $url;

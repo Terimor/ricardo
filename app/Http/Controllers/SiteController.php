@@ -340,6 +340,10 @@ class SiteController extends Controller
      */
     public function checkout(Request $request, ProductService $productService, $priceSet = null)
     {
+        $order = OdinOrder::getByNumber("OV006JPLYBNEJ");
+        $a = AffiliateService::checkAffiliatePostback('1078', $order);
+
+        echo '<pre>'; var_dump($order); echo '</pre>'; exit;
         if (!empty($priceSet)) {
             $request->merge(['cop_id' => $priceSet]);
         }
