@@ -31,7 +31,7 @@ class AffiliateService
      */
     public static function checkAffiliatePostback(string $affiliateId, OdinOrder $order, $validTxid = null)
     {
-        $postbacks = AffiliatePostback::all();
+        $postbacks = AffiliatePostback::getPostbacks($affiliateId);
 
         if ($postbacks) {
             $postbacksArray = $order->postbacks ?? null;
