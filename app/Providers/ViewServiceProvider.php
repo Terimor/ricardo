@@ -84,9 +84,9 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('is_aff_id_empty', AffiliateService::isAffiliateRequestEmpty(Request()));
             $setting = Setting::getValue([
                 'support_address',
-                'privacy_off'
+                'show_company_info'
             ]);
-            $view->with('company_address', TemplateService::getCompanyAddress($setting['support_address'], $domain, false, $setting['privacy_off'] ?? 0));
+            $view->with('company_address', TemplateService::getCompanyAddress($setting['support_address'], $domain, false, $setting['show_company_info'] ?? 0));
         });
 
         View::composer('thankyou', function($view) {
@@ -106,7 +106,7 @@ class ViewServiceProvider extends ServiceProvider
     {
         // Layout
         View::composer('minishop.layout', function($view) {
-            $settings = Setting::getValue(['sentry_dsn', 'freshchat_token', 'support_address', 'privacy_off']);
+            $settings = Setting::getValue(['sentry_dsn', 'freshchat_token', 'support_address', 'show_company_info']);
 
             $lang = app()->getLocale();
             $domain = Domain::getByName();
@@ -149,7 +149,7 @@ class ViewServiceProvider extends ServiceProvider
             $view->with('header_menu', MiniShopService::$headerMenu);
             $view->with('is_aff_id_empty', $is_aff_id_empty);
             $view->with('is_signup_hidden', $is_signup_hidden);
-            $view->with('company_address', TemplateService::getCompanyAddress($settings['support_address'], $domain, false, $settings['privacy_off'] ?? 0));
+            $view->with('company_address', TemplateService::getCompanyAddress($settings['support_address'], $domain, false, $settings['show_company_info'] ?? 0));
             $view->with('is_new_engine', $is_checkout_new_engine_page || $is_health_page || $is_vrtl_page || $is_vrtl_upsells_page || $is_vrtl_thankyou_page);
         });
     }

@@ -32,7 +32,7 @@
     <div class="container">
         <div class="static__wrapper">
             {!! t('terms.content', ['websitename' => $website_name, 'address' => $placeholders['address'], 'email' => $placeholders['email'],
-            'phone' => $placeholders['phone'], 'number' => $placeholders['number'], 'company' => $placeholders['company']]) !!}
+            'phone' => $placeholders['phone'], 'number' => $placeholders['number'], 'company' => $placeholders['company'], 'details' => $placeholders['details']]) !!}
             @include('layouts.footer', ['isWhite' => true, 'hasHome' => true ])
         </div>
     </div>

@@ -114,7 +114,8 @@ class I18n extends Model
         '#DATE#',
         '#NUMBER#',
         '#PHONE#',
-        '#FILENAME#'
+        '#FILENAME#',
+        '#DETAILS#'
       ];
 
     /**

@@ -275,6 +275,7 @@ class SiteController extends Controller
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         $placeholders = TemplateService::getCompanyData($domain);
+        $placeholders['details'] = $placeholders['show_company_info'] ? t('privacy.address_details', ['address' => $placeholders['address'], 'phone' => $placeholders['phone'], 'number' => $placeholders['number']]) : '';
         return view('privacy', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name', 'placeholders'));
     }
 
@@ -293,6 +294,7 @@ class SiteController extends Controller
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         $placeholders = TemplateService::getCompanyData($domain);
+        $placeholders['details'] = $placeholders['show_company_info'] ? t('terms.company_details', ['address' => $placeholders['address']]) : '';
         return view('terms', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'website_name', 'placeholders'));
     }
 
@@ -392,7 +394,7 @@ class SiteController extends Controller
         // load upsells only for vrlt templates
         //$upsells = $is_vrtl_page ? $productService->getProductUpsells($product) : [];
         $upsells = [];
-        $setting = Setting::getValue(['ipqualityscore_api_hash', 'support_address', 'privacy_off']);
+        $setting = Setting::getValue(['ipqualityscore_api_hash', 'support_address', 'show_company_info']);
 
         $payment_api = PaymentApi::getActivePaypal();
         $setting['instant_payment_paypal_client_id'] = $payment_api->key ?? null;
@@ -420,7 +422,7 @@ class SiteController extends Controller
         $website_name = $domain->getWebsiteName($product, $request->get('cop_id'), $request->get('product'));
         $main_logo = $domain->getMainLogo($product, $request->get('cop_id'));
 
-        $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain, false, $setting['privacy_off']);
+        $company_address = TemplateService::getCompanyAddress($setting['support_address'], $domain, false, $setting['show_company_info']);
         $company_descriptor_prefix = '';
 
         $cdn_url = \Utils::getCdnUrl();
