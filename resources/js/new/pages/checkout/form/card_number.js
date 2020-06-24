@@ -35,7 +35,7 @@ export default {
             required,
             valid(value) {
               value = value || '';
-              value = value.replace(/[^0-9]/g, '');
+              //value = value.replace(/[^0-9]/g, '');
 
               const credit_card_type_list = credit_card_type(value);
               const common_rule = value.length > 12 && value.length <= 19;

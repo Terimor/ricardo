@@ -11,7 +11,6 @@
       placeholder: placeholder
         ? placeholderText || textLabel
         : null,
-      pattern: '\\d*',
       type: 'tel',
       autocomplete: 'cc-number',
       'data-bluesnap': 'encryptedCreditCard',
