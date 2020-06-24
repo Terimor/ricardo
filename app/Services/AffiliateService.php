@@ -118,7 +118,7 @@ class AffiliateService
                  // replace all #tag# after processing
                 $url = str_replace('=#', '={', $url);
                 $url = str_replace('#', '}', $url);
-echo '<pre>'; var_dump($url); echo '</pre>'; exit;
+
                 // send request query
                 RequestQueue::saveNewRequestQuery($url, $postback->delay);
                 $postbacksArray[] = $url;
