@@ -54,12 +54,10 @@ class AffiliateService
 
                 // if we have #TXID# in url check it then replace to txid
                 $txid = null;
-                if (strpos($url, '#TXID#')) {
-                    if (!empty($order->txid)) {
-                        $txid = static::getValidTxid($order->txid);
-                        if ($txid) {
-                            $url = str_replace('#TXID#', $txid, $url);
-                        }
+                if (!empty($order->txid) && strpos($url, '#TXID#')) {
+                    $txid = static::getValidTxid($order->txid);
+                    if ($txid) {
+                        $url = str_replace('#TXID#', $txid, $url);
                     }
                 }
                 // if txid not valid delete transaction parameter from URL
@@ -68,10 +66,8 @@ class AffiliateService
                 }
 
                 // if we have #OFFER_ID# in code check it then replace to offer
-                if (strpos($url, '#OFFER_ID#')) {
-                    if (!empty($order->offer)) {
-                        $url = str_replace('#OFFER_ID#', $order->offer, $url);
-                    }
+                if (!empty($order->offer) && strpos($url, '#OFFER_ID#')) {
+                    $url = str_replace('#OFFER_ID#', $order->offer, $url);
                 }
                 $url = static::replaceQueryParams($url, $params);
 
@@ -357,25 +353,21 @@ class AffiliateService
         $code = str_replace('#AMOUNT#', $order->total_price_usd, $code);
 
         // if we have #TXID# in code check it then replace to txid
-        if (strpos($code, '#TXID#')) {
-            if (!empty($order->txid)) {
-                $txid = static::getValidTxid($order->txid);
-                if ($txid) {
-                    $code = str_replace('#TXID#', $txid, $code);
-                }
+        if (!empty($order->txid) && strpos($code, '#TXID#')) {
+            $txid = static::getValidTxid($order->txid);
+            if ($txid) {
+                $code = str_replace('#TXID#', $txid, $code);
             }
         }
         // if we have #OFFER_ID# in code check it then replace to offer
-        if (strpos($code, '#OFFER_ID#')) {
-            if (!empty($order->offer)) {
-                $code = str_replace('#OFFER_ID#', $order->offer, $code);
-            }
+        if (!empty($order->offer) && strpos($code, '#OFFER_ID#')) {
+            $code = str_replace('#OFFER_ID#', $order->offer, $code);
         }
-        if (strpos($code, '#ORDER_NUMBER#')) {
-            if (!empty($order->number)) {
-                $code = str_replace('#ORDER_NUMBER#', $order->number, $code);
-            }
+        // if we have #AFF_ID# in code check it then replace to affiliate and don't have in params
+        if (!empty($order->affiliate) && strpos($code, '#AFF_ID#')) {
+            $code = str_replace('#AFF_ID#', $order->affiliate, $code);
         }
+        $code = str_replace('#ORDER_NUMBER#', $order->number, $code);
         return $code;
     }
 
