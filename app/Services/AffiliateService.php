@@ -92,9 +92,9 @@ class AffiliateService
                 }
 
                 // replace amount
-                if (!empty($order->total_price_usd)) {
-                    $url = str_replace('#AMOUNT#', $order->total_price_usd, $url);
-                }
+                $url = !empty($order->total_price_usd) ? str_replace('#AMOUNT#', $order->total_price_usd, $url) : $url;
+                // order number
+                $url = $order->number ? str_replace('#ORDER_NUMBER#', $order->number, $url) : $url;
 
                 // replace tpl if needed
                 if (!isset($params['tpl'])) {
