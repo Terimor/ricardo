@@ -19,7 +19,7 @@ class TemplateService
     {
         $address = !empty($domain->address) ? $domain->address : $settingValue;
         $address = $line_break ? str_replace("\n", '<br>', $address) : str_replace("\n", ' - ', $address);
-        // if privacy = 0 address is empty
+        // if show_company_info = 0 address is empty
         if ($show_company_info == 0) {
             $address = '';
         }
