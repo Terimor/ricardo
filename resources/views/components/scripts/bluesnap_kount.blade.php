@@ -22,7 +22,10 @@
       });
 
       document.documentElement.classList.add('kaxsdc');
-      document.documentElement.getAttribute('data-event') = 'load';
+      
+      if (document.documentElement.getAttribute('data-event')) {
+        document.documentElement.getAttribute('data-event') = 'load';
+      }
 
       ka_client.autoLoadEvents();
     });
