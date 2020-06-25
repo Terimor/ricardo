@@ -13,7 +13,7 @@
 
   <script type="text/javascript">
     js_deps.wait(['bluesnap_kount'], function() {
-      var ka_client = new ka.ClientSDK();
+      var ka_client = new window.ka.ClientSDK();
 
       ka_client.setupCallback({
         'collect-begin': function(params) {
@@ -22,7 +22,7 @@
       });
 
       document.documentElement.classList.add('kaxsdc');
-      document.documentElement.dataset.event = 'load';
+      document.documentElement.getAttribute('data-event') = 'load';
 
       ka_client.autoLoadEvents();
     });

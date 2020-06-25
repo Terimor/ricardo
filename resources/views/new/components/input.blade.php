@@ -5,7 +5,7 @@
     invalid: {{ $validation }} && {{ $validation }}.$dirty && {{ $validation }}.$invalid,
     dirty: {{ $validation }} && {{ $validation }}.$model,
   }"
-  @if (!empty($init)) v-if="{{ $init }}() || true" @endif>
+>
 
   <div class="input-field-label">
     {!! !empty($label_code) ? '@{{ ' . $label_code . ' }}' : '' !!}

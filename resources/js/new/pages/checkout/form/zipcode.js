@@ -71,8 +71,8 @@ export default {
 
     zipcode_input() {
       this.zipcode_address = null;
-      this.form.zipcode = this.form.zipcode.replace(/[^A-z0-9]/g, '')
-      this.form.zipcode = this.form.zipcode.substr(0, 12);
+      this.form.zipcode = this.form.zipcode ? this.form.zipcode.replace(/[^A-z0-9]/g, '') : this.form.zipcode;
+      this.form.zipcode = this.form.zipcode ? this.form.zipcode.substr(0, 12) : this.form.zipcode;
     },
 
     zipcode_blur() {

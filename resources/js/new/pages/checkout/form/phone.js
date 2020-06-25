@@ -1,4 +1,5 @@
 import { required } from 'vuelidate/lib/validators';
+import logger from '../../../../mixins/logger';
 
 
 export default {
@@ -13,6 +14,11 @@ export default {
       },
     };
   },
+
+
+  mixins: [
+    logger
+  ],
 
 
   validations() {
@@ -48,6 +54,8 @@ export default {
         return acc;
       }, {});
     });
+
+    this.phone_init();
   },
 
 
@@ -60,7 +68,7 @@ export default {
             && !!this.$refs.phone_field && !!this.$refs.phone_field.querySelector('input');
         },
         () => {
-          setTimeout(() => {
+          if (this.$refs.phone_field && !!this.$refs.phone_field.querySelector('input')) {
             const element = this.$refs.phone_field.querySelector('input');
 
             if (element.phone_init) {
@@ -86,7 +94,15 @@ export default {
             });
 
             this.phone_check_padding();
-          }, 100);
+          } else {
+            this.log_data('Phone init error', {
+              force: true,  
+              'window.intlTelInput': !!window.intlTelInput,
+              'this.country_codes': !!this.country_codes,
+              'this.$refs.phone_field': !!this.$refs.phone_field,
+              'this.$refs.phone_field.querySelector': !!this.$refs.phone_field.querySelector('input')
+            });
+          }
         },
       );
     },

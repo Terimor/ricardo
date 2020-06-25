@@ -1,7 +1,6 @@
-const available = [1, 3, 5];
-/*const available = Object.keys(js_data.product.prices)
+const available = Object.keys(js_data.product.prices)
   .filter(value => js_data.product.prices[value].value)
-  .map(value => parseInt(value, 10));*/
+  .map(value => parseInt(value, 10));
 
 
 export default {
