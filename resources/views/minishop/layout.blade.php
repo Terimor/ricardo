@@ -48,7 +48,7 @@
       ref="app"
       :style="[fixed_margin_top]">
 
-      @if(config('app.site_disabled'))
+      @if(!empty($siteDisabled))
         @include('/closed')
       @else
           <!-- Fixed Region -->

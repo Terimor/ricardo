@@ -64,7 +64,7 @@
 
 
   <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
-  @if(config('app.site_disabled'))
+  @if(!empty($siteDisabled))
       @include('/closed')
   @else
 
