@@ -12,9 +12,6 @@
     <li class="footer__row-item"><a href="/terms" class="footer__link">{!! t('footer.terms') !!}</a></li>
     <li class="footer__row-item"><a href="/privacy" class="footer__link">{!! t('footer.privacy') !!}</a></li>
 
-    @if (empty($aff['is_signup_hidden']))
-      <li class="footer__row-item"><a href="https://www.h8m8.com" target="_blank" class="footer__link">{!! t('footer.affiliate') !!}</a></li>
-    @endif
 
     <li class="footer__row-item"><a href="/delivery" class="footer__link">{!! t('footer.delivery') !!}</a></li>
     <li class="footer__row-item"><a href="/report-abuse" class="footer__link">{!! t('abuse.title') !!}</a></li>

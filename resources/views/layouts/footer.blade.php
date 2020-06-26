@@ -34,12 +34,6 @@
 
         <br/>
 
-        @if (!isset($aff['is_signup_hidden']) || !$aff['is_signup_hidden'])
-            <li class="footer__row-item">
-                <a href="https://www.h8m8.com" target="_blank" class="footer__link">{{ t('footer.affiliate') }}</a>
-            </li>
-        @endif
-
         @if ($product->type != 'virtual')
             <li class="footer__row-item">
                 <a href="/delivery" class="footer__link">{{ t('footer.delivery') }}</a>

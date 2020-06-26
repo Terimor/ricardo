@@ -48,17 +48,20 @@
       ref="app"
       :style="[fixed_margin_top]">
 
-      <!-- Fixed Region -->
-      @include('new.regions.fixed')
+      @if(config('app.site_disabled'))
+        @include('/closed')
+      @else
+          <!-- Fixed Region -->
+          @include('new.regions.fixed')
 
-      <!-- Header Region -->
-      @include('minishop.regions.header')
+          <!-- Header Region -->
+          @include('minishop.regions.header')
+          <!-- Content Region -->
+            @yield('content')
+          <!-- Footer Region -->
+          @include('minishop.regions.footer')
 
-      <!-- Content Region -->
-      @yield('content')
-
-      <!-- Footer Region -->
-      @include('minishop.regions.footer')
+      @endif
 
     </div>
 

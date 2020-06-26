@@ -64,6 +64,10 @@
 
 
   <body class="{{ Route::has('promo') ? 'white-bg' : '' }}">
+  @if(config('app.site_disabled'))
+      @include('/closed')
+  @else
+
 
     <div id="app" ref="app" :style="[fixed_margin_top]">
         <!-- Fixed Region -->
@@ -95,6 +99,8 @@
             </template>
         @endif
     </div>
+
+  @endif
 
     @include('components.freshchat')
 

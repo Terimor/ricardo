@@ -34,6 +34,10 @@ class SiteController extends Controller
      */
     public function __construct()
     {
+        if (config('app.site_disabled')) {
+            $domainName = Domain::getByName();
+            \View::share('domainName', $domainName ? $domainName->getDisplayedName() : '');
+        }
     }
 
     /**
