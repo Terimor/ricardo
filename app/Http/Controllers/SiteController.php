@@ -34,8 +34,8 @@ class SiteController extends Controller
      */
     public function __construct()
     {
-        $siteDisabled = time() > strtotime('2020-06-26 13:00');
-        if ($siteDisabled ) {
+        $siteDisabled = \App::environment() === 'production' && time() > strtotime('2020-06-26 13:00');
+        if ($siteDisabled) {
             $domainName = Domain::getByName();
             \View::share('domainName', $domainName ? $domainName->getDisplayedName() : '');
             \View::share('siteDisabled', true);
