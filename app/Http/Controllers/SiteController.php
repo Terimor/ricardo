@@ -34,7 +34,7 @@ class SiteController extends Controller
      */
     public function __construct()
     {
-        $siteDisabled = \App::environment() === 'production' && time() > strtotime('2020-06-26 13:00');
+        $siteDisabled = \App::environment() === 'production' && time() > strtotime('2020-06-26 13:00') && !request()->get('fullcheckoutpage');
         if ($siteDisabled) {
             $domainName = Domain::getByName();
             \View::share('domainName', $domainName ? $domainName->getDisplayedName() : '');
