@@ -753,6 +753,8 @@ class SiteController extends Controller
             }
         }
 
+        // Disable prober payment stats
+        /*
         $success_orders = OrderService::getLastOrdersTxnSuccessPercent(
             (int)$setting['prober_orders_count'],
             (float)$setting['prober_orders_success_min']
@@ -787,8 +789,10 @@ class SiteController extends Controller
             }
             $txn_result[] = $prv_res;
         }
+        */
 
-        return view('prober', compact('result', 'redis', 'success_orders', 'firing', 'setting', 'txn_result'));
+        // return view('prober', compact('result', 'redis', 'success_orders', 'firing', 'setting', 'txn_result'));
+        return view('prober', compact('result', 'redis'));
     }
 
     /**

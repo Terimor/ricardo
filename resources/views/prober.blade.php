@@ -1,6 +1,7 @@
 <pre>
     <ol>
         <li>{{ str_pad('Synced Redis', 60, ' .', STR_PAD_RIGHT) }} {{ $redis }}</li>
+        <?php /* ?>
         <li>{{ str_pad("Orders with an approved payment (last {$setting['prober_orders_count']} orders)", 60, ' .', STR_PAD_RIGHT) }} {{ $success_orders }}%</li>
         <li>{{ str_pad("Firing (last {$setting['prober_firing_orders']} orders)", 60, ' .', STR_PAD_RIGHT) }} {{ $firing }}%</li>
         <li>Successful transactions (last {{$setting['prober_orders_count']}} orders)
@@ -10,6 +11,7 @@
                 @endforeach
             </ul>
         </li>
+        <?php */ ?>
     </ol>
     <b>{{ $result }}</b>
 </pre>
