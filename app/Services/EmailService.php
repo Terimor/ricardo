@@ -148,20 +148,20 @@ class EmailService
     }
 
     /**
-     * Send order email password to SAGA service
-     * @param string $password
+     * Send order email code to SAGA service
+     * @param string $code
      * @param string $email
      * @param string $return_url
      * @return mixed
      */
-    public function sendOrderEmailPassword(string $password, string $email, string $return_url)
+    public function sendOrderEmailCode(string $code, string $email, string $return_url)
     {
         $client = new \GuzzleHttp\Client();
         $urlPath = Setting::getValue('saga_api_endpoint');
         $urlPath = !empty($urlPath) ? $urlPath : '';
 
 
-        $url = $urlPath.'?r=odin-api/send-order-email-password';
+        $url = $urlPath.'?r=odin-api/send-order-email-code';
 
         $request = $client->request('POST', $url, [
             'headers' => [
@@ -170,7 +170,7 @@ class EmailService
             'form_params' => [
                 'language' => app()->getLocale(),
                 'customer_email' => $email,
-                'password' => $password,
+                'code' => $code,
                 'domain'    => request()->server('SERVER_NAME'),
                 'url' => $return_url
             ]

@@ -370,30 +370,30 @@ class OrderService
     }
 
     /**
-     * Generate password for the order and save in cache
+     * Generate code for the order and save in cache
      * @param string $email
      * @return string
      */
-    public function generateOrderPassword(string $email)
+    public function generateOrderCode(string $email)
     {
-        $password = ucfirst(Str::lower(Str::random(12)));
-        \Cache::put('OrderPassword'.$password, $email, 12 * 3600);
-        return $password;
+        $code = ucfirst(Str::lower(Str::random(12)));
+        \Cache::put('OrderCode'.$code, $email, 12 * 3600);
+        return $code;
     }
 
     /**
-     * Returns orders by given password
+     * Returns orders by given code
      * @param string $email
-     * @param string $password
+     * @param string $code
      * @return \Illuminate\Database\Eloquent\Collection|null
      */
-    public function getOrdersByEmailPassword(string $email, string $password)
+    public function getOrdersByEmailCode(string $email, string $code)
     {
-        $cached_email = \Cache::get('OrderPassword'.$password);
+        $cached_email = \Cache::get('OrderCode'.$code);
         if ($cached_email != $email) {
             return null;
         }
-        return OdinOrder::getByEmail($email, ['status', 'currency', 'total_paid', 'trackings', 'products', 'created_at']);
+        return OdinOrder::getByEmail($email);
     }
 
 }

@@ -17,14 +17,14 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="order_password">Password</label>
+                    <label for="order_code">Code</label>
                     <div class="input-group">
                         <input type="text"
-                               :required="passwordRequired"  @change="showEmailError=false"
-                               id="order_password" name="password" class="form-control" v-model="password">
+                               :required="codeRequired"  @change="showEmailError=false"
+                               id="order_code" name="code" class="form-control" v-model="code">
 
-                        <div class="invalid-feedback" v-if="passwordRequired">
-                            Please input your order password or request password by email
+                        <div class="invalid-feedback" v-if="codeRequired">
+                            Please input your order code or request code by email
                         </div>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                 <div class="col-md-2">
                     <label>&nbsp;</label>
                     <div class="input-group">
-                        <button class="btn btn-outline-danger" type="button" @click.prevent="requestPassword">Request password</button>
+                        <button class="btn btn-outline-danger" type="button" @click.prevent="requestCode">Request code</button>
                     </div>
                 </div>
             </div>
@@ -46,10 +46,13 @@
 
         </form>
 
-
-        <div v-for="order in orders">
-
+        <div class="card my-5">
+            <ul class="list-group list-group-flush">
+                <order-detail v-if="orders.length==1" :order="orders[0]" :is-active="true" />
+                <order-detail v-else v-for="order in orders" :order="order" :key="order.number" :is-active="activeOrder == order.number"/>
+            </ul>
         </div>
+
 
     </div>
 </template>
@@ -57,17 +60,18 @@
 <script>
   export default {
     name: "OrderStatus",
-    props: ['orderPassword', 'orderEmail'],
+    props: ['orderCode', 'orderEmail'],
     data() {
       return {
         email: this.orderEmail,
-        password: this.orderPassword,
+        code: this.orderCode,
         showError: false,
-        passwordRequired: true,
+        codeRequired: true,
         alertType: '',
         alertMessage: '',
         showForm: true,
-        orders: []
+        orders: [],
+        activeOrder: null
       }
     },
 
@@ -76,8 +80,8 @@
         this.orders = [];
         this.alertMessage = '';
         this.alertType = '';
-        this.passwordRequired = true;
-        if (!this.email || !this.password) {
+        this.codeRequired = true;
+        if (!this.email || !this.code) {
           this.showError = true;
           return false;
         }
@@ -92,7 +96,7 @@
           },
           body: JSON.stringify({
             email: this.email,
-            password: this.password
+            code: this.code
           }),
         }).then(resp => {
           return resp.json();
@@ -106,16 +110,16 @@
         }
       },
 
-      async requestPassword() {
+      async requestCode() {
         this.alertMessage = '';
         this.alertType = '';
-        this.passwordRequired = false;
+        this.codeRequired = false;
         if (!this.email) {
           this.showError = true;
           return false;
         }
         this.showError = false;
-        const response = await fetch('/request-order-password', {
+        const response = await fetch('/request-order-code', {
           method: 'post',
           credentials: 'same-origin',
           headers: {
@@ -139,10 +143,10 @@
         this.alertMessage = response.message;
       },
 
-      mounted() {
-        if (this.password && this.email) {
-          this.getOrderInfo();
-        }
+    },
+    mounted() {
+      if (this.code && this.email) {
+        this.getOrderInfo();
       }
     }
   }

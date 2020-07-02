@@ -180,27 +180,13 @@ class SiteController extends Controller
         return view('contact_us', compact('loadedPhrases', 'product', 'page_title', 'main_logo', 'main_logo', 'website_name', 'placeholders'));
     }
 
-    /**
-     * Show Support page
-     * @param  Request  $request
-     * @param  ProductService  $productService
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function support(Request $request,ProductService $productService) {
-        $data = [
-            'product' => $productService->resolveProduct($request, true),
-            'page_title' => 'Support',
-            'info' => $info ?? null,
-        ];
-        return view('support', $data);
-    }
 
     /**
      * Show Support page with search results
      * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function supportRequest(Request $request) {
+    /*public function supportRequest(Request $request) {
 
         if (isset($request['search']) && $request['search']) {
             $search = trim($request['search']);
@@ -230,7 +216,7 @@ class SiteController extends Controller
         }
 
         return response()->view('components.support.order_info', compact('info'));
-    }
+    }*/
     /**
      * Returns page
      * @param Request $request
@@ -867,27 +853,27 @@ class SiteController extends Controller
     }
 
     /**
-     * Order status page
+     * Support page
      * @param Request $request
      * @param ProductService $productService
-     * @param string|null $password
+     * @param string|null $code
      * @param string|null $email
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function orderStatus(Request $request, ProductService $productService, ?string $password = null, ?string $email = null)
+    public function support(Request $request, ProductService $productService, ?string $code = null, ?string $email = null)
     {
         $data = [
             'product' => $productService->resolveProduct($request, true),
             'page_title' => 'Order status',
-            'password' => $password,
+            'code' => $code,
             'email' => $email
         ];
 
-        return view('order_status', $data);
+        return view('support', $data);
     }
 
 
-    public function requestOrderPassword(Request $request, EmailService $emailService, OrderService $orderService)
+    public function requestOrderCode(Request $request, EmailService $emailService, OrderService $orderService)
     {
 
         $email = mb_strtolower(trim($request->get('email')));
@@ -906,14 +892,14 @@ class SiteController extends Controller
                 ]);
             }
 
-            $url = \route('order-status', [], true);
-            $password = $orderService->generateOrderPassword($email);
-            $result = $emailService->sendOrderEmailPassword($password, $email, $url);
+            $url = \route('support', [], true);
+            $code = $orderService->generateOrderCode($email);
+            $result = $emailService->sendOrderEmailCode($code, $email, $url);
 
             if (!empty($result['status'])) {
                 return response()->json([
                     'status' => 1,
-                    'message' => 'Password sent to your email!'
+                    'message' => 'Code sent to your email!'
                 ]);
             }
 
@@ -928,20 +914,20 @@ class SiteController extends Controller
     public function getOrderInfo(Request $request, OrderService $orderService)
     {
         $email = trim($request->get('email'));
-        $password = trim($request->get('password'));
-        if (!$email || !$password) {
+        $code = trim($request->get('code'));
+        if (!$email || !$code) {
             return response()->json([
                 'status' => 0,
-                'message' => 'Email and Password are required'
+                'message' => 'Email and Code are required'
             ]);
         }
 
-        $orders = $orderService->getOrdersByEmailPassword($email, $password);
+        $orders = $orderService->getOrdersByEmailCode($email, $code);
 
         if (!$orders || $orders->isEmpty()) {
             return response()->json([
                 'status' => 404,
-                'message' => 'Password is invalid or expired, please request new password!'
+                'message' => 'Code is invalid or expired, please request new code!'
             ]);
         }
 

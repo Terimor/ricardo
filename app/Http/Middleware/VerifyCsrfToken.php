@@ -43,7 +43,7 @@ class VerifyCsrfToken extends Middleware
         'test-payments',
         'new-customer',
         'support-abc',
-        'request-order-password',
+        'request-order-code',
         'get-order-info',
     ];
 }
