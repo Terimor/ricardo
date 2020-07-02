@@ -367,6 +367,21 @@ class OdinOrder extends OdinModel
     }
 
     /**
+     * Return orders by customer email
+     * @param string $email
+     * @param array $select
+     * @return Collection|null
+     */
+    public static function getByEmail(string $email, array $select = []): ?Collection
+    {
+        $query = static::query()->where(['customer_email' => mb_strtolower($email)])->orderByDesc('_id');
+        if ($select) {
+            $query->select($select);
+        }
+        return $query->get();
+    }
+
+    /**
      * Returns OdinOrder by Txn hash
      * @param string $hash
      * @param string|null $provider

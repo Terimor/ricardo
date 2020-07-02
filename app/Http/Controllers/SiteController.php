@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\EmailService;
 use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -864,4 +865,91 @@ class SiteController extends Controller
     {
         return response(null, 200);
     }
+
+    /**
+     * Order status page
+     * @param Request $request
+     * @param ProductService $productService
+     * @param string|null $password
+     * @param string|null $email
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function orderStatus(Request $request, ProductService $productService, ?string $password = null, ?string $email = null)
+    {
+        $data = [
+            'product' => $productService->resolveProduct($request, true),
+            'page_title' => 'Order status',
+            'password' => $password,
+            'email' => $email
+        ];
+
+        return view('order_status', $data);
+    }
+
+
+    public function requestOrderPassword(Request $request, EmailService $emailService, OrderService $orderService)
+    {
+
+        $email = mb_strtolower(trim($request->get('email')));
+        if (!$email) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Email is required'
+            ]);
+        }
+        if ($email) {
+            $orders = OdinOrder::getByEmail($email, ['status']);
+            if ($orders->isEmpty()) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'There is not order by that email!'
+                ]);
+            }
+
+            $url = \route('order-status', [], true);
+            $password = $orderService->generateOrderPassword($email);
+            $result = $emailService->sendOrderEmailPassword($password, $email, $url);
+
+            if (!empty($result['status'])) {
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'Password sent to your email!'
+                ]);
+            }
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'Something went wrong!'
+            ]);
+        }
+        return response()->json($request->all());
+    }
+
+    public function getOrderInfo(Request $request, OrderService $orderService)
+    {
+        $email = trim($request->get('email'));
+        $password = trim($request->get('password'));
+        if (!$email || !$password) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Email and Password are required'
+            ]);
+        }
+
+        $orders = $orderService->getOrdersByEmailPassword($email, $password);
+
+        if (!$orders || $orders->isEmpty()) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Password is invalid or expired, please request new password!'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 1,
+            'orders' => $orders->toArray()
+        ]);
+
+    }
+
 }

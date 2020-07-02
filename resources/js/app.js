@@ -8,7 +8,7 @@ import * as extraFields from './mixins/extraFields';
 
 let deps = ['vue', 'element'];
 
-if (location.pathname.substr(1).split('/').shift() !== 'thankyou-promos' && location.hostname !== 'smartbell.pro') {
+if (location.pathname.substr(1).split('/').shift() === 'checkout' && location.hostname !== 'smartbell.pro') {
   deps.push('intl_tel_input');
 }
 

@@ -88,6 +88,10 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/support-abc', 'SiteController@support');
     $router->post('/support-abc', 'SiteController@supportRequest')->name('support-request');
 
+    $router->get('/order-status/{password?}/{email?}', 'SiteController@orderStatus')->name('order-status');
+    $router->post('/request-order-password', 'SiteController@requestOrderPassword')->name('request-order-password');
+    $router->post('/get-order-info', 'SiteController@getOrderInfo')->name('get-order-info');
+
     // report-abuse
     $router->get('/report-abuse', 'SiteController@reportAbuse');
 

@@ -55,7 +55,7 @@ class ViewServiceProvider extends ServiceProvider
             $is_thankyou = $is_thankyou_page || $is_vrtl_thankyou_page;
 
             $view->with('cdn_url', UtilsService::getCdnUrl());
-            $view->with('HasVueApp', $is_checkout || $is_upsells || $is_thankyou || Route::is('order-tracking'));
+            $view->with('HasVueApp', $is_checkout || $is_upsells || $is_thankyou || Route::is('order-tracking')  || Route::is('order-status'));
             $view->with('PayPalCurrency', UtilsService::getPayPalCurrencyCode());
             $view->with('sentry_dsn', $settings['sentry_dsn']);
             $view->with('FreshchatToken', $settings['freshchat_token']);

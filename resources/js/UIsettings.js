@@ -34,3 +34,4 @@ Vue.component('upsells-virtual', require('./components/UpsellsVirtual').default)
 // common
 Vue.component('green-button', require('./components/common/GreenButton').default)
 Vue.component('modal', require('./components/common/modal').default)
+Vue.component('order-status', require('./components/OrderStatus').default)

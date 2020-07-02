@@ -7,6 +7,7 @@ use App\Models\OdinOrder;
 use App\Models\OdinCustomer;
 use Exception;
 use App\Exceptions\BlockEmailException;
+use Illuminate\Support\Str;
 
 /**
  * Email Service class
@@ -144,6 +145,38 @@ class EmailService
             'valid' => $valid,
             'disposable' => $disposable
         ];
+    }
+
+    /**
+     * Send order email password to SAGA service
+     * @param string $password
+     * @param string $email
+     * @param string $return_url
+     * @return mixed
+     */
+    public function sendOrderEmailPassword(string $password, string $email, string $return_url)
+    {
+        $client = new \GuzzleHttp\Client();
+        $urlPath = Setting::getValue('saga_api_endpoint');
+        $urlPath = !empty($urlPath) ? $urlPath : '';
+
+
+        $url = $urlPath.'?r=odin-api/send-order-email-password';
+
+        $request = $client->request('POST', $url, [
+            'headers' => [
+                'api-token' => $this->apiKey,
+            ],
+            'form_params' => [
+                'language' => app()->getLocale(),
+                'customer_email' => $email,
+                'password' => $password,
+                'domain'    => request()->server('SERVER_NAME'),
+                'url' => $return_url
+            ]
+        ]);
+
+        return json_decode($request->getBody()->getContents(), true);
     }
 
 
