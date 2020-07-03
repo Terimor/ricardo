@@ -10,6 +10,16 @@
 
 @endsection
 
+@section('styles')
+
+    <link
+        href="{{ mix_cdn('assets/js/app.vue.css') }}"
+        onload="js_deps.ready.call(this, 'page-styles')"
+        rel="stylesheet"
+        media="none" />
+
+@endsection
+
 @section('content')
     <div class="contacts bg-white">
         <div class="container py-5">

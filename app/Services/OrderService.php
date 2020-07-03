@@ -15,6 +15,47 @@ use Illuminate\Support\Str;
  */
 class OrderService
 {
+
+    public static array $as_subtags = [
+        'Delivered_001' => ['Delivered', 'Shipment delivered successfully'],
+        'Delivered_002' => ['Picked up by the customer', 'Package picked up by the customer'],
+        'Delivered_003' => ['Sign by customer', 'Package delivered to and signed by the customer'],
+        'Delivered_004' => ['Delivered and received cash on delivery', 'Package delivered to the customer and cash collected on delivery'],
+        'AvailableForPickup_001' => ['Available for pickup', 'The package arrived at a pickup point near you and is available for pickup'],
+        'Exception_001' => ['Exception', 'Delivery of the package failed due to some shipping exception'],
+        'Exception_002' => ['Customer moved', 'Delivery of the package failed as the customer relocated '],
+        'Exception_003' => ['Customer refused delivery', 'Delivery of the package failed as the recipient refused to take the package due to some reason'],
+        'Exception_004' => ['Delayed (Customs clearance)', 'Package delayed due to some issues during the customs clearance'],
+        'Exception_005' => ['Delayed (External factors)', 'Package delayed due to some unforeseen reasons'],
+        'Exception_006' => ['Held for payment', 'The package being held due to pending payment from the customer’s end'],
+        'Exception_007' => ['Incorrect Address', 'Package not delivered due to incorrect recipient address'],
+        'Exception_008' => ['Pick up missed', 'Package available for the pickup but not collected by the customer'],
+        'Exception_009' => ['Rejected by carrier', 'Package rejected by the carrier due to noncompliance with its guidelines'],
+        'Exception_010' => ['Returning to sender', 'The package returned to the original sender'],
+        'Exception_011' => ['Returned to sender', 'The package returned to the sender'],
+        'Exception_012' => ['Shipment damaged', 'Shipment damaged'],
+        'Exception_013' => ['Shipment lost', 'Delivery of the package failed as it got lost'],
+        'AttemptFail_001' => ['Failed Attempt', 'The delivery of the package failed due to some reason. Courier usually leaves a notice and will try to deliver again'],
+        'AttemptFail_002' => ['Addressee not available', 'Recipient not available at the given address'],
+        'AttemptFail_003' => ['Business Closed', 'Business is closed at the time of delivery'],
+        'InTransit_001' => ['In Transit', 'Shipment on the way'],
+        'InTransit_002' => ['Acceptance scan', 'Shipment accepted by the carrier'],
+        'InTransit_003' => ['Arrival scan', 'Shipment arrived at a hub or sorting center'],
+        'InTransit_004' => ['Arrived at destination country', 'International shipment arrived at the destination country'],
+        'InTransit_005' => ['Customs clearance completed', 'Customs clearance completed'],
+        'InTransit_006' => ['Customs clearance started', 'Package handed over to customs for clearance'],
+        'InTransit_007' => ['Departure Scan', 'Package departed from the facility'],
+        'InTransit_008' => ['Problem resolved', 'Problem resolved and shipment in transitt'],
+        'InTransit_009' => ['Forwarded to a different delivery address', 'Shipment forwarded to a different delivery address'],
+        'InfoReceived_001' => ['Info Received', 'The carrier received a request from the shipper and is about to pick up the shipment'],
+        'OutForDelivery_001' => ['Out for Delivery', 'The package is out for delivery'],
+        'OutForDelivery_002' => ['Available for pickup', 'The package has arrived at sorting center and is available for pickup'],
+        'OutForDelivery_003' => ['Customer contacted', 'The customer is contacted before the final delivery'],
+        'OutForDelivery_004' => ['Delivery appointment scheduled', 'A delivery appointment is scheduled'],
+        'Pending_001' => ['Pending', 'No information available on the carrier website or the tracking number is yet to be tracked'],
+        'Expired_001' => ['Expired', 'No tracking information of the shipment, from last 30 days']
+    ];
+
     /**
      *
      * @param array $data
@@ -382,7 +423,7 @@ class OrderService
     }
 
     /**
-     * Returns orders by given code
+     * Returns orders data by given code and email
      * @param string $email
      * @param string $code
      * @return \Illuminate\Database\Eloquent\Collection|null
@@ -393,7 +434,52 @@ class OrderService
         if ($cached_email != $email) {
             return null;
         }
-        return OdinOrder::getByEmail($email);
+        $orders = OdinOrder::getByEmail($email);
+        $result = [];
+        if ($orders) {
+            foreach ($orders as $order) {
+                /* @var  OdinOrder $order*/
+                $orderData = $order->toArray();
+                $orderData['status'] = $order->getStatusText();
+                $orderData['shipping_country'] = UtilsService::$countryCodes[$orderData['shipping_country']] ?? $orderData['shipping_country'];
+                $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.datetime_format'));
+                $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);
+                $orderData['products'] = $this->prepareProductsData($order->products);
+                $result[] = $orderData;
+            }
+            return $result;
+        }
+    }
+
+    /**
+     * set trackings status and dates formated values
+     * @param array $trackings
+     * @return array
+     */
+    public function prepareTrackingsData(array $trackings)
+    {
+        foreach ($trackings as &$tracking) {
+            $tracking['added_at'] = $tracking['added_at']->toDatetime()->format(config('app.datetime_format'));
+            $tracking['status_at'] = !empty($tracking['status_at']) ? $tracking['status_at']->toDatetime()->format(config('app.datetime_format')) : '';
+            if (!empty($tracking['status'])) {
+                $tracking['status'] = static::$as_subtags[$tracking['status']][0] ?? $tracking['status'];
+            }
+        }
+        return $trackings;
+    }
+
+    /**
+     * Set products names by sku codes
+     * @param array $products
+     * @return array
+     */
+    public function prepareProductsData(array $products)
+    {
+        $skus = OdinProduct::getCacheSkusProduct();
+        foreach ($products as &$product) {
+            $product['name'] = $skus[$product['sku_code']]['product_name'] ?? '';
+        }
+        return $products;
     }
 
 }

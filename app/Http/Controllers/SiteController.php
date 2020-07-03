@@ -873,6 +873,13 @@ class SiteController extends Controller
     }
 
 
+    /**
+     * Generate code for accessing order and sending to customer email
+     * @param Request $request
+     * @param EmailService $emailService
+     * @param OrderService $orderService
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function requestOrderCode(Request $request, EmailService $emailService, OrderService $orderService)
     {
 
@@ -911,6 +918,12 @@ class SiteController extends Controller
         return response()->json($request->all());
     }
 
+    /**
+     * Validating order code and email and return orders info for support page
+     * @param Request $request
+     * @param OrderService $orderService
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getOrderInfo(Request $request, OrderService $orderService)
     {
         $email = trim($request->get('email'));
@@ -924,7 +937,7 @@ class SiteController extends Controller
 
         $orders = $orderService->getOrdersByEmailCode($email, $code);
 
-        if (!$orders || $orders->isEmpty()) {
+        if (!$orders) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Code is invalid or expired, please request new code!'
@@ -933,7 +946,7 @@ class SiteController extends Controller
 
         return response()->json([
             'status' => 1,
-            'orders' => $orders->toArray()
+            'orders' => $orders
         ]);
 
     }
