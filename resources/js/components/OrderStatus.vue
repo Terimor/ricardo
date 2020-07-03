@@ -49,7 +49,13 @@
         <div class="card my-5">
             <ul class="list-group list-group-flush">
                 <order-detail v-if="orders.length==1" :order="orders[0]" :is-active="true" />
-                <order-detail v-else v-for="order in orders" :order="order" :key="order.number" :is-active="activeOrder == order.number"/>
+                <order-detail v-else
+                  v-for="order in orders"
+                  :order="order"
+                  :key="order.number"
+                  :is-active="activeOrder == order.number"
+                  @click="setActive(order.number)"
+                />
             </ul>
         </div>
 
@@ -76,6 +82,9 @@
     },
 
     methods: {
+      setActive(number) {
+        this.activeOrder = this.activeOrder == number ? null : number;
+      },
       async getOrderInfo() {
         this.orders = [];
         this.alertMessage = '';
