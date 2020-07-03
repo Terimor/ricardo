@@ -47,16 +47,40 @@
         </form>
 
         <div class="card my-5">
-            <ul class="list-group list-group-flush">
-                <order-detail v-if="orders.length==1" :order="orders[0]" :is-active="true" />
-                <order-detail v-else
-                  v-for="order in orders"
-                  :order="order"
-                  :key="order.number"
-                  :is-active="activeOrder == order.number"
-                  @click="setActive(order.number)"
-                />
-            </ul>
+            <table class="table orders-statuses-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Total paid</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+
+                <template v-if="orders.length==1">
+                    <tr>
+                        <td>{{orders[0].number}}</td>
+                        <td>{{orders[0].status}}</td>
+                        <td>{{orders[0].created_at}}</td>
+                        <td>{{orders[0].total_paid}}</td>
+                    </tr>
+                    <order-detail  :order="orders[0]" :is-active="true" />
+                </template>
+                <template v-else v-for="order in orders">
+                    <tr @click="setActive(order.number)" style="cursor: pointer">
+                        <td>{{order.number}}</td>
+                        <td>{{order.status}}</td>
+                        <td>{{order.created_at}}</td>
+                        <td>{{order.total_paid}}</td>
+                    </tr>
+                    <order-detail :order="order" :key="order.number" :is-active="activeOrder == order.number"/>
+                </template>
+
+                </tbody>
+            </table>
+
         </div>
 
 
@@ -111,12 +135,14 @@
           return resp.json();
         });
 
+        console.log(response)
         if (response.status != 1) {
           this.alertMessage = response.message;
           this.alertType = 'danger';
         } else {
           this.orders = response.orders
         }
+        console.log(this.alertType);
       },
 
       async requestCode() {
@@ -149,6 +175,7 @@
           this.alertType = 'success';
           this.showForm = false;
         }
+        console.log(response)
         this.alertMessage = response.message;
       },
 

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\PaymentProviders;
+use App\Models\Currency;
 use App\Models\Txn;
 use App\Models\OdinOrder;
 use App\Models\AffiliateSetting;
@@ -415,9 +416,9 @@ class OrderService
      * @param string $email
      * @return string
      */
-    public function generateOrderCode(string $email)
+    public function generateOrderCode(string $email): string
     {
-        $code = ucfirst(Str::lower(Str::random(12)));
+        $code = strval(rand(100000, 999999));
         \Cache::put('OrderCode'.$code, $email, 12 * 3600);
         return $code;
     }
@@ -426,25 +427,28 @@ class OrderService
      * Returns orders data by given code and email
      * @param string $email
      * @param string $code
-     * @return \Illuminate\Database\Eloquent\Collection|null
+     * @return array
      */
-    public function getOrdersByEmailCode(string $email, string $code)
+    public function getOrdersByEmailCode(string $email, string $code): array
     {
+        $result = [];
         $cached_email = \Cache::get('OrderCode'.$code);
         if ($cached_email != $email) {
-            return null;
+            return $result;
         }
         $orders = OdinOrder::getByEmail($email);
-        $result = [];
+
         if ($orders) {
             foreach ($orders as $order) {
                 /* @var  OdinOrder $order*/
                 $orderData = $order->toArray();
                 $orderData['status'] = $order->getStatusText();
                 $orderData['shipping_country'] = UtilsService::$countryCodes[$orderData['shipping_country']] ?? $orderData['shipping_country'];
-                $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.datetime_format'));
+                $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.date_format'));
                 $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);
-                $orderData['products'] = $this->prepareProductsData($order->products);
+                $currency = CurrencyService::getCurrency($order->currency);
+                $orderData['total_paid'] = CurrencyService::getLocalTextValue($orderData['total_paid'], $currency);
+                $orderData['products'] = $this->prepareProductsData($order->products, $currency);
                 $result[] = $orderData;
             }
             return $result;
@@ -462,7 +466,7 @@ class OrderService
             $tracking['added_at'] = $tracking['added_at']->toDatetime()->format(config('app.datetime_format'));
             $tracking['status_at'] = !empty($tracking['status_at']) ? $tracking['status_at']->toDatetime()->format(config('app.datetime_format')) : '';
             if (!empty($tracking['status'])) {
-                $tracking['status'] = static::$as_subtags[$tracking['status']][0] ?? $tracking['status'];
+                $tracking['status'] = static::$as_subtags[$tracking['status']][1] ?? $tracking['status'];
             }
         }
         return $trackings;
@@ -471,13 +475,20 @@ class OrderService
     /**
      * Set products names by sku codes
      * @param array $products
+     * @param Currency $currency
      * @return array
      */
-    public function prepareProductsData(array $products)
+    public function prepareProductsData(array $products, Currency $currency): array
     {
+
         $skus = OdinProduct::getCacheSkusProduct();
         foreach ($products as &$product) {
             $product['name'] = $skus[$product['sku_code']]['product_name'] ?? '';
+            $product['total'] = $product['is_paid'] ?
+                CurrencyService::getLocalTextValue($product['price'] * $product['quantity'], $currency) :
+                'Not Paid';
+            $product['price'] =  CurrencyService::getLocalTextValue($product['price'], $currency);
+
         }
         return $products;
     }
