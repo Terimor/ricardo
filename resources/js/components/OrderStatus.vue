@@ -32,8 +32,19 @@
                     <label>&nbsp;</label>
 
                     <div class="input-group">
-                        <button class="btn btn-outline-secondary" type="submit">{{$t('support.get_order_status')}}</button>
-                        <button class="btn btn-outline-danger request-code-button" type="button" @click.prevent="requestCode">{{$t('support.request_code')}}</button>
+                        <button class="btn btn-outline-secondary"
+                                type="submit"
+                                :disabled="submitDisabled"
+                        >
+                            {{$t('support.get_order_status')}}
+                        </button>
+                        <button class="btn btn-outline-danger request-code-button"
+                                type="button"
+                                @click.prevent="requestCode"
+                                :disabled="requestCodeDisabled"
+                        >
+                            {{$t('support.request_code')}}
+                        </button>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -99,7 +110,9 @@
         alertMessage: '',
         showForm: true,
         orders: [],
-        activeOrder: null
+        activeOrder: null,
+        requestCodeDisabled: false,
+        submitDisabled: false
       }
     },
 
@@ -108,6 +121,7 @@
         this.activeOrder = this.activeOrder == number ? null : number;
       },
       async getOrderInfo() {
+
         this.orders = [];
         this.alertMessage = '';
         this.alertType = '';
@@ -117,7 +131,7 @@
           return false;
         }
         this.showError = false;
-
+        this.submitDisabled = true;
         const response = await fetch('/get-order-info', {
           method: 'post',
           credentials: 'same-origin',
@@ -133,14 +147,13 @@
           return resp.json();
         });
 
-        console.log(response)
+        this.submitDisabled = false;
         if (response.status != 1) {
           this.alertMessage = response.message;
           this.alertType = 'danger';
         } else {
           this.orders = response.orders
         }
-        console.log(this.alertType);
       },
 
       async requestCode() {
@@ -151,6 +164,7 @@
           this.showError = true;
           return false;
         }
+        this.requestCodeDisabled = true;
         this.showError = false;
         const response = await fetch('/request-order-code', {
           method: 'post',
@@ -167,13 +181,14 @@
         });
 
 
+        this.requestCodeDisabled = false;
         if (response.status != 1) {
           this.alertType = 'danger';
         } else {
+          this.email = '';
+          this.code = '';
           this.alertType = 'success';
-          this.showForm = false;
         }
-        console.log(response)
         this.alertMessage = response.message;
       },
 
