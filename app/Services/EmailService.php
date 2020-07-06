@@ -7,7 +7,6 @@ use App\Models\OdinOrder;
 use App\Models\OdinCustomer;
 use Exception;
 use App\Exceptions\BlockEmailException;
-use Illuminate\Support\Str;
 
 /**
  * Email Service class
