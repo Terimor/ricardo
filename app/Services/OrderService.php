@@ -9,7 +9,7 @@ use App\Models\OdinOrder;
 use App\Models\AffiliateSetting;
 use App\Models\OdinProduct;
 use App\Models\Localize;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Order Service class
@@ -424,6 +424,32 @@ class OrderService
     }
 
     /**
+     * Return array of sku names from orders products
+     * @param Collection $orders
+     * @return array
+     */
+    public function getSkusNamesFromOrders(Collection $orders): array
+    {
+        $skus = [];
+        foreach ($orders as $order) {
+            /* @var  OdinOrder $order*/
+            foreach ($order->products as $product) {
+                $skus[$product['sku_code']] = $product['sku_code'];
+            }
+        }
+
+        $skusData = OdinProduct::getSkusArrayByCodes(array_keys($skus));
+        foreach ($skusData as $skuData) {
+            foreach ($skuData as $skuItem) {
+                if ($skuItem['is_published']) {
+                    $skus[$skuItem['code']] = $skuItem['name'];
+                }
+            }
+        }
+        return $skus;
+    }
+
+    /**
      * Returns orders data by given code and email
      * @param string $email
      * @param string $code
@@ -439,18 +465,22 @@ class OrderService
         $orders = OdinOrder::getByEmail($email);
 
         if ($orders) {
+
+            $skus = $this->getSkusNamesFromOrders($orders);
+
             foreach ($orders as $order) {
-                /* @var  OdinOrder $order*/
+
                 $orderData = $order->toArray();
                 $orderData['status'] = $order->getStatusText();
-                $orderData['shipping_country'] = UtilsService::$countryCodes[$orderData['shipping_country']] ?? $orderData['shipping_country'];
+                $orderData['shipping_country'] = t('country.'.$orderData['shipping_country']);
                 $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.date_format'));
                 $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);
                 $currency = CurrencyService::getCurrency($order->currency);
                 $orderData['total_paid'] = CurrencyService::getLocalTextValue($orderData['total_paid'], $currency);
-                $orderData['products'] = $this->prepareProductsData($order->products, $currency);
+                $orderData['products'] = $this->prepareProductsData($order->products, $currency, $skus);
                 $result[] = $orderData;
             }
+
             return $result;
         }
     }
@@ -476,19 +506,16 @@ class OrderService
      * Set products names by sku codes
      * @param array $products
      * @param Currency $currency
+     * @param array $skus
      * @return array
      */
-    public function prepareProductsData(array $products, Currency $currency): array
+    public function prepareProductsData(array $products, Currency $currency, array $skus): array
     {
-
-        $skus = OdinProduct::getCacheSkusProduct();
         foreach ($products as &$product) {
-            $product['name'] = $skus[$product['sku_code']]['product_name'] ?? '';
-            $product['total'] = $product['is_paid'] ?
-                CurrencyService::getLocalTextValue($product['price'] * $product['quantity'], $currency) :
+            $product['name'] = $skus[$product['sku_code']] ?? $product['sku_code'];
+            $product['price'] = $product['is_paid'] ?
+                CurrencyService::getLocalTextValue($product['price'], $currency) :
                 'Not Paid';
-            $product['price'] =  CurrencyService::getLocalTextValue($product['price'], $currency);
-
         }
         return $products;
     }

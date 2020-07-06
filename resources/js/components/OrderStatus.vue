@@ -8,52 +8,50 @@
         <form method="post" @submit.prevent="getOrderInfo" :class="showError ? 'was-validated' : ''" v-if="showForm">
             <div class="row">
                 <div class="col-md-4">
-                    <label for="order_email">Enter email</label>
+                    <label for="order_email">{{$t('support.enter_email')}}</label>
                     <div class="input-group">
                         <input type="email" id="order_email" name="email" class="form-control" v-model="email" @change="showEmailError=false" required>
                         <div class="invalid-feedback">
-                            Please input your email address.
+                            {{$t('support.email_required')}}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="order_code">Code</label>
+                    <label for="order_code">{{$t('support.code')}}</label>
                     <div class="input-group">
                         <input type="text"
                                :required="codeRequired"  @change="showEmailError=false"
                                id="order_code" name="code" class="form-control" v-model="code">
 
                         <div class="invalid-feedback" v-if="codeRequired">
-                            Please input your order code or request code by email
+                            {{$t('support.code_required')}}
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <label>&nbsp;</label>
-                    <div class="input-group">
-                        <button class="btn btn-outline-secondary" type="submit">Get order status</button>
 
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary" type="submit">{{$t('support.get_order_status')}}</button>
+                        <button class="btn btn-outline-danger request-code-button" type="button" @click.prevent="requestCode">{{$t('support.request_code')}}</button>
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <label>&nbsp;</label>
-                    <div class="input-group">
-                        <button class="btn btn-outline-danger" type="button" @click.prevent="requestCode">Request code</button>
-                    </div>
+
                 </div>
             </div>
 
 
         </form>
 
-        <div class="card my-5">
+        <div class="card my-5" v-if="orders.length">
             <table class="table orders-statuses-table">
                 <thead>
                     <tr>
-                        <th>Order</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Total paid</th>
+                        <th>{{$t('support.order')}}</th>
+                        <th>{{$t('support.status')}}</th>
+                        <th>{{$t('support.date')}}</th>
+                        <th>{{$t('support.total_paid')}}</th>
                     </tr>
 
                 </thead>

@@ -862,14 +862,12 @@ class SiteController extends Controller
      */
     public function support(Request $request, ProductService $productService, ?string $code = null, ?string $email = null)
     {
-        $data = [
-            'product' => $productService->resolveProduct($request, true),
-            'page_title' => 'Order status',
-            'code' => $code,
-            'email' => $email
-        ];
+        $domain = Domain::getByName();
+        $loadedPhrases = (new I18nService())->loadPhrases('support_page');
+        $product = $productService->resolveProduct($request, true);
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('refunds_title'));
 
-        return view('support', $data);
+        return view('support', compact('domain', 'product', 'page_title', 'loadedPhrases', 'code', 'email'));
     }
 
 
@@ -887,7 +885,7 @@ class SiteController extends Controller
         if (!$email) {
             return response()->json([
                 'status' => 0,
-                'message' => 'Email is required'
+                'message' => t('support.email_required')
             ]);
         }
         if ($email) {
@@ -895,7 +893,7 @@ class SiteController extends Controller
             if ($orders->isEmpty()) {
                 return response()->json([
                     'status' => 404,
-                    'message' => 'There is not order by that email!'
+                    'message' => t('support.no_order_by_email')
                 ]);
             }
 
@@ -906,7 +904,7 @@ class SiteController extends Controller
             if (!empty($result['status'])) {
                 return response()->json([
                     'status' => 1,
-                    'message' => 'Code sent to your email!'
+                    'message' => t('support.code_sent_to_your_email')
                 ]);
             }
 
@@ -926,6 +924,7 @@ class SiteController extends Controller
      */
     public function getOrderInfo(Request $request, OrderService $orderService)
     {
+        $loadedPhrases = (new I18nService())->loadPhrases('support_page');
         $email = trim($request->get('email'));
         $code = trim($request->get('code'));
         if (!$email || !$code) {
@@ -940,7 +939,7 @@ class SiteController extends Controller
         if (!$orders) {
             return response()->json([
                 'status' => 404,
-                'message' => 'Code is invalid or expired, please request new code!'
+                'message' => t('support.code_is_invalid')
             ]);
         }
 

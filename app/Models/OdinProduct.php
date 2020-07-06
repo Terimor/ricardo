@@ -948,4 +948,16 @@ class OdinProduct extends OdinModel
         }
         return $products;
     }
+
+    /**
+     * Returns products skus array by sku_codes
+     * @param array $codes
+     * @return null|array
+     */
+    public static function getSkusArrayByCodes(array $codes): ?array
+    {
+        return OdinProduct::query()
+            ->whereIn('skus.code', $codes)
+            ->select(['skus'])->pluck('skus')->toArray();
+    }
 }
