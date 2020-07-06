@@ -515,7 +515,7 @@ class OrderService
             $product['name'] = $skus[$product['sku_code']] ?? $product['sku_code'];
             $product['price'] = $product['is_paid'] ?
                 CurrencyService::getLocalTextValue($product['price'], $currency) :
-                'Not Paid';
+                t('support.not_paid');
         }
         return $products;
     }
