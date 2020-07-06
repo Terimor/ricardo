@@ -880,7 +880,7 @@ class SiteController extends Controller
      */
     public function requestOrderCode(Request $request, EmailService $emailService, OrderService $orderService)
     {
-
+        $loadedPhrases = (new I18nService())->loadPhrases('support_page');
         $email = mb_strtolower(trim($request->get('email')));
         if (!$email) {
             return response()->json([
