@@ -889,31 +889,30 @@ class SiteController extends Controller
                 'message' => t('support.email_required')
             ]);
         }
-        if ($email) {
-            $orders = OdinOrder::getByEmail($email, ['status']);
-            if ($orders->isEmpty()) {
-                return response()->json([
-                    'status' => 404,
-                    'message' => t('support.no_order_by_email')
-                ]);
-            }
-
-            $url = \route('support', [], true);
-            $code = $orderService->generateOrderCode($email);
-            $result = $emailService->sendOrderEmailCode($code, $email, $url, $domain);
-
-            if (!empty($result['status'])) {
-                return response()->json([
-                    'status' => 1,
-                    'message' => t('support.code_sent_to_your_email')
-                ]);
-            }
-
+        $orders = OdinOrder::getByEmail($email, ['status']);
+        if ($orders->isEmpty()) {
             return response()->json([
-                'status' => 500,
-                'message' => 'Something went wrong!'
+                'status' => 404,
+                'message' => t('support.order.not_found')
             ]);
         }
+
+        $url = \route('support', [], true);
+        $code = $orderService->generateOrderCode($email);
+        $result = $emailService->sendOrderEmailCode($code, $email, $url, $domain);
+
+        if (!empty($result['status'])) {
+            return response()->json([
+                'status' => 1,
+                'message' => t('support.code.sent')
+            ]);
+        }
+
+        return response()->json([
+            'status' => 500,
+            'message' => 'Something went wrong!'
+        ]);
+
         return response()->json($request->all());
     }
 
