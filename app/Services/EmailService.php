@@ -151,9 +151,10 @@ class EmailService
      * @param string $code
      * @param string $email
      * @param string $return_url
+     * @param string $domain
      * @return mixed
      */
-    public function sendOrderEmailCode(string $code, string $email, string $return_url)
+    public function sendOrderEmailCode(string $code, string $email, string $return_url, string $domain)
     {
         $client = new \GuzzleHttp\Client();
         $urlPath = Setting::getValue('saga_api_endpoint');
@@ -170,7 +171,7 @@ class EmailService
                 'language' => app()->getLocale(),
                 'customer_email' => $email,
                 'code' => $code,
-                'domain'    => request()->server('SERVER_NAME'),
+                'domain' => $domain,
                 'url' => $return_url
             ]
         ]);

@@ -217,7 +217,7 @@ class OdinProduct extends OdinModel
     {
         foreach ($value as $key => $val) {
             $value[$key]['name'] = $this->getFieldLocalText($val['name']);
-            $value[$key]['brief'] = $this->getFieldLocalText($val['brief']);
+            $value[$key]['brief'] = !empty($val['brief']) ? $this->getFieldLocalText($val['brief']) : '';
 
             // images
             $value[$key]['quantity_image'] = [];
@@ -958,6 +958,6 @@ class OdinProduct extends OdinModel
     {
         return OdinProduct::query()
             ->whereIn('skus.code', $codes)
-            ->select(['skus'])->pluck('skus')->toArray();
+            ->select(['skus.code', 'skus.name'])->pluck('skus')->toArray();
     }
 }

@@ -17,6 +17,11 @@ use Illuminate\Database\Eloquent\Collection;
 class OrderService
 {
 
+    /**
+     * Aftership tracking subtags list
+     * Linked to Saga: AftershipAlert::$as_subtags
+     * @var array
+     */
     public static array $as_subtags = [
         'Delivered_001' => ['Delivered', 'Shipment delivered successfully'],
         'Delivered_002' => ['Picked up by the customer', 'Package picked up by the customer'],
@@ -412,6 +417,17 @@ class OrderService
     }
 
     /**
+     * Return cache key for request order code functionality
+     * @param string $email
+     * @return string
+     */
+    protected function getOrderCodeCacheKey(string $email)
+    {
+        $emailHash = hash('crc32', $email);
+        return 'OrderCode'.$emailHash;
+    }
+
+    /**
      * Generate code for the order and save in cache
      * @param string $email
      * @return string
@@ -419,7 +435,7 @@ class OrderService
     public function generateOrderCode(string $email): string
     {
         $code = strval(rand(100000, 999999));
-        \Cache::put('OrderCode'.$code, $email, 12 * 3600);
+        \Cache::put($this->getOrderCodeCacheKey($email), $code, 12 * 3600);
         return $code;
     }
 
@@ -441,9 +457,7 @@ class OrderService
         $skusData = OdinProduct::getSkusArrayByCodes(array_keys($skus));
         foreach ($skusData as $skuData) {
             foreach ($skuData as $skuItem) {
-                if ($skuItem['is_published']) {
-                    $skus[$skuItem['code']] = $skuItem['name'];
-                }
+                $skus[$skuItem['code']] = $skuItem['name'];
             }
         }
         return $skus;
@@ -458,20 +472,24 @@ class OrderService
     public function getOrdersByEmailCode(string $email, string $code): array
     {
         $result = [];
-        $cached_email = \Cache::get('OrderCode'.$code);
-        if ($cached_email != $email) {
+        $cachedCode = \Cache::get($this->getOrderCodeCacheKey($email));
+        if (!$cachedCode || $cachedCode !== $code) {
             return $result;
         }
-        $orders = OdinOrder::getByEmail($email);
+        $orders = OdinOrder::getByEmail($email, [
+            'number', 'status', 'shipping_country', 'created_at', 'trackings', 'total_paid', 'products',
+            'shipping_apt', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
+            'shipping_street2', 'shipping_building', 'shipping_apt',
+            'customer_first_name', 'customer_last_name', 'customer_phone', 'customer_email'
+        ]);
 
         if ($orders) {
 
             $skus = $this->getSkusNamesFromOrders($orders);
 
             foreach ($orders as $order) {
-
+                /* @var OdinOrder $order*/
                 $orderData = $order->toArray();
-                $orderData['status'] = $order->getStatusText();
                 $orderData['shipping_country'] = t('country.'.$orderData['shipping_country']);
                 $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.date_format'));
                 $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);

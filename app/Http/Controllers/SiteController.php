@@ -880,7 +880,8 @@ class SiteController extends Controller
      */
     public function requestOrderCode(Request $request, EmailService $emailService, OrderService $orderService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('support_page');
+        $domain = Domain::getByName();
+        (new I18nService())->loadPhrases('support_page');
         $email = mb_strtolower(trim($request->get('email')));
         if (!$email) {
             return response()->json([
@@ -899,7 +900,7 @@ class SiteController extends Controller
 
             $url = \route('support', [], true);
             $code = $orderService->generateOrderCode($email);
-            $result = $emailService->sendOrderEmailCode($code, $email, $url);
+            $result = $emailService->sendOrderEmailCode($code, $email, $url, $domain);
 
             if (!empty($result['status'])) {
                 return response()->json([
@@ -924,8 +925,8 @@ class SiteController extends Controller
      */
     public function getOrderInfo(Request $request, OrderService $orderService)
     {
-        $loadedPhrases = (new I18nService())->loadPhrases('support_page');
-        $email = trim($request->get('email'));
+        (new I18nService())->loadPhrases('support_page');
+        $email = mb_strtolower(trim($request->get('email')));
         $code = trim($request->get('code'));
         if (!$email || !$code) {
             return response()->json([
@@ -935,7 +936,6 @@ class SiteController extends Controller
         }
 
         $orders = $orderService->getOrdersByEmailCode($email, $code);
-
         if (!$orders) {
             return response()->json([
                 'status' => 404,

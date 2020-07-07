@@ -71,7 +71,7 @@
                 <template v-if="orders.length==1">
                     <tr>
                         <td>{{orders[0].number}}</td>
-                        <td>{{orders[0].status}}</td>
+                        <td>{{$t('support.status.' + orders[0].status)}}</td>
                         <td>{{orders[0].created_at}}</td>
                         <td>{{orders[0].total_paid}}</td>
                     </tr>
@@ -80,7 +80,7 @@
                 <template v-else v-for="order in orders">
                     <tr @click="setActive(order.number)" style="cursor: pointer">
                         <td>{{order.number}}</td>
-                        <td>{{order.status}}</td>
+                        <td>{{$t('support.status.' + order.status)}}</td>
                         <td>{{order.created_at}}</td>
                         <td>{{order.total_paid}}</td>
                     </tr>
