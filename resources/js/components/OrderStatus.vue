@@ -10,7 +10,7 @@
                 <div class="col-md-4">
                     <label for="order_email">{{$t('support.enter_email')}}</label>
                     <div class="input-group">
-                        <input type="email" id="order_email" name="email" class="form-control" v-model="email" @change="showEmailError=false" required>
+                        <input ref="email" type="email" id="order_email" name="email" class="form-control" v-model="email" @change="showEmailError=false" required>
                         <div class="invalid-feedback">
                             {{$t('support.email_required')}}
                         </div>
@@ -20,7 +20,8 @@
                     <label for="order_code">{{$t('support.code')}}</label>
                     <div class="input-group">
                         <input type="text"
-                               :required="codeRequired"  @change="showEmailError=false"
+                               ref="code"
+                               :required="codeRequired"  @change="showEmailError=false"  pattern="[0-9]{6}"
                                id="order_code" name="code" class="form-control" v-model="code">
 
                         <div class="invalid-feedback" v-if="codeRequired">
@@ -120,13 +121,18 @@
       setActive(number) {
         this.activeOrder = this.activeOrder == number ? null : number;
       },
+
+      validateCode() {
+        return this.$refs['code'].checkValidity();
+      },
+
       async getOrderInfo() {
 
         this.orders = [];
         this.alertMessage = '';
         this.alertType = '';
         this.codeRequired = true;
-        if (!this.email || !this.code) {
+        if (!this.email || !this.code || !this.validateEmail() || !this.validateCode()) {
           this.showError = true;
           return false;
         }
@@ -147,20 +153,25 @@
           return resp.json();
         });
 
-        this.submitDisabled = false;
         if (response.status != 1) {
           this.alertMessage = response.message;
           this.alertType = 'danger';
+          this.submitDisabled = false;
         } else {
           this.orders = response.orders
         }
       },
 
+      validateEmail() {
+        return this.$refs['email'].checkValidity();
+      },
+
       async requestCode() {
+        this.showError = false;
         this.alertMessage = '';
         this.alertType = '';
         this.codeRequired = false;
-        if (!this.email) {
+        if (!this.email || !this.validateEmail()) {
           this.showError = true;
           return false;
         }
@@ -181,12 +192,10 @@
         });
 
 
-        this.requestCodeDisabled = false;
         if (response.status != 1) {
+          this.requestCodeDisabled = false;
           this.alertType = 'danger';
         } else {
-          this.email = '';
-          this.code = '';
           this.alertType = 'success';
         }
         this.alertMessage = response.message;
