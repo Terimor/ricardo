@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['loadVue' => true])
 
 @section('title', $page_title)
 

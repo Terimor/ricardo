@@ -1,4 +1,4 @@
-@if (!$HasVueApp)
+@if (!$HasVueApp && empty($loadVue))
 
   <script
     src="{{ mix_cdn('/assets/js/static.js') }}"
