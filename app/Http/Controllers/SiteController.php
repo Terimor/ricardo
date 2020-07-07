@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\EmailService;
 use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -838,11 +837,11 @@ class SiteController extends Controller
     /**
      * Generate code for accessing order and sending to customer email
      * @param Request $request
-     * @param EmailService $emailService
+     * @param \App\Services\EmailService $emailService
      * @param OrderService $orderService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function requestOrderCode(Request $request, EmailService $emailService, OrderService $orderService)
+    public function requestOrderCode(Request $request, \App\Services\EmailService $emailService, OrderService $orderService)
     {
         $domain = Domain::getByName();
         (new I18nService())->loadPhrases('support_page');
