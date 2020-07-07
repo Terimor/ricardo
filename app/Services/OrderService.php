@@ -417,25 +417,25 @@ class OrderService
     }
 
     /**
-     * Return cache key for request order access code functionality by email
+     * Return cache key for support code functionality by email
      * @param string $email
      * @return string
      */
-    protected function getOrderAccessCodeCacheKey(string $email)
+    protected function getSupportCodeCacheKey(string $email)
     {
         $emailHash = hash('crc32', $email);
         return 'OrderCode'.$emailHash;
     }
 
     /**
-     * Generate code for the accessing order and save in cache
+     * Generate support code for the accessing orders and save in cache
      * @param string $email
      * @return string
      */
-    public function generateOrderAccessCode(string $email): string
+    public function generateSupportCode(string $email): string
     {
         $code = strval(rand(100000, 999999));
-        \Cache::put($this->getOrderAccessCodeCacheKey($email), $code, 12 * 3600);
+        \Cache::put($this->getSupportCodeCacheKey($email), $code, 12 * 3600);
         return $code;
     }
 
@@ -469,10 +469,10 @@ class OrderService
      * @param string $code
      * @return array
      */
-    public function getOrdersByEmailAccessCode(string $email, string $code): array
+    public function getOrdersByEmailAndSupportCode(string $email, string $code): array
     {
         $result = [];
-        $cachedCode = \Cache::get($this->getOrderAccessCodeCacheKey($email));
+        $cachedCode = \Cache::get($this->getSupportCodeCacheKey($email));
         if (!$cachedCode || $cachedCode !== $code) {
             return $result;
         }

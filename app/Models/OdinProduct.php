@@ -955,7 +955,7 @@ class OdinProduct extends OdinModel
      * @param array $select
      * @return null|array
      */
-    public static function getSkusArrayByCodes(array $codes, $select = []): ?array
+    public static function getSkusArrayByCodes(array $codes, array $select = []): ?array
     {
         $query = OdinProduct::query()
             ->whereIn('skus.code', $codes);

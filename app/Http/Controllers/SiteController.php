@@ -841,7 +841,7 @@ class SiteController extends Controller
      * @param OrderService $orderService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function requestOrderAccessCode(Request $request, \App\Services\EmailService $emailService, OrderService $orderService)
+    public function requestSupportCode(Request $request, \App\Services\EmailService $emailService, OrderService $orderService)
     {
         $domain = Domain::getByName();
         (new I18nService())->loadPhrases('support_page');
@@ -860,8 +860,8 @@ class SiteController extends Controller
             ]);
         }
 
-        $code = $orderService->generateOrderAccessCode($email);
-        $result = $emailService->sendOrderAccessCodeToCustomer($code, $email, $domain->name);
+        $code = $orderService->generateSupportCode($email);
+        $result = $emailService->sendSupportCodeToCustomer($code, $email, $domain->name);
 
         if (!empty($result['status'])) {
             return response()->json([
@@ -878,7 +878,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Validating order access code and email and return orders info for support page
+     * Validating support code and email and return orders info for support page
      * @param Request $request
      * @param OrderService $orderService
      * @return \Illuminate\Http\JsonResponse
@@ -895,7 +895,7 @@ class SiteController extends Controller
             ]);
         }
 
-        $orders = $orderService->getOrdersByEmailAccessCode($email, $code);
+        $orders = $orderService->getOrdersByEmailAndSupportCode($email, $code);
         if (!$orders) {
             return response()->json([
                 'status' => 404,

@@ -18,7 +18,7 @@
 @section('content')
     <div class="contacts bg-white">
         <div class="container py-5">
-            <order-status order-code="{{$code}}" order-email="{{$email}}"/>
+            <order-status support-code="{{$code}}" order-email="{{$email}}"/>
         </div>
     </div>
 @endsection

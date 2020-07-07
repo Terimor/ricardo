@@ -99,11 +99,11 @@
 <script>
   export default {
     name: "OrderStatus",
-    props: ['orderCode', 'orderEmail'],
+    props: ['supportCode', 'orderEmail'],
     data() {
       return {
         email: this.orderEmail,
-        code: this.orderCode,
+        code: this.supportCode,
         showError: false,
         codeRequired: true,
         alertType: '',
@@ -166,7 +166,7 @@
         }
         this.requestCodeDisabled = true;
         this.showError = false;
-        const response = await fetch('/request-order-code', {
+        const response = await fetch('/request-support-code', {
           method: 'post',
           credentials: 'same-origin',
           headers: {
