@@ -828,7 +828,7 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         $loadedPhrases = (new I18nService())->loadPhrases('support_page');
         $product = $productService->resolveProduct($request, true);
-        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('refunds_title'));
+        $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('support.title'));
 
         return view('support', compact('domain', 'product', 'page_title', 'loadedPhrases', 'code', 'email'));
     }
