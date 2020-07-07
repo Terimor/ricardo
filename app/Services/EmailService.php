@@ -147,21 +147,21 @@ class EmailService
     }
 
     /**
-     * Send order email code to SAGA service
+     * Send order access code to customer using SAGA api service
      * @param string $code
      * @param string $email
      * @param string $return_url
      * @param string $domain
      * @return mixed
      */
-    public function sendOrderEmailCode(string $code, string $email, string $return_url, string $domain)
+    public function sendOrderAccessCodeToCustomer(string $code, string $email, string $return_url, string $domain)
     {
         $client = new \GuzzleHttp\Client();
         $urlPath = Setting::getValue('saga_api_endpoint');
         $urlPath = !empty($urlPath) ? $urlPath : '';
 
 
-        $url = $urlPath.'?r=odin-api/send-order-email-code';
+        $url = $urlPath.'?r=odin-api/send-order-access-code';
 
         $request = $client->request('POST', $url, [
             'headers' => [
