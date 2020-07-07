@@ -846,12 +846,10 @@ class SiteController extends Controller
         $domain = Domain::getByName();
         (new I18nService())->loadPhrases('support_page');
         $email = mb_strtolower(trim($request->get('email')));
-        if (!$email) {
-            return response()->json([
-                'status' => 0,
-                'message' => t('support.email_required')
-            ]);
-        }
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
         $orders = OdinOrder::getByEmail($email, ['status']);
         if ($orders->isEmpty()) {
             return response()->json([
@@ -888,12 +886,10 @@ class SiteController extends Controller
         (new I18nService())->loadPhrases('support_page');
         $email = mb_strtolower(trim($request->get('email')));
         $code = trim($request->get('code'));
-        if (!$email || !$code) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'Email and Code are required'
-            ]);
-        }
+        $request->validate([
+            'email' => ['required', 'email'],
+            'code' => ['required', 'digits:6']
+        ]);
 
         $orders = $orderService->getOrdersByEmailAndSupportCode($email, $code);
         if (!$orders) {
