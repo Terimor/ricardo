@@ -878,7 +878,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Validating order code and email and return orders info for support page
+     * Validating order access code and email and return orders info for support page
      * @param Request $request
      * @param OrderService $orderService
      * @return \Illuminate\Http\JsonResponse
@@ -895,7 +895,7 @@ class SiteController extends Controller
             ]);
         }
 
-        $orders = $orderService->getOrdersByEmailCode($email, $code);
+        $orders = $orderService->getOrdersByEmailAccessCode($email, $code);
         if (!$orders) {
             return response()->json([
                 'status' => 404,

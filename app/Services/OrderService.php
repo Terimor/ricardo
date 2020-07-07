@@ -417,11 +417,11 @@ class OrderService
     }
 
     /**
-     * Return cache key for request order code functionality
+     * Return cache key for request order access code functionality by email
      * @param string $email
      * @return string
      */
-    protected function getOrderCodeCacheKey(string $email)
+    protected function getOrderAccessCodeCacheKey(string $email)
     {
         $emailHash = hash('crc32', $email);
         return 'OrderCode'.$emailHash;
@@ -435,7 +435,7 @@ class OrderService
     public function generateOrderAccessCode(string $email): string
     {
         $code = strval(rand(100000, 999999));
-        \Cache::put($this->getOrderCodeCacheKey($email), $code, 12 * 3600);
+        \Cache::put($this->getOrderAccessCodeCacheKey($email), $code, 12 * 3600);
         return $code;
     }
 
@@ -454,7 +454,7 @@ class OrderService
             }
         }
 
-        $skusData = OdinProduct::getSkusArrayByCodes(array_keys($skus));
+        $skusData = OdinProduct::getSkusArrayByCodes(array_keys($skus), ['skus.code', 'skus.name']);
         foreach ($skusData as $skuData) {
             foreach ($skuData as $skuItem) {
                 $skus[$skuItem['code']] = $skuItem['name'];
@@ -469,10 +469,10 @@ class OrderService
      * @param string $code
      * @return array
      */
-    public function getOrdersByEmailCode(string $email, string $code): array
+    public function getOrdersByEmailAccessCode(string $email, string $code): array
     {
         $result = [];
-        $cachedCode = \Cache::get($this->getOrderCodeCacheKey($email));
+        $cachedCode = \Cache::get($this->getOrderAccessCodeCacheKey($email));
         if (!$cachedCode || $cachedCode !== $code) {
             return $result;
         }
