@@ -428,11 +428,11 @@ class OrderService
     }
 
     /**
-     * Generate code for the order and save in cache
+     * Generate code for the accessing order and save in cache
      * @param string $email
      * @return string
      */
-    public function generateOrderCode(string $email): string
+    public function generateOrderAccessCode(string $email): string
     {
         $code = strval(rand(100000, 999999));
         \Cache::put($this->getOrderCodeCacheKey($email), $code, 12 * 3600);

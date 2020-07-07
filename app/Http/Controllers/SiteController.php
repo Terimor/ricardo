@@ -861,7 +861,7 @@ class SiteController extends Controller
         }
 
         $url = \route('support', [], true);
-        $code = $orderService->generateOrderCode($email);
+        $code = $orderService->generateOrderAccessCode($email);
         $result = $emailService->sendOrderEmailCode($code, $email, $url, $domain);
 
         if (!empty($result['status'])) {
