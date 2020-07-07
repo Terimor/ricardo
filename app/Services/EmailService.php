@@ -150,11 +150,10 @@ class EmailService
      * Send order access code to customer using SAGA api service
      * @param string $code
      * @param string $email
-     * @param string $return_url
      * @param string $domain
      * @return mixed
      */
-    public function sendOrderAccessCodeToCustomer(string $code, string $email, string $return_url, string $domain)
+    public function sendOrderAccessCodeToCustomer(string $code, string $email, string $domain)
     {
         $client = new \GuzzleHttp\Client();
         $urlPath = Setting::getValue('saga_api_endpoint');
@@ -172,7 +171,6 @@ class EmailService
                 'customer_email' => $email,
                 'code' => $code,
                 'domain' => $domain,
-                'url' => $return_url
             ]
         ]);
 
