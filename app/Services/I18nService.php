@@ -15,13 +15,12 @@ class I18nService
     /**
      * Load phrases
      * @param string $category
-     * @param bool|null $force
      * @return array
      */
-    public static function loadPhrases(string $category, ?bool $force = false)
+    public static function loadPhrases(string $category)
     {
         $language = app()->getLocale();
-        if (empty(I18n::$loadedPhrases[$language]) || $force) {
+        if (empty(I18n::$loadedPhrases[$language])) {
             $cacheKey = str_replace('_', '', "I18N{$category}{$language}");
             $loadedPhrases = Cache::get($cacheKey);
             if (!$loadedPhrases) {

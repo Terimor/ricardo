@@ -514,7 +514,9 @@ class OrderService
         $orderData['countries'] = [];
         $mainProduct = $order->getMainProduct(false);
         if ($mainProduct) {
-            $product = OdinProduct::getBySku($mainProduct['sku_code'], false);
+            $product = OdinProduct::getBySku($mainProduct['sku_code'], false, [
+                'is_europe_only', 'countries', 'skus', 'type'
+            ]);
             if ($product) {
                 $orderData['countries'] = UtilsService::getShippingCountries(true, $product);
             }
@@ -595,7 +597,7 @@ class OrderService
             'shipping_street' => 'street',
             'shipping_street2' => 'district',
             'shipping_building' => 'building',
-            'shipping_apt' => 'complement)'
+            'shipping_apt' => 'complement'
         ];
     }
 

@@ -827,7 +827,6 @@ class SiteController extends Controller
     {
         $domain = Domain::getByName();
         $loadedPhrases = I18nService::loadPhrases('support_page');
-        $loadedPhrases = array_merge($loadedPhrases, I18nService::loadPhrases('checkout_page', true));
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('support.title'));
         $countries =  \Utils::getShippingCountries(true, $product);
