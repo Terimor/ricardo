@@ -869,6 +869,7 @@ class SiteController extends Controller
             ]);
         }
 
+        logger()->error("request support code did not work, {$code} - {$email} - {$domain->name}");
         return response()->json([
             'status' => 500,
             'message' => 'Something went wrong!'
@@ -930,6 +931,8 @@ class SiteController extends Controller
         }
         $order = OdinOrder::getByNumber($orderNumber);
         if ($order->customer_email !== $email) {
+
+            logger()->error("trying access to order {$order->number} with different email {$order->customer_email} - {$email}");
             return response()->json([
                 'status' => 0,
                 'message' => 'Invalid email'
@@ -944,12 +947,14 @@ class SiteController extends Controller
 
         $orderData = $orderService->updateShippingAddress($order, $shippingData);
         if (!$orderData) {
+            logger()->error("Update shipping address error, Order {$order->number} ".json_encode($shippingData));
             return response()->json([
                 'status' => 0,
                 'message' => 'Something went wrong!'
             ]);
         }
-        $emailService->notifyCustomerAddressChange($order->number);
+        $domain = Domain::getByName();
+        $emailService->notifyCustomerAddressChange($order->number, $domain->name);
         return response()->json([
             'status' => 1,
             'message' => $i18nService->getPhraseTranslation('support.address.changed'),

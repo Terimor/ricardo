@@ -146,10 +146,31 @@ class EmailService
         ];
     }
 
-    public function notifyCustomerAddressChange(string $number)
+    /**
+     * @param string $number
+     * @param string $domain
+     * @return mixed
+     */
+    public function notifyCustomerAddressChange(string $number, string $domain)
     {
-        // @todo implement
-        return true;
+        $client = new \GuzzleHttp\Client();
+        $urlPath = Setting::getValue('saga_api_endpoint');
+        $urlPath = !empty($urlPath) ? $urlPath : '';
+
+        $url = $urlPath.'?r=odin-api/notify-customer-address-change';
+
+        $request = $client->request('POST', $url, [
+            'headers' => [
+                'api-token' => $this->apiKey,
+            ],
+            'form_params' => [
+                'language' => app()->getLocale(),
+                'number' => $number,
+                'domain' => $domain,
+            ]
+        ]);
+
+        return json_decode($request->getBody()->getContents(), true);
     }
 
     /**
