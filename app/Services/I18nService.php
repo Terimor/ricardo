@@ -43,6 +43,16 @@ class I18nService
     }
 
     /**
+     * Return translation of phrase for current locale
+     * @param string $phrase
+     * @return string|null
+     */
+    public function getPhraseTranslation(string $phrase): ?string
+    {
+        return I18n::getTranslationByPhraseAndLanguage($phrase, app()->getLocale());
+    }
+
+    /**
      * Prepare loaded phrases to cache
      * Returns array with language key, for example ['de'] => [phrases array]
      * @param $phrases

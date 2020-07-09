@@ -846,7 +846,6 @@ class SiteController extends Controller
     public function requestSupportCode(Request $request, \App\Services\EmailService $emailService, OrderService $orderService, I18nService $i18nService)
     {
         $domain = Domain::getByName();
-        $i18nService->loadPhrases('support_page');
         $email = mb_strtolower(trim($request->get('email')));
         $request->validate([
             'email' => ['required', 'email'],
@@ -856,7 +855,7 @@ class SiteController extends Controller
         if ($orders->isEmpty()) {
             return response()->json([
                 'status' => 404,
-                'message' => t('support.order.not_found')
+                'message' => $i18nService->getPhraseTranslation('support.order.not_found')
             ]);
         }
 
@@ -866,7 +865,7 @@ class SiteController extends Controller
         if (!empty($result['status'])) {
             return response()->json([
                 'status' => 1,
-                'message' => t('support.code.sent')
+                'message' => $i18nService->getPhraseTranslation('support.code.sent')
             ]);
         }
 
@@ -913,13 +912,12 @@ class SiteController extends Controller
      * @param \App\Http\Requests\ChangeOrderAddressRequest $request
      * @param OrderService $orderService
      * @param I18nService $i18nService
+     * @param \App\services\EmailService $emailService
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\OrderNotFoundException
      */
-    public function changeOrderAddress(\App\Http\Requests\ChangeOrderAddressRequest $request, OrderService $orderService, I18nService $i18nService)
+    public function changeOrderAddress(\App\Http\Requests\ChangeOrderAddressRequest $request, OrderService $orderService, I18nService $i18nService, \App\services\EmailService $emailService)
     {
-        $i18nService->loadPhrases('support_page');
-
         $email = $request->get('email');
         $code = $request->get('code');
         $orderNumber = $request->get('number');
@@ -927,7 +925,7 @@ class SiteController extends Controller
         if (!$orderService->validateSupportCode($email, $code)) {
             return response()->json([
                 'status' => 0,
-                'message' => t('support.code_is_invalid')
+                'message' => $i18nService->getPhraseTranslation('support.code_is_invalid')
             ]);
         }
         $order = OdinOrder::getByNumber($orderNumber);
@@ -951,9 +949,10 @@ class SiteController extends Controller
                 'message' => 'Something went wrong!'
             ]);
         }
+        $emailService->notifyCustomerAddressChange($order->number);
         return response()->json([
             'status' => 1,
-            'message' => t('support.address.changed'),
+            'message' => $i18nService->getPhraseTranslation('support.address.changed'),
             'order' => $orderData
         ]);
     }

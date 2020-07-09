@@ -146,6 +146,12 @@ class EmailService
         ];
     }
 
+    public function notifyCustomerAddressChange(string $number)
+    {
+        // @todo implement
+        return true;
+    }
+
     /**
      * Send support code to customer using SAGA api service
      * @param string $code
