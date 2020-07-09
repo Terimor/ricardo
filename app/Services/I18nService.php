@@ -17,7 +17,7 @@ class I18nService
      * @param string $category
      * @return array
      */
-    public static function loadPhrases(string $category)
+    public function loadPhrases(string $category)
     {
         $language = app()->getLocale();
         if (empty(I18n::$loadedPhrases[$language])) {

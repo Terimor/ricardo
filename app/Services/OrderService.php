@@ -476,6 +476,21 @@ class OrderService
     }
 
 
+    public function getSkuNamesFromOrder(OdinOrder $order): array
+    {
+        $skus = [];
+        foreach ($order->products as $product) {
+            $skus[$product['sku_code']] = $product['sku_code'];
+        }
+        $skusData = OdinProduct::getSkusArrayByCodes(array_keys($skus), ['skus.code', 'skus.name']);
+        foreach ($skusData as $skuData) {
+            foreach ($skuData as $skuItem) {
+                $skus[$skuItem['code']] = $skuItem['name'];
+            }
+        }
+        return $skus;
+    }
+
     /**
      * Returns array containing order fields prepared for support page
      * @param OdinOrder $order
@@ -485,26 +500,15 @@ class OrderService
     public function prepareOrderDataForSupportPage(OdinOrder $order, ?array $skus = []): array
     {
         if (!$skus) {
-            $skus = [];
-            foreach ($order->products as $product) {
-                $skus[$product['sku_code']] = $product['sku_code'];
-            }
-            $skusData = OdinProduct::getSkusArrayByCodes(array_keys($skus), ['skus.code', 'skus.name']);
-            foreach ($skusData as $skuData) {
-                foreach ($skuData as $skuItem) {
-                    $skus[$skuItem['code']] = $skuItem['name'];
-                }
-            }
+            $skus = $this->getSkuNamesFromOrder($order);
         }
         $orderData = $order->toArray();
-
         $returnFields = array_merge($this->getSupportPageRelatedFieldsNames(), ['countries', 'allowEditAddress', 'shipping_country_name']);
         foreach ($orderData as $field => $value) {
             if (!in_array($field, $returnFields)) {
                 unset($orderData[$field]);
             }
         }
-
         $orderData['shipping_country_name'] = t('country.'.$orderData['shipping_country']);
         $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.date_format'));
         $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);

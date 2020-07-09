@@ -819,14 +819,15 @@ class SiteController extends Controller
      * Support page
      * @param Request $request
      * @param ProductService $productService
+     * @param I18nService $i18nService
      * @param string|null $code
      * @param string|null $email
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function support(Request $request, ProductService $productService, ?string $code = null, ?string $email = null)
+    public function support(Request $request, ProductService $productService, I18nService $i18nService, ?string $code = null, ?string $email = null)
     {
         $domain = Domain::getByName();
-        $loadedPhrases = I18nService::loadPhrases('support_page');
+        $loadedPhrases = $i18nService->loadPhrases('support_page');
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('support.title'));
         $countries =  \Utils::getShippingCountries(true, $product);
@@ -839,12 +840,13 @@ class SiteController extends Controller
      * @param Request $request
      * @param \App\Services\EmailService $emailService
      * @param OrderService $orderService
+     * @param I18nService $i18nService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function requestSupportCode(Request $request, \App\Services\EmailService $emailService, OrderService $orderService)
+    public function requestSupportCode(Request $request, \App\Services\EmailService $emailService, OrderService $orderService, I18nService $i18nService)
     {
         $domain = Domain::getByName();
-        (new I18nService())->loadPhrases('support_page');
+        $i18nService->loadPhrases('support_page');
         $email = mb_strtolower(trim($request->get('email')));
         $request->validate([
             'email' => ['required', 'email'],
@@ -879,11 +881,12 @@ class SiteController extends Controller
      * Validating support code and email and return orders info for support page
      * @param Request $request
      * @param OrderService $orderService
+     * @param I18nService $i18nService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getOrderInfo(Request $request, OrderService $orderService)
+    public function getOrderInfo(Request $request, OrderService $orderService, I18nService $i18nService)
     {
-        (new I18nService())->loadPhrases('support_page');
+        $i18nService->loadPhrases('support_page');
         $email = mb_strtolower(trim($request->get('email')));
         $code = trim($request->get('code'));
         $request->validate([
@@ -907,14 +910,15 @@ class SiteController extends Controller
 
     /**
      * Handle request of changing order address in support page
-     * @param Request $request
+     * @param \App\Http\Requests\ChangeOrderAddressRequest $request
      * @param OrderService $orderService
+     * @param I18nService $i18nService
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\OrderNotFoundException
      */
-    public function changeOrderAddress(\App\Http\Requests\ChangeOrderAddressRequest $request, OrderService $orderService)
+    public function changeOrderAddress(\App\Http\Requests\ChangeOrderAddressRequest $request, OrderService $orderService, I18nService $i18nService)
     {
-        (new I18nService())->loadPhrases('support_page');
+        $i18nService->loadPhrases('support_page');
 
         $email = $request->get('email');
         $code = $request->get('code');
