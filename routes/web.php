@@ -90,6 +90,7 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     $router->get('/support-abc/{password?}/{email?}', 'SiteController@support')->name('support');
     $router->post('/request-support-code', 'SiteController@requestSupportCode')->name('request-support-code');
     $router->post('/get-order-info', 'SiteController@getOrderInfo')->name('get-order-info');
+    $router->post('/change-order-address', 'SiteController@changeOrderAddress')->name('change-order-address');
 
     // report-abuse
     $router->get('/report-abuse', 'SiteController@reportAbuse');

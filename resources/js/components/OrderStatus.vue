@@ -1,6 +1,12 @@
 <template>
     <div class="contacts__wrapper">
 
+        <change-order-address
+          v-if="editingAddressOrder"
+          :order="editingAddressOrder"
+          @cancelEdit="editingAddressOrder=null"
+          @submit="saveOrderAddress"
+        />
 
         <div v-if="alertMessage" :class="'alert alert-' + this.alertType + ' alert-dismissible fade show'" role="alert">
             {{alertMessage}}
@@ -76,16 +82,21 @@
                         <td>{{orders[0].created_at}}</td>
                         <td>{{orders[0].total_paid}}</td>
                     </tr>
-                    <order-detail  :order="orders[0]" :is-active="true" />
+                    <order-detail :order="orders[0]" :is-active="true" @editAddressClick="openAddressForm" />
                 </template>
                 <template v-else v-for="order in orders">
-                    <tr @click="setActive(order.number)" style="cursor: pointer">
+                    <tr @click="setActive(order)" style="cursor: pointer">
                         <td>{{order.number}}</td>
                         <td>{{$t('support.status.' + order.status)}}</td>
                         <td>{{order.created_at}}</td>
                         <td>{{order.total_paid}}</td>
                     </tr>
-                    <order-detail :order="order" :key="order.number" :is-active="activeOrder == order.number"/>
+                    <order-detail
+                        :order="order"
+                        :key="order.number"
+                        :is-active="activeOrder && activeOrder.number == order.number"
+                        @editAddressClick="openAddressForm"
+                    />
                 </template>
 
                 </tbody>
@@ -98,9 +109,15 @@
 </template>
 
 <script>
+  import globals from '../mixins/globals';
+  import ChangeOrderAddress from "./ChangeOrderAddress";
   export default {
     name: "OrderStatus",
+    components: {ChangeOrderAddress},
     props: ['supportCode', 'orderEmail'],
+    mixins: [
+      globals
+    ],
     data() {
       return {
         email: this.orderEmail,
@@ -113,17 +130,68 @@
         orders: [],
         activeOrder: null,
         requestCodeDisabled: false,
-        submitDisabled: false
+        submitDisabled: false,
+        editingAddressOrder: null,
       }
     },
 
     methods: {
-      setActive(number) {
-        this.activeOrder = this.activeOrder == number ? null : number;
+      setActive(order) {
+
+        this.editingAddressOrder = null
+        this.activeOrder = (this.activeOrder && this.activeOrder.number == order.number) ? null : order;
+        this.alertMessage = '';
+        this.alertType = '';
+      },
+
+      openAddressForm(order) {
+        this.alertMessage = '';
+        this.alertType = '';
+        js_data.countries = order.countries;
+
+        this.editingAddressOrder = order;
       },
 
       validateCode() {
         return this.$refs['code'].checkValidity();
+      },
+
+      async saveOrderAddress(data) {
+        const confirmed = confirm(this.$t('support.confirm.address_change'));
+        if (!confirmed) {
+          return false;
+        }
+        data.number = this.editingAddressOrder.number;
+        data.email = this.email;
+        data.code = this.code;
+
+        this.editingAddressOrder = null;
+        const response = await fetch('/change-order-address', {
+          method: 'post',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(data)
+        }).then(resp => {
+          return resp.json();
+        });
+
+        if (response.status != 1) {
+          this.alertMessage = response.message;
+          this.alertType = 'danger';
+        } else {
+          this.alertMessage = response.message;
+          this.alertType = 'success';
+          for (let key in this.orders) {
+            if (this.orders[key].number == response.order.number) {
+              this.orders[key] = response.order;
+              this.activeOrder = response.order;
+            }
+          }
+        }
+
       },
 
       async getOrderInfo() {
@@ -159,6 +227,9 @@
           this.submitDisabled = false;
         } else {
           this.orders = response.orders
+          if (this.orders.length == 1) {
+            this.activeOrder = this.orders[0];
+          }
         }
       },
 
@@ -190,7 +261,6 @@
         }).then(resp => {
           return resp.json();
         });
-
 
         if (response.status != 1) {
           this.requestCodeDisabled = false;

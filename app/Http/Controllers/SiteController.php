@@ -826,11 +826,12 @@ class SiteController extends Controller
     public function support(Request $request, ProductService $productService, ?string $code = null, ?string $email = null)
     {
         $domain = Domain::getByName();
-        $loadedPhrases = (new I18nService())->loadPhrases('support_page');
+        $loadedPhrases = I18nService::loadPhrases('support_page');
+        $loadedPhrases = array_merge($loadedPhrases, I18nService::loadPhrases('checkout_page', true));
         $product = $productService->resolveProduct($request, true);
         $page_title = \Utils::generatePageTitle($domain, $product, $request->get('cop_id'), t('support.title'));
-
-        return view('support', compact('domain', 'product', 'page_title', 'loadedPhrases', 'code', 'email'));
+        $countries =  \Utils::getShippingCountries(true, $product);
+        return view('support', compact('domain', 'product', 'page_title', 'loadedPhrases', 'code', 'email', 'countries'));
     }
 
 
@@ -903,7 +904,68 @@ class SiteController extends Controller
             'status' => 1,
             'orders' => $orders
         ]);
+    }
 
+    /**
+     * Handle request of changing order address in support page
+     * @param Request $request
+     * @param OrderService $orderService
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\OrderNotFoundException
+     */
+    public function changeOrderAddress(Request $request, OrderService $orderService)
+    {
+        (new I18nService())->loadPhrases('support_page');
+        $request->validate([
+            'email'                 => ['required', 'email'],
+            'code'                  => ['required', 'digits:6'],
+            'number'                => ['required', 'string'],
+            'city'                  => ['required', 'string'],
+            'country'               => ['required', 'regex:/^[a-z]{2}$/'],
+            'state'                 => ['string', 'between:1,30', 'nullable'],
+            'street'                => ['required', 'string'],
+            'district'              => ['string', 'between:1,255', 'nullable'],
+            'building'              => ['string', 'between:1,9', 'nullable'],
+            'complement'            => ['nullable', 'string', 'between:0,255'],
+            'zipcode'               => ['required', 'string'],
+        ]);
+
+        $email = $request->get('email');
+        $code = $request->get('code');
+        $orderNumber = $request->get('number');
+
+        if (!$orderService->validateSupportCode($email, $code)) {
+            return response()->json([
+                'status' => 0,
+                'message' => t('support.code_is_invalid')
+            ]);
+        }
+        $order = OdinOrder::getByNumber($orderNumber);
+        if ($order->customer_email !== $email) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Invalid email'
+            ]);
+        }
+
+        $mappingFields = $orderService->getShippingFieldsMapping();
+        $shippingData = [];
+        foreach ($mappingFields as $field => $name) {
+            $shippingData[$field] = $request->get($name);
+        }
+
+        $orderData = $orderService->updateShippingAddress($order, $shippingData);
+        if (!$orderData) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Something went wrong!'
+            ]);
+        }
+        return response()->json([
+            'status' => 1,
+            'message' => t('support.address.changed'),
+            'order' => $orderData
+        ]);
     }
 
 }

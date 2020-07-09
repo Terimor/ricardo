@@ -45,5 +45,6 @@ class VerifyCsrfToken extends Middleware
         'support-abc',
         'request-support-code',
         'get-order-info',
+        'change-order-address'
     ];
 }

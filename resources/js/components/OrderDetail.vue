@@ -32,10 +32,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5>{{$t('support.shipping_address')}}</h5>
+                            <p v-if="order.allowEditAddress"><button class="btn btn-primary" @click="editAddressClick">Edit address</button></p>
                             {{order.shipping_apt}} {{order.shipping_building}} {{order.shipping_street2}} {{order.shipping_street}} <br />
                             {{order.shipping_city}} {{order.shipping_state}} <br />
                             {{order.shipping_zip}} <br />
-                            {{order.shipping_country}}
+                            {{order.shipping_country_name}}
 
                         </div>
                         <div class="col-md-6">
@@ -85,7 +86,9 @@
     name: "OrderDetail",
     props: ['order', 'isActive'],
     methods: {
-
+      editAddressClick() {
+        this.$emit('editAddressClick', this.order)
+      }
     }
   }
 </script>

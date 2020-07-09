@@ -898,7 +898,7 @@ class UtilsService
                 $countries = [];
                 // select only available countries
                 foreach (self::$includeShipping as $key) {
-                    $countries[$key] = self::countryCodes[$key];
+                    $countries[$key] = self::$countryCodes[$key];
                 }
             }
         }

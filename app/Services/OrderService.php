@@ -464,6 +464,66 @@ class OrderService
     }
 
     /**
+     * Validate support code
+     * @param string $email
+     * @param string $code
+     * @return bool
+     */
+    public function validateSupportCode(string $email, string $code): bool
+    {
+        $cachedCode = \Cache::get($this->getSupportCodeCacheKey($email));
+        return $cachedCode && $cachedCode === $code;
+    }
+
+
+    /**
+     * Returns array containing order fields prepared for support page
+     * @param OdinOrder $order
+     * @param array|null $skus
+     * @return array
+     */
+    public function prepareOrderDataForSupportPage(OdinOrder $order, ?array $skus = []): array
+    {
+        if (!$skus) {
+            $skus = [];
+            foreach ($order->products as $product) {
+                $skus[$product['sku_code']] = $product['sku_code'];
+            }
+            $skusData = OdinProduct::getSkusArrayByCodes(array_keys($skus), ['skus.code', 'skus.name']);
+            foreach ($skusData as $skuData) {
+                foreach ($skuData as $skuItem) {
+                    $skus[$skuItem['code']] = $skuItem['name'];
+                }
+            }
+        }
+        $orderData = $order->toArray();
+
+        $returnFields = array_merge($this->getSupportPageRelatedFieldsNames(), ['countries', 'allowEditAddress', 'shipping_country_name']);
+        foreach ($orderData as $field => $value) {
+            if (!in_array($field, $returnFields)) {
+                unset($orderData[$field]);
+            }
+        }
+
+        $orderData['shipping_country_name'] = t('country.'.$orderData['shipping_country']);
+        $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.date_format'));
+        $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);
+        $currency = CurrencyService::getCurrency($order->currency);
+        $orderData['total_paid'] = CurrencyService::getLocalTextValue($orderData['total_paid'], $currency);
+        $orderData['products'] = $this->prepareProductsData($order->products, $currency, $skus);
+        $orderData['countries'] = [];
+        $mainProduct = $order->getMainProduct(false);
+        if ($mainProduct) {
+            $product = OdinProduct::getBySku($mainProduct['sku_code'], false);
+            if ($product) {
+                $orderData['countries'] = UtilsService::getShippingCountries(true, $product);
+            }
+        }
+        $orderData['allowEditAddress'] = $order->isAllowedEditAddress();
+        return $orderData;
+    }
+
+    /**
      * Returns orders data by given code and email
      * @param string $email
      * @param string $code
@@ -472,33 +532,16 @@ class OrderService
     public function getOrdersByEmailAndSupportCode(string $email, string $code): array
     {
         $result = [];
-        $cachedCode = \Cache::get($this->getSupportCodeCacheKey($email));
-        if (!$cachedCode || $cachedCode !== $code) {
+        if (!$this->validateSupportCode($email, $code)) {
             return $result;
         }
-        $orders = OdinOrder::getByEmail($email, [
-            'number', 'status', 'shipping_country', 'created_at', 'trackings', 'total_paid', 'products',
-            'shipping_apt', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
-            'shipping_street2', 'shipping_building', 'shipping_apt',
-            'customer_first_name', 'customer_last_name', 'customer_phone', 'customer_email'
-        ]);
-
+        $orders = OdinOrder::getByEmail($email, $this->getSupportPageRelatedFieldsNames());
         if ($orders) {
-
             $skus = $this->getSkusNamesFromOrders($orders);
-
             foreach ($orders as $order) {
                 /* @var OdinOrder $order*/
-                $orderData = $order->toArray();
-                $orderData['shipping_country'] = t('country.'.$orderData['shipping_country']);
-                $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.date_format'));
-                $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);
-                $currency = CurrencyService::getCurrency($order->currency);
-                $orderData['total_paid'] = CurrencyService::getLocalTextValue($orderData['total_paid'], $currency);
-                $orderData['products'] = $this->prepareProductsData($order->products, $currency, $skus);
-                $result[] = $orderData;
+                $result[] = $this->prepareOrderDataForSupportPage($order, $skus);
             }
-
             return $result;
         }
     }
@@ -536,6 +579,48 @@ class OrderService
                 t('support.not_paid');
         }
         return $products;
+    }
+
+    /**
+     * Returns array of with mapping fields of model and request
+     * @return array
+     */
+    public function getShippingFieldsMapping(): array
+    {
+        return  [
+            'shipping_country' => 'country',
+            'shipping_zip' => 'zipcode',
+            'shipping_state' => 'state',
+            'shipping_city' => 'city',
+            'shipping_street' => 'street',
+            'shipping_street2' => 'district',
+            'shipping_building' => 'building',
+            'shipping_apt' => 'complement)'
+        ];
+    }
+
+    /**
+     * Update order shipping address and return order info data array for support page
+     * @param OdinOrder $order
+     * @param array $addressFields
+     * @return array|null
+     */
+    public function updateShippingAddress(OdinOrder $order, array $addressFields): ?array
+    {
+        if (!$order->update($addressFields)) {
+            return null;
+        }
+        return $this->prepareOrderDataForSupportPage($order);
+    }
+
+    public function getSupportPageRelatedFieldsNames(): array
+    {
+        return [
+            'number', 'status', 'is_paused', 'shipping_country', 'created_at', 'trackings', 'total_paid', 'products',
+            'shipping_apt', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
+            'shipping_street2', 'shipping_building', 'shipping_apt',
+            'customer_first_name', 'customer_last_name', 'customer_phone', 'customer_email'
+        ];
     }
 
 }

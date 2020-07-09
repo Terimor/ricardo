@@ -88,7 +88,7 @@ export default {
         : country;
 
       callback(fname, lname, email, street, city, zipcode, country);
-      
+
       if (js_data.customer.phone && js_data.customer.address && js_data.customer.address.country) {
         phone = js_data.customer.phone;
 

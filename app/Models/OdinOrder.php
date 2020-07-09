@@ -1147,4 +1147,16 @@ class OdinOrder extends OdinModel
             $this->save();
         }
     }
+
+    /**
+     * Check if order is in status which allow edit shipping address
+     * @return bool
+     */
+    public function isAllowedEditAddress(): bool
+    {
+        $statuses = [
+            static::STATUS_NEW, static::STATUS_PAID, static::STATUS_HALFPAID
+        ];
+        return in_array($this->status, $statuses) && !$this->is_paused;
+    }
 }
