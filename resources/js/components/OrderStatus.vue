@@ -109,15 +109,11 @@
 </template>
 
 <script>
-  import globals from '../mixins/globals';
   import ChangeOrderAddress from "./ChangeOrderAddress";
   export default {
     name: "OrderStatus",
     components: {ChangeOrderAddress},
     props: ['supportCode', 'orderEmail'],
-    mixins: [
-      globals
-    ],
     data() {
       return {
         email: this.orderEmail,

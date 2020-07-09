@@ -912,22 +912,9 @@ class SiteController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\OrderNotFoundException
      */
-    public function changeOrderAddress(Request $request, OrderService $orderService)
+    public function changeOrderAddress(\App\Http\Requests\ChangeOrderAddressRequest $request, OrderService $orderService)
     {
         (new I18nService())->loadPhrases('support_page');
-        $request->validate([
-            'email'                 => ['required', 'email'],
-            'code'                  => ['required', 'digits:6'],
-            'number'                => ['required', 'string'],
-            'city'                  => ['required', 'string'],
-            'country'               => ['required', 'regex:/^[a-z]{2}$/'],
-            'state'                 => ['string', 'between:1,30', 'nullable'],
-            'street'                => ['required', 'string'],
-            'district'              => ['string', 'between:1,255', 'nullable'],
-            'building'              => ['string', 'between:1,9', 'nullable'],
-            'complement'            => ['nullable', 'string', 'between:0,255'],
-            'zipcode'               => ['required', 'string'],
-        ]);
 
         $email = $request->get('email');
         $code = $request->get('code');
