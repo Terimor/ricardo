@@ -922,7 +922,6 @@ class SiteController extends Controller
         $email = $request->get('email');
         $code = $request->get('code');
         $orderNumber = $request->get('number');
-
         if (!$orderService->validateSupportCode($email, $code)) {
             return response()->json([
                 'status' => 0,
@@ -931,27 +930,12 @@ class SiteController extends Controller
         }
         $order = OdinOrder::getByNumber($orderNumber);
         if ($order->customer_email !== $email) {
-
             logger()->error("trying access to order {$order->number} with different email {$order->customer_email} - {$email}");
-            return response()->json([
-                'status' => 0,
-                'message' => 'Invalid email'
-            ]);
+            return response()->json(['status' => 0, 'message' => 'Invalid email']);
         }
-
-        $mappingFields = $orderService->getShippingFieldsMapping();
-        $shippingData = [];
-        foreach ($mappingFields as $field => $name) {
-            $shippingData[$field] = $request->get($name);
-        }
-
-        $orderData = $orderService->updateShippingAddress($order, $shippingData);
+        $orderData = $orderService->updateShippingAddress($order, $request->all());
         if (!$orderData) {
-            logger()->error("Update shipping address error, Order {$order->number} ".json_encode($shippingData));
-            return response()->json([
-                'status' => 0,
-                'message' => 'Something went wrong!'
-            ]);
+            return response()->json(['status' => 0, 'message' => 'Something went wrong!']);
         }
         $domain = Domain::getByName();
         $emailResult = $emailService->notifyCustomerAddressChange($order->number, $domain->name);

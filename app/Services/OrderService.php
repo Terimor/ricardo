@@ -608,13 +608,19 @@ class OrderService
     /**
      * Update order shipping address and return order info data array for support page
      * @param OdinOrder $order
-     * @param array $addressFields
+     * @param array $data
      * @return array|null
      */
-    public function updateShippingAddress(OdinOrder $order, array $addressFields): ?array
+    public function updateShippingAddress(OdinOrder $order, array $data): ?array
     {
+        $mappingFields = $this->getShippingFieldsMapping();
+        $addressFields = [];
+        foreach ($mappingFields as $field => $name) {
+            $addressFields[$field] = $data[$name] ?? null;
+        }
         $order->updateReason = \App\models\DataHistory::REASON_CUSTOMER;
         if (!$order->update($addressFields)) {
+            logger()->error("Update shipping address error, Order {$order->number} ".json_encode($addressFields));
             return null;
         }
         return $this->prepareOrderDataForSupportPage($order);
