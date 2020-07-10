@@ -613,6 +613,7 @@ class OrderService
      */
     public function updateShippingAddress(OdinOrder $order, array $addressFields): ?array
     {
+        $order->updateReason = \App\models\DataHistory::REASON_CUSTOMER;
         if (!$order->update($addressFields)) {
             return null;
         }

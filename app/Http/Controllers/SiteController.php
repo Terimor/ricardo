@@ -954,7 +954,10 @@ class SiteController extends Controller
             ]);
         }
         $domain = Domain::getByName();
-        $emailService->notifyCustomerAddressChange($order->number, $domain->name);
+        $emailResult = $emailService->notifyCustomerAddressChange($order->number, $domain->name);
+        if (empty($emailResult['status'])) {
+            logger()->error("Address change email sending failed, Order {$order->number},  ".json_encode($emailResult));
+        }
         return response()->json([
             'status' => 1,
             'message' => $i18nService->getPhraseTranslation('support.address.changed'),

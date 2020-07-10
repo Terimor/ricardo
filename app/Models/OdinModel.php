@@ -7,6 +7,9 @@ use App\Models\DataHistory;
 
 class OdinModel extends Model
 {
+
+    public ?string $updateReason;
+
     /**
      *
      */
@@ -88,7 +91,7 @@ class OdinModel extends Model
                             'collection' => $model->collection,
                             'document_id' => $model->_id,
                             'fields' => $fields,
-                            'reason' => DataHistory::REASON_ODIN_UPDATE
+                            'reason' => $model->updateReason ?? DataHistory::REASON_ODIN_UPDATE
                         ];
                         DataHistory::saveHistoryData($data);
                     }
