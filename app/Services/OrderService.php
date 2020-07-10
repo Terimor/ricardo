@@ -618,7 +618,7 @@ class OrderService
         foreach ($mappingFields as $field => $name) {
             $addressFields[$field] = $data[$name] ?? null;
         }
-        $order->updateReason = \App\models\DataHistory::REASON_CUSTOMER;
+        $order->updateReason = \App\Models\DataHistory::REASON_CUSTOMER;
         if (!$order->update($addressFields)) {
             logger()->error("Update shipping address error, Order {$order->number} ".json_encode($addressFields));
             return null;
