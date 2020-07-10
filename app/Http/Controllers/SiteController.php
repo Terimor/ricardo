@@ -913,11 +913,11 @@ class SiteController extends Controller
      * @param \App\Http\Requests\ChangeOrderAddressRequest $request
      * @param OrderService $orderService
      * @param I18nService $i18nService
-     * @param \App\services\EmailService $emailService
+     * @param \App\Services\EmailService $emailService
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\OrderNotFoundException
      */
-    public function changeOrderAddress(\App\Http\Requests\ChangeOrderAddressRequest $request, OrderService $orderService, I18nService $i18nService, \App\services\EmailService $emailService)
+    public function changeOrderAddress(\App\Http\Requests\ChangeOrderAddressRequest $request, OrderService $orderService, I18nService $i18nService, \App\Services\EmailService $emailService)
     {
         $email = $request->get('email');
         $code = $request->get('code');
