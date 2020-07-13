@@ -65,7 +65,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="changeAddress" :disabled="$v.$invalid">Save</button>
+                    <button type="button" class="btn btn-primary" @click="changeAddress">Save</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="cancelEdit">Close</button>
                 </div>
             </div>
