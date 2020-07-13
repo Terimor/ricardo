@@ -1,0 +1,20 @@
+@import '../variables';
+
+
+.orders-statuses-table .highlight-row {
+  background-color: #CFF5FF;
+}
+
+tr.order-info {
+  background-color: #f9f9f9;
+}
+
+#address-modal {
+  z-index: 10001;
+  background: none;
+  max-width: none;
+
+  .close {
+    outline: none;
+  }
+}

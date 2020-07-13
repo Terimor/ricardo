@@ -3,8 +3,8 @@
         <td colspan="4">
             <div class="row pt-1">
                 <div class="col-md-6 border-right">
-                    <h4>{{$t('support.order_info')}}</h4>
-                    <div class="tab;e-responsive">
+                    <h4 class="mb-2">{{$t('support.order_info')}}</h4>
+                    <div class="table-responsive">
                         <table class="table">
                             <thead>
                             <tr>
@@ -14,7 +14,7 @@
                             </thead>
                             <tbody>
                             <tr v-for="product in order.products" :class="product.is_paid ? '' : 'text-secondary font-weight-light font-italic'">
-                                <td class="pl-0">{{product.quantity}} x {{product.name}}</td>
+                                <td class="pl-0">{{product.quantity}} × {{product.name}}</td>
                                 <td>{{product.price}}</td>
                             </tr>
                             </tbody>
@@ -31,21 +31,25 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <h5>{{$t('support.shipping_address')}}</h5>
-                            <p v-if="order.allowEditAddress"><button class="btn btn-primary" @click="editAddressClick">Edit address</button></p>
-                            {{order.shipping_apt}} {{order.shipping_building}} {{order.shipping_street2}} {{order.shipping_street}} <br />
-                            {{order.shipping_city}} {{order.shipping_state}} <br />
-                            {{order.shipping_zip}} <br />
-                            {{order.shipping_country_name}}
-
+                            <h5 class="mb-2">{{$t('support.shipping_address')}}</h5>
+                            
+                            <ul class="list-group">
+                              <li v-if="order.shipping_apt || order.shipping_building || order.shipping_street2 || order.shipping_street" class="list-group-item">{{order.shipping_apt}} {{order.shipping_building}} {{order.shipping_street2}} {{order.shipping_street}}</li>
+                              <li v-if="order.shipping_city || order.shipping_state" class="list-group-item">{{order.shipping_city}} {{order.shipping_state}}</li>
+                              <li v-if="order.shipping_zip" class="list-group-item">{{order.shipping_zip}}</li>
+                              <li v-if="order.shipping_country_name" class="list-group-item">{{order.shipping_country_name}}</li>
+                            </ul>
+                            
+                            <button v-if="order.allowEditAddress" class="mt-3 btn btn-primary" @click="editAddressClick">Edit address</button>
                         </div>
                         <div class="col-md-6">
-                            <h5>{{$t('support.customer_information')}}</h5>
-
-                                {{order.customer_first_name}} {{order.customer_last_name}} <br />
-                                {{order.customer_phone}} <br />
-                                {{order.customer_email}} <br />
-
+                            <h5 class="mb-2">{{$t('support.customer_information')}}</h5>
+                            
+                            <ul class="list-group">
+                              <li v-if="order.customer_first_name || order.customer_last_name" class="list-group-item">{{order.customer_first_name}} {{order.customer_last_name}}</li>
+                              <li v-if="order.customer_phone" class="list-group-item">{{order.customer_phone}}</li>
+                              <li v-if="order.customer_email" class="list-group-item">{{order.customer_email}}</li>
+                            </ul>
                         </div>
                     </div>
 

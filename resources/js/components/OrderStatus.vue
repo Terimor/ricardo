@@ -45,7 +45,7 @@
                         >
                             {{$t('support.get_order_status')}}
                         </button>
-                        <button class="btn btn-outline-danger request-code-button"
+                        <button class="btn btn-outline-success request-code-button"
                                 type="button"
                                 @click.prevent="requestCode"
                                 :disabled="requestCodeDisabled"
@@ -85,7 +85,7 @@
                     <order-detail :order="orders[0]" :is-active="true" @editAddressClick="openAddressForm" />
                 </template>
                 <template v-else v-for="order in orders">
-                    <tr @click="setActive(order)" style="cursor: pointer">
+                    <tr @click="setActive(order)" style="cursor: pointer" :class="{'highlight-row': activeOrder && activeOrder.number == order.number}">
                         <td>{{order.number}}</td>
                         <td>{{$t('support.status.' + order.status)}}</td>
                         <td>{{order.created_at}}</td>
@@ -109,7 +109,9 @@
 </template>
 
 <script>
+  import Cleave from 'cleave.js';
   import ChangeOrderAddress from "./ChangeOrderAddress";
+
   export default {
     name: "OrderStatus",
     components: {ChangeOrderAddress},
@@ -272,6 +274,15 @@
       if (this.code && this.email) {
         this.getOrderInfo();
       }
+
+      js_deps.wait_for(() => {
+        return !!document.getElementById('order_code');
+      }, () => {
+        var cleave = new Cleave('#order_code', {
+          numericOnly: true,
+          blocks: [6]
+        });
+      });
     }
   }
 </script>
