@@ -30,7 +30,7 @@
                 <div class="col-md-6">
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-xl-6">
                             <h5 class="mb-2">{{$t('support.shipping_address')}}</h5>
                             
                             <ul class="list-group">
@@ -42,7 +42,7 @@
                             
                             <button v-if="order.allowEditAddress" class="mt-3 btn btn-primary" @click="editAddressClick">Edit address</button>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-xl-6 mt-3 mt-xl-0">
                             <h5 class="mb-2">{{$t('support.customer_information')}}</h5>
                             
                             <ul class="list-group">
