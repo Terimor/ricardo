@@ -3,12 +3,7 @@
 namespace App\Services;
 
 use App\Constants\PaymentProviders;
-use App\Models\Currency;
-use App\Models\Txn;
-use App\Models\OdinOrder;
-use App\Models\AffiliateSetting;
-use App\Models\OdinProduct;
-use App\Models\Localize;
+use App\Models\{Currency, Setting, Txn, OdinOrder, AffiliateSetting, OdinProduct, Localize};
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -658,6 +653,29 @@ class OrderService
             throw new BadRequestHttpException('Invalid email');
         }
         return $order;
+    }
+
+    public function cancelOrderUsingSagaApi(OdinOrder $order)
+    {
+        $client = new \GuzzleHttp\Client();
+        $urlPath = Setting::getValue('saga_api_endpoint');
+        $urlPath = !empty($urlPath) ? $urlPath : '';
+
+
+        $url = $urlPath.'?r=odin-api/cancel-order';
+        $apiKey = Setting::getValue('saga_api_access_key');
+
+        $request = $client->request('POST', $url, [
+            'headers' => [
+                'api-token' => $apiKey,
+            ],
+            'form_params' => [
+                'language' => app()->getLocale(),
+                'order_number' => $order->number,
+            ]
+        ]);
+
+        return json_decode($request->getBody()->getContents(), true);
     }
 
 }

@@ -116,6 +116,7 @@ class SupportRequestsController extends Controller
     }
 
     /**
+     * Send request to Saga API for cancelling order
      * @param Request $request
      * @param OrderService $orderService
      * @param I18nService $i18nService
@@ -133,13 +134,23 @@ class SupportRequestsController extends Controller
         } catch (\Exception $exception) {
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         }
-        if ($order->isNotExportedOrder()) {
-            return response()->json([
-                'status' => 1,
-                'message' => 'Order cancelled'
-            ]);
+        if ($order && $order->isNotExportedOrder()) {
+            $result = $orderService->cancelOrderUsingSagaApi($order);
+            if (!empty($result['status'])) {
+                return response()->json([
+                    'status' => 1,
+                    'order' => [
+                        'number' => $order->number,
+                        'status' => OdinOrder::STATUS_CANCELLED,
+                    ],
+                    'message' => $i18nService->getPhraseTranslation('support.order.cancelled'),
+                ]);
+            }
         }
-
+        return response()->json([
+            'status' => 0,
+            'message' => $i18nService->getPhraseTranslation('support.order.not_cancelled'),
+        ]);
 
     }
 
