@@ -82,7 +82,7 @@
                         <td>{{orders[0].created_at}}</td>
                         <td>{{orders[0].total_paid}}</td>
                     </tr>
-                    <order-detail :order="orders[0]" :is-active="true" @editAddressClick="openAddressForm" />
+                    <order-detail :order="orders[0]" :is-active="true" @editAddressClick="openAddressForm" @cancelOrderClick="cancelOrder" />
                 </template>
                 <template v-else v-for="order in orders">
                     <tr @click="setActive(order)" style="cursor: pointer">
@@ -95,7 +95,7 @@
                         :order="order"
                         :key="order.number"
                         :is-active="activeOrder && activeOrder.number == order.number"
-                        @editAddressClick="openAddressForm"
+                        @editAddressClick="openAddressForm" @cancelOrderClick="cancelOrder"
                     />
                 </template>
 
@@ -138,6 +138,45 @@
         this.activeOrder = (this.activeOrder && this.activeOrder.number == order.number) ? null : order;
         this.alertMessage = '';
         this.alertType = '';
+      },
+
+      async cancelOrder(order) {
+        const confirmed = confirm(this.$t('support.confirm.order.cancel'));
+        if (!confirmed) {
+          return false;
+        }
+        const data = {
+          number: order.number,
+          email: this.email,
+          code: this.code
+        }
+
+        const response = await fetch('/cancel-order', {
+          method: 'post',
+          credentials: 'same-origin',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(data)
+        }).then(resp => {
+          return resp.json();
+        });
+
+        if (response.status != 1) {
+          this.alertMessage = response.message;
+          this.alertType = 'danger';
+        } else {
+          this.alertMessage = response.message;
+          this.alertType = 'success';
+          for (let key in this.orders) {
+            if (this.orders[key].number == response.order.number) {
+              this.orders[key].status = response.order.status;
+              break;
+            }
+          }
+        }
+
       },
 
       openAddressForm(order) {
@@ -184,6 +223,7 @@
             if (this.orders[key].number == response.order.number) {
               this.orders[key] = response.order;
               this.activeOrder = response.order;
+              break;
             }
           }
         }

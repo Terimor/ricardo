@@ -10,6 +10,8 @@ use App\Models\AffiliateSetting;
 use App\Models\OdinProduct;
 use App\Models\Localize;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Order Service class
@@ -525,7 +527,7 @@ class OrderService
                 $orderData['countries'] = UtilsService::getShippingCountries(true, $product);
             }
         }
-        $orderData['allowEditAddress'] = $order->isAllowedEditAddress();
+        $orderData['isNotExportedOrder'] = $order->isNotExportedOrder();
         return $orderData;
     }
 
@@ -634,6 +636,28 @@ class OrderService
             'shipping_street2', 'shipping_building', 'shipping_apt',
             'customer_first_name', 'customer_last_name', 'customer_phone', 'customer_email'
         ];
+    }
+
+    /**
+     * Return order from support page request data
+     * @param Request $request
+     * @return OdinOrder|null
+     * @throws \App\Exceptions\OrderNotFoundException
+     */
+    public function getOrderFromSupportRequest(Request $request): ?OdinOrder
+    {
+        $email = $request->get('email');
+        $code = $request->get('code');
+        $orderNumber = $request->get('number');
+        if (!$this->validateSupportCode($email, $code)) {
+            throw new BadRequestHttpException((new I18nService())->getPhraseTranslation('support.code_is_invalid'));
+        }
+        $order = OdinOrder::getByNumber($orderNumber);
+        if ($order->customer_email !== $email) {
+            logger()->error("trying access to order {$order->number} with different email {$order->customer_email} - {$email}");
+            throw new BadRequestHttpException('Invalid email');
+        }
+        return $order;
     }
 
 }

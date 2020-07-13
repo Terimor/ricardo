@@ -85,12 +85,12 @@ Route::group(['middleware' => ['localization']], function (\Illuminate\Routing\R
     // sitemap
     $router->get('/sitemap.xml', 'SiteController@sitemap');
     // support
-    //$router->post('/support-abc', 'SiteController@supportRequest')->name('support-request');
-
     $router->get('/support-abc/{password?}/{email?}', 'SiteController@support')->name('support');
-    $router->post('/request-support-code', 'SiteController@requestSupportCode')->name('request-support-code');
-    $router->post('/get-order-info', 'SiteController@getOrderInfo')->name('get-order-info');
-    $router->post('/change-order-address', 'SiteController@changeOrderAddress')->name('change-order-address');
+    $router->post('/request-support-code', 'SupportRequestsController@requestSupportCode')->name('request-support-code');
+    $router->post('/get-order-info', 'SupportRequestsController@getOrderInfo')->name('get-order-info');
+    $router->post('/change-order-address', 'SupportRequestsController@changeOrderAddress')->name('change-order-address');
+    $router->post('/cancel-order', 'SupportRequestsController@cancelOrder')->name('cancel-order');
+    //end support
 
     // report-abuse
     $router->get('/report-abuse', 'SiteController@reportAbuse');

@@ -3,8 +3,13 @@
         <td colspan="4">
             <div class="row pt-1">
                 <div class="col-md-6 border-right">
-                    <h4>{{$t('support.order_info')}}</h4>
-                    <div class="tab;e-responsive">
+                    <h4>{{$t('support.order_info')}} </h4>
+                    <p v-if="order.isNotExportedOrder">
+                        <button class="btn btn-danger" @click="cancelOrderClick">
+                            {{$t('support.order.cancel')}}
+                        </button>
+                    </p>
+                    <div class="table-responsive">
                         <table class="table">
                             <thead>
                             <tr>
@@ -32,7 +37,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5>{{$t('support.shipping_address')}}</h5>
-                            <p v-if="order.allowEditAddress"><button class="btn btn-primary" @click="editAddressClick">Edit address</button></p>
+                            <p v-if="order.isNotExportedOrder"><button class="btn btn-primary" @click="editAddressClick">{{$t('support.address.edit')}}</button></p>
                             {{order.shipping_apt}} {{order.shipping_building}} {{order.shipping_street2}} {{order.shipping_street}} <br />
                             {{order.shipping_city}} {{order.shipping_state}} <br />
                             {{order.shipping_zip}} <br />
@@ -88,6 +93,10 @@
     methods: {
       editAddressClick() {
         this.$emit('editAddressClick', this.order)
+      },
+      cancelOrderClick() {
+        console.log('dddddd');
+        this.$emit('cancelOrderClick', this.order)
       }
     }
   }

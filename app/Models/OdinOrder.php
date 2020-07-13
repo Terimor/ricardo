@@ -1149,10 +1149,10 @@ class OdinOrder extends OdinModel
     }
 
     /**
-     * Check if order is in status which allow edit shipping address
+     * Check if order is in not exported and not in cancelled statuses
      * @return bool
      */
-    public function isAllowedEditAddress(): bool
+    public function isNotExportedOrder(): bool
     {
         $statuses = [
             static::STATUS_NEW, static::STATUS_PAID, static::STATUS_HALFPAID
