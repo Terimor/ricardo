@@ -13,7 +13,7 @@
         </div>
         <form method="post" @submit.prevent="getOrderInfo" :class="showError ? 'was-validated' : ''" v-if="showForm">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3 col-xl-4">
                     <label for="order_email">{{$t('support.enter_email')}}</label>
                     <div class="input-group">
                         <input ref="email" type="email" id="order_email" name="email" class="form-control" v-model="email" @change="showEmailError=false" required>
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3 col-xl-4 mt-4 mt-md-0">
                     <label for="order_code">{{$t('support.code')}}</label>
                     <div class="input-group">
                         <input type="text"
@@ -35,27 +35,27 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <label>&nbsp;</label>
+                <div class="col-md-6 col-xl-4">
+                  <label>&nbsp;</label>
+                  
+                  <div>
+                    <button class="btn btn-outline-secondary"
+                            type="submit"
+                            :disabled="submitDisabled"
+                    >
+                        {{$t('support.get_order_status')}}
+                    </button>
 
-                    <div class="input-group">
-                        <button class="btn btn-outline-secondary"
-                                type="submit"
-                                :disabled="submitDisabled"
-                        >
-                            {{$t('support.get_order_status')}}
-                        </button>
-                        <button class="btn btn-outline-danger request-code-button"
-                                type="button"
-                                @click.prevent="requestCode"
-                                :disabled="requestCodeDisabled"
-                        >
-                            {{$t('support.request_code')}}
-                        </button>
+                    <div class="d-block d-sm-inline-block mt-2 mt-sm-0 ml-sm-2">
+                      <button class="btn btn-outline-success"
+                              type="button"
+                              @click.prevent="requestCode"
+                              :disabled="requestCodeDisabled"
+                      >
+                          {{$t('support.request_code')}}
+                      </button>
                     </div>
-                </div>
-                <div class="col-md-2">
-
+                  </div>
                 </div>
             </div>
 
@@ -63,6 +63,7 @@
         </form>
 
         <div class="card my-5" v-if="orders.length">
+          <div class="table-responsive">
             <table class="table orders-statuses-table">
                 <thead>
                     <tr>
@@ -85,7 +86,7 @@
                     <order-detail :order="orders[0]" :is-active="true" @editAddressClick="openAddressForm" @cancelOrderClick="cancelOrder" />
                 </template>
                 <template v-else v-for="order in orders">
-                    <tr @click="setActive(order)" style="cursor: pointer">
+                    <tr @click="setActive(order)" style="cursor: pointer" :class="{'highlight-row': activeOrder && activeOrder.number == order.number}">
                         <td>{{order.number}}</td>
                         <td>{{$t('support.status.' + order.status)}}</td>
                         <td>{{order.created_at}}</td>
@@ -101,7 +102,7 @@
 
                 </tbody>
             </table>
-
+          </div>
         </div>
 
 
@@ -109,7 +110,9 @@
 </template>
 
 <script>
+  import Cleave from 'cleave.js';
   import ChangeOrderAddress from "./ChangeOrderAddress";
+
   export default {
     name: "OrderStatus",
     components: {ChangeOrderAddress},
@@ -312,6 +315,15 @@
       if (this.code && this.email) {
         this.getOrderInfo();
       }
+
+      js_deps.wait_for(() => {
+        return !!document.getElementById('order_code');
+      }, () => {
+        var cleave = new Cleave('#order_code', {
+          numericOnly: true,
+          blocks: [6]
+        });
+      });
     }
   }
 </script>

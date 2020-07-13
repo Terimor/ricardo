@@ -52,6 +52,7 @@ mix
   .sass('resources/sass/app.scss', 'public/assets/css')
   .sass('resources/sass/views/promo.scss', 'public/assets/css')
   .sass('resources/sass/views/contact-us.scss', 'public/assets/css')
+  .sass('resources/sass/views/support.scss', 'public/assets/css')
   .sass('resources/sass/views/static.scss', 'public/assets/css')
   .sass('resources/sass/views/splash.scss', 'public/assets/css')
   .sass('resources/sass/views/uppsells.scss', 'public/assets/css')
