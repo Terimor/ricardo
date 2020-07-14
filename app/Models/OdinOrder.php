@@ -1155,8 +1155,17 @@ class OdinOrder extends OdinModel
     public function isNotExportedOrder(): bool
     {
         $statuses = [
-            static::STATUS_NEW, static::STATUS_PAID, static::STATUS_HALFPAID, static::STATUS_ERROR
+            static::STATUS_NEW, static::STATUS_PAID, static::STATUS_HALFPAID
         ];
-        return in_array($this->status, $statuses) && !$this->is_paused;
+
+        if (in_array($this->status, $statuses) && !$this->is_paused) {
+            foreach ($this->products as $product) {
+                if (!empty($product['is_exported'])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

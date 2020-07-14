@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-md-6 col-xl-4">
                   <label>&nbsp;</label>
-                  
+
                   <div>
                     <button class="btn btn-outline-secondary"
                             type="submit"
@@ -175,6 +175,8 @@
           for (let key in this.orders) {
             if (this.orders[key].number == response.order.number) {
               this.orders[key].status = response.order.status;
+              this.orders[key].isNotExportedOrder = false;
+              this.activeOrder.isNotExportedOrder = false;
               break;
             }
           }
