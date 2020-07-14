@@ -74,7 +74,7 @@
 </template>
 
 <script>
-  import addressValidation from '../validation/address-validation';
+  import changeAddressValidation from '../validation/change-address-validation';
   import globals from '../mixins/globals';
   import * as extraFields from '../mixins/extraFields';
   import Street from './common/common-fields/Street';
@@ -109,6 +109,7 @@
         isLoading: {
           address: false,
         },
+        isSupportChangeAddress: true,
         form: {
           countryCodePhoneField: null,
           street: null,
@@ -119,11 +120,13 @@
       }
     },
 
-    validations: addressValidation,
+    validations: changeAddressValidation,
 
     methods: {
 
       async changeAddress() {
+        this.$v.form.$touch();
+
         if (this.$v.$invalid) {
           return false;
         }
