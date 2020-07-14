@@ -655,6 +655,11 @@ class OrderService
         return $order;
     }
 
+    /**
+     * Send request to saga api for cancelling order
+     * @param OdinOrder $order
+     * @return mixed
+     */
     public function cancelOrderUsingSagaApi(OdinOrder $order)
     {
         $client = new \GuzzleHttp\Client();
