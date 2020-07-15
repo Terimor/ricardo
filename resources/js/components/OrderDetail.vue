@@ -4,11 +4,7 @@
             <div class="row pt-1">
                 <div class="col-md-6 border-right">
                     <h4 class="mb-2">{{$t('support.order_info')}}</h4>
-                    <p v-if="order.isNotExportedOrder">
-                        <button class="btn btn-danger" @click="cancelOrderClick">
-                            {{$t('support.order.cancel')}}
-                        </button>
-                    </p>
+
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -31,6 +27,10 @@
                             </tfoot>
                         </table>
                     </div>
+
+                    <button v-if="order.isNotExportedOrder" class="btn btn-danger" @click="cancelOrderClick">
+                        {{$t('support.order.cancel')}}
+                    </button>
                 </div>
                 <div class="col-md-6">
 
