@@ -292,9 +292,7 @@ export const tplMixin = {
   watch: {
 
     'form.country'(country) {      
-      if (!this.isSupportChangeAddress) {
-        this.reloadPaymentMethods(country);
-      }
+      this.reloadPaymentMethods(country);
     },
 
     'form.card_type'(value) {

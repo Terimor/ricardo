@@ -1,5 +1,5 @@
 <template>
-  <div class="alert" v-html="textAlert"></div>
+  <div class="alert alert-success purchase-exists-alert" v-html="textAlert"></div>
 </template>
 
 <script>
@@ -18,11 +18,7 @@ export default {
 </script>
 
 <style lang="scss">
-.alert {
-  width: 100%;
-  padding: 20px;
-  background-color: #6bbd6e;
-  color: white;
+.purchase-exists-alert {
   margin-top: 15px;
 }
 </style>

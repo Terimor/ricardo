@@ -109,7 +109,6 @@
         isLoading: {
           address: false,
         },
-        isSupportChangeAddress: true,
         form: {
           countryCodePhoneField: null,
           street: null,
