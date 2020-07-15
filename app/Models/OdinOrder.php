@@ -137,6 +137,7 @@ class OdinOrder extends OdinModel
         'txns_fee_usd' => 0, //float, total amount of all txns' fee in USD
         'shipping_cost_usd' => 0, // float, Total shipping cost in USD
         'payout_usd' => 0, // float, Affiliate payout amount in USD
+        'campaign_cost_usd' => 0, // float, Campaign cost in USD
         'shop_currency' => null, // enum string, //currency was used to display prices
         'installments' => 0,
         'customer_email' => null, // * string
