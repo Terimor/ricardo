@@ -16,7 +16,9 @@
     }"
     theme="variant-1"
     :tabindex="tabindex"
-    :order="order" />
+    :order="order"
+    @input="onChange"
+  />
 
 </template>
 
@@ -33,6 +35,12 @@
       'order',
       '$v',
     ],
+
+    methods: {
+      onChange(value) {
+        this.$emit('change', value);
+      }
+    },
 
 
     computed: {
@@ -57,5 +65,5 @@
 
 
 <style lang="scss" scoped>
-  
+
 </style>

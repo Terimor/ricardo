@@ -49,7 +49,11 @@ class I18nService
      */
     public function getPhraseTranslation(string $phrase): ?string
     {
-        return I18n::getTranslationByPhraseAndLanguage($phrase, app()->getLocale());
+        $language = app()->getLocale();
+        if (empty(I18n::$loadedPhrases[$language][$phrase])) {
+            I18n::$loadedPhrases[$language][$phrase] = I18n::getTranslationByPhraseAndLanguage($phrase, $language);
+        }
+        return I18n::$loadedPhrases[$language][$phrase];
     }
 
     /**

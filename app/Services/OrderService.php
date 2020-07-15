@@ -506,7 +506,7 @@ class OrderService
                 unset($orderData[$field]);
             }
         }
-        $orderData['shipping_country_name'] = t('country.'.$orderData['shipping_country']);
+        $orderData['shipping_country_name'] = (new I18nService())->getPhraseTranslation('country.'.$orderData['shipping_country']);
         $orderData['created_at'] = $order->created_at->toDatetime()->format(config('app.date_format'));
         $orderData['trackings'] = $this->prepareTrackingsData($orderData['trackings'] ?? []);
         $currency = CurrencyService::getCurrency($order->currency);
@@ -575,11 +575,12 @@ class OrderService
      */
     public function prepareProductsData(array $products, Currency $currency, array $skus): array
     {
+        $i18nService = new I18nService();
         foreach ($products as &$product) {
             $product['name'] = $skus[$product['sku_code']] ?? $product['sku_code'];
             $product['price'] = $product['is_paid'] ?
                 CurrencyService::getLocalTextValue($product['price'], $currency) :
-                t('support.not_paid');
+                $i18nService->getPhraseTranslation('support.not_paid');
         }
         return $products;
     }
@@ -628,7 +629,7 @@ class OrderService
         return [
             'number', 'status', 'is_paused', 'shipping_country', 'created_at', 'trackings', 'total_paid', 'products',
             'shipping_apt', 'shipping_country', 'shipping_zip', 'shipping_state', 'shipping_city', 'shipping_street',
-            'shipping_street2', 'shipping_building', 'shipping_apt',
+            'shipping_street2', 'shipping_building', 'shipping_apt', 'currency',
             'customer_first_name', 'customer_last_name', 'customer_phone', 'customer_email'
         ];
     }

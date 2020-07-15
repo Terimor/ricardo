@@ -58,6 +58,7 @@
                             :form="form"
                             name="zipcode" /> <br/>
                         <Country
+                            @change="resetFields"
                             :$v="$v.form.country"
                             :form="form"
                             name="country" />
@@ -123,6 +124,12 @@
 
     methods: {
 
+      resetFields() {
+        this.form.district = '';
+        this.form.complement = '';
+        this.form.building = '';
+      },
+
       async changeAddress() {
         this.$v.form.$touch();
 
@@ -168,7 +175,8 @@
     watch: {
       order() {
         this.setInputFields();
-      }
+      },
+
     }
 
   }
