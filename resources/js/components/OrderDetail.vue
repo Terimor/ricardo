@@ -45,7 +45,7 @@
                               <li v-if="order.shipping_country_name" class="list-group-item">{{order.shipping_country_name}}</li>
                             </ul>
 
-                            <button v-if="order.isNotExportedOrder" class="mt-3 btn btn-primary" @click="editAddressClick">Edit address</button>
+                            <button v-if="order.isNotExportedOrder" class="mt-3 btn btn-primary" @click="editAddressClick">{{$t('support.address.edit')}}</button>
                         </div>
                         <div class="col-xl-6 mt-3 mt-xl-0">
                             <h5 class="mb-2">{{$t('support.customer_information')}}</h5>
