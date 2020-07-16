@@ -29,7 +29,7 @@ class SupportRequestsController extends Controller
         $orders = OdinOrder::getByEmail($email, ['status']);
         if ($orders->isEmpty()) {
             return response()->json([
-                'status' => 404,
+                'status' => 0,
                 'message' => $i18nService->getPhraseTranslation('support.order.not_found')
             ]);
         }
@@ -46,8 +46,8 @@ class SupportRequestsController extends Controller
 
         logger()->error("request support code did not work, {$code} - {$email} - {$domain->name}");
         return response()->json([
-            'status' => 500,
-            'message' => 'Something went wrong!'
+            'status' => 0,
+            'message' => $i18nService->getPhraseTranslation('support.error')
         ]);
 
     }
@@ -72,7 +72,7 @@ class SupportRequestsController extends Controller
         $orders = $orderService->getOrdersByEmailAndSupportCode($email, $code);
         if (!$orders) {
             return response()->json([
-                'status' => 404,
+                'status' => 0,
                 'message' => t('support.code_is_invalid')
             ]);
         }

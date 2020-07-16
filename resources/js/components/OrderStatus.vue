@@ -143,6 +143,11 @@
         this.alertType = '';
       },
 
+      responseError(response) {
+        this.alertMessage = response.status === 0 ? response.message : this.$t('support.error');
+        this.alertType = 'danger';
+      },
+
       async cancelOrder(order) {
         const confirmed = confirm(this.$t('support.confirm.order.cancel'));
         if (!confirmed) {
@@ -167,8 +172,7 @@
         });
 
         if (response.status != 1) {
-          this.alertMessage = response.message;
-          this.alertType = 'danger';
+          this.responseError(response)
         } else {
           this.alertMessage = response.message;
           this.alertType = 'success';
@@ -219,8 +223,7 @@
         });
 
         if (response.status != 1) {
-          this.alertMessage = response.message;
-          this.alertType = 'danger';
+          this.responseError(response);
         } else {
           this.alertMessage = response.message;
           this.alertType = 'success';
@@ -263,8 +266,7 @@
         });
 
         if (response.status != 1) {
-          this.alertMessage = response.message;
-          this.alertType = 'danger';
+          this.responseError(response);
           this.submitDisabled = false;
         } else {
           this.orders = response.orders
@@ -304,12 +306,13 @@
         });
 
         if (response.status != 1) {
+          this.responseError(response);
           this.requestCodeDisabled = false;
-          this.alertType = 'danger';
         } else {
           this.alertType = 'success';
+          this.alertMessage = response.message;
         }
-        this.alertMessage = response.message;
+
       },
 
     },
