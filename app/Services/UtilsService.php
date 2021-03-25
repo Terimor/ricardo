@@ -18,7 +18,7 @@ class UtilsService
      */
 	const S3_URL_STAGING = 'odin-img-dev.s3.eu-central-1.amazonaws.com';
     const S3_URL_PRODUCTION = 'mediaodin.s3.amazonaws.com';
-    const CDN_HOST_PRODUCTION = 'cdn.8xgb.com';
+    const CDN_HOST_PRODUCTION = 'd1tg25xyqn5yw8.cloudfront.net';//'cdn.8xgb.com';
     const CDN_HOST_STAGING = 'cdn.odin.saga-be.host';
 
 	public static $localhostIps = ['127.0.0.1', '192.168.1.101', '192.168.1.3'];

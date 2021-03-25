@@ -121,7 +121,9 @@
                 <div class="col-md-6 mt-md-5">
                     <div class="product-media">
                         <div class="for-img">
-                            <img src="https://enence.com/theme/images/lang/en/safe.png" alt="">
+                            <img
+                                alt=""
+                                src="{{ $loadedImages['safe_stripe_payment']['url'] ?? '' }}">
                         </div>
                         @if (!empty($product->vimeo_id))
                         <h3>

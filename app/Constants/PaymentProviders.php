@@ -1591,19 +1591,19 @@ class PaymentProviders
         self::STRIPE => [
             'name'      => 'Stripe',
             'is_active' => true,
-            'is_main'   => false,
+            'is_main'   => true,
             'is_fallback' => true,
             'in_prod'   => true,
             'fraud_setting' => [
                 'common' => [
-                    '3ds_limit' => 20,
-                    'fallback_limit' => 99,
-                    'refuse_limit' => 99
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 101,
+                    'refuse_limit' => 101
                 ],
                 'affiliate' => [
-                    '3ds_limit' => 100,
-                    'fallback_limit' => 99,
-                    'refuse_limit' => 99
+                    '3ds_limit' => 101,
+                    'fallback_limit' => 101,
+                    'refuse_limit' => 101
                 ]
             ],
             'extra_fields'  => [
@@ -1653,42 +1653,42 @@ class PaymentProviders
             'methods'   => [
                 'main' => [
                     PaymentMethods::VISA => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*'] //before it was 'europe' for every card type
                     ],
                     PaymentMethods::MASTERCARD => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::AMEX => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::DISCOVER => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::DINERSCLUB => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::JCB => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ]
                 ],
                 'fallback' => [
                     PaymentMethods::VISA => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::MASTERCARD => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::AMEX => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::DISCOVER => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::DINERSCLUB => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ],
                     PaymentMethods::JCB => [
-                        '-3ds' => ['europe']
+                        '-3ds' => ['*']
                     ]
                 ]
             ]

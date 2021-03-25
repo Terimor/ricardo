@@ -39,7 +39,7 @@ class PaymentCardStripe3dsRequest extends FormRequest
     {
         return [
             'payment_intent'    => ['required', 'string'],
-            'source_type'   => ['required', 'string', 'in:card'],
+            //'source_type'   => ['required', 'string', 'in:card'],
             'orderid'   => ['required', 'string', 'size:24']
         ];
     }
