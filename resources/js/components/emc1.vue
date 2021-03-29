@@ -365,7 +365,6 @@
           : '';
       },
       xprice_total_text() {
-console.log('---'+this.price_multiplier+'---');
         return this.price_multiplier + this.price_total_text;
       },
       textMainDealText: () => t('checkout.main_deal.message', { country: t('country.' + js_data.country_code) || '' }),
