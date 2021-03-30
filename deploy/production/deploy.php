@@ -37,8 +37,14 @@ task('frontend:s3:upload', function () {
     run("cd {{release_path}}/public/assets && aws s3 sync . s3://mediaodin/assets --profile=odinprod --cache-control max-age=259200");
 });
 
+task('deploy:confirm', function() {
+    if (!askConfirmation('Do you confirm Odin PRODUCTION deployment?')) {
+        die('Deployment successfully canceled.');
+    }
+});
+
+before('deploy', 'deploy:confirm');
 after('artisan:storage:link', 'frontend:build');
 after('frontend:build', 'frontend:s3:upload');
-
 //if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
