@@ -207,6 +207,10 @@ class TemplateService
         if ($request->get('tpl') == 'amc81') {
             $viewTemplate = 'new.pages.checkout.templates.amc81';
         }
+        if ($request->get('tpl') == 'nmc9') {
+            $viewTemplate = 'new.pages.checkout.templates.nmc9';
+        }
+
         return $viewTemplate;
     }
 
